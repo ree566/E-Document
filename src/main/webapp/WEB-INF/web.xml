@@ -1,12 +1,194 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+    <display-name>CalculatorWSApplication</display-name>
+    <welcome-file-list>
+        <welcome-file>index.html</welcome-file>
+        <welcome-file>index.htm</welcome-file>
+        <welcome-file>index.jsp</welcome-file>
+    </welcome-file-list>
+    <listener>
+        <listener-class>com.advantech.listener.QuartzContextListener</listener-class>
+    </listener>
+    <!--http://stackoverflow.com/questions/20326451/hide-jsp-extension-or-change-display-name-on-url-->
+    
+    <context-param>
+        <param-name>pageTitle</param-name>
+        <param-value>藍燈系統</param-value>
+    </context-param>
+    
+    <filter>
+        <filter-name>EncodingFilter</filter-name>
+        <filter-class>com.advantech.filter.EncodingFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>EncodingFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    
+    <filter>
+        <filter-name>LoginFilter</filter-name>
+        <filter-class>com.advantech.filter.LoginFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>LoginFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    
+    <filter>
+        <filter-name>PermissionFilter</filter-name>
+        <filter-class>com.advantech.filter.PermissionFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>PermissionFilter</filter-name>
+        <url-pattern>/Login</url-pattern>
+        <url-pattern>/Error</url-pattern>
+        <url-pattern>/login.jsp</url-pattern>
+        <url-pattern>/error.jsp</url-pattern>
+    </filter-mapping>
 
-<web-app xmlns="http://java.sun.com/xml/ns/javaee"
-	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
-	 version="3.0">
+    <servlet>
+        <servlet-name>bab</servlet-name>
+        <jsp-file>/babpage.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>bab</servlet-name>
+        <url-pattern>/Bab</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>test</servlet-name>
+        <jsp-file>/testpage.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>test</servlet-name>
+        <url-pattern>/Test</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>TestTotal</servlet-name>
+        <jsp-file>/testTotal.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>TestTotal</servlet-name>
+        <url-pattern>/TestTotal</url-pattern>  
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>BabTotal</servlet-name>
+        <jsp-file>/babTotal.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>BabTotal</servlet-name>
+        <url-pattern>/BabTotal</url-pattern>   
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>sensordata</servlet-name>
+        <jsp-file>/sensor.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>sensordata</servlet-name>
+        <url-pattern>/Sensor</url-pattern>  
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>SysInfo</servlet-name>
+        <jsp-file>/sysInfo.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>SysInfo</servlet-name>
+        <url-pattern>/SysInfo</url-pattern>  
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>SensorAdjust</servlet-name>
+        <jsp-file>/sensorAdjust.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>SensorAdjust</servlet-name>
+        <url-pattern>/SensorAdjust</url-pattern>  
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>TotalMap</servlet-name>
+        <jsp-file>/totalMap.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>TotalMap</servlet-name>
+        <url-pattern>/TotalMap</url-pattern>  
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>Login</servlet-name>
+        <jsp-file>/login.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Login</servlet-name>
+        <url-pattern>/Login</url-pattern>  
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>Error</servlet-name>
+        <jsp-file>/error.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Error</servlet-name>
+        <url-pattern>/Error</url-pattern>  
+    </servlet-mapping>
+ 
+    <servlet>
+        <servlet-name>QuartzInitializer</servlet-name>
+        <servlet-class>
+            org.quartz.ee.servlet.QuartzInitializerServlet
+        </servlet-class>
+        <init-param>
+            <param-name>config-file</param-name>
+            <param-value>/quartz.properties</param-value>
+        </init-param>
+        <init-param>
+            <param-name>shutdown-on-unload</param-name>
+            <param-value>true</param-value>
+        </init-param>
+        <init-param>
+            <param-name>start-scheduler-on-load</param-name>
+            <param-value>true</param-value>
+        </init-param>
+        <load-on-startup>2</load-on-startup>
+    </servlet>
+
+    <context-param>
+        <param-name>quartz:shutdown-on-unload</param-name>
+        <param-value>true</param-value>
+    </context-param>
+    <context-param>
+        <param-name>quartz:wait-on-shutdown</param-name>
+        <param-value>true</param-value>
+    </context-param>
+    <context-param>
+        <param-name>quartz:start-scheduler-on-load</param-name>
+        <param-value>true</param-value>
+    </context-param>
     <session-config>
         <session-timeout>
-            30
+            20
         </session-timeout>
     </session-config>
+    <resource-ref>
+        <description>MFG-SEVER</description>
+        <res-ref-name>jdbc/res1</res-ref-name>
+        <res-type>javax.sql.DataSource</res-type>
+        <res-auth>Container</res-auth>
+    </resource-ref>
+    <resource-ref>
+        <description>PC-P7H55MLE</description>
+        <res-ref-name>jdbc/res2</res-ref-name>
+        <res-type>javax.sql.DataSource</res-type>
+        <res-auth>Container</res-auth>
+    </resource-ref>
+    <resource-ref>
+        <description>172.22.3.40</description>
+        <res-ref-name>jdbc/res3</res-ref-name>
+        <res-type>javax.sql.DataSource</res-type>
+        <res-auth>Container</res-auth>
+    </resource-ref>
 </web-app>
