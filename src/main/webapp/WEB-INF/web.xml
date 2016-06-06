@@ -6,16 +6,16 @@
         <welcome-file>index.htm</welcome-file>
         <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>
-    <listener>
+<!--    <listener>
         <listener-class>com.advantech.listener.QuartzContextListener</listener-class>
-    </listener>
+    </listener>-->
     <!--http://stackoverflow.com/questions/20326451/hide-jsp-extension-or-change-display-name-on-url-->
     
     <context-param>
         <param-name>pageTitle</param-name>
         <param-value>藍燈系統</param-value>
     </context-param>
-    
+<!--    
     <filter>
         <filter-name>EncodingFilter</filter-name>
         <filter-class>com.advantech.filter.EncodingFilter</filter-class>
@@ -44,7 +44,7 @@
         <url-pattern>/Error</url-pattern>
         <url-pattern>/login.jsp</url-pattern>
         <url-pattern>/error.jsp</url-pattern>
-    </filter-mapping>
+    </filter-mapping>-->
 
     <servlet>
         <servlet-name>bab</servlet-name>
@@ -136,7 +136,7 @@
         <url-pattern>/Error</url-pattern>  
     </servlet-mapping>
  
-    <servlet>
+<!--    <servlet>
         <servlet-name>QuartzInitializer</servlet-name>
         <servlet-class>
             org.quartz.ee.servlet.QuartzInitializerServlet
@@ -154,7 +154,7 @@
             <param-value>true</param-value>
         </init-param>
         <load-on-startup>2</load-on-startup>
-    </servlet>
+    </servlet>-->
 
     <context-param>
         <param-name>quartz:shutdown-on-unload</param-name>

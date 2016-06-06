@@ -1,0 +1,115 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.advantech.helper;
+
+import com.advantech.quartzJob.DataTransformer;
+import com.bag.test.RvResponse;
+import com.bag.test.Service;
+import com.bag.test.ServiceSoap;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.XML;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+/**
+ *
+ * @author Wei.Cheng
+ */
+public class WebServiceRV {
+
+    private final String sParam;
+    private final URL url;//webservice位置(放在專案中，因為url無法讀取，裏頭標籤衝突)
+    private static final Logger log = LoggerFactory.getLogger(WebServiceRV.class);
+
+    private static WebServiceRV instance;
+
+    private WebServiceRV() {
+        sParam = "<root>"
+                + "<METHOD ID='ETLSO.QryProductionKanban4Test'/>"
+                + "<KANBANTEST>"
+                + "<STATION_ID>4,122,124,11,3,5,6,32,30,134,151,04,105</STATION_ID>"
+                + "</KANBANTEST>"
+                + "</root>";
+        url = DataTransformer.class.getResource("Service.wsdl");
+    }
+
+    public static WebServiceRV getInstance() {
+        if (instance == null) {
+            instance = new WebServiceRV();
+        }
+        return instance;
+    }
+
+    //Get data from WebService
+    private List<Object> getWebServiceData() throws Exception {
+        Service service = new Service(url);
+        ServiceSoap port = service.getServiceSoap();
+        RvResponse.RvResult result = port.rv(sParam);
+        return result.getAny();
+    }
+
+    @SuppressWarnings("ConvertToTryWithResources")
+    public List<String> getXMLString() throws Exception {
+        List list = new ArrayList();//ws = WebService
+        List data = getWebServiceData();
+        for (Object obj : data) {
+            Document doc = ((Element) obj).getOwnerDocument();
+            StringWriter sw = new StringWriter();
+            TransformerFactory tf = TransformerFactory.newInstance();
+            Transformer transformer = tf.newTransformer();
+            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
+            transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+            transformer.transform(new DOMSource(doc), new StreamResult(sw));
+            list.add(sw.toString());
+            sw.close();
+        }
+
+        return list;
+    }
+
+    public JSONArray getKanbantestUsers() {
+        try {
+            List<String> list = getXMLString();
+            JSONObject xmlJSONObj = XML.toJSONObject(list.toString());
+            return xmlJSONObj.getJSONObject("diffgr:diffgram").getJSONObject("root").getJSONArray("QryData");
+        } catch (JSONException e) {
+//            log.error(e.toString());
+            return new JSONArray();//Break if KanbanService is in error.
+        } catch (Exception e) {
+            log.error(e.toString());
+            return new JSONArray();
+        }
+    }
+
+    public static void main(String arg[]) {
+//        JSONArray jarray = getInstance().getKanbantestUsers();
+//        for (int i = 0, j = jarray.length(); i < j; i++) {
+//            System.out.println(this.);
+//        }
+    }
+    
+
+    private JSONArray putJ(JSONArray j) {
+        return j.put(3);
+    }
+}

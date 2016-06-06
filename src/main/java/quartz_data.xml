@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<job-scheduling-data
+    xmlns="http://www.quartz-scheduler.org/xml/JobSchedulingData"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.quartz-scheduler.org/xml/JobSchedulingData http://www.quartz-scheduler.org/xml/job_scheduling_data_2_0.xsd"
+    version="1.8">
+    <!--主要工作job，把資料轉換到TXT控制燈號-->
+    <schedule>
+        <job>
+            <name>DailyJobWorker</name>
+            <job-class>com.advantech.quartzJob.DailyJobWorker</job-class>
+        </job>
+        <trigger>
+            <cron>
+                <name>DailyJobWorker</name>
+                <job-name>DailyJobWorker</job-name>
+                <cron-expression>0/30 * 8-17 ? * MON-FRI *</cron-expression>
+            </cron>
+        </trigger>
+    </schedule>
+    <!--清理資料庫job-->
+    <schedule>
+        <job>
+            <name>DataBaseInit</name>
+            <job-class>com.advantech.quartzJob.DataBaseInit</job-class>
+        </job>
+        <trigger>
+            <cron>
+                <name>DataBaseInit</name>
+                <job-name>DataBaseInit</job-name>
+                <cron-expression>0 30 6,18 ? * MON-FRI *</cron-expression>
+            </cron>
+        </trigger>
+    </schedule>
+    
+    <schedule>
+        <job>
+            <name>SaveBABDataToDB</name>
+            <job-class>com.advantech.quartzJob.BABDataSaver</job-class>
+        </job>
+        <trigger>
+            <cron>
+                <name>SaveBABDataToDB</name>
+                <job-name>SaveBABDataToDB</job-name>
+                <cron-expression>0 0 12,16,22 ? * MON-FRI *</cron-expression>
+            </cron>
+        </trigger>
+    </schedule>
+    <!--晚上十點把未完結工單做儲存的job-->
+    
+    <schedule>
+        <job>
+            <name>CheckSensor</name>
+            <job-class>com.advantech.quartzJob.CheckSensor</job-class>
+        </job>
+        <trigger>
+            <cron>
+                <name>CheckSensor</name>
+                <job-name>CheckSensor</job-name>
+                <cron-expression>0 0 11,14 ? * MON-FRI *</cron-expression>
+            </cron>
+        </trigger>
+    </schedule>
+    <!--定時查看sensor是否異常，回報-->
+    
+</job-scheduling-data>
