@@ -138,7 +138,8 @@ $(document).ready(function () {
         var obj = JSON.parse(user_sel);
         var string = "#T_Button #T" + obj.step3_sel;
         $(string).addClass("btn-success").attr("disabled", true);
-        $("#step4 :button").attr("id", $(string).is(':last-child') ? "end" : "s_end");
+        var isLastStation = $(string).is(':last-child');
+        $("#step4 :button").attr("id", isLastStation ? "end" : "s_end").val("結束按鈕" + isLastStation ? "(儲存線平衡紀錄)" : "");
         $("#step4").show();
 
         $("#sensordata #div2").html("<iframe style='width:100%; height:80px' scrolling='no' src='Sensor'></iframe>");//Show the sensor time when user is inline.

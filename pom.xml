@@ -226,6 +226,26 @@
                 <groupId>org.jvnet.jax-ws-commons</groupId>
                 <artifactId>jaxws-maven-plugin</artifactId>
                 <version>2.3</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>wsimport</goal>
+                        </goals>
+                        <configuration>
+                            <wsdlFiles>
+                                <wsdlFile>Service.wsdl</wsdlFile>
+                            </wsdlFiles>
+                            <packageName></packageName>
+                            <vmArgs>
+                                <vmArg>-Djavax.xml.accessExternalSchema=all</vmArg>
+                            </vmArgs>
+                            <wsdlLocation>${project.basedir}/src/main/resources/wsdl/Service.wsdl</wsdlLocation>
+                            <staleFile>${project.build.directory}/jaxws/stale/Service.stale</staleFile>
+                        </configuration>
+                        <id>wsimport-generate-Service</id>
+                        <phase>generate-sources</phase>
+                    </execution>
+                </executions>
                 <dependencies>
                     <dependency>
                         <groupId>javax.xml</groupId>
@@ -239,6 +259,31 @@
                     <verbose>true</verbose>
                     <extension>true</extension>
                     <catalog>${basedir}/src/jax-ws-catalog.xml</catalog>
+                </configuration>
+            </plugin>
+            
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>jaxws-maven-plugin</artifactId>
+                <version>1.9</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>wsimport</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <keep>true</keep>
+                    <verbose>true</verbose>
+                    <wsdlDirectory>../wscontract/src/main/resources/wsdl</wsdlDirectory>
+                    <wsdlLocation>wsdl/MaintainAddress.wsdl</wsdlLocation>
+                    <sourceDestDir>src/main/java</sourceDestDir>
+                    <bindingDirectory>.</bindingDirectory>
+                    <bindingFiles>
+                        <bindingFile>jaxb/xsdbindings.xml</bindingFile>
+                        <bindingFile>jaxb/wsdlbindings.xml</bindingFile>
+                    </bindingFiles>
                 </configuration>
             </plugin>
         </plugins>

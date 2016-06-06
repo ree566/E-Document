@@ -5,11 +5,8 @@
  */
 package com.advantech.helper;
 
-import com.advantech.quartzJob.DataTransformer;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,27 +29,35 @@ public class PropertiesReader {
 
     private int maxTestTable, limitBABData, balanceRoundingDigit;
 
-    private PropertiesReader() {
-        try {
-            dataInit();
-        } catch (IOException | JSONException ex) {
-            log.error(ex.toString());
-        }
+    private PropertiesReader() throws Exception {
+        dataInit();
     }
 
     public static PropertiesReader getInstance() {
         if (p == null) {
-            p = new PropertiesReader();
+            try {
+                p = new PropertiesReader();
+            } catch (Exception ex) {
+                System.out.println("Can't read the property file.");
+                log.error("Can't read the property file.");
+            }
         }
         return p;
     }
 
-    private void dataInit() throws IOException, JSONException {
-        String configFile = "options.properties";
+    private void dataInit() throws Exception {
+        String configFile = "/options.properties";
         Properties properties = new Properties();
-        InputStream is = DataTransformer.class.getResourceAsStream(configFile);
+        InputStream is = this.getClass().getResourceAsStream(configFile);
         properties.load(is);
 
+        loadParams(properties);
+
+        is.close();
+        properties.clear();
+    }
+
+    private void loadParams(Properties properties) {
         testMail = properties.getProperty("testMail");
         txtLocation = properties.getProperty("outputTxtPath");
         testTxtName = properties.getProperty("outputTestName");
@@ -68,8 +73,6 @@ public class PropertiesReader {
         maxTestTable = convertStringToInteger(properties.getProperty("maxTestTable"));
         limitBABData = convertStringToInteger(properties.getProperty("limitBABData"));
         balanceRoundingDigit = convertStringToInteger(properties.getProperty("balanceRoundingDigit"));
-        is.close();
-        properties.clear();
     }
 
     private int convertStringToInteger(String number) {

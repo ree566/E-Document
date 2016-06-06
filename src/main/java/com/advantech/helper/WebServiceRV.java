@@ -5,18 +5,12 @@
  */
 package com.advantech.helper;
 
-import com.advantech.quartzJob.DataTransformer;
-import com.bag.test.RvResponse;
-import com.bag.test.Service;
-import com.bag.test.ServiceSoap;
-import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
@@ -26,6 +20,9 @@ import org.json.JSONObject;
 import org.json.XML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tempuri.RvResponse;
+import org.tempuri.Service;
+import org.tempuri.ServiceSoap;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -48,7 +45,7 @@ public class WebServiceRV {
                 + "<STATION_ID>4,122,124,11,3,5,6,32,30,134,151,04,105</STATION_ID>"
                 + "</KANBANTEST>"
                 + "</root>";
-        url = DataTransformer.class.getResource("Service.wsdl");
+        url = this.getClass().getClassLoader().getResource("wsdl/Service.wsdl");
     }
 
     public static WebServiceRV getInstance() {
@@ -104,7 +101,7 @@ public class WebServiceRV {
     public static void main(String arg[]) {
 //        JSONArray jarray = getInstance().getKanbantestUsers();
 //        for (int i = 0, j = jarray.length(); i < j; i++) {
-//            System.out.println(this.);
+            System.out.println(WebServiceRV.getInstance().url);
 //        }
     }
     
