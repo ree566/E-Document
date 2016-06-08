@@ -24,6 +24,7 @@ public class QuartzContextListener implements ServletContextListener {
     boolean endpointChangeFlag = false;
 //    
 //    private Logger logger = Logger.getLogger(QuartzContextListener.class);
+
     public QuartzContextListener() {
 //        getLoggerExtender();
     }
@@ -35,42 +36,22 @@ public class QuartzContextListener implements ServletContextListener {
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
-        DataTransformer.initInnerObjs();
-        BasicDAO.objectInit();
-//        logger.info("contextDestroyed");
-//        logger = LogManager.getLogger(QuartzContextListener.class);
-//        WebApplicationContext webApplicationContext = (WebApplicationContext) sce
-//                .getServletContext()
-//                .getAttribute(
-//                        WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE);
-//        org.quartz.impl.StdScheduler startQuertz = (org.quartz.impl.StdScheduler) webApplicationContext
-//                .getBean("startQuertz");
-//        if (startQuertz != null) {
-//            startQuertz.shutdown();
-//        }
-        
+
         try {
+            DataTransformer.initInnerObjs();
+            BasicDAO.objectInit();
+
             Thread.sleep(1000);
-        } catch (InterruptedException e) {
+            
+            ThreadLocalCleanUtil.clearThreadLocals();
+        } catch (Exception e) {
             e.printStackTrace();
         }
-//        ThreadLocal<Integer> tlocal = new ThreadLocal<Integer>();  
-//        ClassFactory.cleanCache();
-//        try {
-//            if (scheduler != null) {
-//                scheduler.shutdown();
-//                tlocal.remove();
-        ThreadLocalCleanUtil.clearThreadLocals();
-//            ThreadLocalCleanUtil.closeLog4j();
+
+        
         //web service當tomcat在做reload會有資源為釋放之情形(多次reload可能會memory leak)
         //http://timen-zbt.iteye.com/blog/1814795
-//            Thread.sleep(1000);
-//            }
-//            System.gc();
-//        } catch (InterruptedException ex) {
-//            logger.error(ex);
-//        }
-//        Configurator.shutdown((LoggerContext) LogManager.getContext());
+
         //安裝quartz後當tomcat重新啟動時會出現memory leak(http://www.cnblogs.com/leeying/p/3782102.html)
         //使用以上方法
 

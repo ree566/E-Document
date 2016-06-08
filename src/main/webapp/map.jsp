@@ -165,7 +165,7 @@
                     }
                 });
 
-//                $('[data-toggle="tooltip"]').tooltip();
+                $('[data-toggle="tooltip"]').tooltip();
 
 
                 function initWiget(obj) {

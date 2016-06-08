@@ -262,30 +262,6 @@
                 </configuration>
             </plugin>
             
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>jaxws-maven-plugin</artifactId>
-                <version>1.9</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>wsimport</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <keep>true</keep>
-                    <verbose>true</verbose>
-                    <wsdlDirectory>../wscontract/src/main/resources/wsdl</wsdlDirectory>
-                    <wsdlLocation>wsdl/MaintainAddress.wsdl</wsdlLocation>
-                    <sourceDestDir>src/main/java</sourceDestDir>
-                    <bindingDirectory>.</bindingDirectory>
-                    <bindingFiles>
-                        <bindingFile>jaxb/xsdbindings.xml</bindingFile>
-                        <bindingFile>jaxb/wsdlbindings.xml</bindingFile>
-                    </bindingFiles>
-                </configuration>
-            </plugin>
         </plugins>
         
         <finalName>${project.artifactId}</finalName>

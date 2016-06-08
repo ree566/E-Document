@@ -49,6 +49,11 @@ public class TxtWriter {
         return instance;
     }
 
+    public void writeTxtWithFileName(Map map, String fileName) throws IOException {
+        String filePath = fileLocation + fileName + fileNameExt;
+//        writeTxtWithFullTxtPath(map, filePath);
+    }
+
     private void writeTxtWithFullTxtPath(Map map, String filePath) throws IOException {
         if (map == null || map.isEmpty()) {
             return;
@@ -65,11 +70,6 @@ public class TxtWriter {
         }
         fw.close();
         file.close();
-    }
-
-    public void writeTxtWithFileName(Map map, String fileName) throws IOException {
-        String filePath = fileLocation + fileName + fileNameExt;
-        writeTxtWithFullTxtPath(map, filePath);
     }
 
     @SuppressWarnings("ConvertToTryWithResources")
