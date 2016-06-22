@@ -40,7 +40,7 @@
             </button>
             <a class="navbar-brand" href="SysInfo">
                 <span><img id="logoImg" src="images/bulb.png" alt="sysIcon" /></span>
-                ${initParam.pageTitle}
+                    ${initParam.pageTitle}
                 <span><img id="logoImg" src="images/bulb.png" alt="sysIcon" /></span>
             </a>
         </div>
@@ -50,8 +50,12 @@
                 <li>
                     <a href="TestTotal"><span class="glyphicon glyphicon-list-alt" aria-hidden="true" /> 測試線別狀態</a>
                 </li>
-                <li>
-                    <a href="BabTotal"><span class="glyphicon glyphicon-list-alt" aria-hidden="true" /> 組包裝總統計表</a>
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="glyphicon glyphicon-list-alt" aria-hidden="true" /> 組包裝總統計表<span class="caret" /></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="BabTotal">線平衡資訊查詢</a></li>
+                        <li><a href="BabDetailInfo">各站機台時間查詢</a></li>
+                    </ul>
                 </li>
                 <li>
                     <a href="TotalMap"><span class="glyphicon glyphicon-list-alt" aria-hidden="true" /> 整體狀態平面圖(5F)</a>

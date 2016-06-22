@@ -33,18 +33,21 @@ public class BABService {
         babDAO = new BABDAO();
     }
 
-    public JSONObject getBABByLine(int lineNo) throws JSONException {
+    public List<BAB> getBAB(String modelName, String dateFrom, String dateTo) {
+        return babDAO.getBAB(modelName, dateFrom, dateTo);
+    }
+
+    public JSONObject getProcessingBABByLine(int lineNo) throws JSONException {
         JSONObject jsonObj = null;
         List<BAB> babs = babDAO.getProcessingBABByLine(lineNo);
         if (babs != null && !babs.isEmpty()) {
-            jsonObj = new JSONObject();
-            JSONArray jsonArr = new JSONArray();
-            for (BAB b : babs) {
-                jsonArr.put(new Gson().toJson(b));
-            }
-            jsonObj.put("BABData", jsonArr);
+            jsonObj = new JSONObject().put("BABData", new Gson().toJson(babs));
         }
         return jsonObj;
+    }
+
+    public static void main(String arg0[]) {
+        System.out.print(new BABService().getBAB("TPC-1551T-E3AE", "2016-06-01", "2016-06-22"));
     }
 
     public List<Array> getAvailableModelName() {
@@ -100,11 +103,9 @@ public class BABService {
 
     public boolean startBAB(BAB bab) {
         BAB prevBab = babDAO.getEarliestBAB(bab.getLine());
-        if (prevBab != null) {
-            if (getBABAvgs(prevBab.getId()).length() == 0) {
-                //沒有的話把上一筆工單直接結束掉
-                babDAO.closeBABDirectly(prevBab);
-            }
+        if (prevBab != null && getBABAvgs(prevBab.getId()).length() == 0) {
+            //沒有的話把上一筆工單直接結束掉
+            babDAO.closeBABDirectly(prevBab);
         }
         return babDAO.insertBAB(bab);
     }
@@ -172,10 +173,14 @@ public class BABService {
         return BABStatus == BAB_CLOSED_SIGN ? babDAO.getClosedBalanceDetail(BABid) : babDAO.getBalaceDetail(BABid);
     }
 
+    public List<Map> getBABTimeDetail(int BABid, int isused) {
+        return isused == BAB_CLOSED_SIGN ? babDAO.getBABTimeHistoryDetail(BABid) : babDAO.getSensorStatus(BABid);
+    }
+
     public JSONArray getSensorDiffChart(int BABid, int isused) {
         JSONArray totalArrObj = new JSONArray();
 
-        List<Map> l = (isused == BAB_CLOSED_SIGN ? babDAO.getBABTimeHistoryDetail(BABid) : babDAO.getSensorStatus(BABid));
+        List<Map> l = getBABTimeDetail(BABid, isused);
 
         JSONObject innerObj = new JSONObject();
         JSONArray arr = new JSONArray();

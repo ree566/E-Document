@@ -19,17 +19,18 @@ public class TestClass implements Test{
     private static int count = 0;
 
     public static void main(String args[]) {
-        int cnt = 0, n = 25462;
-        int[] arr = {1, 3, 5, 7, 9};
-
-        for (; n != 0; cnt++) {
-            arr[cnt] = n % 10;
-            n = n / 10;
-        }
-        System.out.println("cnt=" + cnt);
-        for (int i = 0; i < arr.length; i++) {
-            System.out.print(arr[i]);
-        }
+//        int cnt = 0, n = 25462;
+//        int[] arr = {1, 3, 5, 7, 9};
+//
+//        for (; n != 0; cnt++) {
+//            arr[cnt] = n % 10;
+//            n = n / 10;
+//        }
+//        System.out.println("cnt=" + cnt);
+        System.out.println("中文測試");
+//        for (int i = 0; i < arr.length; i++) {
+//            System.out.print(arr[i]);
+//        }
 
     }
 

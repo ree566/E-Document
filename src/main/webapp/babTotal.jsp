@@ -762,7 +762,7 @@
                                     <th>線別</th>
                                     <th>人數</th>
                                     <th>紀錄flag</th>
-                                    <th>開始時間</th>
+                                    <th>投入時間</th>
                                 </tr>
                             </thead>
                         </table>

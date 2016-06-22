@@ -60,6 +60,10 @@ public class BABDAO extends BasicDAO {
         return queryBABTable("SELECT * FROM LS_BAB WHERE id = ?", BABid);
     }
 
+    public List<BAB> getBAB(String modelName, String dateFrom, String dateTo) {
+        return queryProcForBeanList(getConn(), BAB.class, "{CALL getBABInTime(?,?,?)}", modelName, dateFrom, dateTo);
+    }
+
     public List<BAB> getBABIdForCaculate() {
         return queryBABTable("SELECT * FROM LS_BAB_Id_List");
     }
@@ -114,7 +118,7 @@ public class BABDAO extends BasicDAO {
     }
 
     public List<Map> getBABTimeHistoryDetail(int BABid) {
-        return queryForMapList(getConn(), "SELECT TagName, groupid, diff, BABid FROM LS_BABTimeHistoryDetail WHERE BABid = ? order by 1,2", BABid);
+        return queryForMapList(getConn(), "SELECT * FROM LS_BABTimeHistoryDetail WHERE BABid = ? ORDER BY TagName, groupid", BABid);
     }
 
     public List<Map> getBalaceDetail(int BABid) {
@@ -122,7 +126,7 @@ public class BABDAO extends BasicDAO {
     }
 
     public List<Map> getClosedBalanceDetail(int BABid) {
-        return queryForMapList(getConn(), "SELECT BABid, groupid, balance, pass FROM LS_BalanceHistory WHERE BABid = ?", BABid);
+        return queryForMapList(getConn(), "SELECT * FROM LS_BalanceHistory WHERE BABid = ?", BABid);
     }
 
     public List<Map> getLineBalanceCompare(String Model_name, String lineType) {

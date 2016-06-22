@@ -119,6 +119,24 @@
     </servlet-mapping>
     
     <servlet>
+        <servlet-name>BabDetailInfo</servlet-name>
+        <jsp-file>/babDetailInfo.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>BabDetailInfo</servlet-name>
+        <url-pattern>/BabDetailInfo</url-pattern>  
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>About</servlet-name>
+        <jsp-file>/about.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>About</servlet-name>
+        <url-pattern>/About</url-pattern>  
+    </servlet-mapping>
+    
+    <servlet>
         <servlet-name>Login</servlet-name>
         <jsp-file>/login.jsp</jsp-file>
     </servlet>

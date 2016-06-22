@@ -60,7 +60,7 @@ public class BabSearch extends HttpServlet {
             out.print(models.isEmpty() ? "data not found" : convertString(models.get(0).getModel_name()));
         }
         else if (pChecker.checkInputVal(cookieLineMessage)) {
-            out.print(babService.getBABByLine(Integer.parseInt(cookieLineMessage)));
+            out.print(babService.getProcessingBABByLine(Integer.parseInt(cookieLineMessage)));
         }
         else if (pChecker.checkInputVals(getBab, poSaveLine)) {
             out.print(babService.getBABInfoWithSensorState(getBab, poSaveLine));

@@ -66,8 +66,8 @@ public class BasicDAO implements Serializable {
     public static enum SQL {
 
         Way_Chien_TWM3("jdbc/res2"),
-        Way_Chien_LineBalcing("jdbc/res4"),
-        Way_Chien_WebAccess("jdbc/res3");
+        Way_Chien_WebAccess("jdbc/res3"),
+        Way_Chien_LineBalcing("jdbc/res4");
 
         SQL(String str) {
             this.str = str;

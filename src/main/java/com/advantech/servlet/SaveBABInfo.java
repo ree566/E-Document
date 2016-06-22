@@ -62,7 +62,7 @@ public class SaveBABInfo extends HttpServlet {
                 if (type.equals("1")) {
                     String str = babService.checkAndStartBAB(new BAB(po, modelName, lineNo, Integer.parseInt(people)));
                     if ("success".equals(str)) {
-                        serverMsg = babService.getBABByLine(lineNo);
+                        serverMsg = babService.getProcessingBABByLine(lineNo);
                         serverMsg.put("status", "success");
                     } else {
                         serverMsg = new JSONObject().put("status", str);
