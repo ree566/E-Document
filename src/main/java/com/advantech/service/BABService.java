@@ -41,7 +41,7 @@ public class BABService {
         JSONObject jsonObj = null;
         List<BAB> babs = babDAO.getProcessingBABByLine(lineNo);
         if (babs != null && !babs.isEmpty()) {
-            jsonObj = new JSONObject().put("BABData", new Gson().toJson(babs));
+            jsonObj = new JSONObject().put("BABData", babs);
         }
         return jsonObj;
     }
@@ -140,6 +140,11 @@ public class BABService {
             needToSave = prevSensorCloseFlag;
         }
         return (needToSave ? babDAO.stopAndSaveBab(bab) : babDAO.closeBABDirectly(bab)) ? "success" : "發生問題，請聯絡管理人員";
+    }
+
+    public boolean closeBABWithoutCheckPrevSensor(BAB bab) {
+        JSONArray babAvgs = getBABAvgs(bab.getId());
+        return babAvgs.length() != 0 ? babDAO.stopAndSaveBab(bab) : babDAO.closeBABDirectly(bab);
     }
 
     public double getLineBalance(int babNo) throws JSONException {

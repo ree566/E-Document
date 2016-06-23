@@ -150,15 +150,9 @@ public class PropertiesReader {
     public static void main(String arg0[]) {
 
         PropertiesReader p = getInstance();
-        System.out.println(p.testMail);
-        System.out.println(p.txtLocation);
-        System.out.println(p.testTxtName);
-        System.out.println(p.babTxtName);
-        System.out.println(p.outputFilenameExt);
-        System.out.println(p.testMail);
-        System.out.println(p.testStandard);
-        System.out.println(p.babStandard);
-        System.out.println(p.balanceDiff);
+        Double d1 = 0.8000000121;
+        System.out.println("d1 smaller than babStandard: " + (d1 < p.babStandard));
+        System.out.println("d1 bigger than babStandard: " + (d1 > p.babStandard));
 
     }
 }

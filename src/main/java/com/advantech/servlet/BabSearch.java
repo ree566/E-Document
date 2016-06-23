@@ -49,7 +49,7 @@ public class BabSearch extends HttpServlet {
             throws ServletException, IOException {
 
         res.setCharacterEncoding("utf-8");
-        res.setContentType("text/plain");
+        res.setContentType("application/json");
         PrintWriter out = res.getWriter();
         String po = req.getParameter("po");
         String cookieLineMessage = req.getParameter("saveline");

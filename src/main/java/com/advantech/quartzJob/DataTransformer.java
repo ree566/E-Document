@@ -319,7 +319,9 @@ public class DataTransformer {
                 }
 
                 //Alarm by the last group lineBalance
-                boolean isUnderBalance = (lineBalanceService.caculateLineBalance(maxTimeDiff, sumTimeDiff, peoples) < BAB_STANDARD);
+                double lineBalance = lineBalanceService.caculateLineBalance(maxTimeDiff, sumTimeDiff, peoples);
+                
+                boolean isUnderBalance = (Double.compare(lineBalance, BAB_STANDARD) < 0);
 
                 if (isUnderBalance) {
                     isSomeBabUnderStandard = true;

@@ -69,7 +69,7 @@ public class BABDataSaver implements Job {
         
         for (BAB bab : unClosedBabs) {
             log.info("Begin save unclose bab " + new Gson().toJson(bab));
-            babService.closeBAB(bab);
+            log.info("Close bab status :" + (babService.closeBABWithoutCheckPrevSensor(bab) ? "success" : "fail"));
         }
 
     }
