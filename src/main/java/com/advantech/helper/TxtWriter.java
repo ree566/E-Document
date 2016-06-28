@@ -33,8 +33,8 @@ public class TxtWriter {
 
     private TxtWriter() {
         PropertiesReader p = PropertiesReader.getInstance();
-        fileLocation = PropertiesReader.getInstance().getTxtLocation();
-//        fileLocation = System.getProperty("user.home") + "\\Desktop\\";         // testing file path 
+//        fileLocation = PropertiesReader.getInstance().getTxtLocation();
+        fileLocation = System.getProperty("user.home") + "\\Desktop\\project\\";         // testing file path 
         fileNameExt = p.getOutputFilenameExt();
         //tomcat 讀取網路磁碟機有問題時，請把路徑改成如下列txtlocation所示(全路徑，而不是N://這種)
         //設定完之後還要把"tomcat服務"的設定從Local System 改為最高權限 Administrator 才能順利讀寫網路磁碟機
@@ -51,7 +51,7 @@ public class TxtWriter {
 
     public void writeTxtWithFileName(Map map, String fileName) throws IOException {
         String filePath = fileLocation + fileName + fileNameExt;
-//        writeTxtWithFullTxtPath(map, filePath);
+        writeTxtWithFullTxtPath(map, filePath);
     }
 
     private void writeTxtWithFullTxtPath(Map map, String filePath) throws IOException {
@@ -70,6 +70,12 @@ public class TxtWriter {
         }
         fw.close();
         file.close();
+    }
+    
+    public void resetAllTxt() throws IOException{
+        PropertiesReader p = PropertiesReader.getInstance();
+        txtReset(p.getTestTxtName());
+        txtReset(p.getBabTxtName());
     }
 
     @SuppressWarnings("ConvertToTryWithResources")
@@ -101,4 +107,41 @@ public class TxtWriter {
             file.close();
         }
     }
+    
+    public void turnAllSignToOpen() throws IOException{
+        PropertiesReader p = PropertiesReader.getInstance();
+        turnSignToOpen(p.getTestTxtName());
+        turnSignToOpen(p.getBabTxtName());
+    }
+    
+    @SuppressWarnings("ConvertToTryWithResources")
+    private void turnSignToOpen(String txtName) throws FileNotFoundException, IOException {
+
+        String path = fileLocation + txtName + fileNameExt;
+        String st = "";
+        FileReader fr;
+        File inputFile = new File(path);
+        if (!inputFile.exists()) {
+            inputFile.createNewFile();
+        }
+        fr = new FileReader(path);
+        BufferedReader br = new BufferedReader(fr);
+        while (br.ready()) {
+            st += br.readLine() + " ";
+        }
+        fr.close();
+        br.close();
+        if (!"".equals(st.trim())) {
+            String[] after = st.split(" ");
+            FileWriter file = new FileWriter(path, false);
+            BufferedWriter fw = new BufferedWriter(file);
+            for (String s : after) {
+                fw.write(s.replace(",0", ",1"));
+                fw.newLine();
+            }
+            fw.close();
+            file.close();
+        }
+    }
+   
 }

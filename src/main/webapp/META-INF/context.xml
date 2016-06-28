@@ -1,4 +1,58 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Context antiJARLocking="true" path="/CalculatorWSApplication">
-   
+    <Resource 
+        name="jdbc/res2" 
+        auth="Container" 
+        type="javax.sql.DataSource" 
+        username="waychien"
+        password="m3server" 
+        initialSize="10" 
+        maxActive="100" 
+        maxIdle="30" 
+        maxWait="1000" 
+        testOnBorrow="true"
+        validationQuery="SELECT 1"
+        logAbandoned="true" 
+        removeAbandoned="true" 
+        removeAbandonedTimeout="180" 
+        driverClassName="net.sourceforge.jtds.jdbc.Driver" 
+        url="jdbc:jtds:sqlserver://M3-SERVER/TWM3" 
+    />
+    <Resource 
+        name="jdbc/res3" 
+        auth="Container" 
+        type="javax.sql.DataSource" 
+        username="Webass"
+        password="Webass" 
+        initialSize="10" 
+        maxActive="100" 
+        maxIdle="30" 
+        maxWait="1000" 
+        testOnBorrow="true"
+        validationQuery="SELECT 1"
+        logAbandoned="true" 
+        removeAbandoned="true" 
+        removeAbandonedTimeout="180" 
+        driverClassName="net.sourceforge.jtds.jdbc.Driver" 
+        url="jdbc:jtds:sqlserver://M3-SERVER/WebAccess;loginTimeout=15" 
+    />
+    <!--url="jdbc:jtds:sqlserver://MFG-ESOP-032N/WebAccess;loginTimeout=15"--> 
+    <Resource 
+        name="jdbc/res4" 
+        auth="Container" 
+        type="javax.sql.DataSource" 
+        username="waychien"
+        password="m3server" 
+        initialSize="10" 
+        maxActive="100" 
+        maxIdle="30" 
+        maxWait="1000" 
+        testOnBorrow="true"
+        validationQuery="SELECT 1"
+        logAbandoned="true" 
+        removeAbandoned="true" 
+        removeAbandonedTimeout="180" 
+        driverClassName="net.sourceforge.jtds.jdbc.Driver" 
+        url="jdbc:jtds:sqlserver://M3-SERVER/Line_Balancing" 
+    />
 </Context>

@@ -238,7 +238,7 @@
                                 $("#babArea #" + people.TagName + " #" + people.TagName + people.T_Num)
                                         .removeClass("offLine")
                                         .addClass((people.ismax ? "alarm" : "normal"))
-                                        .attr("title", "Time:" + people.average + "秒");
+                                        .attr("title", "Time:" + people.diff + "秒");
                             }
                         }
                     }

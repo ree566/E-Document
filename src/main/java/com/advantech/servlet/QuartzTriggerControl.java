@@ -7,6 +7,7 @@
 package com.advantech.servlet;
 
 import com.advantech.helper.CronTrigMod;
+import com.advantech.quartzJob.DataTransformer;
 import java.io.*;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;

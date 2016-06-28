@@ -7,6 +7,7 @@
  */
 package com.advantech.quartzJob;
 
+import com.advantech.entity.AlarmAction;
 import com.advantech.helper.PropertiesReader;
 import com.advantech.helper.TxtWriter;
 import com.advantech.helper.WebServiceRV;
@@ -33,6 +34,8 @@ public class DataTransformer {
     private static final Logger log = LoggerFactory.getLogger(DataTransformer.class);
 
     private static DataTransformer instance;
+
+    private static boolean writeTxtActionContorlSign = true;
 
     private final LineBalanceService lineBalanceService;
     private final TestService testService;
@@ -124,15 +127,18 @@ public class DataTransformer {
     private void saveToTxt(String txtName) throws Exception {
         boolean isDocNameTest = testTxtName.equals(txtName);
         boolean isNeedToWriteTxt = isDocNameTest ? matchingTestData() : matchingBABData1();
-        if (isNeedToWriteTxt) {
-            setTxt(isDocNameTest ? PEOPLE_MATCH : BAB_ISUSED, txtName);
-        } else {
-            resetTxt(txtName);
+        if (writeTxtActionContorlSign == true) {
+            if (isNeedToWriteTxt) {
+                setTxt(isDocNameTest ? PEOPLE_MATCH : BAB_ISUSED, txtName);
+            } else {
+                resetTxt(txtName);
+            }
         }
     }
 
     private void setTxt(Map m, String txtName) throws IOException {
         txtWriter.writeTxtWithFileName(m, txtName);
+//        saveTestAlarm(m, txtName);
         if (testTxtName.equals(txtName)) {
             if (testResetFlag == false) {
                 testResetFlag = true;
@@ -147,13 +153,32 @@ public class DataTransformer {
             if (testResetFlag == true) {
                 initTestMap();
                 setTxt(PEOPLE_MATCH, txtName);
+//                babService.resetTestAlarm();
                 testResetFlag = false;
             }
         } else if (babResetFlag == true) {
             initBabMap();
             setTxt(BAB_ISUSED, txtName);
+//            babService.resetBABAlarm();
             babResetFlag = false;
         }
+    }
+
+    public boolean saveTestAlarm(Map map, String txtName) throws IOException {
+        if (map == null || map.isEmpty()) {
+            return false;
+        }
+        List l = new ArrayList();
+        Iterator it = map.keySet().iterator();
+
+        while (it.hasNext()) {
+            Object key = it.next();
+            String tableId = key.toString();
+            int action = (int) map.get(key);
+            l.add(new AlarmAction(tableId, action));
+        }
+
+        return testTxtName.equals(txtName) ? babService.updateTestAlarm(l) : babService.updateBABAlarm(l);
     }
 
     private void initTestMap() {
@@ -221,6 +246,10 @@ public class DataTransformer {
 
             userArr = separateAbnormalUser(tables, userArr);
 
+// test alarm status
+//            userArr = putTestTable(userArr);
+//            isSomeoneUnderStandard = true;
+//
             testJsonObj.put("data", userArr);
         } else {
             testJsonObj = null;
@@ -239,6 +268,18 @@ public class DataTransformer {
             j.put(abnormalUser);
         }
         return j;
+    }
+
+    private JSONArray putTestTable(JSONArray j) {
+        PEOPLE_MATCH.put("T" + 24, ALARM_SIGN);
+        return j.put(
+                new JSONObject()
+                .put("name", "test")
+                .put("number", "test")
+                .put("table", 24)
+                .put("PRODUCTIVITY", "0.0")
+                .put("isalarm", ALARM_SIGN)
+        );
     }
 
     private boolean matchingBABData() throws JSONException {
@@ -320,7 +361,7 @@ public class DataTransformer {
 
                 //Alarm by the last group lineBalance
                 double lineBalance = lineBalanceService.caculateLineBalance(maxTimeDiff, sumTimeDiff, peoples);
-                
+
                 boolean isUnderBalance = (Double.compare(lineBalance, BAB_STANDARD) < 0);
 
                 if (isUnderBalance) {
@@ -371,6 +412,10 @@ public class DataTransformer {
 
     public static JSONObject getBabJsonObj() {
         return babJsonObj;
+    }
+
+    public static void setWriteTxtActionContorlSign(boolean writeTxtActionContorlSign) {
+        DataTransformer.writeTxtActionContorlSign = writeTxtActionContorlSign;
     }
 
     public static void initInnerObjs() {

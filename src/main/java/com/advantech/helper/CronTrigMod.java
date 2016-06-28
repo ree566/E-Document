@@ -6,10 +6,13 @@
 package com.advantech.helper;
 
 import com.advantech.quartzJob.DailyJobWorker;
+import com.advantech.quartzJob.DataTransformer;
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.Date;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.CronScheduleBuilder;
+import static org.quartz.CronScheduleBuilder.cronSchedule;
 import org.quartz.CronTrigger;
 import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
@@ -23,6 +26,7 @@ import org.quartz.impl.triggers.CronTriggerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.quartz.TriggerBuilder;
+import static org.quartz.TriggerBuilder.newTrigger;
 
 /**
  *
@@ -46,20 +50,27 @@ public class CronTrigMod {
 //    http://openhome.cc/Gossip/DesignPattern/SingletonPattern.htm
     @SuppressWarnings("DoubleCheckedLocking")
     public static CronTrigMod getInstance() {
-        if(instance == null){
+        if (instance == null) {
             instance = new CronTrigMod();
         }
         return instance;
     }
 
     public boolean triggerPauseOrResume(String order) {
+        TxtWriter t = TxtWriter.getInstance();
         try {
             if ("pause".equals(order)) {
-                scheduler.standby();
+                DataTransformer.setWriteTxtActionContorlSign(false);
+                t.turnAllSignToOpen();
+                log.info("Stop write txt function");
+//                scheduler.standby();
             } else {
-                scheduler.start();
+                DataTransformer.setWriteTxtActionContorlSign(true);
+                t.resetAllTxt();
+                log.info("Resume write txt function");
+//                scheduler.start();
             }
-        } catch (SchedulerException ex) {
+        } catch (IOException ex) {
             log.error(ex.toString());
             return false;
         }
@@ -91,7 +102,7 @@ public class CronTrigMod {
         } catch (SchedulerException | ParseException e) {
             log.error("更新cron定时任务运行时间失败[triggerKey=" + triggerKey + "]:", e);
             return false;
-        } 
+        }
         return true;
     }
 
@@ -111,5 +122,13 @@ public class CronTrigMod {
             scheduler.unscheduleJob(trigKey);
             scheduler.deleteJob(jobKey);
         }
+    }
+
+    public static void main(String arg0[]) {
+        CronTrigger trigger = newTrigger()
+                .withIdentity("trigger3", "group1")
+                .withSchedule(cronSchedule("0 0/2 8-17 * * ?").withMisfireHandlingInstructionDoNothing())
+                .forJob("myJob", "group1")
+                .build();
     }
 }

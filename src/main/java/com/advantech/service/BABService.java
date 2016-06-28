@@ -1,5 +1,6 @@
 package com.advantech.service;
 
+import com.advantech.entity.AlarmAction;
 import com.advantech.model.BABDAO;
 import com.advantech.entity.BAB;
 import com.advantech.entity.BABHistory;
@@ -86,6 +87,22 @@ public class BABService {
     public JSONArray getLastGroupStatus(int BABid) {
         List l = babDAO.getLastGroupStatus(BABid);
         return new JSONArray(l);
+    }
+
+    public boolean updateTestAlarm(List<AlarmAction> l) {
+        return babDAO.updateTestAlarm(l);
+    }
+
+    public boolean updateBABAlarm(List<AlarmAction> l) {
+        return babDAO.updateBABAlarm(l);
+    }
+
+    public boolean resetTestAlarm() {
+        return babDAO.resetTestAlarm();
+    }
+
+    public boolean resetBABAlarm() {
+        return babDAO.resetBABAlarm();
     }
 
     public String checkAndStartBAB(BAB bab) {

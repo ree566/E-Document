@@ -6,6 +6,12 @@
     xsi:schemaLocation="http://www.quartz-scheduler.org/xml/JobSchedulingData http://www.quartz-scheduler.org/xml/job_scheduling_data_2_0.xsd"
     version="1.8">
     <!--主要工作job，把資料轉換到TXT控制燈號-->
+    
+    <processing-directives>
+        <overwrite-existing-data>false</overwrite-existing-data>
+        <ignore-duplicates>true</ignore-duplicates> 
+    </processing-directives>
+    
     <schedule>
         <job>
             <name>DailyJobWorker</name>
@@ -15,6 +21,7 @@
             <cron>
                 <name>DailyJobWorker</name>
                 <job-name>DailyJobWorker</job-name>
+                <!--<misfire-instruction>MISFIRE_INSTRUCTION_FIRE_ONCE_NOW</misfire-instruction>-->
                 <cron-expression>0/30 * 8-17 ? * MON-FRI *</cron-expression>
             </cron>
         </trigger>
