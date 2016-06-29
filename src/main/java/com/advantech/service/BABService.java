@@ -161,6 +161,7 @@ public class BABService {
 
     public boolean closeBABWithoutCheckPrevSensor(BAB bab) {
         JSONArray babAvgs = getBABAvgs(bab.getId());
+        bab.setBabavgs(babAvgs);
         return babAvgs.length() != 0 ? babDAO.stopAndSaveBab(bab) : babDAO.closeBABDirectly(bab);
     }
 

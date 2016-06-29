@@ -178,6 +178,11 @@ public class BABDAO extends BasicDAO {
         );
     }
 
+    /**
+     * Please set the babAvg into bab object if data need to saveAndClose.
+     * @param bab
+     * @return 
+     */
     //一連串儲存動作統一commit，不然出問題時會出現A和B資料庫資料不同步問題
     public boolean stopAndSaveBab(BAB bab) {
         LineBalanceService lineBalanceService = BasicService.getLineBalanceService();
@@ -188,7 +193,12 @@ public class BABDAO extends BasicDAO {
         Connection conn2 = null;
 
         try {
-            JSONArray balances = bab.getBabavgs();// check data balance is exist first
+            //Prevent check Babavg data in database if exists or not multiple times, let ouside check and save value into bab object.
+            JSONArray balances = bab.getBabavgs();
+            if(balances == null){// check data balance is exist first
+                log.error("The babAvg in bab object is not setting value, saving action suspend.");
+                return false;
+            }
             int dataCount = fbnService.getBalancePerGroup(bab.getId()).size();
 
             if (dataCount <= LIMIT_BAB_DATA) {
