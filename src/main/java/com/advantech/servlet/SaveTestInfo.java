@@ -40,8 +40,8 @@ public class SaveTestInfo extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
-        res.setCharacterEncoding("utf-8");
-        res.getContentType();
+        
+        res.setContentType("text/plain");
         PrintWriter out = res.getWriter();
         Cookie[] cookies = req.getCookies();
 

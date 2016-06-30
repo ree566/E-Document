@@ -47,7 +47,6 @@ public class LineLogin extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
 
-        res.setCharacterEncoding("utf-8");
         res.setContentType("text/plain");
 
         PrintWriter out = res.getWriter();

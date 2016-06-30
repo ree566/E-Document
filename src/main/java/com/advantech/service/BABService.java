@@ -89,6 +89,10 @@ public class BABService {
         return new JSONArray(l);
     }
 
+    public List<Map> getClosedBABInfo(String startDate, String endDate) {
+        return babDAO.getClosedBABInfoDetail(startDate, endDate);
+    }
+
     public boolean updateTestAlarm(List<AlarmAction> l) {
         return babDAO.updateTestAlarm(l);
     }

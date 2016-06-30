@@ -41,8 +41,8 @@ public class GetSensorChart extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
+        
         res.setContentType("application/json");
-        res.setCharacterEncoding("utf-8");
         PrintWriter out = res.getWriter();
         String babid = req.getParameter("id");
         String isused = req.getParameter("isused");

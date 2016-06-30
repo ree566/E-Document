@@ -65,6 +65,15 @@
     </servlet-mapping>
     
     <servlet>
+        <servlet-name>Error</servlet-name>
+        <jsp-file>/error.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Error</servlet-name>
+        <url-pattern>/Error</url-pattern>  
+    </servlet-mapping>
+    
+    <servlet>
         <servlet-name>TestTotal</servlet-name>
         <jsp-file>/testTotal.jsp</jsp-file>
     </servlet>
@@ -146,15 +155,15 @@
     </servlet-mapping>
     
     <servlet>
-        <servlet-name>Error</servlet-name>
-        <jsp-file>/error.jsp</jsp-file>
+        <servlet-name>BabDetail</servlet-name>
+        <jsp-file>/babDetail.jsp</jsp-file>
     </servlet>
     <servlet-mapping>
-        <servlet-name>Error</servlet-name>
-        <url-pattern>/Error</url-pattern>  
+        <servlet-name>BabDetail</servlet-name>
+        <url-pattern>/BabDetail</url-pattern>  
     </servlet-mapping>
  
-<!--    <servlet>
+        <servlet>
         <servlet-name>QuartzInitializer</servlet-name>
         <servlet-class>
             org.quartz.ee.servlet.QuartzInitializerServlet
@@ -172,7 +181,7 @@
             <param-value>true</param-value>
         </init-param>
         <load-on-startup>2</load-on-startup>
-    </servlet>-->
+    </servlet>
 
     <context-param>
         <param-name>quartz:shutdown-on-unload</param-name>

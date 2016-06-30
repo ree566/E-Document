@@ -39,12 +39,10 @@ public class AllBAB extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
 
-        res.setCharacterEncoding("utf-8");
         res.setContentType("application/json");
         PrintWriter out = res.getWriter();
         String lineType = req.getParameter("lineType");
         out.print(new JSONObject().put("data", babService.getBABInfo(lineType)));
 
     }
-
 }

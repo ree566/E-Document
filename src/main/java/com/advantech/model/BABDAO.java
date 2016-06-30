@@ -138,6 +138,10 @@ public class BABDAO extends BasicDAO {
         return queryForMapList(getConn(), "SELECT * FROM LS_LineBalanceCompareById(?)", BAbid);
     }
 
+    public List<Map> getClosedBABInfoDetail(String startDate, String endDate) {
+        return queryProcForMapList(getConn(), "{CALL closedBABInfoDetail(?,?)}", startDate, endDate);
+    }
+
     public List<Array> getAvailableModelName() {
         return queryForArrayList(getConn(), "SELECT Model_name from LS_availModelName");
     }
@@ -158,11 +162,11 @@ public class BABDAO extends BasicDAO {
     private boolean updateAlarmTable(String sql, List<AlarmAction> l) {
         return update(getConn(), sql, l, "alarm", "tableId");
     }
-    
+
     public boolean resetTestAlarm() {
         return update(getConn(), "UPDATE Alm_TestAction SET alarm = 0");
     }
-    
+
     public boolean resetBABAlarm() {
         return update(getConn(), "UPDATE Alm_BABAction SET alarm = 0");
     }
@@ -180,8 +184,9 @@ public class BABDAO extends BasicDAO {
 
     /**
      * Please set the babAvg into bab object if data need to saveAndClose.
+     *
      * @param bab
-     * @return 
+     * @return
      */
     //一連串儲存動作統一commit，不然出問題時會出現A和B資料庫資料不同步問題
     public boolean stopAndSaveBab(BAB bab) {
@@ -195,7 +200,7 @@ public class BABDAO extends BasicDAO {
         try {
             //Prevent check Babavg data in database if exists or not multiple times, let ouside check and save value into bab object.
             JSONArray balances = bab.getBabavgs();
-            if(balances == null){// check data balance is exist first
+            if (balances == null) {// check data balance is exist first
                 log.error("The babAvg in bab object is not setting value, saving action suspend.");
                 return false;
             }

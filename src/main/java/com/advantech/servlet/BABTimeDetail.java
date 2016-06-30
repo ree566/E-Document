@@ -9,8 +9,6 @@ import com.advantech.helper.ParamChecker;
 import com.advantech.service.BABService;
 import com.advantech.service.BasicService;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
@@ -42,7 +40,6 @@ public class BABTimeDetail extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
 
-        res.setCharacterEncoding("utf-8");
         res.setContentType("text/plain");
         PrintWriter out = res.getWriter();
         String id = req.getParameter("id");

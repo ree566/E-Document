@@ -2,7 +2,6 @@
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
- * 查詢組裝包裝相關資訊(工單對照的機種、線別資訊等用)
  */
 package com.advantech.servlet;
 
@@ -18,14 +17,13 @@ import org.json.JSONObject;
  *
  * @author Wei.Cheng
  */
-@WebServlet(name = "GetAvailBabDetail", urlPatterns = {"/GetAvailBabDetail"})
-public class GetAvailBabDetail extends HttpServlet {
+@WebServlet(name = "GetCloseBABInfo", urlPatterns = {"/GetCloseBABInfo"})
+public class GetCloseBABInfo extends HttpServlet {
 
     private BABService babService = null;
 
     @Override
-    public void init()
-            throws ServletException {
+    public void init() throws ServletException {
         babService = BasicService.getBabService();
     }
 
@@ -39,13 +37,11 @@ public class GetAvailBabDetail extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
 
-        res.setContentType("application/json");
+        res.setContentType("text/plain");
         PrintWriter out = res.getWriter();
-        String modelName = req.getParameter("modelName");
-        String dateFrom = req.getParameter("dateFrom");
-        String dateTo = req.getParameter("dateTo");
-        out.print(new JSONObject().put("data", babService.getBAB(modelName, dateFrom, dateTo)));
+        String startDate = req.getParameter("startDate");
+        String endDate = req.getParameter("endDate");
 
+        out.print(new JSONObject().put("data", babService.getClosedBABInfo(startDate, endDate)));
     }
-
 }

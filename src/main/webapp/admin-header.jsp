@@ -55,6 +55,7 @@
                     <ul class="dropdown-menu">
                         <li><a href="BabTotal">線平衡資訊查詢</a></li>
                         <li><a href="BabDetailInfo">各站機台時間查詢</a></li>
+                        <li><a href="BabDetail">工單亮燈頻率查詢</a></li>
                     </ul>
                 </li>
                 <li>

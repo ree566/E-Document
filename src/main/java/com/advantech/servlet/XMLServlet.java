@@ -28,7 +28,7 @@ public class XMLServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
-        res.setCharacterEncoding("utf-8");
+        
         res.setContentType("text/xml");
         PrintWriter out = res.getWriter();
         try {
