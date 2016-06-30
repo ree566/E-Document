@@ -71,10 +71,10 @@
                 border: 1px black solid;
             }
         </style>
-        <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-        <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+        <script src="//www.gstatic.com/charts/loader.js"></script>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
         <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
-        <script type="text/javascript" src="js/canvasjs.min.js"></script>
+        <script src="js/canvasjs.min.js"></script>
         <script src="js/jquery.dataTables.min.js"></script>
         <script src="js/jquery.blockUI.js"></script>
         <script src="js/moment.js"></script>

@@ -43,7 +43,7 @@
                 color: #880000;
             }
         </style>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
         <script src="js/jquery.cookie.js"></script>
         <script src="js/jquery.blockUI.js"></script>
         <!--<script src="js/babpage.js"></script>-->
