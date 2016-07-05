@@ -33,6 +33,9 @@
                 height: 20%;
                 float: right;
             }
+            .noscript input{
+                display: block;
+            }
         </style>
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
         <script src="js/jquery.blockUI.js"></script>
@@ -69,7 +72,11 @@
             });
         </script>
     </head>
-    <body>
+    <body class="noscript">
+        
+        <script>
+            $("body").removeClass("noscript");
+        </script>
         <jsp:include page="head.jsp" />
         <div id="wigetCtrl">
             <div>

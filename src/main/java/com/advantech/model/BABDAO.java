@@ -106,8 +106,12 @@ public class BABDAO extends BasicDAO {
         return queryProcForMapList(getConn(), "{CALL LS_lastGroupStatus(?)}", BABid);
     }
 
-    public List<Map> getBABAvgs(int BABid) throws JSONException {
+    public List<Map> getBABAvgs(int BABid){
         return queryForMapList(getConn(), "SELECT * FROM BABAVG(?)", BABid);
+    }
+    
+    public List<Map> getBABAvgsInSpecGroup(int BABid){
+        return queryProcForMapList(getConn(), "{CALL getbabAvgInSpecGroup(?)}", BABid);
     }
 
     public List<Map> getClosedBABAVG(int BABid) throws JSONException {

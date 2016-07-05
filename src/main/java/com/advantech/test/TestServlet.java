@@ -7,6 +7,7 @@
 package com.advantech.test;
 
 import com.advantech.entity.FBN;
+import com.advantech.quartzJob.LineBalancePeopleGenerator;
 import com.advantech.service.BasicService;
 import com.advantech.service.FBNService;
 import com.google.gson.Gson;
@@ -38,10 +39,9 @@ public class TestServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
-        res.setContentType("text/plain");
+        res.setContentType("application/json");
         PrintWriter out = res.getWriter();
-        FBNService service = BasicService.getFbnService();
-        out.println(new Gson().toJson(service.getBABFinalStationSensorStatus(308)));
+        out.println(LineBalancePeopleGenerator.getBabToTestAssignNumOfPeopleStatus());
     }
 
     private String getSensorTime(FBN f) {

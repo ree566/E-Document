@@ -27,7 +27,7 @@ public class PropertiesReader {
     private JSONObject cc, responseUnits, systemAbnormalAlarmMailCC;
     private String systemAbnormalAlarmMailTo;
 
-    private int maxTestTable, limitBABData, balanceRoundingDigit;
+    private int maxTestTable, maxTestRequiredPeople, limitBABData, balanceRoundingDigit;
 
     private PropertiesReader() throws Exception {
         dataInit();
@@ -71,6 +71,7 @@ public class PropertiesReader {
         systemAbnormalAlarmMailTo = properties.getProperty("systemAbnormalAlarm.mailTo");
         systemAbnormalAlarmMailCC = new JSONObject(properties.getProperty("systemAbnormalAlarm.mailCC"));
         maxTestTable = convertStringToInteger(properties.getProperty("maxTestTable"));
+        maxTestRequiredPeople = convertStringToInteger(properties.getProperty("maxTestRequiredPeople"));
         limitBABData = convertStringToInteger(properties.getProperty("limitBABData"));
         balanceRoundingDigit = convertStringToInteger(properties.getProperty("balanceRoundingDigit"));
     }
@@ -137,6 +138,10 @@ public class PropertiesReader {
 
     public int getMaxTestTable() {
         return maxTestTable;
+    }
+
+    public int getMaxTestRequiredPeople() {
+        return maxTestRequiredPeople;
     }
 
     public int getLimitBABData() {

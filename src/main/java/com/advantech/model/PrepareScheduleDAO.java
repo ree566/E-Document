@@ -8,6 +8,7 @@ package com.advantech.model;
 import com.advantech.entity.PrepareSchedule;
 import java.sql.Connection;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -29,9 +30,13 @@ public class PrepareScheduleDAO extends BasicDAO {
 
     public List<PrepareSchedule> getPrepareSchedule(String po) {
         return queryPrepareScheduleTable(
-            "SELECT * FROM prepare_Schedule WHERE DATEDIFF(DAY,GETDATE(),ondatetime) BETWEEN -30 AND 30 AND PO = ?",
-            po
+                "SELECT * FROM prepare_Schedule WHERE DATEDIFF(DAY,GETDATE(),ondatetime) BETWEEN -30 AND 30 AND PO = ?",
+                po
         );
+    }
+
+    public List<Map> getTestStandardTime(String modelName) {
+        return queryForMapList(getConn(), "{CALL exp_getNschedule(?)}", modelName);
     }
 
     public static void main(String arg0[]) {

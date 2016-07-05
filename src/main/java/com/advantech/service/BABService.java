@@ -177,9 +177,13 @@ public class BABService {
         return (isused == BAB_CLOSED_SIGN ? getClosedBABAVG(BABid) : getBABAvgs(BABid));
     }
 
-    private JSONArray getBABAvgs(int BABid) throws JSONException {
+    private JSONArray getBABAvgs(int BABid){
         List l = babDAO.getBABAvgs(BABid);
         return new JSONArray(l);
+    }
+    
+    public List<Map> getBABAvgsInSpecGroup(int BABid){
+        return babDAO.getBABAvgsInSpecGroup(BABid);
     }
 
     public double getAvgType2(int BABid, int closedSign) throws Exception {

@@ -40,6 +40,7 @@ public class DataTransformer {
     private final LineBalanceService lineBalanceService;
     private final TestService testService;
     private final BABService babService;
+    private final LineBalancePeopleGenerator lbGenerator;
 
     private final WebServiceRV rv;
     private final TxtWriter txtWriter;
@@ -93,6 +94,7 @@ public class DataTransformer {
         lineBalanceService = BasicService.getLineBalanceService();
         babService = BasicService.getBabService();
         testService = BasicService.getTestService();
+        lbGenerator = LineBalancePeopleGenerator.getInstance();
     }
 
     public static DataTransformer getInstance() {
@@ -106,6 +108,7 @@ public class DataTransformer {
         //分開以免一個exception全部被job都進入catch
         checkAndSetTestTxt();
         checkAndSetBabTxt();
+//        lbGenerator.generateTestPeople();
     }
 
     private void checkAndSetTestTxt() {
@@ -129,9 +132,9 @@ public class DataTransformer {
         boolean isNeedToWriteTxt = isDocNameTest ? matchingTestData() : matchingBABData1();
         if (writeTxtActionContorlSign == true) {
             if (isNeedToWriteTxt) {
-                setTxt(isDocNameTest ? PEOPLE_MATCH : BAB_ISUSED, txtName);
+//                setTxt(isDocNameTest ? PEOPLE_MATCH : BAB_ISUSED, txtName);
             } else {
-                resetTxt(txtName);
+//                resetTxt(txtName);
             }
         }
     }
