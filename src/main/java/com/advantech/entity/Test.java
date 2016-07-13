@@ -16,6 +16,7 @@ public class Test implements Serializable {
     private static final long serialVersionUID = 1L;
     private int id;
     private String userid;
+    private int sitefloor;
     private String updatetime;
 
     public Test() {
@@ -41,6 +42,14 @@ public class Test implements Serializable {
 
     public void setUserid(String userid) {
         this.userid = userid;
+    }
+
+    public int getSitefloor() {
+        return sitefloor;
+    }
+
+    public void setSitefloor(int sitefloor) {
+        this.sitefloor = sitefloor;
     }
 
     public String getUpdatetime() {

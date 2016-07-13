@@ -91,7 +91,7 @@ public class SensorEndpoint1 {
 
     // Generate when connect users are at least one.
     private void pollingDBAndBrocast() {
-        String crontrigger = "0/5 * 6-18 ? * MON-FRI *";
+        String crontrigger = "0/10 * 6-18 ? * MON-FRI *";
         try {
             CronTrigMod.getInstance().generateAJob(PollingServer.class, jobKey, trigKey, crontrigger);
         } catch (SchedulerException ex) {

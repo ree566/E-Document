@@ -33,9 +33,9 @@ public class DataTransformer {
 
     private static final Logger log = LoggerFactory.getLogger(DataTransformer.class);
 
-    private static DataTransformer instance;
+    private static boolean controlJobFlag = true;
 
-    private static boolean writeTxtActionContorlSign = true;
+    private static DataTransformer instance;
 
     private final LineBalanceService lineBalanceService;
     private final TestService testService;
@@ -51,7 +51,9 @@ public class DataTransformer {
     private static final int ASSY_PEOPLES = 4, PACKING_PEOPLES = 3;
 
     private final int maxTestTable;
-    private static boolean testResetFlag, babResetFlag; //Don't repeatedly reset txt when not exist any alarm sign.
+
+    //Don't repeatedly reset txt when not exist any alarm sign.
+    private static boolean testResetFlag, babResetFlag, isWriteToTxt, isWriteToDB;
 
     private final int ALARM_SIGN = 1, NORMAL_SIGN = 0;
     private final int TEST_USER_NOT_IN_SYSTEM_SIGN = -1, TEST_USER_NOT_IN_XML_SIGN = 2;
@@ -95,6 +97,8 @@ public class DataTransformer {
         babService = BasicService.getBabService();
         testService = BasicService.getTestService();
         lbGenerator = LineBalancePeopleGenerator.getInstance();
+        isWriteToTxt = p.isWriteToTxt();
+        isWriteToDB = p.isWriteToDB();
     }
 
     public static DataTransformer getInstance() {
@@ -129,19 +133,30 @@ public class DataTransformer {
 
     private void saveToTxt(String txtName) throws Exception {
         boolean isDocNameTest = testTxtName.equals(txtName);
-        boolean isNeedToWriteTxt = isDocNameTest ? matchingTestData() : matchingBABData1();
-        if (writeTxtActionContorlSign == true) {
-            if (isNeedToWriteTxt) {
-//                setTxt(isDocNameTest ? PEOPLE_MATCH : BAB_ISUSED, txtName);
+        boolean isNeedToOutputResult = isDocNameTest ? matchingTestData() : matchingBABData1();
+
+        if (controlJobFlag == true) {
+            if (isNeedToOutputResult) {
+                outputResult(isDocNameTest ? PEOPLE_MATCH : BAB_ISUSED, txtName);
             } else {
-//                resetTxt(txtName);
+                resetOutputResult(txtName);
             }
         }
     }
 
-    private void setTxt(Map m, String txtName) throws IOException {
-        txtWriter.writeTxtWithFileName(m, txtName);
-//        saveTestAlarm(m, txtName);
+    private void outputResult(Map m, String txtName) throws IOException {
+        if (isWriteToTxt) {
+            txtWriter.writeTxtWithFileName(m, txtName);
+        }
+        if (isWriteToDB) {
+            saveTestAlarm(m, txtName);
+        }
+        if (isWriteToTxt || isWriteToDB) {
+            changeFlagStatus(txtName);
+        }
+    }
+
+    private void changeFlagStatus(String txtName) throws IOException {
         if (testTxtName.equals(txtName)) {
             if (testResetFlag == false) {
                 testResetFlag = true;
@@ -151,19 +166,29 @@ public class DataTransformer {
         }
     }
 
-    private void resetTxt(String txtName) throws IOException {
-        if (testTxtName.equals(txtName)) {
-            if (testResetFlag == true) {
-                initTestMap();
-                setTxt(PEOPLE_MATCH, txtName);
-//                babService.resetTestAlarm();
-                testResetFlag = false;
+    private void resetOutputResult(String txtName) throws IOException {
+        if (isWriteToTxt || isWriteToDB) {
+            if (testTxtName.equals(txtName)) {
+                if (testResetFlag == true) {
+                    if (isWriteToTxt) {
+                        initTestMap();
+                        outputResult(PEOPLE_MATCH, txtName);
+                    }
+                    if (isWriteToDB) {
+                        babService.resetTestAlarm();
+                    }
+                    testResetFlag = false;
+                }
+            } else if (babResetFlag == true) {
+                if (isWriteToTxt) {
+                    initBabMap();
+                    outputResult(BAB_ISUSED, txtName);
+                }
+                if (isWriteToDB) {
+                    babService.resetBABAlarm();
+                }
+                babResetFlag = false;
             }
-        } else if (babResetFlag == true) {
-            initBabMap();
-            setTxt(BAB_ISUSED, txtName);
-//            babService.resetBABAlarm();
-            babResetFlag = false;
         }
     }
 
@@ -226,6 +251,7 @@ public class DataTransformer {
                         fitUser.put("name", name)
                                 .put("number", no)
                                 .put("table", tableid)
+                                .put("sitefloor", ti.getSitefloor())
                                 .put("PRODUCTIVITY", PRODUCTIVITY);
                         if (PRODUCTIVITY < TEST_STANDARD) {
                             fitUser.put("isalarm", ALARM_SIGN);
@@ -417,8 +443,8 @@ public class DataTransformer {
         return babJsonObj;
     }
 
-    public static void setWriteTxtActionContorlSign(boolean writeTxtActionContorlSign) {
-        DataTransformer.writeTxtActionContorlSign = writeTxtActionContorlSign;
+    public static void setWriteTxtActionContorlSign(boolean controlJobFlag) {
+        DataTransformer.controlJobFlag = controlJobFlag;
     }
 
     public static void initInnerObjs() {

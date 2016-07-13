@@ -39,7 +39,7 @@ public class TestDAO extends BasicDAO {
     }
 
     public List<Test> getAllTableInfo() {
-        return queryTestTable("SELECT * FROM LS_TEST ORDER BY ID");
+        return queryTestTable("SELECT * FROM testTableView ORDER BY ID");
     }
 
     public List<Desk> getDesk() {

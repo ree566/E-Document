@@ -29,6 +29,8 @@ public class PropertiesReader {
 
     private int maxTestTable, maxTestRequiredPeople, limitBABData, balanceRoundingDigit;
 
+    private boolean writeToTxt, writeToDB, saveToOldDB;
+
     private PropertiesReader() throws Exception {
         dataInit();
     }
@@ -74,6 +76,9 @@ public class PropertiesReader {
         maxTestRequiredPeople = convertStringToInteger(properties.getProperty("maxTestRequiredPeople"));
         limitBABData = convertStringToInteger(properties.getProperty("limitBABData"));
         balanceRoundingDigit = convertStringToInteger(properties.getProperty("balanceRoundingDigit"));
+        writeToTxt = convertStringToBoolean(properties.getProperty("result.write.to.txt"));
+        writeToDB = convertStringToBoolean(properties.getProperty("result.write.to.database"));
+        saveToOldDB = convertStringToBoolean(properties.getProperty("result.save.to.oldServer"));
     }
 
     private int convertStringToInteger(String number) {
@@ -82,6 +87,10 @@ public class PropertiesReader {
 
     private double convertStringToDouble(String number) {
         return (number != null && !"".equals(number)) ? Double.parseDouble(number) : 0;
+    }
+
+    private boolean convertStringToBoolean(String str) {
+        return (str != null && !"".equals(str)) ? str.equals("true") : false;
     }
 
     public static Logger getLog() {
@@ -152,12 +161,24 @@ public class PropertiesReader {
         return balanceRoundingDigit;
     }
 
+    public boolean isWriteToTxt() {
+        return writeToTxt;
+    }
+
+    public boolean isWriteToDB() {
+        return writeToDB;
+    }
+
+    public boolean isSaveToOldDB() {
+        return saveToOldDB;
+    }
+
     public static void main(String arg0[]) {
 
         PropertiesReader p = getInstance();
         Double d1 = 0.8000000121;
-        System.out.println("d1 smaller than babStandard: " + (d1 < p.babStandard));
-        System.out.println("d1 bigger than babStandard: " + (d1 > p.babStandard));
+//        System.out.println("d1 smaller than babStandard: " + (d1 < p.babStandard));
+//        System.out.println("d1 bigger than babStandard: " + (d1 > p.babStandard));
 
     }
 }

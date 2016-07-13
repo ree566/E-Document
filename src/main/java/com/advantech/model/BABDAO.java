@@ -36,9 +36,13 @@ public class BABDAO extends BasicDAO {
     private static final Logger log = LoggerFactory.getLogger(BABDAO.class);
 
     private final int LIMIT_BAB_DATA;
+    private static boolean isSaveToOldDB;
 
     public BABDAO() {
         LIMIT_BAB_DATA = PropertiesReader.getInstance().getLimitBABData();
+
+        PropertiesReader p = PropertiesReader.getInstance();
+        isSaveToOldDB = p.isSaveToOldDB();
     }
 
     private Connection getConn() {
@@ -106,11 +110,11 @@ public class BABDAO extends BasicDAO {
         return queryProcForMapList(getConn(), "{CALL LS_lastGroupStatus(?)}", BABid);
     }
 
-    public List<Map> getBABAvgs(int BABid){
+    public List<Map> getBABAvgs(int BABid) {
         return queryForMapList(getConn(), "SELECT * FROM BABAVG(?)", BABid);
     }
-    
-    public List<Map> getBABAvgsInSpecGroup(int BABid){
+
+    public List<Map> getBABAvgsInSpecGroup(int BABid) {
         return queryProcForMapList(getConn(), "{CALL getbabAvgInSpecGroup(?)}", BABid);
     }
 
@@ -219,45 +223,47 @@ public class BABDAO extends BasicDAO {
 
             QueryRunner qRunner = new QueryRunner();
             ProcRunner pRunner = new ProcRunner();
-            conn1 = getDBUtilConn(SQL.Way_Chien_WebAccess);
-            conn2 = getDBUtilConn(SQL.Way_Chien_LineBalcing);
 
-            conn1.setAutoCommit(false);
-            conn2.setAutoCommit(false);
             //--------區間內請勿再開啟tran不然會deadlock----------------------------
+            conn1 = getDBUtilConn(SQL.Way_Chien_WebAccess);
+            conn1.setAutoCommit(false);
 
-            Double[] data = lineBalanceService.fillBalanceDataToArray(balances);
-            Object[] param2 = {
-                bab.getPeople(),
-                bab.getLinetype(),
-                bab.getPO(),
-                bab.getModel_name(),
-                baln,
-                data[0],
-                data[1],
-                data[2],
-                data[3],
-                bab.getLine()
-            };
-            qRunner.update(conn2,
-                    "insert into Line_Balancing_Main(Number_of_poople, Do_not_stop, PO, PN, Balance, "
-                    + "Do_not1, Do_not2, Do_not3, Do_not4, Line) values (?,?,?,?,?,?,?,?,?,?)",
-                    param2);
+            if (isSaveToOldDB) {
+                conn2 = getDBUtilConn(SQL.Way_Chien_LineBalcing);
+                conn2.setAutoCommit(false);
+                Double[] data = lineBalanceService.fillBalanceDataToArray(balances);
+                Object[] param2 = {
+                    bab.getPeople(),
+                    bab.getLinetype(),
+                    bab.getPO(),
+                    bab.getModel_name(),
+                    baln,
+                    data[0],
+                    data[1],
+                    data[2],
+                    data[3],
+                    bab.getLine()
+                };
+                qRunner.update(conn2,
+                        "insert into Line_Balancing_Main(Number_of_poople, Do_not_stop, PO, PN, Balance, "
+                        + "Do_not1, Do_not2, Do_not3, Do_not4, Line) values (?,?,?,?,?,?,?,?,?,?)",
+                        param2);
+                DbUtils.commitAndCloseQuietly(conn2);
+            }
 
             Object[] param3 = {bab.getId()};
             pRunner.updateProc(conn1, "{CALL LS_closeBABWithSaving(?)}", param3);//關閉線別
 
             //--------區間內請勿再開啟tran不然會deadlock----------------------------
             DbUtils.commitAndCloseQuietly(conn1);
-            DbUtils.commitAndCloseQuietly(conn2);
-
             lineBalanceService.checkLineBalanceAndSendMail(bab, maxBaln, baln);
-
             flag = true;
         } catch (SQLException ex) {
             log.error(ex.toString());
             DbUtils.rollbackAndCloseQuietly(conn1);
-            DbUtils.rollbackAndCloseQuietly(conn2);
+            if (conn2 != null) {
+                DbUtils.rollbackAndCloseQuietly(conn2);
+            }
         } catch (MessagingException | JSONException ex) {
             log.error(ex.toString());
             flag = true; //即使寄信失敗一樣傳回true給使用者知道(不需要知道寄信fail log有紀錄即可)
