@@ -20,7 +20,7 @@ public class PropertiesReader {
     private static final Logger log = LoggerFactory.getLogger(PropertiesReader.class);
     private static PropertiesReader p;
 
-    private String testMail, txtLocation, testTxtName, babTxtName, outputFilenameExt;
+    private String testMail, txtLocation, testTxtName, babTxtName, outputFilenameExt, mailServerUsername, mailServerPassword, mailServerLocation, mailServerPort;
 
     private double testStandard, babStandard, balanceDiff;
 
@@ -29,7 +29,7 @@ public class PropertiesReader {
 
     private int maxTestTable, maxTestRequiredPeople, limitBABData, balanceRoundingDigit;
 
-    private boolean writeToTxt, writeToDB, saveToOldDB;
+    private boolean writeToTxt, writeToDB, saveToOldDB, sendMailAlarmUser;
 
     private PropertiesReader() throws Exception {
         dataInit();
@@ -69,6 +69,11 @@ public class PropertiesReader {
         babStandard = convertStringToDouble(properties.getProperty("balanceStandard"));
         balanceDiff = convertStringToDouble(properties.getProperty("balanceDifference"));
         cc = new JSONObject(properties.getProperty("ccMails"));
+        mailServerUsername = properties.getProperty("mail.server.username");
+        mailServerPassword = properties.getProperty("mail.server.password");
+        mailServerLocation = properties.getProperty("mail.server.location");
+        mailServerPort = properties.getProperty("mail.server.port");
+        sendMailAlarmUser = convertStringToBoolean(properties.getProperty("send.mail.alarm.user"));
         responseUnits = new JSONObject(properties.getProperty("responseUnits"));
         systemAbnormalAlarmMailTo = properties.getProperty("systemAbnormalAlarm.mailTo");
         systemAbnormalAlarmMailCC = new JSONObject(properties.getProperty("systemAbnormalAlarm.mailCC"));
@@ -173,12 +178,34 @@ public class PropertiesReader {
         return saveToOldDB;
     }
 
+    public String getMailServerUsername() {
+        return mailServerUsername;
+    }
+
+    public String getMailServerPassword() {
+        return mailServerPassword;
+    }
+
+    public String getMailServerLocation() {
+        return mailServerLocation;
+    }
+
+    public String getMailServerPort() {
+        return mailServerPort;
+    }
+
+    public boolean isSendMailAlarmUser() {
+        return sendMailAlarmUser;
+    }
+
     public static void main(String arg0[]) {
 
         PropertiesReader p = getInstance();
         Double d1 = 0.8000000121;
 //        System.out.println("d1 smaller than babStandard: " + (d1 < p.babStandard));
 //        System.out.println("d1 bigger than babStandard: " + (d1 > p.babStandard));
-
+        System.out.println(p.getMailServerUsername());
+        System.out.println(p.getMailServerPassword());
+        System.out.println(p.getMailServerLocation());
     }
 }

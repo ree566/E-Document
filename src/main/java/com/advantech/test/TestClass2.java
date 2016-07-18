@@ -15,16 +15,16 @@ import java.util.Map;
  */
 public class TestClass2 {
 
-    private TestClassService t = BasicService.getTestClassService();
-
-    public static void main(String arg[]) {
-        Test t = new TestClass();
-        TestClass t2 = new TestClass();
-        t.getName();
-        
-    }
-
-    private void testF() {
-        t.testFunction();
-    }
+//    private TestClassService t = BasicService.getTestClassService();
+//
+//    public static void main(String arg[]) {
+//        Test t = new TestClass();
+//        TestClass t2 = new TestClass();
+//        t.getName();
+//        
+//    }
+//
+//    private void testF() {
+//        t.testFunction();
+//    }
 }

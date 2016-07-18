@@ -9,10 +9,19 @@
 <jsp:useBean id="lineDAO" class="com.advantech.model.LineDAO" scope="application" />
 <!DOCTYPE html>
 <html>
+    <c:set var="userSitefloor" value="${param.sitefloor}" />
+    <c:if test="${(userSitefloor == null) || (userSitefloor == '')}">
+        <c:redirect url="/" />
+    </c:if>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>${initParam.pageTitle}</title>
         <style>
+            #titleAlert{
+                background-color: green;
+                color: white;
+                text-align: center;
+            }
             .Div0{
                 float:left; width:100%; 
                 border-bottom-style:dotted;
@@ -67,6 +76,7 @@
                 });
             }
             $(document).ready(function () {
+
                 $(document).ajaxSend(function () {
                     block();//Block the screen when ajax is sending, Prevent form submit repeatly.
                 });
@@ -74,8 +84,9 @@
                     $.unblockUI();//Unblock the ajax when success
                 });
 
+                var manuallyModelNameInput = false;
 
-                $('[data-toggle="tooltip"]').tooltip();
+//                $('[data-toggle="tooltip"]').tooltip();
 
                 //Init the object to boostrap's form
                 $(":button").addClass("btn btn-default");
@@ -94,12 +105,18 @@
                 //裏頭存了step的四個選項的div
                 $step3_objs = $("#step3").children().detach();
                 $("#cookieinfo").html(jsonstring != null ? "BAB cookie 已經儲存" : "尚無資料");
-                $objgroup = $("#po,#line,#people,#begin");
+                $objgroup = $("#po, #line, #people, #begin");
 
                 //抓取cookie所儲存的json data讓其他元件做應對
                 if (jsonstring != null) {
                     $obj = $.parseJSON(jsonstring);
                     if ($obj != null) {
+                        var userSitefloorSelect = $obj.userSitefloorSelect;
+                        var pageSitefloor = $("#userSitefloorSelect").val();
+                        if (userSitefloorSelect != null && userSitefloorSelect != pageSitefloor) {
+                            $(":input,select").not("#redirectBtn").attr("disabled", "disabled");
+                            $("#servermsg").html("您已經登入其他樓層");
+                        }
                         saveline = $obj.line;
                         if (msgstring != null) {
                             $("#step3").html($step3_objs.eq(0));
@@ -111,15 +128,15 @@
                                         checked: true
                                     });
                                     $("#lineselect").children().eq(saveline).attr("selected", true);
-                                    $("#lineselect,#step1next").attr("disabled", true);
+                                    $("#lineselect, #step1next").attr("disabled", true);
+                                    $("#manuallyModelNameInput").prop("checked", false);
                                 }
                             }
                         } else {
                             if ($obj != null) {
                                 $("#lineselect").children().eq($obj.line).attr("selected", true);
-                                $("#lineselect,#step1next").attr("disabled", true);
+                                $("#lineselect, #step1next, #isfirst").attr("disabled", true);
                                 $("#step2").show();
-                                $("#isfirst").attr("disabled", "disabled");
                             }
                         }
                         var json = getdata(saveline);
@@ -207,12 +224,23 @@
                     $("#people").attr("disabled", true);
                 }
 
+                $("#manuallyModelNameInput").change(function () {
+                    manuallyModelNameInput = $(this).is(":checked");
+                    $("#modelname").attr("readonly", !manuallyModelNameInput).attr("style", !manuallyModelNameInput ? "background: #CCC" : "").val("");
+                });
+
                 //Search the ModelName by PO.(Station 1)
                 $("#po").on("keyup", function () {
-                    var text = $(this).val().trim().toLocaleUpperCase();
-                    $(this).val(text);
-                    getModel(text, "#modelname");
+                    textBoxToUpperCase($(this));
+                    if (!manuallyModelNameInput) {
+                        getModel($(this).val(), $(this).next());
+                    }
                 });
+
+                $("#modelname").on("keyup", function () {
+                    textBoxToUpperCase($(this));
+                });
+
 
                 //從已經從站別1儲存的工單資料中尋找相關資訊(LS_BAB table)
                 $("#po1").on("keyup", function () {
@@ -231,36 +259,35 @@
 
                 //站別1投入工單按鈕
                 $("#begin").click(function () {
-                    if (!$.cookie('table')) {
-                        var po = $("#po").val().trim();
-                        var modelname = $("#modelname").val().trim();
-                        var line = $("#lineselect").val();
-                        var people = $("#people").val();
-                        if (modelname == 'data not found' || modelname == "" || po == "" || line == -1) {
-                            $("#servermsg").html("請確認資料是否正確");
-                            return false;
-                        }
-                        if (parseInt(people) <= 0 || parseInt(people) > 5 || people == "") {
-                            $("#servermsg").html("人數範圍錯誤");
-                            return false;
-                        }
-                        if (line == -1) {
-                            line = saveline;
-                        }
-                        if (!confirm("工單:" + po + " 機種:" + modelname + " 人數:" + people + " \n確認無誤?")) {
-                            return false;
-                        }
-                        var obj = toback(po, modelname, line, people, null, 1);
-                        if (obj.status == "success") {
-                            $.cookie("people", people);
-                            reload();
-                        } else {
-                            $("#servermsg").html(obj.status);
-                        }
 
-                    } else {
-                        $("#servermsg").html("您已經登入包裝");
+                    console.log();
+                    var po = $("#po").val().trim();
+                    var modelname = $("#modelname").val().trim();
+                    var line = $("#lineselect").val();
+                    var people = $("#people").val();
+                    if (modelname == 'data not found' || modelname == "" || po == "" || line == -1) {
+                        $("#servermsg").html("請確認資料是否正確");
+                        return false;
                     }
+                    if (parseInt(people) <= 0 || parseInt(people) > 5 || people == "") {
+                        $("#servermsg").html("人數範圍錯誤");
+                        return false;
+                    }
+                    if (line == -1) {
+                        line = saveline;
+                    }
+                    if (!confirm("工單:" + po + " 機種:" + modelname + " 人數:" + people + " \n確認無誤?")) {
+                        return false;
+                    }
+                    var obj = toback(po, modelname, line, people, null, 1);
+                    if (obj.status == "success") {
+                        $.cookie("people", people);
+                        reload();
+                    } else {
+                        $("#servermsg").html(obj.status);
+                    }
+
+
                 });
 
                 //工單最後一個站別關閉工單用
@@ -328,22 +355,25 @@
 
                 //第一步登入用(卡站別1只允許1個人進入)
                 $("#step1next").click(function () {
-                    console.log("btn click");
                     var line = $("#lineselect").val();
                     var type = $("#lineselect option:selected").text().trim();
 //                    console.log(line);
                     if (line == -1) {
-                        return;
+                        return false;
+                    } else if (!confirm("※確定您選擇的線別為 " + type + " ?")) {
+                        return false;
                     }
+
                     if ($("#isfirst").is(":checked")) {
                         var id = 1;
                         var msg = linelogin();
                         //getdata there
                         if (msg == "success") {
-                            if ($.cookie('babinfo') == null) {
+                            if (jsonstring == null) {
                                 var json = {
                                     line: line,
-                                    identit: id
+                                    identit: id,
+                                    userSitefloorSelect: $("#userSitefloorSelect").val()
                                 };
                                 var date = new Date();
                                 var minutes = 12 * 60;
@@ -356,10 +386,11 @@
                     } else {
                         $("#searchpeople").show();
                         $("#step2").show();
-                        if ($.cookie('babinfo') == null) {
+                        if (jsonstring == null) {
                             var json = {
                                 line: line,
-                                identit: id
+                                identit: id,
+                                userSitefloorSelect: $("#userSitefloorSelect").val()
                             };
                             var date = new Date();
                             var minutes = 12 * 60;
@@ -398,6 +429,15 @@
                 //將進行中的工單第一個做標記，讓使用者知道目前亮的是哪一張工單的燈號
                 if ($("#linestate").children().length > 0) {
                     $("#linestate").children().eq(0).attr("style", "border-color:red; border-style:solid;");
+                }
+
+                if ($.cookie('table')) {
+                    $(":input,select").not("#redirectBtn").attr("disabled", "disabled");
+                    $("#servermsg").html("您已經登入包裝");
+                }
+
+                function textBoxToUpperCase(obj) {
+                    obj.val(obj.val().trim().toLocaleUpperCase());
                 }
 
                 //儲存使用者站別cookie
@@ -446,7 +486,7 @@
                 }
 
                 //取得機種
-                function getModel(text, appendTo) {
+                function getModel(text, obj) {
                     var reg = "^[0-9a-zA-Z]+$";
                     if (text != "" && text.match(reg)) {
                         window.clearTimeout(hnd);
@@ -459,7 +499,7 @@
                                 },
                                 dataType: "html",
                                 success: function (response) {
-                                    $(appendTo).val(response);
+                                    obj.val(response);
                                 },
                                 error: function () {
                                     $("#servermsg").html("error");
@@ -467,7 +507,7 @@
                             });
                         }, 1000);
                     } else {
-                        $(appendTo).val("");
+                        obj.val("");
                     }
                 }
 
@@ -603,9 +643,13 @@
         </script>
     </head>
     <body>
-        <!--        <script>
-                    block();
-                </script>-->
+        <input id="userSitefloorSelect" type="hidden" value="${userSitefloor}">
+        <div id="titleAlert">
+            <c:out value="您所選擇的樓層是: ${userSitefloor}" />
+            <a href="index.jsp">
+                <button id="redirectBtn" >不是我的樓層?</button>
+            </a>
+        </div>
         <jsp:include page="head.jsp" />
         <div style="clear:both"></div>
         <div id="step1">
@@ -615,7 +659,7 @@
                     <div id="step1obj" class="form-inline">
                         <select style="text-align: center" id="lineselect">
                             <option value="-1">---請選擇線別---</option>
-                            <c:forEach var="lines" items="${lineDAO.line}">
+                            <c:forEach var="lines" items="${lineDAO.getLine(userSitefloor)}">
                                 <option value="${lines.id}" ${lines.lock == 1 ? "disabled style='opacity:0.2'" : ""}>${lines.name}</option>
                             </c:forEach>
                         </select>
@@ -668,6 +712,7 @@
                                     </c:forEach>
                                 </select>
                                 <input type="button" value="開始" id="begin">
+                                <lable for="manuallyModelNameInput"><input id="manuallyModelNameInput" type="checkbox" />手動輸入工單模式</lable>
                             </div>
                             <div style="padding:5px 5px">
                                 <input type="button" id="exitT1" value="返回步驟1">
@@ -739,10 +784,10 @@
     </div>
 
     <jsp:include page="footer.jsp" />
-<!--    <script>
-        $(window).load(function () {
-            $.unblockUI();
-        });
-    </script>-->
+    <!--    <script>
+            $(window).load(function () {
+                $.unblockUI();
+            });
+        </script>-->
 </body>
 </html>

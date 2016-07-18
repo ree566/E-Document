@@ -31,6 +31,8 @@ public class MailSend {
     private final String mailServerAddress;
     private final String password;
     private final String companyAddr = "@advantech.com.tw";
+    
+    private static boolean isSendMailAlarmUser;
 
     private final JSONArray cc;
 
@@ -38,18 +40,20 @@ public class MailSend {
     private static final Logger log = LoggerFactory.getLogger(MailSend.class);
 
     private MailSend() {
+        PropertiesReader properties = PropertiesReader.getInstance();
+
         String hostaddr = null;
         try {
-            hostaddr = getHostAddr();
+            String hostSetting = properties.getMailServerLocation();
+            hostaddr = new ParamChecker().checkInputVal(hostSetting) ? hostSetting : getHostAddr();
         } catch (UnknownHostException | SocketException ex) {
             log.error(ex.toString());
         }
         mailHost = hostaddr;
-        mailPort = "25";
-        mailServerAddress = "kevin@" + hostaddr;
-        password = "kevin";
+        mailPort = properties.getMailServerPort();
+        mailServerAddress = properties.getMailServerUsername() + "@" + hostaddr;
+        password = properties.getMailServerPassword();
 
-        PropertiesReader properties = PropertiesReader.getInstance();
         JSONObject mails = properties.getCc();
         cc = mails.getJSONArray("maillist");
 
@@ -58,6 +62,8 @@ public class MailSend {
         props.setProperty("mail.smtp.auth", "true");
         props.put("mail.smtp.starttls.enable", "true");
         props.setProperty("mail.smtp.port", mailPort);
+        
+        isSendMailAlarmUser = properties.isSendMailAlarmUser();
     }
 
     public static MailSend getInstance() {
@@ -78,6 +84,11 @@ public class MailSend {
     }
 
     private boolean handleSettingsAndSendMail(String from, String to, String subject, String text) throws MessagingException {
+        if(!isSendMailAlarmUser){
+            log.info("The setting in options.properties is false, send mail job abandon!");
+            return false;
+        }
+    
         Session session = Session.getDefaultInstance(props,
                 new Authenticator() {
             @Override
@@ -89,12 +100,12 @@ public class MailSend {
         MimeMessage message = new MimeMessage(session);
         message.setFrom(new InternetAddress(from));
         message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to + companyAddr));
-        
+
         for (Object o : cc) {
             String mail = o.toString() + companyAddr;
             message.setRecipients(Message.RecipientType.CC, InternetAddress.parse(mail));
         }
-        
+
         message.setSubject(subject, "UTF-8");
         message.setSentDate(new Date());
         MimeBodyPart htmlPart = new MimeBodyPart();
@@ -110,11 +121,10 @@ public class MailSend {
 
     //測試main
     public static void main(String[] arg0) {
-        try {
-            MailSend.getInstance().sendMailWithoutSender(MailSend.class, "Wei.Cheng@advantech.com.tw", "mailtesting", "echo");
-        } catch (MessagingException ex) {
-            System.out.print(ex);
-        }
+        MailSend m = MailSend.getInstance();
+        System.out.println(m.mailHost);
+        System.out.println(m.mailPort);
+//        System.out.println();
     }
 
     //Get the Host address.

@@ -5,16 +5,13 @@
  */
 package com.advantech.test;
 
-import java.util.ArrayList;
-import java.util.List;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import com.advantech.entity.Test;
 
 /**
  *
  * @author Wei.Cheng
  */
-public class TestClass implements Test{
+public class TestClass{
 
     private static int count = 0;
 
@@ -27,7 +24,9 @@ public class TestClass implements Test{
 //            n = n / 10;
 //        }
 //        System.out.println("cnt=" + cnt);
-        System.out.println("中文測試");
+        Test t = new Test();
+        t.setTableName("T5555");
+        System.out.println(t.getTableNum());
 //        for (int i = 0; i < arr.length; i++) {
 //            System.out.print(arr[i]);
 //        }
@@ -39,8 +38,5 @@ public class TestClass implements Test{
         return true;
     }
 
-    @Override
-    public void getName() {
-        System.out.println(this.getClass().getName());
-    }
+
 }

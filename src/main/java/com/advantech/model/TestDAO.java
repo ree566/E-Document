@@ -46,6 +46,10 @@ public class TestDAO extends BasicDAO {
         return queryDeskTable("SELECT * FROM LS_Table");
     }
 
+    public List<Desk> getDesk(String sitefloor) {
+        return queryDeskTable("SELECT * FROM LS_Table where sitefloor = ?", sitefloor);
+    }
+
     public boolean insertTestPeople(int tableNo, String userNo) {
         return updateTestTable("INSERT INTO LS_TEST(id,userid) VALUES (?,?)", tableNo, userNo);
     }

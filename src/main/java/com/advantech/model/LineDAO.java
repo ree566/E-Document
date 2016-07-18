@@ -34,6 +34,10 @@ public class LineDAO extends BasicDAO {
         return queryLineTable("SELECT * FROM LS_Line");
     }
 
+    public List<Line> getLine(String sitefloor) {
+        return queryLineTable("SELECT * FROM LS_Line where sitefloor = ?", sitefloor);
+    }
+
     public boolean openSingleLine(int lineNo) {
         return updateLineStatus(LINE_OPEN_SIGN, lineNo);
     }

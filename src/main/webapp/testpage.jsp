@@ -9,10 +9,19 @@
 <jsp:useBean id="testDAO" class="com.advantech.model.TestDAO" scope="application" />
 <!DOCTYPE html>
 <html>
+    <c:set var="userSitefloor" value="${param.sitefloor}" />
+    <c:if test="${(userSitefloor == null) || (userSitefloor == '')}">
+        <c:redirect url="/" />
+    </c:if>
     <head> 
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>${initParam.pageTitle}</title>
         <style>
+            #titleAlert{
+                background-color: green;
+                color: white;
+                text-align: center;
+            }
             .Div0{
                 float:left; width:100%; 
                 border-bottom-style:dotted;
@@ -76,16 +85,19 @@
                 //Get values from cookie and setting html objects.
                 if (tablecookie != null) {
                     $objgroup.attr("disabled", true);
-                    $("#table").children().eq(tablecookie).attr("selected", true);
+                    $("#table").val(tablecookie);
                     $("#end").removeAttr("disabled");
+                    var userSitefloorSelect = $.cookie("userSitefloorSelect");
+                    if (userSitefloorSelect != null && userSitefloorSelect != $("#userSitefloorSelect").val()) {
+                        $(":input,select").not("#redirectBtn").attr("disabled", "disabled");
+                        $("#servermsg").html("您已經登入其他樓層");
+                    }
                 } else {
                     $objgroup.removeAttr("disabled");
                     $("#end").attr("disabled", true);
                 }
                 $objgroup = null;
-                if ($("#tableuno").length == 0 && $.cookie('table')) {
-                    $("#clearcookies").removeAttr("disabled");
-                }
+
 
                 //Checking if user is login the babpage.jsp or not.(Get the cookie generate by babpage.jsp)
                 //If not, login and check the user input values.
@@ -110,6 +122,10 @@
                                 if (response == "success") {
                                     loaddiv();
                                 }
+                                var date = new Date();
+                                var minutes = 12 * 60;
+                                date.setTime(date.getTime() + (minutes * 60 * 1000));
+                                $.cookie("userSitefloorSelect", $("#userSitefloorSelect").val(), {expires: date});
                             },
                             error: function () {
                                 $("#servermsg").html("error");
@@ -199,6 +215,13 @@
         </script>
     </head>
     <body>
+        <input id="userSitefloorSelect" type="hidden" value="${userSitefloor}">
+        <div id="titleAlert">
+            <c:out value="您所選擇的樓層是: ${userSitefloor}" />
+            <a href="index.jsp">
+                <button id="redirectBtn">不是我的樓層?</button>
+            </a>
+        </div>
         <jsp:include page="head.jsp" />
         <c:forEach items="${cookie}" var="currentCookie">  
             <c:if test="${currentCookie.value.name eq 'user_number'}">
@@ -213,7 +236,7 @@
                 <input type="text" placeholder="刷入工號" id="user_number" ${key == null ?"":"disabled"} value="${key == null ?"":key}">
                 <select id="table" ${key == null ?"":"disabled"} value="${tb == null ?"":tb}">
                     <option value="-1">請選擇桌次</option>
-                    <c:forEach var="tab" items="${testDAO.desk}">
+                    <c:forEach var="tab" items="${testDAO.getDesk(userSitefloor)}">
                         <option value="${tab.id}">${tab.name}</option>
                     </c:forEach>
                 </select>

@@ -246,7 +246,8 @@ public class DataTransformer {
                 for (Iterator it = tables.iterator(); it.hasNext();) {
                     Test ti = (Test) it.next();
                     if (ti.getUserid().trim().equals(no)) {
-                        int tableid = ti.getId();
+                        int tableid = ti.getTableNum();
+                        
                         JSONObject fitUser = new JSONObject();
                         fitUser.put("name", name)
                                 .put("number", no)
@@ -255,7 +256,7 @@ public class DataTransformer {
                                 .put("PRODUCTIVITY", PRODUCTIVITY);
                         if (PRODUCTIVITY < TEST_STANDARD) {
                             fitUser.put("isalarm", ALARM_SIGN);
-                            PEOPLE_MATCH.put("T" + tableid, ALARM_SIGN);
+                            PEOPLE_MATCH.put(tableid, ALARM_SIGN);
                             isSomeoneUnderStandard = true;
                         } else {
                             fitUser.put("isalarm", NORMAL_SIGN);
@@ -291,7 +292,7 @@ public class DataTransformer {
             JSONObject abnormalUser = new JSONObject();
             abnormalUser.put("name", "n/a")
                     .put("number", ti.getUserid())
-                    .put("table", ti.getId())
+                    .put("table", ti.getTableNum())
                     .put("PRODUCTIVITY", "0.0")
                     .put("isalarm", TEST_USER_NOT_IN_XML_SIGN);
             j.put(abnormalUser);
@@ -299,6 +300,7 @@ public class DataTransformer {
         return j;
     }
 
+    //測試亮燈method
     private JSONArray putTestTable(JSONArray j) {
         PEOPLE_MATCH.put("T" + 24, ALARM_SIGN);
         return j.put(
@@ -311,6 +313,7 @@ public class DataTransformer {
         );
     }
 
+    //組測亮燈邏輯type 1
     private boolean matchingBABData() throws JSONException {
         boolean isSomeBabUnderStandard = false;
         List<BAB> babGroups = babService.getBABIdForCaculate();
@@ -357,6 +360,7 @@ public class DataTransformer {
         return isSomeBabUnderStandard;
     }
 
+    //組測亮燈邏輯type 2(目前使用)
     private boolean matchingBABData1() throws Exception {
         boolean isSomeBabUnderStandard = false;
         List<BAB> babGroups = babService.getBABIdForCaculate();

@@ -15,6 +15,7 @@ public class Test implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private int id;
+    private String tableName;
     private String userid;
     private int sitefloor;
     private String updatetime;
@@ -34,6 +35,14 @@ public class Test implements Serializable {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getTableName() {
+        return tableName;
+    }
+
+    public void setTableName(String tableName) {
+        this.tableName = tableName;
     }
 
     public String getUserid() {
@@ -58,6 +67,10 @@ public class Test implements Serializable {
 
     public void setUpdatetime(String updatetime) {
         this.updatetime = updatetime;
+    }
+    
+    public int getTableNum(){
+        return Integer.parseInt(this.tableName.replaceAll("\\D+",""));
     }
 
 }
