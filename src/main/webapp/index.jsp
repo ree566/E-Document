@@ -6,8 +6,8 @@
     http://encosia.com/3-reasons-why-you-should-let-google-host-jquery-for-you/?ref=sidebar_most_popular
 --%>
 
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html>
     <head>
@@ -100,11 +100,17 @@
         <script src="js/jquery.blockUI.js"></script>
         <script src="js/jquery.blockUI.Default.js"></script>
         <script src="js/jquery.cookie.js"></script>
+        <script src="js/cookie.check.js"></script>
         <script>
 
             $(document).ready(function () {
 
                 $("input").addClass("form-control");
+
+                if (!are_cookies_enabled()) {
+                    alert(cookie_disabled_message);
+                    $(":input,select").attr("disabled", true);
+                }
 
                 //Quartz standby and resume.(Please remove when sensor testing is finish)
                 $("#title").dblclick(function () {

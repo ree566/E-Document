@@ -1,0 +1,327 @@
+############################## tomcat ###############################
+<Source Packages>
+---------------------------------------------------------------------
+>com.advantech.endpoint 
+
+系統的polling方式不是由網頁去對資料庫polling，而是由系統統一一個class對資料庫polling，
+再利用HTML5的websocket去brocast給網頁端
+
+>>SensorEndpoint.java
+負責利用Polling.class把感應器目前有統一到的資料丟到前端(/BAB以及/SensorAdjust頁面感應器狀態的來源)
+
+>>SensorEndpoint1.java
+負責把DataTransformer處理完的資料丟回去給前端(需要得知目前資料狀態的頁面都有使用)
+
+以上系統主動丟資料的動作只有當"至少"一個使用者開啟網頁時會去polling
+作用時間:周一至周五早上八點到晚上六點
+
+---------------------------------------------------------------------
+>com.advantech.helper
+
+>>PropertiesReader.java
+負責把source/main/resources/options.properties裏頭的設定檔讀出給其他class使用
+如果要加其他設定到設定檔請在此寫額外參數去判讀
+
+>>TxtWriter.java
+負責把結果輸出到txt裏頭，只會依照map丟出key value格式
+負責把txt初始化，丟給webaccess關燈的動作才會關燈(0關/1開)
+
+>>WebServiceRV.java
+讀取測試看板的xml，以json格式回報
+如果看板輸入參數有變化請在此修改(設定變數寫死在class中)
+如果xml裏頭的子Tag名稱不是"diffgr:diffgram" > "root" > "QryData" 請修改function getKanbantestUsers()
+
+---------------------------------------------------------------------
+>com.advantech.model
+
+與資料庫溝通class
+>>BABDAO.java
+若組包裝結果不儲存到額外資料庫(系統預設會寫到Line_Balancing資料庫的Line_Balancing_Main中)
+請把對此資料庫動作的相關程式碼都註解掉即可
+"getDBUtilConn(SQL.Way_Chien_LineBalcing)" 到 "DbUtils.commitAndCloseQuietly(conn2)" 中的程式碼;
+
+---------------------------------------------------------------------
+>com.advantech.quartzJob
+
+>>BABDataSaver.java
+負責把使用者忘記關閉的工單關閉
+作用時間:周一至周五晚上十點
+
+>>CheckSensor.java
+負責當資料庫"當天"有使用者刷入資料，感應器卻持續empty時寄信用
+
+作用時間:周一至周五早上十一點和下午兩點
+
+>>DailyJobWorker.java
+抓取資料庫資料並把結果透過TxtWriter輸出到txt用
+
+作用時間:周一至周五早上八點到下午六點
+
+>>DataBaseInit.java
+負責把LS_TEST資料表(測試人員要刷入桌號的table)清空，以及組包裝線別改isused為0(離線)
+因為組包裝人員第一站卡只有第一個人能刷入工單，isused為1能防止重複的第一站刷入
+
+>>※DataTransformer.java※
+核心class
+
+負責抓看板數據拿來跟資料庫中LS_TEST測試人員名稱桌號做比對，link第幾桌，名字是誰，及格or不及格
+不及格以txt輸出1通知webaccess要亮燈了
+
+負責抓目前各線別"當天最早"投入的工單(直接看資料庫LS_BAB_Id_List檢視表)
+以資料表id去執行資料庫預存程序LS_lastGroupStatus看該筆工單"最後一組"各站時間
+再利用LineBalanceService.caculateLineBalance看目前平衡率使否達到標準
+(標準訂在option.properties的參數balanceStandard)
+
+若要修改亮燈邏輯請改其中matchingTestData(測試)和matchingBABData1(組包裝) function
+最後請分別將計算完的數值存到static變數
+(testJsonObj, PEOPLE_MATCH, PEOPLE_NOT_MATCH, babJsonObj)中，網頁端才能polling到資訊
+
+---------------------------------------------------------------------
+>com.advantech.service
+
+>>BABService.java
+組包裝的操作邏輯請改此(※重要:若工單機種為手動輸入請把英文全數轉為大寫，以免無法比對前後資訊)
+
+>>FBNService.java
+FBN資料表的操作邏輯請改此(Sensor資料表查看用)
+
+>>LineBalanceService.java
+對資料庫LineBalancing資料庫底下Line_Balancing_Main的操作邏輯，以及線平衡計算公式請改此
+
+>>LineService.java
+組包裝的線別操作邏輯請改此
+
+>>PrepareScheduleService.java
+組包裝工單帶出機種使用，需要TWM3底下prepare_Schedule資料表
+若不使用請改網頁babpage.jsp把工單帶出機種改成手動輸入
+
+>>TestService.java
+測試的操作邏輯請改此
+
+---------------------------------------------------------------------
+>com.advantech.servlet
+
+提供資料給web用
+此系統所有web都是透過jquery ajax和servlet做連接溝通
+
+---------------------------------------------------------------------
+>com.advantech.test
+
+測試資料用，無作用可刪除
+
+---------------------------------------------------------------------
+<Other Sources>
+保留設定檔用
+>log4j2.xml log設定檔用
+>logback.xml log設定檔用
+>option.properties ※系統設定參數用
+>quartz.properties quartz設定用
+>quartz_data.xml quartz設定用
+>Service.wsdl 測試看板用
+
+---------------------------------------------------------------------
+<Project Files>
+>pom.xml 需要引入外部jar檔請找他
+
+---------------------------------------------------------------------
+<Web Pages>
+> META-INF > ※context.xml
+資料庫設定請找他
+
+> WEB-INF > ※web.xml
+網站設定請找他(網頁如何link...等等)
+
+---------------------------------------------------------------------
+<網頁.jsp部分>
+>about.jsp --後台About
+>admin-header.jsp --後台header
+>babDetail.jsp --後台BabDetail
+>babDetailInfo.jsp --後台BabDetailInfo
+>babTotal.jsp --後台BabTotal
+>map.jsp --目前樓層組包側狀態，若要改map和圖形位置請改此
+>sensor.jsp --顯示各感應器目前最後狀態
+>sensorAdjust.jsp --同上
+>sysInfo.jsp --後台首頁 
+>testTotal.jsp --測試線別狀態
+>totalMap.jsp --後台TotalMap
+
+>babpage.jsp --組包裝線別登入窗口
+>testpage.jsp --測試線別登入窗口
+>footer.jsp --頁尾
+>head.jsp --頁首
+>index.jsp --真正網頁的首頁
+
+網頁採cookie記錄使用者資訊
+組包裝線別第一站登入時會把資料庫LS_Line的狀態isused改為1使用中(回上一步則改回0)，
+當登入時電腦就儲存著cookie，以便維持唯一一個第一站電腦去做工單投入動作
+後面站別則靠cookie做登入登出(測試資料中，沒有卡唯一性)
+中間站別按結束通知系統已經做完了，之後"線別最後一站"的儲存按鈕按下，才能正確完成資料儲存動作
+
+測試則透過testpage.jsp窗口，儲存使用者在第幾桌之後，系統透過webservice去link使用者的狀態，丟出串起來的資訊給前端網頁
+
+---------------------------------------------------------------------
+############################# database ##############################
+<table>
+>BwDiscreteTable
+感應器輸入原始table
+
+>>trigger dataShiftTrig
+備份資料到FBN table做資料處理
+
+>※FBN
+>>restTimeBlockTrig
+把休息時間的資料全部在寫入之前block掉(休息時間不同請改此)
+
+>>Sensor_trig
+把得到的每一筆資料透過storeProcedure再新增之後去做資料處理
+
+>※LS_BAB
+儲存組包裝頁面刷入資訊用(isused欄位: -1沒有儲存資料/ null使用中 /1已經儲存)
+
+>LS_BAB_History
+java靠此table判斷前端網頁是否有做"結束"動作
+
+>LS_BABTimeHistoryDetail
+使用者按下儲存動作時java會判斷資料有沒有達到可用數，決定是否儲存到此
+
+>LS_BalanceHistory
+同上
+
+>※LS_Line
+組包裝線別table，要改名或新增請改此
+
+>LS_LineBalancingComparisonHistory
+儲存各套工單總數以及未達標準用
+
+>LS_Table
+儲存測試線別桌號和樓層
+
+>LS_TagNameComparison
+儲存原始感應器名稱和對照感應器名稱，感應器對照有異動請改此
+
+>LS_Test
+儲存測試人員工號以及對應桌號
+
+---------------------------------------------------------------------
+<view>
+
+>FBNView 
+資料庫所有FBN相關資訊都是透過此view去檢視，TagName透過此view已經轉換成類似L1-S-1格式
+
+>LS_BAB_ID_List
+檢視各線別最早投入工單
+
+>LS_BAB_Sort
+"當日"投入系統工單
+
+>LS_FBN_Sort
+"當日"感應器數據
+
+---------------------------------------------------------------------
+<store procedure>
+
+>closedBABInfoDetail(@startDate datetime,@endDate datetime)
+抓取工單資訊用
+
+>getBABByLineType(@lineType varchar(10))
+同上
+
+>getBABInTime(@model_name varchar(50), @startDate datetime, @endDate datetime)
+同上
+
+>LS_babFinalStationSensorStatus(@BABid int)
+得到"該工單"各站感應器最後狀態
+
+>※LS_closeBABDirectly(@BABid int)
+直接關閉工單，不管是否有可用資料(LS_BAB狀態會改為-1)
+
+>※LS_closeBABWithSaving(@BABid int)
+關閉工單並透過sp(LS_saveBABTimeDetail, LS_saveBalanceToHistory)
+把能用資料存到LS_BABTimeHistoryDetail、LS_BalanceHistory(LS_BAB狀態會改為1)
+
+※※LS_closeBABDirectly與LS_closeBABWithSaving只抓當日資料(因透過LS_FBN_Sort這個view)
+
+>LS_FBNINS(@TagName varchar(6), @筆數 int, @是否隨機或規律 int)
+插入隨機資料
+
+>※LS_GroupSensor(@id int, @TagName varchar(10), @LogValue int, @LogTime time, @LogMill int)
+把FBN資料表丟進來的資訊去做判斷，並update FBN資料表後的groupid,isused,diff,BABid欄位
+
+isused == null --後方sensor尚未參考，若有參考會被寫入個數字1
+isused == 1 --後方sensor已經參考
+isused == 2 --通知後方sensor前方感應器已經結束，組別歸零
+
+第一站判斷LS_BAB table是否有工單刷入(依照自己的TagName連兩碼去抓對應線別投入的工單)
+有的話開始分groupid遞增
+
+後面2~4站判斷前一站是否有被分配到組別，有的話開始動作
+
+配組邏輯如下(1是感應器擋住，0反之)
+(圖若跑掉請用notepad++開啟)
+
+(自動分組)		(查看是否有組別)   	(查看是否有組別)
+		      ┌──────────┐       ┌──────────┐
+┌──────┐1 <─┐   │   ┌──────┐1<─┐    │   ┌──────┐1<─┐  
+│    S1    │     │  │   │  S2      │    │    │  │  S3       │   │
+└──────┘0  ─┘   │   └──────┘0 ─┘    │   └──────┘0 ─┘
+	     ↑	      │                ↑         │
+	     └─────┘               └─────┘
+※此sp只處理當日資料		
+				
+>LS_lastGroupStatus(@BABid int)
+得到特定組別最後感應器狀態(資料配組要達到使用者輸入人數才會顯示)
+
+>LS_saveBABTimeDetail
+儲存資料到對應table
+
+>LS_saveBalanceToHistory
+同上
+
+>LS_Sensor_END(@sensorid int, @BABid int)
+通知資料庫使用者已經結束，組別可歸零
+
+>LS_SensorDiffChart(@BABid)
+前端產出圖表用
+
+---------------------------------------------------------------------
+<函數-資料表函式>
+
+---------------------------------------------------------------------
+<函數-純量值函式>
+
+>countSensorDiff(@startTime time, @endTime time)
+依照前後時間算出時間差距(秒)，假如有橫跨休息時間需要把休息時間去掉
+(若休息時間不同請改此)
+
+---------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

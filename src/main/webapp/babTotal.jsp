@@ -5,6 +5,8 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<jsp:useBean id="cDAO" class="com.advantech.model.CountermeasureDAO" scope="application" />
 <!DOCTYPE html>
 <html>
     <head>
@@ -12,6 +14,7 @@
         <title>${initParam.pageTitle}</title>
         <link rel="stylesheet" href="css/jquery.dataTables.min.css">
         <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+        <link rel="stylesheet" href="//cdn.datatables.net/buttons/1.2.1/css/buttons.dataTables.min.css">
         <style>
             body{
                 font-size: 16px;
@@ -52,16 +55,6 @@
             .detail{
                 height: 650px;
             }
-            /*            #final_time {
-                            opacity: 0.5;
-                            position: fixed;
-                            right: 10px;
-                            bottom: 10px;    
-                            padding: 5px 5px;    
-                            font-size: 14px;
-                            background: #777;
-                            color: white;
-                        }*/
             #balanceCount{
                 border:2px black solid;
                 width:50%;
@@ -69,6 +62,14 @@
             .balance{
                 text-align: center;
                 border: 1px black solid;
+            }
+            textArea{
+                width: 100%;
+                height: 300px;
+                resize: none;
+            }
+            .modal-content table .lab{
+                width: 120px;
             }
         </style>
         <script src="//www.gstatic.com/charts/loader.js"></script>
@@ -80,6 +81,13 @@
         <script src="js/moment.js"></script>
         <script src="js/jquery.cookie.js"></script>
         <script src="//cdn.jsdelivr.net/alasql/0.2/alasql.min.js"></script> 
+        <script src="//cdn.datatables.net/buttons/1.2.1/js/dataTables.buttons.min.js"></script>
+        <script src="//cdn.datatables.net/buttons/1.2.1/js/buttons.flash.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js"></script>
+        <script src="//cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/pdfmake.min.js"></script>
+        <script src="//cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/vfs_fonts.js"></script>
+        <script src="//cdn.datatables.net/buttons/1.2.1/js/buttons.html5.min.js"></script>
+        <script src="//cdn.datatables.net/buttons/1.2.1/js/buttons.print.min.js"></script>
         <script>
             var round_digit = 2;
             function getBAB() {
@@ -170,6 +178,10 @@
 
             function getDetail(tableId, id, isused) {
                 $(tableId).DataTable({
+                    dom: 'Bfrtip',
+                    buttons: [
+                        'copy', 'csv', 'excel', 'pdf', 'print'
+                    ],
                     "ajax": {
                         "url": "LineBalanceDetail",
                         "type": "POST",
@@ -301,7 +313,6 @@
                     }
                 });
             }
-            ;
 
 //http://canvasjs.com/docs/charts/how-to/hide-unhide-data-series-chart-legend-click/
             function generateChart(d, chartId) {
@@ -317,7 +328,9 @@
                                 valueFormatString: "0 sec",
                                 interlacedColor: "#F5F5F5",
                                 gridColor: "#D7D7D7",
-                                tickColor: "#D7D7D7"
+                                tickColor: "#D7D7D7",
+                                minimum: 0,
+                                maximum: 500
                             },
                             axisX: {
                                 title: "台數",
@@ -377,10 +390,11 @@
                         {data: "id", visible: false},
                         {data: "PO"},
                         {data: "model_name"},
-                        {data: "line"},
+                        {data: "lineName"},
                         {data: "people"},
                         {data: "isused"},
-                        {data: "btime"}
+                        {data: "btime"},
+                        {}
                     ],
                     "columnDefs": [
                         {
@@ -403,6 +417,20 @@
                                         break;
                                 }
                             }
+                        },
+                        {
+                            "type": "html",
+                            "targets": 6,
+                            'render': function (data, type, row) {
+                                return formatDate(data);
+                            }
+                        },
+                        {
+                            "type": "html",
+                            "targets": 7,
+                            'render': function (data, type, row) {
+                                return "<input type=\"button\" class=\"btn " + (row.cm_id == null ? "btn-danger" : "btn-info") + " btn-sm\" data-toggle=\"modal\" data-target=\"#myModal\" " + (row.isused == -1 ? "disabled" : "") + " value=\"檢視詳細\" />";
+                            }
                         }
                     ],
                     "oLanguage": {
@@ -421,7 +449,7 @@
             function getPercent(val) {
                 return roundDecimal((val * 100), round_digit) + '%';
             }
-            
+
             function roundDecimal(val, precision) {
                 var size = Math.pow(10, precision);
                 return Math.round(val * size) / size;
@@ -570,8 +598,54 @@
                 });
             }
 
+            function getContermeasure(BABid) {
+                $.ajax({
+                    url: "CountermeasureServlet",
+                    data: {
+                        BABid: BABid,
+                        action: "select"
+                    },
+                    type: "POST",
+                    dataType: 'json',
+                    success: function (msg) {
+                        var jsonData = msg.data[0];
+                        var isDataAvailable = jsonData != null;
+                        $(".modal-body #errorReason").html(!isDataAvailable ? "N/A" : jsonData.reason);
+                        $(".modal-body #errorCon").html(!isDataAvailable ? "N/A" : jsonData.solution.replace(/(?:\r\n|\r|\n)/g, '<br />'));
+                        $(".modal-body #responseUser").html(!isDataAvailable ? "N/A" : jsonData.editor);
+                        $("#errorCode>select").val(!isDataAvailable ? -1 : jsonData.errorCode_id).attr("disabled", isDataAvailable);
+                        $("#myModal").unblock();
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        alert(xhr.status);
+                        alert(thrownError);
+                    }
+                });
+            }
+
+            function counterMeasureModeUndo() {
+                $("#saveCountermeasure, #undoContent").hide();
+                $("#editCountermeasure").show();
+                $("#errorCode>select").attr("disabled", true);
+            }
+
+            function counterMeasureModeEdit() {
+                $("#saveCountermeasure, #undoContent").show();
+                $("#editCountermeasure").hide();
+                $("#errorCode>select").attr("disabled", false);
+            }
+
+            function formatDate(dateString) {
+                return dateString.substring(0, 16);
+            }
+
+            function tableAjaxReload(tableObject) {
+                tableObject.ajax.reload();
+            }
+
             $(document).ready(function () {
 //                $("#final_time").text(new Date());
+
                 var interval = null;
                 var countdownnumber = 30 * 60;
                 var diff = 12;
@@ -645,6 +719,7 @@
                 });
 
                 var type;
+
                 $("body").on('dblclick', '#babHistory tbody tr', function () {
                     type = "type2";
                     var selectData = historyTable.row(this).data();
@@ -690,15 +765,98 @@
                     getBABCompare(null, modelName, lineType, type);
                 });
 
-                $("#clearCookie").click(function () {
-                    var cookies = $.cookie();
-                    for (var cookie in cookies) {
-                        $.removeCookie(cookie);
+
+                //edit counterMeasure 
+
+                var editId;
+                $("body").on('click', '#babHistory input[type="button"]', function () {
+                    $("#myModal").block({message: "loading..."});
+                    var selectData = historyTable.row($(this).parents('tr')).data();
+                    editId = selectData.id;
+                    $("#myModal #titleMessage").html(
+                            "號碼: " + editId +
+                            " | 工單: " + selectData.PO +
+                            " | 機種: " + selectData.model_name +
+                            " | 線別: " + selectData.lineName +
+                            " | 時間: " + selectData.btime
+                            );
+                    getContermeasure(selectData.id);
+                });
+
+                $('#myModal').on('shown.bs.modal', function () {
+                    $(this).find('.modal-dialog').css({width: '90%',
+                        height: 'auto',
+                        'max-height': '100%'});
+                });
+
+                $("#saveCountermeasure, #undoContent").hide();
+
+                var originErrorReason;
+                var originErrorCon;
+                var originResponseUser;
+
+                $("#editCountermeasure").click(function () {
+                    counterMeasureModeEdit();
+
+                    originErrorReason = $("#errorReason").html();
+                    originErrorCon = $("#errorCon").html().replace(/<br *\/?>/gi, '\n');
+                    originResponseUser = $("#responseUser").html();
+
+                    $("#errorReason").html("<input type='text' id='errorReasonText' maxlength='100' value='" + (originErrorReason == "N/A" ? "" : originErrorReason) + "'>");
+                    $("#errorCon").html("<textarea id='errorConText' maxlength='500'>" + (originErrorCon == "N/A" ? "" : originErrorCon) + "</textarea>");
+                    $("#responseUser").html("<input type='text' id='responseUserText' maxlength='30' value='" + (originResponseUser == "N/A" ? "" : originResponseUser) + "'>");
+
+                    console.log("editing");
+                });
+
+                $("#undoContent").click(function () {
+                    if (!confirm("確定捨棄修改?")) {
+                        return false;
+                    }
+                    counterMeasureModeUndo();
+
+                    $("#errorReason").html(originErrorReason);
+                    $("#errorCon").html(originErrorCon.replace(/(?:\r\n|\r|\n)/g, '<br />'));
+                    $("#responseUser").html(originResponseUser);
+                });
+
+                $("#saveCountermeasure").click(function () {
+                    if (confirm("確定修改內容?")) {
+                        $.ajax({
+                            url: "CountermeasureServlet",
+                            data: {
+                                BABid: editId,
+                                reason: $("#errorReasonText").val(),
+                                errorCode_id: $("#errorCode>select").val(),
+                                solution: $("#errorConText").val(),
+                                editor: $("#responseUserText").val(),
+                                action: "update"
+                            },
+                            type: "POST",
+                            dataType: 'json',
+                            success: function (msg) {
+                                counterMeasureModeUndo();
+                                getContermeasure(editId);
+                                tableAjaxReload(historyTable);
+                            },
+                            error: function (xhr, ajaxOptions, thrownError) {
+                                alert(xhr.status);
+                                alert(thrownError);
+                            }
+                        });
                     }
                 });
 
-                $("body").on("click", "input[type='button']", function () {
-//                    console.log('click');
+                $('#myModal').on('hidden.bs.modal', function () {
+                    counterMeasureModeUndo();
+                });
+
+                //
+
+                $("#lineType2").val("ASSY");
+                $("#searchAvailableBAB").trigger("click");
+
+                $("body").on("click", "#searchAvailableBAB, #send", function () {
                     block();
                 });
 
@@ -735,6 +893,60 @@
             <div id="balanceCount">
             </div>
         </div>
+
+        <!-- Modal -->
+        <div id="myModal" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 id="titleMessage" class="modal-title"></h4>
+                    </div>
+                    <div class="modal-body">
+                        <div>
+                            <table id="countermeasureTable" cellspacing="10" class="table table-bordered">
+                                <tr>
+                                    <td class="lab">異常代碼</td>
+                                    <td id="errorCode">
+                                        <select>
+                                            <option value="-1">請選擇</option>
+                                            <c:forEach var="errorCode" items="${cDAO.errorCode}">
+                                                <option value="${errorCode[0]}">${errorCode[1]}</option>
+                                            </c:forEach>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="lab">異常原因</td>
+                                    <td id="errorReason">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="lab">對策</td>
+                                    <td id="errorCon">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="lab">填寫人</td>
+                                    <td id="responseUser">
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" id="editCountermeasure" class="btn btn-default" >Edit</button>
+                        <button type="button" id="saveCountermeasure" class="btn btn-default">Save</button>
+                        <button type="button" id="undoContent" class="btn btn-default">Undo</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
         <hr />
         <!----->
         <div class="wiget-ctrl form-inline">
@@ -763,6 +975,7 @@
                                     <th>人數</th>
                                     <th>紀錄flag</th>
                                     <th>投入時間</th>
+                                    <th>action</th>
                                 </tr>
                             </thead>
                         </table>

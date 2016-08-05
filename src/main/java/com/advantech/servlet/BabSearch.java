@@ -51,18 +51,18 @@ public class BabSearch extends HttpServlet {
         res.setContentType("application/json");
         PrintWriter out = res.getWriter();
         String po = req.getParameter("po");
-        String cookieLineMessage = req.getParameter("saveline");
-        String getBab = req.getParameter("po_getBAB");
+        String saveLine = req.getParameter("saveline");
+        String poGetBAB = req.getParameter("po_getBAB");
         String poSaveLine = req.getParameter("po_saveline");
         if (pChecker.checkInputVal(po)) {
-            List<PrepareSchedule> models = prepareScheduleService.getAllSchedule(po);
-            out.print(models.isEmpty() ? "data not found" : convertString(models.get(0).getModel_name()));
+            PrepareSchedule schedule = prepareScheduleService.getScheduleByPO(po);
+            out.print(schedule == null ? "data not found" : convertString(schedule.getModel_name()));
         }
-        else if (pChecker.checkInputVal(cookieLineMessage)) {
-            out.print(babService.getProcessingBABByLine(Integer.parseInt(cookieLineMessage)));
+        else if (pChecker.checkInputVal(saveLine)) {
+            out.print(babService.getProcessingBABByLine(Integer.parseInt(saveLine)));
         }
-        else if (pChecker.checkInputVals(getBab, poSaveLine)) {
-            out.print(babService.getBABInfoWithSensorState(getBab, poSaveLine));
+        else if (pChecker.checkInputVals(poGetBAB, poSaveLine)) {
+            out.print(babService.getBABInfoWithSensorState(poGetBAB, poSaveLine));
         }
     }
 

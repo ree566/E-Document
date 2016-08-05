@@ -28,6 +28,7 @@ public class PrepareScheduleDAO extends BasicDAO {
         return queryForBeanList(getConn(), PrepareSchedule.class, sql, params);
     }
 
+    //只取正負30天的工單
     public List<PrepareSchedule> getPrepareSchedule(String po) {
         return queryPrepareScheduleTable(
                 "SELECT * FROM prepare_Schedule WHERE DATEDIFF(DAY,GETDATE(),ondatetime) BETWEEN -30 AND 30 AND PO = ?",

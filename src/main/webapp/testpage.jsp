@@ -40,6 +40,7 @@
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
         <script src="js/jquery.cookie.js"></script>
         <script src="js/jquery.blockUI.js"></script>
+        <script src="js/cookie.check.js"></script>
         <script>
             function block() {
                 $.blockUI({
@@ -68,6 +69,11 @@
                 $(document).ajaxSuccess(function () {
                     $.unblockUI();
                 });
+
+                if (!are_cookies_enabled()) {
+                    alert(cookie_disabled_message);
+                    return;
+                }
 
                 getTestInfo();
 

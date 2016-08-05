@@ -55,6 +55,7 @@
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
         <script src="js/jquery.cookie.js"></script>
         <script src="js/jquery.blockUI.js"></script>
+        <script src="js/cookie.check.js"></script>
         <!--<script src="js/babpage.js"></script>-->
         <script>
             function block() {
@@ -83,6 +84,11 @@
                 $(document).ajaxSuccess(function () {
                     $.unblockUI();//Unblock the ajax when success
                 });
+
+                if (!are_cookies_enabled()) {
+                    alert(cookie_disabled_message);
+                    return;
+                }
 
                 var manuallyModelNameInput = false;
 
@@ -114,7 +120,7 @@
                         var userSitefloorSelect = $obj.userSitefloorSelect;
                         var pageSitefloor = $("#userSitefloorSelect").val();
                         if (userSitefloorSelect != null && userSitefloorSelect != pageSitefloor) {
-                            $(":input,select").not("#redirectBtn").attr("disabled", "disabled");
+                            $("#step2, #step3").hide();
                             $("#servermsg").html("您已經登入其他樓層");
                         }
                         saveline = $obj.line;
@@ -213,7 +219,7 @@
                         $("#step4").show();
                     }
 
-                    $("#sensordata #div2").html("<iframe style='width:100%; height:80px' scrolling='no' src='Sensor'></iframe>");//Show the sensor time when user is inline.
+//                    $("#sensordata #div2").html("<iframe style='width:100%; height:80px' scrolling='no' src='Sensor'></iframe>");//Show the sensor time when user is inline.
 
                     $("#sensordata").slideToggle();
                 }
@@ -465,13 +471,15 @@
                         $.removeCookie(cookie);
                     }
                 }
+                
+                var STATION1_LOGIN = true, STATION1_OUT = false;
 
                 //站別1登入
                 function linelogin() {
                     //通過後台測試 回傳直
                     linevalue = $("#lineselect").val();
                     var people = $("#people").val();
-                    var flag = saveIdentit(linevalue, people, "TRUE");
+                    var flag = saveIdentit(linevalue, people, STATION1_LOGIN);
                     return flag;
                 }
 
@@ -479,7 +487,7 @@
                 function linelogout() {
                     linevalue = $("#lineselect").val();
                     if (confirm('確定離開T1?')) {
-                        var flag = saveIdentit(linevalue, 0, "FALSE");
+                        var flag = saveIdentit(linevalue, 0, STATION1_OUT);
                         $.removeCookie("servermsg");
                         return flag;
                     }
@@ -565,9 +573,9 @@
                             url: "LineLogin",
                             async: false,
                             data: {
-                                lineno: linevalue,
+                                lineNo: linevalue,
                                 people: people,
-                                Flag: FLAG
+                                action: FLAG
                             },
                             dataType: "html",
                             success: function (response) {
@@ -784,10 +792,5 @@
     </div>
 
     <jsp:include page="footer.jsp" />
-    <!--    <script>
-            $(window).load(function () {
-                $.unblockUI();
-            });
-        </script>-->
 </body>
 </html>

@@ -39,12 +39,8 @@ public class BABService {
     }
 
     public JSONObject getProcessingBABByLine(int lineNo) throws JSONException {
-        JSONObject jsonObj = null;
         List<BAB> babs = babDAO.getProcessingBABByLine(lineNo);
-        if (babs != null && !babs.isEmpty()) {
-            jsonObj = new JSONObject().put("BABData", babs);
-        }
-        return jsonObj;
+        return (babs != null && !babs.isEmpty()) ? new JSONObject().put("BABData", babs) : null;
     }
 
     public static void main(String arg0[]) {
@@ -177,12 +173,12 @@ public class BABService {
         return (isused == BAB_CLOSED_SIGN ? getClosedBABAVG(BABid) : getBABAvgs(BABid));
     }
 
-    private JSONArray getBABAvgs(int BABid){
+    private JSONArray getBABAvgs(int BABid) {
         List l = babDAO.getBABAvgs(BABid);
         return new JSONArray(l);
     }
-    
-    public List<Map> getBABAvgsInSpecGroup(int BABid){
+
+    public List<Map> getBABAvgsInSpecGroup(int BABid) {
         return babDAO.getBABAvgsInSpecGroup(BABid);
     }
 

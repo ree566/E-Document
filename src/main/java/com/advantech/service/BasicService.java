@@ -24,6 +24,7 @@ public class BasicService {
     private static TestService testService = null;
     private static PrepareScheduleService prepareScheduleService = null;
     private static TestClassService testClassService = null;
+    private static CountermeasureService countermeasureService = null;
 
     static {
         babService = new BABService();
@@ -33,6 +34,7 @@ public class BasicService {
         testService = new TestService();
         prepareScheduleService = new PrepareScheduleService();
         testClassService = new TestClassService();
+        countermeasureService = new CountermeasureService();
     }
 
     public static BABService getBabService() {
@@ -61,6 +63,10 @@ public class BasicService {
 
     public static TestClassService getTestClassService() {
         return testClassService;
+    }
+
+    public static CountermeasureService getCountermeasureService() {
+        return countermeasureService;
     }
 
 }

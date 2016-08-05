@@ -27,6 +27,7 @@ public class BAB implements Serializable {
     private String lineName;
     private String linetype;
     private String btime;
+    private Integer cm_id; // check countermeasure is exist or not
 
     //for saving line balance data, not exist in the database
     private JSONArray babavgs;
@@ -128,6 +129,14 @@ public class BAB implements Serializable {
 
     public void setBabavgs(JSONArray babavgs) {
         this.babavgs = babavgs;
+    }
+
+    public Integer getCm_id() {
+        return cm_id;
+    }
+
+    public void setCm_id(Integer cm_id) {
+        this.cm_id = cm_id;
     }
 
 }

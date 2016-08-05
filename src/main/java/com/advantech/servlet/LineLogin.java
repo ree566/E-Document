@@ -15,7 +15,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.json.JSONException;
+import org.json.JSONException;  
 import org.json.JSONObject;
 
 /**
@@ -50,8 +50,8 @@ public class LineLogin extends HttpServlet {
         res.setContentType("text/plain");
 
         PrintWriter out = res.getWriter();
-        String lineNo = req.getParameter("lineno");
-        String flag = req.getParameter("Flag");
+        String lineNo = req.getParameter("lineNo");
+        String action = req.getParameter("action");
 
         if (pChecker.checkInputVal(lineNo) && !lineNo.equals("-1")) {
             try {
@@ -60,8 +60,8 @@ public class LineLogin extends HttpServlet {
                 JSONObject lineState = lineService.getLineState(line);
 
                 String msg;
-                if (flag.equals("TRUE")) {
-                    msg = lineService.loginBAB(lineState, line);
+                if (action.equals("true")) {
+                    msg = lineService.loginBAB(line);
                     if ("success".equals(msg)) {
                         lineState.put("linestate", msg);
                         String content = lineState.toString();
@@ -69,12 +69,14 @@ public class LineLogin extends HttpServlet {
                         res.addCookie(c);
                     }
                 } else {
-                    msg = lineService.logoutBAB(lineState, line);
+                    msg = lineService.logoutBAB(line);
                 }
                 out.print(msg);
             } catch (JSONException ex) {
                 log.error(ex.toString());
             }
+        } else {
+            out.print("no data filter the check");
         }
     }
 

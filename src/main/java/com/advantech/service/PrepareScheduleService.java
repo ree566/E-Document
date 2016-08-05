@@ -22,6 +22,11 @@ public class PrepareScheduleService {
         prepareScheduleDAO = new PrepareScheduleDAO();
     }
 
+    public PrepareSchedule getScheduleByPO(String po) {
+        List l = this.getAllSchedule(po);
+        return l != null && !l.isEmpty() ? (PrepareSchedule) l.get(0) : null;
+    }
+
     public List<PrepareSchedule> getAllSchedule(String po) {
         return prepareScheduleDAO.getPrepareSchedule(po);
     }

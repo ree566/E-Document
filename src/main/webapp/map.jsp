@@ -327,7 +327,7 @@
 
             <div id="mapGroup">
                 <div class="clearWiget"></div>
-                <img src="images/totalMap.png" alt="Img Test" width="1100px" height="600px"/>
+                <img src="images/totalMap_5f.png" alt="Img Test" width="1100px" height="600px"/>
                 <div id="titleArea"></div>
                 <div id="testArea"></div>
                 <div class="clearWiget"></div>
@@ -336,6 +336,16 @@
             </div>
         </div>
         <hr />
+        
+<!--若您對 CSS 語法還不太會使用，就把 <div> 上的 position:absolute; 拿掉就好了~
+
+
+若您想要使用 CSS 語法就必須使用兩層 <div>
+
+第一層 <div> 寫上 position:relative;
+
+第二層 <div> 寫上 position:absolute;-->
+
         <jsp:include page="footer.jsp" />
     </body>
 </html>

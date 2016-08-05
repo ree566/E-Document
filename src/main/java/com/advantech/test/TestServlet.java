@@ -41,7 +41,7 @@ public class TestServlet extends HttpServlet {
             throws ServletException, IOException {
         res.setContentType("application/json");
         PrintWriter out = res.getWriter();
-        out.println(LineBalancePeopleGenerator.getBabToTestAssignNumOfPeopleStatus());
+        out.println(new Gson().toJson(BasicService.getCountermeasureService().getErrorCode()));
     }
 
     private String getSensorTime(FBN f) {

@@ -143,7 +143,7 @@
                         "columns": [
                             {data: "id", visible: false},
                             {data: "PO", width: "50px"},
-                            {data: "line", width: "50px"},
+                            {data: "lineName", width: "50px"},
                             {data: "people", width: "50px"},
                             {data: "isused", width: "50px"},
                             {data: "btime", width: "50px"}

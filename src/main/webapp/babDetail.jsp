@@ -84,6 +84,12 @@
                             'render': function (data, type, full, meta) {
                                 return getPercent(full.failPercent / full.total);
                             }
+                        },
+                        {
+                            "targets": 8,
+                            'render': function (data, type, full, meta) {
+                                return formatDate(data);
+                            }
                         }
                     ],
                     "oLanguage": {
@@ -103,6 +109,19 @@
                     },
                     "order": [[8, "desc"]]
                 });
+            }
+
+            function formatDate(dateString) {
+                return dateString.substring(0, 16);
+            }
+
+            function getPercent(val) {
+                return roundDecimal((val * 100), round_digit);
+            }
+
+            function roundDecimal(val, precision) {
+                var size = Math.pow(10, precision);
+                return Math.round(val * size) / size;
             }
 
             $(function () {
@@ -141,15 +160,6 @@
                     }
                 });
             });
-
-            function getPercent(val) {
-                return roundDecimal((val * 100), round_digit);
-            }
-
-            function roundDecimal(val, precision) {
-                var size = Math.pow(10, precision);
-                return Math.round(val * size) / size;
-            }
         </script>
     </head>
     <body>

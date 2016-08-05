@@ -64,7 +64,8 @@ $(document).ready(function () {
                         $("#lineselect,#step1next").attr("disabled", true);
                     }
                 }
-            } else {
+            }
+            else {
                 if ($obj != null) {
                     $("#lineselect").children().eq($obj.line).attr("selected", true);
                     $("#lineselect,#step1next").attr("disabled", true);
@@ -92,7 +93,7 @@ $(document).ready(function () {
                     sArr[sArr.length] = obj.PO;
                     sArr[sArr.length] = "'>";
                     sArr[sArr.length] = " | 機種 ";
-                    sArr[sArr.length] = obj.model_name;
+                    sArr[sArr.length] = obj.Model_name;
                     sArr[sArr.length] = " | 線別 ";
                     sArr[sArr.length] = obj.name;
                     sArr[sArr.length] = "<input type='hidden' class='line' value='";
@@ -138,13 +139,8 @@ $(document).ready(function () {
         var string = "#T_Button #T" + obj.step3_sel;
         $(string).addClass("btn-success").attr("disabled", true);
         var isLastStation = $(string).is(':last-child');
-
-        if (obj.step3_sel == 1) {
-            $("#step4").hide();
-        } else {
-            $("#step4 :button").attr("id", isLastStation ? "end" : "s_end").val("結束按鈕" + (isLastStation ? "(儲存線平衡紀錄)" : ""));
-            $("#step4").show();
-        }
+        $("#step4 :button").attr("id", isLastStation ? "end" : "s_end").val("結束按鈕" + isLastStation ? "(儲存線平衡紀錄)" : "");
+        $("#step4").show();
 
         $("#sensordata #div2").html("<iframe style='width:100%; height:80px' scrolling='no' src='Sensor'></iframe>");//Show the sensor time when user is inline.
 
@@ -159,9 +155,9 @@ $(document).ready(function () {
 
     //Search the ModelName by PO.(Station 1)
     $("#po").on("keyup", function () {
-        var text = $(this).val().trim().toLocaleUpperCase();
-        $(this).val(text);
-        getModel(text, "#modelname");
+      //  var text = $(this).val().trim().toLocaleUpperCase();
+      //  $(this).val(text);
+      //  getModel(text, "#modelname");
     });
 
     //從已經從站別1儲存的工單資料中尋找相關資訊(LS_BAB table)
@@ -197,7 +193,7 @@ $(document).ready(function () {
             if (line == -1) {
                 line = saveline;
             }
-            if (!confirm("工單:" + po + " 機種:" + modelname + " 人數:" + people + " \n確認無誤?")) {
+            if(!confirm("工單:" + po + " 機種:" + modelname + " 人數:" + people + " \n確認無誤?")){
                 return false;
             }
             var obj = toback(po, modelname, line, people, null, 1);
@@ -522,6 +518,7 @@ $(document).ready(function () {
 
 //儲存、結束工單
 function toback(po, modelname, line, people, id, type) {
+
     $("#servermsg").html("");
     var obj;
     $.ajax({
