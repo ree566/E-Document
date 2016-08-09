@@ -51,7 +51,7 @@ public class LineLogin extends HttpServlet {
 
         PrintWriter out = res.getWriter();
         String lineNo = req.getParameter("lineNo");
-        String action = req.getParameter("action");
+        String action = req.getParameter("action"); 
 
         if (pChecker.checkInputVal(lineNo) && !lineNo.equals("-1")) {
             try {
@@ -76,7 +76,7 @@ public class LineLogin extends HttpServlet {
                 log.error(ex.toString());
             }
         } else {
-            out.print("no data filter the check");
+            log.error("no data filter the check");
         }
     }
 

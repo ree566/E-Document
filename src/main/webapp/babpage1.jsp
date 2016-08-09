@@ -210,12 +210,14 @@
                                 return false;
                             }
                             var obj = $.parseJSON(userInfoCookie);
+                            console.log(obj);
                             firstStationLogin(obj, STATION1_OUT);
+                        } else {
+                            //Just remove the cookie.
+                            removeCookie(userInfoCookieName);
+                            removeCookie(babInfoCookieName);
+                            reload();
                         }
-//                          Else just remove the cookie.
-                        removeCookie(userInfoCookieName);
-                        removeCookie(babInfoCookieName);
-                        reload();
                     }
                 });
 
@@ -261,7 +263,7 @@
                 //操作工單登出
                 $("#babEnd").click(function () {
                     var userInfo = $.parseJSON(userInfoCookie);
-                    if (confirm("站別 " + userInfo.station + " 結束?")) {
+                    if (confirm("站別 " + userInfo.station + " 確定儲存?")) {
                         removeCookie(babInfoCookieName);
                         reload();
                     }
@@ -281,10 +283,10 @@
                     modelname: $("#modelname").val()
                 };
 
-                if (obj.modelname == "data not found" || !checkVal(obj.modelname)) {
-                    $("#serverMsg").html("找不到資料，請重新確認您的工單是否存在");
-                    return false;
-                }
+//                if (obj.modelname == "data not found" || !checkVal(obj.modelname)) {
+//                    $("#serverMsg").html("找不到資料，請重新確認您的工單是否存在");
+//                    return false;
+//                }
 
                 if ($("#station").val() == firstStation) {
                     obj.people = $("#people").val();
@@ -443,7 +445,7 @@
         <jsp:include page="head.jsp" />
         <script>
             var btn = $.fn.button.noConflict(); // reverts $.fn.button to jqueryui btn
-            $.fn.btn = btn; // assigns bootstrap button functionality to $.fn.btn
+            $.fn.btn = btn; // assigns bootstrap button functionality to $.fn.btn 
         </script>
 
         <!--Dialogs-->

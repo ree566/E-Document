@@ -18,13 +18,13 @@
                 padding: 0.5em; 
                 float: left;
                 background-color: white;
-                border:2px green dashed;
+                border:2px green double;
                 margin: 2px 2px;
                 border-radius:99em;
                 cursor: default;
             }
             img{
-                border:2px green dashed;
+                border:2px green solid;
             }
             #generateArea{
                 height: 20px;
@@ -54,21 +54,28 @@
                 background-color: white;
                 font-size: 32px;
                 float: left;
-                border:2px green dashed;
+                border:2px green solid;
                 cursor: default;
             }
             .clearWiget{
                 clear: both;
             }
             #mapGroup{
-                width: 1280px;
-                height: 1024px;
-                margin: 0px auto;
+                width: 1024px;
+                height: 768px;
+                background-image: url(images/totalMap_5f_1.png);
+                background-repeat: no-repeat;
+                -o-background-size: 100% 100%, auto;
+                -moz-background-size: 100% 100%, auto;
+                -webkit-background-size: 100% 100%, auto;
+                background-size: 100% 100%, auto;
+                background-position:center center;
+                border:5px red solid;
             }
-/*            body {
-                padding-top: 70px;
-                 Required padding for .navbar-fixed-top. Remove if using .navbar-static-top. Change if height of navigation changes. 
-            }*/
+            /*            body {
+                            padding-top: 70px;
+                             Required padding for .navbar-fixed-top. Remove if using .navbar-static-top. Change if height of navigation changes. 
+                        }*/
             #wigetCtrl{
                 margin: 0px auto;
                 width: 98%;
@@ -79,10 +86,19 @@
                 -webkit-transition: none;
                 transition: none;
             }
+            #wigetInfo{
+                border-bottom: 5px red solid;
+                border-right: 5px red solid;
+                background-color: white;
+                width: 25%; 
+                overflow: hidden;
+                padding:0 auto;
+            }
         </style>
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
         <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
         <script src="js/reconnecting-websocket.min.js"></script>
+        <script src="js/jquery.fullscreen-min.js"></script>
         <script>
 
             $(function () {
@@ -119,7 +135,7 @@
                     $("#titleArea>div")
                             .eq(i)
                             .addClass("titleWiget")
-                            .css({left: groupStatus.x, top: groupStatus.y})
+//                            .css({left: groupStatus.x, top: groupStatus.y})
                             .html(groupStatus.lineName);
                 }
 
@@ -130,8 +146,8 @@
                         $("#testArea>div")
                                 .eq(i)
                                 .append("<div></div>")
-                                .addClass("testWiget")
-                                .css({left: groupStatus.x, top: groupStatus.y});
+                                .addClass("testWiget");
+//                                .css({left: groupStatus.x, top: groupStatus.y});
                     }
                 }
 
@@ -143,10 +159,12 @@
                                 .eq(i)
                                 .append("<div></div>")
                                 .addClass("babWiget")
-                                .css({left: groupStatus.x, top: groupStatus.y})
+//                                .css({left: groupStatus.x, top: groupStatus.y})
                                 .attr("id", groupStatus.lineName);
                     }
                 }
+
+                $(".testWiget, .babWiget").after("<div class='clearWiget'></div>");
 
                 var testChildElement = $("#testArea>.testWiget div");
                 var babChildElement = $("#babArea>.babWiget div");
@@ -156,17 +174,20 @@
 
                 $("#testArea>div, #babArea>div").draggable({
                     drag: function (e) {
-                        return false;
+//                        return false;
                     }
                 });
                 $("#titleArea>div").addClass("lineTitle").draggable({
                     drag: function (e) {
-                        return false;
+//                        return false;
                     }
                 });
 
                 $('[data-toggle="tooltip"]').tooltip();
 
+                $("#fullBtn").click(function () {
+                    $("#mapGroup").fullScreen(true);
+                });
 
                 function initWiget(obj) {
                     obj.addClass("offLine").removeClass("alarm normal abnormal").removeAttr("title");
@@ -313,38 +334,41 @@
         </script>
     </head>
     <body style="cursor: auto;">
+        <button id="fullBtn">Full</button>
         <div id="wigetCtrl">
-            <div id="wigetInfo">
-                <label for="empty" style="float:left">空</label>
-                <div id="empty" class="draggable"></div>
-                <label for="normalSign" style="float:left">正常</label>
-                <div id="normalSign" class="draggable normal"></div>
-                <label for="normalSign" style="float:left">警告</label>
-                <div id="alarmSign" class="draggable alarm"></div>
-                <label for="normalSign" style="float:left">異常</label>
-                <div id="abnormalSign" class="draggable abnormal"></div>
-            </div>
-
             <div id="mapGroup">
+                <div id="wigetInfo">
+                    <label for="empty" style="float:left">空</label>
+                    <div id="empty" class="draggable"></div>
+                    <label for="normalSign" style="float:left">正常</label>
+                    <div id="normalSign" class="draggable normal"></div>
+                    <label for="normalSign" style="float:left">警告</label>
+                    <div id="alarmSign" class="draggable alarm"></div>
+                    <label for="normalSign" style="float:left">異常</label>
+                    <div id="abnormalSign" class="draggable abnormal"></div>
+                </div>
                 <div class="clearWiget"></div>
-                <img src="images/totalMap_5f.png" alt="Img Test" width="1100px" height="600px"/>
+
                 <div id="titleArea"></div>
+                <div class="clearWiget"></div>
+
                 <div id="testArea"></div>
                 <div class="clearWiget"></div>
+
                 <div id="babArea"></div>
                 <div class="clearWiget"></div>
             </div>
         </div>
         <hr />
+
+        <!--若您對 CSS 語法還不太會使用，就把 <div> 上的 position:absolute; 拿掉就好了~
         
-<!--若您對 CSS 語法還不太會使用，就把 <div> 上的 position:absolute; 拿掉就好了~
-
-
-若您想要使用 CSS 語法就必須使用兩層 <div>
-
-第一層 <div> 寫上 position:relative;
-
-第二層 <div> 寫上 position:absolute;-->
+        
+        若您想要使用 CSS 語法就必須使用兩層 <div>
+        
+        第一層 <div> 寫上 position:relative;
+        
+        第二層 <div> 寫上 position:absolute;-->
 
         <jsp:include page="footer.jsp" />
     </body>
