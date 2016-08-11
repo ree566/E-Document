@@ -285,7 +285,7 @@
                     if (!confirm("工單:" + po + " 機種:" + modelname + " 人數:" + people + " \n確認無誤?")) {
                         return false;
                     }
-                    var obj = toback(po, modelname, line, people, null, 1);
+                    var obj = toback(po, modelname, line, people, null, "insert");
                     if (obj.status == "success") {
                         $.cookie("people", people);
                         reload();
@@ -306,7 +306,7 @@
                         line = obj.line;
                     }
                     if (confirm("結束工單號碼 " + po + "?")) {
-                        var obj = toback(po, -1, line, -1, babid, 0);
+                        var obj = toback(po, -1, line, -1, babid, "delete");
                         if (obj.status == "success") {
                             $.removeCookie("po_search_result");
                             reload();
@@ -362,11 +362,11 @@
                 //第一步登入用(卡站別1只允許1個人進入)
                 $("#step1next").click(function () {
                     var line = $("#lineselect").val();
-                    var type = $("#lineselect option:selected").text().trim();
+                    var linetype = $("#lineselect option:selected").text().trim();
 //                    console.log(line);
                     if (line == -1) {
                         return false;
-                    } else if (!confirm("※確定您選擇的線別為 " + type + " ?")) {
+                    } else if (!confirm("※確定您選擇的線別為 " + linetype + " ?")) {
                         return false;
                     }
 
@@ -385,7 +385,7 @@
                                 var minutes = 12 * 60;
                                 date.setTime(date.getTime() + (minutes * 60 * 1000));
                                 $.cookie("babinfo", JSON.stringify(json), {expires: date});
-                                generateTagCookie(1, type);
+                                generateTagCookie(1, linetype);
                             }
                             reload();
                         }
@@ -619,7 +619,7 @@
             });
 
 //儲存、結束工單
-            function toback(po, modelname, line, people, id, type) {
+            function toback(po, modelname, line, people, id, action) {
                 $("#servermsg").html("");
                 var obj;
                 $.ajax({
@@ -629,10 +629,10 @@
                     data: {
                         po: po,
                         modelname: modelname,
-                        line: line,
+                        lineNo: line,
                         people: people,
                         id: id,
-                        type: type
+                        action: action
                     },
                     dataType: "json",
                     success: function (response) {

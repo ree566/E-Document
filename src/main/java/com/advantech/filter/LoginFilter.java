@@ -14,12 +14,12 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  *
  * @author Wei.Cheng
  */
-
 public class LoginFilter implements Filter {
 
     public LoginFilter() {
@@ -31,17 +31,17 @@ public class LoginFilter implements Filter {
             throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) req;
         HttpServletResponse response = (HttpServletResponse) res;
-//        HttpSession session = request.getSession(false);
-//        String loginURI = request.getContextPath() + "/Login";
-//
-//        boolean loggedIn = session != null && session.getAttribute("jobnumber") != null;
-//        boolean loginRequest = request.getRequestURI().equals(loginURI);
-//
-//        if (loggedIn || loginRequest) {
+        HttpSession session = request.getSession(false);
+        String loginURI = request.getContextPath() + "/Login";
+
+        boolean loggedIn = session != null && session.getAttribute("jobnumber") != null;
+        boolean loginRequest = request.getRequestURI().equals(loginURI);
+
+        if (loggedIn || loginRequest) {
             chain.doFilter(request, response);
-//        } else {
-//            response.sendRedirect(loginURI);
-//        }
+        } else {
+            response.sendRedirect(loginURI);
+        }
     }
 
     @Override

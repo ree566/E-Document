@@ -55,16 +55,16 @@ public class SaveBABInfo extends HttpServlet {
         PrintWriter out = res.getWriter();
         String po = req.getParameter("po");
         String modelName = req.getParameter("modelname");
-        String line = req.getParameter("line");
+        String line = req.getParameter("lineNo");
         String people = req.getParameter("people");
         String id = req.getParameter("id");
-        String type = req.getParameter("type");
+        String action = req.getParameter("action");
         JSONObject serverMsg = null;
         if (pChecker.checkInputVals(po, modelName, line, people)) {
             try {
                 int lineNo = Integer.parseInt(line);
                 serverMsg = new JSONObject();
-                if (type.equals("1")) {
+                if (action.equals("insert")) {
                     BAB bab = new BAB(po, modelName, lineNo, Integer.parseInt(people));
                     String str = babService.checkAndStartBAB(bab);
                     if ("success".equals(str)) {
@@ -74,9 +74,11 @@ public class SaveBABInfo extends HttpServlet {
                     } else {
                         serverMsg = new JSONObject().put("status", str);
                     }
-                } else {
+                } else if (action.equals("delete")) {
                     String str = babService.closeBAB(id);
                     serverMsg = new JSONObject().put("status", !"".equals(str) ? str : "錯誤");
+                } else {
+                    serverMsg = new JSONObject().put("status", "not support action");
                 }
 
             } catch (JSONException | NumberFormatException e) {

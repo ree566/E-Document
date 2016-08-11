@@ -7,7 +7,6 @@ package com.advantech.service;
 
 import com.advantech.entity.Line;
 import com.advantech.model.LineDAO;
-import com.google.gson.Gson;
 import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -20,35 +19,11 @@ import org.json.JSONObject;
 public class LineService {
 
     private final LineDAO lineDAO;
-    private final int LINE_OPEN_SIGN = 1;
-    private final int LINE_CLOSED_SIGN = 0;
 
     protected LineService() {
         lineDAO = new LineDAO();
     }
-
-    public String loginBAB(int lineNo) throws JSONException {
-        return isLineOpened(lineNo) ? "此線別尚未結束或者已使用中" : (lineDAO.openSingleLine(lineNo) ? "success" : "fail");
-    } 
-
-    public String logoutBAB(int lineNo) throws JSONException {
-        return isLineClosed(lineNo) ? "站別尚未開始，無法結束" : (lineDAO.closeSingleLine(lineNo) ? "success" : "fail");
-    }
-
-    private boolean isLineOpened(int lineNo) throws JSONException {
-        Line line = lineDAO.getLine(lineNo);
-        return line.getIsused() == LINE_OPEN_SIGN;
-    }
-
-    private boolean isLineClosed(int lineNo) throws JSONException {
-        Line line = lineDAO.getLine(lineNo);
-        return line.getIsused() == LINE_CLOSED_SIGN;
-    }
-
-    public boolean closeAllLine() {
-        return lineDAO.allLineEnd();
-    }
-
+    
     public JSONArray getLine() {
         //確認無人之後寫進資料庫 cookie作儲存 cookie失效時更改登入狀態
         //選擇線別後選擇是開始或結束人，查看該線別是否在進行中(看BAB資料表看是否該線別有感應器的1(尚未結束))
@@ -56,6 +31,10 @@ public class LineService {
         //前一天的就不用看了，只看當天
         List l = lineDAO.getLine();
         return new JSONArray(l);
+    }
+    
+     public Line getLine(int lineNo) {
+        return lineDAO.getLine(lineNo);
     }
 
     public JSONObject getLineState(int lineNo) throws JSONException {
@@ -71,8 +50,25 @@ public class LineService {
         return matchLine;
     }
 
-    public int getLINE_CLOSED_SIGN() {
-        return LINE_CLOSED_SIGN;
+    public String loginBAB(int lineNo) throws JSONException {
+        return isLineOpened(lineNo) ? "此線別尚未結束或者已使用中。" : (lineDAO.openSingleLine(lineNo) ? "success" : "fail");
+    } 
+
+    public String logoutBAB(int lineNo) throws JSONException {
+        return isLineClosed(lineNo) ? "站別尚未開始，無法結束。" : (lineDAO.closeSingleLine(lineNo) ? "success" : "fail");
+    }
+
+    private boolean isLineOpened(int lineNo) {
+        Line line = lineDAO.getLine(lineNo);
+        return line.isIsOpened();
+    }
+
+    private boolean isLineClosed(int lineNo) {
+        return !this.isLineOpened(lineNo);
+    }
+
+    public boolean closeAllLine() {
+        return lineDAO.allLineEnd();
     }
 
 }

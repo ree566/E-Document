@@ -4,12 +4,14 @@ import com.advantech.entity.AlarmAction;
 import com.advantech.model.BABDAO;
 import com.advantech.entity.BAB;
 import com.advantech.entity.BABHistory;
+import com.advantech.entity.Line;
 import com.advantech.helper.PropertiesReader;
 import com.google.gson.Gson;
 import java.math.BigDecimal;
 import java.sql.Array;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -26,25 +28,29 @@ import org.json.JSONObject;
 public class BABService {
 
     private final BABDAO babDAO;
-    private final int BAB_CLOSED_SIGN = 1;
-    private final int BAB_UNCLOSED_SIGN = 0;
     private final int BALANCE_ROUNDING_DIGIT = PropertiesReader.getInstance().getBalanceRoundingDigit();
+    
+    private final Integer BAB_NO_RECORD_SIGN = -1;
+    private final Integer BAB_UNCLOSE_SIGN = null;
+    private final Integer BAB_CLOSED_SIGN = 1;
 
     protected BABService() {
         babDAO = new BABDAO();
     }
 
-    public List<BAB> getBAB(String modelName, String dateFrom, String dateTo) {
-        return babDAO.getBAB(modelName, dateFrom, dateTo);
+    public BAB getBAB(int id) {
+        List l = babDAO.getBAB(id);
+        return !l.isEmpty() ? (BAB) l.get(0) : null;
+    }
+
+    public BAB getBAB(String modelName, String dateFrom, String dateTo) {
+        List l = babDAO.getBAB(modelName, dateFrom, dateTo);
+        return !l.isEmpty() ? (BAB) l.get(0) : null;
     }
 
     public JSONObject getProcessingBABByLine(int lineNo) throws JSONException {
         List<BAB> babs = babDAO.getProcessingBABByLine(lineNo);
         return (babs != null && !babs.isEmpty()) ? new JSONObject().put("BABData", babs) : null;
-    }
-
-    public static void main(String arg0[]) {
-        System.out.print(new BABService().getBAB("TPC-1551T-E3AE", "2016-06-01", "2016-06-22"));
     }
 
     public List<Array> getAvailableModelName() {
@@ -107,15 +113,14 @@ public class BABService {
 
     public String checkAndStartBAB(BAB bab) {
         LineService lineService = BasicService.getLineService();
-        int lineClosedSign = lineService.getLINE_CLOSED_SIGN();
 
         List<BAB> prevBAB = babDAO.getProcessingBABByPOAndLine(bab.getPO(), bab.getLine());
         if (!prevBAB.isEmpty()) {
             return "工單號碼已經存在";
         }
 
-        JSONObject lineState = lineService.getLineState(bab.getLine());
-        return lineState.getInt("isused") == lineClosedSign ? "線別尚未開啟" : (startBAB(bab) ? "success" : "error");
+        Line line = lineService.getLine(bab.getLine());
+        return line.isIsOpened() ? (startBAB(bab) ? "success" : "error") : "線別尚未開啟";
     }
 
     public boolean startBAB(BAB bab) {
@@ -169,8 +174,9 @@ public class BABService {
         return BasicService.getLineBalanceService().caculateLineBalance(getBABAvgs(babNo));
     }
 
-    public JSONArray getAvg(int BABid, int isused) {
-        return (isused == BAB_CLOSED_SIGN ? getClosedBABAVG(BABid) : getBABAvgs(BABid));
+    public JSONArray getAvg(int BABid) {
+        BAB b = this.getBAB(BABid);
+        return (b.isIsBabClosed() ? getClosedBABAVG(BABid) : getBABAvgs(BABid));
     }
 
     private JSONArray getBABAvgs(int BABid) {
@@ -182,8 +188,8 @@ public class BABService {
         return babDAO.getBABAvgsInSpecGroup(BABid);
     }
 
-    public double getAvgType2(int BABid, int closedSign) throws Exception {
-        List<Map> l = getLineBalanceDetail(BABid, (closedSign == BAB_CLOSED_SIGN ? BAB_CLOSED_SIGN : BAB_UNCLOSED_SIGN));
+    public double getAvgType2(int BABid, Integer closedSign) throws Exception {
+        List<Map> l = getLineBalanceDetail(BABid, closedSign);
         if (l.isEmpty()) {
             return 0;
         } else {
@@ -196,12 +202,12 @@ public class BABService {
         }
     }
 
-    public List<Map> getLineBalanceDetail(int BABid, int BABStatus) {
-        return BABStatus == BAB_CLOSED_SIGN ? babDAO.getClosedBalanceDetail(BABid) : babDAO.getBalaceDetail(BABid);
+    public List<Map> getLineBalanceDetail(int BABid, Integer BABStatus) {
+        return Objects.equals(BABStatus, BAB_CLOSED_SIGN) ? babDAO.getClosedBalanceDetail(BABid) : babDAO.getBalaceDetail(BABid);
     }
 
-    public List<Map> getBABTimeDetail(int BABid, int isused) {
-        return isused == BAB_CLOSED_SIGN ? babDAO.getBABTimeHistoryDetail(BABid) : babDAO.getSensorStatus(BABid);
+    public List<Map> getBABTimeDetail(int BABid, Integer isused) {
+        return Objects.equals(isused, BAB_CLOSED_SIGN) ? babDAO.getBABTimeHistoryDetail(BABid) : babDAO.getSensorStatus(BABid);
     }
 
     public JSONArray getSensorDiffChart(int BABid, int isused) {
@@ -286,13 +292,4 @@ public class BABService {
 
         return message;
     }
-
-    public int getBAB_CLOSED_SIGN() {
-        return BAB_CLOSED_SIGN;
-    }
-
-    public int getBAB_UNCLOSED_SIGN() {
-        return BAB_UNCLOSED_SIGN;
-    }
-
 }

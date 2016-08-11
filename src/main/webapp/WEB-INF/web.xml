@@ -25,7 +25,31 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
     
-    <filter>
+     <context-param>
+        <param-name>BASIC_PERMISSION</param-name>
+        <param-value>0</param-value>
+    </context-param>
+    
+    <context-param>
+        <param-name>LINE_LEADER_PERMISSION</param-name>
+        <param-value>1</param-value>
+    </context-param>
+    
+    <context-param>
+        <param-name>SYTEM_MANAGER_PERMISSION</param-name>
+        <param-value>2</param-value>
+    </context-param>
+    
+    <context-param>
+        <param-name>SYSOP_LIMIT_PERMISSION</param-name>
+        <param-value>3</param-value>
+    </context-param>
+    
+<!--    <listener>
+        <listener-class>com.advantech.listener.SessionListener</listener-class>
+    </listener>-->
+    
+<!--    <filter>
         <filter-name>LoginFilter</filter-name>
         <filter-class>com.advantech.filter.LoginFilter</filter-class>
     </filter>
@@ -44,7 +68,7 @@
         <url-pattern>/Error</url-pattern>
         <url-pattern>/login.jsp</url-pattern>
         <url-pattern>/error.jsp</url-pattern>
-    </filter-mapping>
+    </filter-mapping>-->
     
     <servlet>
         <servlet-name>bab</servlet-name>
@@ -144,7 +168,7 @@
         <servlet-name>About</servlet-name>
         <url-pattern>/About</url-pattern>  
     </servlet-mapping>
-    
+<!--    
     <servlet>
         <servlet-name>Login</servlet-name>
         <jsp-file>/login.jsp</jsp-file>
@@ -152,7 +176,7 @@
     <servlet-mapping>
         <servlet-name>Login</servlet-name>
         <url-pattern>/Login</url-pattern>  
-    </servlet-mapping>
+    </servlet-mapping>-->
     
     <servlet>
         <servlet-name>BabDetail</servlet-name>
@@ -163,7 +187,7 @@
         <url-pattern>/BabDetail</url-pattern>  
     </servlet-mapping>
  
-<!--    <servlet>
+    <servlet>
         <servlet-name>QuartzInitializer</servlet-name>
         <servlet-class>
             org.quartz.ee.servlet.QuartzInitializerServlet
@@ -181,7 +205,7 @@
             <param-value>true</param-value>
         </init-param>
         <load-on-startup>2</load-on-startup>
-    </servlet>-->
+    </servlet>
 
     <context-param>
         <param-name>quartz:shutdown-on-unload</param-name>

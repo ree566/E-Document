@@ -322,7 +322,7 @@ public class DataTransformer {
             JSONArray transBabData = new JSONArray();
             babJsonObj = new JSONObject();
             for (BAB bab : babGroups) {
-                JSONArray sensorDatas = babService.getAvg(bab.getId(), babService.getBAB_UNCLOSED_SIGN());
+                JSONArray sensorDatas = babService.getAvg(bab.getId());
                 int peoples = sensorDatas.length();
                 if (peoples == 0) {
                     continue;

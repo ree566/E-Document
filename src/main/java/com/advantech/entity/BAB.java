@@ -17,17 +17,19 @@ public class BAB implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private int id;
+    private Integer id;
     private String PO;
     private String Model_name;
-    private int line;
-    private int people;
-    private int isused;
+    private Integer line;
+    private Integer people;
+    private Integer isused;
     private String name;
     private String lineName;
     private String linetype;
     private String btime;
     private Integer cm_id; // check countermeasure is exist or not
+
+    private boolean isBabClosed;
 
     //for saving line balance data, not exist in the database
     private JSONArray babavgs;
@@ -36,18 +38,18 @@ public class BAB implements Serializable {
 
     }
 
-    public BAB(String PO, String Model_name, int line, int people) {
+    public BAB(String PO, String Model_name, Integer line, Integer people) {
         this.PO = PO;
         this.Model_name = Model_name;
         this.line = line;
         this.people = people;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -67,27 +69,27 @@ public class BAB implements Serializable {
         this.Model_name = Model_name;
     }
 
-    public int getLine() {
+    public Integer getLine() {
         return line;
     }
 
-    public void setLine(int line) {
+    public void setLine(Integer line) {
         this.line = line;
     }
 
-    public int getPeople() {
+    public Integer getPeople() {
         return people;
     }
 
-    public void setPeople(int people) {
+    public void setPeople(Integer people) {
         this.people = people;
     }
 
-    public int getIsused() {
+    public Integer getIsused() {
         return isused;
     }
 
-    public void setIsused(int isused) {
+    public void setIsused(Integer isused) {
         this.isused = isused;
     }
 
@@ -139,4 +141,9 @@ public class BAB implements Serializable {
         this.cm_id = cm_id;
     }
 
+    public boolean isIsBabClosed() {
+        return this.isused != null;
+    }
+
 }
+

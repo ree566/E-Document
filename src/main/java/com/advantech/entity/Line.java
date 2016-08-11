@@ -20,6 +20,8 @@ public class Line implements Serializable {
     private int isused;
     private String linetype;
     private int lock;
+    
+    private boolean isOpened;
 
     public Line(){
         
@@ -71,6 +73,10 @@ public class Line implements Serializable {
 
     public void setLock(int lock) {
         this.lock = lock;
+    }
+
+    public boolean isIsOpened() {
+        return this.isused == 1;
     }
 
 }
