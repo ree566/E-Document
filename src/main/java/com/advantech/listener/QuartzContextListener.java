@@ -9,6 +9,7 @@ import com.advantech.model.BasicDAO;
 import com.advantech.quartzJob.DataTransformer;
 import com.advantech.helper.ThreadLocalCleanUtil;
 import com.advantech.endpoint.SensorEndpoint;
+import com.advantech.helper.PropertiesReader;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
@@ -32,6 +33,8 @@ public class QuartzContextListener implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent sce) {
 //        BasicConfigurator.configure();
+        BasicDAO.dataSourceInit();
+        PropertiesReader.getInstance();
     }
 
     @Override

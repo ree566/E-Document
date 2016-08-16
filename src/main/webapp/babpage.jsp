@@ -81,7 +81,7 @@
                 $(document).ajaxSend(function () {
                     block();//Block the screen when ajax is sending, Prevent form submit repeatly.
                 });
-                $(document).ajaxSuccess(function () {
+                $(document).on("ajaxSuccess, ajaxComplete",function () {
                     $.unblockUI();//Unblock the ajax when success
                 });
 
@@ -439,7 +439,7 @@
 
                 if ($.cookie('table')) {
                     $(":input,select").not("#redirectBtn").attr("disabled", "disabled");
-                    $("#servermsg").html("您已經登入包裝");
+                    $("#servermsg").html("您已經登入測試");
                 }
 
                 function textBoxToUpperCase(obj) {

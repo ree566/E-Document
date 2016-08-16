@@ -11,7 +11,6 @@ import java.math.BigDecimal;
 import java.sql.Array;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -29,10 +28,12 @@ public class BABService {
 
     private final BABDAO babDAO;
     private final int BALANCE_ROUNDING_DIGIT = PropertiesReader.getInstance().getBalanceRoundingDigit();
-    
+
     private final Integer BAB_NO_RECORD_SIGN = -1;
     private final Integer BAB_UNCLOSE_SIGN = null;
     private final Integer BAB_CLOSED_SIGN = 1;
+
+    private final Integer FIRST_STATION_NUMBER = 1;
 
     protected BABService() {
         babDAO = new BABDAO();
@@ -43,9 +44,8 @@ public class BABService {
         return !l.isEmpty() ? (BAB) l.get(0) : null;
     }
 
-    public BAB getBAB(String modelName, String dateFrom, String dateTo) {
-        List l = babDAO.getBAB(modelName, dateFrom, dateTo);
-        return !l.isEmpty() ? (BAB) l.get(0) : null;
+    public List<BAB> getBAB(String modelName, String dateFrom, String dateTo) {
+        return babDAO.getBAB(modelName, dateFrom, dateTo);
     }
 
     public JSONObject getProcessingBABByLine(int lineNo) throws JSONException {
@@ -111,7 +111,7 @@ public class BABService {
         return babDAO.resetBABAlarm();
     }
 
-    public String checkAndStartBAB(BAB bab) {
+    public String checkAndStartBAB(BAB bab, String jobnumber) {
         LineService lineService = BasicService.getLineService();
 
         List<BAB> prevBAB = babDAO.getProcessingBABByPOAndLine(bab.getPO(), bab.getLine());
@@ -120,11 +120,21 @@ public class BABService {
         }
 
         Line line = lineService.getLine(bab.getLine());
-        return line.isIsOpened() ? (startBAB(bab) ? "success" : "error") : "線別尚未開啟";
+
+        if (line.isIsOpened()) {
+            if (startBAB(bab)) {
+                BAB b = this.babDAO.getLastInputBAB(bab.getLine());//get last insert id
+                return this.recordBABPeople(b.getId(), this.FIRST_STATION_NUMBER, jobnumber) ? "success" : "error";
+            } else {
+                return "發生錯誤，工單已經投入，人員資訊無法記錄";
+            }
+        } else {
+            return "線別尚未開啟";
+        }
     }
 
     public boolean startBAB(BAB bab) {
-        BAB prevBab = babDAO.getEarliestBAB(bab.getLine());
+        BAB prevBab = babDAO.getLastInputBAB(bab.getLine());
         if (prevBab != null && getBABAvgs(prevBab.getId()).length() == 0) {
             //沒有的話把上一筆工單直接結束掉
             babDAO.closeBABDirectly(prevBab);
@@ -132,8 +142,12 @@ public class BABService {
         return babDAO.insertBAB(bab);
     }
 
-    public String closeBAB(String babNo) throws Exception {
-        List<BAB> processingBab = babDAO.getProcessingBAB(Integer.parseInt(babNo));
+    public boolean recordBABPeople(int BABid, int station, String jobnumber) {
+        return babDAO.recordBABPeople(BABid, station, jobnumber);
+    }
+
+    public String closeBAB(int BABid){
+        List<BAB> processingBab = babDAO.getProcessingBAB(BABid);
         if (processingBab != null && !processingBab.isEmpty()) {
             BAB bab = processingBab.get(0);
             String message = closeBAB(bab);
@@ -170,8 +184,8 @@ public class BABService {
         return babAvgs.length() != 0 ? babDAO.stopAndSaveBab(bab) : babDAO.closeBABDirectly(bab);
     }
 
-    public double getLineBalance(int babNo) throws JSONException {
-        return BasicService.getLineBalanceService().caculateLineBalance(getBABAvgs(babNo));
+    public double getLineBalance(int BABid) throws JSONException {
+        return BasicService.getLineBalanceService().caculateLineBalance(getBABAvgs(BABid));
     }
 
     public JSONArray getAvg(int BABid) {
@@ -188,7 +202,7 @@ public class BABService {
         return babDAO.getBABAvgsInSpecGroup(BABid);
     }
 
-    public double getAvgType2(int BABid, Integer closedSign) throws Exception {
+    public double getAvgType2(int BABid, int closedSign) throws Exception {
         List<Map> l = getLineBalanceDetail(BABid, closedSign);
         if (l.isEmpty()) {
             return 0;
@@ -202,12 +216,12 @@ public class BABService {
         }
     }
 
-    public List<Map> getLineBalanceDetail(int BABid, Integer BABStatus) {
-        return Objects.equals(BABStatus, BAB_CLOSED_SIGN) ? babDAO.getClosedBalanceDetail(BABid) : babDAO.getBalaceDetail(BABid);
+    public List<Map> getLineBalanceDetail(int BABid, int isused) {
+        return isused == BAB_CLOSED_SIGN ? babDAO.getClosedBalanceDetail(BABid) : babDAO.getBalaceDetail(BABid);
     }
 
-    public List<Map> getBABTimeDetail(int BABid, Integer isused) {
-        return Objects.equals(isused, BAB_CLOSED_SIGN) ? babDAO.getBABTimeHistoryDetail(BABid) : babDAO.getSensorStatus(BABid);
+    public List<Map> getBABTimeDetail(int BABid, int isused) {
+        return isused == BAB_CLOSED_SIGN ? babDAO.getBABTimeHistoryDetail(BABid) : babDAO.getSensorStatus(BABid);
     }
 
     public JSONArray getSensorDiffChart(int BABid, int isused) {
@@ -266,14 +280,7 @@ public class BABService {
         return jsonObj;
     }
 
-    /**
-     * Check sensor & return update message
-     *
-     * @param sensorNum
-     * @param BABid
-     * @return
-     */
-    public JSONObject stopSensor(int sensorNum, int BABid) {
+    public JSONObject stopSensor(int BABid, int station) {
         boolean checkCloseFlag = false;
         boolean sensorEndFlag = false;
         JSONObject message = new JSONObject();
@@ -281,10 +288,10 @@ public class BABService {
         message.put("total", existBabStatistics);
         if (existBabStatistics) {
             //第二顆不做檢查，因為假使第一顆沒有換下一套(儲存紀錄)，後面無法做工單關閉
-            checkCloseFlag = (sensorNum == 2 ? true : babDAO.checkPrevSensorIsClosed(BABid, sensorNum - 1));
+            checkCloseFlag = (station == 2 ? true : babDAO.checkPrevSensorIsClosed(BABid, station - 1));
 
             if (checkCloseFlag) {
-                sensorEndFlag = babDAO.stopSingleSensor(sensorNum, BABid);
+                sensorEndFlag = babDAO.stopSingleSensor(station, BABid);
             }
         }
         message.put("history", checkCloseFlag);

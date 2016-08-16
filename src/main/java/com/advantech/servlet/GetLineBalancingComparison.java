@@ -69,15 +69,15 @@ public class GetLineBalancingComparison extends HttpServlet {
             
             try {
                 for (Map m : l) {
-                    Integer ctrl_isused = parseToInteger(m.get("ctrl_isused"));
-                    Integer ctrl_id = parseToInteger(m.get("ctrl_id"));
-                    Integer exp_isused = parseToInteger(m.get("exp_isused"));
-                    Integer exp_id = parseToInteger(m.get("exp_id"));
+                    int ctrl_isused = parseToInt(m.get("ctrl_isused"));
+                    int ctrl_id = parseToInt(m.get("ctrl_id"));
+                    int exp_isused = parseToInt(m.get("exp_isused"));
+                    int exp_id = parseToInt(m.get("exp_id"));
 
 //            JSONArray ctrlAvgs = babService.getAvg(ctrl_id, ctrl_isused);
 //            JSONArray expAvgs = babService.getAvg(exp_id, exp_isused);
-                    Double ctrlBalance = ctrl_id == null ? 0 : babService.getAvgType2(ctrl_id, ctrl_isused);
-                    Double expBalance = exp_id == null ? 0 : babService.getAvgType2(exp_id, exp_isused);
+                    Double ctrlBalance = ctrl_id == 0 ? 0 : babService.getAvgType2(ctrl_id, ctrl_isused);
+                    Double expBalance = exp_id == 0 ? 0 : babService.getAvgType2(exp_id, exp_isused);
 
 //                Double ctrlBalance = lineBalanceService.caculateLineBalance(ctrlAvgs);
 //                Double expBalance = lineBalanceService.caculateLineBalance(expAvgs);
@@ -95,7 +95,7 @@ public class GetLineBalancingComparison extends HttpServlet {
         out.print(responseObject);
     }
 
-    private Integer parseToInteger(Object o) {
-        return o == null ? null : (int) o;
+    private int parseToInt(Object o) {
+        return o == null ? 0 : (int) o;
     }
 }

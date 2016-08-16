@@ -17,19 +17,17 @@ public class BAB implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private Integer id;
+    private int id;
     private String PO;
     private String Model_name;
-    private Integer line;
-    private Integer people;
-    private Integer isused;
+    private int line;
+    private int people;
+    private int isused;
     private String name;
     private String lineName;
     private String linetype;
     private String btime;
     private Integer cm_id; // check countermeasure is exist or not
-
-    private boolean isBabClosed;
 
     //for saving line balance data, not exist in the database
     private JSONArray babavgs;
@@ -38,18 +36,18 @@ public class BAB implements Serializable {
 
     }
 
-    public BAB(String PO, String Model_name, Integer line, Integer people) {
+    public BAB(String PO, String Model_name, int line, int people) {
         this.PO = PO;
         this.Model_name = Model_name;
         this.line = line;
         this.people = people;
     }
 
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -69,27 +67,27 @@ public class BAB implements Serializable {
         this.Model_name = Model_name;
     }
 
-    public Integer getLine() {
+    public int getLine() {
         return line;
     }
 
-    public void setLine(Integer line) {
+    public void setLine(int line) {
         this.line = line;
     }
 
-    public Integer getPeople() {
+    public int getPeople() {
         return people;
     }
 
-    public void setPeople(Integer people) {
+    public void setPeople(int people) {
         this.people = people;
     }
 
-    public Integer getIsused() {
+    public int getIsused() {
         return isused;
     }
 
-    public void setIsused(Integer isused) {
+    public void setIsused(int isused) {
         this.isused = isused;
     }
 
@@ -142,7 +140,7 @@ public class BAB implements Serializable {
     }
 
     public boolean isIsBabClosed() {
-        return this.isused != null;
+        return this.isused != 0;
     }
 
 }

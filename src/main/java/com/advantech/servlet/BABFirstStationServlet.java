@@ -2,7 +2,7 @@
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
- * 儲存資料到LS_BAB用
+ * 儲存資料到LS_BAB用，負責第一站投工單
  */
 package com.advantech.servlet;
 
@@ -21,88 +21,76 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 /**
  *
  * @author Wei.Cheng
  */
-@WebServlet(name = "SaveBABInfo", urlPatterns = {"/SaveBABInfo"})
-public class SaveBABInfo extends HttpServlet {
-
-    private static final Logger log = LoggerFactory.getLogger(SaveBABInfo.class);
+@WebServlet(name = "BABFirstStationServlet", urlPatterns = {"/BABFirstStationServlet"})
+public class BABFirstStationServlet extends HttpServlet {
+    
+    private static final Logger log = LoggerFactory.getLogger(BABFirstStationServlet.class);
     private BABService babService = null;
     private ParamChecker pChecker = null;
-
+    
     @Override
     public void init() throws ServletException {
         babService = BasicService.getBabService();
         pChecker = new ParamChecker();
     }
-
+    
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
         res.sendError(HttpServletResponse.SC_FORBIDDEN);
     }
-
+    
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
-
+        
         res.setContentType("application/json");
         PrintWriter out = res.getWriter();
+        
         String po = req.getParameter("po");
         String modelName = req.getParameter("modelname");
         String line = req.getParameter("lineNo");
         String people = req.getParameter("people");
-        String id = req.getParameter("id");
-        String action = req.getParameter("action");
-        JSONObject serverMsg = null;
-        if (pChecker.checkInputVals(po, modelName, line, people)) {
+        
+        String jobnumber = req.getParameter("jobnumber");
+        
+        String successMessage = "success";
+        
+        if (pChecker.checkInputVals(po, modelName, line, people, jobnumber)) {
             try {
                 int lineNo = Integer.parseInt(line);
-                serverMsg = new JSONObject();
-                if (action.equals("insert")) {
-                    BAB bab = new BAB(po, modelName, lineNo, Integer.parseInt(people));
-                    String str = babService.checkAndStartBAB(bab);
-                    if ("success".equals(str)) {
-                        serverMsg = babService.getProcessingBABByLine(lineNo);
-                        serverMsg.put("status", "success");
-                        sendMailAfterBABRunIn(bab);
-                    } else {
-                        serverMsg = new JSONObject().put("status", str);
-                    }
-                } else if (action.equals("delete")) {
-                    String str = babService.closeBAB(id);
-                    serverMsg = new JSONObject().put("status", !"".equals(str) ? str : "錯誤");
-                } else {
-                    serverMsg = new JSONObject().put("status", "not support action");
+                BAB bab = new BAB(po, modelName, lineNo, Integer.parseInt(people));
+                String result = babService.checkAndStartBAB(bab, jobnumber);
+                if (successMessage.equals(result)) {
+                    sendMailAfterBABRunIn(bab);
                 }
-
-            } catch (JSONException | NumberFormatException e) {
+                out.print(result);
+            } catch (MessagingException e) {
                 log.error(e.toString());
-            } catch (Exception ex) {
-                log.error(ex.toString());
-            } finally {
-                out.print(serverMsg);
+                out.print(successMessage);
             }
+        } else {
+            out.print("Invaild input value");
         }
     }
-
+    
     private void sendMailAfterBABRunIn(BAB bab) throws MessagingException {
-
+        
         String targetMail = PropertiesReader.getInstance().getTestMail();
         if ("".equals(targetMail)) {
             return;
         }
-
+        
         String subject = "[藍燈系統]系統訊息";
         MailSend.getInstance().sendMailWithoutSender(this.getClass(), targetMail, subject, generateMailBody(bab));
-
+        
     }
-
+    
     private String generateMailBody(BAB bab) {
         return new StringBuilder()
                 .append("<p>現在時間 <strong>")
@@ -122,7 +110,7 @@ public class SaveBABInfo extends HttpServlet {
                 .append("'>線平衡電子化系統</a> 中的歷史紀錄做查詢</p>")
                 .toString();
     }
-
+    
     private String getToday() {
         return DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.SSS").print(new DateTime());
     }

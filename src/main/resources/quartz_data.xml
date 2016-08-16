@@ -22,7 +22,7 @@
                 <name>DailyJobWorker</name>
                 <job-name>DailyJobWorker</job-name>
                 <!--<misfire-instruction>MISFIRE_INSTRUCTION_FIRE_ONCE_NOW</misfire-instruction>-->
-                <cron-expression>0/30 * 8-17 ? * MON-FRI *</cron-expression>
+                <cron-expression>0/30 * 8-21 ? * MON-FRI *</cron-expression>
             </cron>
         </trigger>
     </schedule>
@@ -36,7 +36,7 @@
             <cron>
                 <name>DataBaseInit</name>
                 <job-name>DataBaseInit</job-name>
-                <cron-expression>0 30 6,18 ? * MON-FRI *</cron-expression>
+                <cron-expression>0 30 6,21 ? * MON-FRI *</cron-expression>
             </cron>
         </trigger>
     </schedule>
@@ -66,6 +66,21 @@
                 <name>CheckSensor</name>
                 <job-name>CheckSensor</job-name>
                 <cron-expression>0 0 11,14 ? * MON-FRI *</cron-expression>
+            </cron>
+        </trigger>
+    </schedule>
+    <!--定時查看sensor是否異常，回報-->
+    
+    <schedule>
+        <job>
+            <name>TestLineTypeRecord</name>
+            <job-class>com.advantech.quartzJob.TestLineTypeRecord</job-class>
+        </job>
+        <trigger>
+            <cron>
+                <name>TestLineTypeRecord</name>
+                <job-name>TestLineTypeRecord</job-name>
+                <cron-expression>0 0 9-17 ? * MON-FRI *</cron-expression>
             </cron>
         </trigger>
     </schedule>

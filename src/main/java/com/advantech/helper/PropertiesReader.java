@@ -31,6 +31,8 @@ public class PropertiesReader {
 
     private boolean writeToTxt, writeToDB, saveToOldDB, sendMailAlarmUser;
 
+    private String endpointQuartzTrigger;
+
     private PropertiesReader() throws Exception {
         dataInit();
     }
@@ -60,6 +62,7 @@ public class PropertiesReader {
     }
 
     private void loadParams(Properties properties) {
+
         testMail = properties.getProperty("testMail");
         txtLocation = properties.getProperty("outputTxtPath");
         testTxtName = properties.getProperty("outputTestName");
@@ -84,6 +87,47 @@ public class PropertiesReader {
         writeToTxt = convertStringToBoolean(properties.getProperty("result.write.to.txt"));
         writeToDB = convertStringToBoolean(properties.getProperty("result.write.to.database"));
         saveToOldDB = convertStringToBoolean(properties.getProperty("result.save.to.oldServer"));
+        endpointQuartzTrigger = properties.getProperty("endpoint.quartz.trigger");
+
+        logTheSystemSetting();
+    }
+
+    private void logTheSystemSetting() {
+        log.info("Set output txt path : " + txtLocation);
+        log.info("Set output test txt name : " + testTxtName);
+        log.info("Set output bab txt name : " + babTxtName);
+        log.info("Set file ext name is : " + outputFilenameExt);
+        log.info("Set test lineType standard is : " + testStandard);
+        log.info("Set bab lineType standard is : " + babStandard);
+        log.info("Set balanceDiff(Need to send mail when balance is diff to prev input bab) is : " + balanceDiff);
+        log.info("Set cc mail setting is : " + cc);
+        log.info("The mail info setting -> : "
+                + new JSONObject()
+                .put("mailServerUsername", mailServerUsername)
+                .put("mailServerPassword", mailServerPassword)
+                .put("mailServerLocation", mailServerLocation)
+                .put("mailServerPort", mailServerPort)
+                .toString()
+        );
+        log.info("Need to send mail when system abnormal? : " + sendMailAlarmUser);
+        log.info("System abnormal alarm to : " + responseUnits);
+        log.info("Abnormal mail setting : "
+                + new JSONObject()
+                .put("systemAbnormalAlarmMailTo", systemAbnormalAlarmMailTo)
+                .put("systemAbnormalAlarmMailCC", systemAbnormalAlarmMailCC)
+        );
+        log.info("The max table setting in test lineType is : " + maxTestTable);
+        log.info("The max test required people in test lineType is  : " + maxTestRequiredPeople);
+        log.info("The minimum data collection need to save to database : " + limitBABData);
+        log.info("The balance rounding digit is : " + balanceRoundingDigit);
+        log.info("Other save result setting : "
+                + new JSONObject()
+                .put("writeToTxt", writeToTxt)
+                .put("writeToDB", writeToDB)
+                .put("saveToOldDB", saveToOldDB)
+        );
+
+        log.info("The endpoint quartz trigger : " + endpointQuartzTrigger);
     }
 
     private int convertStringToInteger(String number) {
@@ -96,10 +140,6 @@ public class PropertiesReader {
 
     private boolean convertStringToBoolean(String str) {
         return (str != null && !"".equals(str)) ? str.equals("true") : false;
-    }
-
-    public static Logger getLog() {
-        return log;
     }
 
     public double getTestStandard() {
@@ -196,6 +236,10 @@ public class PropertiesReader {
 
     public boolean isSendMailAlarmUser() {
         return sendMailAlarmUser;
+    }
+
+    public String getEndpointQuartzTrigger() {
+        return endpointQuartzTrigger;
     }
 
     public static void main(String arg0[]) {

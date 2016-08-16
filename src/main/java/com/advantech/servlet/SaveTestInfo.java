@@ -40,69 +40,39 @@ public class SaveTestInfo extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
-        
+
         res.setContentType("text/plain");
         PrintWriter out = res.getWriter();
-        Cookie[] cookies = req.getCookies();
 
-        String userNo = req.getParameter("user_number");
-        String table = req.getParameter("table");
+        String action = req.getParameter("action");
+        String userNo = req.getParameter("userNo");
+        String tableNo = req.getParameter("tableNo");
+        String result;
 
-        String delUserNo = req.getParameter("remove_user_number");
-        String delTableId = req.getParameter("remove_table");
-
-        boolean b = false;
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if (cookie.getName().equals("table")) {
-                    delTableId = cookie.getValue();
-                }
-                if (cookie.getName().equals("user_number")) {
-                    delUserNo = cookie.getValue();
-                }
-            }
-        }
-        if (pChecker.checkInputVals(userNo, table)) {
-            int tableNum = Integer.parseInt(table);
-            String i = testService.checkDeskIsAvailable(tableNum, userNo);
-            if (i == null) {
-                boolean checkInsertStatus = testService.addTestPeople(tableNum, userNo.toUpperCase().trim());
-                if (checkInsertStatus == true) {
-                    res.addCookie(createAndAddContentIntoCookie("table", table));
-                    res.addCookie(createAndAddContentIntoCookie("user_number", userNo));
-                    out.print("success");
-                } else {
-                    out.print("fail");
+        if (pChecker.checkInputVals(action)) { 
+            if (pChecker.checkInputVals(userNo, tableNo)) {
+                int tableNum = Integer.parseInt(tableNo);
+                switch (action) {
+                    case "LOGIN":
+                        String i = testService.checkDeskIsAvailable(tableNum, userNo);
+                        if (i == null) {
+                            result = testService.addTestPeople(tableNum, userNo) ? "success" : "fail";
+                        } else {
+                            result = i;
+                        }
+                        break;
+                    case "LOGOUT":
+                        result = testService.removeTestPeople(tableNum, userNo) ? "success" : "fail";
+                        break;
+                    default:
+                        result = "Not support action.";
                 }
             } else {
-                out.print(i);
+                result = "Invaild input value.";
             }
-            b = true;
+        } else {
+            result = "Not support action.";
         }
-        if (pChecker.checkInputVal(delTableId) && pChecker.checkInputVal(delUserNo)) {
-            b = true;
-            int tableNum = Integer.parseInt(delTableId);
-            if (testService.removeTestPeople(tableNum, delUserNo.toUpperCase().trim())) {
-                if (cookies != null) {
-                    for (Cookie cookie : cookies) {
-                        cookie.setMaxAge(0);
-                        res.addCookie(cookie);
-                    }
-                }
-                out.print("success");
-            } else {
-                out.print("fail");
-                b = false;
-            }
-        }
-        if (!b) {
-            out.print("無資料異動");
-        }
-    }
-
-    private Cookie createAndAddContentIntoCookie(String cookieName, String content) {
-        Cookie cookie = new Cookie(cookieName, content);
-        cookie.setMaxAge(12 * 60 * 60);
-        return cookie;
+        out.print(result);
     }
 }

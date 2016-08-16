@@ -54,6 +54,10 @@ public class TestDAO extends BasicDAO {
         return updateTestTable("INSERT INTO LS_TEST(id,userid) VALUES (?,?)", tableNo, userNo);
     }
 
+    public boolean recordTestLineType(String user_id, String user_name, Double productivity) {
+        return update(getConn(), "INSERT INTO testLineTypeRecord(user_id, user_name, productivity) VALUES(?,?,?)", user_id, user_name, productivity);
+    }
+
     public boolean deleteTestPeople(int tableNo, String userNo) {
         return updateTestTable("DELETE LS_TEST WHERE id=?", tableNo);
     }

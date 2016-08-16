@@ -42,26 +42,16 @@ public class BasicDAO implements Serializable {
      建議將 JDBC driver 放在 $CATALINA_BASE/lib 路徑下，以免造成 JRE Memory Leak 的問題
      */
     private static final Logger log = LoggerFactory.getLogger(BasicDAO.class);
-    private static final QueryRunner qRunner;
-    private static final ProcRunner pRunner;
+    private static QueryRunner qRunner;
+    private static ProcRunner pRunner;
 
-    private static final String DISCONNECT_TRIG_EXP;
-    private static final String DEFAULT_TRIG_EXP;
-    private static final String TRIGGER_KEY;
+    private static String DISCONNECT_TRIG_EXP;
+    private static String DEFAULT_TRIG_EXP;
+    private static String TRIGGER_KEY;
     private static boolean connectFlag = false;
     private static final int RETRY_WAIT_TIME = 3000;
 
-    private static final Map<String, DataSource> dataSourceMap;
-
-    static {
-        qRunner = new QueryRunner();
-        pRunner = new ProcRunner();
-        dataSourceMap = new HashMap<>();
-        DISCONNECT_TRIG_EXP = "0 0/15 8-16 ? * MON-FRI *";
-        DEFAULT_TRIG_EXP = "0/30 * 8-17 ? * MON-FRI *";
-        TRIGGER_KEY = "DailyJobWorker";
-        dataSourceInit();
-    }
+    private static Map<String, DataSource> dataSourceMap;
 
     public static enum SQL {
 
@@ -80,15 +70,28 @@ public class BasicDAO implements Serializable {
         }
     }
 
-    private static void dataSourceInit() {
+    public static void dataSourceInit() {
+        qRunner = new QueryRunner();
+        pRunner = new ProcRunner();
+        dataSourceMap = new HashMap<>();
+        DISCONNECT_TRIG_EXP = "0 0/15 8-16 ? * MON-FRI *";
+        DEFAULT_TRIG_EXP = "0/30 * 8-17 ? * MON-FRI *";
+        TRIGGER_KEY = "DailyJobWorker";
+
         dataSourceMap.clear();
-        for (SQL sql : SQL.values()) {
-            String dataSourceString = sql.toString();
-            try {
-                dataSourceMap.put(dataSourceString, getDataSource(dataSourceString));
-            } catch (NamingException ex) {
-                log.error(ex.toString());
+
+        try {
+
+            for (SQL sql : SQL.values()) {
+                String dataSourceString = sql.toString();
+                try {
+                    dataSourceMap.put(dataSourceString, getDataSource(dataSourceString));
+                } catch (NamingException ex) {
+                    log.error(ex.toString());
+                }
             }
+        } catch (Exception e) {
+            log.error(e.toString());
         }
     }
 

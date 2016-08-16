@@ -24,10 +24,10 @@ import org.json.JSONObject;
  *
  * @author Wei.Cheng
  */
-@WebServlet(name = "StopSensor", urlPatterns = {"/StopSensor"})
-public class StopSensor extends HttpServlet {
+@WebServlet(name = "BABOtherStationServlet", urlPatterns = {"/BABOtherStationServlet"})
+public class BABOtherStationServlet extends HttpServlet {
 
-    private static final Logger log = LoggerFactory.getLogger(StopSensor.class);
+    private static final Logger log = LoggerFactory.getLogger(BABOtherStationServlet.class);
 
     private BABService babService = null;
     private ParamChecker pChecker = null;
@@ -51,21 +51,37 @@ public class StopSensor extends HttpServlet {
 
         res.setContentType("application/json");
         PrintWriter out = res.getWriter();
-        JSONObject serverMsg = new JSONObject();
-        try {
-            String sensor = req.getParameter("sensor");
-            String babId = req.getParameter("BABid");
-            String line = req.getParameter("line");
 
-            if (pChecker.checkInputVals(sensor, babId, line)) {
-                JSONObject message = babService.stopSensor(Integer.parseInt(sensor), Integer.parseInt(babId));
-                serverMsg.put("servermsg", message);
+        String jobnumber = req.getParameter("jobnumber");
+        String station = req.getParameter("station");
+        String babId = req.getParameter("babId");
+
+        String action = req.getParameter("action");
+
+        if (pChecker.checkInputVals(action)) {
+            if (pChecker.checkInputVals(station, babId, jobnumber)) {
+                int babid = Integer.parseInt(babId);
+                int stationid = Integer.parseInt(station);
+                switch (action) {
+                    case "LOGIN":
+                        boolean result = babService.recordBABPeople(babid, stationid, jobnumber);
+                        out.print(result ? "success" : "fail");
+                        break;
+                    case "SENSOR_END":
+                        JSONObject message = babService.stopSensor(babid, stationid);
+                        out.print(message);
+                        break;
+                    case "BAB_END":
+                        out.print(babService.closeBAB(babid));
+                        break;
+                    default:
+                        out.print("Not support action");
+                }
             } else {
-                serverMsg.put("servermsg", "no data through");
+                out.print("Invaild input value");
             }
-            out.print(serverMsg);
-        } catch (JSONException ex) {
-            log.error(ex.toString());
+        } else {
+            out.print("Not support action");
         }
     }
 

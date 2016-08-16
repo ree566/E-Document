@@ -10,6 +10,7 @@
 package com.advantech.endpoint;
 
 import com.advantech.helper.CronTrigMod;
+import com.advantech.helper.PropertiesReader;
 import com.advantech.quartzJob.PollingServer;
 import java.util.ArrayList;
 import java.util.Queue;
@@ -38,6 +39,8 @@ public class SensorEndpoint1 {
 
     private final JobKey jobKey = new JobKey("JobB", "JobBGroup");
     private final TriggerKey trigKey = new TriggerKey("JobBTrigger", "JobBGroup");
+
+    private static final String quartzTrigger = PropertiesReader.getInstance().getEndpointQuartzTrigger();
 
     @OnOpen
     public void onOpen(final Session session) {
@@ -91,9 +94,8 @@ public class SensorEndpoint1 {
 
     // Generate when connect users are at least one.
     private void pollingDBAndBrocast() {
-        String crontrigger = "0/10 * 6-18 ? * MON-FRI *";
         try {
-            CronTrigMod.getInstance().generateAJob(PollingServer.class, jobKey, trigKey, crontrigger);
+            CronTrigMod.getInstance().generateAJob(PollingServer.class, jobKey, trigKey, quartzTrigger);
         } catch (SchedulerException ex) {
             log.error(ex.toString());
         }

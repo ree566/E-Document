@@ -5,10 +5,15 @@
  */
 package com.advantech.helper;
 
+import com.advantech.entity.TestLineTypeUser;
+import com.advantech.entity.TestLineTypeUsers;
+import com.google.gson.Gson;
 import java.io.StringWriter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
@@ -25,6 +30,7 @@ import org.tempuri.Service;
 import org.tempuri.ServiceSoap;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 /**
  *
@@ -84,27 +90,45 @@ public class WebServiceRV {
         return list;
     }
 
-    public JSONArray getKanbantestUsers() {
-        try {
-            List<String> list = getXMLString();
-            JSONObject xmlJSONObj = XML.toJSONObject(list.toString());
-            return xmlJSONObj.getJSONObject("diffgr:diffgram").getJSONObject("root").getJSONArray("QryData");
-        } catch (JSONException e) {
+//    public JSONArray getKanbantestUsers() {
+//        try {
+//            List<String> list = getXMLString();
+//            JSONObject xmlJSONObj = XML.toJSONObject(list.toString());
+//            return xmlJSONObj.getJSONObject("diffgr:diffgram").getJSONObject("root").getJSONArray("QryData");
+//        } catch (JSONException e) {
+////            log.error(e.toString());
+//            return new JSONArray();//Break if KanbanService is in error.
+//        } catch (Exception e) {
 //            log.error(e.toString());
-            return new JSONArray();//Break if KanbanService is in error.
-        } catch (Exception e) {
-            log.error(e.toString());
-            return new JSONArray();
+//            return new JSONArray();
+//        }
+//    }
+
+    public List<TestLineTypeUser> getKanbantestUsers() {
+        try {
+            List l = this.getWebServiceData();
+            Document doc = ((Element) l.get(1)).getOwnerDocument();
+
+            //Unmarshal the data into javaObject.
+            JAXBContext jc = JAXBContext.newInstance(TestLineTypeUsers.class);
+            Unmarshaller u = jc.createUnmarshaller();
+
+            //Skip the <diffgr:diffgram> tag, read root tag directly.
+            Node node = (Node) doc.getFirstChild().getFirstChild();
+            TestLineTypeUsers users = (TestLineTypeUsers) u.unmarshal(node);
+
+            return users.getQryData();
+        } catch (Exception ex) {
+
+            log.error(ex.toString());
+            return new ArrayList();
+
         }
     }
 
     public static void main(String arg[]) {
-//        JSONArray jarray = getInstance().getKanbantestUsers();
-//        for (int i = 0, j = jarray.length(); i < j; i++) {
-            System.out.println(WebServiceRV.getInstance().url);
-//        }
+
     }
-    
 
     private JSONArray putJ(JSONArray j) {
         return j.put(3);

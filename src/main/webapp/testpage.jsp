@@ -40,183 +40,165 @@
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
         <script src="js/jquery.cookie.js"></script>
         <script src="js/jquery.blockUI.js"></script>
+        <script src="js/jquery.blockUI.Default.js"></script>
         <script src="js/cookie.check.js"></script>
+        <script src="js/param.check.js"></script>
         <script>
-            function block() {
-                $.blockUI({
-                    css: {
-                        border: 'none',
-                        padding: '15px',
-                        backgroundColor: '#000',
-                        '-webkit-border-radius': '10px',
-                        '-moz-border-radius': '10px',
-                        opacity: .5,
-                        color: '#fff'
-                    },
-                    fadeIn: 0
-                    , overlayCSS: {
-                        backgroundColor: '#FFFFFF',
-                        opacity: .3
-                    }
-                });
-            }
-            $(document).ready(function () {
+            var userInfoCookieName = "userInfo", testLineTypeCookieName = "testLineTypeCookieName";
+            var STATION_LOGIN = "LOGIN", STATION_LOGOUT = "LOGOUT";
 
-                //Prevent submit the form repeatly.
-                $(document).ajaxSend(function () {
-                    block();
-                });
-                $(document).ajaxSuccess(function () {
-                    $.unblockUI();
-                });
+            $(document).ready(function () {
 
                 if (!are_cookies_enabled()) {
                     alert(cookie_disabled_message);
                     return;
                 }
 
-                getTestInfo();
-
                 //Add class to transform the button type to bootstrap.
                 $(":button").addClass("btn btn-default");
                 $(":text,select,input[type='number']").addClass("form-control");
-
-
-                var tabreg = /^\d+$/;//Textbox check regex.
-
-                $objgroup = $("#user_number,#table,#begin");
-                var tablecookie = $.cookie('table');
-                $("#cookieinfo").html(tablecookie != null ? "測試 cookie 已經儲存" : "尚無資料");
-
-                //Get values from cookie and setting html objects.
-                if (tablecookie != null) {
-                    $objgroup.attr("disabled", true);
-                    $("#table").val(tablecookie);
-                    $("#end").removeAttr("disabled");
-                    var userSitefloorSelect = $.cookie("userSitefloorSelect");
-                    if (userSitefloorSelect != null && userSitefloorSelect != $("#userSitefloorSelect").val()) {
-                        $(":input,select").not("#redirectBtn").attr("disabled", "disabled");
-                        $("#servermsg").html("您已經登入其他樓層");
-                    }
-                } else {
-                    $objgroup.removeAttr("disabled");
-                    $("#end").attr("disabled", true);
+                
+                console.log($.cookie(testLineTypeCookieName));
+                var cookieCheckStatus = checkExistCookies();
+                if (cookieCheckStatus == false) {
+                    return false;
                 }
-                $objgroup = null;
-
 
                 //Checking if user is login the babpage.jsp or not.(Get the cookie generate by babpage.jsp)
                 //If not, login and check the user input values.
                 $("#begin").click(function () {
-                    if (!$.cookie('babinfo')) {
-                        var usnumber = $("#user_number").val().trim();
-                        var table = $("#table").val().trim();
-                        if (!table.match(tabreg)) {
-                            $("#servermsg").html("error input value");
-                            return false;
-                        }
-                        $.ajax({
-                            type: "Post",
-                            url: "SaveTestInfo",
-                            data: {
-                                user_number: usnumber.trim(),
-                                table: table.trim()
-                            },
-                            dataType: "html",
-                            success: function (response) {
-                                $("#servermsg").html(response);
-                                if (response == "success") {
-                                    loaddiv();
-                                }
-                                var date = new Date();
-                                var minutes = 12 * 60;
-                                date.setTime(date.getTime() + (minutes * 60 * 1000));
-                                $.cookie("userSitefloorSelect", $("#userSitefloorSelect").val(), {expires: date});
-                            },
-                            error: function () {
-                                $("#servermsg").html("error");
-                                loaddiv();
-                            }
-                        });
-                    } else {
-                        $("#servermsg").html("您已經登入組裝");
-                    }
+                    LoginOrLogoutTestLineType(STATION_LOGIN);
                 });
 
                 //TestTable logout.(Delete data from database)
                 $("#end").click(function () {
-                    var usnumber = $("#user_number").val().trim();
-//                    var usname = $("#user_name").val();
-                    var table = $("#table").val().trim();
-                    if (usnumber != "" && table != "") {
-                        if (!table.match(tabreg)) {
-                            $("#servermsg").html("error input value");
-                            return false;
-                        }
-                    }
-                    $.ajax({
-                        type: "Post",
-                        url: "SaveTestInfo",
-                        data: {
-                            remove_user_number: usnumber.trim(),
-                            remove_table: table.trim()
-                        },
-                        dataType: "html",
-                        success: function (response) {
-                            $("#servermsg").html(response);
-                            if (response == "success") {
-                                $("#user_number,#table,#begin").removeAttr("disabled");
-                            }
-                            $(":text").val("");
-                            loaddiv();
-                        },
-                        error: function () {
-                            $("#servermsg").html("error");
-                            loaddiv();
-                        }
-                    });
+                    LoginOrLogoutTestLineType(STATION_LOGOUT);
+                });
+
+                $(document).on("keyup", "#user_number", function () {
+                    textBoxToUpperCase($(this));
                 });
 
             });
-            function loaddiv() {
-                window.location.reload();
-            }
 
-            //Logout the user saving cookie.
-            function deleteAllCookies() {
-                var cookies = document.cookie.split(";");
-                for (var i = 0; i < cookies.length; i++) {
-                    var cookie = cookies[i];
-                    var eqPos = cookie.indexOf("=");
-                    var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
-                    document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
-                    loaddiv();
+            function checkExistCookies() {
+                $("#cookieinfo").html("尚無資料");
+                var testLineTypeCookie = $.cookie(testLineTypeCookieName);
+                var babLineTypeCookie = $.cookie(userInfoCookieName);
+
+                if (babLineTypeCookie) {
+                    lockAllUserInput();
+                    showMsg("您已經登入組包裝");
+                    return false;
+                }
+
+                //Get values from cookie and setting html objects.
+                if (testLineTypeCookie != null) {
+                    var cookieInfo = $.parseJSON(testLineTypeCookie);
+                    if (cookieInfo.floor == $("#userSitefloorSelect").val()) {
+                        $("#user_number").val(cookieInfo.userNo);
+                        $("#table").val(cookieInfo.tableNo);
+                        lockWhenUserIsLogin();
+                        $("#cookieinfo").html("測試 cookie 已經儲存");
+                        $("#userInfo").html("<td>" + cookieInfo.tableNo + "</td>" + "<td>" + cookieInfo.userNo + "</td>");
+                        return true;
+                    } else {
+                        lockAllUserInput();
+                        showMsg("您已經登入其他樓層");
+                        return false;
+                    }
+                } else {
+                    unlockLoginInput();
+                    return true;
                 }
             }
 
-            function getTestInfo() {
+            function lockAllUserInput() {
+                $(":input,select").not("#redirectBtn").attr("disabled", "disabled");
+            }
+
+            function LoginOrLogoutTestLineType(action) {
+                var userNo = $("#user_number").val();
+                var tableNo = $("#table").val();
+                var data = {
+                    userNo: userNo,
+                    tableNo: tableNo
+                };
+
+                console.log(data);
+
+                if (!checkVal(data.tableNo)) {
+                    showMsg("error input value");
+                    return false;
+                }
+
+                data.floor = $("#userSitefloorSelect").val();
+                data.action = action;
+
                 $.ajax({
                     type: "Post",
-                    url: "TestTableStatus",
-                    dataType: "json",
+                    url: "SaveTestInfo",
+                    data: data,
+                    dataType: "html",
                     success: function (response) {
-                        $("#tableUseStatus, #userInfo").html("");
-                        var saveUserNumber = $.cookie("user_number");
-                        var saveTable = $.cookie("table");
-                        for (var i = 0, j = response.length; i < j; i++) {
-                            var obj = response[i];
-                            $("#tableUseStatus").append("NO:<b class='tableisused'>" + obj.id + "、 </b>");
-
-                        }
-                        if (saveTable != null && saveUserNumber != null) {
-                            $("#userInfo").append("<td id='tableno'>" + saveTable + "</td>");
-                            $("#userInfo").append("<td id='tableuno'>" + saveUserNumber + "</td>");
+                        if (response == "success") {
+                            if (action == STATION_LOGIN) {
+                                generateCookie(testLineTypeCookieName, JSON.stringify(data));
+                            } else if (action == STATION_LOGOUT) {
+                                $("#user_number,#table,#begin").removeAttr("disabled");
+                                $(":text").val("");
+                                removeAllStepCookie();
+                            }
+                            reload();
+                        } else {
+                            showMsg(response);
                         }
                     },
                     error: function () {
-                        $("#servermsg").html("error");
+                        showMsg("error");
+                        reload();
                     }
                 });
+            }
+
+            function lockWhenUserIsLogin() {
+                $("#user_number,#table,#begin").attr("disabled", true);
+                $("#end").removeAttr("disabled");
+            }
+
+            function unlockLoginInput() {
+                $("#user_number,#table,#begin").removeAttr("disabled");
+                $("#end").attr("disabled", true);
+            }
+
+            function showTestInfo() {
+                console.log($.cookie(testLineTypeCookieName));
+            }
+
+            //auto uppercase the textbox value(PO, ModelName)
+            function textBoxToUpperCase(obj) {
+                obj.val(obj.val().trim().toLocaleUpperCase());
+            }
+
+            //generate all cookies exist 12 hours
+            function generateCookie(name, value) {
+                var date = new Date();
+                var minutes = 12 * 60;
+                date.setTime(date.getTime() + (minutes * 60 * 1000));
+                $.cookie(name, value, {expires: date});
+            }
+
+            //Logout the user saving cookie.
+            function removeAllStepCookie() {
+                $.removeCookie(testLineTypeCookieName);
+            }
+
+            function reload() {
+                window.location.reload();
+            }
+
+            function showMsg(msg) {
+                $("#servermsg").html(msg);
             }
         </script>
     </head>
@@ -248,7 +230,7 @@
                 </select>
                 <input type="button" value="開始" id="begin" ${key == null ?"":"disabled"}>
                 <input type="button" value="結束" id="end">
-                <input type="button" value="清除cookie" onclick="deleteAllCookies()" id="clearcookies" ${key != null ?"":"disabled"}>
+                <input type="button" value="清除cookie" onclick="removeAllStepCookie()" id="clearcookies" ${key != null ?"":"disabled"}>
             </div>
             <div class="Div2">
                 <p><h3>步驟1:</h3>先在此處輸入您的<code>桌次</code>以及<code>工號</code>，確認之後按下開始。</p>

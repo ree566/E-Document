@@ -24,9 +24,13 @@ public class TestService {
     public List<Test> getAllTableInfo() {
         return testDAO.getAllTableInfo();
     }
-    
+
     public boolean addTestPeople(int tableNum, String jobNumber) {
         return testDAO.insertTestPeople(tableNum, jobNumber);
+    }
+
+    public boolean recordTestLineType(String user_id, String user_name, Double productivity) {
+        return testDAO.recordTestLineType(user_id, user_name, productivity);
     }
 
     public boolean removeTestPeople(int tableNum, String jobNumber) {

@@ -13,6 +13,7 @@ import com.advantech.helper.TxtWriter;
 import com.advantech.helper.WebServiceRV;
 import com.advantech.entity.BAB;
 import com.advantech.entity.Test;
+import com.advantech.entity.TestLineTypeUser;
 import com.advantech.service.BABService;
 import com.advantech.service.BasicService;
 import com.advantech.service.LineBalanceService;
@@ -232,22 +233,23 @@ public class DataTransformer {
         if (hasDataInCollection(tables)) {
             initTestMap();
             JSONArray userArr = new JSONArray();
-            JSONArray kanbanUsers;
 
-            kanbanUsers = rv.getKanbantestUsers();
+            List<TestLineTypeUser> kanbanUsers = rv.getKanbantestUsers();
 
             testJsonObj = new JSONObject();
             boolean isInTheWebService = false;
-            for (int a = 0, length = kanbanUsers.length(); a < length; a++) {
-                JSONObject user = kanbanUsers.getJSONObject(a);
-                Double PRODUCTIVITY = user.getDouble("PRODUCTIVITY");
-                String no = user.getString("USER_NO");
-                String name = user.getString("USER_NAME");
+
+            for (TestLineTypeUser user : kanbanUsers) {
+                
+                Double PRODUCTIVITY = user.getPRODUCTIVITY();
+                String no = user.getUSER_NO();
+                String name = user.getUSER_NAME();
+                
                 for (Iterator it = tables.iterator(); it.hasNext();) {
                     Test ti = (Test) it.next();
                     if (ti.getUserid().trim().equals(no)) {
                         int tableid = ti.getTableNum();
-                        
+
                         JSONObject fitUser = new JSONObject();
                         fitUser.put("name", name)
                                 .put("number", no)
@@ -273,13 +275,7 @@ public class DataTransformer {
                     PEOPLE_NOT_MATCH.put(name, TEST_USER_NOT_IN_SYSTEM_SIGN); //沒核對到資料庫的人員傳回m2給前端
                 }
             }
-
             userArr = separateAbnormalUser(tables, userArr);
-
-// test alarm status
-//            userArr = putTestTable(userArr);
-//            isSomeoneUnderStandard = true;
-//
             testJsonObj.put("data", userArr);
         } else {
             testJsonObj = null;

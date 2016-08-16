@@ -12,8 +12,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@WebServlet(urlPatterns = {"/CheckUser"}
-)
+@WebServlet(name = "CheckUser", urlPatterns = {"/CheckUser"})
 public class CheckUser extends HttpServlet {
 
     /**

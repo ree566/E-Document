@@ -101,7 +101,7 @@ public class BABDAO extends BasicDAO {
         return queryBABTable("SELECT * FROM LS_BABTimeOutView");//get the timeout bab where hour diff = 2
     }
 
-    public BAB getEarliestBAB(int lineNo) {
+    public BAB getLastInputBAB(int lineNo) {
         List list = queryBABTable("SELECT TOP 1 * FROM LS_BAB_Sort WHERE line = ? ORDER BY ID DESC", lineNo);
         return list.isEmpty() ? null : (BAB) list.get(0);
     }
@@ -188,6 +188,10 @@ public class BABDAO extends BasicDAO {
                 bab.getLine(),
                 bab.getPeople()
         );
+    }
+
+    public boolean recordBABPeople(int BABid, int station, String jobnumber) {
+        return update(getConn(), "INSERT INTO BABPeopleRecoard(BABid, station, user_id) VALUES (?,?,?)", BABid, station, jobnumber);
     }
 
     /**
