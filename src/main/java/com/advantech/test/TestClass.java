@@ -5,38 +5,42 @@
  */
 package com.advantech.test;
 
-import com.advantech.entity.Test;
+import com.advantech.service.BabLineTypeFacade;
+import com.advantech.service.BasicLineTypeFacade;
+import com.advantech.service.TestLineTypeFacade;
 
 /**
  *
  * @author Wei.Cheng
  */
-public class TestClass{
+public class TestClass {
 
     private static int count = 0;
 
     public static void main(String args[]) {
-//        int cnt = 0, n = 25462;
-//        int[] arr = {1, 3, 5, 7, 9};
-//
-//        for (; n != 0; cnt++) {
-//            arr[cnt] = n % 10;
-//            n = n / 10;
-//        }
-//        System.out.println("cnt=" + cnt);
-        Test t = new Test();
-        t.setTableName("T5555");
-        System.out.println(t.getTableNum());
-//        for (int i = 0; i < arr.length; i++) {
-//            System.out.print(arr[i]);
-//        }
+//        BasicLineTypeFacade tF = TestLineTypeFacade.getInstance();
+        boolean b = true;
 
+        for (int i = 0; i <= 10; i++) {
+            BasicLineTypeFacade bF = BabLineTypeFacade.getInstance();
+            System.out.println("The " + i + " time data : " + bF.getParam());
+
+            if (i % 2 == 0) {
+                b = !b;
+                bF.setParam(b);
+            }
+        }
+    }
+
+    private static void showParam(BasicLineTypeFacade tF, BasicLineTypeFacade bF) {
+        System.out.println("-----------------------------");
+        System.out.println("tF:" + tF.getParam());
+        System.out.println("bF:" + bF.getParam());
     }
 
     public boolean testFunction() {
         System.out.println("Function testing.");
         return true;
     }
-
 
 }

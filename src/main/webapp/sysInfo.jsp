@@ -10,6 +10,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>${initParam.pageTitle}</title>
+        <link rel="shortcut icon" href="images/favicon.ico"/>
         <style>
             #title{
                 /*border: 1px black solid;*/

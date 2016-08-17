@@ -15,7 +15,8 @@
     </c:if>
     <head> 
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>${initParam.pageTitle}</title>
+        <title>測試 ${userSitefloor} 樓 - ${initParam.pageTitle}</title>
+        <link rel="shortcut icon" href="images/favicon.ico"/>
         <style>
             #titleAlert{
                 background-color: green;
@@ -46,6 +47,7 @@
         <script>
             var userInfoCookieName = "userInfo", testLineTypeCookieName = "testLineTypeCookieName";
             var STATION_LOGIN = "LOGIN", STATION_LOGOUT = "LOGOUT";
+            var tabreg = /^[0-9a-zA-Z-]+$/;//Textbox check regex.
 
             $(document).ready(function () {
 
@@ -57,7 +59,7 @@
                 //Add class to transform the button type to bootstrap.
                 $(":button").addClass("btn btn-default");
                 $(":text,select,input[type='number']").addClass("form-control");
-                
+
                 console.log($.cookie(testLineTypeCookieName));
                 var cookieCheckStatus = checkExistCookies();
                 if (cookieCheckStatus == false) {
@@ -125,9 +127,7 @@
                     tableNo: tableNo
                 };
 
-                console.log(data);
-
-                if (!checkVal(data.tableNo)) {
+                if (!checkVal(data.tableNo) || !data.userNo.match(tabreg)) {
                     showMsg("error input value");
                     return false;
                 }
@@ -149,6 +149,7 @@
                                 $(":text").val("");
                                 removeAllStepCookie();
                             }
+                            showMsg(response);
                             reload();
                         } else {
                             showMsg(response);
@@ -206,7 +207,7 @@
         <input id="userSitefloorSelect" type="hidden" value="${userSitefloor}">
         <div id="titleAlert">
             <c:out value="您所選擇的樓層是: ${userSitefloor}" />
-            <a href="index.jsp">
+            <a href="${pageContext.request.contextPath}">
                 <button id="redirectBtn">不是我的樓層?</button>
             </a>
         </div>
@@ -221,7 +222,7 @@
         </c:forEach>
         <div class="Div0" id="inputpannel">
             <div class="Div1 form-inline">
-                <input type="text" placeholder="刷入工號" id="user_number" ${key == null ?"":"disabled"} value="${key == null ?"":key}">
+                <input type="text" placeholder="刷入工號" id="user_number" ${key == null ?"":"disabled"} value="${key == null ?"":key}" maxlength="10">
                 <select id="table" ${key == null ?"":"disabled"} value="${tb == null ?"":tb}">
                     <option value="-1">請選擇桌次</option>
                     <c:forEach var="tab" items="${testDAO.getDesk(userSitefloor)}">
@@ -264,7 +265,7 @@
                     <h4>此處會紀錄您刷入的工號以及桌號。</h3>
                 </div>
             </div>
-            <div class="Div0">
+<!--            <div class="Div0">
                 <div class="Div1">目前已使用中的桌次:
                     <p id="tableUseStatus">
                     </p>
@@ -272,7 +273,7 @@
                 <div class="Div2">
                     <p><h3>步驟3:</h3>此處會顯示已經刷入成功的桌次，請確認您的桌次是否在其中。</p>
                 </div>
-            </div>
+            </div>-->
             <div class="Div0">
                 <div class="Div1">未刷入資料庫的使用者:
                     <p>

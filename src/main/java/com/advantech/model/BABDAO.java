@@ -159,24 +159,16 @@ public class BABDAO extends BasicDAO {
         return !historys.isEmpty();//回傳是否有東西 有true 無 false
     }
 
-    public boolean updateTestAlarm(List<AlarmAction> l) {
-        return updateAlarmTable("UPDATE Alm_TestAction SET alarm = ? WHERE tableId = ?", l);
-    }
-
     public boolean updateBABAlarm(List<AlarmAction> l) {
         return updateAlarmTable("UPDATE Alm_BABAction SET alarm = ? WHERE tableId = ?", l);
     }
 
-    private boolean updateAlarmTable(String sql, List<AlarmAction> l) {
-        return update(getConn(), sql, l, "alarm", "tableId");
-    }
-
-    public boolean resetTestAlarm() {
-        return update(getConn(), "UPDATE Alm_TestAction SET alarm = 0");
-    }
-
     public boolean resetBABAlarm() {
         return update(getConn(), "UPDATE Alm_BABAction SET alarm = 0");
+    }
+
+    private boolean updateAlarmTable(String sql, List<AlarmAction> l) {
+        return update(getConn(), sql, l, "alarm", "tableId");
     }
 
     public boolean insertBAB(BAB bab) {

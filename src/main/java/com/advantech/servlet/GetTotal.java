@@ -6,7 +6,8 @@
  */
 package com.advantech.servlet;
 
-import com.advantech.quartzJob.DataTransformer;
+import com.advantech.service.BabLineTypeFacade;
+import com.advantech.service.TestLineTypeFacade;
 import java.io.*;
 import java.util.ArrayList;
 import javax.servlet.ServletException;
@@ -38,10 +39,12 @@ public class GetTotal extends HttpServlet {
         JSONObject dataObj = null;
         switch (type) {
             case "type1":
-                dataObj = DataTransformer.getTestJsonObj();
+//                dataObj = DataTransformer.getTestJsonObj();
+                dataObj = TestLineTypeFacade.getInstance().getJSONObject();
                 break;
             case "type2":
-                dataObj = DataTransformer.getBabJsonObj();
+//                dataObj = DataTransformer.getBabJsonObj();
+                dataObj = BabLineTypeFacade.getInstance().getJSONObject();
                 break;
             default:
                 break;

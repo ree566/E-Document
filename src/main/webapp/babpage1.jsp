@@ -15,7 +15,8 @@
     </c:if>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>${initParam.pageTitle}</title>
+        <title>組包裝 ${userSitefloor} 樓 - ${initParam.pageTitle}</title>
+        <link rel="shortcut icon" href="images/favicon.ico"/>
         <link rel="stylesheet" href="//code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css">
         <style>
             #titleAlert{
@@ -643,7 +644,7 @@
         <input id="userSitefloorSelect" type="hidden" value="${userSitefloor}">
         <div id="titleAlert">
             <c:out value="您所選擇的樓層是: ${userSitefloor}" />
-            <a href="index.jsp">
+            <a href="${pageContext.request.contextPath}">
                 <button id="redirectBtn" class="btn btn-default" >不是我的樓層?</button>
             </a>
         </div>

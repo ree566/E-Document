@@ -27,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.quartz.TriggerBuilder;
 import static org.quartz.TriggerBuilder.newTrigger;
+import static org.quartz.CronScheduleBuilder.cronSchedule;
 
 /**
  *

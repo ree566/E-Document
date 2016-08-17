@@ -7,6 +7,8 @@
 package com.advantech.quartzJob;
 
 import com.advantech.endpoint.SensorEndpoint1;
+import com.advantech.service.BabLineTypeFacade;
+import com.advantech.service.TestLineTypeFacade;
 import com.google.gson.Gson;
 import org.json.JSONArray;
 import org.quartz.Job;
@@ -39,7 +41,8 @@ public class PollingServer implements Job {
          */
         try {
             JSONArray arr = new JSONArray();
-            arr.put(DataTransformer.getTestJsonObj()).put(DataTransformer.getBabJsonObj());
+            arr.put(TestLineTypeFacade.getInstance().getJSONObject())
+                    .put(BabLineTypeFacade.getInstance().getJSONObject());
             SensorEndpoint1.sendAll(arr.toString());
         } catch (Exception e) {
             log.error(e.toString());

@@ -20,9 +20,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.json.XML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tempuri.RvResponse;
@@ -37,13 +34,13 @@ import org.w3c.dom.Node;
  * @author Wei.Cheng
  */
 public class WebServiceRV {
-
+    
     private final String sParam;
     private final URL url;//webservice位置(放在專案中，因為url無法讀取，裏頭標籤衝突)
     private static final Logger log = LoggerFactory.getLogger(WebServiceRV.class);
-
+    
     private static WebServiceRV instance;
-
+    
     private WebServiceRV() {
         sParam = "<root>"
                 + "<METHOD ID='ETLSO.QryProductionKanban4Test'/>"
@@ -53,7 +50,7 @@ public class WebServiceRV {
                 + "</root>";
         url = this.getClass().getClassLoader().getResource("wsdl/Service.wsdl");
     }
-
+    
     public static WebServiceRV getInstance() {
         if (instance == null) {
             instance = new WebServiceRV();
@@ -68,7 +65,7 @@ public class WebServiceRV {
         RvResponse.RvResult result = port.rv(sParam);
         return result.getAny();
     }
-
+    
     @SuppressWarnings("ConvertToTryWithResources")
     public List<String> getXMLString() throws Exception {
         List list = new ArrayList();//ws = WebService
@@ -86,7 +83,7 @@ public class WebServiceRV {
             list.add(sw.toString());
             sw.close();
         }
-
+        
         return list;
     }
 
@@ -103,7 +100,6 @@ public class WebServiceRV {
 //            return new JSONArray();
 //        }
 //    }
-
     public List<TestLineTypeUser> getKanbantestUsers() {
         try {
             List l = this.getWebServiceData();
@@ -116,20 +112,20 @@ public class WebServiceRV {
             //Skip the <diffgr:diffgram> tag, read root tag directly.
             Node node = (Node) doc.getFirstChild().getFirstChild();
             TestLineTypeUsers users = (TestLineTypeUsers) u.unmarshal(node);
-
             return users.getQryData();
         } catch (Exception ex) {
-
             log.error(ex.toString());
             return new ArrayList();
-
         }
     }
-
+    
     public static void main(String arg[]) {
-
+        List<TestLineTypeUser> l = WebServiceRV.getInstance().getKanbantestUsers();
+        for (TestLineTypeUser t : l) {
+            System.out.println(new Gson().toJson(t));
+        }
     }
-
+    
     private JSONArray putJ(JSONArray j) {
         return j.put(3);
     }

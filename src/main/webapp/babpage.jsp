@@ -15,7 +15,8 @@
     </c:if>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>${initParam.pageTitle}</title>
+        <title>組包裝 ${userSitefloor} 樓 - ${initParam.pageTitle}</title>
+        <link rel="shortcut icon" href="images/favicon.ico"/>
         <style>
             #titleAlert{
                 background-color: green;

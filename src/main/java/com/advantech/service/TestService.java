@@ -5,8 +5,10 @@
  */
 package com.advantech.service;
 
+import com.advantech.entity.AlarmAction;
 import com.advantech.model.TestDAO;
 import com.advantech.entity.Test;
+import com.advantech.entity.TestLineTypeUser;
 import java.util.List;
 
 /**
@@ -29,12 +31,20 @@ public class TestService {
         return testDAO.insertTestPeople(tableNum, jobNumber);
     }
 
-    public boolean recordTestLineType(String user_id, String user_name, Double productivity) {
-        return testDAO.recordTestLineType(user_id, user_name, productivity);
+    public boolean recordTestLineType(List<TestLineTypeUser> l) {
+        return testDAO.recordTestLineType(l);
     }
 
     public boolean removeTestPeople(int tableNum, String jobNumber) {
         return testDAO.deleteTestPeople(tableNum, jobNumber);
+    }
+    
+    public boolean updateTestAlarm(List<AlarmAction> l) {
+        return testDAO.updateTestAlarm(l);
+    }
+    
+    public boolean resetTestAlarm() {
+        return testDAO.resetTestAlarm();
     }
 
     public String checkDeskIsAvailable(int tableNo, String userNo) {

@@ -95,16 +95,8 @@ public class BABService {
         return babDAO.getClosedBABInfoDetail(startDate, endDate);
     }
 
-    public boolean updateTestAlarm(List<AlarmAction> l) {
-        return babDAO.updateTestAlarm(l);
-    }
-
     public boolean updateBABAlarm(List<AlarmAction> l) {
         return babDAO.updateBABAlarm(l);
-    }
-
-    public boolean resetTestAlarm() {
-        return babDAO.resetTestAlarm();
     }
 
     public boolean resetBABAlarm() {

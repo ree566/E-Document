@@ -5,13 +5,13 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.quartz-scheduler.org/xml/JobSchedulingData http://www.quartz-scheduler.org/xml/job_scheduling_data_2_0.xsd"
     version="1.8">
-    <!--主要工作job，把資料轉換到TXT控制燈號-->
-    
+
     <processing-directives>
         <overwrite-existing-data>false</overwrite-existing-data>
         <ignore-duplicates>true</ignore-duplicates> 
     </processing-directives>
     
+    <!--主要工作job，把資料轉換到TXT控制燈號-->
     <schedule>
         <job>
             <name>DailyJobWorker</name>
@@ -26,6 +26,7 @@
             </cron>
         </trigger>
     </schedule>
+    
     <!--清理資料庫job-->
     <schedule>
         <job>
@@ -41,6 +42,7 @@
         </trigger>
     </schedule>
     
+    <!--晚上十點把未完結工單做儲存的job-->
     <schedule>
         <job>
             <name>SaveBABDataToDB</name>
@@ -54,8 +56,9 @@
             </cron>
         </trigger>
     </schedule>
-    <!--晚上十點把未完結工單做儲存的job-->
     
+    
+    <!--定時查看sensor是否異常，回報-->
     <schedule>
         <job>
             <name>CheckSensor</name>
@@ -69,9 +72,10 @@
             </cron>
         </trigger>
     </schedule>
-    <!--定時查看sensor是否異常，回報-->
     
-    <schedule>
+    
+    <!--定時查看sensor是否異常，回報-->
+    <!--    <schedule>
         <job>
             <name>TestLineTypeRecord</name>
             <job-class>com.advantech.quartzJob.TestLineTypeRecord</job-class>
@@ -83,7 +87,6 @@
                 <cron-expression>0 0 9-17 ? * MON-FRI *</cron-expression>
             </cron>
         </trigger>
-    </schedule>
-    <!--定時查看sensor是否異常，回報-->
+    </schedule>-->
     
 </job-scheduling-data>

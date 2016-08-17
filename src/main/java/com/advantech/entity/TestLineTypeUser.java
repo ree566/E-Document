@@ -17,16 +17,15 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "QryData")
-public class TestLineTypeUser implements Serializable{
+public class TestLineTypeUser implements Serializable {
 
 //    @XmlElement(name = "C_DATE")
 //    private String C_DATE;
-
     @XmlElement(name = "USER_NO")
-    private String USER_NO;
+    private String userNo;
 
     @XmlElement(name = "USER_NAME")
-    private String USER_NAME;
+    private String userName;
 
 //    @XmlElement(name = "TOTAL_PQ")
 //    private String TOTAL_PQ;
@@ -51,9 +50,8 @@ public class TestLineTypeUser implements Serializable{
 //
 //    @XmlElement(name = "BREAK_H")
 //    private String BREAK_H;
-
     @XmlElement(name = "PRODUCTIVITY")
-    private Double PRODUCTIVITY;
+    private Double productivity;
 
 //    public String getC_DATE() {
 //        return C_DATE;
@@ -62,21 +60,20 @@ public class TestLineTypeUser implements Serializable{
 //    public void setC_DATE(String C_DATE) {
 //        this.C_DATE = C_DATE;
 //    }
-
-    public String getUSER_NO() {
-        return USER_NO;
+    public String getUserNo() {
+        return userNo;
     }
 
-    public void setUSER_NO(String USER_NO) {
-        this.USER_NO = USER_NO;
+    public void setUserNo(String userNo) {
+        this.userNo = userNo;
     }
 
-    public String getUSER_NAME() {
-        return USER_NAME;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setUSER_NAME(String USER_NAME) {
-        this.USER_NAME = USER_NAME;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
 //    public String getTOTAL_PQ() {
@@ -142,13 +139,12 @@ public class TestLineTypeUser implements Serializable{
 //    public void setBREAK_H(String BREAK_H) {
 //        this.BREAK_H = BREAK_H;
 //    }
-
-    public Double getPRODUCTIVITY() {
-        return PRODUCTIVITY;
+    public Double getProductivity() {
+        return productivity;
     }
 
-    public void setPRODUCTIVITY(Double PRODUCTIVITY) {
-        this.PRODUCTIVITY = PRODUCTIVITY;
+    public void setProductivity(Double productivity) {
+        this.productivity = productivity;
     }
 
 }

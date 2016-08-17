@@ -176,7 +176,7 @@ public class DataTransformer {
                         outputResult(PEOPLE_MATCH, txtName);
                     }
                     if (isWriteToDB) {
-                        babService.resetTestAlarm();
+                        testService.resetTestAlarm();
                     }
                     testResetFlag = false;
                 }
@@ -207,7 +207,7 @@ public class DataTransformer {
             l.add(new AlarmAction(tableId, action));
         }
 
-        return testTxtName.equals(txtName) ? babService.updateTestAlarm(l) : babService.updateBABAlarm(l);
+        return testTxtName.equals(txtName) ? testService.updateTestAlarm(l) : babService.updateBABAlarm(l);
     }
 
     private void initTestMap() {
@@ -241,9 +241,9 @@ public class DataTransformer {
 
             for (TestLineTypeUser user : kanbanUsers) {
                 
-                Double PRODUCTIVITY = user.getPRODUCTIVITY();
-                String no = user.getUSER_NO();
-                String name = user.getUSER_NAME();
+                String no = user.getUserNo();
+                String name = user.getUserName();
+                Double PRODUCTIVITY = user.getProductivity();
                 
                 for (Iterator it = tables.iterator(); it.hasNext();) {
                     Test ti = (Test) it.next();

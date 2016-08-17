@@ -10,6 +10,7 @@
     <head>
         <meta charset=UTF-8>
         <title>${initParam.pageTitle}</title>
+        <link rel="shortcut icon" href="images/favicon.ico"/>
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
         <link rel="stylesheet" href="css/jquery.dataTables.min.css">
         <style>
