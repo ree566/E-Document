@@ -27,8 +27,8 @@
         
         driverClass="net.sourceforge.jtds.jdbc.Driver"
         name="jdbc/res3" 
-        user="Webass" 
-        password="Webass" 
+        user="waychien" 
+        password="m3server" 
         
         idleConnectionTestPeriod="60"
         maxPoolSize="50" 

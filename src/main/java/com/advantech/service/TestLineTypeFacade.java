@@ -24,22 +24,22 @@ import org.json.JSONObject;
 public class TestLineTypeFacade extends BasicLineTypeFacade {
 
     private static TestLineTypeFacade instance;
-    
+
     private final Map PEOPLE_NOT_MATCH = new HashMap();
-    
+
     private final int maxTestTable;
     private final double TEST_STANDARD;
-    
+
     private final WebServiceRV rv;
     private final TestService testService;
-    
+
     private final int TEST_USER_NOT_IN_SYSTEM_SIGN = -1, TEST_USER_NOT_IN_XML_SIGN = 2;
 
     public TestLineTypeFacade() {
         PropertiesReader p = PropertiesReader.getInstance();
         maxTestTable = p.getMaxTestTable();
         TEST_STANDARD = p.getTestStandard();
-        
+
         rv = WebServiceRV.getInstance();
         testService = BasicService.getTestService();
         super.setTxtName(p.getTestTxtName());
@@ -63,7 +63,7 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
 
     @Override
     protected boolean generateData() {
-           boolean isSomeoneUnderStandard = false;
+        boolean isSomeoneUnderStandard = false;
         List<Test> tables = testService.getAllTableInfo();
         if (hasDataInCollection(tables)) {
             initMap();
@@ -75,60 +75,62 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
             boolean isInTheWebService = false;
 
             for (TestLineTypeUser user : kanbanUsers) {
-                
-                String no = user.getUserNo();
-                String name = user.getUserName();
-                Double PRODUCTIVITY = user.getProductivity();
-                
+
+                String jobnumber = user.getUserNo();
+                String userName = user.getUserName();
+                Double productivity = user.getProductivity();
+
                 for (Iterator it = tables.iterator(); it.hasNext();) {
                     Test ti = (Test) it.next();
-                    if (ti.getUserid().trim().equals(no)) {
-                        int tableid = ti.getTableNum();
+                    if (ti.getUserid().trim().equals(jobnumber)) {
+                        int tableNo = ti.getTableNum();
+                        int status;
 
-                        JSONObject fitUser = new JSONObject();
-                        fitUser.put("name", name)
-                                .put("number", no)
-                                .put("table", tableid)
-                                .put("sitefloor", ti.getSitefloor())
-                                .put("PRODUCTIVITY", PRODUCTIVITY);
-                        if (PRODUCTIVITY < TEST_STANDARD) {
-                            fitUser.put("isalarm", ALARM_SIGN);
-                            dataMap.put(tableid, ALARM_SIGN);
+                        if (productivity < TEST_STANDARD) {
+                            status = ALARM_SIGN;
+                            dataMap.put(tableNo, ALARM_SIGN);
                             isSomeoneUnderStandard = true;
                         } else {
-                            fitUser.put("isalarm", NORMAL_SIGN);
+                            status = NORMAL_SIGN;
                         }
-                        userArr.put(fitUser);
-                        it.remove();
-                        isInTheWebService = true;
+
+                        userArr.put(newTestUser(userName, jobnumber, tableNo, productivity, ti.getSitefloor(), status));
+                        it.remove();//把比對過的資料移除，剩下的就是有在本系統XML卻找不到人的使用者
+                        isInTheWebService = true;//對到人之後跳出迴圈，換下一個人做比對
                         break;
                     }
                 }
                 if (isInTheWebService) {
                     isInTheWebService = false;
                 } else {
-                    PEOPLE_NOT_MATCH.put(name, TEST_USER_NOT_IN_SYSTEM_SIGN); //沒核對到資料庫的人員傳回m2給前端
+                    PEOPLE_NOT_MATCH.put(userName, TEST_USER_NOT_IN_SYSTEM_SIGN); //沒核對到資料庫的人員傳回m2給前端
                 }
             }
-            userArr = separateAbnormalUser(tables, userArr);
+            userArr = separateAbnormalUser(tables, userArr);//把剩下的人以異常訊號回報給前端
             processingJsonObject.put("data", userArr);
         } else {
             processingJsonObject = null;
         }
         return isSomeoneUnderStandard;
     }
-    
+
     private JSONArray separateAbnormalUser(List<Test> l, JSONArray j) {
-        for (Test ti : l) {//邊對邊拿掉collection的data，剩下的就是沒刷入系統的人
-            JSONObject abnormalUser = new JSONObject();
-            abnormalUser.put("name", "n/a")
-                    .put("number", ti.getUserid())
-                    .put("table", ti.getTableNum())
-                    .put("PRODUCTIVITY", "0.0")
-                    .put("isalarm", TEST_USER_NOT_IN_XML_SIGN);
-            j.put(abnormalUser);
+        String emptyUserName = "n/a";
+        Double emptyProductivity = 0.0;
+        for (Test ti : l) {
+            j.put(newTestUser(emptyUserName, ti.getUserid(), ti.getTableNum(), emptyProductivity, ti.getSitefloor(), TEST_USER_NOT_IN_XML_SIGN));
         }
         return j;
+    }
+
+    private JSONObject newTestUser(String name, String jobnumber, int tableNo, Double productivity, String sitefloor, int status) {
+        return new JSONObject()
+                .put("name", name)
+                .put("number", jobnumber)
+                .put("table", tableNo)
+                .put("PRODUCTIVITY", productivity)
+                .put("sitefloor", sitefloor)
+                .put("isalarm", status);
     }
 
     @Override

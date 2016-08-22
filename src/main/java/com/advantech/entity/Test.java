@@ -17,7 +17,7 @@ public class Test implements Serializable {
     private int id;
     private String tableName;
     private String userid;
-    private int sitefloor;
+    private String sitefloor;
     private String updatetime;
 
     public Test() {
@@ -53,11 +53,11 @@ public class Test implements Serializable {
         this.userid = userid;
     }
 
-    public int getSitefloor() {
+    public String getSitefloor() {
         return sitefloor;
     }
 
-    public void setSitefloor(int sitefloor) {
+    public void setSitefloor(String sitefloor) {
         this.sitefloor = sitefloor;
     }
 

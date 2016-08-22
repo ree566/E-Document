@@ -4,11 +4,13 @@ import com.advantech.entity.AlarmAction;
 import com.advantech.model.BABDAO;
 import com.advantech.entity.BAB;
 import com.advantech.entity.BABHistory;
+import com.advantech.entity.BABPeopleRecord;
 import com.advantech.entity.Line;
 import com.advantech.helper.PropertiesReader;
 import com.google.gson.Gson;
 import java.math.BigDecimal;
 import java.sql.Array;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.json.JSONArray;
@@ -116,9 +118,9 @@ public class BABService {
         if (line.isIsOpened()) {
             if (startBAB(bab)) {
                 BAB b = this.babDAO.getLastInputBAB(bab.getLine());//get last insert id
-                return this.recordBABPeople(b.getId(), this.FIRST_STATION_NUMBER, jobnumber) ? "success" : "error";
+                return this.recordBABPeople(b.getId(), this.FIRST_STATION_NUMBER, jobnumber) ? "success" : "發生錯誤，工單已經投入，人員資訊無法記錄";
             } else {
-                return "發生錯誤，工單已經投入，人員資訊無法記錄";
+                return "error";
             }
         } else {
             return "線別尚未開啟";
@@ -134,11 +136,22 @@ public class BABService {
         return babDAO.insertBAB(bab);
     }
 
+//    public 
     public boolean recordBABPeople(int BABid, int station, String jobnumber) {
-        return babDAO.recordBABPeople(BABid, station, jobnumber);
+        List l = new ArrayList();
+        l.add(new BABPeopleRecord(BABid, station, jobnumber));
+        return babDAO.recordBABPeople(l);
     }
 
-    public String closeBAB(int BABid){
+    public BABPeopleRecord getExistUserInBAB(int BABid, int station) {
+        return babDAO.getExistUserInBAB(BABid, station);
+    }
+
+    public List<BABPeopleRecord> getExistUserInBAB(int BABid) {
+        return babDAO.getExistUserInBAB(BABid);
+    }
+
+    public String closeBAB(int BABid) {
         List<BAB> processingBab = babDAO.getProcessingBAB(BABid);
         if (processingBab != null && !processingBab.isEmpty()) {
             BAB bab = processingBab.get(0);
@@ -279,7 +292,7 @@ public class BABService {
         boolean existBabStatistics = (getBABAvgs(BABid).length() != 0);
         message.put("total", existBabStatistics);
         if (existBabStatistics) {
-            //第二顆不做檢查，因為假使第一顆沒有換下一套(儲存紀錄)，後面無法做工單關閉
+            //第二站不做檢查，因為假使第一顆沒有換下一套(儲存紀錄)，後面無法做工單關閉，而且假如只開兩站不會執行此function
             checkCloseFlag = (station == 2 ? true : babDAO.checkPrevSensorIsClosed(BABid, station - 1));
 
             if (checkCloseFlag) {

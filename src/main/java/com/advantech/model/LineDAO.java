@@ -7,6 +7,7 @@ package com.advantech.model;
 
 import com.advantech.entity.Line;
 import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -40,6 +41,9 @@ public class LineDAO extends BasicDAO {
     }
 
     public List<Line> getLine(String sitefloor) {
+        if(sitefloor.length() > 3){
+            return new ArrayList();
+        }
         return queryLineTable("SELECT * FROM LS_Line where sitefloor = ?", sitefloor);
     }
 

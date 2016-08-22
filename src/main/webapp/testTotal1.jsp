@@ -1,7 +1,8 @@
 <%-- 
-    Document   : sensorAdjust
-    Created on : 2016/4/14, 下午 02:11:41
+    Document   : test
+    Created on : 2015/11/20, 上午 11:36:50
     Author     : Wei.Cheng
+https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-render-function-with-ajax-datasource-getting-undefined
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -11,33 +12,29 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>${initParam.pageTitle}</title>
         <link rel="shortcut icon" href="images/favicon.ico"/>
+        <link rel="stylesheet" href="css/jquery.dataTables.min.css">
         <style>
             body {
                 padding-top: 70px;
                 /* Required padding for .navbar-fixed-top. Remove if using .navbar-static-top. Change if height of navigation changes. */
             }
-            #wigetCtrl{
-                margin: 0px auto;
-                width: 98%
-            }
-            iframe1{
-                
-            }
         </style>
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+        <script src="js/jquery.dataTables.min.js"></script>
+        <script src="js/jquery.cookie.js"></script>
         <script>
-            $(function () {
-                $("#iframe1").load(function () {
-                    console.log("This table is update.");
-                });
+            $(document).ready(function () {
+
             });
         </script>
     </head>
     <body>
         <jsp:include page="admin-header.jsp" />
-        <div id="wigetCtrl">
-            <iframe id="iframe1" style='width:100%; height:650px' frameborder="0" scrolling="no" src="map_5f.jsp" webkitAllowFullScreen mozAllowFullScreen allowFullScreen></iframe>
+        
+        <div class="container">
+            <h1>搜尋特定日期的各站紀錄，從每個小時會save一次的那個table</h1>
         </div>
+        
         <jsp:include page="footer.jsp" />
     </body>
 </html>

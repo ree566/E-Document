@@ -330,8 +330,8 @@
                                 interlacedColor: "#F5F5F5",
                                 gridColor: "#D7D7D7",
                                 tickColor: "#D7D7D7",
-                                minimum: 0,
-                                maximum: 500
+                                minimum: 0
+//                                maximum: 500
                             },
                             axisX: {
                                 title: "台數",

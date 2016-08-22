@@ -6,12 +6,12 @@
 package com.advantech.model;
 
 import com.advantech.entity.AlarmAction;
-import com.advantech.quartzJob.DataTransformer;
 import com.advantech.entity.Test;
 import com.advantech.entity.Desk;
 import com.advantech.entity.TestLineTypeUser;
 import com.advantech.service.TestLineTypeFacade;
 import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -50,6 +50,9 @@ public class TestDAO extends BasicDAO {
     }
 
     public List<Desk> getDesk(String sitefloor) {
+        if(sitefloor.length() > 3){
+            return new ArrayList();
+        }
         return queryDeskTable("SELECT * FROM LS_Table where sitefloor = ?", sitefloor);
     }
 

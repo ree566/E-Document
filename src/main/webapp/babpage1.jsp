@@ -10,7 +10,7 @@
 <!DOCTYPE html>
 <html>
     <c:set var="userSitefloor" value="${param.sitefloor}" />
-    <c:if test="${(userSitefloor == null) || (userSitefloor == '')}">
+    <c:if test="${(userSitefloor == null) || (userSitefloor == '' || userSitefloor < 1 || userSitefloor > 7)}">
         <c:redirect url="/" />
     </c:if>
     <head>
@@ -27,7 +27,10 @@
             .step{
                 float:left; 
                 width:100%; 
-                border-bottom-style:dotted;
+                /*border-bottom-style:dotted;*/
+                border-left: solid 2px;
+                border-bottom: solid 2px;
+                border-right: solid 2px;
             }
             #step1{
                 background-color: rosybrown;
@@ -58,6 +61,12 @@
             .stepAlarm{
                 border-color: red;
             }
+            li{
+                line-height: 20px;
+            }
+            .importantMsg{
+                color: red;
+            }
         </style>
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
         <script src="//code.jquery.com/ui/1.12.0/jquery-ui.js"></script>
@@ -69,7 +78,8 @@
             var hnd;//鍵盤輸入間隔
             var hnd2;//鍵盤輸入間隔
             var serverErrorConnMessage = "Error, the textbox can't connect to server now.";
-            var userNotFoundMessage = "使用者不存在，請重新確認。", paramNotVaildMessage = "輸入資料有誤，請重新再確認。";
+            var userNotFoundMessage = "使用者不存在，請重新確認，如有問題請通知系統管理人員。",
+                    paramNotVaildMessage = "輸入資料有誤，請重新再確認。";
 
             var userInfoCookieName = "userInfo", babInfoCookieName = "babInfo", testLineTypeCookieName = "testLineTypeCookieName";
             var STATION_LOGIN = "LOGIN", STATION_LOGOUT = "LOGOUT";
@@ -78,24 +88,7 @@
             var firstStation = 1;
             var otherStationSearchResult;
 
-            function block() {
-                $.blockUI({
-                    css: {
-                        border: 'none',
-                        padding: '15px',
-                        backgroundColor: '#000',
-                        '-webkit-border-radius': '10px',
-                        '-moz-border-radius': '10px',
-                        opacity: .5,
-                        color: '#fff'
-                    },
-                    fadeIn: 0
-                    , overlayCSS: {
-                        backgroundColor: '#FFFFFF',
-                        opacity: .3
-                    }
-                });
-            }
+            var tabreg = /^[0-9a-zA-Z-]+$/;//Textbox check regex.
 
             $(function () {
                 $(document).ajaxSend(function () {
@@ -174,23 +167,7 @@
 
                 changeInputPOAction();
 
-                if (isUserInfoExist) {
-                    var obj = $.parseJSON(userInfoCookie);
-                    $("#lineNo").val(obj.lineNo);
-                    $("#jobnumber").val(obj.jobnumber);
-                    $("#station").val(obj.station);
-                    $("#step2").unblock();
-                    obj.station == firstStation ? $("#babEnd, .userWiget > .station1HintMessage").hide() : $("#babEnd, .userWiget > .station1HintMessage").show();
-                } else {
-                    $("#step2").block({message: "請先在步驟一完成相關步驟。"});
-                }
-
-                if (isBabInfoExist) {
-                    var obj = $.parseJSON(babInfoCookie);
-                    $("#modelname").val(obj.modelname);
-                    $("#modelname").prev().val(obj.po);
-                    showMsg("資料已經儲存");
-                }
+                initUserInputWiget();
 
                 if (isUserInfoExist && isBabInfoExist) {
                     console.log($.extend($.parseJSON(userInfoCookie), $.parseJSON(babInfoCookie)));
@@ -228,19 +205,21 @@
 
                 //儲存使用者資訊
                 $("#saveInfo").click(function () {
-                    if (confirm("saveInfo?")) {
+                    if (confirm("確定您所填入的資料無誤?")) {
                         saveUserStatus();
                     }
                 });
 
                 //重設使用者資訊
                 $("#clearInfo").click(function () {
-                    if (confirm("clearInfo?")) {
+                    if (confirm("確定離開此站別?")) {
+                        if (!isUserInfoExist) {
+//                            showMsg("步驟1 cookie不存在，無法登出，請聯絡系統管理員。");
+                            return false;
+                        }
+
                         if ($("#station").val() == firstStation) {
-                            if (!isUserInfoExist) {
-                                showMsg("步驟1 cookie不存在，無法登出，請聯絡系統管理員。");
-                                return false;
-                            }
+
                             var obj = $.parseJSON(userInfoCookie);
                             console.log(obj);
                             firstStationLogin(obj, STATION_LOGOUT);
@@ -257,7 +236,7 @@
                     if (isBabInfoExist) {
                         dialog.dialog("open");
                     } else {
-                        if (confirm("確定儲存?")) {
+                        if (confirm("確定開始工單?")) {
                             startBab();
                         }
                     }
@@ -267,7 +246,7 @@
                 $("#babEnd").click(function () {
                     var userInfo = $.parseJSON(userInfoCookie);
                     var babInfo = $.parseJSON(babInfoCookie);
-                    var maxStation = babInfo.maxStation;
+                    var maxStation = babInfo.people;
                     if (confirm("站別 " + userInfo.station + " 確定儲存?")) {
                         var data = {
                             babId: babInfo.babId,
@@ -280,16 +259,43 @@
                         } else if (userInfo.station == maxStation) {
                             data.action = BAB_END;
                             otherStation(data);
+                        } else {
+                            showMsg("invaild station");
                         }
                     }
                 });
 
-                $("#clearAllCookie").click(function () {
-                    removeAllStepCookie();
-                    reload();
+                $("#directlyClose").click(function () {
+                    if (confirm("※強制跳出並不會做資料儲存※\n確定跳出?")) {
+                        $.removeCookie(babInfoCookieName);
+                        reload();
+                    }
+                });
+
+                $(":text").focus(function () {
+                    $(this).select();
                 });
 
             });
+
+            function block() {
+                $.blockUI({
+                    css: {
+                        border: 'none',
+                        padding: '15px',
+                        backgroundColor: '#000',
+                        '-webkit-border-radius': '10px',
+                        '-moz-border-radius': '10px',
+                        opacity: .5,
+                        color: '#fff'
+                    },
+                    fadeIn: 0
+                    , overlayCSS: {
+                        backgroundColor: '#FFFFFF',
+                        opacity: .3
+                    }
+                });
+            }
 
             //extra functions
             function checkExistCookies() {
@@ -313,6 +319,49 @@
                 return true;
             }
 
+            function initUserInputWiget() {
+                var userInfoCookie = $.cookie(userInfoCookieName);
+                var babInfoCookie = $.cookie(babInfoCookieName);
+
+                if (userInfoCookie != null) {
+                    var obj = $.parseJSON(userInfoCookie);
+                    $("#lineNo").val(obj.lineNo);
+                    $("#jobnumber").val(obj.jobnumber);
+                    $("#station").val(obj.station);
+                    $("#step2").unblock();
+
+                    if (obj.station == firstStation) {
+                        $("#babEnd, .userWiget > .station1HintMessage").hide();
+                        $("#step2Hint")
+                                .append("<li>輸入工單</li>")
+                                .append("<li class='importantMsg'>確定系統有帶出機種</li>")
+                                .append("<li>選擇人數</li>")
+                                .append("<li>點選<code>Begin</code>開始投入</li>");
+                    } else {
+                        $("#babEnd, .userWiget > .station1HintMessage").show();
+                        $("#step2Hint")
+                                .append("<li>輸入工單</li>")
+                                .append("<li class='importantMsg'>確定系統有帶出機種</li>")
+                                .append("<li>點選<code>Begin</code>開始</li>")
+                                .append("<li>做完最後一台時點擊<code>Save</code>，告知系統您已經做完了</li>");
+                    }
+                } else {
+                    $("#step2").block({message: "請先在步驟一完成相關步驟。"});
+                }
+
+                if (babInfoCookie != null) {
+                    var obj = $.parseJSON(babInfoCookie);
+                    $("#modelname").val(obj.modelname);
+                    $("#modelname").prev().val(obj.po);
+
+                    if ($("#people").is(":visible")) {
+                        $("#people").val(obj.people);
+                    }
+                    showInfo("工單: " + obj.po + " | 機種 : " + obj.modelname + " | 人數 : " + obj.people);
+                    showMsg("資料已經儲存");
+                }
+            }
+
             function lockAllUserInput() {
                 $(":input,select").not("#redirectBtn").attr("disabled", "disabled");
             }
@@ -324,7 +373,7 @@
                     station: $("#station").val()
                 };
 
-                if (checkVal(userInfo.lineNo, userInfo.jobnumber, userInfo.station) == false) {
+                if (checkVal(userInfo.lineNo, userInfo.jobnumber, userInfo.station) == false || !userInfo.jobnumber.match(tabreg)) {
                     showMsg(paramNotVaildMessage);
                     return false;
                 } else {
@@ -522,22 +571,22 @@
                     saveBabInfo(data);
                     console.log("First station input new babs.");
                 } else {
-                    if (station > otherStationSearchResult.people) {
-                        showMsg("您的站別大於第一站工單投入所輸入的人數 " + otherStationSearchResult.people + " ，請重新確認。");
-                        return false;
-                    } else {
-                        var cookieInfo = JSON.parse($.cookie(userInfoCookieName));
+//                    if (station > otherStationSearchResult.people) {
+//                        showMsg("您的站別大於第一站工單投入所輸入的人數 " + otherStationSearchResult.people + " ，請重新確認。");
+//                        return false;
+//                    } else {
+                    var cookieInfo = JSON.parse($.cookie(userInfoCookieName));
 
-                        data.station = cookieInfo.station;
-                        data.jobnumber = cookieInfo.jobnumber;
-                        data.action = STATION_LOGIN;
+                    data.station = cookieInfo.station;
+                    data.jobnumber = cookieInfo.jobnumber;
+                    data.action = STATION_LOGIN;
 
-                        data.babId = otherStationSearchResult.id;
-                        data.maxStation = otherStationSearchResult.people;
+                    data.babId = otherStationSearchResult.id;
+                    data.people = otherStationSearchResult.people;
 
-                        otherStation(data);
-                        showMsg("Begin save.");
-                    }
+                    otherStation(data);
+                    showMsg("Begin save.");
+//                    }
                     console.log("Other station user login.");
                 }
             }
@@ -578,7 +627,7 @@
                                     po: data.po,
                                     modelname: data.modelname,
                                     babId: data.babId,
-                                    maxStation: data.maxStation
+                                    people: data.people
                                 };
                                 generateCookie(babInfoCookieName, JSON.stringify(savingData));
                             } else {
@@ -636,7 +685,10 @@
 
             function showMsg(msg) {
                 $("#serverMsg").html(msg);
-                $(this).parent().addClass("stepAlarm");
+            }
+
+            function showInfo(msg) {
+                $("#processingBab").html(msg);
             }
         </script>
     </head>
@@ -695,7 +747,7 @@
                 </div>
                 <div class="wigetInfo">
                     <h3>步驟1:</h3>
-                    <h5>請選擇您的線別。</h5>
+                    <h5>請依序填入您的相關資訊。</h5>
                 </div>
             </div>
 
@@ -713,6 +765,7 @@
                         </select>
                         <input type="button" id="babBegin" value="Begin" />
                         <input type="button" id="babEnd" value="Save" />
+                        <input type="button" id="directlyClose" value="強制跳出" />
                     </div>
                     <div class="station1HintMessage alarm">
                         <span class="glyphicon glyphicon-alert"></span>
@@ -722,12 +775,16 @@
                 </div>
                 <div class="wigetInfo">
                     <h3>步驟2:</h3>
-                    <h5>請輸入工單號碼。</h5>
+                    <h5>請依照下列流程操作。</h5>
+                    <h5>
+                        <ol id="step2Hint">
+                        </ol>
+                    </h5>
                 </div>
             </div>
 
             <div id="step3" class="step">
-                <div id='serverMsg' class="userWiget form-inline">        
+                <div id='serverMsg' class="userWiget">        
                 </div>
                 <div class="wigetInfo">
                     <h3>步驟3:觀看伺服器訊息。</h3>
@@ -735,12 +792,10 @@
                 </div>
             </div>
 
-            <div id="step4" class="step">
-                <div class="userWiget form-inline">
-                    There's the processing PN information.
-                </div>
+            <div id="step4" class="step stepAlarm">
+                <div id="processingBab" class="userWiget"></div>
                 <div class="wigetInfo">
-                    <h3>此處會顯示站別1輸入的工單。</h3>
+                    <h3>此處會顯示您正在進行的工單。</h3>
                 </div>
             </div>
 

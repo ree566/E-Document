@@ -10,7 +10,7 @@
 <!DOCTYPE html>
 <html>
     <c:set var="userSitefloor" value="${param.sitefloor}" />
-    <c:if test="${(userSitefloor == null) || (userSitefloor == '')}">
+    <c:if test="${(userSitefloor == null) || (userSitefloor == '' || userSitefloor < 1 || userSitefloor > 7)}">
         <c:redirect url="/" />
     </c:if>
     <head> 
@@ -102,7 +102,7 @@
                         $("#table").val(cookieInfo.tableNo);
                         lockWhenUserIsLogin();
                         $("#cookieinfo").html("測試 cookie 已經儲存");
-                        $("#userInfo").html("<td>" + cookieInfo.tableNo + "</td>" + "<td>" + cookieInfo.userNo + "</td>");
+                        $("#userInfo").html("<td>" + $("#table option:selected").text() + "</td>" + "<td>" + cookieInfo.userNo + "</td>");
                         return true;
                     } else {
                         lockAllUserInput();

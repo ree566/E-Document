@@ -10,6 +10,7 @@ import com.advantech.helper.ProcRunner;
 import com.advantech.helper.PropertiesReader;
 import com.advantech.entity.BABHistory;
 import com.advantech.entity.BAB;
+import com.advantech.entity.BABPeopleRecord;
 import com.advantech.entity.LineBalancing;
 import com.advantech.service.BasicService;
 import com.advantech.service.FBNService;
@@ -182,8 +183,30 @@ public class BABDAO extends BasicDAO {
         );
     }
 
-    public boolean recordBABPeople(int BABid, int station, String jobnumber) {
-        return update(getConn(), "INSERT INTO BABPeopleRecoard(BABid, station, user_id) VALUES (?,?,?)", BABid, station, jobnumber);
+    public BABPeopleRecord getExistUserInBAB(int BABid, int station) {
+        List l = queryForBeanList(
+                getConn(),
+                BABPeopleRecord.class,
+                "SELECT * FROM BABPeopleRecord WHERE BABid = ? AND station = ?",
+                BABid, station
+        );
+        return !l.isEmpty() ? (BABPeopleRecord) l.get(0) : null;
+    }
+
+    public List<BABPeopleRecord> getExistUserInBAB(int BABid) {
+        return queryForBeanList(
+                getConn(),
+                BABPeopleRecord.class,
+                "SELECT * FROM BABPeopleRecord WHERE BABid = ?",
+                BABid
+        );
+    }
+
+    public boolean recordBABPeople(List<BABPeopleRecord> l) {
+        return update(getConn(),
+                "INSERT INTO BABPeopleRecord(BABid, station, user_id) VALUES (?,?,?)",
+                l,
+                "BABid", "station", "user_id");
     }
 
     /**

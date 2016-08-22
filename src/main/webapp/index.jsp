@@ -157,7 +157,7 @@
         <div class="bg"></div>
         <div class="jumbotron outline stroke-double">
             <h1 id="title">${initParam.pageTitle}</h1>
-            <p class="lead">+ Parallax Effect using jQuery</p>
+            <p class="lead">+ Dynamic management the production bottleneck.</p>
         </div>
 
 
