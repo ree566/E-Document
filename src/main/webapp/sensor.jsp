@@ -27,6 +27,8 @@
         <script src="js/moment.js"></script>
         <script>
             $(document).ready(function () {
+                var sitefloor = ${param.sitefloor};
+
                 var cookieTNum = $.cookie("user_sel");//cookie save the user selected 站別 in babpage.jsp，search when it is exist
                 //Init the table when no data send from the server. (Datatype json, default "[]")
                 var defaultstring = "<tr style='background-color:black'><td>n/a</td><td>n/a</td><td>n/a</td><td>n/a</td><td>n/a</td><td>n/a</td></tr>";
@@ -63,7 +65,7 @@
                         var flag = false;
                         for (var i = 0; i < arr.length; i++) {
                             var arrobj = arr[i];
-                            if (tagname != '' && tagname != arrobj.TagName) {
+                            if (sitefloor != arrobj.sitefloor) {
                                 /*
                                  * Get user's station number in cookies, and show the Sensor data that matches.
                                  */
@@ -76,7 +78,7 @@
                                     "<td>" + arrobj.TagName + "</td>" +
                                     "<td>" + arrobj.LogValue + "</td>" +
                                     "<td>" + arrobj.groupid + "</td>" +
-                                    "<td>" + (diff == 0 ? "計算中..." : diff + "秒") + "</td>" +
+                                    "<td>" + (diff == null ? "計算中..." : diff + "秒") + "</td>" +
                                     "<td>" + time + "</td>" +
                                     "<td>" + arrobj.BABid + "</td>" +
                                     "</tr>";
@@ -148,7 +150,6 @@
         </script>
     </head>
     <body>
-
         <div id="servermsg" style="color:red; border: 2"></div>
         <div id="sensorMsg">
             <table id="sen_table" class="table table-bordered" style="text-align: center;">

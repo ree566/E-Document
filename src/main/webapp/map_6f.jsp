@@ -23,9 +23,6 @@
                 cursor: default;
                 text-align: center;
             }
-            img{
-                border:2px green solid;
-            }
             #generateArea{
                 height: 20px;
             }
@@ -71,6 +68,8 @@
                 background-size: 100% 100%, auto;
                 background-position:center center;
                 border:5px red solid;
+                /*讓最外層div不要隨視窗變動而改變(不然裏頭的子div會跑掉)*/
+                position: absolute; 
             }
             /*            body {
                             padding-top: 70px;
@@ -125,13 +124,13 @@
 
             $(function () {
 
-                var pXa = 0;
-                var pYa = 0;
+                var pXa = -20;
+                var pYa = -20;
 
                 var titleGroup = [
                     //assy
-                    {lineName: "L3", x: 1080, y: 180},
-                    {lineName: "L4", x: 1080, y: 280},
+                    {lineName: "L3", x: 1080, y: 280},
+                    {lineName: "L4", x: 1080, y: 180},
                     //pkg
                     {lineName: "L6", x: 190, y: 200},
                     {lineName: "L7", x: 190, y: 105},
@@ -147,8 +146,8 @@
                 ];
 
                 var babGroup = [
-                    {people: 8, x: 790, y: 190, lineName: "L3"}, // group 1-4
-                    {people: 8, x: 790, y: 280, lineName: "L4"}, // group 21-24
+                    {people: 8, x: 790, y: 280, lineName: "L3"}, // group 1-4
+                    {people: 8, x: 790, y: 190, lineName: "L4"}, // group 21-24
                     {people: 3, x: 255, y: 210, lineName: "L6"}, // group 16-20
                     {people: 3, x: 255, y: 120, lineName: "L7"}, // group 9-15
                     {people: 4, x: 400, y: 190, lineName: "L8"}, // group 5-8

@@ -8,6 +8,7 @@ package com.advantech.service;
 import com.advantech.model.FBNDAO;
 import com.advantech.entity.FBN;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -25,7 +26,7 @@ public class FBNService {
         return fbnDAO.getSensorDataInDay();
     }
 
-    public List<FBN> getSensorInstantlyStatus() {
+    public List<Map> getSensorInstantlyStatus() {
         return fbnDAO.getSensorInstantlyStatus();
     }
 

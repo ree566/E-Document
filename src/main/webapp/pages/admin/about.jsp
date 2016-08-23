@@ -16,27 +16,16 @@
                 padding-top: 70px;
                 /* Required padding for .navbar-fixed-top. Remove if using .navbar-static-top. Change if height of navigation changes. */
             }
-            #wigetCtrl{
-                margin: 0px auto;
-                width: 98%;
-                text-align: center;
-            }
-            iframe1{
-
-            }
         </style>
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
         <script>
             $(function () {
-                $("#iframe1").load(function () {
-                    console.log("This table is update.");
-                });
             });
         </script>
     </head>
     <body>
         <jsp:include page="admin-header.jsp" />
-        <div id="wigetCtrl">
+        <div class="container">
             <h3>System discription1</h3>
             <h3>System discription2</h3>
             <h3>System discription3</h3>

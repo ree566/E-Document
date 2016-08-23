@@ -49,6 +49,43 @@
         <script>
             var round_digit = 2;
 
+            $(function () {
+                var momentFormatString = 'YYYY-MM-DD';
+                $(":text,input[type='number'],select").addClass("form-control");
+                $(":button").addClass("btn btn-default");
+                var options = {
+                    defaultDate: moment(),
+                    useCurrent: true,
+                    //locale: "zh-tw",
+                    format: momentFormatString,
+                    extraFormats: [momentFormatString],
+                    disabledHours: [0, 1, 2, 3, 4, 5, 6, 7, 18, 19, 20, 21, 22, 23, 24]
+                };
+                var beginTimeObj = $('#fini').datetimepicker(options);
+                var endTimeObj = $('#ffin').datetimepicker(options);
+
+                var table;
+
+                $("#send").click(function () {
+
+                    console.log("I'm clicked");
+
+                    var startDate = $('#fini').val();
+                    var endDate = $('#ffin').val();
+
+                    getDetail(startDate, endDate);
+                });
+
+                $("body").on('click', '#babDetail tbody tr', function () {
+                    if ($(this).hasClass('selected')) {
+                        $(this).removeClass('selected');
+                    } else {
+                        $('#babDetail tr.selected').removeClass('selected');
+                        $(this).addClass('selected');
+                    }
+                });
+            });
+
             function getDetail(startDate, endDate) {
                 $("#babDetail").DataTable({
                     dom: 'Bfrtip',
@@ -61,11 +98,12 @@
                         headerOffset: 50
                     },
                     "ajax": {
-                        "url": "GetCloseBABInfo",
+                        "url": "GetClosedInfo",
                         "type": "POST",
                         data: {
                             startDate: startDate,
-                            endDate: endDate
+                            endDate: endDate,
+                            action: "getBab"
                         }
                     },
                     "columns": [
@@ -75,7 +113,7 @@
                         {data: "lineName"},
                         {data: "people"},
                         {data: "failPercent"},
-                        {data: "total"},
+                        {data: "qty"},
                         {},
                         {data: "btime"}
                     ],
@@ -125,42 +163,7 @@
                 return Math.round(val * size) / size;
             }
 
-            $(function () {
-                var momentFormatString = 'YYYY-MM-DD';
-                $(":text,input[type='number'],select").addClass("form-control");
-                $(":button").addClass("btn btn-default");
-                var options = {
-                    defaultDate: moment(),
-                    useCurrent: true,
-                    //locale: "zh-tw",
-                    format: momentFormatString,
-                    extraFormats: [momentFormatString],
-                    disabledHours: [0, 1, 2, 3, 4, 5, 6, 7, 18, 19, 20, 21, 22, 23, 24]
-                };
-                var beginTimeObj = $('#fini').datetimepicker(options);
-                var endTimeObj = $('#ffin').datetimepicker(options);
 
-                var table;
-
-                $("#send").click(function () {
-
-                    console.log("I'm clicked");
-
-                    var startDate = $('#fini').val();
-                    var endDate = $('#ffin').val();
-
-                    getDetail(startDate, endDate);
-                });
-
-                $("body").on('click', '#babDetail tbody tr', function () {
-                    if ($(this).hasClass('selected')) {
-                        $(this).removeClass('selected');
-                    } else {
-                        $('#babDetail tr.selected').removeClass('selected');
-                        $(this).addClass('selected');
-                    }
-                });
-            });
         </script>
     </head>
     <body>
@@ -168,7 +171,7 @@
         <div class="wiget-ctrl form-inline">
             <div style="width:100%">
                 <h3>工單明細查詢</h3>
-                <table id="leaveRequest" class="table">
+                <table class="table">
                     <tr>
                         <td>
                             <div class="form-group form-inline">
@@ -195,10 +198,10 @@
                                 <th>工單</th>
                                 <th>機種</th>
                                 <th>線別</th>
-                                <th>人數</th>
-                                <th>未達標準</th>
-                                <th>生產總數</th>
-                                <th>亮燈頻率(%)</th>
+                                <th>生產人數</th>
+                                <th>系統計算未達標準</th>
+                                <th>生產總數量</th>
+                                <th>系統計算亮燈頻率(%)</th>
                                 <th>投入時間</th>
                             </tr>
                         </thead>

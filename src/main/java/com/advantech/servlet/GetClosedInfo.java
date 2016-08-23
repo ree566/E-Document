@@ -7,7 +7,10 @@ package com.advantech.servlet;
 
 import com.advantech.service.BABService;
 import com.advantech.service.BasicService;
+import com.advantech.service.TestService;
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
@@ -17,13 +20,15 @@ import org.json.JSONObject;
  *
  * @author Wei.Cheng
  */
-@WebServlet(name = "GetCloseBABInfo", urlPatterns = {"/GetCloseBABInfo"})
-public class GetCloseBABInfo extends HttpServlet {
+@WebServlet(name = "GetClosedInfo", urlPatterns = {"/GetClosedInfo"})
+public class GetClosedInfo extends HttpServlet {
 
+    private TestService testService = null;
     private BABService babService = null;
 
     @Override
     public void init() throws ServletException {
+        testService = BasicService.getTestService();
         babService = BasicService.getBabService();
     }
 
@@ -37,11 +42,25 @@ public class GetCloseBABInfo extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
 
-        res.setContentType("text/plain");
+        res.setContentType("application/json");
         PrintWriter out = res.getWriter();
         String startDate = req.getParameter("startDate");
         String endDate = req.getParameter("endDate");
+        String action = req.getParameter("action");
 
-        out.print(new JSONObject().put("data", babService.getClosedBABInfo(startDate, endDate)));
+        List l;
+
+        switch (action) {
+            case "getTest":
+                l = testService.getRecordTestLineType(startDate, endDate);
+                break;
+            case "getBab":
+                l = babService.getClosedBABInfo(startDate, endDate);
+                break;
+            default:
+                l = new ArrayList();
+        }
+
+        out.print(new JSONObject().put("data", l));
     }
 }

@@ -50,10 +50,14 @@ public class TestDAO extends BasicDAO {
     }
 
     public List<Desk> getDesk(String sitefloor) {
-        if(sitefloor.length() > 3){
+        if (sitefloor.length() > 3) {
             return new ArrayList();
         }
         return queryDeskTable("SELECT * FROM LS_Table where sitefloor = ?", sitefloor);
+    }
+
+    public List<Map> getRecordTestLineType(String startDate, String endDate) {
+        return queryProcForMapList(getConn(), "{CALL testLineRecord(?,?)}", startDate, endDate);
     }
 
     public boolean insertTestPeople(int tableNo, String userNo) {

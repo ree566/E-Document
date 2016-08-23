@@ -236,7 +236,7 @@
     </head>
     <body>
         <jsp:include page="admin-header.jsp" />
-        <div class="wiget-ctrl form-inline">
+        <div class="container form-inline">
             <div style="width:100%">
                 <h3>工單明細查詢</h3>
                 <table id="leaveRequest" class="table">

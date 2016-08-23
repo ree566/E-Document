@@ -83,7 +83,7 @@
 
             var userInfoCookieName = "userInfo", babInfoCookieName = "babInfo", testLineTypeCookieName = "testLineTypeCookieName";
             var STATION_LOGIN = "LOGIN", STATION_LOGOUT = "LOGOUT";
-            var SENSOR_END = "SENSOR_END", BAB_END = "BAB_END";
+            var BAB_END = "BAB_END";
 
             var firstStation = 1;
             var otherStationSearchResult;
@@ -246,29 +246,27 @@
                 $("#babEnd").click(function () {
                     var userInfo = $.parseJSON(userInfoCookie);
                     var babInfo = $.parseJSON(babInfoCookie);
-                    var maxStation = babInfo.people;
                     if (confirm("站別 " + userInfo.station + " 確定儲存?")) {
                         var data = {
                             babId: babInfo.babId,
                             station: userInfo.station,
                             jobnumber: userInfo.jobnumber
                         };
-                        if (userInfo.station != firstStation && userInfo.station < maxStation) {
-                            data.action = SENSOR_END;
-                            otherStation(data);
-                        } else if (userInfo.station == maxStation) {
+                        if (userInfo.station != firstStation) {
                             data.action = BAB_END;
                             otherStation(data);
-                        } else {
-                            showMsg("invaild station");
                         }
                     }
                 });
 
                 $("#directlyClose").click(function () {
                     if (confirm("※強制跳出並不會做資料儲存※\n確定跳出?")) {
-                        $.removeCookie(babInfoCookieName);
-                        reload();
+                        if ($.cookie(babInfoCookieName) != null) {
+                            $.removeCookie(babInfoCookieName);
+                            reload();
+                        } else {
+                            showMsg("沒有步驟二的資料");
+                        }
                     }
                 });
 
@@ -359,6 +357,8 @@
                     }
                     showInfo("工單: " + obj.po + " | 機種 : " + obj.modelname + " | 人數 : " + obj.people);
                     showMsg("資料已經儲存");
+                } else {
+                    showInfo("尚無資料");
                 }
             }
 
@@ -731,7 +731,7 @@
                 <div class="userWiget form-inline">
                     <select id="lineNo">
                         <option value="-1">---請選擇線別---</option>
-                        <c:forEach var="lines" items="${lineDAO.getLine(param.sitefloor)}">
+                        <c:forEach var="lines" items="${lineDAO.getLine(userSitefloor)}">
                             <option value="${lines.id}" ${lines.lock == 1 ? "disabled style='opacity:0.2'" : ""}>${lines.name}</option>
                         </c:forEach>
                     </select>
@@ -765,12 +765,17 @@
                         </select>
                         <input type="button" id="babBegin" value="Begin" />
                         <input type="button" id="babEnd" value="Save" />
-                        <input type="button" id="directlyClose" value="強制跳出" />
                     </div>
                     <div class="station1HintMessage alarm">
                         <span class="glyphicon glyphicon-alert"></span>
                         做完時請記得做儲存動作
                         <span class="glyphicon glyphicon-arrow-up"></span>
+                    </div>
+                    <div style="text-align:right; padding-top: 40px">
+                        <button id="directlyClose" class="btn btn-danger">
+                            <span class="glyphicon glyphicon-alert"></span>
+                            強制跳出
+                        </button>
                     </div>
                 </div>
                 <div class="wigetInfo">
@@ -795,7 +800,8 @@
             <div id="step4" class="step stepAlarm">
                 <div id="processingBab" class="userWiget"></div>
                 <div class="wigetInfo">
-                    <h3>此處會顯示您正在進行的工單。</h3>
+                    <h3>完成:</h3>
+                    <h5>此處會顯示您正在進行的工單。</h5>
                 </div>
             </div>
 

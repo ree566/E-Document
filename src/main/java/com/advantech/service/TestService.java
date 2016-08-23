@@ -10,6 +10,7 @@ import com.advantech.model.TestDAO;
 import com.advantech.entity.Test;
 import com.advantech.entity.TestLineTypeUser;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -27,6 +28,10 @@ public class TestService {
         return testDAO.getAllTableInfo();
     }
 
+    public List<Map> getRecordTestLineType(String startDate, String endDate) {
+        return testDAO.getRecordTestLineType(startDate, endDate);
+    }
+
     public boolean addTestPeople(int tableNum, String jobNumber) {
         return testDAO.insertTestPeople(tableNum, jobNumber);
     }
@@ -38,11 +43,11 @@ public class TestService {
     public boolean removeTestPeople(int tableNum, String jobNumber) {
         return testDAO.deleteTestPeople(tableNum, jobNumber);
     }
-    
+
     public boolean updateTestAlarm(List<AlarmAction> l) {
         return testDAO.updateTestAlarm(l);
     }
-    
+
     public boolean resetTestAlarm() {
         return testDAO.resetTestAlarm();
     }

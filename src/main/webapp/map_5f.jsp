@@ -23,9 +23,6 @@
                 cursor: default;
                 text-align: center;
             }
-            img{
-                border:2px green solid;
-            }
             #generateArea{
                 height: 20px;
             }
@@ -71,6 +68,8 @@
                 background-size: 100% 100%, auto;
                 background-position:center center;
                 border:5px red solid;
+                /*讓最外層div不要隨視窗變動而改變(不然裏頭的子div會跑掉)*/
+                position: absolute; 
             }
             /*            body {
                             padding-top: 70px;
@@ -126,33 +125,33 @@
 
             $(function () {
 
-                var pXa = 0;
-                var pYa = 350;
+                var pXa = -20;
+                var pYa = -20;
 
                 var titleGroup = [
-                    {lineName: "L1", x: 1090, y: -100},
-                    {lineName: "LA", x: 1090, y: -200},
-                    {lineName: "LB", x: 1090, y: -260},
-                    {lineName: "LH", x: 380, y: -200},
-                    {lineName: "LG", x: 380, y: -260},
-                    {lineName: "LF", x: 380, y: -320}
+                    {lineName: "L1", x: 1090, y: 250},
+                    {lineName: "LA", x: 1090, y: 150},
+                    {lineName: "LB", x: 1090, y: 90},
+                    {lineName: "LH", x: 380, y: 150},
+                    {lineName: "LG", x: 380, y: 90},
+                    {lineName: "LF", x: 380, y: 30}
                 ];
 
                 var testGroup = [
-                    {people: 4, x: 600, y: -320}, // group 21-24
-                    {people: 5, x: 600, y: -250}, // group 16-20
-                    {people: 7, x: 530, y: -200}, // group 9-15
-                    {people: 4, x: 630, y: -120}, // group 5-8
-                    {people: 4, x: 630, y: -80} // group 1-4
+                    {people: 4, x: 600, y: 30}, // group 21-24
+                    {people: 5, x: 600, y: 100}, // group 16-20
+                    {people: 7, x: 530, y: 150}, // group 9-15
+                    {people: 4, x: 630, y: 230}, // group 5-8
+                    {people: 4, x: 630, y: 290} // group 1-4
                 ];
 
                 var babGroup = [
-                    {people: 4, x: 930, y: -100, lineName: "L1"}, // group 1-4
-                    {people: 4, x: 930, y: -200, lineName: "LA"}, // group 21-24
-                    {people: 4, x: 930, y: -260, lineName: "LB"}, // group 16-20
-                    {people: 3, x: 250, y: -190, lineName: "LF"}, // group 9-15
-                    {people: 3, x: 250, y: -240, lineName: "LG"}, // group 5-8
-                    {people: 3, x: 250, y: -300, lineName: "LH"} // group 1-4
+                    {people: 4, x: 930, y: 250, lineName: "L1"}, // group 1-4
+                    {people: 4, x: 930, y: 150, lineName: "LA"}, // group 21-24
+                    {people: 4, x: 930, y: 90, lineName: "LB"}, // group 16-20
+                    {people: 3, x: 250, y: 160, lineName: "LF"}, // group 9-15
+                    {people: 3, x: 250, y: 110, lineName: "LG"}, // group 5-8
+                    {people: 3, x: 250, y: 50, lineName: "LH"} // group 1-4
                 ];
 
                 for (var i = 0; i < titleGroup.length; i++) {

@@ -148,7 +148,7 @@ public class BABDAO extends BasicDAO {
     }
 
     public List<Map> getClosedBABInfoDetail(String startDate, String endDate) {
-        return queryProcForMapList(getConn(), "{CALL closedBABInfoDetail(?,?)}", startDate, endDate);
+        return queryProcForMapList(getConn(), "{CALL closedBABInfoDetail_1(?,?)}", startDate, endDate);
     }
 
     public List<Array> getAvailableModelName() {

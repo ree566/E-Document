@@ -8,6 +8,7 @@ package com.advantech.model;
 import com.advantech.entity.FBN;
 import java.sql.Connection;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -32,8 +33,8 @@ public class FBNDAO extends BasicDAO {
     }
 
     //利用檢視表(過濾後FBN資料表資訊)得到當前sensor時間 websocket用 
-    public List<FBN> getSensorInstantlyStatus() {
-        return queryFBNTable("SELECT * FROM LS_GetSenRealTime");
+    public List<Map> getSensorInstantlyStatus() {
+        return queryForMapList(getConn(), "SELECT * FROM LS_GetSenRealTime");
     }
 
     public List<FBN> getBalancePerGroup(int BABid) {

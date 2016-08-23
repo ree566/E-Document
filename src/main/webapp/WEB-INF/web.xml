@@ -162,21 +162,12 @@
     
     <servlet>
         <servlet-name>About</servlet-name>
-        <jsp-file>/about.jsp</jsp-file>
+        <jsp-file>pages/admin/about.jsp</jsp-file>
     </servlet>
     <servlet-mapping>
         <servlet-name>About</servlet-name>
-        <url-pattern>/About</url-pattern>  
+        <url-pattern>pages/admin/About</url-pattern>  
     </servlet-mapping>
-<!--    
-    <servlet>
-        <servlet-name>Login</servlet-name>
-        <jsp-file>/login.jsp</jsp-file>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>Login</servlet-name>
-        <url-pattern>/Login</url-pattern>  
-    </servlet-mapping>-->
     
     <servlet>
         <servlet-name>BabDetail</servlet-name>

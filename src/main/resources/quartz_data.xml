@@ -75,7 +75,7 @@
     
     
     <!--定時查看sensor是否異常，回報-->
-    <!--    <schedule>
+    <schedule>
         <job>
             <name>TestLineTypeRecord</name>
             <job-class>com.advantech.quartzJob.TestLineTypeRecord</job-class>
@@ -84,9 +84,9 @@
             <cron>
                 <name>TestLineTypeRecord</name>
                 <job-name>TestLineTypeRecord</job-name>
-                <cron-expression>0 0 9-17 ? * MON-FRI *</cron-expression>
+                <cron-expression>0 0/10 9-19 ? * MON-FRI *</cron-expression>
             </cron>
         </trigger>
-    </schedule>-->
+    </schedule>
     
 </job-scheduling-data>
