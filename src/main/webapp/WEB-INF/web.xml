@@ -16,16 +16,7 @@
         <param-value>藍燈系統</param-value>
     </context-param>
     
-    <filter>
-        <filter-name>EncodingFilter</filter-name>
-        <filter-class>com.advantech.filter.EncodingFilter</filter-class>
-    </filter>
-    <filter-mapping>
-        <filter-name>EncodingFilter</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>
-    
-     <context-param>
+    <context-param>
         <param-name>BASIC_PERMISSION</param-name>
         <param-value>0</param-value>
     </context-param>
@@ -45,19 +36,28 @@
         <param-value>3</param-value>
     </context-param>
     
-<!--    <listener>
+    <!--    <listener>
         <listener-class>com.advantech.listener.SessionListener</listener-class>
     </listener>-->
     
-<!--    <filter>
+    <filter>
+        <filter-name>EncodingFilter</filter-name>
+        <filter-class>com.advantech.filter.EncodingFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>EncodingFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    
+    <filter>
         <filter-name>LoginFilter</filter-name>
         <filter-class>com.advantech.filter.LoginFilter</filter-class>
     </filter>
     <filter-mapping>
         <filter-name>LoginFilter</filter-name>
-        <url-pattern>/*</url-pattern>
+        <url-pattern>/pages/admin/modify/*</url-pattern>
     </filter-mapping>
-    
+    <!--
     <filter>
         <filter-name>PermissionFilter</filter-name>
         <filter-class>com.advantech.filter.PermissionFilter</filter-class>
@@ -70,6 +70,7 @@
         <url-pattern>/error.jsp</url-pattern>
     </filter-mapping>-->
     
+    <!--作業人員使用頁面-->
     <servlet>
         <servlet-name>bab</servlet-name>
         <jsp-file>/babpage1.jsp</jsp-file>
@@ -90,95 +91,114 @@
     
     <servlet>
         <servlet-name>Error</servlet-name>
-        <jsp-file>/error.jsp</jsp-file>
+        <jsp-file>/temp/error.jsp</jsp-file>
     </servlet>
     <servlet-mapping>
         <servlet-name>Error</servlet-name>
-        <url-pattern>/Error</url-pattern>  
+        <url-pattern>/temp/Error</url-pattern>  
     </servlet-mapping>
     
     <servlet>
-        <servlet-name>TestTotal</servlet-name>
-        <jsp-file>/testTotal1.jsp</jsp-file>
+        <servlet-name>SysInfoOldUrl</servlet-name>
+        <jsp-file>/temp/redirect.jsp</jsp-file>
     </servlet>
     <servlet-mapping>
-        <servlet-name>TestTotal</servlet-name>
-        <url-pattern>/TestTotal</url-pattern>  
-    </servlet-mapping>
-    
-    <servlet>
-        <servlet-name>BabTotal</servlet-name>
-        <jsp-file>/babTotal.jsp</jsp-file>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>BabTotal</servlet-name>
-        <url-pattern>/BabTotal</url-pattern>   
-    </servlet-mapping>
-    
-    <servlet>
-        <servlet-name>sensordata</servlet-name>
-        <jsp-file>/sensor.jsp</jsp-file>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>sensordata</servlet-name>
-        <url-pattern>/Sensor</url-pattern>  
-    </servlet-mapping>
-    
-    <servlet>
-        <servlet-name>SysInfo</servlet-name>
-        <jsp-file>/sysInfo.jsp</jsp-file>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>SysInfo</servlet-name>
+        <servlet-name>SysInfoOldUrl</servlet-name>
         <url-pattern>/SysInfo</url-pattern>  
     </servlet-mapping>
     
+    <!--幹部使用頁面-->
+    <servlet>
+        <servlet-name>TestTotal</servlet-name>
+        <jsp-file>/pages/admin/testTotal1.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>TestTotal</servlet-name>
+        <url-pattern>/pages/admin/TestTotal</url-pattern>  
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>BabTotal</servlet-name>
+        <jsp-file>/pages/admin/babTotal.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>BabTotal</servlet-name>
+        <url-pattern>/pages/admin/BabTotal</url-pattern>   
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>sensordata</servlet-name>
+        <jsp-file>/pages/admin/sensor.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>sensordata</servlet-name>
+        <url-pattern>/pages/admin/Sensor</url-pattern>  
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>SysInfo</servlet-name>
+        <jsp-file>/pages/admin/sysInfo.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>SysInfo</servlet-name>
+        <url-pattern>/pages/admin/SysInfo</url-pattern>  
+    </servlet-mapping>
+    
     <servlet>
         <servlet-name>SensorAdjust</servlet-name>
-        <jsp-file>/sensorAdjust.jsp</jsp-file>
+        <jsp-file>/pages/admin/sensorAdjust.jsp</jsp-file>
     </servlet>
     <servlet-mapping>
         <servlet-name>SensorAdjust</servlet-name>
-        <url-pattern>/SensorAdjust</url-pattern>  
+        <url-pattern>/pages/admin/SensorAdjust</url-pattern>  
     </servlet-mapping>
     
     <servlet>
         <servlet-name>TotalMap</servlet-name>
-        <jsp-file>/totalMap.jsp</jsp-file>
+        <jsp-file>/pages/admin/totalMap.jsp</jsp-file>
     </servlet>
     <servlet-mapping>
         <servlet-name>TotalMap</servlet-name>
-        <url-pattern>/TotalMap</url-pattern>  
+        <url-pattern>/pages/admin/TotalMap</url-pattern>  
     </servlet-mapping>
     
     <servlet>
         <servlet-name>BabDetailInfo</servlet-name>
-        <jsp-file>/babDetailInfo.jsp</jsp-file>
+        <jsp-file>/pages/admin/babDetailInfo.jsp</jsp-file>
     </servlet>
     <servlet-mapping>
         <servlet-name>BabDetailInfo</servlet-name>
-        <url-pattern>/BabDetailInfo</url-pattern>  
+        <url-pattern>/pages/admin/BabDetailInfo</url-pattern>  
     </servlet-mapping>
     
     <servlet>
         <servlet-name>About</servlet-name>
-        <jsp-file>pages/admin/about.jsp</jsp-file>
+        <jsp-file>/pages/admin/about.jsp</jsp-file>
     </servlet>
     <servlet-mapping>
         <servlet-name>About</servlet-name>
-        <url-pattern>pages/admin/About</url-pattern>  
+        <url-pattern>/pages/admin/About</url-pattern>  
     </servlet-mapping>
     
     <servlet>
         <servlet-name>BabDetail</servlet-name>
-        <jsp-file>/babDetail.jsp</jsp-file>
+        <jsp-file>/pages/admin/babDetail.jsp</jsp-file>
     </servlet>
     <servlet-mapping>
         <servlet-name>BabDetail</servlet-name>
-        <url-pattern>/BabDetail</url-pattern>  
+        <url-pattern>/pages/admin/BabDetail</url-pattern>  
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>Countermeasure</servlet-name>
+        <jsp-file>/pages/admin/modify/countermeasure.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Countermeasure</servlet-name>
+        <url-pattern>/pages/admin/modify/Countermeasure</url-pattern>  
     </servlet-mapping>
  
-<!--    <servlet>
+    <servlet>
         <servlet-name>QuartzInitializer</servlet-name>
         <servlet-class>
             org.quartz.ee.servlet.QuartzInitializerServlet
@@ -196,7 +216,7 @@
             <param-value>true</param-value>
         </init-param>
         <load-on-startup>2</load-on-startup>
-    </servlet>-->
+    </servlet>
 
     <context-param>
         <param-name>quartz:shutdown-on-unload</param-name>

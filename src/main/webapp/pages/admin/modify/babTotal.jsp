@@ -12,8 +12,8 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>${initParam.pageTitle}</title>
-        <link rel="shortcut icon" href="images/favicon.ico"/>
-        <link rel="stylesheet" href="css/jquery.dataTables.min.css">
+        <link rel="shortcut icon" href="../../images/favicon.ico"/>
+        <link rel="stylesheet" href="../../css/jquery.dataTables.min.css">
         <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
         <link rel="stylesheet" href="//cdn.datatables.net/buttons/1.2.1/css/buttons.dataTables.min.css">
         <style>
@@ -76,11 +76,11 @@
         <script src="//www.gstatic.com/charts/loader.js"></script>
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
         <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
-        <script src="js/canvasjs.min.js"></script>
-        <script src="js/jquery.dataTables.min.js"></script>
-        <script src="js/jquery.blockUI.js"></script>
-        <script src="js/moment.js"></script>
-        <script src="js/jquery.cookie.js"></script>
+        <script src="../../js/canvasjs.min.js"></script>
+        <script src="../../js/jquery.dataTables.min.js"></script>
+        <script src="../../js/jquery.blockUI.js"></script>
+        <script src="../../js/moment.js"></script>
+        <script src="../../js/jquery.cookie.js"></script>
         <script src="//cdn.jsdelivr.net/alasql/0.2/alasql.min.js"></script> 
         <script src="//cdn.datatables.net/buttons/1.2.1/js/dataTables.buttons.min.js"></script>
         <script src="//cdn.datatables.net/buttons/1.2.1/js/buttons.flash.min.js"></script>
@@ -96,7 +96,7 @@
                     "processing": false,
                     "serverSide": false,
                     "ajax": {
-                        "url": "GetTotal",
+                        "url": "../../GetTotal",
                         "type": "POST",
                         "data": {"type": "type2"}
                     },
@@ -184,7 +184,7 @@
                         'copy', 'csv', 'excel', 'pdf', 'print'
                     ],
                     "ajax": {
-                        "url": "LineBalanceDetail",
+                        "url": "../../LineBalanceDetail",
                         "type": "POST",
                         "data": {
                             id: id,
@@ -293,7 +293,7 @@
 
             function getChartData(id, isused, chartId) {
                 $.ajax({
-                    url: "GetSensorChart",
+                    url: "../../GetSensorChart",
                     method: 'POST',
                     dataType: 'json',
                     data: {
@@ -380,10 +380,14 @@
             function getHistoryBAB() {
                 var lineType = $("#lineType2").val();
                 var table = $("#babHistory").DataTable({
+                    dom: 'Bfrtip',
+                    buttons: [
+                        'copy', 'csv', 'excel', 'pdf', 'print'
+                    ],
                     "processing": false,
                     "serverSide": false,
                     "ajax": {
-                        "url": "AllBAB",
+                        "url": "../../AllBAB",
                         "type": "POST",
                         "data": {"lineType": lineType}
                     },
@@ -479,7 +483,7 @@
                 $("#lineBalnHistory").show();
                 $("#lineBalnHistory").DataTable({
                     "ajax": {
-                        "url": "GetLineBalancingComparison",
+                        "url": "../../GetLineBalancingComparison",
                         "type": "POST",
                         "data": {
                             "BABid": BABid,
@@ -601,7 +605,7 @@
 
             function getContermeasure(BABid) {
                 $.ajax({
-                    url: "CountermeasureServlet",
+                    url: "../../CountermeasureServlet",
                     data: {
                         BABid: BABid,
                         action: "select"
@@ -824,7 +828,7 @@
                 $("#saveCountermeasure").click(function () {
                     if (confirm("確定修改內容?")) {
                         $.ajax({
-                            url: "CountermeasureServlet",
+                            url: "../../CountermeasureServlet",
                             data: {
                                 BABid: editId,
                                 reason: $("#errorReasonText").val(),
@@ -869,7 +873,7 @@
         </script>
     </head>
     <body>
-        <jsp:include page="admin-header.jsp" />
+        <jsp:include page="header.jsp" />
         <!----->
         <div class="wiget-ctrl form-inline">
             <div id="bab_currentStatus">
@@ -964,7 +968,7 @@
                         <input type="button" id="searchAvailableBAB" value="查詢">
                     </div>
                 </div>
-                <div style="width: 80%; background-color: #F5F5F5">
+                <div style="width: 90%; background-color: #F5F5F5">
                     <div style="padding: 10px">
                         <table id="babHistory" class="display" cellspacing="0" width="100%" style="text-align: center">
                             <thead>
@@ -1081,8 +1085,6 @@
                 </div>
             </div>
         </div>
-        <div style="clear: both"></div>
-        <!--<div id="final_time"></div>-->
         <jsp:include page="footer.jsp" />
     </body>
 </html>

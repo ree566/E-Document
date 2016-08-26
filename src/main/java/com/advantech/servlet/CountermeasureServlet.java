@@ -7,6 +7,7 @@
 package com.advantech.servlet;
 
 import com.advantech.helper.ParamChecker;
+import com.advantech.helper.StringParser;
 import com.advantech.service.BasicService;
 import com.advantech.service.CountermeasureService;
 import java.io.*;
@@ -53,16 +54,16 @@ public class CountermeasureServlet extends HttpServlet {
         String solution = req.getParameter("solution");
         String editor = req.getParameter("editor");
 
-        if (!new ParamChecker().checkInputVals(BABid)) {
+        if (!new ParamChecker().checkInputVals(BABid) && !action.endsWith("select")) {
             out.print(new JSONObject().put("data", "No data effect"));
             return;
         }
 
-        int id = Integer.parseInt(BABid);
+        int id = StringParser.strToInt(BABid);
 
         switch (action) {
             case "select":
-                out.print(new JSONObject().put("data", cService.getCountermeasure(id)));
+                out.print(new JSONObject().put("data", cService.getCountermeasure()));
                 break;
             case "insert":
                 out.print(new JSONObject().put("data", cService.insertCountermeasure(id, Integer.parseInt(errorCode_id), reason, solution, editor)));

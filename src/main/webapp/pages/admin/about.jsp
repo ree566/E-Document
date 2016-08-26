@@ -10,7 +10,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>${initParam.pageTitle}</title>
-        <link rel="shortcut icon" href="images/favicon.ico"/>
+        <link rel="shortcut icon" href="../../images/favicon.ico"/>
         <style>
             body {
                 padding-top: 70px;
@@ -24,7 +24,7 @@
         </script>
     </head>
     <body>
-        <jsp:include page="admin-header.jsp" />
+        <jsp:include page="header.jsp" />
         <div class="container">
             <h3>System discription1</h3>
             <h3>System discription2</h3>

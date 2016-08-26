@@ -1,6 +1,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
 <style>
     a[disabled] {
         pointer-events: none;
@@ -11,6 +12,9 @@
     #logoImg{
         width: 40px;
         height: 25px;
+    }
+    body{
+        font-family: 微軟正黑體;
     }
 </style>
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
@@ -39,9 +43,9 @@
                 <span class="icon-bar"></span>
             </button>
             <a class="navbar-brand" href="SysInfo">
-                <span><img id="logoImg" src="images/bulb.png" alt="sysIcon" /></span>
+                <span><img id="logoImg" src="../../images/bulb.png" alt="sysIcon" /></span>
                     ${initParam.pageTitle}
-                <span><img id="logoImg" src="images/bulb.png" alt="sysIcon" /></span>
+                <span><img id="logoImg" src="../../images/bulb.png" alt="sysIcon" /></span>
             </a>
         </div>
         <!-- Collect the nav links, forms, and other content for toggling -->
@@ -92,9 +96,9 @@
                     </ul>
                 </li>
                 <li>
-                    <a href="#">
+                    <a href="modify/Countermeasure">
                         <span class="glyphicon glyphicon-wrench" aria-hidden="true" /> 
-                        系統資料修改區
+                        系統維護區
                     </a>
                 </li>
                 <li>

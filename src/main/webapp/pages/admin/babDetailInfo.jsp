@@ -10,11 +10,11 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>${initParam.pageTitle}</title>
-        <link rel="shortcut icon" href="images/favicon.ico"/>
+        <link rel="shortcut icon" href="../../images/favicon.ico"/>
         <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
-        <link rel="stylesheet" href="css/bootstrap-datetimepicker.min.css">
-        <link rel="stylesheet" href="css/jquery.dataTables.min.css">
-        <link rel="stylesheet" href="css/fixedHeader.dataTables.min.css">
+        <link rel="stylesheet" href="../../css/bootstrap-datetimepicker.min.css">
+        <link rel="stylesheet" href="../../css/jquery.dataTables.min.css">
+        <link rel="stylesheet" href="../../css/fixedHeader.dataTables.min.css">
         <link rel="stylesheet" href="//cdn.datatables.net/buttons/1.2.1/css/buttons.dataTables.min.css">
         <style>
             body{
@@ -34,10 +34,10 @@
         </style>
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
         <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
-        <script src="js/moment.js"></script>
-        <script src="js/bootstrap-datetimepicker.min.js"></script>
-        <script src="js/jquery.dataTables.min.js"></script>
-        <script src="js/dataTables.fixedHeader.min.js"></script>
+        <script src="../../js/moment.js"></script>
+        <script src="../../js/bootstrap-datetimepicker.min.js"></script>
+        <script src="../../js/jquery.dataTables.min.js"></script>
+        <script src="../../js/dataTables.fixedHeader.min.js"></script>
         <script src="//cdn.datatables.net/buttons/1.2.1/js/dataTables.buttons.min.js"></script>
         <script src="//cdn.datatables.net/buttons/1.2.1/js/buttons.flash.min.js"></script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js"></script>
@@ -47,61 +47,6 @@
         <script src="//cdn.datatables.net/buttons/1.2.1/js/buttons.print.min.js"></script>
 
         <script>
-            function getDetail(BABid, isused) {
-                $("#BabDetail").DataTable({
-                    dom: 'Bfrtip',
-                    buttons: [
-                        'copy', 'csv', 'excel', 'pdf', 'print'
-                    ],
-                    "processing": false,
-                    "serverSide": false,
-                    fixedHeader: {
-                        headerOffset: 50
-                    },
-                    "ajax": {
-                        "url": "BABTimeDetail",
-                        "type": "POST",
-                        data: {
-                            id: BABid,
-                            isused: isused,
-                            action: "getDetail"
-                        }
-                    },
-                    "columns": [
-                        {data: "BABid", visible: false},
-                        {data: "TagName"},
-                        {data: "groupid"},
-                        {data: "diff"},
-                        {data: "endtime"}
-                    ],
-                    "columnDefs": [
-//                        {
-//                            "type": "html",
-//                            "targets": 3,
-//                            'render': function (data, type, full, meta) {
-//                                return data + "秒";
-//                            }
-//                        }
-                    ],
-                    "oLanguage": {
-                        "sLengthMenu": "顯示 _MENU_ 筆記錄",
-                        "sZeroRecords": "無符合資料",
-                        "sInfo": "目前記錄：_START_ 至 _END_, 總筆數：_TOTAL_"
-                    },
-                    bAutoWidth: true,
-                    displayLength: -1,
-                    lengthChange: false,
-                    filter: false,
-                    info: false,
-                    paginate: false,
-                    destroy: true,
-                    "initComplete": function (settings, json) {
-                        $("#BabDetail").show();
-                    },
-                    "order": [[2, "asc"], [1, "asc"]]
-                });
-            }
-
             $(function () {
                 var momentFormatString = 'YYYY-MM-DD';
                 $(":text,input[type='number'],select").addClass("form-control");
@@ -133,7 +78,7 @@
                         "processing": false,
                         "serverSide": false,
                         "ajax": {
-                            "url": "GetAvailBabDetail",
+                            "url": "../../GetAvailBabDetail",
                             "type": "POST",
                             data: {
                                 modelName: Model_name,
@@ -156,6 +101,13 @@
                                 'render': function (data, type, full, meta) {
                                     return data == 1 ? "已完結" : "進行中";
                                 }
+                            },
+                            {
+                                "type": "html",
+                                "targets": 5,
+                                'render': function (data, type, full, meta) {
+                                    return formatDate(data);
+                                }
                             }
                         ],
                         "oLanguage": {
@@ -172,8 +124,8 @@
                         destroy: true,
                         "initComplete": function (settings, json) {
                             $("#table1").show();
-                        }
-//                        "order": [[1, "asc"], [2, "asc"]]
+                        },
+                        "order": [[5, "desc"]]
                     });
                 });
 
@@ -215,7 +167,7 @@
                         var term = $.trim(request.term);
                         var matcher = new RegExp('^' + $.ui.autocomplete.escapeRegex(term), "i");
                         $.ajax({
-                            url: "GetAvailableModelName",
+                            url: "../../GetAvailableModelName",
                             dataType: "json",
                             success: function (data) {
                                 response($.map(data, function (v, i) {
@@ -232,10 +184,69 @@
                     }
                 });
             });
+            
+             function getDetail(BABid, isused) {
+                $("#BabDetail").DataTable({
+                    dom: 'Bfrtip',
+                    buttons: [
+                        'copy', 'csv', 'excel', 'pdf', 'print'
+                    ],
+                    "processing": false,
+                    "serverSide": false,
+                    fixedHeader: {
+                        headerOffset: 50
+                    },
+                    "ajax": {
+                        "url": "../../BABTimeDetail",
+                        "type": "POST",
+                        data: {
+                            id: BABid,
+                            isused: isused,
+                            action: "getDetail"
+                        }
+                    },
+                    "columns": [
+                        {data: "BABid", visible: false},
+                        {data: "TagName"},
+                        {data: "groupid"},
+                        {data: "diff"},
+                        {data: "endtime"}
+                    ],
+                    "columnDefs": [
+                        {
+                            "type": "html",
+                            "targets": 4,
+                            'render': function (data, type, full, meta) {
+                                return formatDate(data);
+                            }
+                        }
+                    ],
+                    "oLanguage": {
+                        "sLengthMenu": "顯示 _MENU_ 筆記錄",
+                        "sZeroRecords": "無符合資料",
+                        "sInfo": "目前記錄：_START_ 至 _END_, 總筆數：_TOTAL_"
+                    },
+                    bAutoWidth: true,
+                    displayLength: -1,
+                    lengthChange: false,
+                    filter: false,
+                    info: false,
+                    paginate: false,
+                    destroy: true,
+                    "initComplete": function (settings, json) {
+                        $("#BabDetail").show();
+                    },
+                    "order": [[2, "asc"], [1, "asc"]]
+                });
+            }
+            
+            function formatDate(dateString) {
+                return dateString.substring(0, 16);
+            }
         </script>
     </head>
     <body>
-        <jsp:include page="admin-header.jsp" />
+        <jsp:include page="header.jsp" />
         <div class="container form-inline">
             <div style="width:100%">
                 <h3>工單明細查詢</h3>

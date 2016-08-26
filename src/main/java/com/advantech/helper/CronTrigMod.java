@@ -10,9 +10,10 @@ import com.advantech.quartzJob.DataTransformer;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.CronScheduleBuilder;
-import static org.quartz.CronScheduleBuilder.cronSchedule;
 import org.quartz.CronTrigger;
 import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
@@ -28,6 +29,8 @@ import org.slf4j.LoggerFactory;
 import org.quartz.TriggerBuilder;
 import static org.quartz.TriggerBuilder.newTrigger;
 import static org.quartz.CronScheduleBuilder.cronSchedule;
+import org.quartz.SimpleScheduleBuilder;
+import static org.quartz.TriggerKey.triggerKey;
 
 /**
  *
@@ -36,6 +39,10 @@ import static org.quartz.CronScheduleBuilder.cronSchedule;
 public class CronTrigMod {
 
     private static final Logger log = LoggerFactory.getLogger(DailyJobWorker.class);
+
+    public static Map changedJobKey = new HashMap();
+
+    private final String mainJobKey = "DailyJobWorker";
 
     private Scheduler scheduler;
     private static CronTrigMod instance;
@@ -57,6 +64,16 @@ public class CronTrigMod {
         return instance;
     }
 
+    public String getTriggerByJobKey(String jobKey) {
+        try {
+            Trigger t = scheduler.getTrigger(new TriggerKey(jobKey));
+            return ((CronTrigger) t).getCronExpression();
+        } catch (SchedulerException ex) {
+            log.error(ex.toString());
+            return null;
+        }
+    }
+
     public boolean triggerPauseOrResume(String order) {
         TxtWriter t = TxtWriter.getInstance();
         try {
@@ -76,6 +93,34 @@ public class CronTrigMod {
             return false;
         }
         return true;
+    }
+
+    public void updateMainJobCronExpressionToDefault() throws SchedulerException {
+        // retrieve the trigger
+        Object trig = changedJobKey.get(mainJobKey);
+        Trigger oldTrigger = (trig != null) ? (Trigger) trig : scheduler.getTrigger(triggerKey(mainJobKey));
+        scheduler.rescheduleJob(oldTrigger.getKey(), oldTrigger);
+        changedJobKey.remove(mainJobKey);
+    }
+
+    public void updateMainJobCronExpression() throws SchedulerException {
+        // retrieve the trigger
+        Object trig = changedJobKey.get(mainJobKey);
+
+        Trigger oldTrigger = (trig != null) ? (Trigger) trig : scheduler.getTrigger(triggerKey(mainJobKey));
+        changedJobKey.put(mainJobKey, oldTrigger);
+
+        // obtain a builder that would produce the trigger
+        TriggerBuilder tb = oldTrigger.getTriggerBuilder();
+
+        // update the schedule associated with the builder, and build the new trigger
+        // (other builder methods could be called, to change the trigger in any desired way)
+        Trigger newTrigger = tb.withSchedule(SimpleScheduleBuilder.simpleSchedule()
+                .withIntervalInMinutes(15)
+                .withRepeatCount(1)
+        ).build();
+
+        scheduler.rescheduleJob(oldTrigger.getKey(), newTrigger);
     }
 
     public boolean updateCronExpression(String triggerKey, String cronExpression, Integer executeNow) {

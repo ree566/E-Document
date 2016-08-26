@@ -5,7 +5,7 @@ import com.advantech.helper.ParamChecker;
 import com.advantech.service.BasicService;
 import com.advantech.service.IdentitService;
 import java.io.IOException;
-import java.util.List;
+import java.io.PrintWriter;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebInitParam;
 import javax.servlet.annotation.WebServlet;
@@ -56,22 +56,26 @@ public class Login extends HttpServlet {
     public void doPost(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
         HttpSession session = req.getSession();
-
+        
+        PrintWriter out = res.getWriter();
+        res.setContentType("text/plain");
         String jobnumber = req.getParameter("jobnumber");
-        String password = req.getParameter("password");
-
-        Identit i = checkInputValAndLogin(jobnumber, password);
-        if (i != null) {
-            session.setAttribute("id", i.getId());
-            session.setAttribute("jobnumber", i.getJobnumber());
-            session.setAttribute("name", i.getName());
-            session.setAttribute("permission", i.getPermission());
-            session.setAttribute("sitefloor", i.getSitefloor());
-            res.sendRedirect(SUCCESS);
-        } else {
-            req.setAttribute("errormsg", "錯誤的帳號或密碼");
-            req.getRequestDispatcher(FAIL).forward(req, res);
-        }
+//        String password = req.getParameter("password");
+//
+//        Identit i = checkInputValAndLogin(jobnumber, password);
+//        if (i != null) {
+//            session.setAttribute("id", i.getId());
+            session.setAttribute("jobnumber", jobnumber);
+//            session.setAttribute("jobnumber", i.getJobnumber());
+//            session.setAttribute("name", i.getName());
+//            session.setAttribute("permission", i.getPermission());
+//            session.setAttribute("sitefloor", i.getSitefloor());
+//            res.sendRedirect(SUCCESS);
+//        } else {
+//            req.setAttribute("errormsg", "錯誤的帳號或密碼");
+//            req.getRequestDispatcher(FAIL).forward(req, res);
+//        }
+        out.print("jobnumber" + (jobnumber != null ? "已經" : "尚未") + "儲存");
     }
 
     private Identit checkInputValAndLogin(String jobnumber, String password) {

@@ -205,7 +205,11 @@
 
                 //儲存使用者資訊
                 $("#saveInfo").click(function () {
-                    if (confirm("確定您所填入的資料無誤?")) {
+                    var lineNo = $("#lineNo option:selected").text();
+                    var jobnumber = $("#jobnumber").val();
+                    var station = $("#station").val();
+                    
+                    if (confirm("確定您所填入的資料無誤?\n" + "線別:" + lineNo + "\n工號:" + jobnumber + "\n站別:" + station)) {
                         saveUserStatus();
                     }
                 });
@@ -236,7 +240,10 @@
                     if (isBabInfoExist) {
                         dialog.dialog("open");
                     } else {
-                        if (confirm("確定開始工單?")) {
+                        var po = $("#po").val();
+                        var modelname = $("#modelname").val();
+                        var people = $("#people").val();
+                        if (confirm("確定開始工單?\n" + "工單:" + po + "\n機種:" + modelname + "\n人數:" + people)) {
                             startBab();
                         }
                     }
@@ -633,6 +640,7 @@
                             } else {
                                 removeCookie(babInfoCookieName);
                             }
+                            showMsg(response);
                             reload();
                         } else {
                             showMsg(response);
@@ -700,7 +708,7 @@
                 <button id="redirectBtn" class="btn btn-default" >不是我的樓層?</button>
             </a>
         </div>
-        <jsp:include page="head.jsp" />
+        <jsp:include page="temp/head.jsp" />
         <script>
             var btn = $.fn.button.noConflict(); // reverts $.fn.button to jqueryui btn
             $.fn.btn = btn; // assigns bootstrap button functionality to $.fn.btn 
@@ -810,6 +818,6 @@
                 <p>機子擋住Sensor即開始計時，休息時間的操作不列入計算範圍之內。</p>
             </div>
         </div>
-        <jsp:include page="footer.jsp" />
+        <jsp:include page="temp/footer.jsp" />
     </body>
 </html>

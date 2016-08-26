@@ -11,12 +11,12 @@
 <html>
     <c:set var="userSitefloor" value="${param.sitefloor}" />
     <c:if test="${(userSitefloor == null) || (userSitefloor == '' || userSitefloor < 1 || userSitefloor > 7)}">
-        <c:redirect url="/SysInfo" />
+        <c:redirect url="SysInfo" />
     </c:if>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>${initParam.pageTitle}</title>
-        <link rel="shortcut icon" href="images/favicon.ico"/>
+        <link rel="shortcut icon" href="../../images/favicon.ico"/>
         <style>
             #goback{
                 cursor: pointer;
@@ -42,7 +42,7 @@
         </script>
     </head>
     <body>
-        <jsp:include page="admin-header.jsp" />
+        <jsp:include page="header.jsp" />
         <div id="wigetCtrl">
             <h3>組裝包裝各感應器目前狀態</h3>
             <iframe id="iframe1" style='width:100%; height:500px' src="Sensor?sitefloor=${userSitefloor}"></iframe>

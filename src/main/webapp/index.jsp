@@ -14,8 +14,12 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>${initParam.pageTitle}</title>
         <link rel="shortcut icon" href="images/favicon.ico"/>
+        <!--不用header 因為這裡寫入的style會被複寫-->
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
         <style>
+            body{
+                font-family: 微軟正黑體;
+            }
             a:link,a:visited{
                 color: blue;
             }
@@ -201,6 +205,6 @@
                 <h5>JSP version :<%=JspFactory.getDefaultFactory().getEngineInfo().getSpecificationVersion()%></h5>
             </div>
         </div>
-        <jsp:include page="footer.jsp" />
+        <jsp:include page="temp/footer.jsp" />
     </body>
 </html>

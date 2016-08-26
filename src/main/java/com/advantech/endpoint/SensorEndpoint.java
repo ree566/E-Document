@@ -13,13 +13,17 @@ import com.advantech.helper.CronTrigMod;
 import com.advantech.helper.PropertiesReader;
 import com.advantech.quartzJob.PollingDB;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import javax.websocket.EndpointConfig;
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
+import javax.websocket.server.HandshakeRequest;
 import javax.websocket.server.ServerEndpoint;
 import org.quartz.JobKey;
 import org.quartz.SchedulerException;
@@ -31,7 +35,11 @@ import org.slf4j.LoggerFactory;
  *
  * @author Wei.Cheng
  */
-@ServerEndpoint("/echo")
+@ServerEndpoint(
+        value = "/echo"
+//        , 
+//        configurator = WebSocketConfig.class
+)
 public class SensorEndpoint {
 
     private static final Logger log = LoggerFactory.getLogger(SensorEndpoint.class);
@@ -44,6 +52,8 @@ public class SensorEndpoint {
 
     @OnOpen
     public void onOpen(final Session session) {
+//        HandshakeRequest req = (HandshakeRequest) conf.getUserProperties().get("handshakereq");
+//        Map<String,List<String>> headers = req.getHeaders();
         queue.add(session);
 //        System.out.println("New session opened: " + session.getId());
 

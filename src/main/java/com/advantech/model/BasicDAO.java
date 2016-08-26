@@ -45,9 +45,6 @@ public class BasicDAO implements Serializable {
     private static QueryRunner qRunner;
     private static ProcRunner pRunner;
 
-    private static String DISCONNECT_TRIG_EXP;
-    private static String DEFAULT_TRIG_EXP;
-    private static String TRIGGER_KEY;
     private static boolean connectFlag = false;
     private static final int RETRY_WAIT_TIME = 3000;
 
@@ -74,11 +71,6 @@ public class BasicDAO implements Serializable {
         qRunner = new QueryRunner();
         pRunner = new ProcRunner();
         dataSourceMap = new HashMap<>();
-        DISCONNECT_TRIG_EXP = "0 0/15 8-16 ? * MON-FRI *";
-        DEFAULT_TRIG_EXP = "0/30 * 8-17 ? * MON-FRI *";
-        TRIGGER_KEY = "DailyJobWorker";
-
-        dataSourceMap.clear();
 
         try {
 
@@ -114,14 +106,14 @@ public class BasicDAO implements Serializable {
             conn = source.getConnection();
             if (connectFlag == true) {
                 //當連線正常時 把quartz cron調整回來
-                triggerChangeStatus = changeCronTrig(DEFAULT_TRIG_EXP);
+                triggerChangeStatus = changeCronTrig(connectFlag);
                 log.info("Database is connected, Update trgger to default: " + triggerChangeStatus);
             }
         } catch (SQLException ex) {
             log.error(ex.toString());
             if (connectFlag == false) {
                 //當連線異常時，進入這把排程調整成15分鐘看一下資料庫連線
-                triggerChangeStatus = changeCronTrig(DISCONNECT_TRIG_EXP);
+                triggerChangeStatus = changeCronTrig(connectFlag);
                 log.error("Database disconnected, Update trigger to disconnected_exp: " + triggerChangeStatus);
             }
         }
@@ -226,16 +218,20 @@ public class BasicDAO implements Serializable {
     }
 
     //Change the cron trigger when database is disconnected. 30sec/per --> 15min/per
-    private static boolean changeCronTrig(String exp) {
-        boolean b = false;
+    private static boolean changeCronTrig(boolean connectionStatus) {
         try {
             CronTrigMod c = CronTrigMod.getInstance();
-            b = c.updateCronExpression(TRIGGER_KEY, exp, 0);
+            if (connectionStatus == true) {
+                c.updateMainJobCronExpressionToDefault();
+            } else {
+                c.updateMainJobCronExpression();
+            }
             connectFlag = !connectFlag;//有更改時調整flag(開關)做判斷，避免重複修改
+            return true;
         } catch (Exception e) {
             log.error(e.toString());
+            return false;
         }
-        return b;
     }
 
     public static void objectInit() {

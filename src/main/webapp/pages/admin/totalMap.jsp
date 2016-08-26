@@ -10,12 +10,12 @@
 <html>
     <c:set var="userSitefloor" value="${param.sitefloor}" />
     <c:if test="${(userSitefloor == null) || (userSitefloor == '' || userSitefloor < 1 || userSitefloor > 7)}">
-        <c:redirect url="/SysInfo" />
+        <c:redirect url="SysInfo" />
     </c:if>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>${initParam.pageTitle}</title>
-        <link rel="shortcut icon" href="images/favicon.ico"/>
+        <link rel="shortcut icon" href="../../images/favicon.ico"/>
         <style>
             body {
                 padding-top: 70px;
@@ -39,7 +39,7 @@
         </script>
     </head>
     <body>
-        <jsp:include page="admin-header.jsp" />
+        <jsp:include page="header.jsp" />
         <div id="wigetCtrl">
             <iframe id="iframe1" style='width:100%; height:650px' frameborder="0" scrolling="no" src="map_${userSitefloor}f.jsp" webkitAllowFullScreen mozAllowFullScreen allowFullScreen></iframe>
         </div>

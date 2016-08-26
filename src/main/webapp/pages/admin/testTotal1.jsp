@@ -11,11 +11,11 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>${initParam.pageTitle}</title>
-        <link rel="shortcut icon" href="images/favicon.ico"/>
+        <link rel="shortcut icon" href="../../images/favicon.ico"/>
         <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
-        <link rel="stylesheet" href="css/bootstrap-datetimepicker.min.css">
-        <link rel="stylesheet" href="css/jquery.dataTables.min.css">
-        <link rel="stylesheet" href="css/fixedHeader.dataTables.min.css">
+        <link rel="stylesheet" href="../../css/bootstrap-datetimepicker.min.css">
+        <link rel="stylesheet" href="../../css/jquery.dataTables.min.css">
+        <link rel="stylesheet" href="../../css/fixedHeader.dataTables.min.css">
         <link rel="stylesheet" href="//cdn.datatables.net/buttons/1.2.1/css/buttons.dataTables.min.css">
         <style>
             body {
@@ -28,10 +28,10 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
         </style>
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
         <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
-        <script src="js/moment.js"></script>
-        <script src="js/bootstrap-datetimepicker.min.js"></script>
-        <script src="js/jquery.dataTables.min.js"></script>
-        <script src="js/dataTables.fixedHeader.min.js"></script>
+        <script src="../../js/moment.js"></script>
+        <script src="../../js/bootstrap-datetimepicker.min.js"></script>
+        <script src="../../js/jquery.dataTables.min.js"></script>
+        <script src="../../js/dataTables.fixedHeader.min.js"></script>
         <script src="//cdn.datatables.net/buttons/1.2.1/js/dataTables.buttons.min.js"></script>
         <script src="//cdn.datatables.net/buttons/1.2.1/js/buttons.flash.min.js"></script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js"></script>
@@ -87,7 +87,7 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                         headerOffset: 50
                     },
                     "ajax": {
-                        "url": "GetClosedInfo",
+                        "url": "../../GetClosedInfo",
                         "type": "POST",
                         data: {
                             startDate: startDate,
@@ -136,7 +136,7 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
         </script>
     </head>
     <body>
-        <jsp:include page="admin-header.jsp" />
+        <jsp:include page="header.jsp" />
 
         <div class="container">
             <h3>測試線別資料擷取紀錄查詢</h3>

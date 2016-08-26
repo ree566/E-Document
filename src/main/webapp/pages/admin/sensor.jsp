@@ -10,9 +10,8 @@
     <head>
         <meta charset=UTF-8>
         <title>${initParam.pageTitle}</title>
-        <link rel="shortcut icon" href="images/favicon.ico"/>
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-        <link rel="stylesheet" href="css/jquery.dataTables.min.css">
+        <link rel="stylesheet" href="../../css/jquery.dataTables.min.css">
         <style>
             .non-padding{
                 padding: 0 0;
@@ -20,11 +19,11 @@
         </style>
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
         <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-        <script src="js/reconnecting-websocket.min.js"></script>
-        <script src="js/jquery.tablesorter.min.js"></script> 
-        <script src="js/jquery.cookie.js"></script>
-        <script src="js/jquery.dataTables.min.js"></script>
-        <script src="js/moment.js"></script>
+        <script src="../../js/reconnecting-websocket.min.js"></script>
+        <script src="../../js/jquery.tablesorter.min.js"></script> 
+        <script src="../../js/jquery.cookie.js"></script>
+        <script src="../../js/jquery.dataTables.min.js"></script>
+        <script src="../../js/moment.js"></script>
         <script>
             $(document).ready(function () {
                 var sitefloor = ${param.sitefloor};

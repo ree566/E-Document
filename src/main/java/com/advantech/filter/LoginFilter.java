@@ -32,7 +32,7 @@ public class LoginFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest) req;
         HttpServletResponse response = (HttpServletResponse) res;
         HttpSession session = request.getSession(false);
-        String loginURI = request.getContextPath() + "/Login";
+        String loginURI = request.getContextPath() + "/pages/admin/SysInfo";
 
         boolean loggedIn = session != null && session.getAttribute("jobnumber") != null;
         boolean loginRequest = request.getRequestURI().equals(loginURI);

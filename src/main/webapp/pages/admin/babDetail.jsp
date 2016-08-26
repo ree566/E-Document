@@ -10,11 +10,11 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>${initParam.pageTitle}</title>
-        <link rel="shortcut icon" href="images/favicon.ico"/>
+        <link rel="shortcut icon" href="../../images/favicon.ico"/>
         <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
-        <link rel="stylesheet" href="css/bootstrap-datetimepicker.min.css">
-        <link rel="stylesheet" href="css/jquery.dataTables.min.css">
-        <link rel="stylesheet" href="css/fixedHeader.dataTables.min.css">
+        <link rel="stylesheet" href="../../css/bootstrap-datetimepicker.min.css">
+        <link rel="stylesheet" href="../../css/jquery.dataTables.min.css">
+        <link rel="stylesheet" href="../../css/fixedHeader.dataTables.min.css">
         <link rel="stylesheet" href="//cdn.datatables.net/buttons/1.2.1/css/buttons.dataTables.min.css">
         <style>
             body{
@@ -31,13 +31,22 @@
             .alarm{
                 color:red;
             }
+            #babDetail th {
+                max-width: 100px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+            .dt-index {
+                column-width: auto !important;
+            }
         </style>
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
         <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
-        <script src="js/moment.js"></script>
-        <script src="js/bootstrap-datetimepicker.min.js"></script>
-        <script src="js/jquery.dataTables.min.js"></script>
-        <script src="js/dataTables.fixedHeader.min.js"></script>
+        <script src="../../js/moment.js"></script>
+        <script src="../../js/bootstrap-datetimepicker.min.js"></script>
+        <script src="../../js/jquery.dataTables.min.js"></script>
+        <script src="../../js/dataTables.fixedHeader.min.js"></script>
         <script src="//cdn.datatables.net/buttons/1.2.1/js/dataTables.buttons.min.js"></script>
         <script src="//cdn.datatables.net/buttons/1.2.1/js/buttons.flash.min.js"></script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js"></script>
@@ -98,7 +107,7 @@
                         headerOffset: 50
                     },
                     "ajax": {
-                        "url": "GetClosedInfo",
+                        "url": "../../GetClosedInfo",
                         "type": "POST",
                         data: {
                             startDate: startDate,
@@ -108,12 +117,15 @@
                     },
                     "columns": [
                         {data: "id", visible: false},
-                        {data: "PO", width: "50"},
-                        {data: "Model_name", width: "50"},
+                        {data: "PO"},
+                        {data: "Model_name"},
+                        {data: "linetype"},
                         {data: "lineName"},
                         {data: "people"},
-                        {data: "failPercent"},
                         {data: "qty"},
+                        {},
+                        {},
+                        {},
                         {},
                         {data: "btime"}
                     ],
@@ -125,7 +137,13 @@
                             }
                         },
                         {
-                            "targets": 8,
+                            "targets": [8, 9, 10],
+                            'render': function (data, type, full, meta) {
+                                return "data";
+                            }
+                        },
+                        {
+                            "targets": 11,
                             'render': function (data, type, full, meta) {
                                 return formatDate(data);
                             }
@@ -146,7 +164,7 @@
                     "initComplete": function (settings, json) {
                         $("#babDetail").show();
                     },
-                    "order": [[8, "desc"]]
+                    "order": [[11, "desc"]]
                 });
             }
 
@@ -167,7 +185,7 @@
         </script>
     </head>
     <body>
-        <jsp:include page="admin-header.jsp" />
+        <jsp:include page="header.jsp" />
         <div class="wiget-ctrl form-inline">
             <div style="width:100%">
                 <h3>工單明細查詢</h3>
@@ -197,11 +215,14 @@
                                 <th>id</th>
                                 <th>工單</th>
                                 <th>機種</th>
+                                <th>站別</th>
                                 <th>線別</th>
-                                <th>生產人數</th>
-                                <th>系統計算未達標準</th>
-                                <th>生產總數量</th>
-                                <th>系統計算亮燈頻率(%)</th>
+                                <th data-toggle="tooltip" data-placement="bottom" title="生產人數">TP</th>
+                                <th data-toggle="tooltip" data-placement="bottom" title="生產總數量">TA</th>
+                                <th data-toggle="tooltip" data-placement="bottom" title="系統計算亮燈頻率(%)">AP</th>
+                                <th>code</th>
+                                <th>說明</th>
+                                <th>對策</th>
                                 <th>投入時間</th>
                             </tr>
                         </thead>

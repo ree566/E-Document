@@ -9,17 +9,16 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>5F狀態平面圖 - ${initParam.pageTitle}</title>
-        <link rel="shortcut icon" href="images/favicon.ico"/>
+        <title>6F狀態平面圖 - ${initParam.pageTitle}</title>
         <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
         <style>
             .draggable { 
                 width: 25px; 
                 height: 25px; 
-                padding: 0.5em; 
+                padding: 0.3em; 
                 float: left;
                 /*background-color: red;*/
-                margin: 0px;
+                /*margin: 0px;*/
                 cursor: default;
                 text-align: center;
             }
@@ -60,7 +59,7 @@
             #mapGroup{
                 width: 1200px;
                 height: 500px;
-                background-image: url(images/totalMap_5f_1.png);
+                background-image: url(../../images/totalMap_6f.png);
                 background-repeat: no-repeat;
                 -o-background-size: 100% 100%, auto;
                 -moz-background-size: 100% 100%, auto;
@@ -71,10 +70,6 @@
                 /*讓最外層div不要隨視窗變動而改變(不然裏頭的子div會跑掉)*/
                 position: absolute; 
             }
-            /*            body {
-                            padding-top: 70px;
-                             Required padding for .navbar-fixed-top. Remove if using .navbar-static-top. Change if height of navigation changes. 
-                        }*/
             #wigetCtrl{
             }
             .modal.fade.ui-draggable-dragging {
@@ -94,34 +89,33 @@
             #titleArea>div, #testArea>div, #babArea>div{
                 position: absolute;
             }
+            .titleWiget, .testWiget, .babWiget{
+
+            }
             .divCustomBg{
                 background-size: 100% 100%, auto;
                 background-repeat: no-repeat;
             }
-            .ui-helper {
-                /*width: 100% !important;*/
-                float: left;
-            }
             .blub-empty{
-                background-image: url(images/blub-icon/Gray_Light_Icon.png);
+                background-image: url(../../images/blub-icon/Gray_Light_Icon.png);
                 /*background-color: red;*/
             }
             .blub-normal{
-                background-image: url(images/blub-icon/Green_Light_Icon.png);
+                background-image: url(../../images/blub-icon/Green_Light_Icon.png);
             }
             .blub-alarm{
-                background-image: url(images/blub-icon/Blue_Light_Icon.png);
+                background-image: url(../../images/blub-icon/Blue_Light_Icon.png);
             }
             .blub-abnormal{
-                background-image: url(images/blub-icon/Yellow_Light_Icon.png);
+                background-image: url(../../images/blub-icon/Yellow_Light_Icon.png);
             }
         </style>
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
         <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
-        <script src="js/reconnecting-websocket.min.js"></script>
-        <script src="js/jquery.fullscreen-min.js"></script>
+        <script src="../../js/reconnecting-websocket.min.js"></script>
+        <script src="../../js/jquery.fullscreen-min.js"></script>
         <script>
-            var sitefloor = 5;
+            var sitefloor = 6;
 
             $(function () {
 
@@ -129,29 +123,30 @@
                 var pYa = -20;
 
                 var titleGroup = [
-                    {lineName: "L1", x: 1090, y: 250},
-                    {lineName: "LA", x: 1090, y: 150},
-                    {lineName: "LB", x: 1090, y: 90},
-                    {lineName: "LH", x: 380, y: 150},
-                    {lineName: "LG", x: 380, y: 90},
-                    {lineName: "LF", x: 380, y: 30}
+                    //assy
+                    {lineName: "L3", x: 1080, y: 280},
+                    {lineName: "L4", x: 1080, y: 180},
+                    //pkg
+                    {lineName: "L6", x: 190, y: 200},
+                    {lineName: "L7", x: 190, y: 105},
+                    {lineName: "L8", x: 525, y: 220},
+                    {lineName: "L9", x: 525, y: 280}
                 ];
 
                 var testGroup = [
-                    {people: 4, x: 600, y: 30}, // group 21-24
-                    {people: 5, x: 600, y: 100}, // group 16-20
-                    {people: 7, x: 530, y: 150}, // group 9-15
-                    {people: 4, x: 630, y: 230}, // group 5-8
-                    {people: 4, x: 630, y: 290} // group 1-4
+                    {people: 4, x: 580, y: 80}, // group 15-18
+                    {people: 4, x: 580, y: 160}, // group 11-14
+                    {people: 5, x: 610, y: 210}, // group 6-10
+                    {people: 5, x: 610, y: 290} // group 1-5
                 ];
 
                 var babGroup = [
-                    {people: 4, x: 930, y: 250, lineName: "L1"}, // group 1-4
-                    {people: 4, x: 930, y: 150, lineName: "LA"}, // group 21-24
-                    {people: 4, x: 930, y: 90, lineName: "LB"}, // group 16-20
-                    {people: 3, x: 250, y: 160, lineName: "LF"}, // group 9-15
-                    {people: 3, x: 250, y: 110, lineName: "LG"}, // group 5-8
-                    {people: 3, x: 250, y: 50, lineName: "LH"} // group 1-4
+                    {people: 8, x: 790, y: 280, lineName: "L3"}, // group 1-4
+                    {people: 8, x: 790, y: 190, lineName: "L4"}, // group 21-24
+                    {people: 3, x: 255, y: 210, lineName: "L6"}, // group 16-20
+                    {people: 3, x: 255, y: 120, lineName: "L7"}, // group 9-15
+                    {people: 4, x: 400, y: 190, lineName: "L8"}, // group 5-8
+                    {people: 4, x: 400, y: 320, lineName: "L9"} // group 1-4
                 ];
 
                 for (var i = 0; i < titleGroup.length; i++) {
@@ -203,11 +198,11 @@
                 var dragableWiget = $("#titleArea>div, #testArea>div, #babArea>div");
 //                dragableWiget.after("<div class='clearWiget'></div>");
 
-//                dragableWiget.not(".clearWiget").addClass("ui-helper").draggable({
-//                    drag: function (e) {
-////                        return false;
-//                    }
-//                });
+                dragableWiget.draggable({
+                    drag: function (e) {
+//                        return false;
+                    }
+                });
 
                 $('[data-toggle="tooltip"]').tooltip();
 
@@ -387,16 +382,6 @@
                 <!--<div class="clearWiget"></div>-->
             </div>
         </div>
-        <hr />
-
-        <!--若您對 CSS 語法還不太會使用，就把 <div> 上的 position:absolute; 拿掉就好了~
-        
-        
-        若您想要使用 CSS 語法就必須使用兩層 <div>
-        
-        第一層 <div> 寫上 position:relative;
-        
-        第二層 <div> 寫上 position:absolute;-->
         <div class="clearWiget" />
     </body>
 </html>

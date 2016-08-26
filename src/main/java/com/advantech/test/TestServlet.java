@@ -7,6 +7,7 @@
 package com.advantech.test;
 
 import com.advantech.entity.FBN;
+import com.advantech.helper.CronTrigMod;
 import com.advantech.quartzJob.LineBalancePeopleGenerator;
 import com.advantech.service.BasicService;
 import com.advantech.service.FBNService;
@@ -33,7 +34,8 @@ public class TestServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
-        doPost(req, res);
+        CronTrigMod c = CronTrigMod.getInstance();
+ 
     }
 
     @Override

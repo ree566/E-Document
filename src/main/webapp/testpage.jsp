@@ -211,7 +211,7 @@
                 <button id="redirectBtn">不是我的樓層?</button>
             </a>
         </div>
-        <jsp:include page="head.jsp" />
+        <jsp:include page="temp/head.jsp" />
         <c:forEach items="${cookie}" var="currentCookie">  
             <c:if test="${currentCookie.value.name eq 'user_number'}">
                 <c:set var="key" value="${currentCookie.value.value}" />
@@ -298,6 +298,6 @@
                 </div>
             </div>
         </div>
-        <jsp:include page="footer.jsp" />
+        <jsp:include page="temp/footer.jsp" />
     </body>
 </html>
