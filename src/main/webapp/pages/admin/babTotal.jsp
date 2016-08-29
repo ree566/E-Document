@@ -6,7 +6,6 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<jsp:useBean id="cDAO" class="com.advantech.model.CountermeasureDAO" scope="application" />
 <!DOCTYPE html>
 <html>
     <head>
@@ -608,7 +607,7 @@
                     url: "../../CountermeasureServlet",
                     data: {
                         BABid: BABid,
-                        action: "select"
+                        action: "selectOne"
                     },
                     type: "POST",
                     dataType: 'json',

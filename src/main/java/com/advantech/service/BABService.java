@@ -157,8 +157,9 @@ public class BABService {
             BAB bab = processingBab.get(0);
             String message = closeBAB(bab);
             return message;
+        } else {
+            return "查無工單資料，請聯絡管理人員";
         }
-        return "查無工單資料，請聯絡管理人員";
     }
 
     //檢查統計值是否為空，空值直接讓使用者作結束

@@ -62,6 +62,9 @@ public class CountermeasureServlet extends HttpServlet {
         int id = StringParser.strToInt(BABid);
 
         switch (action) {
+            case "selectOne":
+                out.print(new JSONObject().put("data", cService.getCountermeasure(id)));
+                break;
             case "select":
                 out.print(new JSONObject().put("data", cService.getCountermeasure()));
                 break;

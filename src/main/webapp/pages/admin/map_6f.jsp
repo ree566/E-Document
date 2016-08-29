@@ -116,6 +116,7 @@
         <script src="../../js/jquery.fullscreen-min.js"></script>
         <script>
             var sitefloor = 6;
+            var maxTestTableNo = 42;
 
             $(function () {
 
@@ -216,7 +217,7 @@
 
                 function testObjectInit() {
                     var object = $("#testArea>.testWiget div");
-                    var loopCount = object.length;
+                    var loopCount = maxTestTableNo;
                     object.each(function () {
                         $(this).attr({"id": "draggable" + loopCount + "_" + sitefloor + "f", "data-toggle": "tooltip"})
                                 .addClass("draggable blub-empty divCustomBg")

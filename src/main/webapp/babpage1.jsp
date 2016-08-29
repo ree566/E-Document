@@ -131,12 +131,16 @@
                             } else {
                                 changeJobnumber(newJobnumber);
                                 $(this).dialog("close");
-                                startBab();
+                                if ($("#station").val() == firstStation) {
+                                    startBab();
+                                }else{
+                                    reload();
+                                }
                             }
                         },
                         "取消": function () {
                             $(this).dialog("close");
-                            $("#dialog").dialog("open");
+//                            $("#dialog").dialog("open");
                         }
                     }
                 });
@@ -155,6 +159,17 @@
                         "否": function () {
                             $(this).dialog("close");
                             $("#dialog-message").dialog("open");
+                        }
+                    }
+                });
+
+                $("#directlyClose").click(function () {
+                    if (confirm("※強制跳出並不會做資料儲存※\n確定跳出?")) {
+                        if ($.cookie(babInfoCookieName) != null) {
+                            $.removeCookie(babInfoCookieName);
+                            reload();
+                        } else {
+                            showMsg("沒有步驟二的資料");
                         }
                     }
                 });
@@ -180,6 +195,7 @@
 
                 $("#babBegin, #clearInfo, .userWiget>div>input:eq(0)").attr("disabled", isBabInfoExist && ($.parseJSON(userInfoCookie).station != firstStation));
                 $("#babEnd").attr("disabled", !isBabInfoExist);
+                $("#changeUser").attr("disabled", isBabInfoExist);
 
                 $(":text").keyup(function () {
                     textBoxToUpperCase($(this));
@@ -208,7 +224,7 @@
                     var lineNo = $("#lineNo option:selected").text();
                     var jobnumber = $("#jobnumber").val();
                     var station = $("#station").val();
-                    
+
                     if (confirm("確定您所填入的資料無誤?\n" + "線別:" + lineNo + "\n工號:" + jobnumber + "\n站別:" + station)) {
                         saveUserStatus();
                     }
@@ -240,10 +256,12 @@
                     if (isBabInfoExist) {
                         dialog.dialog("open");
                     } else {
-                        var po = $("#po").val();
+                        var station = $("#station").val();
+                        var isFirstStation = station == firstStation;
+                        var po = $(isFirstStation ? "#po" : "#po1").val();
                         var modelname = $("#modelname").val();
                         var people = $("#people").val();
-                        if (confirm("確定開始工單?\n" + "工單:" + po + "\n機種:" + modelname + "\n人數:" + people)) {
+                        if (confirm("確定開始工單?\n" + "工單:" + po + "\n機種:" + modelname + (isFirstStation ? ("\n人數:" + people) : ("\n站別:" + station)))) {
                             startBab();
                         }
                     }
@@ -266,15 +284,15 @@
                     }
                 });
 
-                $("#directlyClose").click(function () {
-                    if (confirm("※強制跳出並不會做資料儲存※\n確定跳出?")) {
-                        if ($.cookie(babInfoCookieName) != null) {
-                            $.removeCookie(babInfoCookieName);
-                            reload();
-                        } else {
-                            showMsg("沒有步驟二的資料");
-                        }
-                    }
+                $("#changeUser").click(function () {
+                    dialogMessage.dialog("open");
+//                    var jobnumber = $("#jobnumber").val();
+//                    if (checkUserExist(jobnumber)) {
+//                        changeJobnumber(jobnumber);
+//                    }else{
+//                        showMsg(userNotFoundMessage);
+//                    }
+
                 });
 
                 $(":text").focus(function () {
@@ -336,19 +354,20 @@
                     $("#step2").unblock();
 
                     if (obj.station == firstStation) {
-                        $("#babEnd, .userWiget > .station1HintMessage").hide();
+                        $("#babEnd, .userWiget > .station1HintMessage, #changeUser").hide();
                         $("#step2Hint")
                                 .append("<li>輸入工單</li>")
                                 .append("<li class='importantMsg'>確定系統有帶出機種</li>")
                                 .append("<li>選擇人數</li>")
                                 .append("<li>點選<code>Begin</code>開始投入</li>");
                     } else {
-                        $("#babEnd, .userWiget > .station1HintMessage").show();
+                        $("#babEnd").show();
                         $("#step2Hint")
                                 .append("<li>輸入工單</li>")
                                 .append("<li class='importantMsg'>確定系統有帶出機種</li>")
                                 .append("<li>點選<code>Begin</code>開始</li>")
-                                .append("<li>做完最後一台時點擊<code>Save</code>，告知系統您已經做完了</li>");
+                                .append("<li>做完最後一台時點擊<code>Save</code>，告知系統您已經做完了</li>")
+                                .append("<li>如果要更換使用者，請點選<code>換人</code>，填入您的新工號之後進行工號切換</li>");
                     }
                 } else {
                     $("#step2").block({message: "請先在步驟一完成相關步驟。"});
@@ -358,6 +377,7 @@
                     var obj = $.parseJSON(babInfoCookie);
                     $("#modelname").val(obj.modelname);
                     $("#modelname").prev().val(obj.po);
+                    $(".userWiget > .station1HintMessage").show();
 
                     if ($("#people").is(":visible")) {
                         $("#people").val(obj.people);
@@ -370,7 +390,7 @@
             }
 
             function lockAllUserInput() {
-                $(":input,select").not("#redirectBtn").attr("disabled", "disabled");
+                $(":input,select").not("#redirectBtn, #directlyClose").attr("disabled", "disabled");
             }
 
             function saveUserStatus() {
@@ -773,6 +793,7 @@
                         </select>
                         <input type="button" id="babBegin" value="Begin" />
                         <input type="button" id="babEnd" value="Save" />
+                        <input type="button" id="changeUser" value="換人" />
                     </div>
                     <div class="station1HintMessage alarm">
                         <span class="glyphicon glyphicon-alert"></span>
