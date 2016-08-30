@@ -10,6 +10,7 @@ package com.advantech.servlet;
 import com.advantech.entity.BAB;
 import com.advantech.entity.BABPeopleRecord;
 import com.advantech.helper.ParamChecker;
+import com.advantech.service.BABLoginStatusService;
 import com.advantech.service.BABService;
 import com.advantech.service.BasicService;
 import java.io.*;
@@ -31,12 +32,14 @@ public class BABOtherStationServlet extends HttpServlet {
 
     private static final Logger log = LoggerFactory.getLogger(BABOtherStationServlet.class);
 
+    private BABLoginStatusService bService = null;
     private BABService babService = null;
     private ParamChecker pChecker = null;
 
     @Override
     public void init()
             throws ServletException {
+        bService = BasicService.getBabLoginStatusService();
         babService = BasicService.getBabService();
         pChecker = new ParamChecker();
     }
@@ -62,7 +65,7 @@ public class BABOtherStationServlet extends HttpServlet {
         String action = req.getParameter("action");
 
         if (pChecker.checkInputVals(action)) {
-            if (pChecker.checkInputVals(station, babId, jobnumber)) {
+            if (pChecker.checkInputVals(station, babId)) {
                 int babid = Integer.parseInt(babId);
                 int stationid = Integer.parseInt(station);
 
@@ -71,12 +74,15 @@ public class BABOtherStationServlet extends HttpServlet {
                 if (stationid <= b.getPeople()) {
                     switch (action) {
                         case "LOGIN":
-                            BABPeopleRecord bRecord = babService.getExistUserInBAB(babid, stationid);
+                            if(!pChecker.checkInputVal("jobnumber")){
+                                return;
+                            }
+                            BABPeopleRecord bRecord = bService.getExistUserInBAB(babid, stationid);
                             if (bRecord != null && bRecord.getUser_id().equals(jobnumber)) {
                                 out.print("success"); //當確定人是存在的，且工號站別數已經記錄起來
                                 return;
                             }
-                            List<BABPeopleRecord> l = babService.getExistUserInBAB(babid);
+                            List<BABPeopleRecord> l = bService.getExistUserInBAB(babid);
                             boolean checkStatus = true;
                             for (BABPeopleRecord br : l) {
                                 if (br.getUser_id().equals(jobnumber)) {
@@ -93,7 +99,7 @@ public class BABOtherStationServlet extends HttpServlet {
 
                             //檢查站別有無使用，和工號有無登入其他站別
                             if (checkStatus == true) {
-                                boolean result = babService.recordBABPeople(babid, stationid, jobnumber);
+                                boolean result = bService.recordBABPeople(babid, stationid, jobnumber);
                                 out.print(result ? "success" : "fail");
                             }
                             break;

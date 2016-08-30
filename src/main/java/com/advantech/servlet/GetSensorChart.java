@@ -13,7 +13,7 @@ import java.io.*;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
-import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  *
@@ -41,19 +41,18 @@ public class GetSensorChart extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
-        
+
         res.setContentType("application/json");
         PrintWriter out = res.getWriter();
         String babid = req.getParameter("id");
         String isused = req.getParameter("isused");
-        JSONArray arr;
+        JSONObject obj = new JSONObject();
         if (pChecker.checkInputVals(babid)) {
-            arr = babService.getSensorDiffChart(Integer.parseInt(babid), isNull(isused, 0));
-
-        } else {
-            arr = new JSONArray();
+            int id = Integer.parseInt(babid);
+            obj.put("data", babService.getSensorDiffChart(id, isNull(isused, 0)));
+            obj.put("avg", babService.getTotalAvg(id));
         }
-        out.print(arr);
+        out.print(obj);
     }
 
     private int isNull(String o, int i) {

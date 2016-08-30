@@ -56,7 +56,9 @@ public abstract class BasicLineTypeFacade {
 
     public void processingDataAndSave() throws Exception {
         isNeedToOutputResult = this.generateData();
-        saveToTxt(txtName);
+        if (isWriteToTxt) {
+            saveToTxt(txtName);
+        }
     }
 
     protected void setTxtName(String txtName) {
@@ -155,4 +157,9 @@ public abstract class BasicLineTypeFacade {
     public boolean getParam() {
         return resetFlag;
     }
+
+    public void setIsWriteToTxt(boolean isWriteToTxt) {
+        this.isWriteToTxt = isWriteToTxt;
+    }
+
 }

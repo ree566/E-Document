@@ -58,6 +58,8 @@
                         <span class="caret" />
                     </a>
                     <ul class="dropdown-menu">
+                        <!--<li><a href="testTotal.jsp">測試線別狀態</a></li>-->
+                        <li><a href="TestTotalDetail">測試線別狀態</a></li>
                         <li><a href="TestTotal">測試線別紀錄</a></li>
                     </ul>
                 </li>

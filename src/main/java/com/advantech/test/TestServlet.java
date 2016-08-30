@@ -7,11 +7,9 @@
 package com.advantech.test;
 
 import com.advantech.entity.FBN;
-import com.advantech.helper.CronTrigMod;
-import com.advantech.quartzJob.LineBalancePeopleGenerator;
+import com.advantech.helper.ParamChecker;
+import com.advantech.service.BABLoginStatusService;
 import com.advantech.service.BasicService;
-import com.advantech.service.FBNService;
-import com.google.gson.Gson;
 import java.io.*;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -34,32 +32,44 @@ public class TestServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
-        CronTrigMod c = CronTrigMod.getInstance();
- 
+        PrintWriter out = res.getWriter();
+        String babid = req.getParameter("babid");
+        String station = req.getParameter("station");
+        String jobnumber = req.getParameter("jobnumber");
+        String action = req.getParameter("action");
+        if (new ParamChecker().checkInputVals(babid, station, jobnumber, action)) {
+            BABLoginStatusService bs = BasicService.getBabLoginStatusService();
+            int babId = Integer.parseInt(babid);
+            int stat = Integer.parseInt(station);
+
+            switch (action) {
+                case "insert":
+                    out.print(bs.babLogin(babId, stat, jobnumber));
+                    break;
+                case "update":
+                    out.print(bs.changeUser(babId, stat, jobnumber));
+                    break;
+                case "delete":
+                    out.print(bs.deleteUserFromStation(babId, stat));
+                    break;
+                case "select":
+                    out.print(bs.getBABLoginStatus());
+                    break;
+                default:
+                    out.print("Invaild action.");
+            }
+        } else {
+            out.print("Invaild input value.");
+        }
+
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
-        res.setContentType("application/json");
+        res.setContentType("text/plain");
         PrintWriter out = res.getWriter();
-        out.println(new Gson().toJson(BasicService.getCountermeasureService().getErrorCode()));
-    }
-
-    private String getSensorTime(FBN f) {
-        return convertFullDateTime(f.getLogDate(), f.getLogTime());
-    }
-
-    private String convertFullDateTime(String... str) {
-        String dateString = "";
-        for (String st : str) {
-            dateString += st.trim() + " ";
-        }
-        return dateString;
-    }
-
-    private DateTime convert(String date) {
-        DateTimeFormatter dtf = DateTimeFormat.forPattern("yy/MM/dd HH:mm:ss ");
-        return dtf.parseDateTime(date);
+        String id = req.getParameter("id");
+        out.println(BasicService.getBabService().getAvg(Integer.parseInt(id)));
     }
 }

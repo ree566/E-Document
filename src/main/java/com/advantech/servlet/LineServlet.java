@@ -6,10 +6,8 @@
  */
 package com.advantech.servlet;
 
-import com.advantech.entity.Line;
 import com.advantech.helper.ParamChecker;
 import com.advantech.service.BasicService;
-import com.advantech.service.IdentitService;
 import com.advantech.service.LineService;
 import java.io.*;
 import javax.servlet.ServletException;

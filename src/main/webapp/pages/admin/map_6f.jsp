@@ -262,7 +262,7 @@
                                 $(".testWiget #draggable" + people.table + "_" + people.sitefloor + "f")
                                         .removeClass("blub-empty")
                                         .addClass(signalClass)
-                                        .attr("title", people.name);
+                                        .attr("title", people.name + " 效率:" + (Math.floor(people.PRODUCTIVITY * 100)) + "%");
                             }
                         }
                     }

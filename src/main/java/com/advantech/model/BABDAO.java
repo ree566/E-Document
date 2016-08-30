@@ -183,32 +183,6 @@ public class BABDAO extends BasicDAO {
         );
     }
 
-    public BABPeopleRecord getExistUserInBAB(int BABid, int station) {
-        List l = queryForBeanList(
-                getConn(),
-                BABPeopleRecord.class,
-                "SELECT * FROM BABPeopleRecord WHERE BABid = ? AND station = ?",
-                BABid, station
-        );
-        return !l.isEmpty() ? (BABPeopleRecord) l.get(0) : null;
-    }
-
-    public List<BABPeopleRecord> getExistUserInBAB(int BABid) {
-        return queryForBeanList(
-                getConn(),
-                BABPeopleRecord.class,
-                "SELECT * FROM BABPeopleRecord WHERE BABid = ?",
-                BABid
-        );
-    }
-
-    public boolean recordBABPeople(List<BABPeopleRecord> l) {
-        return update(getConn(),
-                "INSERT INTO BABPeopleRecord(BABid, station, user_id) VALUES (?,?,?)",
-                l,
-                "BABid", "station", "user_id");
-    }
-
     /**
      * Please set the babAvg into bab object if data need to saveAndClose.
      *

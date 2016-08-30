@@ -6,6 +6,7 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<jsp:useBean id="cDAO" class="com.advantech.model.CountermeasureDAO" scope="application" />
 <!DOCTYPE html>
 <html>
     <head>
@@ -164,14 +165,11 @@
                                           GROUP BY PO, TagName, Model_name \
                                           ORDER BY TagName', [arr]);
                 for (var i = 0; i < res.length; i++) {
-//                    var diff = res[i].diff;
-//                    var balance = res[i].balance;
                     $("#balanceCount").append(
                             '<p>線別: ' + res[i].TagName +
                             ' 工單號碼: ' + res[i].PO +
                             ' 機種: ' + res[i].Model_name +
                             ' 最後一台平衡率: ' + getPercent(res[i].balance, round_digit) +
-//                            ' 平衡率: ' + res[i].balance.toFixed(2) +
                             "</p>");
                 }
             }
@@ -263,7 +261,6 @@
                                 }, 0);
 
                         // Update footer
-
                         $(api.column(columnIndex).footer()).html(
                                 '<h5>達到標準: ' + passTotal + '組 (' + getPercent((passTotal / total), round_digit) + ')</h5>' +
                                 '<h5>未達標準<code>(亮燈頻率)</code>: ' + failTotal + '組 (' + getPercent((failTotal / total), round_digit) + ')</h5>' +
@@ -271,23 +268,6 @@
                                 );
                     }
                 });
-            }
-
-            function respondCanvas() {
-                var ctx = this.element.getContext("2d");
-                var container = c.parent();
-                var $container = $(container);
-                c.attr('width', $container.width()); //max width
-                c.attr('height', $container.height()); //max height                   
-
-                //Call a function to redraw other content (texts, images etc)
-                var chart = new Chart(ctx).Line(chartData, {
-                    scaleOverride: true,
-                    scaleSteps: steps,
-                    scaleStepWidth: Math.ceil(max / steps),
-                    scaleStartValue: 0
-                });
-
             }
 
             function getChartData(id, isused, chartId) {
@@ -300,14 +280,18 @@
                         isused: isused
                     },
                     success: function (d) {
-                        var arr = d;
-                        for (var i = 0, j = arr.length; i < j; i++) {
-                            var obj = arr[i];
-                            obj.type = "line";
-                            obj.lineThickness = 3;
-                            obj.axisYType = "secondary";
-                            obj.showInLegend = true;
-                            obj.name = "站別" + (i + 1);
+//                        var jsonObj = d;
+                        var arr = d.data;
+
+                        if (arr != null) {
+                            for (var i = 0, j = arr.length; i < j; i++) {
+                                var obj = arr[i];
+                                obj.type = "line";
+                                obj.lineThickness = 3;
+                                obj.axisYType = "secondary";
+                                obj.showInLegend = true;
+                                obj.name = "站別" + (i + 1);
+                            }
                         }
                         generateChart(d, chartId);
                     }
@@ -316,10 +300,15 @@
 
 //http://canvasjs.com/docs/charts/how-to/hide-unhide-data-series-chart-legend-click/
             function generateChart(d, chartId) {
+                var totalAvg = Math.round(d.avg);
+                console.log(totalAvg);
                 var chart = new CanvasJS.Chart(chartId,
                         {
                             zoomEnabled: true,
                             animationEnabled: true,
+                            exportEnabled: true,
+                            exportFileName: "Range Area",
+                            zoomType: "xy",
                             title: {
                                 text: "各站各機台消耗時間(秒)"
                             },
@@ -329,8 +318,17 @@
                                 interlacedColor: "#F5F5F5",
                                 gridColor: "#D7D7D7",
                                 tickColor: "#D7D7D7",
-                                minimum: 0
-//                                maximum: 500
+                                minimum: 0,
+                                stripLines: [
+                                    {
+                                        value: totalAvg,
+                                        label: totalAvg + "sec",
+                                        labelPlacement: "outside",
+                                        color: "orange",
+                                        labelFontStyle: "微軟正黑體",
+                                        showOnTop: true
+                                    }
+                                ]
                             },
                             axisX: {
                                 title: "台數",
@@ -355,7 +353,7 @@
                                     e.chart.render();
                                 }
                             },
-                            data: d
+                            data: (d.data == null ? [] : d.data)
                         });
                 isNoDataAvailable(chart);
                 chart.render();
@@ -614,11 +612,10 @@
                     success: function (msg) {
                         var jsonData = msg.data[0];
                         var isDataAvailable = jsonData != null;
-                        $(".modal-body #errorCode").html(!isDataAvailable ? "N/A" : jsonData.errorCode_id);
                         $(".modal-body #errorReason").html(!isDataAvailable ? "N/A" : jsonData.reason);
                         $(".modal-body #errorCon").html(!isDataAvailable ? "N/A" : jsonData.solution.replace(/(?:\r\n|\r|\n)/g, '<br />'));
                         $(".modal-body #responseUser").html(!isDataAvailable ? "N/A" : jsonData.editor);
-                        $("#errorCode>select").val(!isDataAvailable ? -1 : jsonData.errorCode_id).attr("disabled", isDataAvailable);
+                        $("#errorCode>select").val(!isDataAvailable ? -1 : jsonData.errorCode_id).attr("disabled", true);
                         $("#myModal").unblock();
                     },
                     error: function (xhr, ajaxOptions, thrownError) {
@@ -628,6 +625,17 @@
                 });
             }
 
+            function counterMeasureModeUndo() {
+                $("#saveCountermeasure, #undoContent").hide();
+                $("#editCountermeasure").show();
+                $("#errorCode>select").attr("disabled", true);
+            }
+
+            function counterMeasureModeEdit() {
+                $("#saveCountermeasure, #undoContent").show();
+                $("#editCountermeasure").hide();
+                $("#errorCode>select").attr("disabled", false);
+            }
             function formatDate(dateString) {
                 return dateString.substring(0, 16);
             }
@@ -635,10 +643,29 @@
             function tableAjaxReload(tableObject) {
                 tableObject.ajax.reload();
             }
+            
+            //看使用者是否存在
+            function checkUserExist(jobnumber) {
+                var result;
+                $.ajax({
+                    type: "Post",
+                    url: "CheckUser",
+                    data: {
+                        jobnumber: jobnumber
+                    },
+                    dataType: "json",
+                    async: false,
+                    success: function (response) {
+                        result = response;
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        showMsg(xhr.responseText);
+                    }
+                });
+                return result;
+            }
 
             $(document).ready(function () {
-//                $("#final_time").text(new Date());
-
                 var interval = null;
                 var countdownnumber = 30 * 60;
                 var diff = 12;
@@ -712,7 +739,6 @@
                 });
 
                 var type;
-
                 $("body").on('dblclick', '#babHistory tbody tr', function () {
                     type = "type2";
                     var selectData = historyTable.row(this).data();
@@ -741,8 +767,7 @@
                     }
 
                 });
-
-                $(window).resize(respondCanvas);
+                
                 $("#send").on("click", function () {
                     type = "type1";
                     var modelName = $("#Model_name").val();
@@ -757,10 +782,8 @@
 
                     getBABCompare(null, modelName, lineType, type);
                 });
-
-
+                
                 //edit counterMeasure 
-
                 var editId;
                 $("body").on('click', '#babHistory input[type="button"]', function () {
                     $("#myModal").block({message: "loading..."});
@@ -780,6 +803,72 @@
                     $(this).find('.modal-dialog').css({width: '90%',
                         height: 'auto',
                         'max-height': '100%'});
+                });
+
+                $("#saveCountermeasure, #undoContent").hide();
+
+                var originErrorReason;
+                var originErrorCon;
+                var originResponseUser;
+
+                $("#editCountermeasure").click(function () {
+                    counterMeasureModeEdit();
+
+                    originErrorReason = $("#errorReason").html();
+                    originErrorCon = $("#errorCon").html().replace(/<br *\/?>/gi, '\n');
+                    originResponseUser = $("#responseUser").html();
+
+                    $("#errorReason").html("<input type='text' id='errorReasonText' maxlength='100' value='" + (originErrorReason == "N/A" ? "" : originErrorReason) + "'>");
+                    $("#errorCon").html("<textarea id='errorConText' maxlength='500'>" + (originErrorCon == "N/A" ? "" : originErrorCon) + "</textarea>");
+                    $("#responseUser").html("<input type='text' id='responseUserText' maxlength='30' value='" + (originResponseUser == "N/A" ? "" : originResponseUser) + "'>");
+
+                    console.log("editing");
+                });
+
+                $("#undoContent").click(function () {
+                    if (!confirm("確定捨棄修改?")) {
+                        return false;
+                    }
+                    counterMeasureModeUndo();
+
+                    $("#errorReason").html(originErrorReason);
+                    $("#errorCon").html(originErrorCon.replace(/(?:\r\n|\r|\n)/g, '<br />'));
+                    $("#responseUser").html(originResponseUser);
+                });
+
+                $("#saveCountermeasure").click(function () {
+                    var editor = $("#responseUserText").val();
+                    if(checkUserExist(editor) == false){
+                        return false;
+                    }
+                    if (confirm("確定修改內容?")) {
+                        $.ajax({
+                            url: "../../CountermeasureServlet",
+                            data: {
+                                BABid: editId,
+                                reason: $("#errorReasonText").val(),
+                                errorCode_id: $("#errorCode>select").val(),
+                                solution: $("#errorConText").val(),
+                                editor: editor,
+                                action: "update"
+                            },
+                            type: "POST",
+                            dataType: 'json',
+                            success: function (msg) {
+                                counterMeasureModeUndo();
+                                getContermeasure(editId);
+                                tableAjaxReload(historyTable);
+                            },
+                            error: function (xhr, ajaxOptions, thrownError) {
+                                alert(xhr.status);
+                                alert(thrownError);
+                            }
+                        });
+                    }
+                });
+
+                $('#myModal').on('hidden.bs.modal', function () {
+                    counterMeasureModeUndo();
                 });
 
                 $("#lineType2").val("ASSY");
@@ -839,6 +928,12 @@
                                 <tr>
                                     <td class="lab">異常代碼</td>
                                     <td id="errorCode">
+                                        <select>
+                                            <option value="-1">請選擇</option>
+                                            <c:forEach var="errorCode" items="${cDAO.errorCode}">
+                                                <option value="${errorCode[0]}">${errorCode[1]}</option>
+                                            </c:forEach>
+                                        </select>
                                     </td>
                                 </tr>
                                 <tr>
@@ -860,6 +955,9 @@
                         </div>
                     </div>
                     <div class="modal-footer">
+                        <button type="button" id="editCountermeasure" class="btn btn-default" >Edit</button>
+                        <button type="button" id="saveCountermeasure" class="btn btn-default">Save</button>
+                        <button type="button" id="undoContent" class="btn btn-default">Undo</button>
                         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                     </div>
                 </div>

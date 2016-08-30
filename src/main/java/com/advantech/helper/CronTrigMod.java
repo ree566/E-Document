@@ -6,7 +6,9 @@
 package com.advantech.helper;
 
 import com.advantech.quartzJob.DailyJobWorker;
-import com.advantech.quartzJob.DataTransformer;
+import com.advantech.service.BabLineTypeFacade;
+import com.advantech.service.BasicLineTypeFacade;
+import com.advantech.service.TestLineTypeFacade;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Date;
@@ -78,19 +80,19 @@ public class CronTrigMod {
         TxtWriter t = TxtWriter.getInstance();
         try {
             if ("pause".equals(order)) {
-                DataTransformer.setWriteTxtActionContorlSign(false);
+                scheduler.standby();
                 t.turnAllSignToOpen();
                 log.info("Stop write txt function");
-//                scheduler.standby();
             } else {
-                DataTransformer.setWriteTxtActionContorlSign(true);
                 t.resetAllTxt();
                 log.info("Resume write txt function");
-//                scheduler.start();
+                scheduler.start();
             }
         } catch (IOException ex) {
             log.error(ex.toString());
             return false;
+        } catch (SchedulerException ex) {
+            log.error(ex.toString());
         }
         return true;
     }

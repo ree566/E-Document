@@ -26,6 +26,7 @@ public class BasicService {
     private static TestClassService testClassService = null;
     private static CountermeasureService countermeasureService = null;
     private static IdentitService identitService = null;
+    private static BABLoginStatusService babLoginStatusService = null;
 
     static {
         babService = new BABService();
@@ -37,6 +38,7 @@ public class BasicService {
         testClassService = new TestClassService();
         countermeasureService = new CountermeasureService();
         identitService = new IdentitService();
+        babLoginStatusService = new BABLoginStatusService();
     }
 
     public static BABService getBabService() {
@@ -73,6 +75,10 @@ public class BasicService {
 
     public static IdentitService getIdentitService() {
         return identitService;
+    }
+
+    public static BABLoginStatusService getBabLoginStatusService() {
+        return babLoginStatusService;
     }
 
 }

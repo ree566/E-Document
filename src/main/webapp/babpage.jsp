@@ -79,10 +79,12 @@
             }
             $(document).ready(function () {
 
+                printCookies();
+
                 $(document).ajaxSend(function () {
                     block();//Block the screen when ajax is sending, Prevent form submit repeatly.
                 });
-                $(document).on("ajaxSuccess, ajaxComplete",function () {
+                $(document).on("ajaxSuccess, ajaxComplete", function () {
                     $.unblockUI();//Unblock the ajax when success
                 });
 
@@ -122,7 +124,7 @@
                         var pageSitefloor = $("#userSitefloorSelect").val();
                         if (userSitefloorSelect != null && userSitefloorSelect != pageSitefloor) {
                             $("#step2, #step3").hide();
-                            $("#servermsg").html("您已經登入其他樓層");
+                            showMsg("您已經登入其他樓層");
                         }
                         saveline = $obj.line;
                         if (msgstring != null) {
@@ -134,14 +136,15 @@
                                         disabled: true,
                                         checked: true
                                     });
-                                    $("#lineselect").children().eq(saveline).attr("selected", true);
+                                    $("#lineselect").val(saveline);
+                                    console.log(saveline);
                                     $("#lineselect, #step1next").attr("disabled", true);
                                     $("#manuallyModelNameInput").prop("checked", false);
                                 }
                             }
                         } else {
                             if ($obj != null) {
-                                $("#lineselect").children().eq($obj.line).attr("selected", true);
+                                $("#lineselect").val($obj.line);
                                 $("#lineselect, #step1next, #isfirst").attr("disabled", true);
                                 $("#step2").show();
                             }
@@ -273,11 +276,11 @@
                     var line = $("#lineselect").val();
                     var people = $("#people").val();
                     if (modelname == 'data not found' || modelname == "" || po == "" || line == -1) {
-                        $("#servermsg").html("請確認資料是否正確");
+                        showMsg("請確認資料是否正確");
                         return false;
                     }
                     if (parseInt(people) <= 0 || parseInt(people) > 5 || people == "") {
-                        $("#servermsg").html("人數範圍錯誤");
+                        showMsg("人數範圍錯誤");
                         return false;
                     }
                     if (line == -1) {
@@ -291,29 +294,26 @@
                         $.cookie("people", people);
                         reload();
                     } else {
-                        $("#servermsg").html(obj.status);
+                        showMsg(obj.status);
                     }
-
-
                 });
 
                 //工單最後一個站別關閉工單用
                 $("#end").on("click", function () {
-                    var po, babid, line;
+                    var data;
+                    var po;
                     if (po_search_result != null) {
                         var obj = JSON.parse(po_search_result);
+                        var userSel = JSON.parse($.cookie("user_sel"));
                         po = obj.PO;
-                        babid = obj.id;
-                        line = obj.line;
+                        data = {
+                            babId: obj.id,
+                            station: userSel.step3_sel,
+                            action: "BAB_END"
+                        };
                     }
                     if (confirm("結束工單號碼 " + po + "?")) {
-                        var obj = toback(po, -1, line, -1, babid, "delete");
-                        if (obj.status == "success") {
-                            $.removeCookie("po_search_result");
-                            reload();
-                        } else {
-                            $("#servermsg").html(obj.status);
-                        }
+                        otherStation(data);
                     }
                 });
 
@@ -344,7 +344,7 @@
                             dataType: "json",
                             success: function (response) {
                                 var obj = response.servermsg;
-                                $("#servermsg").html(
+                                showMsg(
                                         "<p>檢查前顆感應器是否已經結束:" +
                                         (obj.history ? "是" : "否") +
                                         "</p><p>檢查統計值:" +
@@ -354,7 +354,7 @@
                                         "</p>");
                             },
                             error: function () {
-                                $("#servermsg").html("error");
+                                showMsg("error");
                             }
                         });
                     }
@@ -399,14 +399,10 @@
                                 identit: id,
                                 userSitefloorSelect: $("#userSitefloorSelect").val()
                             };
-                            var date = new Date();
-                            var minutes = 12 * 60;
-                            date.setTime(date.getTime() + (minutes * 60 * 1000));
-                            $.cookie("babinfo", JSON.stringify(json), {expires: date});
+                            generateCookie("babinfo", JSON.stringify(json));
                         }
                         reload();
                     }
-
                 });
 
                 //離開站別1(順便clear cookie)
@@ -440,7 +436,7 @@
 
                 if ($.cookie('table')) {
                     $(":input,select").not("#redirectBtn").attr("disabled", "disabled");
-                    $("#servermsg").html("您已經登入測試");
+                    showMsg("您已經登入測試");
                 }
 
                 function textBoxToUpperCase(obj) {
@@ -472,8 +468,8 @@
                         $.removeCookie(cookie);
                     }
                 }
-                
-                var STATION1_LOGIN = true, STATION1_OUT = false;
+
+                var STATION1_LOGIN = "LOGIN", STATION1_OUT = "LOGOUT";
 
                 //站別1登入
                 function linelogin() {
@@ -511,7 +507,7 @@
                                     obj.val(response);
                                 },
                                 error: function () {
-                                    $("#servermsg").html("error");
+                                    showMsg("error");
                                 }
                             });
                         }, 1000);
@@ -553,15 +549,15 @@
                                         }
                                     }
                                     $.cookie("po_search_result", JSON.stringify(obj));
-                                    $("#servermsg").html(obj == null ? "找不到工單資料" : "找到資料");
+                                    showMsg(obj == null ? "找不到工單資料" : "找到資料");
                                 },
                                 error: function () {
-                                    $("#servermsg").html("error");
+                                    showMsg("error");
                                 }
                             });
                         }, 1000);
                     } else {
-                        $("#servermsg").val("");
+                        showMsg("");
                     }
                 }
 
@@ -571,7 +567,7 @@
                     if (linevalue != -1) {
                         $.ajax({
                             type: "Post",
-                            url: "LineLogin",
+                            url: "LineServlet",
                             async: false,
                             data: {
                                 lineNo: linevalue,
@@ -581,11 +577,22 @@
                             dataType: "html",
                             success: function (response) {
                                 //傳回來 success or fail
-                                $("#servermsg").html(response);
+                                if (response == "success") {
+                                    if (FLAG == STATION1_LOGIN) {
+                                        var obj = {
+                                            linestate: response
+                                        };
+                                        generateCookie("servermsg", JSON.stringify(obj));
+                                    } else {
+                                        removeAllCookies();
+                                    }
+                                } else {
+                                    showMsg(response);
+                                }
                                 result = response;
                             },
                             error: function (xhr, ajaxOptions, thrownError) {
-                                $("#servermsg").html(xhr.responseText);
+                                showMsg(xhr.responseText);
                             }
                         });
                     }
@@ -608,7 +615,7 @@
                             obj = json;
                         },
                         error: function () {
-                            $("#servermsg").html("error");
+                            showMsg("error");
                         }
                     });
                     return obj;
@@ -621,18 +628,18 @@
 
 //儲存、結束工單
             function toback(po, modelname, line, people, id, action) {
-                $("#servermsg").html("");
+                showMsg("");
                 var obj;
                 $.ajax({
                     type: "Post",
-                    url: "SaveBABInfo",
+                    url: "BABFirstStationServlet",
                     async: false,
                     data: {
                         po: po,
                         modelname: modelname,
                         lineNo: line,
                         people: people,
-                        id: id,
+                        jobnumber: "jobnumber",
                         action: action
                     },
                     dataType: "json",
@@ -640,14 +647,65 @@
                         obj = response;
                     },
                     error: function (xhr, ajaxOptions, thrownError) {
-                        $("#servermsg").html(xhr.responseText);
+                        showMsg(xhr.responseText);
                     }
                 });
                 return obj;
             }
+
+            //其他站別動作
+            function otherStation(data) {
+                $.ajax({
+                    type: "Post",
+                    url: "BABOtherStationServlet",
+                    data: data,
+                    dataType: "html",
+                    success: function (response) {
+                        if (response == "success") {
+                            $.removeCookie("po_search_result");
+                            showMsg(response);
+                            reload();
+                        } else {
+                            showMsg(response);
+                        }
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        showMsg(xhr.responseText);
+                    }
+                });
+            }
+
+            //generate all cookies exist 12 hours
+            function generateCookie(name, value) {
+                var date = new Date();
+                var minutes = 12 * 60;
+                date.setTime(date.getTime() + (minutes * 60 * 1000));
+                $.cookie(name, value, {expires: date});
+            }
+
+            function removeAllCookies() {
+                var cookies = $.cookie();
+                for (var cookie in cookies) {
+                    $.removeCookie(cookie);
+                }
+            }
+
             function reload() {
                 $(":button,select,:checkbox").removeAttr("disabled");
                 window.location.reload();
+            }
+
+            function printCookies() {
+                var theCookies = document.cookie.split(';');
+                var aString = '';
+                for (var i = 1; i <= theCookies.length; i++) {
+                    aString += i + ' ' + theCookies[i - 1] + "\n";
+                }
+                console.log(aString);
+            }
+            
+            function showMsg(message){
+                $("#serverMsg").html(message);
             }
         </script>
     </head>
@@ -659,7 +717,7 @@
                 <button id="redirectBtn" >不是我的樓層?</button>
             </a>
         </div>
-        <jsp:include page="head.jsp" />
+        <jsp:include page="temp/head.jsp" />
         <div style="clear:both"></div>
         <div id="step1">
             <!--判斷該線別有無使用人-->
@@ -792,6 +850,6 @@
         <p>機子擋住Sensor即開始計時，休息時間的操作不列入計算範圍之內。</p>
     </div>
 
-    <jsp:include page="footer.jsp" />
+    <jsp:include page="temp/footer.jsp" />
 </body>
 </html>

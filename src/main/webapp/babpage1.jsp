@@ -286,13 +286,6 @@
 
                 $("#changeUser").click(function () {
                     dialogMessage.dialog("open");
-//                    var jobnumber = $("#jobnumber").val();
-//                    if (checkUserExist(jobnumber)) {
-//                        changeJobnumber(jobnumber);
-//                    }else{
-//                        showMsg(userNotFoundMessage);
-//                    }
-
                 });
 
                 $(":text").focus(function () {

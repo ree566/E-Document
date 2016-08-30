@@ -33,8 +33,8 @@ public class TxtWriter {
 
     private TxtWriter() {
         PropertiesReader p = PropertiesReader.getInstance();
-//        fileLocation = PropertiesReader.getInstance().getTxtLocation();
-        fileLocation = System.getProperty("user.home") + "\\Desktop\\project\\";         // testing file path 
+        fileLocation = PropertiesReader.getInstance().getTxtLocation();
+//        fileLocation = System.getProperty("user.home") + "\\Desktop\\project\\";         // testing file path 
         fileNameExt = p.getOutputFilenameExt();
         //tomcat 讀取網路磁碟機有問題時，請把路徑改成如下列txtlocation所示(全路徑，而不是N://這種)
         //設定完之後還要把"tomcat服務"的設定從Local System 改為最高權限 Administrator 才能順利讀寫網路磁碟機

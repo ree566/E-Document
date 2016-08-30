@@ -72,7 +72,7 @@ public class BABFirstStationServlet extends HttpServlet {
                 out.print(result);
             } catch (MessagingException e) {
                 log.error(e.toString());
-                out.print(successMessage);
+                out.print(successMessage);//Send succcess no matter send mail success or fail.
             }
         } else {
             out.print("Invaild input value");

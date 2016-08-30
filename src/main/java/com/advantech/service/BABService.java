@@ -4,13 +4,11 @@ import com.advantech.entity.AlarmAction;
 import com.advantech.model.BABDAO;
 import com.advantech.entity.BAB;
 import com.advantech.entity.BABHistory;
-import com.advantech.entity.BABPeopleRecord;
 import com.advantech.entity.Line;
 import com.advantech.helper.PropertiesReader;
 import com.google.gson.Gson;
 import java.math.BigDecimal;
 import java.sql.Array;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.json.JSONArray;
@@ -118,7 +116,8 @@ public class BABService {
         if (line.isIsOpened()) {
             if (startBAB(bab)) {
                 BAB b = this.babDAO.getLastInputBAB(bab.getLine());//get last insert id
-                return this.recordBABPeople(b.getId(), this.FIRST_STATION_NUMBER, jobnumber) ? "success" : "發生錯誤，工單已經投入，人員資訊無法記錄";
+                BABLoginStatusService bs = BasicService.getBabLoginStatusService();
+                return bs.recordBABPeople(b.getId(), this.FIRST_STATION_NUMBER, jobnumber) ? "success" : "發生錯誤，工單已經投入，人員資訊無法記錄";
             } else {
                 return "error";
             }
@@ -134,21 +133,6 @@ public class BABService {
             babDAO.closeBABDirectly(prevBab);
         }
         return babDAO.insertBAB(bab);
-    }
-
-//    public 
-    public boolean recordBABPeople(int BABid, int station, String jobnumber) {
-        List l = new ArrayList();
-        l.add(new BABPeopleRecord(BABid, station, jobnumber));
-        return babDAO.recordBABPeople(l);
-    }
-
-    public BABPeopleRecord getExistUserInBAB(int BABid, int station) {
-        return babDAO.getExistUserInBAB(BABid, station);
-    }
-
-    public List<BABPeopleRecord> getExistUserInBAB(int BABid) {
-        return babDAO.getExistUserInBAB(BABid);
     }
 
     public String closeBAB(int BABid) {
@@ -197,6 +181,17 @@ public class BABService {
     public JSONArray getAvg(int BABid) {
         BAB b = this.getBAB(BABid);
         return (b.isIsBabClosed() ? getClosedBABAVG(BABid) : getBABAvgs(BABid));
+    }
+
+    public Double getTotalAvg(int BABid) {
+        JSONArray j = this.getAvg(BABid);
+        Double total = 0.0;
+        int people = j.length();
+        for (Object o : j) {
+            JSONObject obj = (JSONObject) o;
+            total += obj.getDouble("average");
+        }
+        return total / people;
     }
 
     private JSONArray getBABAvgs(int BABid) {

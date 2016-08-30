@@ -12,7 +12,7 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>${initParam.pageTitle}</title>
         <link rel="shortcut icon" href="../../images/favicon.ico"/>
-        <link rel="stylesheet" href="css/jquery.dataTables.min.css">
+        <link rel="stylesheet" href="../../css/jquery.dataTables.min.css">
         <style>
             .nodata{
                 opacity: 0.2
@@ -37,8 +37,8 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
             }
         </style>
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-        <script src="js/jquery.dataTables.min.js"></script>
-        <script src="js/jquery.cookie.js"></script>
+        <script src="../../js/jquery.dataTables.min.js"></script>
+        <script src="../../js/jquery.cookie.js"></script>
         <script>
             $(document).ready(function () {
 
@@ -76,7 +76,7 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                     "processing": false,
                     "serverSide": false,
                     "ajax": {
-                        "url": "GetTotal",
+                        "url": "../../GetTotal",
                         "type": "POST",
                         "data": {"type": "type1"}
                     },
@@ -172,7 +172,7 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
         </script>
     </head>
     <body>
-        <jsp:include page="admin-header.jsp" />
+        <jsp:include page="header.jsp" />
         <div id="wigetCtrl">
         <h3>測試各站別狀態</h3><!----------------------------------------------->
         <div style="width: 50%; background-color: #F5F5F5">
