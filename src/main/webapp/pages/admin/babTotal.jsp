@@ -873,6 +873,8 @@
 
                 $("#lineType2").val("ASSY");
                 $("#searchAvailableBAB").trigger("click");
+                
+                $("#editCountermeasure").attr("disabled", true);
 
                 $("body").on("click", "#searchAvailableBAB, #send", function () {
                     block();

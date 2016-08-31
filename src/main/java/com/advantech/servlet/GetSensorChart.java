@@ -50,7 +50,7 @@ public class GetSensorChart extends HttpServlet {
         if (pChecker.checkInputVals(babid)) {
             int id = Integer.parseInt(babid);
             obj.put("data", babService.getSensorDiffChart(id, isNull(isused, 0)));
-            obj.put("avg", babService.getTotalAvg(id));
+            obj.put("avg", babService.getTotalAvg(id).intValue());
         }
         out.print(obj);
     }

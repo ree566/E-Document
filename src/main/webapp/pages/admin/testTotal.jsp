@@ -108,7 +108,7 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                                 if (data == 2) {
                                     return "異常";
                                 }
-                                return (data == 1 ? "<img src='images/red-light.jpg' width=20>" : "");
+                                return (data == 1 ? "<img src='../../images/red-light.jpg' width=20>" : "");
                             }
                         }
                     ],
