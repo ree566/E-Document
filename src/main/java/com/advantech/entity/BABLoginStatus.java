@@ -14,7 +14,7 @@ import java.io.Serializable;
 public class BABLoginStatus implements Serializable {
 
     private int id;
-    private int BABid;
+    private int lineId;
     private int station;
     private String jobnumber;
 
@@ -22,7 +22,7 @@ public class BABLoginStatus implements Serializable {
     }
 
     public BABLoginStatus(int BABid, int station, String jobnumber) {
-        this.BABid = BABid;
+        this.lineId = BABid;
         this.station = station;
         this.jobnumber = jobnumber;
     }
@@ -35,12 +35,12 @@ public class BABLoginStatus implements Serializable {
         this.id = id;
     }
 
-    public int getBABid() {
-        return BABid;
+    public int getLineId() {
+        return lineId;
     }
 
-    public void setBABid(int BABid) {
-        this.BABid = BABid;
+    public void setLineId(int BABid) {
+        this.lineId = BABid;
     }
 
     public int getStation() {

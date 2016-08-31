@@ -4,6 +4,7 @@ import com.advantech.entity.AlarmAction;
 import com.advantech.model.BABDAO;
 import com.advantech.entity.BAB;
 import com.advantech.entity.BABHistory;
+import com.advantech.entity.BABLoginStatus;
 import com.advantech.entity.Line;
 import com.advantech.helper.PropertiesReader;
 import com.google.gson.Gson;
@@ -95,6 +96,10 @@ public class BABService {
         return babDAO.getClosedBABInfoDetail(startDate, endDate);
     }
 
+    public BAB getLastInputBAB(int lineNo) {
+        return babDAO.getLastInputBAB(lineNo);
+    }
+
     public boolean updateBABAlarm(List<AlarmAction> l) {
         return babDAO.updateBABAlarm(l);
     }
@@ -136,7 +141,7 @@ public class BABService {
     }
 
     public String closeBAB(int BABid) {
-        List<BAB> processingBab = babDAO.getProcessingBAB(BABid);
+        List<BAB> processingBab = babDAO.getBAB(BABid);
         if (processingBab != null && !processingBab.isEmpty()) {
             BAB bab = processingBab.get(0);
             String message = closeBAB(bab);
@@ -281,18 +286,27 @@ public class BABService {
         return jsonObj;
     }
 
-    public JSONObject stopSensor(int BABid, int station) {
+    public JSONObject stopSensor(int lineNo, int station) {
         boolean checkCloseFlag = false;
         boolean sensorEndFlag = false;
         JSONObject message = new JSONObject();
-        boolean existBabStatistics = (getBABAvgs(BABid).length() != 0);
-        message.put("total", existBabStatistics);
-        if (existBabStatistics) {
-            //第二站不做檢查，因為假使第一顆沒有換下一套(儲存紀錄)，後面無法做工單關閉，而且假如只開兩站不會執行此function
-            checkCloseFlag = (station == 2 ? true : babDAO.checkPrevSensorIsClosed(BABid, station - 1));
-
-            if (checkCloseFlag) {
-                sensorEndFlag = babDAO.stopSingleSensor(station, BABid);
+        BAB bab = babDAO.getLastInputBAB(lineNo);
+        if (bab != null) {
+            boolean existBabStatistics = (getBABAvgs(bab.getId()).length() != 0);
+            message.put("total", existBabStatistics);
+            if (existBabStatistics) {
+                //第二站不做檢查，因為假使第一顆沒有換下一套(儲存紀錄)，後面無法做工單關閉，而且假如只開兩站不會執行此function
+                checkCloseFlag = (station == 2 ? true : babDAO.checkPrevSensorIsClosed(bab.getId(), station - 1));
+                if (checkCloseFlag) {
+                    BABLoginStatusService bsService = BasicService.getBabLoginStatusService();
+                    BABLoginStatus bs = bsService.getBABLoginStatus(bab.getLine(), station);
+                    if (bs != null) {
+                        sensorEndFlag = babDAO.stopSingleSensor(station, bab.getId());
+                        if (sensorEndFlag == true) {
+                            bsService.babLogin(bab.getLine(), station, bs.getJobnumber());
+                        }
+                    }
+                }
             }
         }
         message.put("history", checkCloseFlag);

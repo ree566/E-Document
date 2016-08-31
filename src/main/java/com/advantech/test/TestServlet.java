@@ -6,17 +6,13 @@
  */
 package com.advantech.test;
 
-import com.advantech.entity.FBN;
+import com.advantech.entity.BAB;
 import com.advantech.helper.ParamChecker;
-import com.advantech.service.BABLoginStatusService;
 import com.advantech.service.BasicService;
 import java.io.*;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,33 +29,12 @@ public class TestServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
         PrintWriter out = res.getWriter();
-        String babid = req.getParameter("babid");
-        String station = req.getParameter("station");
-        String jobnumber = req.getParameter("jobnumber");
-        String action = req.getParameter("action");
-        if (new ParamChecker().checkInputVals(babid, station, jobnumber, action)) {
-            BABLoginStatusService bs = BasicService.getBabLoginStatusService();
-            int babId = Integer.parseInt(babid);
-            int stat = Integer.parseInt(station);
-
-            switch (action) {
-                case "insert":
-                    out.print(bs.babLogin(babId, stat, jobnumber));
-                    break;
-                case "update":
-                    out.print(bs.changeUser(babId, stat, jobnumber));
-                    break;
-                case "delete":
-                    out.print(bs.deleteUserFromStation(babId, stat));
-                    break;
-                case "select":
-                    out.print(bs.getBABLoginStatus());
-                    break;
-                default:
-                    out.print("Invaild action.");
-            }
-        } else {
-            out.print("Invaild input value.");
+        String PO = req.getParameter("PO");
+        String Model_name = req.getParameter("Model_name");
+        String line = req.getParameter("line");
+        String people = req.getParameter("people");
+        if (new ParamChecker().checkInputVals(PO, Model_name, line, people)) {
+            out.print(BasicService.getBabService().startBAB(new BAB(PO, Model_name, Integer.parseInt(line), Integer.parseInt(people))));
         }
 
     }

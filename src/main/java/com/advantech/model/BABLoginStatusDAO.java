@@ -35,42 +35,47 @@ public class BABLoginStatusDAO extends BasicDAO {
         return queryFBNTable("SELECT * FROM BABLoginStatus");
     }
 
-    public boolean babLogin(int BABid, int station, String jobnumber) {
-        return update(getConn(), "INSERT INTO babLoginStatus(babid, station, jobnumber) VALUES(?,?,?)", BABid, station, jobnumber);
+    public BABLoginStatus getBABLoginStatus(int lineId, int station) {
+        List l = queryFBNTable("SELECT * FROM BABLoginStatus WHERE lineId = ? AND station = ?", lineId, station);
+        return !l.isEmpty() ? (BABLoginStatus) l.get(0) : null;
     }
 
-    public boolean changeUser(int BABid, int station, String jobnumber) {
-        return update(getConn(), "UPDATE babLoginStatus SET jobnumber = ? WHERE babid = ? AND station = ?", jobnumber, BABid, station);
-    }
-    
-    public boolean deleteUserFromStation(int BABid, int station){
-        return update(getConn(), "DELETE FROM babLoginStatus WHERE babid = ? AND station = ?", BABid, station);
+    public boolean babLogin(int lineId, int station, String jobnumber) {
+        return update(getConn(), "INSERT INTO babLoginStatus(lineId, station, jobnumber) VALUES(?,?,?)", lineId, station, jobnumber);
     }
 
-    public BABPeopleRecord getExistUserInBAB(int BABid, int station) {
+    public boolean changeUser(int lineId, int station, String jobnumber) {
+        return update(getConn(), "UPDATE babLoginStatus SET jobnumber = ? WHERE lineId = ? AND station = ?", jobnumber, lineId, station);
+    }
+
+    public boolean deleteUserFromStation(int lineId, int station) {
+        return update(getConn(), "DELETE FROM babLoginStatus WHERE lineId = ? AND station = ?", lineId, station);
+    }
+
+    public BABPeopleRecord getExistUserInBAB(int lineId, int station) {
         List l = queryForBeanList(
                 getConn(),
                 BABPeopleRecord.class,
-                "SELECT * FROM BABPeopleRecord WHERE BABid = ? AND station = ?",
-                BABid, station
+                "SELECT * FROM BABPeopleRecord WHERE lineId = ? AND station = ?",
+                lineId, station
         );
         return !l.isEmpty() ? (BABPeopleRecord) l.get(0) : null;
     }
 
-    public List<BABPeopleRecord> getExistUserInBAB(int BABid) {
+    public List<BABPeopleRecord> getExistUserInBAB(int lineId) {
         return queryForBeanList(
                 getConn(),
                 BABPeopleRecord.class,
-                "SELECT * FROM BABPeopleRecord WHERE BABid = ?",
-                BABid
+                "SELECT * FROM BABPeopleRecord WHERE lineId = ?",
+                lineId
         );
     }
 
     public boolean recordBABPeople(List<BABPeopleRecord> l) {
         return update(getConn(),
-                "INSERT INTO BABPeopleRecord(BABid, station, user_id) VALUES (?,?,?)",
+                "INSERT INTO BABPeopleRecord(lineId, station, user_id) VALUES (?,?,?)",
                 l,
-                "BABid", "station", "user_id");
+                "lineId", "station", "user_id");
     }
 
     private boolean updateAlarmTable(String sql, List<AlarmAction> l) {

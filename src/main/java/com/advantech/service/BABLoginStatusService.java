@@ -27,29 +27,33 @@ public class BABLoginStatusService {
         return babLoginStatusDAO.getBABLoginStatus();
     }
 
-    public boolean babLogin(int BABid, int station, String jobnumber) {
-        return babLoginStatusDAO.babLogin(BABid, station, jobnumber);
+    public BABLoginStatus getBABLoginStatus(int lineId, int station) {
+        return babLoginStatusDAO.getBABLoginStatus(lineId, station);
     }
 
-    public boolean changeUser(int BABid, int station, String jobnumber) {
-       return babLoginStatusDAO.changeUser(BABid, station, jobnumber);
+    public boolean babLogin(int lineId, int station, String jobnumber) {
+        return babLoginStatusDAO.babLogin(lineId, station, jobnumber);
     }
 
-    public boolean deleteUserFromStation(int BABid, int station) {
-        return babLoginStatusDAO.deleteUserFromStation(BABid, station);
+    public boolean changeUser(int lineId, int station, String jobnumber) {
+        return babLoginStatusDAO.changeUser(lineId, station, jobnumber);
     }
 
-    public boolean recordBABPeople(int BABid, int station, String jobnumber) {
+    public boolean deleteUserFromStation(int lineId, int station) {
+        return babLoginStatusDAO.deleteUserFromStation(lineId, station);
+    }
+
+    public boolean recordBABPeople(int lineId, int station, String jobnumber) {
         List l = new ArrayList();
-        l.add(new BABPeopleRecord(BABid, station, jobnumber));
+        l.add(new BABPeopleRecord(lineId, station, jobnumber));
         return babLoginStatusDAO.recordBABPeople(l);
     }
 
-    public BABPeopleRecord getExistUserInBAB(int BABid, int station) {
-        return babLoginStatusDAO.getExistUserInBAB(BABid, station);
+    public BABPeopleRecord getExistUserInBAB(int lineId, int station) {
+        return babLoginStatusDAO.getExistUserInBAB(lineId, station);
     }
 
-    public List<BABPeopleRecord> getExistUserInBAB(int BABid) {
-        return babLoginStatusDAO.getExistUserInBAB(BABid);
+    public List<BABPeopleRecord> getExistUserInBAB(int lineId) {
+        return babLoginStatusDAO.getExistUserInBAB(lineId);
     }
 }

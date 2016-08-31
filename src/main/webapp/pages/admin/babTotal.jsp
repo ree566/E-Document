@@ -300,8 +300,6 @@
 
 //http://canvasjs.com/docs/charts/how-to/hide-unhide-data-series-chart-legend-click/
             function generateChart(d, chartId) {
-                var totalAvg = Math.round(d.avg);
-                console.log(totalAvg);
                 var chart = new CanvasJS.Chart(chartId,
                         {
                             zoomEnabled: true,
@@ -321,11 +319,16 @@
                                 minimum: 0,
                                 stripLines: [
                                     {
-                                        value: totalAvg,
-                                        label: totalAvg + "sec",
+                                        value: d.avg,
+                                        label: d.avg + "sec",
                                         labelPlacement: "outside",
+                                        labelAlign: "near",
                                         color: "orange",
+                                        thickness: 3,
+                                        labelFontSize: 14,
+                                        labelFontWeight: "bold",
                                         labelFontStyle: "微軟正黑體",
+                                        labelBackgroundColor: "#666666",
                                         showOnTop: true
                                     }
                                 ]
@@ -643,7 +646,7 @@
             function tableAjaxReload(tableObject) {
                 tableObject.ajax.reload();
             }
-            
+
             //看使用者是否存在
             function checkUserExist(jobnumber) {
                 var result;
@@ -767,7 +770,7 @@
                     }
 
                 });
-                
+
                 $("#send").on("click", function () {
                     type = "type1";
                     var modelName = $("#Model_name").val();
@@ -782,7 +785,7 @@
 
                     getBABCompare(null, modelName, lineType, type);
                 });
-                
+
                 //edit counterMeasure 
                 var editId;
                 $("body").on('click', '#babHistory input[type="button"]', function () {
@@ -838,7 +841,7 @@
 
                 $("#saveCountermeasure").click(function () {
                     var editor = $("#responseUserText").val();
-                    if(checkUserExist(editor) == false){
+                    if (checkUserExist(editor) == false) {
                         return false;
                     }
                     if (confirm("確定修改內容?")) {

@@ -49,8 +49,9 @@ public class GetSensorChart extends HttpServlet {
         JSONObject obj = new JSONObject();
         if (pChecker.checkInputVals(babid)) {
             int id = Integer.parseInt(babid);
+            Double d = babService.getTotalAvg(id);
             obj.put("data", babService.getSensorDiffChart(id, isNull(isused, 0)));
-            obj.put("avg", babService.getTotalAvg(id));
+            obj.put("avg", d.intValue());
         }
         out.print(obj);
     }

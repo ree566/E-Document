@@ -6,15 +6,17 @@
 package com.advantech.model;
 
 import com.advantech.entity.AlarmAction;
-import com.advantech.helper.ProcRunner;
 import com.advantech.helper.PropertiesReader;
 import com.advantech.entity.BABHistory;
 import com.advantech.entity.BAB;
-import com.advantech.entity.BABPeopleRecord;
+import com.advantech.entity.BABLoginStatus;
 import com.advantech.entity.LineBalancing;
+import com.advantech.helper.ProcRunner;
+import com.advantech.service.BABLoginStatusService;
 import com.advantech.service.BasicService;
 import com.advantech.service.FBNService;
 import com.advantech.service.LineBalanceService;
+import java.math.BigDecimal;
 import java.sql.Array;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -23,6 +25,7 @@ import java.util.Map;
 import javax.mail.MessagingException;
 import org.apache.commons.dbutils.DbUtils;
 import org.apache.commons.dbutils.QueryRunner;
+import org.apache.commons.dbutils.handlers.ScalarHandler;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.slf4j.Logger;
@@ -84,10 +87,6 @@ public class BABDAO extends BasicDAO {
 
     public List<BAB> getProcessingBAB() {
         return queryBABTable("SELECT * FROM LS_BAB_Sort");
-    }
-
-    public List<BAB> getProcessingBAB(int BABid) {
-        return queryBABTable("SELECT * FROM LS_BAB_Sort WHERE id = ?", BABid);
     }
 
     public List<BAB> getProcessingBABByLine(int lineNo) {
@@ -173,14 +172,35 @@ public class BABDAO extends BasicDAO {
     }
 
     public boolean insertBAB(BAB bab) {
-        return update(
-                getConn(),
-                "INSERT INTO LS_BAB(PO,Model_name,line,people) VALUES (?,?,?,?)",
-                bab.getPO(),
-                bab.getModel_name(),
-                bab.getLine(),
-                bab.getPeople()
-        );
+        int firstStationNo = 1;
+        boolean flag = false;
+        Connection conn = null;
+        BABLoginStatus bStatus = BasicService.getBabLoginStatusService().getBABLoginStatus(bab.getLine(), firstStationNo);
+
+        if (bStatus == null) {
+            return false;
+        }
+
+        try {
+            QueryRunner qRunner = new QueryRunner();
+            conn = getDBUtilConn(SQL.Way_Chien_WebAccess);
+            conn.setAutoCommit(false);
+
+            String sql = "INSERT INTO LS_BAB(PO,Model_name,line,people) VALUES (?,?,?,?)";
+            BigDecimal autoGenerateId = qRunner.insert(conn, sql, new ScalarHandler<BigDecimal>(), bab.getPO(), bab.getModel_name(), bab.getLine(), bab.getPeople());
+            int id = autoGenerateId.intValue();
+
+            String sql2 = "INSERT INTO BABPeopleRecord(BABid, station, user_id) VALUES(?,?,?)";
+            qRunner.insert(conn, sql2, new ScalarHandler<Long>(), id, firstStationNo, bStatus.getJobnumber());
+
+            DbUtils.commitAndCloseQuietly(conn);
+            flag = true;
+        } catch (SQLException ex) {
+            log.error(ex.toString());
+            DbUtils.rollbackAndCloseQuietly(conn);
+        }
+        return flag;
+
     }
 
     /**
@@ -254,9 +274,7 @@ public class BABDAO extends BasicDAO {
         } catch (SQLException ex) {
             log.error(ex.toString());
             DbUtils.rollbackAndCloseQuietly(conn1);
-            if (conn2 != null) {
-                DbUtils.rollbackAndCloseQuietly(conn2);
-            }
+            DbUtils.rollbackAndCloseQuietly(conn2);
         } catch (MessagingException | JSONException ex) {
             log.error(ex.toString());
             flag = true; //即使寄信失敗一樣傳回true給使用者知道(不需要知道寄信fail log有紀錄即可)
@@ -265,7 +283,7 @@ public class BABDAO extends BasicDAO {
     }
 
     public boolean stopSingleSensor(int sensorId, int BABid) {
-        return updateProc(getConn(), "{CALL LS_Sensor_END(?,?)}", sensorId, BABid);
+        return update(getConn(), "{CALL LS_Sensor_END(?,?)}", sensorId, BABid);
     }
 
     public boolean closeBABDirectly(BAB bab) {
