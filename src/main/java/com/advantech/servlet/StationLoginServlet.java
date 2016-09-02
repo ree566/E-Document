@@ -25,7 +25,13 @@ import javax.servlet.http.*;
 public class StationLoginServlet extends HttpServlet {
 
     private BABLoginStatusService blsService = null;
-    private final String TESTLINE = "testLine", BABLINE = "babLine", LOGIN = "LOGIN", LOGOUT = "LOGOUT", CHANGEUSER = "CHANGEUSER";
+    private final String 
+            TESTLINE = "testLine",
+            BABLINE = "babLine", 
+            LOGIN = "LOGIN", 
+            LOGOUT = "LOGOUT", 
+            CHANGEUSER = "CHANGEUSER", 
+            GET_AVAILABLE_STATION = "GETAVAILABLESTATION";
     private ParamChecker pChecker;
 
     @Override
@@ -97,7 +103,15 @@ public class StationLoginServlet extends HttpServlet {
                             case CHANGEUSER:
                                 if (bStatus == null) {
                                     out.print("無法換人，此站別人員不存在");
-                                } else if (blsService.changeUser(line, st, jobnumber)) {
+                                    return;
+                                }
+                                BABLoginStatus bs = blsService.getUser(jobnumber);
+                                if (bs != null) {
+                                    Line l = BasicService.getLineService().getLine(bs.getLineId());
+                                    out.print("無法換人，您已經在線別 " + l.getName() + "的站別 " + bs.getStation() + " 登入");
+                                    return;
+                                }
+                                if (blsService.changeUser(line, st, jobnumber)) {
                                     BAB b = BasicService.getBabService().getLastInputBAB(line);
                                     if (b != null) {
                                         blsService.recordBABPeople(b.getId(), st, jobnumber);
@@ -106,6 +120,9 @@ public class StationLoginServlet extends HttpServlet {
                                 } else {
                                     out.print("Fail to change user");
                                 }
+                                break;
+                            case GET_AVAILABLE_STATION:
+                                //return avail station array to jsp
                                 break;
                             default:
                                 out.print(unSupportAction);

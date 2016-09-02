@@ -201,7 +201,7 @@
 
                 dragableWiget.draggable({
                     drag: function (e) {
-//                        return false;
+                        return false;
                     }
                 });
 

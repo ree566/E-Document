@@ -83,7 +83,7 @@ public class BABEndServlet extends HttpServlet {
 
                     //沒有babavg，直接回傳success，等第三站關閉
                     if (!existBabStatistics) {
-                        out.print("success");
+                        out.print("統計資料不存在，如要關閉請由最後一站直接關閉");
                     } else if (!isPrevClose) {
                         out.print("上一站尚未關閉");
                     } else if (!isStationClose) {

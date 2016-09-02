@@ -183,11 +183,7 @@
                         }
 
                         var obj = $.parseJSON(userInfoCookie);
-                        if ($("#station").val() == firstStation) {
-                            firstStationLogin(obj, STATION_LOGOUT);
-                        } else {
-                            userLogout(obj);
-                        }
+                        stationLogout(obj);
                     }
                 });
 
@@ -205,7 +201,7 @@
                 $("#babEnd").click(function () {
                     var line = $("#lineNo").val();
                     var station = $("#station").val();
-                    var processingBab = getProcessingBab(line);
+                    var processingBab = otherStationSearchResult;
                     if (processingBab == null) {
                         showMsg("站別一無工單投入，無法結束");
                         return false;
@@ -262,6 +258,8 @@
                 var userInfoCookie = $.cookie(userInfoCookieName);
                 var babInfoCookie = $.cookie(babInfoCookieName);
 
+                showInfo(null);
+
                 if (userInfoCookie != null) {
                     var obj = $.parseJSON(userInfoCookie);
                     $("#lineNo").val(obj.lineNo);
@@ -286,23 +284,33 @@
                                 .append("<li>點選<code>Begin</code>開始</li>")
                                 .append("<li>做完最後一台時點擊<code>Save</code>，告知系統您已經做完了</li>")
                                 .append("<li>如果要更換使用者，請點選<code>換人</code>，填入您的新工號之後進行工號切換</li>");
+                        otherStationSearchResult = getProcessingBab(obj.lineNo);
+                        console.log(otherStationSearchResult);
+                        showInfo(otherStationSearchResult);
                     }
 
                     if (babInfoCookie != null) {
                         var obj = $.parseJSON(babInfoCookie);
-                        $("#modelname").val(obj.modelname);
-                        $("#modelname").prev().val(obj.po);
+                        $("#modelname").val(obj.model_name);
+                        $("#modelname").prev().val(obj.PO);
 
                         if ($("#people").is(":visible")) {
                             $("#people").val(obj.people);
                         }
-                        showInfo("工單: " + obj.po + " | 機種 : " + obj.modelname + " | 人數 : " + obj.people);
+                        showInfo(obj);
                         showMsg("資料已經儲存");
-                    } else {
-                        showInfo("尚無資料");
                     }
                 } else {
                     $("#step2").block({message: "請先在步驟一完成相關步驟。", css: {cursor: 'default'}, overlayCSS: {cursor: 'default'}});
+                }
+            }
+
+            //最底下顯示作用中的工單
+            function showInfo(data) {
+                if (data != null) {
+                    $("#processingBab").html("工單: " + data.PO + " | 機種 : " + data.model_name + " | 人數 : " + data.people);
+                } else {
+                    $("#processingBab").html("尚無資料");
                 }
             }
 
@@ -344,47 +352,11 @@
             //步驟一儲存使用者資訊
             function stationLogin(userInfo) {
                 userInfo.floor = $("#userSitefloorSelect").val();
-
-                if (userInfo.station == firstStation) {
-                    firstStationLogin(userInfo, STATION_LOGIN);
-                } else {
-                    userLogin(userInfo);
-                }
+                userInfo.action = STATION_LOGIN;
+                changeUserLoginStatus(userInfo);
             }
 
-            //第一站綁定線別開啟關閉，保持唯一一個能投入工單的電腦
-            function firstStationLogin(data, action) {
-                data.action = action;
-                $.ajax({
-                    type: "Post",
-                    url: "LineServlet",
-                    data: data,
-                    dataType: "html",
-                    success: function (response) {
-                        //傳回來 success or fail
-                        if (response == "success") {
-                            if (action == STATION_LOGIN) {
-                                userLogin(data);
-                            } else {
-                                userLogout(data);
-                                removeAllStepCookie();
-                            }
-                        } else {
-                            showMsg(response);
-                        }
-                    },
-                    error: function (xhr, ajaxOptions, thrownError) {
-                        showMsg(xhr.responseText);
-                    }
-                });
-            }
-
-            function userLogin(data) {
-                data.action = STATION_LOGIN;
-                changeUserLoginStatus(data);
-            }
-
-            function userLogout(data) {
+            function stationLogout(data) {
                 data.action = STATION_LOGOUT;
                 changeUserLoginStatus(data);
             }
@@ -584,7 +556,11 @@
 
             //站別一投入過的資料暫存
             function addValueToBabCookie(data) {
-                generateCookie(babInfoCookieName, JSON.stringify(data));
+                generateCookie(babInfoCookieName, JSON.stringify({
+                    PO: data.po,
+                    model_name: data.modelname,
+                    people: data.people
+                }));
                 reload();
             }
 
@@ -618,11 +594,6 @@
 
             function showMsg(msg) {
                 $("#serverMsg").html(msg);
-            }
-
-            //最底下顯示作用中的工單
-            function showInfo(msg) {
-                $("#processingBab").html(msg);
             }
 
             function block() {

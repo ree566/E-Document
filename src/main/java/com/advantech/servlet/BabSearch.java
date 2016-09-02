@@ -6,6 +6,7 @@
  */
 package com.advantech.servlet;
 
+import com.advantech.entity.BAB;
 import com.advantech.helper.ParamChecker;
 import com.advantech.entity.PrepareSchedule;
 import com.advantech.service.BABService;
@@ -52,16 +53,14 @@ public class BabSearch extends HttpServlet {
         PrintWriter out = res.getWriter();
         String po = req.getParameter("po");
         String saveLine = req.getParameter("saveline");
-        String poGetBAB = req.getParameter("po_getBAB");
-        String poSaveLine = req.getParameter("po_saveline");
+        
         if (pChecker.checkInputVal(po)) {
             PrepareSchedule schedule = prepareScheduleService.getScheduleByPO(po);
             out.print(schedule == null ? "data not found" : convertString(schedule.getModel_name()));
         } else if (pChecker.checkInputVal(saveLine)) {
-            out.print(new JSONObject(babService.getFirstInputBAB(Integer.parseInt(saveLine))));
-        } else if (pChecker.checkInputVals(poGetBAB, poSaveLine)) {
-            out.print(babService.getBABInfoWithSensorState(poGetBAB, poSaveLine));
-        }
+            BAB b = babService.getFirstInputBAB(Integer.parseInt(saveLine));
+            out.print(b != null ? new JSONObject(b) : null);
+        } 
     }
 
     private String convertString(String input) {

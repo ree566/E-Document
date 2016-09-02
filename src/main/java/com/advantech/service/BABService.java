@@ -266,7 +266,7 @@ public class BABService {
         return totalArrObj;
     }
 
-    public JSONObject getBABInfoWithSensorState(String po, String lineNo) throws JSONException {
+    public JSONObject getBABInfoWithSensorState1(String po, String lineNo) throws JSONException {
         JSONObject jsonObj = null;
         List<BAB> l = babDAO.getProcessingBABByPOAndLine(po, Integer.parseInt(lineNo));
         if (l.isEmpty()) {
