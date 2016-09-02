@@ -23,13 +23,10 @@ public class CheckUser extends HttpServlet {
     private IdentitService identitService = null;
     private ParamChecker pChecker = null;
 
-    private int BASIC_PERMISSION;
-
     @Override
     public void init() throws ServletException {
         identitService = BasicService.getIdentitService();
         pChecker = new ParamChecker();
-        BASIC_PERMISSION = Integer.parseInt(getServletContext().getInitParameter("BASIC_PERMISSION"));
     }
 
     @Override
@@ -54,7 +51,7 @@ public class CheckUser extends HttpServlet {
     private boolean isUserExist(String jobnumber) {
         //change the sql query(password not check)
         Identit i = identitService.getIdentit(jobnumber);
-        return !(i == null || i.getPermission() != BASIC_PERMISSION);
+        return !(i == null);
     }
 
 }

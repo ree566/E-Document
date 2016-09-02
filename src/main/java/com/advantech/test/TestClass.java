@@ -5,9 +5,9 @@
  */
 package com.advantech.test;
 
-import com.advantech.service.BabLineTypeFacade;
 import com.advantech.service.BasicLineTypeFacade;
-import com.advantech.service.TestLineTypeFacade;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -18,17 +18,11 @@ public class TestClass {
     private static int count = 0;
 
     public static void main(String args[]) {
-//        BasicLineTypeFacade tF = TestLineTypeFacade.getInstance();
-        boolean b = true;
+        Pattern p = Pattern.compile("^[a-zA-Z]+([0-9]+).*");
+        Matcher m = p.matcher("TTGGGGT233221");
 
-        for (int i = 0; i <= 10; i++) {
-            BasicLineTypeFacade bF = BabLineTypeFacade.getInstance();
-            System.out.println("The " + i + " time data : " + bF.getParam());
-
-            if (i % 2 == 0) {
-                b = !b;
-                bF.setParam(b);
-            }
+        if (m.find()) {
+            System.out.println(Integer.parseInt(m.group(1)));
         }
     }
 

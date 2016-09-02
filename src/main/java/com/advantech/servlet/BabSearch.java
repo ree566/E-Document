@@ -12,12 +12,12 @@ import com.advantech.service.BABService;
 import com.advantech.service.BasicService;
 import com.advantech.service.PrepareScheduleService;
 import java.io.*;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
+import org.json.JSONObject;
 
 /**
  *
@@ -57,11 +57,9 @@ public class BabSearch extends HttpServlet {
         if (pChecker.checkInputVal(po)) {
             PrepareSchedule schedule = prepareScheduleService.getScheduleByPO(po);
             out.print(schedule == null ? "data not found" : convertString(schedule.getModel_name()));
-        }
-        else if (pChecker.checkInputVal(saveLine)) {
-            out.print(babService.getProcessingBABByLine(Integer.parseInt(saveLine)));
-        }
-        else if (pChecker.checkInputVals(poGetBAB, poSaveLine)) {
+        } else if (pChecker.checkInputVal(saveLine)) {
+            out.print(new JSONObject(babService.getFirstInputBAB(Integer.parseInt(saveLine))));
+        } else if (pChecker.checkInputVals(poGetBAB, poSaveLine)) {
             out.print(babService.getBABInfoWithSensorState(poGetBAB, poSaveLine));
         }
     }

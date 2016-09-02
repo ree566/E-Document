@@ -9,14 +9,11 @@ import com.advantech.entity.AlarmAction;
 import com.advantech.helper.PropertiesReader;
 import com.advantech.entity.BABHistory;
 import com.advantech.entity.BAB;
-import com.advantech.entity.BABLoginStatus;
 import com.advantech.entity.LineBalancing;
 import com.advantech.helper.ProcRunner;
-import com.advantech.service.BABLoginStatusService;
 import com.advantech.service.BasicService;
 import com.advantech.service.FBNService;
 import com.advantech.service.LineBalanceService;
-import java.math.BigDecimal;
 import java.sql.Array;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -25,7 +22,6 @@ import java.util.Map;
 import javax.mail.MessagingException;
 import org.apache.commons.dbutils.DbUtils;
 import org.apache.commons.dbutils.QueryRunner;
-import org.apache.commons.dbutils.handlers.ScalarHandler;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.slf4j.Logger;
@@ -65,8 +61,9 @@ public class BABDAO extends BasicDAO {
         return queryBABTable("SELECT * FROM LS_BAB");
     }
 
-    public List<BAB> getBAB(int BABid) {
-        return queryBABTable("SELECT * FROM LS_BAB WHERE id = ?", BABid);
+    public BAB getBAB(int BABid) {
+        List l = queryBABTable("SELECT * FROM LS_BAB WHERE id = ?", BABid);
+        return l.isEmpty() ? null : (BAB) l.get(0);
     }
 
     public List<BAB> getBAB(String modelName, String dateFrom, String dateTo) {
@@ -101,9 +98,14 @@ public class BABDAO extends BasicDAO {
         return queryBABTable("SELECT * FROM LS_BABTimeOutView");//get the timeout bab where hour diff = 2
     }
 
+    public BAB getFirstInputBAB(int lineNo) {
+        List l = queryBABTable("SELECT TOP 1 * FROM LS_BAB_Sort WHERE line = ?", lineNo);
+        return l.isEmpty() ? null : (BAB) l.get(0);
+    }
+
     public BAB getLastInputBAB(int lineNo) {
-        List list = queryBABTable("SELECT TOP 1 * FROM LS_BAB_Sort WHERE line = ? ORDER BY ID DESC", lineNo);
-        return list.isEmpty() ? null : (BAB) list.get(0);
+        List l = queryBABTable("SELECT TOP 1 * FROM LS_BAB_Sort WHERE line = ? ORDER BY ID DESC", lineNo);
+        return l.isEmpty() ? null : (BAB) l.get(0);
     }
 
     public List<Map> getLastGroupStatus(int BABid) {
@@ -172,35 +174,10 @@ public class BABDAO extends BasicDAO {
     }
 
     public boolean insertBAB(BAB bab) {
-        int firstStationNo = 1;
-        boolean flag = false;
-        Connection conn = null;
-        BABLoginStatus bStatus = BasicService.getBabLoginStatusService().getBABLoginStatus(bab.getLine(), firstStationNo);
-
-        if (bStatus == null) {
-            return false;
-        }
-
-        try {
-            QueryRunner qRunner = new QueryRunner();
-            conn = getDBUtilConn(SQL.Way_Chien_WebAccess);
-            conn.setAutoCommit(false);
-
-            String sql = "INSERT INTO LS_BAB(PO,Model_name,line,people) VALUES (?,?,?,?)";
-            BigDecimal autoGenerateId = qRunner.insert(conn, sql, new ScalarHandler<BigDecimal>(), bab.getPO(), bab.getModel_name(), bab.getLine(), bab.getPeople());
-            int id = autoGenerateId.intValue();
-
-            String sql2 = "INSERT INTO BABPeopleRecord(BABid, station, user_id) VALUES(?,?,?)";
-            qRunner.insert(conn, sql2, new ScalarHandler<Long>(), id, firstStationNo, bStatus.getJobnumber());
-
-            DbUtils.commitAndCloseQuietly(conn);
-            flag = true;
-        } catch (SQLException ex) {
-            log.error(ex.toString());
-            DbUtils.rollbackAndCloseQuietly(conn);
-        }
-        return flag;
-
+        return update(getConn(),
+                "INSERT INTO LS_BAB(PO,Model_name,line,people) VALUES (?, ?, ?, ?)",
+                bab.getPO(), bab.getModel_name(), bab.getLine(), bab.getPeople()
+        );
     }
 
     /**

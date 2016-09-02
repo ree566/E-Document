@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -34,6 +36,8 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
     private final TestService testService;
 
     private final int TEST_USER_NOT_IN_SYSTEM_SIGN = -1, TEST_USER_NOT_IN_XML_SIGN = 2;
+
+    Pattern p = Pattern.compile("^[a-zA-Z]+([0-9]+).*");
 
     public TestLineTypeFacade() {
         PropertiesReader p = PropertiesReader.getInstance();
@@ -83,12 +87,18 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
                 for (Iterator it = tables.iterator(); it.hasNext();) {
                     Test ti = (Test) it.next();
                     if (ti.getUserid().trim().equals(jobnumber)) {
-                        int tableNo = ti.getTableNum();
+
                         int status;
+                        String tableName = ti.getTableName();
+                        Integer tableNo = this.getTableNo(tableName);
+
+                        if (tableNo == null) {
+                            continue;
+                        }
 
                         if (productivity < TEST_STANDARD) {
                             status = ALARM_SIGN;
-                            dataMap.put(tableNo, ALARM_SIGN);
+                            dataMap.put(tableName, ALARM_SIGN);
                             isSomeoneUnderStandard = true;
                         } else {
                             status = NORMAL_SIGN;
@@ -131,6 +141,15 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
                 .put("PRODUCTIVITY", productivity)
                 .put("sitefloor", sitefloor)
                 .put("isalarm", status);
+    }
+
+    private Integer getTableNo(String tableName) {
+        Matcher m = p.matcher(tableName);
+        if (m.find()) {
+            return Integer.parseInt(m.group(1));
+        } else {
+            return null;
+        }
     }
 
     @Override

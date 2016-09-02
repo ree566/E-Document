@@ -5,19 +5,24 @@
  */
 package com.advantech.model;
 
-import com.advantech.entity.AlarmAction;
 import com.advantech.entity.BABLoginStatus;
 import com.advantech.entity.BABPeopleRecord;
-import static com.advantech.model.BasicDAO.queryForBeanList;
-import static com.advantech.model.BasicDAO.update;
+import com.advantech.helper.ProcRunner;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
+import org.apache.commons.dbutils.DbUtils;
+import org.apache.commons.dbutils.QueryRunner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Wei.Cheng
  */
 public class BABLoginStatusDAO extends BasicDAO {
+
+    private static final Logger log = LoggerFactory.getLogger(BABLoginStatusDAO.class);
 
     public BABLoginStatusDAO() {
 
@@ -35,9 +40,63 @@ public class BABLoginStatusDAO extends BasicDAO {
         return queryFBNTable("SELECT * FROM BABLoginStatus");
     }
 
+    public BABLoginStatus getUser(String jobnumber) {
+        List l = queryFBNTable("SELECT * FROM BABLoginStatus WHERE jobnumber = ?", jobnumber);
+        return !l.isEmpty() ? (BABLoginStatus) l.get(0) : null;
+    }
+
     public BABLoginStatus getBABLoginStatus(int lineId, int station) {
         List l = queryFBNTable("SELECT * FROM BABLoginStatus WHERE lineId = ? AND station = ?", lineId, station);
         return !l.isEmpty() ? (BABLoginStatus) l.get(0) : null;
+    }
+
+    public boolean firstStationBABLogin(int lineNo, String jobnumber) {
+
+        boolean flag = false;
+        Connection conn = null;
+
+        try {
+            conn = this.getConn();
+            conn.setAutoCommit(false);
+            QueryRunner qRunner = new QueryRunner();
+
+            Object[] params = {lineNo, 1, jobnumber};
+            qRunner.update(conn, "INSERT INTO babLoginStatus(lineId, station, jobnumber) VALUES(?,?,?)", params);
+
+            Object[] params2 = {1, lineNo};
+            qRunner.update(conn, "UPDATE LS_Line SET isused = ? WHERE id = ?", params2);
+
+            DbUtils.commitAndCloseQuietly(conn);
+            flag = true;
+        } catch (SQLException ex) {
+            log.error(ex.toString());
+            DbUtils.rollbackAndCloseQuietly(conn);
+        }
+        return flag;
+    }
+
+    public boolean firstStationBABLogout(int lineNo) {
+        boolean flag = false;
+        Connection conn = null;
+
+        try {
+            conn = this.getConn();
+            conn.setAutoCommit(false);
+            QueryRunner qRunner = new QueryRunner();
+
+            Object[] params = {lineNo, 1};
+            qRunner.update(conn, "DELETE FROM babLoginStatus WHERE lineId = ? AND station = ?", params);
+
+            Object[] params2 = {0, lineNo};
+            qRunner.update(conn, "UPDATE LS_Line SET isused = ? WHERE id = ?", params2);
+
+            DbUtils.commitAndCloseQuietly(conn);
+            flag = true;
+        } catch (SQLException ex) {
+            log.error(ex.toString());
+            DbUtils.rollbackAndCloseQuietly(conn);
+        }
+        return flag;
     }
 
     public boolean babLogin(int lineId, int station, String jobnumber) {
@@ -71,15 +130,16 @@ public class BABLoginStatusDAO extends BasicDAO {
         );
     }
 
+    public boolean recordBABPeople(BABPeopleRecord b) {
+        return update(getConn(),
+                "INSERT INTO BABPeopleRecord(BABid, station, user_id) VALUES (?,?,?)",
+                b.getBABid(), b.getStation(), b.getUser_id());
+    }
+
     public boolean recordBABPeople(List<BABPeopleRecord> l) {
         return update(getConn(),
-                "INSERT INTO BABPeopleRecord(lineId, station, user_id) VALUES (?,?,?)",
+                "INSERT INTO BABPeopleRecord(BABid, station, user_id) VALUES (?,?,?)",
                 l,
-                "lineId", "station", "user_id");
+                "BABid", "station", "user_id");
     }
-
-    private boolean updateAlarmTable(String sql, List<AlarmAction> l) {
-        return update(getConn(), sql, l, "alarm", "tableId");
-    }
-
 }

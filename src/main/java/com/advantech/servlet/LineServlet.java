@@ -54,11 +54,12 @@ public class LineServlet extends HttpServlet {
         PrintWriter out = res.getWriter();
         String lineNo = req.getParameter("lineNo");
         String action = req.getParameter("action");
+        String jobnumber = req.getParameter("jobnumber");
 
         if (pChecker.checkInputVal(lineNo) && !lineNo.equals("-1")) {
 
             int line = Integer.parseInt(lineNo);
-            
+
             String msg;
             switch (action) {
                 case LOGIN:
@@ -72,7 +73,7 @@ public class LineServlet extends HttpServlet {
                     break;
             }
             out.print(msg);
-            
+
         } else {
             log.error("no data filter the check");
             out.print("no data filter the check");

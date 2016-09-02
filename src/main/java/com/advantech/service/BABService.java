@@ -41,8 +41,7 @@ public class BABService {
     }
 
     public BAB getBAB(int id) {
-        List l = babDAO.getBAB(id);
-        return !l.isEmpty() ? (BAB) l.get(0) : null;
+        return babDAO.getBAB(id);
     }
 
     public List<BAB> getBAB(String modelName, String dateFrom, String dateTo) {
@@ -96,6 +95,10 @@ public class BABService {
         return babDAO.getClosedBABInfoDetail(startDate, endDate);
     }
 
+    public BAB getFirstInputBAB(int lineNo) {
+        return babDAO.getFirstInputBAB(lineNo);
+    }
+
     public BAB getLastInputBAB(int lineNo) {
         return babDAO.getLastInputBAB(lineNo);
     }
@@ -121,8 +124,8 @@ public class BABService {
         if (line.isIsOpened()) {
             if (startBAB(bab)) {
                 BAB b = this.babDAO.getLastInputBAB(bab.getLine());//get last insert id
-                BABLoginStatusService bs = BasicService.getBabLoginStatusService();
-                return bs.recordBABPeople(b.getId(), this.FIRST_STATION_NUMBER, jobnumber) ? "success" : "發生錯誤，工單已經投入，人員資訊無法記錄";
+                BasicService.getBabLoginStatusService().recordBABPeople(b.getId(), FIRST_STATION_NUMBER, jobnumber);
+                return "success";
             } else {
                 return "error";
             }
@@ -141,9 +144,8 @@ public class BABService {
     }
 
     public String closeBAB(int BABid) {
-        List<BAB> processingBab = babDAO.getBAB(BABid);
-        if (processingBab != null && !processingBab.isEmpty()) {
-            BAB bab = processingBab.get(0);
+        BAB bab = babDAO.getBAB(BABid);
+        if (bab != null) {
             String message = closeBAB(bab);
             return message;
         } else {
@@ -286,11 +288,11 @@ public class BABService {
         return jsonObj;
     }
 
-    public JSONObject stopSensor(int lineNo, int station) {
+    public JSONObject stopSensor(int BABid, int station) {
         boolean checkCloseFlag = false;
         boolean sensorEndFlag = false;
         JSONObject message = new JSONObject();
-        BAB bab = babDAO.getLastInputBAB(lineNo);
+        BAB bab = babDAO.getBAB(BABid);
         if (bab != null) {
             boolean existBabStatistics = (getBABAvgs(bab.getId()).length() != 0);
             message.put("total", existBabStatistics);
@@ -308,6 +310,8 @@ public class BABService {
                     }
                 }
             }
+        } else {
+            message.put("total", false);
         }
         message.put("history", checkCloseFlag);
         message.put("do_sensor_end", sensorEndFlag);
