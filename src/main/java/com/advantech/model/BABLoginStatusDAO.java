@@ -45,6 +45,10 @@ public class BABLoginStatusDAO extends BasicDAO {
         return !l.isEmpty() ? (BABLoginStatus) l.get(0) : null;
     }
 
+    public List<BABLoginStatus> getBABLoginStatus(int lineId) {
+        return queryFBNTable("SELECT * FROM BABLoginStatus WHERE lineId = ?", lineId);
+    }
+
     public BABLoginStatus getBABLoginStatus(int lineId, int station) {
         List l = queryFBNTable("SELECT * FROM BABLoginStatus WHERE lineId = ? AND station = ?", lineId, station);
         return !l.isEmpty() ? (BABLoginStatus) l.get(0) : null;
@@ -111,7 +115,7 @@ public class BABLoginStatusDAO extends BasicDAO {
         return update(getConn(), "DELETE FROM babLoginStatus WHERE lineId = ? AND station = ?", lineId, station);
     }
 
-    public BABPeopleRecord getExistUserInBAB(int lineId, int station) {
+    public BABPeopleRecord getBABPeopleRecord(int lineId, int station) {
         List l = queryForBeanList(
                 getConn(),
                 BABPeopleRecord.class,
@@ -121,7 +125,7 @@ public class BABLoginStatusDAO extends BasicDAO {
         return !l.isEmpty() ? (BABPeopleRecord) l.get(0) : null;
     }
 
-    public List<BABPeopleRecord> getExistUserInBAB(int lineId) {
+    public List<BABPeopleRecord> getBABPeopleRecord(int lineId) {
         return queryForBeanList(
                 getConn(),
                 BABPeopleRecord.class,

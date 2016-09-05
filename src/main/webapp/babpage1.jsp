@@ -10,7 +10,7 @@
 <!DOCTYPE html>
 <html>
     <c:set var="userSitefloor" value="${param.sitefloor}" />
-    <c:if test="${(userSitefloor == null) || (userSitefloor == '' || userSitefloor < 1 || userSitefloor > 7)}">
+    <c:if test="${(userSitefloor == null || !userSitefloor.matches('[0-9]+')) || (userSitefloor == '' || userSitefloor < 1 || userSitefloor > 7)}">
         <c:redirect url="/" />
     </c:if>
     <head>
@@ -52,6 +52,7 @@
             .wigetInfo{
                 float:right;
                 width:40%;
+                padding-right: 5px;
             }
             .userWiget > .alarm{
                 padding-top: 5px;
@@ -86,6 +87,8 @@
 
             var firstStation = 1;
             var otherStationSearchResult;
+
+            var serverMsgDialog;
 
             var tabreg = /^[0-9a-zA-Z-]+$/;//Textbox check regex.
 
@@ -137,6 +140,23 @@
                     }
                 });
 
+                var serverMsgDialog = $("#dialog-message2").dialog({
+                    autoOpen: false,
+                    resizable: false,
+                    height: "auto",
+                    width: 400,
+                    modal: true,
+                    buttons: {
+                        "確定": function () {
+                            return true;
+                        },
+                        "取消": function () {
+                            $(this).dialog("close");
+                            return false;
+                        }
+                    }
+                });
+
                 //Don't do the code after this check when user cookie info is not vaild.
                 var cookieCheckStatus = checkExistCookies();
                 if (cookieCheckStatus == false) {
@@ -181,7 +201,6 @@
 //                            showMsg("步驟1 cookie不存在，無法登出，請聯絡系統管理員。");
                             return false;
                         }
-
                         var obj = $.parseJSON(userInfoCookie);
                         stationLogout(obj);
                     }
@@ -201,7 +220,7 @@
                 $("#babEnd").click(function () {
                     var line = $("#lineNo").val();
                     var station = $("#station").val();
-                    var processingBab = otherStationSearchResult;
+                    var processingBab = getProcessingBab(line);
                     if (processingBab == null) {
                         showMsg("站別一無工單投入，無法結束");
                         return false;
@@ -223,7 +242,16 @@
                 });
 
                 $("#changeUser").click(function () {
-                    dialogMessage.dialog("open");
+                    console.log("This is first message");
+
+                    if (serverMsgDialog.dialog("open")) {
+                        console.log("This is next message");
+                        console.log("True");
+                    } else {
+                        console.log("This is next message");
+                        console.log("False");
+                    }
+//                    dialogMessage.dialog("open");
                 });
 
                 $(":text").focus(function () {
@@ -254,6 +282,10 @@
                 return true;
             }
 
+            function lockAllUserInput() {
+                $(":input,select").not("#redirectBtn").attr("disabled", "disabled");
+            }
+
             function initUserInputWiget() {
                 var userInfoCookie = $.cookie(userInfoCookieName);
                 var babInfoCookie = $.cookie(babInfoCookieName);
@@ -273,20 +305,18 @@
                                 .append("<li>輸入工單</li>")
                                 .append("<li class='importantMsg'>確定系統有帶出機種</li>")
                                 .append("<li>選擇人數</li>")
-                                .append("<li>點選<code>Begin</code>開始投入</li>");
+                                .append("<li>點選<code>Begin</code>開始投入</li>")
+                                .append("<li>如果要更換使用者，請點選<code>換人</code>，填入您的新工號之後進行工號切換</li>");
                         $("#people").show();
                     } else {
                         $("#po, #modelname ,#babBegin").hide();
                         $("#babEnd, .stationHintMessage").show();
                         $("#step2Hint")
-                                .append("<li>輸入工單</li>")
-                                .append("<li class='importantMsg'>確定系統有帶出機種</li>")
-                                .append("<li>點選<code>Begin</code>開始</li>")
-                                .append("<li>做完最後一台時點擊<code>Save</code>，告知系統您已經做完了</li>")
+                                .append("<li>做完最後一台時點擊<code>結束</code>，告知系統您已經做完了</li>")
                                 .append("<li>如果要更換使用者，請點選<code>換人</code>，填入您的新工號之後進行工號切換</li>");
-                        otherStationSearchResult = getProcessingBab(obj.lineNo);
-                        console.log(otherStationSearchResult);
-                        showInfo(otherStationSearchResult);
+//                        otherStationSearchResult = getProcessingBab(obj.lineNo);
+//                        console.log(otherStationSearchResult);
+//                        showInfo(otherStationSearchResult);
                     }
 
                     if (babInfoCookie != null) {
@@ -312,10 +342,6 @@
                 } else {
                     $("#processingBab").html("尚無資料");
                 }
-            }
-
-            function lockAllUserInput() {
-                $(":input,select").not("#redirectBtn").attr("disabled", "disabled");
             }
 
             function saveUserStatus() {
@@ -383,11 +409,7 @@
                             if (data.action == "CHANGEUSER") {
                                 changeJobnumberInCookie(data.jobnumber);
                             } else if (data.action == STATION_LOGIN) {
-                                generateCookie(userInfoCookieName, JSON.stringify({
-                                    lineNo: data.lineNo,
-                                    jobnumber: data.jobnumber,
-                                    station: data.station
-                                }));
+                                generateCookie(userInfoCookieName, JSON.stringify(data));
                             } else if (data.action == STATION_LOGOUT) {
                                 removeAllStepCookie();
                             }
@@ -540,13 +562,7 @@
                     data: data,
                     dataType: "html",
                     success: function (response) {
-                        if (response == "success") {
-                            removeCookie(babInfoCookieName);
-                            showMsg(response);
-                            reload();
-                        } else {
-                            showMsg(response);
-                        }
+                        showMsg(response);
                     },
                     error: function (xhr, ajaxOptions, thrownError) {
                         showMsg(xhr.responseText);
@@ -607,8 +623,8 @@
                         opacity: .5,
                         color: '#fff'
                     },
-                    fadeIn: 0
-                    , overlayCSS: {
+                    fadeIn: 0,
+                    overlayCSS: {
                         backgroundColor: '#FFFFFF',
                         opacity: .3
                     }
@@ -631,13 +647,21 @@
         </script>
 
         <!--Dialogs-->
+        <div id="dialog-message2" title="${initParam.pageTitle}">
+            <p>
+                <span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 50px 0;"></span>
+                請務必確認以下資訊
+            </p>
+            <div id="dialog-content"></div>
+        </div>
+
         <div id="dialog-message" title="${initParam.pageTitle}">
             <p>
                 <span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 50px 0;"></span>
                 請再次輸入您的工號。
             </p>
             <p>
-                <input type="text" id="newJobnumber">
+                <input type="text" id="newJobnumber" >
             </p>
         </div>
         <!--Dialogs-->

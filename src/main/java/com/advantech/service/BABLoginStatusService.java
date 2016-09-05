@@ -30,6 +30,10 @@ public class BABLoginStatusService {
         return babLoginStatusDAO.getUser(jobnumber);
     }
 
+    public List<BABLoginStatus> getBABLoginStatus(int lineId) {
+        return babLoginStatusDAO.getBABLoginStatus(lineId);
+    }
+
     public BABLoginStatus getBABLoginStatus(int lineId, int station) {
         return babLoginStatusDAO.getBABLoginStatus(lineId, station);
     }
@@ -58,11 +62,11 @@ public class BABLoginStatusService {
         return babLoginStatusDAO.recordBABPeople(new BABPeopleRecord(BABid, station, jobnumber));
     }
 
-    public BABPeopleRecord getExistUserInBAB(int lineId, int station) {
-        return babLoginStatusDAO.getExistUserInBAB(lineId, station);
+    public BABPeopleRecord getBABPeopleRecord(int lineId, int station) {
+        return babLoginStatusDAO.getBABPeopleRecord(lineId, station);
     }
 
-    public List<BABPeopleRecord> getExistUserInBAB(int lineId) {
-        return babLoginStatusDAO.getExistUserInBAB(lineId);
+    public List<BABPeopleRecord> getBABPeopleRecord(int lineId) {
+        return babLoginStatusDAO.getBABPeopleRecord(lineId);
     }
 }

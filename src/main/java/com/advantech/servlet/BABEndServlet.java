@@ -65,17 +65,25 @@ public class BABEndServlet extends HttpServlet {
             int babid = Integer.parseInt(BABid);
 
             BAB b = babService.getBAB(babid);//由前端先搜尋後給他得知
-            
+
             BABLoginStatus babLoginStatus = bService.getBABLoginStatus(line, stationid);
 
             if (stationid <= b.getPeople()) {
-                
+
                 if (b.getPeople() == stationid) { // if the station is the last station
-                    if ("success".equals(babService.closeBAB(b.getId()))) {
+                    String closeMsg = babService.closeBAB(b.getId());
+                    if ("success".equals(closeMsg)) {
                         bService.recordBABPeople(b.getId(), stationid, babLoginStatus.getJobnumber());
                         out.print("success");
+                    } else {
+                        out.print(closeMsg);
                     }
                 } else {
+                    if (babService.isSensorClosed(babid, stationid)) {
+                        out.print("感應器已經關閉，請勿重複做關閉動作");
+                        return;
+                    }
+
                     JSONObject message = babService.stopSensor(b.getId(), stationid);
                     boolean existBabStatistics = message.getBoolean("total");
                     boolean isPrevClose = message.getBoolean("history");
@@ -83,7 +91,7 @@ public class BABEndServlet extends HttpServlet {
 
                     //沒有babavg，直接回傳success，等第三站關閉
                     if (!existBabStatistics) {
-                        out.print("統計資料不存在，如要關閉請由最後一站直接關閉");
+                        out.print("統計資料不存在，如需關閉請由最後一站直接關閉");
                     } else if (!isPrevClose) {
                         out.print("上一站尚未關閉");
                     } else if (!isStationClose) {

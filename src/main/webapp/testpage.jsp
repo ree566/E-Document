@@ -10,7 +10,7 @@
 <!DOCTYPE html>
 <html>
     <c:set var="userSitefloor" value="${param.sitefloor}" />
-    <c:if test="${(userSitefloor == null) || (userSitefloor == '' || userSitefloor < 1 || userSitefloor > 7)}">
+    <c:if test="${(userSitefloor == null || !userSitefloor.matches('[0-9]+')) || (userSitefloor == '' || userSitefloor < 1 || userSitefloor > 7)}">
         <c:redirect url="/" />
     </c:if>
     <head> 

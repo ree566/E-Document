@@ -103,6 +103,10 @@ public class BABService {
         return babDAO.getLastInputBAB(lineNo);
     }
 
+    public boolean isSensorClosed(int BABid, int station) {
+        return babDAO.isSensorClosed(BABid, station);
+    }
+
     public boolean updateBABAlarm(List<AlarmAction> l) {
         return babDAO.updateBABAlarm(l);
     }
@@ -163,9 +167,9 @@ public class BABService {
             bab.setBabavgs(babAvgs);
             boolean prevSensorCloseFlag;
             if (bab.getPeople() != 2) {
-                prevSensorCloseFlag = babDAO.checkPrevSensorIsClosed(bab.getId(), bab.getPeople() - 1);
+                prevSensorCloseFlag = babDAO.isSensorClosed(bab.getId(), bab.getPeople() - 1);
                 if (prevSensorCloseFlag == false) {
-                    return "關閉失敗，檢檢查上一站是否關閉";
+                    return "關閉失敗，請檢查上一站是否關閉";
                 }
             } else {
                 prevSensorCloseFlag = true;
@@ -266,28 +270,6 @@ public class BABService {
         return totalArrObj;
     }
 
-    public JSONObject getBABInfoWithSensorState1(String po, String lineNo) throws JSONException {
-        JSONObject jsonObj = null;
-        List<BAB> l = babDAO.getProcessingBABByPOAndLine(po, Integer.parseInt(lineNo));
-        if (l.isEmpty()) {
-            return jsonObj;
-        }
-        BAB bab = l.get(0);
-        if (bab != null) {
-            jsonObj = new JSONObject(new Gson().toJson(bab));
-            JSONObject babHistory = new JSONObject();
-            List<BABHistory> historys = babDAO.getBABHistory(bab);
-            for (int i = 1, len = bab.getPeople(); i <= len; i++) {
-                babHistory.put("T" + i, 0);
-            }
-            for (BABHistory bh : historys) {
-                babHistory.put("T" + bh.getT_Num(), 1);
-            }
-            jsonObj.put("S_State", babHistory);
-        }
-        return jsonObj;
-    }
-
     public JSONObject stopSensor(int BABid, int station) {
         boolean checkCloseFlag = false;
         boolean sensorEndFlag = false;
@@ -298,7 +280,7 @@ public class BABService {
             message.put("total", existBabStatistics);
             if (existBabStatistics) {
                 //第二站不做檢查，因為假使第一顆沒有換下一套(儲存紀錄)，後面無法做工單關閉，而且假如只開兩站不會執行此function
-                checkCloseFlag = (station == 2 ? true : babDAO.checkPrevSensorIsClosed(bab.getId(), station - 1));
+                checkCloseFlag = (station == 2 ? true : this.isSensorClosed(bab.getId(), station - 1));// 檢查是否有關閉(依照LS_BAB_History table)
                 if (checkCloseFlag) {
                     BABLoginStatusService bsService = BasicService.getBabLoginStatusService();
                     BABLoginStatus bs = bsService.getBABLoginStatus(bab.getLine(), station);
