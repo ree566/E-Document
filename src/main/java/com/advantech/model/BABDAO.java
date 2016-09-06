@@ -79,7 +79,7 @@ public class BABDAO extends BasicDAO {
     }
 
     public List<BAB> getBABInfo(String lineType) {
-        return queryProcForBeanList(getConn(), BAB.class, "{CALL getBABByLineType(?)}", lineType);
+        return queryProcForMapList(getConn(), "{CALL getBABByLineType(?)}", lineType);
     }
 
     public List<BAB> getProcessingBAB() {

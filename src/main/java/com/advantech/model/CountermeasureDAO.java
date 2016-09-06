@@ -42,12 +42,16 @@ public class CountermeasureDAO extends BasicDAO {
         return queryForArrayList(getConn(), "SELECT * FROM errorCode");
     }
 
+    public List getActionCode() {
+        return queryForArrayList(getConn(), "SELECT * FROM actionCode");
+    }
+
     public boolean insertCountermeasure(int BABid, int errorCode_id, String reason, String solution, String editor) {
-        return updateCountermeasure("INSERT INTO Countermeasure(BABid, errorCode_id, reason, solution, editor) values(?,?,?,?,?)", BABid,errorCode_id, reason, solution, editor);
+        return updateCountermeasure("INSERT INTO Countermeasure(BABid, errorCode_id, reason, solution, editor) values(?,?,?,?,?)", BABid, errorCode_id, reason, solution, editor);
     }
 
     public boolean updateCountermeasure(int BABid, int errorCode_id, String reason, String solution, String editor) {
-        return updateCountermeasure("UPDATE Countermeasure SET errorCode_id = ?, reason = ?, solution = ?, editor = ? WHERE BABid = ?",errorCode_id, reason, solution, editor, BABid);
+        return updateCountermeasure("UPDATE Countermeasure SET errorCode_id = ?, reason = ?, solution = ?, editor = ? WHERE BABid = ?", errorCode_id, reason, solution, editor, BABid);
     }
 
     public boolean deleteCountermeasure(int id) {

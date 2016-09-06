@@ -363,7 +363,7 @@
                                 .append("<li>如果要更換使用者，請點選<code>換人</code>，填入您的新工號之後進行工號切換</li>");
                     }
                 } else {
-                    $("#step2").block({message: "請先在步驟一完成相關步驟。"});
+                    $("#step2").block({message: "請先在步驟一完成相關步驟。", css: {cursor: 'default'}, overlayCSS: {cursor: 'default'}});
                 }
 
                 if (babInfoCookie != null) {

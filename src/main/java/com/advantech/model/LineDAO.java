@@ -34,6 +34,10 @@ public class LineDAO extends BasicDAO {
     public List<Line> getLine() {
         return queryLineTable("SELECT * FROM LS_Line");
     }
+    
+    public List<Line> getOpenedLine() {
+        return queryLineTable("SELECT * FROM LS_Line WHERE lock = 0");
+    }
 
     public Line getLine(int lineNO) {
         List l = queryLineTable("SELECT * FROM LS_Line WHERE id = ?", lineNO);

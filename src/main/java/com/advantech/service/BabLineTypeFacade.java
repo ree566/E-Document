@@ -7,6 +7,7 @@ package com.advantech.service;
 
 import com.advantech.entity.AlarmAction;
 import com.advantech.entity.BAB;
+import com.advantech.entity.Line;
 import com.advantech.helper.PropertiesReader;
 import com.advantech.quartzJob.LineBalancePeopleGenerator;
 import java.util.List;
@@ -24,30 +25,10 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
     private final LineBalanceService lineBalanceService;
     private final BABService babService;
     private final LineBalancePeopleGenerator lbGenerator;
-
-    private static final int ASSY_PEOPLES = 4, PACKING_PEOPLES = 3;
+    
+    private static List<Line> babLineStatus;
 
     private final double BAB_STANDARD;
-
-    //設定線別人數
-    private enum Line {
-
-        L1(ASSY_PEOPLES),
-        LA(ASSY_PEOPLES),
-        LB(ASSY_PEOPLES),
-        LF(PACKING_PEOPLES),
-        LG(PACKING_PEOPLES),
-        LH(PACKING_PEOPLES);
-
-        Line(int type) {
-            this.type = type;
-        }
-        private final int type;
-
-        public int getTypeNumber() {
-            return type;
-        }
-    }
 
     private BabLineTypeFacade() {
         lineBalanceService = BasicService.getLineBalanceService();
@@ -57,7 +38,7 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
         PropertiesReader p = PropertiesReader.getInstance();
         BAB_STANDARD = p.getBabStandard();
         super.setTxtName(p.getBabTxtName());
-
+        babLineStatus = BasicService.getLineService().getLine();
     }
 
     public static BabLineTypeFacade getInstance() {
@@ -70,9 +51,10 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
     @Override
     protected void initMap() {
         dataMap.clear();
-        for (Line line : Line.values()) {
-            for (int i = 1, length = line.getTypeNumber(); i <= length; i++) {
-                dataMap.put(line + "-L-" + i, super.NORMAL_SIGN);
+        for (Line line : babLineStatus) {
+            String lineName = line.getName().trim();
+            for (int i = 1, length = line.getPeople(); i <= length; i++) {
+                dataMap.put(lineName + "-L-" + i, super.NORMAL_SIGN); 
             }
         }
     }

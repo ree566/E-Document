@@ -89,8 +89,11 @@
         <script src="//cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/vfs_fonts.js"></script>
         <script src="//cdn.datatables.net/buttons/1.2.1/js/buttons.html5.min.js"></script>
         <script src="//cdn.datatables.net/buttons/1.2.1/js/buttons.print.min.js"></script>
+        <script src="../../js/param.check.js"></script>
         <script>
             var round_digit = 2;
+            var historyTable;
+
             function getBAB() {
                 var table = $("#data2").DataTable({
                     "processing": false,
@@ -319,12 +322,14 @@
                                 gridColor: "#D7D7D7",
                                 tickColor: "#D7D7D7",
                                 minimum: 0,
+                                maximum: 600,
                                 stripLines: [
                                     {
                                         value: totalAvg,
                                         label: totalAvg + "sec",
                                         labelPlacement: "outside",
                                         color: "orange",
+                                        labelBackgroundColor: "black",
                                         labelFontStyle: "微軟正黑體",
                                         showOnTop: true
                                     }
@@ -376,6 +381,8 @@
 
             function getHistoryBAB() {
                 var lineType = $("#lineType2").val();
+                var alarmPercentStandard = 0.3;
+
                 var table = $("#babHistory").DataTable({
                     dom: 'Bfrtip',
                     buttons: [
@@ -391,10 +398,11 @@
                     "columns": [
                         {data: "id", visible: false},
                         {data: "PO"},
-                        {data: "model_name"},
+                        {data: "Model_name"},
                         {data: "lineName"},
                         {data: "people"},
                         {data: "isused"},
+                        {data: "alarmPercent", "sType": "numeric-comma"},
                         {data: "btime"},
                         {}
                     ],
@@ -405,9 +413,6 @@
                             "data": "isused",
                             'render': function (data, type, row) {
                                 switch (data) {
-                                    case 0:
-                                        return "尚未關閉";
-                                        break;
                                     case 1:
                                         return "已經關閉";
                                         break;
@@ -415,7 +420,7 @@
                                         return "沒有儲存紀錄";
                                         break;
                                     default:
-                                        return "未知的代碼";
+                                        return "尚未關閉";
                                         break;
                                 }
                             }
@@ -423,15 +428,35 @@
                         {
                             "type": "html",
                             "targets": 6,
+                            "data": "isused",
                             'render': function (data, type, row) {
-                                return formatDate(data);
+                                return roundDecimal(((data == null ? 0.0 : data) * 100), 2);
                             }
                         },
                         {
                             "type": "html",
                             "targets": 7,
                             'render': function (data, type, row) {
-                                return "<input type=\"button\" class=\"btn " + (row.cm_id == null ? "btn-danger" : "btn-info") + " btn-sm\" data-toggle=\"modal\" data-target=\"#myModal\" " + (row.isused == -1 ? "disabled" : "") + " value=\"檢視詳細\" />";
+                                return formatDate(data);
+                            }
+                        },
+                        {
+                            "type": "html",
+                            "targets": 8,
+                            'render': function (data, type, row) {
+                                var isCmReply = row.cm_id != null;
+                                var isAboveApStandard = row.alarmPercent > alarmPercentStandard;
+                                var isBabAvail = row.isused != -1;
+
+                                if (!isBabAvail) {
+                                    return "無紀錄";
+                                } else if (!isAboveApStandard && row.alarmPercent != null) {
+                                    return "達到標準";
+                                } else if ((!isCmReply && isAboveApStandard)) {
+                                    return "<input type='button' class='btn btn-danger btn-sm' data-toggle= 'modal' data-target='#myModal' value='檢視詳細' />";
+                                } else if (isCmReply && isAboveApStandard) {
+                                    return "<input type='button' class='btn btn-info btn-sm' data-toggle= 'modal' data-target='#myModal' value='檢視詳細' />";
+                                }
                             }
                         }
                     ],
@@ -443,7 +468,7 @@
                     bAutoWidth: true,
                     displayLength: 10,
                     destroy: true,
-                    "order": [[6, "desc"]]
+                    "order": [[7, "desc"]]
                 });
                 return table;
             }
@@ -611,18 +636,23 @@
                     dataType: 'json',
                     success: function (msg) {
                         var jsonData = msg.data[0];
-                        var isDataAvailable = jsonData != null;
-                        $(".modal-body #errorReason").html(!isDataAvailable ? "N/A" : jsonData.reason);
-                        $(".modal-body #errorCon").html(!isDataAvailable ? "N/A" : jsonData.solution.replace(/(?:\r\n|\r|\n)/g, '<br />'));
-                        $(".modal-body #responseUser").html(!isDataAvailable ? "N/A" : jsonData.editor);
-                        $("#errorCode>select").val(!isDataAvailable ? -1 : jsonData.errorCode_id).attr("disabled", true);
-                        $("#myModal").unblock();
+//                        $(".modal-body #actionCode").html(jsonData.reason);
+                        $(".modal-body #errorCon").html(jsonData.solution.replace(/(?:\r\n|\r|\n)/g, '<br />'));
+                        $(".modal-body #responseUser").html(jsonData.editor);
+//                        $("#errorCode>select").val(jsonData.errorCode_id).attr("disabled", true);
+//                        $("#myModal").unblock();
                     },
                     error: function (xhr, ajaxOptions, thrownError) {
                         alert(xhr.status);
                         alert(thrownError);
                     }
                 });
+            }
+
+            function initCountermeasureDialog() {
+                $(".modal-body #actionCode, #errorCon, #responseUser").html("N/A");
+                $("#errorCode>select").val(-1).attr("disabled", true);
+                showDialogMsg("");
             }
 
             function counterMeasureModeUndo() {
@@ -643,13 +673,17 @@
             function tableAjaxReload(tableObject) {
                 tableObject.ajax.reload();
             }
-            
+
+            function showDialogMsg(msg) {
+                $("#dialog-msg").html(msg);
+            }
+
             //看使用者是否存在
             function checkUserExist(jobnumber) {
                 var result;
                 $.ajax({
                     type: "Post",
-                    url: "CheckUser",
+                    url: "../../CheckUser",
                     data: {
                         jobnumber: jobnumber
                     },
@@ -663,6 +697,24 @@
                     }
                 });
                 return result;
+            }
+
+            function saveCountermeasure(data) {
+                $.ajax({
+                    url: "../../CountermeasureServlet",
+                    data: data,
+                    type: "POST",
+                    dataType: 'json',
+                    success: function (msg) {
+                        counterMeasureModeUndo();
+                        getContermeasure(data.BABid);
+                        tableAjaxReload(historyTable);
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        alert(xhr.status);
+                        alert(thrownError);
+                    }
+                });
             }
 
             $(document).ready(function () {
@@ -698,7 +750,7 @@
                     $("#lineType").val(saveLineType);
                 }
 
-                $("input, select").addClass("form-control");
+                $("input, select").not(":checkbox").addClass("form-control");
                 $(":button").addClass("btn btn-default");
 
 //http://stackoverflow.com/questions/14493250/ajax-jquery-autocomplete-with-json-data
@@ -732,8 +784,6 @@
                     }
                 });
 
-                var historyTable;
-
                 $("#searchAvailableBAB").click(function () {
                     historyTable = getHistoryBAB();
                 });
@@ -743,7 +793,7 @@
                     type = "type2";
                     var selectData = historyTable.row(this).data();
                     var BABid = selectData.id;
-                    var ModelName = selectData.model_name;
+                    var ModelName = selectData.Model_name;
                     var isused = selectData.isused;
                     var lineType = $("#lineType2").val();
 
@@ -767,7 +817,7 @@
                     }
 
                 });
-                
+
                 $("#send").on("click", function () {
                     type = "type1";
                     var modelName = $("#Model_name").val();
@@ -782,21 +832,27 @@
 
                     getBABCompare(null, modelName, lineType, type);
                 });
-                
+
                 //edit counterMeasure 
                 var editId;
                 $("body").on('click', '#babHistory input[type="button"]', function () {
-                    $("#myModal").block({message: "loading..."});
+//                    $("#myModal").block({message: "loading..."});
                     var selectData = historyTable.row($(this).parents('tr')).data();
                     editId = selectData.id;
+                    console.log(selectData.cm_id);
                     $("#myModal #titleMessage").html(
                             "號碼: " + editId +
                             " | 工單: " + selectData.PO +
-                            " | 機種: " + selectData.model_name +
+                            " | 機種: " + selectData.Model_name +
                             " | 線別: " + selectData.lineName +
                             " | 時間: " + selectData.btime
                             );
-                    getContermeasure(selectData.id);
+
+                    if (selectData.cm_id == null) {
+                        initCountermeasureDialog();
+                    } else {
+                        getContermeasure(selectData.id);
+                    }
                 });
 
                 $('#myModal').on('shown.bs.modal', function () {
@@ -814,11 +870,11 @@
                 $("#editCountermeasure").click(function () {
                     counterMeasureModeEdit();
 
-                    originErrorReason = $("#errorReason").html();
+                    originErrorReason = $("#actionCode").html();
                     originErrorCon = $("#errorCon").html().replace(/<br *\/?>/gi, '\n');
                     originResponseUser = $("#responseUser").html();
 
-                    $("#errorReason").html("<input type='text' id='errorReasonText' maxlength='100' value='" + (originErrorReason == "N/A" ? "" : originErrorReason) + "'>");
+                    $("#actionCode").html("<input type='text' id='actionCodeText' maxlength='100' value='" + (originErrorReason == "N/A" ? "" : originErrorReason) + "'>");
                     $("#errorCon").html("<textarea id='errorConText' maxlength='500'>" + (originErrorCon == "N/A" ? "" : originErrorCon) + "</textarea>");
                     $("#responseUser").html("<input type='text' id='responseUserText' maxlength='30' value='" + (originResponseUser == "N/A" ? "" : originResponseUser) + "'>");
 
@@ -831,40 +887,41 @@
                     }
                     counterMeasureModeUndo();
 
-                    $("#errorReason").html(originErrorReason);
+                    $("#actionCode").html(originErrorReason);
                     $("#errorCon").html(originErrorCon.replace(/(?:\r\n|\r|\n)/g, '<br />'));
                     $("#responseUser").html(originResponseUser);
                 });
 
                 $("#saveCountermeasure").click(function () {
-                    var editor = $("#responseUserText").val();
-                    if(checkUserExist(editor) == false){
-                        return false;
-                    }
                     if (confirm("確定修改內容?")) {
-                        $.ajax({
-                            url: "../../CountermeasureServlet",
-                            data: {
-                                BABid: editId,
-                                reason: $("#errorReasonText").val(),
-                                errorCode_id: $("#errorCode>select").val(),
-                                solution: $("#errorConText").val(),
-                                editor: editor,
-                                action: "update"
-                            },
-                            type: "POST",
-                            dataType: 'json',
-                            success: function (msg) {
-                                counterMeasureModeUndo();
-                                getContermeasure(editId);
-                                tableAjaxReload(historyTable);
-                            },
-                            error: function (xhr, ajaxOptions, thrownError) {
-                                alert(xhr.status);
-                                alert(thrownError);
-                            }
-                        });
+                        var editor = $("#responseUserText").val(),
+                                actionCode = $("#actionCodeText").val(),
+                                errorCode = $("#errorCode>select").val(),
+                                solution = $("#errorConText").val();
+
+                        if (checkVal(editor, actionCode, errorCode, solution) == false) {
+                            showDialogMsg("error input value");
+                            return false;
+                        } else if (checkUserExist(editor) == false) {
+                            showDialogMsg("找不到使用者，請重新確認您的工號是否存在");
+                            return false;
+                        } else {
+                            showDialogMsg("");
+
+                        }
+
+                        var data = {
+                            BABid: editId,
+                            reason: actionCode,
+                            errorCode_id: errorCode,
+                            solution: solution,
+                            editor: editor,
+                            action: "update"
+                        };
+
+                        saveCountermeasure(data);
                     }
+
                 });
 
                 $('#myModal').on('hidden.bs.modal', function () {
@@ -873,8 +930,13 @@
 
                 $("#lineType2").val("ASSY");
                 $("#searchAvailableBAB").trigger("click");
-                
-                $("#editCountermeasure").attr("disabled", true);
+
+                $("#errorCode :checkbox").change(function () {
+                    var array = $.map($('input[name="errorCode"]:checked'), function(c){return c.value; });
+                    console.log(array);
+                });
+
+//                $("#editCountermeasure").attr("disabled", true);
 
                 $("body").on("click", "#searchAvailableBAB, #send", function () {
                     block();
@@ -928,24 +990,32 @@
                         <div>
                             <table id="countermeasureTable" cellspacing="10" class="table table-bordered">
                                 <tr>
-                                    <td class="lab">異常代碼</td>
-                                    <td id="errorCode">
-                                        <select>
-                                            <option value="-1">請選擇</option>
+                                    <td class="lab">Error Code</td>
+                                    <td id="errorCode"> 
+                                        <div class="checkbox">
                                             <c:forEach var="errorCode" items="${cDAO.errorCode}">
-                                                <option value="${errorCode[0]}">${errorCode[1]}</option>
+                                                <label class="checkbox-inline">
+                                                    <input type="checkbox" name="errorCode" value="${errorCode[0]}">${errorCode[1]}
+                                                </label>
                                             </c:forEach>
-                                        </select>
+                                        </div>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td class="lab">異常原因</td>
-                                    <td id="errorReason">
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="lab">對策</td>
+                                    <td class="lab">說明</td>
                                     <td id="errorCon">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="lab">Action Code</td>
+                                    <td id="actionCode">
+                                        <c:forEach var="actionCode" items="${cDAO.actionCode}">
+                                            <div class="checkbox">
+                                                <label class="checkbox-inline">
+                                                    <input type="checkbox" name="actionCode" value="${actionCode[0]}">${actionCode[2]}
+                                                </label>
+                                            </div>
+                                        </c:forEach>
                                     </td>
                                 </tr>
                                 <tr>
@@ -954,6 +1024,7 @@
                                     </td>
                                 </tr>
                             </table>
+                            <div id="dialog-msg" class="alarm"></div>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -973,6 +1044,8 @@
             <div id="bab_HistoryList">
                 <h3>可查詢歷史紀錄</h3>
                 <p class="alarm">※雙擊表格內的內容可直接於下方帶出資料。</p>
+                <p class="alarm">※亮燈頻率標準為30%。</p>
+                <p class="alarm">※進行中的工單，請直接點兩下，於下方 "機種平衡率紀錄查詢" 看亮燈頻率。</p>
                 <div class="search-container">
                     <div class="ui-widget">
                         <select id="lineType2">
@@ -994,8 +1067,9 @@
                                     <th>線別</th>
                                     <th>人數</th>
                                     <th>紀錄flag</th>
+                                    <th>亮燈頻率(%)</th>
                                     <th>投入時間</th>
-                                    <th>action</th>
+                                    <th>異常回覆</th>
                                 </tr>
                             </thead>
                         </table>
