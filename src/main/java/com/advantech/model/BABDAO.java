@@ -218,7 +218,7 @@ public class BABDAO extends BasicDAO {
             ProcRunner pRunner = new ProcRunner();
 
             //--------區間內請勿再開啟tran不然會deadlock----------------------------
-            conn1 = getDBUtilConn(SQL.Way_Chien_WebAccess);
+            conn1 = this.getConn();
             conn1.setAutoCommit(false);
 
             if (isSaveToOldDB) {

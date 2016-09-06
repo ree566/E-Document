@@ -6,8 +6,13 @@
 package com.advantech.model;
 
 import com.advantech.entity.Countermeasure;
+import com.advantech.entity.ErrorCode;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
+import org.apache.commons.dbutils.DbUtils;
+import org.apache.commons.dbutils.QueryRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,8 +51,41 @@ public class CountermeasureDAO extends BasicDAO {
         return queryForArrayList(getConn(), "SELECT * FROM actionCode");
     }
 
-    public boolean insertCountermeasure(int BABid, int errorCode_id, String reason, String solution, String editor) {
-        return updateCountermeasure("INSERT INTO Countermeasure(BABid, errorCode_id, reason, solution, editor) values(?,?,?,?,?)", BABid, errorCode_id, reason, solution, editor);
+    public boolean insertCountermeasure(int BABid, String solution, List<ErrorCode> errorCodes, String editor) {
+
+        boolean flag = false;
+        Connection conn = null;
+
+        try {
+            QueryRunner qRunner = new QueryRunner();
+
+            conn = this.getConn();
+            conn.setAutoCommit(false);
+
+            Object[] param3 = {BABid, solution};
+//            qRunner.insert(conn, "INSERT INTO Countermeasure(BABid, solution) values(?,?)", param3);//關閉線別
+
+            PreparedStatement ps = conn.prepareStatement("INSERT INTO CountermeasureDetail(cm_id, ec_id, ac_id) values(?,?,?)");
+
+            for (ErrorCode errorCode : errorCodes) {
+                Object[] param = {};
+                qRunner.fillStatement(ps, param);
+                
+            }
+
+            ps.executeBatch();
+            ps.close();
+
+            DbUtils.commitAndCloseQuietly(conn);
+            flag = true;
+        } catch (SQLException ex) {
+            log.error(ex.toString());
+            DbUtils.rollbackAndCloseQuietly(conn);
+
+        }
+        return flag;
+
+//        return updateCountermeasure("INSERT INTO Countermeasure(BABid, errorCode_id, reason, solution, editor) values(?,?,?,?,?)", BABid, errorCode_id, reason, solution, editor);
     }
 
     public boolean updateCountermeasure(int BABid, int errorCode_id, String reason, String solution, String editor) {

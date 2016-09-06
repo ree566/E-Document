@@ -34,7 +34,8 @@ public class CountermeasureService {
     }
 
     public boolean insertCountermeasure(int BABid, int errorCode_id, String reason, String solution, String editor) {
-        return countermeasureDAO.insertCountermeasure(BABid, errorCode_id, reason, solution, editor);
+//        return countermeasureDAO.insertCountermeasure(BABid, errorCode_id, reason, solution, editor);
+        return false;
     }
 
     public boolean updateCountermeasure(int id, int errorCode_id, String reason, String solution, String editor) {
