@@ -244,7 +244,7 @@
                 $("#changeUser").click(function () {
                     console.log("This is first message");
 
-                    if (serverMsgDialog.dialog("open")) {
+                    if (dialogMessage.dialog("open")) {
                         console.log("This is next message");
                         console.log("True");
                     } else {

@@ -9,19 +9,23 @@ import com.advantech.entity.AlarmAction;
 import com.advantech.helper.PropertiesReader;
 import com.advantech.entity.BABHistory;
 import com.advantech.entity.BAB;
+import com.advantech.entity.BABLoginStatus;
 import com.advantech.entity.LineBalancing;
 import com.advantech.helper.ProcRunner;
 import com.advantech.service.BasicService;
 import com.advantech.service.FBNService;
 import com.advantech.service.LineBalanceService;
+import java.math.BigDecimal;
 import java.sql.Array;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import javax.mail.MessagingException;
 import org.apache.commons.dbutils.DbUtils;
 import org.apache.commons.dbutils.QueryRunner;
+import org.apache.commons.dbutils.handlers.ScalarHandler;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.slf4j.Logger;
@@ -174,10 +178,40 @@ public class BABDAO extends BasicDAO {
     }
 
     public boolean insertBAB(BAB bab) {
-        return update(getConn(),
-                "INSERT INTO LS_BAB(PO,Model_name,line,people) VALUES (?, ?, ?, ?)",
-                bab.getPO(), bab.getModel_name(), bab.getLine(), bab.getPeople()
-        );
+
+        boolean flag = false;
+        Connection conn = null;
+        List<BABLoginStatus> l = BasicService.getBabLoginStatusService().getBABLoginStatus(bab.getLine());
+
+        try {
+            QueryRunner qRunner = new QueryRunner();
+
+            //--------區間內請勿再開啟tran不然會deadlock----------------------------
+            conn = this.getConn();
+            conn.setAutoCommit(false);
+
+            String sql = "INSERT INTO LS_BAB(PO,Model_name,line,people) VALUES (?, ?, ?, ?)";
+            int babId = qRunner.insert(conn, sql, new ScalarHandler<BigDecimal>(), bab.getPO(), bab.getModel_name(), bab.getLine(), bab.getPeople()).intValue();
+
+            PreparedStatement ps = conn.prepareStatement("INSERT INTO BABPeopleRecord(BABid, station, user_id) VALUES(?,?,?)");
+
+            for (BABLoginStatus bs : l) {
+                Object[] params = {babId, bs.getStation(), bs.getJobnumber()};
+                qRunner.fillStatement(ps, params);
+                ps.addBatch();
+            }
+
+            ps.executeBatch();
+            ps.close();
+
+            DbUtils.commitAndCloseQuietly(conn);
+
+            flag = true;
+        } catch (SQLException ex) {
+            log.error(ex.toString());
+            DbUtils.rollbackAndCloseQuietly(conn);
+        }
+        return flag;
     }
 
     /**

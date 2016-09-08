@@ -60,24 +60,15 @@ public class BABEndServlet extends HttpServlet {
         String BABid = req.getParameter("BABid");
 
         if (pChecker.checkInputVals(station, lineNo, BABid)) {
-            int line = Integer.parseInt(lineNo);
             int stationid = Integer.parseInt(station);
             int babid = Integer.parseInt(BABid);
 
             BAB b = babService.getBAB(babid);//由前端先搜尋後給他得知
 
-            BABLoginStatus babLoginStatus = bService.getBABLoginStatus(line, stationid);
-
             if (stationid <= b.getPeople()) {
 
                 if (b.getPeople() == stationid) { // if the station is the last station
-                    String closeMsg = babService.closeBAB(b.getId());
-                    if ("success".equals(closeMsg)) {
-                        bService.recordBABPeople(b.getId(), stationid, babLoginStatus.getJobnumber());
-                        out.print("success");
-                    } else {
-                        out.print(closeMsg);
-                    }
+                    out.print(babService.closeBAB(b.getId()));
                 } else {
                     if (babService.isSensorClosed(babid, stationid)) {
                         out.print("感應器已經關閉，請勿重複做關閉動作");
@@ -97,8 +88,6 @@ public class BABEndServlet extends HttpServlet {
                     } else if (!isStationClose) {
                         out.print("發生錯誤，本站尚未關閉，請聯絡管理人員");
                     } else {
-                        //把人員記錄起來
-                        bService.recordBABPeople(b.getId(), stationid, babLoginStatus.getJobnumber());
                         out.print("success");
                     }
                 }

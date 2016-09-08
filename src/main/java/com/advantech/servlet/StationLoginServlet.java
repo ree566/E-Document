@@ -84,7 +84,15 @@ public class StationLoginServlet extends HttpServlet {
                                 } else if (st == 1) {
                                     out.print(blsService.firstStationBABLogin(line, jobnumber) ? "success" : "Fail to login user");
                                 } else {
-                                    out.print(blsService.babLogin(line, st, jobnumber) ? "success" : "Fail to login user");
+                                    BAB b = BasicService.getBabService().getLastInputBAB(line);
+                                    if (blsService.babLogin(line, st, jobnumber) == true) {
+                                        if (b != null) {
+                                            blsService.recordBABPeople(b.getId(), st, jobnumber);
+                                        }
+                                        out.print("success");
+                                    } else {
+                                        out.print("Fail to login user");
+                                    }
                                 }
                                 break;
                             case LOGOUT:
@@ -109,11 +117,11 @@ public class StationLoginServlet extends HttpServlet {
                                     out.print("無法換人，該使用者已經在線別 " + l.getName() + "的站別 " + bs.getStation() + " 登入");
                                     return;
                                 }
-                                BABLoginStatus prevStatus = blsService.getBABLoginStatus(line, st);
                                 if (blsService.changeUser(line, st, jobnumber)) {
                                     BAB b = BasicService.getBabService().getLastInputBAB(line);
-                                    if (b != null && prevStatus != null) {
-                                        blsService.recordBABPeople(b.getId(), st, prevStatus.getJobnumber());
+                                    if (b != null) {
+                                        //Record user's jobnumber when user change it.
+                                        blsService.recordBABPeople(b.getId(), st, jobnumber);
                                     }
                                     out.print("success");
                                 } else {

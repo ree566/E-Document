@@ -127,8 +127,6 @@ public class BABService {
 
         if (line.isIsOpened()) {
             if (startBAB(bab)) {
-                BAB b = this.babDAO.getLastInputBAB(bab.getLine());//get last insert id
-                BasicService.getBabLoginStatusService().recordBABPeople(b.getId(), FIRST_STATION_NUMBER, jobnumber);
                 return "success";
             } else {
                 return "error";
