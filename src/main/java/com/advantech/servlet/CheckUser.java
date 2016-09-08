@@ -54,7 +54,7 @@ public class CheckUser extends HttpServlet {
     private boolean isUserExist(String jobnumber) {
         //change the sql query(password not check)
         Identit i = identitService.getIdentit(jobnumber);
-        return !(i == null || i.getPermission() != BASIC_PERMISSION);
+        return !(i == null);
     }
 
 }

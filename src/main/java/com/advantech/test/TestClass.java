@@ -7,7 +7,7 @@ package com.advantech.test;
 
 import com.advantech.service.BabLineTypeFacade;
 import com.advantech.service.BasicLineTypeFacade;
-import com.advantech.service.TestLineTypeFacade;
+import javax.management.RuntimeErrorException;
 
 /**
  *
@@ -17,19 +17,13 @@ public class TestClass {
 
     private static int count = 0;
 
-    public static void main(String args[]) {
+    public static void main(String args[]) throws Exception {
 //        BasicLineTypeFacade tF = TestLineTypeFacade.getInstance();
-        boolean b = true;
-
-        for (int i = 0; i <= 10; i++) {
-            BasicLineTypeFacade bF = BabLineTypeFacade.getInstance();
-            System.out.println("The " + i + " time data : " + bF.getParam());
-
-            if (i % 2 == 0) {
-                b = !b;
-                bF.setParam(b);
-            }
-        }
+        throwRuntime();
+    }
+    
+    private static void throwRuntime() throws Exception{
+        throw new Exception("Nyee BuJam Dao Wo Do Exception Ler.");
     }
 
     private static void showParam(BasicLineTypeFacade tF, BasicLineTypeFacade bF) {

@@ -5,6 +5,8 @@
  */
 package com.advantech.helper;
 
+import java.util.Arrays;
+
 /**
  *
  * @author Wei.Cheng
@@ -24,6 +26,10 @@ public class ParamChecker {
             b = b & checkInputVal(s);
         }
         return b;
+    }
+    
+    public boolean checkArray(Object[] arr) {
+       return arr != null && arr.length != 0;
     }
     
     public static void main(String[] args){

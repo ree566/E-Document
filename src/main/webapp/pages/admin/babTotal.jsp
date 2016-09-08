@@ -93,6 +93,10 @@
         <script>
             var round_digit = 2;
             var historyTable;
+            var actionCodes;
+            var checkedErrorCodes;
+            var checkedActionCodes;
+            var checkBoxs;
 
             function getBAB() {
                 var table = $("#data2").DataTable({
@@ -304,7 +308,7 @@
 //http://canvasjs.com/docs/charts/how-to/hide-unhide-data-series-chart-legend-click/
             function generateChart(d, chartId) {
                 var totalAvg = Math.round(d.avg);
-                console.log(totalAvg);
+//                console.log(totalAvg);
                 var chart = new CanvasJS.Chart(chartId,
                         {
                             zoomEnabled: true,
@@ -384,11 +388,10 @@
                 var alarmPercentStandard = 0.3;
 
                 var table = $("#babHistory").DataTable({
-                    dom: 'Bfrtip',
-                    buttons: [
-                        'copy', 'csv', 'excel', 'pdf', 'print'
-                    ],
-                    "processing": false,
+                    dom: 'lfrtip',
+//                    buttons: [
+//                        'copy', 'csv', 'excel', 'pdf', 'print'
+//                    ],
                     "serverSide": false,
                     "ajax": {
                         "url": "../../AllBAB",
@@ -465,9 +468,9 @@
                         "sZeroRecords": "無符合資料",
                         "sInfo": "目前記錄：_START_ 至 _END_, 總筆數：_TOTAL_"
                     },
-                    bAutoWidth: true,
-                    displayLength: 10,
+                    "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
                     destroy: true,
+                    stateSave: true,
                     "order": [[7, "desc"]]
                 });
                 return table;
@@ -625,7 +628,21 @@
                 });
             }
 
+            function initCountermeasureDialog() {
+                $(".modal-body #errorCon, #responseUser").html("N/A");
+                $("input[name='errorCode']").prop("checked", false);
+                $('input[name="actionCode"]').prop("checked", false);
+                $(".modal-body #responseUser").html("");
+                $(":checkbox").attr("disabled", true);
+                checkedErrorCodes = [];
+                checkedActionCodes = [];
+                setupCheckBox();
+                showDialogMsg("");
+            }
+
             function getContermeasure(BABid) {
+                initCountermeasureDialog();
+
                 $.ajax({
                     url: "../../CountermeasureServlet",
                     data: {
@@ -635,36 +652,100 @@
                     type: "POST",
                     dataType: 'json',
                     success: function (msg) {
-                        var jsonData = msg.data[0];
-//                        $(".modal-body #actionCode").html(jsonData.reason);
+                        var jsonData = msg;
                         $(".modal-body #errorCon").html(jsonData.solution.replace(/(?:\r\n|\r|\n)/g, '<br />'));
-                        $(".modal-body #responseUser").html(jsonData.editor);
-//                        $("#errorCode>select").val(jsonData.errorCode_id).attr("disabled", true);
-//                        $("#myModal").unblock();
+
+                        var errorCodes = msg.errorCodes;
+
+                        for (var i = 0; i < errorCodes.length; i++) {
+                            var obj = errorCodes[i];
+                            checkedErrorCodes.push(obj.ec_id);
+                            checkedActionCodes.push(obj.ac_id);
+                        }
+
+                        setErrorCodeCheckBox(checkedErrorCodes);
+                        setupCheckBox();
+                        setActionCodeCheckBox(checkedActionCodes);
+
+                        $(":checkbox").attr("disabled", true);
+
+                        var editors = jsonData.editors;
+                        for (var i = 0; i < editors.length; i++) {
+                            var editor = editors[i].editor;
+                            $(".modal-body #responseUser").append("<span class='label label-default'>#" + (editor == null ? 'N/A' : editor) + "</span> ");
+                        }
+
+                        if (jsonData.lock == 1) {
+                            $("#editCountermeasure").attr("disabled", true);
+                        }
+
                     },
                     error: function (xhr, ajaxOptions, thrownError) {
-                        alert(xhr.status);
-                        alert(thrownError);
+                        showDialogMsg(xhr.responseText);
                     }
                 });
             }
 
-            function initCountermeasureDialog() {
-                $(".modal-body #actionCode, #errorCon, #responseUser").html("N/A");
-                $("#errorCode>select").val(-1).attr("disabled", true);
-                showDialogMsg("");
+            function setupCheckBox() {
+
+                $("#actionCode").html("");
+                var data = actionCodes.data;
+                var array = $.map($('input[name="errorCode"]:checked'), function (c) {
+                    return c.value;
+                });
+
+                for (var i = 0, j = array.length; i < j; i++) {
+                    var id = array[i];
+                    for (var k = 0, l = data.length; k < l; k++) {
+                        if (data[k].ec_id == id) {
+                            var checkboxObj = checkBoxs.clone();
+                            checkboxObj.addClass("ec" + id);
+                            checkboxObj.find(":checkbox").attr("value", data[k].id).after(data[k].name);
+                            $("#actionCode").append(checkboxObj);
+                        }
+                    }
+                }
+            }
+
+            function getActionCode() {
+                var result;
+                $.ajax({
+                    url: "../../CountermeasureServlet",
+                    data: {action: "getActionCode"},
+                    type: "POST",
+                    dataType: "json",
+                    async: false,
+                    success: function (response) {
+                        result = response;
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        console.log(xhr.responseText);
+                    }
+                });
+                return result;
+            }
+
+            function setErrorCodeCheckBox(errorCodes) {
+                for (var i = 0; i < errorCodes.length; i++) {
+                    $('input[name="errorCode"][value=' + errorCodes[i] + ']').prop("checked", true);
+                }
+
+            }
+
+            function setActionCodeCheckBox(actionCodes) {
+                for (var i = 0; i < actionCodes.length; i++) {
+                    $('input[name="actionCode"][value=' + actionCodes[i] + ']').prop("checked", true);
+                }
             }
 
             function counterMeasureModeUndo() {
                 $("#saveCountermeasure, #undoContent").hide();
                 $("#editCountermeasure").show();
-                $("#errorCode>select").attr("disabled", true);
             }
 
             function counterMeasureModeEdit() {
                 $("#saveCountermeasure, #undoContent").show();
                 $("#editCountermeasure").hide();
-                $("#errorCode>select").attr("disabled", false);
             }
             function formatDate(dateString) {
                 return dateString.substring(0, 16);
@@ -676,6 +757,11 @@
 
             function showDialogMsg(msg) {
                 $("#dialog-msg").html(msg);
+//                setTimeout(function () {
+//                    $("#dialog-msg").fadeOut(function () {
+//                        $(this).html("");
+//                    });
+//                }, 5000);
             }
 
             //看使用者是否存在
@@ -693,7 +779,7 @@
                         result = response;
                     },
                     error: function (xhr, ajaxOptions, thrownError) {
-                        showMsg(xhr.responseText);
+                        showDialogMsg(xhr.responseText);
                     }
                 });
                 return result;
@@ -706,15 +792,24 @@
                     type: "POST",
                     dataType: 'json',
                     success: function (msg) {
-                        counterMeasureModeUndo();
-                        getContermeasure(data.BABid);
-                        tableAjaxReload(historyTable);
+                        if (msg.data == true) {
+                            counterMeasureModeUndo();
+                            getContermeasure(data.BABid);
+//                            tableAjaxReload(historyTable);
+                            $("#searchAvailableBAB").trigger("click");
+                            showDialogMsg("success");
+                        } else {
+                            showDialogMsg(msg.data);
+                        }
                     },
                     error: function (xhr, ajaxOptions, thrownError) {
-                        alert(xhr.status);
-                        alert(thrownError);
+                        showDialogMsg(xhr.responseText);
                     }
                 });
+            }
+
+            function unEntity(str) {
+                return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
             }
 
             $(document).ready(function () {
@@ -723,25 +818,27 @@
                 var diff = 12;
 
                 var table2 = getBAB();
+                checkBoxs = $("#actionCode > div").detach();
+                actionCodes = getActionCode();
 
-                $(window).focus(function () {
-                    interval = setInterval(function () {
-                        if (countdownnumber == 0) {
-                            $("#final_time").text("您於此網頁停留時間過久，網頁自動更新功能已經關閉。");
-                            clearInterval(interval);
-                        } else {
-                            table2.ajax.reload(function (json) {
-                                generateOnlineBabDetail(json);
-                            });
-                            $("#final_time").text(new Date());
-                        }
-                        countdownnumber -= diff;
-                    }, diff * 1000);
-                    console.log("timer start");
-                }).blur(function () {
-                    clearInterval(interval);
-                    console.log("timer stop");
-                });
+//                $(window).focus(function () {
+//                    interval = setInterval(function () {
+//                        if (countdownnumber == 0) {
+//                            $("#final_time").text("您於此網頁停留時間過久，網頁自動更新功能已經關閉。");
+//                            clearInterval(interval);
+//                        } else {
+//                            table2.ajax.reload(function (json) {
+//                                generateOnlineBabDetail(json);
+//                            });
+//                            $("#final_time").text(new Date());
+//                        }
+//                        countdownnumber -= diff;
+//                    }, diff * 1000);
+//                    console.log("timer start");
+//                }).blur(function () {
+//                    clearInterval(interval);
+//                    console.log("timer stop");
+//                });
 
                 var saveModelName = $.cookie('lastPOInsert');
                 var saveLineType = $.cookie('lastLineTypeSelect');
@@ -753,23 +850,26 @@
                 $("input, select").not(":checkbox").addClass("form-control");
                 $(":button").addClass("btn btn-default");
 
-//http://stackoverflow.com/questions/14493250/ajax-jquery-autocomplete-with-json-data
-                $("input#Model_name").autocomplete({
-                    width: 300,
-                    max: 10,
-                    delay: 100,
-                    minLength: 3,
-                    autoFocus: true,
-                    cacheLength: 1,
-                    scroll: true,
-                    highlight: false,
-                    source: function (request, response) {
-                        var term = $.trim(request.term);
-                        var matcher = new RegExp('^' + $.ui.autocomplete.escapeRegex(term), "i");
-                        $.ajax({
-                            url: "GetAvailableModelName",
-                            dataType: "json",
-                            success: function (data) {
+                initCountermeasureDialog();
+
+                //http://stackoverflow.com/questions/14493250/ajax-jquery-autocomplete-with-json-data
+                $.ajax({
+                    url: "../../GetAvailableModelName",
+                    dataType: "json",
+                    success: function (data) {
+                        $("input#Model_name").autocomplete({
+                            width: 300,
+                            max: 10,
+                            delay: 100,
+                            minLength: 3,
+                            autoFocus: true,
+                            cacheLength: 1,
+                            scroll: true,
+                            highlight: false,
+                            source: function (request, response) {
+                                var term = $.trim(request.term);
+                                var matcher = new RegExp('^' + $.ui.autocomplete.escapeRegex(term), "i");
+
                                 response($.map(data, function (v, i) {
                                     var text = v;
                                     if (text && (!request.term || matcher.test(text))) {
@@ -783,6 +883,7 @@
                         });
                     }
                 });
+
 
                 $("#searchAvailableBAB").click(function () {
                     historyTable = getHistoryBAB();
@@ -835,17 +936,18 @@
 
                 //edit counterMeasure 
                 var editId;
+
                 $("body").on('click', '#babHistory input[type="button"]', function () {
-//                    $("#myModal").block({message: "loading..."});
+
                     var selectData = historyTable.row($(this).parents('tr')).data();
                     editId = selectData.id;
-                    console.log(selectData.cm_id);
+//                    console.log(selectData.cm_id);
                     $("#myModal #titleMessage").html(
                             "號碼: " + editId +
-                            " | 工單: " + selectData.PO +
-                            " | 機種: " + selectData.Model_name +
-                            " | 線別: " + selectData.lineName +
-                            " | 時間: " + selectData.btime
+                            " / 工單: " + selectData.PO +
+                            " / 機種: " + selectData.Model_name +
+                            " / 線別: " + selectData.lineName +
+                            " / 時間: " + formatDate(selectData.btime)
                             );
 
                     if (selectData.cm_id == null) {
@@ -863,22 +965,21 @@
 
                 $("#saveCountermeasure, #undoContent").hide();
 
-                var originErrorReason;
                 var originErrorCon;
                 var originResponseUser;
 
                 $("#editCountermeasure").click(function () {
                     counterMeasureModeEdit();
 
-                    originErrorReason = $("#actionCode").html();
+                    $(":checkbox").removeAttr("disabled");
+
                     originErrorCon = $("#errorCon").html().replace(/<br *\/?>/gi, '\n');
                     originResponseUser = $("#responseUser").html();
 
-                    $("#actionCode").html("<input type='text' id='actionCodeText' maxlength='100' value='" + (originErrorReason == "N/A" ? "" : originErrorReason) + "'>");
                     $("#errorCon").html("<textarea id='errorConText' maxlength='500'>" + (originErrorCon == "N/A" ? "" : originErrorCon) + "</textarea>");
-                    $("#responseUser").html("<input type='text' id='responseUserText' maxlength='30' value='" + (originResponseUser == "N/A" ? "" : originResponseUser) + "'>");
+                    $("#responseUser").html("<input type='text' id='responseUserText' maxlength='30'>");
 
-                    console.log("editing");
+//                    console.log("editing");
                 });
 
                 $("#undoContent").click(function () {
@@ -887,39 +988,48 @@
                     }
                     counterMeasureModeUndo();
 
-                    $("#actionCode").html(originErrorReason);
+                    $(":checkbox").attr("disabled", true);
+
                     $("#errorCon").html(originErrorCon.replace(/(?:\r\n|\r|\n)/g, '<br />'));
                     $("#responseUser").html(originResponseUser);
                 });
 
                 $("#saveCountermeasure").click(function () {
                     if (confirm("確定修改內容?")) {
-                        var editor = $("#responseUserText").val(),
-                                actionCode = $("#actionCodeText").val(),
-                                errorCode = $("#errorCode>select").val(),
-                                solution = $("#errorConText").val();
+                        var editor = unEntity($("#responseUserText").val()),
+                                solution = unEntity($("#errorConText").val());
 
-                        if (checkVal(editor, actionCode, errorCode, solution) == false) {
-                            showDialogMsg("error input value");
-                            return false;
-                        } else if (checkUserExist(editor) == false) {
+                        var errorCodes = $.map($('input[name="errorCode"]:checked'), function (c) {
+                            return c.value;
+                        });
+
+                        var actionCodes = $.map($('input[name="actionCode"]:checked'), function (c) {
+                            return c.value;
+                        });
+
+                        if (checkVal(editor) == false || checkUserExist(editor) == false) {
                             showDialogMsg("找不到使用者，請重新確認您的工號是否存在");
+                            return false;
+                        } else if (errorCodes.length == 0) {
+                            showDialogMsg("請選擇至少一項ErrorCode");
+                            return false;
+                        } else if (actionCodes.length == 0) {
+                            showDialogMsg("請選擇至少一項ActionCode");
                             return false;
                         } else {
                             showDialogMsg("");
-
                         }
 
-                        var data = {
+                        console.log(editor);
+                        console.log(solution);
+                        saveCountermeasure({
                             BABid: editId,
-                            reason: actionCode,
-                            errorCode_id: errorCode,
                             solution: solution,
+                            errorCodes: errorCodes,
+                            actionCodes: actionCodes,
                             editor: editor,
                             action: "update"
-                        };
-
-                        saveCountermeasure(data);
+                        });
                     }
 
                 });
@@ -931,12 +1041,32 @@
                 $("#lineType2").val("ASSY");
                 $("#searchAvailableBAB").trigger("click");
 
+//                Checkbox change event.
                 $("#errorCode :checkbox").change(function () {
-                    var array = $.map($('input[name="errorCode"]:checked'), function(c){return c.value; });
-                    console.log(array);
+                    if (!$(this).is(":checked")) {
+                        $("#actionCode").find(".ec" + $(this).val()).remove();
+                    } else {
+                        checkedActionCodes = $.map($('input[name="actionCode"]:checked'), function (c) {
+                            return c.value;
+                        });
+
+                        setupCheckBox();
+                        setActionCodeCheckBox(checkedActionCodes);
+                        $("#actionCode" + " .ec" + $(this).val()).first().find(":checkbox").prop("checked", true);
+                    }
                 });
 
-//                $("#editCountermeasure").attr("disabled", true);
+                $(document).on("change", "#actionCode :checkbox", function () {
+                    if ($(this).is(":checked")) {
+                        checkedActionCodes.push($(this).val());
+                    } else {
+                        var removeVal = $(this).val();
+                        checkedActionCodes = jQuery.grep(checkedActionCodes, function (value) {
+                            return value != removeVal;
+                        });
+                    }
+//                    console.log(checkedActionCodes);
+                });
 
                 $("body").on("click", "#searchAvailableBAB, #send", function () {
                     block();
@@ -993,29 +1123,29 @@
                                     <td class="lab">Error Code</td>
                                     <td id="errorCode"> 
                                         <div class="checkbox">
-                                            <c:forEach var="errorCode" items="${cDAO.errorCode}">
+                                            <c:forEach var="errorCode" items="${cDAO.getErrorCode()}">
                                                 <label class="checkbox-inline">
-                                                    <input type="checkbox" name="errorCode" value="${errorCode[0]}">${errorCode[1]}
+                                                    <input type="checkbox" name="errorCode" value="${errorCode.id}">${errorCode.name}
                                                 </label>
                                             </c:forEach>
                                         </div>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td class="lab">說明</td>
-                                    <td id="errorCon">
+                                    <td class="lab">Action Code</td>
+                                    <td id="actionCode">
+                                        <%--<c:forEach var="actionCode" items="${cDAO.actionCode}">--%>   
+                                        <div class="checkbox">
+                                            <label class="checkbox-inline">
+                                                <input type="checkbox" name="actionCode">
+                                            </label>
+                                        </div>
+                                        <%--</c:forEach>--%>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td class="lab">Action Code</td>
-                                    <td id="actionCode">
-                                        <c:forEach var="actionCode" items="${cDAO.actionCode}">
-                                            <div class="checkbox">
-                                                <label class="checkbox-inline">
-                                                    <input type="checkbox" name="actionCode" value="${actionCode[0]}">${actionCode[2]}
-                                                </label>
-                                            </div>
-                                        </c:forEach>
+                                    <td class="lab">說明</td>
+                                    <td id="errorCon">
                                     </td>
                                 </tr>
                                 <tr>

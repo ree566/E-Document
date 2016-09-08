@@ -10,7 +10,6 @@ import com.advantech.helper.ProcRunner;
 import com.advantech.helper.PropertiesReader;
 import com.advantech.entity.BABHistory;
 import com.advantech.entity.BAB;
-import com.advantech.entity.BABPeopleRecord;
 import com.advantech.entity.LineBalancing;
 import com.advantech.service.BasicService;
 import com.advantech.service.FBNService;

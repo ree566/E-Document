@@ -6,11 +6,13 @@
  */
 package com.advantech.servlet;
 
+import com.advantech.entity.Countermeasure;
 import com.advantech.helper.ParamChecker;
 import com.advantech.helper.StringParser;
 import com.advantech.service.BasicService;
 import com.advantech.service.CountermeasureService;
 import java.io.*;
+import java.util.Arrays;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
@@ -26,6 +28,7 @@ import org.slf4j.LoggerFactory;
 public class CountermeasureServlet extends HttpServlet {
 
     private CountermeasureService cService = null;
+    private ParamChecker pChecker = null;
 
     private static final Logger log = LoggerFactory.getLogger(CountermeasureServlet.class);
 
@@ -33,6 +36,7 @@ public class CountermeasureServlet extends HttpServlet {
     public void init()
             throws ServletException {
         cService = BasicService.getCountermeasureService();
+        pChecker = new ParamChecker();
     }
 
     @Override
@@ -49,12 +53,12 @@ public class CountermeasureServlet extends HttpServlet {
         PrintWriter out = res.getWriter();
         String action = req.getParameter("action");
         String BABid = req.getParameter("BABid");
-        String reason = req.getParameter("reason");
-        String errorCode_id = req.getParameter("errorCode_id");
+        String[] actionCodes = req.getParameterValues("actionCodes[]");
         String solution = req.getParameter("solution");
         String editor = req.getParameter("editor");
+        String noDataEffectMsg = "No data effect";
 
-        if (!new ParamChecker().checkInputVals(BABid) && !action.endsWith("select")) {
+        if (!pChecker.checkInputVals(BABid) && !action.equals("select") && !action.equals("getActionCode")) {
             out.print(new JSONObject().put("data", "No data effect"));
             return;
         }
@@ -63,22 +67,27 @@ public class CountermeasureServlet extends HttpServlet {
 
         switch (action) {
             case "selectOne":
-                out.print(new JSONObject().put("data", cService.getCountermeasure(id)));
+                Countermeasure cm = cService.getCountermeasure(id);
+                out.print(new JSONObject(cm).put("errorCodes", cService.getErrorCode(cm.getId())).put("editors", cService.getEditor(cm.getId())));
                 break;
             case "select":
-                out.print(new JSONObject().put("data", cService.getCountermeasure()));
-                break;
-            case "insert":
-                out.print(new JSONObject().put("data", cService.insertCountermeasure(id, Integer.parseInt(errorCode_id), reason, solution, editor)));
+                out.print(new JSONObject(cService.getCountermeasure()));
                 break;
             case "update":
-                out.print(new JSONObject().put("data", cService.updateCountermeasure(id, Integer.parseInt(errorCode_id), reason, solution, editor)));
+                if (pChecker.checkArray(actionCodes)) {
+                    out.print(new JSONObject().put("data", cService.updateCountermeasure(id, Arrays.asList(actionCodes), solution, editor)));
+                } else {
+                    out.print(new JSONObject().put("data", noDataEffectMsg));
+                }
                 break;
             case "delete":
                 out.print(new JSONObject().put("data", cService.deleteCountermeasure(id)));
                 break;
+            case "getActionCode":
+                out.print(new JSONObject().put("data", cService.getActionCode()));
+                break;
             default:
-                out.print(new JSONObject().put("data", "No data effect"));
+                out.print(new JSONObject().put("data", noDataEffectMsg));
                 break;
         }
 

@@ -23,6 +23,7 @@ public class Countermeasure implements Serializable {
     private String solution;
     private String editor;
     private String editTime;
+    private int lock;
 
     public Countermeasure() {
     }
@@ -90,4 +91,12 @@ public class Countermeasure implements Serializable {
         this.editTime = editTime;
     }
 
+    public int getLock() {
+        return lock;
+    }
+
+    public void setLock(int lock) {
+        this.lock = lock;
+    }
+    
 }
