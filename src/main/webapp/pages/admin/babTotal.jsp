@@ -674,11 +674,7 @@
                             var editor = editors[i].editor;
                             $(".modal-body #responseUser").append("<span class='label label-default'>#" + (editor == null ? 'N/A' : editor) + "</span> ");
                         }
-
-                        if (jsonData.lock == 1) {
-                            $("#editCountermeasure").attr("disabled", true);
-                        }
-
+                        $("#editCountermeasure").attr("disabled", jsonData.lock == 1);
                     },
                     error: function (xhr, ajaxOptions, thrownError) {
                         showDialogMsg(xhr.responseText);
