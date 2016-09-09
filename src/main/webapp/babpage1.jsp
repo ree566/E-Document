@@ -114,32 +114,6 @@
                 console.log(babInfoCookie);
 
                 //-------------dialog init
-                var dialogMessage = $("#dialog-message").dialog({
-                    autoOpen: false,
-                    resizable: false,
-                    height: "auto",
-                    width: 400,
-                    modal: true,
-                    buttons: {
-                        "確定": function () {
-                            var newJobnumber = $("#newJobnumber").val();
-                            if (!checkVal(newJobnumber) || !checkUserExist(newJobnumber)) {
-                                showMsg(userNotFoundMessage);
-                                $("#newJobnumber").val("");
-                                $(this).dialog("close");
-                                return false;
-                            } else {
-                                changeUser(newJobnumber);
-                                $(this).dialog("close");
-                            }
-                        },
-                        "取消": function () {
-                            $(this).dialog("close");
-//                            $("#dialog").dialog("open");
-                        }
-                    }
-                });
-
                 var serverMsgDialog = $("#dialog-message2").dialog({
                     autoOpen: false,
                     resizable: false,
@@ -165,7 +139,7 @@
 
                 initUserInputWiget();
 
-                $("#step1").find(":text,select").attr("disabled", isUserInfoExist);
+                $("#step1").find("select").attr("disabled", isUserInfoExist);
 
                 $("#saveInfo").attr("disabled", isUserInfoExist);
                 $("#clearInfo").attr("disabled", !isUserInfoExist);
@@ -185,9 +159,34 @@
                     $("#step2").block({message: "Please wait..."});
                     $(this).next().trigger("keyup");
                     setTimeout(function () {
-                        $("#step2").unblock();
+                        lockStep2(false);
                     }, 2000);
                 });
+
+                var autoUserLogin = function () {
+                    var newJobnumber = $(this).val();
+                    window.clearTimeout(hnd);
+                    hnd = window.setTimeout(function () {
+                        if (!checkVal(newJobnumber) || newJobnumber.length < 5 || !checkUserExist(newJobnumber)) {
+                            showMsg(userNotFoundMessage);
+                            $("#jobnumber").val("");
+                            lockStep2(true);
+                            return false;
+                        } else {
+                            changeUser(newJobnumber);
+                            lockStep2(false);
+                            console.log("jobnumber change to " + newJobnumber);
+                            showMsg("success");
+                        }
+                    }, 1000);
+                };
+                
+                if ($('#step2').is(':visible')) {
+                    $("body").on("keyup", "#jobnumber", autoUserLogin);
+                } else {
+                    $("body").off("keyup", "#jobnumber", autoUserLogin);
+
+                }
 
                 //儲存使用者資訊
                 $("#saveInfo").click(function () {
@@ -241,19 +240,6 @@
                     }
                 });
 
-                $("#changeUser").click(function () {
-                    console.log("This is first message");
-
-                    if (dialogMessage.dialog("open")) {
-                        console.log("This is next message");
-                        console.log("True");
-                    } else {
-                        console.log("This is next message");
-                        console.log("False");
-                    }
-//                    dialogMessage.dialog("open");
-                });
-
                 $(":text").focus(function () {
                     $(this).select();
                 });
@@ -282,6 +268,14 @@
                 return true;
             }
 
+            function lockStep2(flag) {
+                if (flag) {
+                    $("#step2").block({message: "請先在步驟一完成相關步驟。", css: {cursor: 'default'}, overlayCSS: {cursor: 'default'}});
+                } else {
+                    $("#step2").unblock();
+                }
+            }
+
             function lockAllUserInput() {
                 $(":input,select").not("#redirectBtn").attr("disabled", "disabled");
             }
@@ -297,7 +291,7 @@
                     $("#lineNo").val(obj.lineNo);
                     $("#jobnumber").val(obj.jobnumber);
                     $("#station").val(obj.station);
-                    $("#step2").unblock();
+                    lockStep2(false);
 
                     if (obj.station == firstStation) {
                         $("#babEnd, .stationHintMessage").hide();
@@ -331,7 +325,7 @@
                         showMsg("資料已經儲存");
                     }
                 } else {
-                    $("#step2").block({message: "請先在步驟一完成相關步驟。", css: {cursor: 'default'}, overlayCSS: {cursor: 'default'}});
+                    lockStep2(true);
                 }
             }
 
@@ -653,16 +647,6 @@
                 請務必確認以下資訊
             </p>
             <div id="dialog-content"></div>
-        </div>
-
-        <div id="dialog-message" title="${initParam.pageTitle}">
-            <p>
-                <span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 50px 0;"></span>
-                請再次輸入您的工號。
-            </p>
-            <p>
-                <input type="text" id="newJobnumber" >
-            </p>
         </div>
         <!--Dialogs-->
 
