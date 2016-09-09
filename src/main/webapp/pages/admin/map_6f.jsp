@@ -200,11 +200,11 @@
                 var dragableWiget = $("#titleArea>div, #testArea>div, #babArea>div");
 //                dragableWiget.after("<div class='clearWiget'></div>");
 
-                dragableWiget.draggable({
-                    drag: function (e) {
-//                        return false;
-                    }
-                });
+//                dragableWiget.draggable({
+//                    drag: function (e) {
+////                        return false;
+//                    }
+//                });
 
                 $('[data-toggle="tooltip"]').tooltip();
 
