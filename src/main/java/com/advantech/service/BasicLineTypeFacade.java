@@ -65,8 +65,15 @@ public abstract class BasicLineTypeFacade {
         this.txtName = txtName;
     }
 
+    /**
+     * Init the super.dataMap first.
+     */
     protected abstract void initMap();
 
+    /**
+     * Generate data and put the data into variable processingJsonObject.
+     * @return Someone is under the balance or not.
+     */
     protected abstract boolean generateData();
 
     protected void changeFlagStatus(boolean flagStatus) {
@@ -129,6 +136,11 @@ public abstract class BasicLineTypeFacade {
         return setAlarmSignToDb(l);
     }
 
+    /**
+     * Set the data into database signal into database.
+     * @param l
+     * @return 
+     */
     protected abstract boolean setAlarmSignToDb(List<AlarmAction> l);
 
     protected abstract boolean resetAlarmSignToDb();

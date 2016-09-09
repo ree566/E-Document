@@ -40,6 +40,7 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
         <script src="../../js/jquery.dataTables.min.js"></script>
         <script src="../../js/jquery.cookie.js"></script>
         <script>
+            var maxProductivity = 200;
             $(document).ready(function () {
 
                 Array.prototype.max = function () {
@@ -54,7 +55,7 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                 var d = new Date();
                 $("#final_time").text(d);//Get the final polling database time.
                 var interval = null;//Polling database variable.
-                var testtables = 42;//測試table數量(空值要塞入null)
+                var testtables = 24;//測試table數量(空值要塞入null)
 
                 //DataTable sort init.
                 jQuery.fn.dataTableExt.oSort['pct-asc'] = function (x, y) {
@@ -98,7 +99,8 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                             "type": "html",
                             "targets": 3,
                             'render': function (data, type, full, meta) {
-                                return ((data * 100).toFixed(0) + "%");
+                                var productivity = data * 100;
+                                return ((productivity > maxProductivity ? maxProductivity : productivity) + "%");
                             }
                         },
                         {

@@ -9,6 +9,7 @@ import com.advantech.model.LineBalancingDAO;
 import com.advantech.helper.MailSend;
 import com.advantech.helper.PropertiesReader;
 import com.advantech.entity.BAB;
+import com.advantech.entity.Line;
 import com.advantech.entity.LineBalancing;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -99,12 +100,12 @@ public class LineBalanceService {
     }
 
     private void sendMail(BAB bab, int num1, int num2, int diff) throws JSONException, MessagingException {
-        JSONObject lineObj = BasicService.getLineService().getLineState(bab.getLine());
+        Line line = BasicService.getLineService().getLine(bab.getLine());
         String mailto = targetMail.getString(bab.getName().trim()); //Get the responsor of linetype.
         if ("".equals(mailto)) {
             return;
         }
-        String subject = "[藍燈系統]異常訊息(" + lineObj.getString("name").trim() + ")";
+        String subject = "[藍燈系統]異常訊息(" + line.getName().trim() + ")";
         MailSend.getInstance().sendMailWithoutSender(LineBalancingDAO.class, mailto, subject,
                 new StringBuilder()
                 .append("<p>時間 <strong>")

@@ -3,6 +3,7 @@ package com.advantech.service;
 import com.advantech.entity.Countermeasure;
 import com.advantech.model.CountermeasureDAO;
 import java.util.List;
+import java.util.Map;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -25,23 +26,35 @@ public class CountermeasureService {
         return countermeasureDAO.getCountermeasures();
     }
 
-    public List<Countermeasure> getCountermeasure(int BABid) {
+    public Countermeasure getCountermeasure(int BABid) {
         return countermeasureDAO.getCountermeasure(BABid);
     }
 
-    public List getErrorCode() {
+    public List<Map> getErrorCode() {
         return countermeasureDAO.getErrorCode();
     }
 
-    public boolean insertCountermeasure(int BABid, int errorCode_id, String reason, String solution, String editor) {
-        return countermeasureDAO.insertCountermeasure(BABid, errorCode_id, reason, solution, editor);
+    public List<Map> getErrorCode(int cm_id) {
+        return countermeasureDAO.getErrorCode(cm_id);
     }
 
-    public boolean updateCountermeasure(int id, int errorCode_id, String reason, String solution, String editor) {
-        if (this.getCountermeasure(id).isEmpty()) {
-            return this.insertCountermeasure(id, errorCode_id, reason, solution, editor);
+    public List<Map> getActionCode() {
+        return countermeasureDAO.getActionCode();
+    }
+
+    public List<Map> getEditor(int cm_id) {
+        return countermeasureDAO.getEditor(cm_id);
+    }
+
+    public boolean insertCountermeasure(int BABid, List<String> errorCode_id, String solution, String editor) {
+        return countermeasureDAO.insertCountermeasure(BABid, solution, errorCode_id, editor);
+    }
+
+    public boolean updateCountermeasure(int id, List<String> errorCode_id, String solution, String editor) {
+        if (this.getCountermeasure(id) == null) {
+            return this.insertCountermeasure(id, errorCode_id, solution, editor);
         } else {
-            return countermeasureDAO.updateCountermeasure(id, errorCode_id, reason, solution, editor);
+            return countermeasureDAO.updateCountermeasure(id, solution, errorCode_id, editor);
         }
     }
 

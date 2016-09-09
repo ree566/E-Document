@@ -6,8 +6,7 @@
 package com.advantech.test;
 
 import com.advantech.service.BasicLineTypeFacade;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import javax.management.RuntimeErrorException;
 
 /**
  *
@@ -17,13 +16,13 @@ public class TestClass {
 
     private static int count = 0;
 
-    public static void main(String args[]) {
-        Pattern p = Pattern.compile("^[a-zA-Z]+([0-9]+).*");
-        Matcher m = p.matcher("TTGGGGT233221");
-
-        if (m.find()) {
-            System.out.println(Integer.parseInt(m.group(1)));
-        }
+    public static void main(String args[]) throws Exception {
+//        BasicLineTypeFacade tF = TestLineTypeFacade.getInstance();
+        throwRuntime();
+    }
+    
+    private static void throwRuntime() throws Exception{
+        throw new Exception("Nyee BuJam Dao Wo Do Exception Ler.");
     }
 
     private static void showParam(BasicLineTypeFacade tF, BasicLineTypeFacade bF) {

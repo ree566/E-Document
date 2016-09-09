@@ -7,7 +7,6 @@ package com.advantech.model;
 
 import com.advantech.entity.BABLoginStatus;
 import com.advantech.entity.BABPeopleRecord;
-import com.advantech.helper.ProcRunner;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;

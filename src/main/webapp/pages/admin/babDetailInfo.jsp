@@ -154,22 +154,23 @@
                     }
                 });
 
-                $("input#Model_name").autocomplete({
-                    width: 300,
-                    max: 10,
-                    delay: 100,
-                    minLength: 3,
-                    autoFocus: true,
-                    cacheLength: 1,
-                    scroll: true,
-                    highlight: false,
-                    source: function (request, response) {
-                        var term = $.trim(request.term);
-                        var matcher = new RegExp('^' + $.ui.autocomplete.escapeRegex(term), "i");
-                        $.ajax({
-                            url: "../../GetAvailableModelName",
-                            dataType: "json",
-                            success: function (data) {
+                $.ajax({
+                    url: "../../GetAvailableModelName",
+                    dataType: "json",
+                    success: function (data) {
+                        $("input#Model_name").autocomplete({
+                            width: 300,
+                            max: 10,
+                            delay: 100,
+                            minLength: 3,
+                            autoFocus: true,
+                            cacheLength: 1,
+                            scroll: true,
+                            highlight: false,
+                            source: function (request, response) {
+                                var term = $.trim(request.term);
+                                var matcher = new RegExp('^' + $.ui.autocomplete.escapeRegex(term), "i");
+
                                 response($.map(data, function (v, i) {
                                     var text = v;
                                     if (text && (!request.term || matcher.test(text))) {
@@ -184,8 +185,8 @@
                     }
                 });
             });
-            
-             function getDetail(BABid, isused) {
+
+            function getDetail(BABid, isused) {
                 $("#BabDetail").DataTable({
                     dom: 'Bfrtip',
                     buttons: [
@@ -239,7 +240,7 @@
                     "order": [[2, "asc"], [1, "asc"]]
                 });
             }
-            
+
             function formatDate(dateString) {
                 return dateString.substring(0, 16);
             }

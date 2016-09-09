@@ -117,6 +117,7 @@
         <script>
             var sitefloor = 6;
             var maxTestTableNo = 42;
+            var maxProductivity = 200;
 
             $(function () {
 
@@ -201,7 +202,7 @@
 
                 dragableWiget.draggable({
                     drag: function (e) {
-                        return false;
+//                        return false;
                     }
                 });
 
@@ -259,10 +260,11 @@
                                         signalClass = "blub-abnormal";
                                         break;
                                 }
+                                var productivity = Math.floor(people.PRODUCTIVITY * 100);
                                 $(".testWiget #draggable" + people.table + "_" + people.sitefloor + "f")
                                         .removeClass("blub-empty")
                                         .addClass(signalClass)
-                                        .attr("title", people.name + " 效率:" + (Math.floor(people.PRODUCTIVITY * 100)) + "%");
+                                        .attr("title", people.name + " 效率:" + (productivity > maxProductivity ? maxProductivity : productivity) + "%");
                             }
                         }
                     }

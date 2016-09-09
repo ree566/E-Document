@@ -83,7 +83,7 @@ public class BABDAO extends BasicDAO {
     }
 
     public List<BAB> getBABInfo(String lineType) {
-        return queryProcForBeanList(getConn(), BAB.class, "{CALL getBABByLineType(?)}", lineType);
+        return queryProcForMapList(getConn(), "{CALL getBABByLineType(?)}", lineType);
     }
 
     public List<BAB> getProcessingBAB() {
@@ -249,7 +249,7 @@ public class BABDAO extends BasicDAO {
             ProcRunner pRunner = new ProcRunner();
 
             //--------區間內請勿再開啟tran不然會deadlock----------------------------
-            conn1 = getDBUtilConn(SQL.Way_Chien_WebAccess);
+            conn1 = this.getConn();
             conn1.setAutoCommit(false);
 
             if (isSaveToOldDB) {

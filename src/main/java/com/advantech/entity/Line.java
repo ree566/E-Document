@@ -19,14 +19,15 @@ public class Line implements Serializable {
     private String name;
     private int isused;
     private String linetype;
+    private int people;
     private int lock;
-    
+
     private boolean isOpened;
 
-    public Line(){
-        
+    public Line() {
+
     }
-    
+
     public Line(int id, String name, int isused, String linetype, int lock) {
         this.id = id;
         this.name = name;
@@ -65,6 +66,14 @@ public class Line implements Serializable {
 
     public void setLinetype(String linetype) {
         this.linetype = linetype;
+    }
+
+    public int getPeople() {
+        return people;
+    }
+
+    public void setPeople(int people) {
+        this.people = people;
     }
 
     public int getLock() {

@@ -22,7 +22,7 @@
                 <name>DailyJobWorker</name>
                 <job-name>DailyJobWorker</job-name>
                 <!--<misfire-instruction>MISFIRE_INSTRUCTION_FIRE_ONCE_NOW</misfire-instruction>-->
-                <cron-expression>0/30 * 8-21 ? * MON-FRI *</cron-expression>
+                <cron-expression>0/30 * 8-21 ? * MON-SAT *</cron-expression>
             </cron>
         </trigger>
     </schedule>
@@ -37,7 +37,7 @@
             <cron>
                 <name>DataBaseInit</name>
                 <job-name>DataBaseInit</job-name>
-                <cron-expression>0 30 6,21 ? * MON-FRI *</cron-expression>
+                <cron-expression>0 30 6,21 ? * MON-SAT *</cron-expression>
             </cron>
         </trigger>
     </schedule>
@@ -52,7 +52,7 @@
             <cron>
                 <name>SaveBABDataToDB</name>
                 <job-name>SaveBABDataToDB</job-name>
-                <cron-expression>0 0 12,16,22 ? * MON-FRI *</cron-expression>
+                <cron-expression>0 0 12,16,22 ? * MON-SAT *</cron-expression>
             </cron>
         </trigger>
     </schedule>
@@ -68,7 +68,7 @@
             <cron>
                 <name>CheckSensor</name>
                 <job-name>CheckSensor</job-name>
-                <cron-expression>0 0 11,14 ? * MON-FRI *</cron-expression>
+                <cron-expression>0 0 11,14 ? * MON-SAT *</cron-expression>
             </cron>
         </trigger>
     </schedule>
@@ -84,7 +84,7 @@
             <cron>
                 <name>TestLineTypeRecord</name>
                 <job-name>TestLineTypeRecord</job-name>
-                <cron-expression>0 0 9-19 ? * MON-FRI *</cron-expression>
+                <cron-expression>0 0 9-19 ? * MON-SAT *</cron-expression>
             </cron>
         </trigger>
     </schedule>
