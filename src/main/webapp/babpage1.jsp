@@ -181,11 +181,13 @@
                     }, 1000);
                 };
                 
-                if ($('#step2').is(':visible')) {
-                    $("body").on("keyup", "#jobnumber", autoUserLogin);
-                } else {
+                var data = $('#step2').data();
+                if (data["blockUI.isBlocked"] == 1) {
+                    console.log("Element is block.");
                     $("body").off("keyup", "#jobnumber", autoUserLogin);
-
+                } else {
+                    console.log("Element is unblock.");
+                    $("body").on("keyup", "#jobnumber", autoUserLogin);
                 }
 
                 //儲存使用者資訊
