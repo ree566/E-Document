@@ -40,6 +40,7 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
         <script src="//cdn.datatables.net/buttons/1.2.1/js/buttons.html5.min.js"></script>
         <script src="//cdn.datatables.net/buttons/1.2.1/js/buttons.print.min.js"></script>
         <script>
+            var maxProductivity = 200;
             $(document).ready(function () {
 
                 var momentFormatString = 'YYYY-MM-DD';
@@ -77,7 +78,6 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
             });
 
             function getDetail(startDate, endDate) {
-                var productivityMaximum = 1.2;
                 
                 $("#testDetail").DataTable({
                     dom: 'Bfrtip',
@@ -109,7 +109,8 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                         {
                             "targets": 3,
                             'render': function (data, type, full, meta) {
-                                return Math.round((data > productivityMaximum ? productivityMaximum : data) * 100) + '%';
+                                var productivity = data * 100;
+                                return (productivity > maxProductivity ? maxProductivity : productivity) + '%';
                             }
                         },
                         {
