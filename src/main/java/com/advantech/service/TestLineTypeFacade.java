@@ -88,7 +88,7 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
 
                         if (productivity < TEST_STANDARD) {
                             status = ALARM_SIGN;
-                            dataMap.put(tableNo, ALARM_SIGN);
+                            dataMap.put("T" + tableNo, ALARM_SIGN);
                             isSomeoneUnderStandard = true;
                         } else {
                             status = NORMAL_SIGN;
