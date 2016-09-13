@@ -1,6 +1,7 @@
 package com.advantech.service;
 
 import com.advantech.entity.Countermeasure;
+import static com.advantech.model.BasicDAO.queryForMapList;
 import com.advantech.model.CountermeasureDAO;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +29,10 @@ public class CountermeasureService {
 
     public Countermeasure getCountermeasure(int BABid) {
         return countermeasureDAO.getCountermeasure(BABid);
+    }
+
+    public List<Map> getCountermeasureView() {
+        return countermeasureDAO.getCountermeasureView();
     }
 
     public List<Map> getErrorCode() {

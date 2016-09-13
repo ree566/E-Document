@@ -13,10 +13,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
+import net.sourceforge.jtds.jdbcx.JtdsDataSource;
 import org.apache.commons.dbutils.DbUtils;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
@@ -87,6 +89,15 @@ public class BasicDAO implements Serializable {
         }
     }
 
+    private static DataSource getDataSource() {
+        JtdsDataSource xaDS = new JtdsDataSource();
+        xaDS.setServerName("M3-SERVER");
+        xaDS.setDatabaseName("WebAccess");
+        xaDS.setUser("waychien");
+        xaDS.setPassword("m3server");
+        return xaDS;
+    }
+
     private static DataSource getDataSource(String dataSourcePath) throws NamingException {
         Context initContext = new InitialContext();
         Context envContext = (Context) initContext.lookup("java:/comp/env");
@@ -95,7 +106,23 @@ public class BasicDAO implements Serializable {
     }
 
     public static Connection getDBUtilConn(SQL sqlType) {
-        return openConn(sqlType.toString());
+        return getConnWithoutJndi();
+        //        return openConn(sqlType.toString());
+    }
+
+    //If not use jndi
+    private static Connection getConnWithoutJndi() {
+        DataSource ds = getDataSource();
+        qRunner = new QueryRunner();
+        pRunner = new ProcRunner();
+        Connection conn = null;
+        try {
+            conn = ds.getConnection();
+
+        } catch (SQLException ex) {
+            log.error(ex.toString());
+        }
+        return conn;
     }
 
     private synchronized static Connection openConn(String dataSource) {
@@ -183,7 +210,7 @@ public class BasicDAO implements Serializable {
         }
         return flag;
     }
-    
+
     public static boolean updateProc(Connection conn, String sql, Object... params) {
         boolean flag = false;
         try {

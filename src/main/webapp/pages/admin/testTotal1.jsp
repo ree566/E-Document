@@ -110,7 +110,7 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                             "targets": 3,
                             'render': function (data, type, full, meta) {
                                 var productivity = data * 100;
-                                return (productivity > maxProductivity ? maxProductivity : productivity) + '%';
+                                return Math.round(productivity > maxProductivity ? maxProductivity : productivity) + '%';
                             }
                         },
                         {

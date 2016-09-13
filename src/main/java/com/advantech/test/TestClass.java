@@ -5,8 +5,16 @@
  */
 package com.advantech.test;
 
-import com.advantech.service.BasicLineTypeFacade;
-import javax.management.RuntimeErrorException;
+import com.advantech.service.BasicService;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
 /**
  *
@@ -14,26 +22,48 @@ import javax.management.RuntimeErrorException;
  */
 public class TestClass {
 
-    private static int count = 0;
-
     public static void main(String args[]) throws Exception {
-//        BasicLineTypeFacade tF = TestLineTypeFacade.getInstance();
-        throwRuntime();
-    }
-    
-    private static void throwRuntime() throws Exception{
-        throw new Exception("Nyee BuJam Dao Wo Do Exception Ler.");
-    }
+//        LineService ls = BasicService.getLineService();
+//        List<Line> l = ls.getLine();
 
-    private static void showParam(BasicLineTypeFacade tF, BasicLineTypeFacade bF) {
-        System.out.println("-----------------------------");
-        System.out.println("tF:" + tF.getParam());
-        System.out.println("bF:" + bF.getParam());
-    }
+        List<Map> l = BasicService.getBabService().getClosedBABInfo("16/09/01", "16/09/12");
+        Map firstData = l.get(0); // Get the first data to read the object paramaters.
 
-    public boolean testFunction() {
-        System.out.println("Function testing.");
-        return true;
+        HSSFWorkbook workbook = new HSSFWorkbook();
+        HSSFSheet spreadsheet = workbook.createSheet("employe db");
+        HSSFRow row = spreadsheet.createRow(0);
+        HSSFCell cell;
+        Iterator it = firstData.keySet().iterator();
+        int loopCount = 0;
+        while (it.hasNext()) {
+            String key = (String) it.next();
+            cell = row.createCell(loopCount);
+            cell.setCellValue(key);
+            loopCount++;
+        }
+
+        int x = 1;
+        int y = 0;
+        for (Map m : l) {
+            it = m.keySet().iterator();
+            row = spreadsheet.createRow(x);
+            while (it.hasNext()) {
+                Object key = it.next();
+                cell = row.createCell(y);
+                cell.setCellValue(m.get(key).toString());
+                y++;
+            }
+            y = 0;
+            x++;
+        }
+        FileOutputStream out = new FileOutputStream(
+                new File(System.getProperty("user.home") + "\\Desktop\\project\\" + "exceldatabase.xls"));
+        workbook.write(out);
+        out.close();
+        System.out.println(
+                "exceldatabase.xlsx written successfully");
+
+//        System.out.println(new Gson().toJson());
     }
 
 }
