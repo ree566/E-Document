@@ -479,7 +479,7 @@
                     "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
                     destroy: true,
                     stateSave: true,
-                    "order": [[7, "desc"]]
+                    "order": [[8, "desc"]]
                 });
                 return table;
             }
@@ -1190,9 +1190,9 @@
                             <option value=5>5F</option>
                             <option value=6>6F</option>
                         </select> /
-                        <div class="checkbox">
-                            <label><input id="closedOnly" type="checkbox" value="">只顯示已完結工單</label>
-                        </div> /
+                        <!--<div class="checkbox">-->
+                            <!--<label><input id="closedOnly" type="checkbox" value="">只顯示已完結工單</label>-->
+                        <!--</div> /-->
                         <input type="button" id="searchAvailableBAB" value="查詢">
                     </div>
                 </div>

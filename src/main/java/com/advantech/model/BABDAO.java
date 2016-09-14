@@ -61,8 +61,9 @@ public class BABDAO extends BasicDAO {
         return queryBABTable("SELECT * FROM LS_BAB");
     }
 
-    public List<BAB> getBAB(int BABid) {
-        return queryBABTable("SELECT * FROM LS_BAB WHERE id = ?", BABid);
+    public BAB getBAB(int BABid) {
+        List l = queryBABTable("SELECT * FROM LS_BAB WHERE id = ?", BABid);
+        return !l.isEmpty() ? (BAB)l.get(0) : null;
     }
 
     public List<BAB> getBAB(String modelName, String dateFrom, String dateTo) {
@@ -85,8 +86,9 @@ public class BABDAO extends BasicDAO {
         return queryBABTable("SELECT * FROM LS_BAB_Sort");
     }
 
-    public List<BAB> getProcessingBAB(int BABid) {
-        return queryBABTable("SELECT * FROM LS_BAB_Sort WHERE id = ?", BABid);
+    public BAB getProcessingBAB(int BABid) {
+        List l = queryBABTable("SELECT * FROM LS_BAB_Sort WHERE id = ?", BABid);
+        return !l.isEmpty() ? (BAB)l.get(0) : null; 
     }
 
     public List<BAB> getProcessingBABByLine(int lineNo) {

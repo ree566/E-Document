@@ -84,7 +84,8 @@ public class Login extends HttpServlet {
 //            return null;
 //        }
         //change the sql query
-        return identitService.getIdentit(jobnumber, password);
+//        return identitService.getIdentit(jobnumber, password);
+        return null;
       
        
     }

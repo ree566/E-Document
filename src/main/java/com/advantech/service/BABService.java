@@ -42,8 +42,7 @@ public class BABService {
     }
 
     public BAB getBAB(int id) {
-        List l = babDAO.getBAB(id);
-        return !l.isEmpty() ? (BAB) l.get(0) : null;
+        return babDAO.getBAB(id);
     }
 
     public List<BAB> getBAB(String modelName, String dateFrom, String dateTo) {
@@ -154,10 +153,9 @@ public class BABService {
     }
 
     public String closeBAB(int BABid) {
-        List<BAB> processingBab = babDAO.getProcessingBAB(BABid);
-        if (processingBab != null && !processingBab.isEmpty()) {
-            BAB bab = processingBab.get(0);
-            String message = closeBAB(bab);
+        BAB processingBab = babDAO.getProcessingBAB(BABid);
+        if (processingBab != null) {
+            String message = closeBAB(processingBab);
             return message;
         } else {
             return "查無工單資料，請聯絡管理人員";

@@ -63,7 +63,7 @@ public class CountermeasureServlet extends HttpServlet {
             return;
         }
         
-        System.out.println("action: " + action);
+//        System.out.println("action: " + action);
 
         int id = StringParser.strToInt(BABid);
 

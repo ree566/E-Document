@@ -18,21 +18,17 @@ import java.util.List;
 public class IdentitService {
 
     private final IdentitDAO identitDAO;
-    private final int servingSign = 1;
-    private final int leaveSign = 0;
 
     protected IdentitService() {
         identitDAO = new IdentitDAO();
     }
 
     public Identit getIdentit(String jobnumber) {
-        List l = identitDAO.getIdentit(jobnumber);
-        return !l.isEmpty() ? (Identit) l.get(0) : null;
+        return identitDAO.getIdentit(jobnumber);
     }
 
-    public Identit getIdentit(String jobnumber, String password) {
-        List l = identitDAO.userLogin(jobnumber, password);
-        return !l.isEmpty() ? (Identit) l.get(0) : null;
+    public boolean getIdentit(String jobnumber, String password) {
+        return identitDAO.userLogin(jobnumber, password);
     }
 
     public boolean newIdentit(Identit i) {
@@ -54,6 +50,7 @@ public class IdentitService {
     }
 
     public boolean deleteIdentit(int userNo) {
-        return identitDAO.updateIdentitServingStatus(leaveSign, userNo);
+//        return identitDAO.updateIdentitServingStatus(leaveSign, userNo);
+        throw new UnsupportedOperationException();
     }
 }

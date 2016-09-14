@@ -15,20 +15,22 @@ import org.slf4j.LoggerFactory;
  *
  * @author Wei.Cheng
  */
-public class IdentitDAO extends BasicDAO{
+public class IdentitDAO extends BasicDAO {
 
     private static final Logger log = LoggerFactory.getLogger(BasicDAO.class);
 
     private Connection getConn() {
         return getDBUtilConn(SQL.Way_Chien_WebAccess);
     }
-    
-    public List<Identit> getIdentit(String jobnumber){
-        return queryIdentitTable("SELECT * FROM LeaveApplicationRecord.dbo.identit WHERE jobnumber = ?", jobnumber);
+
+    public Identit getIdentit(String jobnumber) {
+        List l = queryIdentitTable("SELECT * FROM LeaveApplicationRecord.dbo.identit WHERE jobnumber = ?", jobnumber);
+        return !l.isEmpty() ? (Identit) l.get(0) : null;
     }
 
-    public List<Identit> userLogin(String jobnumber, String password) {
-        return queryIdentitTable("SELECT * FROM identit WHERE jobnumber = ? AND password is null", jobnumber);
+    public boolean userLogin(String jobnumber, String password) {
+        Identit i = this.getIdentit(jobnumber);
+        return i.getPassword().equals(password);
     }
 
     private List<Identit> queryIdentitTable(String sql, Object... params) {
