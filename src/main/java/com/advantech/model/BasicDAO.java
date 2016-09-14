@@ -17,6 +17,7 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
+import net.sourceforge.jtds.jdbcx.JtdsDataSource;
 import org.apache.commons.dbutils.DbUtils;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
@@ -95,7 +96,32 @@ public class BasicDAO implements Serializable {
     }
 
     public static Connection getDBUtilConn(SQL sqlType) {
-        return openConn(sqlType.toString());
+//        return openConn(sqlType.toString());
+        return getConnWithoutJndi();
+    }
+
+    private static DataSource getDataSource() {
+        JtdsDataSource xaDS = new JtdsDataSource();
+        xaDS.setServerName("M3-SERVER");
+        xaDS.setDatabaseName("WebAccess");
+        xaDS.setUser("waychien");
+        xaDS.setPassword("m3server");
+        return xaDS;
+    }
+
+    //If not use jndi
+    private static Connection getConnWithoutJndi() {
+        DataSource ds = getDataSource();
+        qRunner = new QueryRunner();
+        pRunner = new ProcRunner();
+        Connection conn = null;
+        try {
+            conn = ds.getConnection();
+
+        } catch (SQLException ex) {
+            log.error(ex.toString());
+        }
+        return conn;
     }
 
     private synchronized static Connection openConn(String dataSource) {
@@ -120,7 +146,7 @@ public class BasicDAO implements Serializable {
         return conn;
     }
 
-    public static List queryForMapList(Connection conn, String sql, Object... params) {
+    public static List<Map> queryForMapList(Connection conn, String sql, Object... params) {
         return query(conn, new MapListHandler(), sql, params);
     }
 
@@ -128,7 +154,7 @@ public class BasicDAO implements Serializable {
         return query(conn, new BeanListHandler(cls), sql, params);
     }
 
-    public static List queryForArrayList(Connection conn, String sql, Object... params) {
+    public static List<Array> queryForArrayList(Connection conn, String sql, Object... params) {
         return query(conn, new ArrayListHandler(), sql, params);
     }
 
@@ -201,7 +227,7 @@ public class BasicDAO implements Serializable {
         return queryProc(conn, new BeanListHandler(cls), sql, params);
     }
 
-    public static List queryProcForMapList(Connection conn, String sql, Object... params) {
+    public static List<Map> queryProcForMapList(Connection conn, String sql, Object... params) {
         return queryProc(conn, new MapListHandler(), sql, params);
     }
 

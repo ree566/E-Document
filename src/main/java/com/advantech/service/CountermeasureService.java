@@ -30,6 +30,10 @@ public class CountermeasureService {
         return countermeasureDAO.getCountermeasure(BABid);
     }
 
+    public List<Map> getCountermeasureView() {
+        return countermeasureDAO.getCountermeasureView();
+    }
+
     public List<Map> getErrorCode() {
         return countermeasureDAO.getErrorCode();
     }

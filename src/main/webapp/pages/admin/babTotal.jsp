@@ -385,6 +385,9 @@
 
             function getHistoryBAB() {
                 var lineType = $("#lineType2").val();
+                var sitefloor = $("#sitefloor").val();
+                var closedOnly = $("#closedOnly").is(":checked");
+                
                 var alarmPercentStandard = 0.3;
 
                 var table = $("#babHistory").DataTable({
@@ -396,13 +399,18 @@
                     "ajax": {
                         "url": "../../AllBAB",
                         "type": "POST",
-                        "data": {"lineType": lineType}
+                        "data": {
+                            lineType: lineType,
+                            sitefloor: sitefloor,
+                            closedOnly: closedOnly
+                        }
                     },
                     "columns": [
                         {data: "id", visible: false},
                         {data: "PO"},
                         {data: "Model_name"},
                         {data: "lineName"},
+                        {data: "sitefloor"},
                         {data: "people"},
                         {data: "isused"},
                         {data: "alarmPercent", "sType": "numeric-comma"},
@@ -412,7 +420,7 @@
                     "columnDefs": [
                         {
                             "type": "html",
-                            "targets": 5,
+                            "targets": 6,
                             "data": "isused",
                             'render': function (data, type, row) {
                                 switch (data) {
@@ -430,7 +438,7 @@
                         },
                         {
                             "type": "html",
-                            "targets": 6,
+                            "targets": 7,
                             "data": "isused",
                             'render': function (data, type, row) {
                                 return roundDecimal(((data == null ? 0.0 : data) * 100), 2);
@@ -438,14 +446,14 @@
                         },
                         {
                             "type": "html",
-                            "targets": 7,
+                            "targets": 8,
                             'render': function (data, type, row) {
                                 return formatDate(data);
                             }
                         },
                         {
                             "type": "html",
-                            "targets": 8,
+                            "targets": 9,
                             'render': function (data, type, row) {
                                 var isCmReply = row.cm_id != null;
                                 var isAboveApStandard = row.alarmPercent > alarmPercentStandard;
@@ -632,8 +640,8 @@
                 $(".modal-body #errorCon, #responseUser").html("N/A");
                 $("input[name='errorCode']").prop("checked", false);
                 $('input[name="actionCode"]').prop("checked", false);
-                $(".modal-body #responseUser").html("");
-                $(":checkbox").attr("disabled", true);
+                $(" #responseUser").html("");
+                $(".modal-body :checkbox").attr("disabled", true);
                 checkedErrorCodes = [];
                 checkedActionCodes = [];
                 setupCheckBox();
@@ -1174,11 +1182,17 @@
                 <p class="alarm">※進行中的工單，請直接點兩下，於下方 "機種平衡率紀錄查詢" 看亮燈頻率。</p>
                 <div class="search-container">
                     <div class="ui-widget">
-                        <select id="lineType2">
-                            <option value=-1>請選擇線別</option>
+                        <select id="lineType2"> 
                             <option value="ASSY">ASSY</option>
                             <option value="Packing">Packing</option>
-                        </select>
+                        </select> /
+                        <select id="sitefloor">
+                            <option value=5>5F</option>
+                            <option value=6>6F</option>
+                        </select> /
+                        <div class="checkbox">
+                            <label><input id="closedOnly" type="checkbox" value="">只顯示已完結工單</label>
+                        </div> /
                         <input type="button" id="searchAvailableBAB" value="查詢">
                     </div>
                 </div>
@@ -1191,6 +1205,7 @@
                                     <th>工單</th>
                                     <th>機種</th>
                                     <th>線別</th>
+                                    <th>樓層</th>
                                     <th>人數</th>
                                     <th>紀錄flag</th>
                                     <th>亮燈頻率(%)</th>

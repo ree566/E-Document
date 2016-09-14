@@ -45,6 +45,10 @@ public class CountermeasureDAO extends BasicDAO {
         List l = this.queryCountermeasureTable("SELECT * FROM Countermeasure WHERE BABid = ?", BABid);
         return l.isEmpty() ? null : (Countermeasure) l.get(0);
     }
+    
+    public List<Map> getCountermeasureView(){
+        return queryForMapList(this.getConn(), "SELECT * FROM CountermeasureView");
+    }
 
     public List<Map> getErrorCode() {
         return queryForMapList(getConn(), "SELECT * FROM errorCode");

@@ -18,10 +18,6 @@ public class TestClassService {
     public TestClassService() {
         t = new TestClass();
     }
-    
-    public boolean testFunction(){
-        return t.testFunction();
-    }
 
     
     public static void main(String arg[]) {

@@ -58,10 +58,12 @@ public class CountermeasureServlet extends HttpServlet {
         String editor = req.getParameter("editor");
         String noDataEffectMsg = "No data effect";
 
-        if (!pChecker.checkInputVals(BABid) && !action.equals("select") && !action.equals("getActionCode")) {
+        if (!pChecker.checkInputVals(BABid) && !action.equals("select") && !action.equals("getActionCode") && !action.equals("getExcel")) {
             out.print(new JSONObject().put("data", "No data effect"));
             return;
         }
+        
+        System.out.println("action: " + action);
 
         int id = StringParser.strToInt(BABid);
 
@@ -85,6 +87,9 @@ public class CountermeasureServlet extends HttpServlet {
                 break;
             case "getActionCode":
                 out.print(new JSONObject().put("data", cService.getActionCode()));
+                break;
+            case "getExcel":
+                out.print(new JSONObject().put("data", cService.getCountermeasureView()));
                 break;
             default:
                 out.print(new JSONObject().put("data", noDataEffectMsg));

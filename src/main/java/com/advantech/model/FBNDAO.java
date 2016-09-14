@@ -37,7 +37,7 @@ public class FBNDAO extends BasicDAO {
         return queryForMapList(getConn(), "SELECT * FROM LS_GetSenRealTime");
     }
 
-    public List<FBN> getBalancePerGroup(int BABid) {
+    public List<Map> getBalancePerGroup(int BABid) {
         return queryForMapList(getConn(), "SELECT * FROM LS_balanceDetailPerGroup(?)", BABid);
     }
 

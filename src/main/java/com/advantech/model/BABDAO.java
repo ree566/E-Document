@@ -77,7 +77,7 @@ public class BABDAO extends BasicDAO {
         return getHistoryTable("SELECT * FROM LS_BAB_History WHERE BABid = ?", bab.getId());
     }
 
-    public List<BAB> getBABInfo(String lineType) {
+    public List<Map> getBABInfo(String lineType) {
         return queryProcForMapList(getConn(), "{CALL getBABByLineType(?)}", lineType);
     }
 

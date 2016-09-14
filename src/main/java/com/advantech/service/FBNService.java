@@ -30,7 +30,7 @@ public class FBNService {
         return fbnDAO.getSensorInstantlyStatus();
     }
 
-    public List<FBN> getBalancePerGroup(int BABid) {
+    public List<Map> getBalancePerGroup(int BABid) {
         return fbnDAO.getBalancePerGroup(BABid);
     }
 

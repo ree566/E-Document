@@ -42,7 +42,8 @@ public class AllBAB extends HttpServlet {
         res.setContentType("application/json");
         PrintWriter out = res.getWriter();
         String lineType = req.getParameter("lineType");
-        out.print(new JSONObject().put("data", babService.getBABInfo(lineType)));
+        String sitefloor = req.getParameter("sitefloor");
+        out.print(new JSONObject().put("data", babService.getBABInfo(lineType, Integer.parseInt(sitefloor))));
 
     }
 }

@@ -75,8 +75,7 @@ public class BABDataSaver implements Job {
     }
 
     public static void main(String[] arg0) {
-        TestClassService service = BasicService.getTestClassService();
-        service.testFunction();
+
     }
 
     private String getSensorTime(FBN f) {
