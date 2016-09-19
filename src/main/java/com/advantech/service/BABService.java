@@ -69,9 +69,7 @@ public class BABService {
             Map m = (Map) it.next();
             Integer floor = (Integer) m.get("sitefloor");
             Integer closedSign = (Integer) m.get("isused");
-            if (Objects.equals(floor, sitefloor) && (Objects.equals(closedSign, BAB_CLOSED_SIGN) || Objects.equals(closedSign, BAB_UNCLOSE_SIGN))) {
-                continue;
-            } else {
+            if (!Objects.equals(floor, sitefloor) && (!Objects.equals(closedSign, BAB_CLOSED_SIGN) || !Objects.equals(closedSign, BAB_UNCLOSE_SIGN))) {
                 it.remove();
             }
         }

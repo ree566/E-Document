@@ -50,6 +50,13 @@ public class BasicDAO implements Serializable {
     private static final int RETRY_WAIT_TIME = 3000;
 
     private static Map<String, DataSource> dataSourceMap;
+    private static DataSource ds = null;
+
+    static {
+        ds = getDataSource();
+        qRunner = new QueryRunner();
+        pRunner = new ProcRunner();
+    }
 
     public static enum SQL {
 
@@ -96,8 +103,8 @@ public class BasicDAO implements Serializable {
     }
 
     public static Connection getDBUtilConn(SQL sqlType) {
-//        return openConn(sqlType.toString());
-        return getConnWithoutJndi();
+        return openConn(sqlType.toString());
+//        return getConnWithoutJndi();
     }
 
     private static DataSource getDataSource() {
@@ -111,13 +118,9 @@ public class BasicDAO implements Serializable {
 
     //If not use jndi
     private static Connection getConnWithoutJndi() {
-        DataSource ds = getDataSource();
-        qRunner = new QueryRunner();
-        pRunner = new ProcRunner();
         Connection conn = null;
         try {
             conn = ds.getConnection();
-
         } catch (SQLException ex) {
             log.error(ex.toString());
         }

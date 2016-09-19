@@ -84,7 +84,7 @@
             <cron>
                 <name>TestLineTypeRecord</name>
                 <job-name>TestLineTypeRecord</job-name>
-                <cron-expression>0 0 9-19 ? * MON-SAT *</cron-expression>
+                <cron-expression>0 50 9-16 ? * MON-FRI *</cron-expression>
             </cron>
         </trigger>
     </schedule>

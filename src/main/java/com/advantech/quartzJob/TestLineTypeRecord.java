@@ -11,6 +11,7 @@ import com.advantech.service.BasicService;
 import com.advantech.service.TestService;
 import java.util.Date;
 import java.util.List;
+import org.joda.time.DateTime;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -22,15 +23,21 @@ import org.slf4j.LoggerFactory;
  * @author Wei.Cheng
  */
 public class TestLineTypeRecord implements Job {
-    
+
     private static final Logger log = LoggerFactory.getLogger(TestLineTypeRecord.class);
+    private final int EXCLUDE_HOUR = 12;
 
     @Override
     public void execute(JobExecutionContext jec) throws JobExecutionException {
-        log.info("It's " + new Date() + " right now, begin record the testLineType...");
-        TestService tService = BasicService.getTestService();
-        List testLineTypeStatus = WebServiceRV.getInstance().getKanbantestUsers();
-        boolean recordStatus = tService.recordTestLineType(testLineTypeStatus);
-        log.info("Record status : " + recordStatus);
+        DateTime d = new DateTime();
+        log.info("It's " + d.toString() + " right now, begin record the testLineType...");
+        if (d.getHourOfDay() == EXCLUDE_HOUR) {
+            log.info("No need to record right now.");
+        } else {
+            TestService tService = BasicService.getTestService();
+            List testLineTypeStatus = WebServiceRV.getInstance().getKanbantestUsers();
+            boolean recordStatus = tService.recordTestLineType(testLineTypeStatus);
+            log.info("Record status : " + recordStatus);
+        }
     }
 }
