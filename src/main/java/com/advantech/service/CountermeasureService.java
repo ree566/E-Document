@@ -34,6 +34,14 @@ public class CountermeasureService {
         return countermeasureDAO.getCountermeasureView();
     }
 
+    public List<Map> getUnFillCountermeasureBabs() {
+        return countermeasureDAO.getUnFillCountermeasureBabs();
+    }
+
+    public List<Map> getCountermeasureView(String startDate, String endDate) {
+        return countermeasureDAO.getCountermeasureView(startDate, endDate);
+    }
+
     public List<Map> getErrorCode() {
         return countermeasureDAO.getErrorCode();
     }

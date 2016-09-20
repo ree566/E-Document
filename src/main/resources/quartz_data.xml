@@ -89,4 +89,19 @@
         </trigger>
     </schedule>
     
+    <!--每日把未回覆異常原因的回覆給幹部-->
+    <schedule>
+        <job>
+            <name>CountermeasureAlarm</name>
+            <job-class>com.advantech.quartzJob.CountermeasureAlarm</job-class>
+        </job>
+        <trigger>
+            <cron>
+                <name>CountermeasureAlarm</name>
+                <job-name>CountermeasureAlarm</job-name>
+                <cron-expression>0 0 11,17 ? * MON-FRI *</cron-expression>
+            </cron>
+        </trigger>
+    </schedule>
+    
 </job-scheduling-data>

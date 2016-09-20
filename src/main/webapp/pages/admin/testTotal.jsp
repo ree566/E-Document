@@ -120,31 +120,33 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                     },
                     displayLength: -1,
                     lengthChange: false,
-                    filter: false,
+                    filter: true,
+                    stateSave: true,
                     paginate: false
                 });
 
-                var countdownnumber = 5 * 60;
-                var diff = 12;
-                $(window).focus(function () {
-                    interval = setInterval(function () {
-                        if (countdownnumber == 0) {
-                            $("#final_time").text("您於此網頁停留時間過久，網頁自動更新功能已經關閉。");
-                            clearInterval(interval);
-                        } else {
-                            table.ajax.reload(function () {
-                                insertempty();
-                            });
-                            d = new Date();
-                            $("#final_time").text(d);
-                        }
-                        countdownnumber -= diff;
-                    }, diff * 1000);
-                    console.log("timer start");
-                }).blur(function () {
-                    clearInterval(interval);
-                    console.log("timer stop");
-                });
+                var countdownnumber = 8 * 60 * 60;
+                var diff = 10;
+                interval = setInterval(function () {
+                    if (countdownnumber == 0) {
+                        $("#final_time").text("您於此網頁停留時間過久，網頁自動更新功能已經關閉。");
+                        clearInterval(interval);
+                    } else {
+                        table.ajax.reload(function () {
+                            insertempty();
+                        });
+                        d = new Date();
+                        $("#final_time").text(d);
+                    }
+                    countdownnumber -= diff;
+                }, diff * 1000);
+//                $(window).focus(function () {
+//                    
+//                    console.log("timer start");
+//                }).blur(function () {
+//                    clearInterval(interval);
+//                    console.log("timer stop");
+//                });
 
                 $(window).unload(function () {
                     var cookies = $.cookie();
@@ -176,32 +178,32 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
     <body>
         <jsp:include page="header.jsp" />
         <div id="wigetCtrl">
-        <h3>測試各站別狀態</h3><!----------------------------------------------->
-        <div style="width: 50%; background-color: #F5F5F5">
-            <div style="padding: 10px">
-                <table id="data" class="display" cellspacing="0" width="100%" style="text-align: center">
-                    <thead>
-                        <tr>
-                            <th>姓名</th>
-                            <th>工號</th>
-                            <th>桌號</th>
-                            <th>生產率</th>
-                            <th>亮燈</th>
-                        </tr>
-                    </thead>
+            <h3>測試各站別狀態</h3><!----------------------------------------------->
+            <div style="width: 50%; background-color: #F5F5F5">
+                <div style="padding: 10px">
+                    <table id="data" class="display" cellspacing="0" width="100%" style="text-align: center">
+                        <thead>
+                            <tr>
+                                <th>姓名</th>
+                                <th>工號</th>
+                                <th>桌號</th>
+                                <th>生產率</th>
+                                <th>亮燈</th>
+                            </tr>
+                        </thead>
 
-                    <tfoot>
-                        <tr>
-                            <th>姓名</th>
-                            <th>工號</th>
-                            <th>桌號</th>
-                            <th>生產率</th>
-                            <th>亮燈</th>
-                        </tr>
-                    </tfoot>
-                </table>
+                        <tfoot>
+                            <tr>
+                                <th>姓名</th>
+                                <th>工號</th>
+                                <th>桌號</th>
+                                <th>生產率</th>
+                                <th>亮燈</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
             </div>
-        </div>
         </div>
         <div id="final_time"></div>
         <jsp:include page="footer.jsp" />

@@ -5,6 +5,8 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<jsp:useBean id="cDAO" class="com.advantech.model.CountermeasureDAO" scope="application" />
 <!DOCTYPE html>
 <html>
     <head>
@@ -47,18 +49,16 @@
         <script src="../../js/bootstrap-datetimepicker.min.js"></script>
         <script src="../../js/jquery.dataTables.min.js"></script>
         <script src="../../js/dataTables.fixedHeader.min.js"></script>
-        <script src="//cdn.datatables.net/buttons/1.2.1/js/dataTables.buttons.min.js"></script>
-        <script src="//cdn.datatables.net/buttons/1.2.1/js/buttons.flash.min.js"></script>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js"></script>
-        <script src="//cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/pdfmake.min.js"></script>
-        <script src="//cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/vfs_fonts.js"></script>
-        <script src="//cdn.datatables.net/buttons/1.2.1/js/buttons.html5.min.js"></script>
-        <script src="//cdn.datatables.net/buttons/1.2.1/js/buttons.print.min.js"></script>
 
         <script>
             var round_digit = 2;
+            var table;
+            var actionCodes;
+            var checkBoxs;
 
             $(function () {
+                actionCodes = getActionCode();
+                checkBoxs = $("#actionCode > div").detach();
                 var momentFormatString = 'YYYY-MM-DD';
                 $(":text,input[type='number'],select").addClass("form-control");
                 $(":button").addClass("btn btn-default");
@@ -73,8 +73,6 @@
                 var beginTimeObj = $('#fini').datetimepicker(options);
                 var endTimeObj = $('#ffin').datetimepicker(options);
 
-                var table;
-
                 $("#send").click(function () {
 
                     console.log("I'm clicked");
@@ -82,7 +80,8 @@
                     var startDate = $('#fini').val();
                     var endDate = $('#ffin').val();
 
-                    getDetail(startDate, endDate);
+                    table = getDetail(startDate, endDate);
+
                 });
 
                 $("body").on('click', '#babDetail tbody tr', function () {
@@ -93,14 +92,46 @@
                         $(this).addClass('selected');
                     }
                 });
+
+                $("#generateExcel").click(function () {
+                    var startDate = $('#fini').val();
+                    var endDate = $('#ffin').val();
+
+                    window.location.href = '../../TestServlet?startDate=' + startDate + '&endDate=' + endDate;
+
+                });
+
+                $("body").on('click', '#babDetail input[type="button"]', function () {
+                    console.log("click");
+
+                    var selectData = table.row($(this).parents('tr')).data();
+
+                    console.log(selectData);
+
+                    editId = selectData.id;
+//                    console.log(selectData.cm_id);
+                    $("#myModal #titleMessage").html(
+                            "號碼: " + editId +
+                            " / 工單: " + selectData.PO +
+                            " / 機種: " + selectData.Model_name +
+                            " / 線別: " + selectData.lineName +
+                            " / 時間: " + formatDate(selectData.btime)
+                            );
+
+                    getContermeasure(selectData.id);
+
+                });
+
+                $('#myModal').on('shown.bs.modal', function () {
+                    $(this).find('.modal-dialog').css({width: '90%',
+                        height: 'auto',
+                        'max-height': '100%'});
+                });
             });
 
             function getDetail(startDate, endDate) {
-                $("#babDetail").DataTable({
-                    dom: 'Bfrtip',
-                    buttons: [
-                        'copy', 'csv', 'excel', 'pdf', 'print'
-                    ],
+                var alarmPercentStandard = 0.3;
+                var table = $("#babDetail").DataTable({
                     "processing": true,
                     "serverSide": false,
                     fixedHeader: {
@@ -124,28 +155,31 @@
                         {data: "people"},
                         {data: "qty"},
                         {},
-                        {},
-                        {},
-                        {},
-                        {data: "btime"}
+                        {data: "btime"},
+                        {}
                     ],
                     "columnDefs": [
                         {
                             "targets": 7,
-                            'render': function (data, type, full, meta) {
-                                return getPercent(full.failPercent / full.total);
+                            'render': function (data, type, row, meta) {
+                                return getPercent(row.failPercent / row.total);
                             }
                         },
                         {
-                            "targets": [8, 9, 10],
-                            'render': function (data, type, full, meta) {
-                                return "data";
-                            }
-                        },
-                        {
-                            "targets": 11,
-                            'render': function (data, type, full, meta) {
+                            "targets": 8,
+                            'render': function (data, type, row, meta) {
                                 return formatDate(data);
+                            }
+                        },
+                        {
+                            "targets": 9,
+                            'render': function (data, type, row) {
+                                var isAboveApStandard = row.failPercent / row.total > alarmPercentStandard;
+                                if(isAboveApStandard){
+                                    return "<input type='button' class='btn btn-default' data-toggle='modal' data-target='#myModal' value='檢視詳細'>";
+                                }else{
+                                    return "達到標準";
+                                }
                             }
                         }
                     ],
@@ -164,8 +198,9 @@
                     "initComplete": function (settings, json) {
                         $("#babDetail").show();
                     },
-                    "order": [[11, "desc"]]
+                    "order": [[8, "desc"]]
                 });
+                return table;
             }
 
             function formatDate(dateString) {
@@ -181,11 +216,181 @@
                 return Math.round(val * size) / size;
             }
 
+            function initCountermeasureDialog() {
+                console.log("init dialog");
+                $(".modal-body #errorCon, #responseUser").html("N/A");
+                $("input[name='errorCode']").prop("checked", false);
+                $('input[name="actionCode"]').prop("checked", false);
+                $(" #responseUser").html("");
+                $(".modal-body :checkbox").attr("disabled", true);
+                setupCheckBox();
+                showDialogMsg("");
+            }
 
+            function getContermeasure(BABid) {
+                console.log("generate dialog");
+                initCountermeasureDialog();
+
+                $.ajax({
+                    url: "../../CountermeasureServlet",
+                    data: {
+                        BABid: BABid,
+                        action: "selectOne"
+                    },
+                    type: "POST",
+                    dataType: 'json',
+                    success: function (msg) {
+                        var jsonData = msg;
+                        var errorCodes = msg.errorCodes;
+                        if (errorCodes != null) {
+                            $(".modal-body #errorCon").html(jsonData.solution.replace(/(?:\r\n|\r|\n)/g, '<br />'));
+                            var checkedErrorCodes = [], checkedActionCodes = [];
+
+                            for (var i = 0; i < errorCodes.length; i++) {
+                                var obj = errorCodes[i];
+                                checkedErrorCodes.push(obj.ec_id);
+                                checkedActionCodes.push(obj.ac_id);
+                            }
+
+                            setErrorCodeCheckBox(checkedErrorCodes);
+                            setupCheckBox();
+                            setActionCodeCheckBox(checkedActionCodes);
+
+                            $(":checkbox").attr("disabled", true);
+
+                            var editors = jsonData.editors;
+                            for (var i = 0; i < editors.length; i++) {
+                                var editor = editors[i].editor;
+                                $(".modal-body #responseUser").append("<span class='label label-default'>#" + (editor == null ? 'N/A' : editor) + "</span> ");
+                            }
+                        }
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        showDialogMsg(xhr.responseText);
+                    }
+                });
+            }
+
+            function setupCheckBox() {
+
+                $("#actionCode").html("");
+                var data = actionCodes.data;
+                var array = $.map($('input[name="errorCode"]:checked'), function (c) {
+                    return c.value;
+                });
+
+                for (var i = 0, j = array.length; i < j; i++) {
+                    var id = array[i];
+                    for (var k = 0, l = data.length; k < l; k++) {
+                        if (data[k].ec_id == id) {
+                            var checkboxObj = checkBoxs.clone();
+                            checkboxObj.addClass("ec" + id);
+                            checkboxObj.find(":checkbox").attr("value", data[k].id).after(data[k].name);
+                            $("#actionCode").append(checkboxObj);
+                        }
+                    }
+                }
+            }
+
+            function getActionCode() {
+                var result;
+                $.ajax({
+                    url: "../../CountermeasureServlet",
+                    data: {action: "getActionCode"},
+                    type: "POST",
+                    dataType: "json",
+                    async: false,
+                    success: function (response) {
+                        result = response;
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        console.log(xhr.responseText);
+                    }
+                });
+                return result;
+            }
+
+            function setErrorCodeCheckBox(errorCodes) {
+                for (var i = 0; i < errorCodes.length; i++) {
+                    $('input[name="errorCode"][value=' + errorCodes[i] + ']').prop("checked", true);
+                }
+
+            }
+
+            function setActionCodeCheckBox(actionCodes) {
+                for (var i = 0; i < actionCodes.length; i++) {
+                    $('input[name="actionCode"][value=' + actionCodes[i] + ']').prop("checked", true);
+                }
+            }
+
+            function tableAjaxReload(tableObject) {
+                tableObject.ajax.reload();
+            }
+
+            function showDialogMsg(msg) {
+                $("#dialog-msg").html(msg);
+            }
         </script>
     </head>
     <body>
         <jsp:include page="header.jsp" />
+
+        <!-- Modal -->
+        <div id="myModal" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 id="titleMessage" class="modal-title"></h4>
+                    </div>
+                    <div class="modal-body">
+                        <div>
+                            <table id="countermeasureTable" cellspacing="10" class="table table-bordered">
+                                <tr>
+                                    <td class="lab">Error Code</td>
+                                    <td id="errorCode"> 
+                                        <div class="checkbox">
+                                            <c:forEach var="errorCode" items="${cDAO.getErrorCode()}">
+                                                <label class="checkbox-inline">
+                                                    <input type="checkbox" name="errorCode" value="${errorCode.id}">${errorCode.name}
+                                                </label>
+                                            </c:forEach>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="lab">Action Code</td>
+                                    <td id="actionCode">
+                                        <div class="checkbox">
+                                            <label class="checkbox-inline">
+                                                <input type="checkbox" name="actionCode">
+                                            </label>
+                                        </div>
+                                        <%--</c:forEach>--%>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="lab">說明</td>
+                                    <td id="errorCon">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="lab">填寫人</td>
+                                    <td id="responseUser">
+                                    </td>
+                                </tr>
+                            </table>
+                            <div id="dialog-msg" class="alarm"></div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--d-->
         <div class="wiget-ctrl form-inline">
             <div style="width:100%">
                 <h3>工單明細查詢</h3>
@@ -202,6 +407,7 @@
                                     <input type="text" id="ffin" placeholder="請選擇結束時間"> 
                                 </div>
                                 <input type="button" id="send" value="確定(Ok)">
+                                <input type="button" id="generateExcel" value="產出excel">
                             </div>
                         </td>
                     </tr>
@@ -209,6 +415,7 @@
                 <div style="width:100%">
                     <h3>符合條件之工單列表</h3>
                     <p class="alarm">※只會顯示"已完結工單"的資料。</p>
+                    <p class="alarm">※亮燈頻率只是"近似值"，並非代表"生產總數量"的亮燈頻率。</p>
                     <table id="babDetail" class="display" cellspacing="0" width="100%" style="text-align: center" hidden>
                         <thead>
                             <tr>
@@ -217,13 +424,11 @@
                                 <th>機種</th>
                                 <th>站別</th>
                                 <th>線別</th>
-                                <th data-toggle="tooltip" data-placement="bottom" title="生產人數">TP</th>
-                                <th data-toggle="tooltip" data-placement="bottom" title="生產總數量">TA</th>
-                                <th data-toggle="tooltip" data-placement="bottom" title="系統計算亮燈頻率(%)">AP</th>
-                                <th>code</th>
-                                <th>說明</th>
-                                <th>對策</th>
+                                <th>生產人數</th>
+                                <th>生產總數量</th>
+                                <th>亮燈頻率(%)</th>
                                 <th>投入時間</th>
+                                <th>異常對策</th>
                             </tr>
                         </thead>
                     </table>

@@ -17,11 +17,13 @@ import com.advantech.service.LineBalanceService;
 import java.sql.Array;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.mail.MessagingException;
 import org.apache.commons.dbutils.DbUtils;
 import org.apache.commons.dbutils.QueryRunner;
+import org.apache.commons.dbutils.handlers.BeanListHandler;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.slf4j.Logger;
@@ -63,7 +65,7 @@ public class BABDAO extends BasicDAO {
 
     public BAB getBAB(int BABid) {
         List l = queryBABTable("SELECT * FROM LS_BAB WHERE id = ?", BABid);
-        return !l.isEmpty() ? (BAB)l.get(0) : null;
+        return !l.isEmpty() ? (BAB) l.get(0) : null;
     }
 
     public List<BAB> getBAB(String modelName, String dateFrom, String dateTo) {
@@ -88,7 +90,7 @@ public class BABDAO extends BasicDAO {
 
     public BAB getProcessingBAB(int BABid) {
         List l = queryBABTable("SELECT * FROM LS_BAB_Sort WHERE id = ?", BABid);
-        return !l.isEmpty() ? (BAB)l.get(0) : null; 
+        return !l.isEmpty() ? (BAB) l.get(0) : null;
     }
 
     public List<BAB> getProcessingBABByLine(int lineNo) {

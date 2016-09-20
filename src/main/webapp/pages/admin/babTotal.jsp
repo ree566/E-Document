@@ -121,7 +121,7 @@
                             "targets": 0,
                             "data": "TagName",
                             'render': function (data, type, row) {
-                                return ((data == 'L1' || data == 'LA' || data == 'LB') ? "ASSY" : "PKG");
+                                return ((data == 'L1' || data == 'LA' || data == 'LB' || data == 'L3' || data == 'L4') ? "ASSY" : "PKG");
                             }
                         },
                         {
@@ -1179,7 +1179,6 @@
                 <h3>可查詢歷史紀錄</h3>
                 <p class="alarm">※雙擊表格內的內容可直接於下方帶出資料。</p>
                 <p class="alarm">※亮燈頻率標準為30%。</p>
-                <p class="alarm">※進行中的工單，請直接點兩下，於下方 "機種平衡率紀錄查詢" 看亮燈頻率。</p>
                 <div class="search-container">
                     <div class="ui-widget">
                         <select id="lineType2"> 

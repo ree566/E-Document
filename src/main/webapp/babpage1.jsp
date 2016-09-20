@@ -747,12 +747,12 @@
         <div class="container">
             <!--<button id="changeDiv" class="btn btn-default">changeDiv</button>-->
             <!--<button id="clearAllCookie" class="btn btn-default">DirectClear</button>-->
-
+            <c:set var="lineInfo" value="${lineDAO.getLine(userSitefloor)}" />
             <div id="step1" class="step">
                 <div class="userWiget form-inline">
-                    <select id="lineNo">
+                    <select id="lineNo" name="lineNo">
                         <option value="-1">---請選擇線別---</option>
-                        <c:forEach var="lines" items="${lineDAO.getLine(userSitefloor)}">
+                        <c:forEach var="lines" items="${lineInfo}">
                             <option value="${lines.id}" ${lines.lock == 1 ? "disabled style='opacity:0.2'" : ""}>${lines.name}</option>
                         </c:forEach>
                     </select>

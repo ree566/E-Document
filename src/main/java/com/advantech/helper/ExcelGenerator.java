@@ -8,6 +8,7 @@ package com.advantech.helper;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.math.BigDecimal;
 import java.sql.Clob;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -19,6 +20,7 @@ import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.CellStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,6 +67,14 @@ public class ExcelGenerator {
                     cell.setCellValue(dateFormatToString((Date) value));
                 } else if (value instanceof Integer) {
                     cell.setCellValue((Integer) value);
+                } else if (value instanceof Double) {
+                    cell.setCellValue((Double) value);
+                    createFloatCell(cell);
+                } else if (value instanceof BigDecimal) {
+                    cell.setCellValue(((BigDecimal) value).doubleValue());
+                    createFloatCell(cell);
+                } else if (value == null) {
+                    cell.setCellValue("");
                 } else {
                     cell.setCellValue(value.toString());
                 }
@@ -92,6 +102,13 @@ public class ExcelGenerator {
             log.error(e.toString());
         }
         return sb.toString();
+    }
+
+    private static HSSFCell createFloatCell(HSSFCell cell) {
+        CellStyle style = workbook.createCellStyle();
+        style.setDataFormat(workbook.createDataFormat().getFormat("0.00%"));
+        cell.setCellStyle(style);
+        return cell;
     }
 
     private static String dateFormatToString(Date date) {

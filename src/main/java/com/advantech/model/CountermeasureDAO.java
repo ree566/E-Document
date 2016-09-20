@@ -45,15 +45,23 @@ public class CountermeasureDAO extends BasicDAO {
         List l = this.queryCountermeasureTable("SELECT * FROM Countermeasure WHERE BABid = ?", BABid);
         return l.isEmpty() ? null : (Countermeasure) l.get(0);
     }
-    
-    public List<Map> getCountermeasureView(){
+
+    public List<Map> getCountermeasureView() {
         return queryForMapList(this.getConn(), "SELECT * FROM CountermeasureView");
+    }
+
+    public List<Map> getUnFillCountermeasureBabs() {
+        return queryForMapList(this.getConn(), "SELECT * FROM CountermeasureView WHERE errorCode is null");
+    }
+
+    public List<Map> getCountermeasureView(String startDate, String endDate) {
+        return queryProcForMapList(this.getConn(), "{CALL getCountermeasureDetail(?,?)}", startDate, endDate);
     }
 
     public List<Map> getErrorCode() {
         return queryForMapList(getConn(), "SELECT * FROM errorCode");
     }
-    
+
     public List<Map> getErrorCode(int cm_id) {
         return queryForMapList(getConn(), "SELECT * FROM CountermeasureErrorCodeView WHERE cm_id = ?", cm_id);
     }
@@ -61,8 +69,8 @@ public class CountermeasureDAO extends BasicDAO {
     public List<Map> getActionCode() {
         return queryForMapList(getConn(), "SELECT * FROM actionCode");
     }
-    
-    public List<Map> getEditor(int cm_id){
+
+    public List<Map> getEditor(int cm_id) {
         return queryForMapList(getConn(), "select editor from countermeasureEditorView WHERE cm_id = ?", cm_id);
     }
 
@@ -118,7 +126,7 @@ public class CountermeasureDAO extends BasicDAO {
 
             Object[] param3 = {solution, cm.getId()};
             qRunner.update(conn, "UPDATE Countermeasure SET solution = ? WHERE id = ?", param3);//關閉線別
-            
+
             int cm_id = cm.getId();
             qRunner.update(conn, "DELETE FROM CountermeasureDetail WHERE cm_id = ?", cm_id);
 

@@ -62,15 +62,18 @@ public class CountermeasureServlet extends HttpServlet {
             out.print(new JSONObject().put("data", "No data effect"));
             return;
         }
-        
-//        System.out.println("action: " + action);
 
+//        System.out.println("action: " + action);
         int id = StringParser.strToInt(BABid);
 
         switch (action) {
             case "selectOne":
                 Countermeasure cm = cService.getCountermeasure(id);
-                out.print(new JSONObject(cm).put("errorCodes", cService.getErrorCode(cm.getId())).put("editors", cService.getEditor(cm.getId())));
+                if (cm == null) {
+                    out.print(new JSONObject());
+                } else {
+                    out.print(new JSONObject(cm).put("errorCodes", cService.getErrorCode(cm.getId())).put("editors", cService.getEditor(cm.getId())));
+                }
                 break;
             case "select":
                 out.print(new JSONObject(cService.getCountermeasure()));

@@ -7,6 +7,7 @@ package com.advantech.model;
 
 import com.advantech.helper.ProcRunner;
 import com.advantech.helper.CronTrigMod;
+import java.beans.PropertyVetoException;
 import java.io.Serializable;
 import java.sql.*;
 import java.util.ArrayList;
@@ -103,11 +104,11 @@ public class BasicDAO implements Serializable {
     }
 
     public static Connection getDBUtilConn(SQL sqlType) {
-        return openConn(sqlType.toString());
-//        return getConnWithoutJndi();
+//        return openConn(sqlType.toString());
+        return getConnWithoutJndi();
     }
 
-    private static DataSource getDataSource() {
+    private static DataSource getDataSource(){
         JtdsDataSource xaDS = new JtdsDataSource();
         xaDS.setServerName("M3-SERVER");
         xaDS.setDatabaseName("WebAccess");
