@@ -78,7 +78,7 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
             });
 
             function getDetail(startDate, endDate) {
-                
+
                 $("#testDetail").DataTable({
                     dom: 'Bfrtip',
                     buttons: [
@@ -109,8 +109,8 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                         {
                             "targets": 3,
                             'render': function (data, type, full, meta) {
-                                var productivity = data * 100;
-                                return (productivity > maxProductivity ? maxProductivity : productivity) + '%';
+                                var productivity = data;
+                                return getPercent(productivity > maxProductivity ? maxProductivity : productivity) + "%";
                             }
                         },
                         {
@@ -141,6 +141,15 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
 
             function formatDate(dateString) {
                 return dateString.substring(0, 16);
+            }
+
+            function getPercent(val) {
+                return roundDecimal((val * 100), 0);
+            }
+
+            function roundDecimal(val, precision) {
+                var size = Math.pow(10, precision);
+                return Math.round(val * size) / size;
             }
 
         </script>
