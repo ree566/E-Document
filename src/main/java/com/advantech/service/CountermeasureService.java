@@ -2,6 +2,7 @@ package com.advantech.service;
 
 import com.advantech.entity.Countermeasure;
 import com.advantech.model.CountermeasureDAO;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -38,8 +39,8 @@ public class CountermeasureService {
         return countermeasureDAO.getUnFillCountermeasureBabs();
     }
 
-    public List<Map> getCountermeasureView(String startDate, String endDate) {
-        return countermeasureDAO.getCountermeasureView(startDate, endDate);
+    public List<Map> getCountermeasureView(String lineType, String sitefloor, String startDate, String endDate) {
+        return countermeasureDAO.getCountermeasureView(lineType, sitefloor, startDate, endDate);
     }
 
     public List<Map> getErrorCode() {

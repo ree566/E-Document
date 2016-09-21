@@ -54,8 +54,8 @@ public class CountermeasureDAO extends BasicDAO {
         return queryForMapList(this.getConn(), "SELECT * FROM CountermeasureView WHERE errorCode is null");
     }
 
-    public List<Map> getCountermeasureView(String startDate, String endDate) {
-        return queryProcForMapList(this.getConn(), "{CALL getCountermeasureDetail(?,?)}", startDate, endDate);
+    public List<Map> getCountermeasureView(String lineType, String sitefloor, String startDate, String endDate) {
+        return queryProcForMapList(this.getConn(), "{CALL countermeasureDownExcel(?,?,?,?)}", lineType, sitefloor, startDate, endDate);
     }
 
     public List<Map> getErrorCode() {

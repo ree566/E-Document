@@ -29,6 +29,10 @@ public class LineService {
     public Line getLine(int lineNo) {
         return lineDAO.getLine(lineNo);
     }
+    
+     public List<Line> getLine(String sitefloor) {
+        return lineDAO.getLine(sitefloor);
+    }
 
     public String loginBAB(int lineNo) throws JSONException {
         return isLineOpened(lineNo) ? "此線別尚未結束或者已使用中。" : (lineDAO.openSingleLine(lineNo) ? "success" : "fail");

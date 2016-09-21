@@ -104,8 +104,8 @@ public class BasicDAO implements Serializable {
     }
 
     public static Connection getDBUtilConn(SQL sqlType) {
-//        return openConn(sqlType.toString());
-        return getConnWithoutJndi();
+        return openConn(sqlType.toString());
+//        return getConnWithoutJndi();
     }
 
     private static DataSource getDataSource(){

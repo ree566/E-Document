@@ -17,13 +17,11 @@ import com.advantech.service.LineBalanceService;
 import java.sql.Array;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.mail.MessagingException;
 import org.apache.commons.dbutils.DbUtils;
 import org.apache.commons.dbutils.QueryRunner;
-import org.apache.commons.dbutils.handlers.BeanListHandler;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.slf4j.Logger;
@@ -72,6 +70,7 @@ public class BABDAO extends BasicDAO {
         return queryProcForBeanList(getConn(), BAB.class, "{CALL getBABInTime(?,?,?)}", modelName, dateFrom, dateTo);
     }
 
+    //Quartz用，獲得需要計算ouput的工單
     public List<BAB> getBABIdForCaculate() {
         return queryBABTable("SELECT * FROM LS_BAB_Id_List");
     }
@@ -80,8 +79,9 @@ public class BABDAO extends BasicDAO {
         return getHistoryTable("SELECT * FROM LS_BAB_History WHERE BABid = ?", bab.getId());
     }
 
-    public List<Map> getBABInfo(String lineType) {
-        return queryProcForMapList(getConn(), "{CALL getBABByLineType(?)}", lineType);
+    //Delete when system update. unused
+    public List<Map> getBABInfo(String lineType, String sitefloor, String startDate, String endDate) {
+        return queryProcForMapList(getConn(), "{CALL getBABDetail(?,?,?,?)}", lineType, sitefloor, startDate, endDate);
     }
 
     public List<BAB> getProcessingBAB() {

@@ -55,7 +55,7 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                 var d = new Date();
                 $("#final_time").text(d);//Get the final polling database time.
                 var interval = null;//Polling database variable.
-                var testtables = 24;//測試table數量(空值要塞入null)
+                var testtables = 42;//測試table數量(空值要塞入null)
 
                 //DataTable sort init.
                 jQuery.fn.dataTableExt.oSort['pct-asc'] = function (x, y) {
@@ -124,6 +124,10 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                     stateSave: true,
                     paginate: false
                 });
+
+                $.fn.dataTable.ext.errMode = function (settings, helpPage, message) {
+                    console.log(message);
+                };
 
                 var countdownnumber = 8 * 60 * 60;
                 var diff = 10;

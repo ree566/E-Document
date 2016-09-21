@@ -6,28 +6,19 @@
  */
 package com.advantech.servlet;
 
-import com.advantech.service.BABService;
 import com.advantech.service.BasicService;
+import com.google.gson.Gson;
 import java.io.*;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
-import org.json.JSONObject;
 
 /**
  *
  * @author Wei.Cheng
  */
-@WebServlet(name = "AllBAB", urlPatterns = {"/AllBAB"})
-public class AllBAB extends HttpServlet {
-
-    private BABService babService = null;
-
-    @Override
-    public void init()
-            throws ServletException {
-        babService = BasicService.getBabService();
-    }
+@WebServlet(name = "GetLine", urlPatterns = {"/GetLine"})
+public class GetLine extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
@@ -41,13 +32,10 @@ public class AllBAB extends HttpServlet {
 
         res.setContentType("application/json");
         PrintWriter out = res.getWriter();
-
-        String lineType = req.getParameter("lineType");
+        
         String sitefloor = req.getParameter("sitefloor");
-        String startDate = req.getParameter("startDate");
-        String endDate = req.getParameter("endDate");
 
-        out.print(new JSONObject().put("data", babService.getBABInfo(lineType, sitefloor, startDate, endDate)));
+        out.print(new Gson().toJson(BasicService.getLineService().getLine(sitefloor)));
 
     }
 }

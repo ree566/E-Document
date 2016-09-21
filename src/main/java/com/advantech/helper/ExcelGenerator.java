@@ -39,51 +39,50 @@ public class ExcelGenerator {
         HSSFSheet spreadsheet = workbook.createSheet("dataTable");
         HSSFRow row = spreadsheet.createRow(0);
         HSSFCell cell;
-
-        Map firstData = data.get(0);
-
-        //Set the header
-        Iterator it = firstData.keySet().iterator();
-        int loopCount = 0;
-        while (it.hasNext()) {
-            String key = (String) it.next();
-            cell = row.createCell(loopCount);
-            cell.setCellValue(key);
-            loopCount++;
-        }
-
-        //Set values
-        int x = 1, y = 0;
-        for (Map m : data) {
-            it = m.keySet().iterator();
-            row = spreadsheet.createRow(x);
+        if (!data.isEmpty()) {
+            Map firstData = data.get(0);
+            //Set the header
+            Iterator it = firstData.keySet().iterator();
+            int loopCount = 0;
             while (it.hasNext()) {
-                cell = row.createCell(y);
-                Object key = it.next();
-                Object value = m.get(key);
-                if (value instanceof Clob) {
-                    cell.setCellValue(clobToString((Clob) value));
-                } else if (value instanceof java.util.Date) {
-                    cell.setCellValue(dateFormatToString((Date) value));
-                } else if (value instanceof Integer) {
-                    cell.setCellValue((Integer) value);
-                } else if (value instanceof Double) {
-                    cell.setCellValue((Double) value);
-                    createFloatCell(cell);
-                } else if (value instanceof BigDecimal) {
-                    cell.setCellValue(((BigDecimal) value).doubleValue());
-                    createFloatCell(cell);
-                } else if (value == null) {
-                    cell.setCellValue("");
-                } else {
-                    cell.setCellValue(value.toString());
-                }
-                y++;
+                String key = (String) it.next();
+                cell = row.createCell(loopCount);
+                cell.setCellValue(key);
+                loopCount++;
             }
-            y = 0;//Reset the cell index and begin next data line insert.
-            x++;
-        }
 
+            //Set values
+            int x = 1, y = 0;
+            for (Map m : data) {
+                it = m.keySet().iterator();
+                row = spreadsheet.createRow(x);
+                while (it.hasNext()) {
+                    cell = row.createCell(y);
+                    Object key = it.next();
+                    Object value = m.get(key);
+                    if (value instanceof Clob) {
+                        cell.setCellValue(clobToString((Clob) value));
+                    } else if (value instanceof java.util.Date) {
+                        cell.setCellValue(dateFormatToString((Date) value));
+                    } else if (value instanceof Integer) {
+                        cell.setCellValue((Integer) value);
+                    } else if (value instanceof Double) {
+                        cell.setCellValue((Double) value);
+                        createFloatCell(cell);
+                    } else if (value instanceof BigDecimal) {
+                        cell.setCellValue(((BigDecimal) value).doubleValue());
+                        createFloatCell(cell);
+                    } else if (value == null) {
+                        cell.setCellValue("");
+                    } else {
+                        cell.setCellValue(value.toString());
+                    }
+                    y++;
+                }
+                y = 0;//Reset the cell index and begin next data line insert.
+                x++;
+            }
+        }
         return workbook;
     }
 

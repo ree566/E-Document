@@ -99,7 +99,7 @@
             <cron>
                 <name>CountermeasureAlarm</name>
                 <job-name>CountermeasureAlarm</job-name>
-                <cron-expression>0 0 11,17 ? * MON-FRI *</cron-expression>
+                <cron-expression>0 0 11,16 ? * MON-FRI *</cron-expression>
             </cron>
         </trigger>
     </schedule>

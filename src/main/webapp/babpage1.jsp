@@ -312,6 +312,26 @@
                     }
                 });
             }
+            
+            function getLine(){
+                var result;
+                $.ajax({
+                    type: "Post",
+                    url: "GetLine",
+                    data: {
+                        sitefloor: $("userSitefloorSelect").val()
+                    },
+                    dataType: "json",
+                    async: false,
+                    success: function (response) {
+                        result = response;
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        showMsg(xhr.responseText);
+                    }
+                });
+                return result;
+            }
 
             //extra functions
             function checkExistCookies() {

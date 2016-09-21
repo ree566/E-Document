@@ -9,10 +9,8 @@ import com.advantech.helper.PropertiesReader;
 import com.google.gson.Gson;
 import java.math.BigDecimal;
 import java.sql.Array;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -58,23 +56,10 @@ public class BABService {
         return babDAO.getAvailableModelName();
     }
 
-    public List<Map> getBABInfo(String lineType) {
-        return babDAO.getBABInfo(lineType);
+    public List<Map> getBABInfo(String lineType, String sitefloor, String startDate, String endDate) {
+        return babDAO.getBABInfo(lineType, sitefloor, startDate, endDate);
     }
 
-    public List<Map> getBABInfo(String lineType, Integer sitefloor) {
-        List l = this.getBABInfo(lineType);
-        Iterator it = l.iterator();
-        while (it.hasNext()) {
-            Map m = (Map) it.next();
-            Integer floor = (Integer) m.get("sitefloor");
-            Integer closedSign = (Integer) m.get("isused");
-            if (!Objects.equals(floor, sitefloor) && (!Objects.equals(closedSign, BAB_CLOSED_SIGN) || !Objects.equals(closedSign, BAB_UNCLOSE_SIGN))) {
-                it.remove();
-            }
-        }
-        return l;
-    }
 
     public List<Map> getLineBalanceCompare(String Model_name, String lineType) {
         return babDAO.getLineBalanceCompare(Model_name, lineType);

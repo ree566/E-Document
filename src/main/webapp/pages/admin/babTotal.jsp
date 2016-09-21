@@ -14,6 +14,7 @@
         <title>${initParam.pageTitle}</title>
         <link rel="shortcut icon" href="../../images/favicon.ico"/>
         <link rel="stylesheet" href="../../css/jquery.dataTables.min.css">
+        <link rel="stylesheet" href="../../css/bootstrap-datetimepicker.min.css">
         <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
         <link rel="stylesheet" href="//cdn.datatables.net/buttons/1.2.1/css/buttons.dataTables.min.css">
         <style>
@@ -80,6 +81,7 @@
         <script src="../../js/jquery.dataTables.min.js"></script>
         <script src="../../js/jquery.blockUI.js"></script>
         <script src="../../js/moment.js"></script>
+        <script src="../../js/bootstrap-datetimepicker.min.js"></script>
         <script src="../../js/jquery.cookie.js"></script>
         <script src="//cdn.jsdelivr.net/alasql/0.2/alasql.min.js"></script> 
         <script src="//cdn.datatables.net/buttons/1.2.1/js/dataTables.buttons.min.js"></script>
@@ -386,8 +388,10 @@
             function getHistoryBAB() {
                 var lineType = $("#lineType2").val();
                 var sitefloor = $("#sitefloor").val();
+                var startDate = $('#fini').val();
+                var endDate = $('#ffin').val();
                 var closedOnly = $("#closedOnly").is(":checked");
-                
+
                 var alarmPercentStandard = 0.3;
 
                 var table = $("#babHistory").DataTable({
@@ -402,6 +406,8 @@
                         "data": {
                             lineType: lineType,
                             sitefloor: sitefloor,
+                            startDate: startDate,
+                            endDate: endDate,
                             closedOnly: closedOnly
                         }
                     },
@@ -636,6 +642,24 @@
                 });
             }
 
+            function initDateTimePickerWiget() {
+                var momentFormatString = 'YYYY-MM-DD';
+                var options = {
+                    defaultDate: moment(),
+                    useCurrent: true,
+                    maxDate: moment(),
+                    format: momentFormatString,
+                    extraFormats: [momentFormatString],
+                    disabledHours: [0, 1, 2, 3, 4, 5, 6, 7, 18, 19, 20, 21, 22, 23, 24]
+                };
+                var beginTimeObj = $('#fini').datetimepicker(options);
+                var endTimeObj = $('#ffin').datetimepicker(options);
+
+                beginTimeObj.on("dp.change", function (e) {
+                    endTimeObj.data("DateTimePicker").minDate(e.date);
+                });
+            }
+
             function initCountermeasureDialog() {
                 $(".modal-body #errorCon, #responseUser").html("N/A");
                 $("input[name='errorCode']").prop("checked", false);
@@ -761,11 +785,6 @@
 
             function showDialogMsg(msg) {
                 $("#dialog-msg").html(msg);
-//                setTimeout(function () {
-//                    $("#dialog-msg").fadeOut(function () {
-//                        $(this).html("");
-//                    });
-//                }, 5000);
             }
 
             //看使用者是否存在
@@ -799,7 +818,6 @@
                         if (msg.data == true) {
                             counterMeasureModeUndo();
                             getContermeasure(data.BABid);
-//                            tableAjaxReload(historyTable);
                             $("#searchAvailableBAB").trigger("click");
                             showDialogMsg("success");
                         } else {
@@ -825,25 +843,6 @@
                 checkBoxs = $("#actionCode > div").detach();
                 actionCodes = getActionCode();
 
-//                $(window).focus(function () {
-//                    interval = setInterval(function () {
-//                        if (countdownnumber == 0) {
-//                            $("#final_time").text("您於此網頁停留時間過久，網頁自動更新功能已經關閉。");
-//                            clearInterval(interval);
-//                        } else {
-//                            table2.ajax.reload(function (json) {
-//                                generateOnlineBabDetail(json);
-//                            });
-//                            $("#final_time").text(new Date());
-//                        }
-//                        countdownnumber -= diff;
-//                    }, diff * 1000);
-//                    console.log("timer start");
-//                }).blur(function () {
-//                    clearInterval(interval);
-//                    console.log("timer stop");
-//                });
-
                 var saveModelName = $.cookie('lastPOInsert');
                 var saveLineType = $.cookie('lastLineTypeSelect');
                 if (saveModelName != null) {
@@ -855,6 +854,7 @@
                 $(":button").addClass("btn btn-default");
 
                 initCountermeasureDialog();
+                initDateTimePickerWiget()
 
                 //http://stackoverflow.com/questions/14493250/ajax-jquery-autocomplete-with-json-data
                 $.ajax({
@@ -1072,6 +1072,16 @@
 //                    console.log(checkedActionCodes);
                 });
 
+                $("#generateExcel").click(function () {
+                    var lineType = $('#lineType2').val();
+                    var sitefloor = $('#sitefloor').val();
+                    var startDate = $('#fini').val();
+                    var endDate = $('#ffin').val();
+
+                    window.location.href = '../../TestServlet?startDate=' + startDate + '&endDate=' + endDate + '&lineType=' + lineType + '&sitefloor=' + sitefloor;
+
+                });
+
                 $("body").on("click", "#searchAvailableBAB, #send", function () {
                     block();
                 });
@@ -1079,6 +1089,10 @@
                 $(document).on("ajaxStop, ajaxComplete", function () {
                     $.unblockUI();
                 });
+
+                $.fn.dataTable.ext.errMode = function (settings, helpPage, message) {
+                    console.log(message);
+                };
             });
 
         </script>
@@ -1137,14 +1151,12 @@
                                 </tr>
                                 <tr>
                                     <td class="lab">Action Code</td>
-                                    <td id="actionCode">
-                                        <%--<c:forEach var="actionCode" items="${cDAO.actionCode}">--%>   
+                                    <td id="actionCode"> 
                                         <div class="checkbox">
                                             <label class="checkbox-inline">
                                                 <input type="checkbox" name="actionCode">
                                             </label>
                                         </div>
-                                        <%--</c:forEach>--%>
                                     </td>
                                 </tr>
                                 <tr>
@@ -1189,10 +1201,19 @@
                             <option value=5>5F</option>
                             <option value=6>6F</option>
                         </select> /
-                        <!--<div class="checkbox">-->
-                            <!--<label><input id="closedOnly" type="checkbox" value="">只顯示已完結工單</label>-->
-                        <!--</div> /-->
+
+                        日期:從
+                        <div class='input-group date' id='beginTime'>
+                            <input type="text" id="fini" placeholder="請選擇起始時間"> 
+                        </div> 
+                        到 
+                        <div class='input-group date' id='endTime'>
+                            <input type="text" id="ffin" placeholder="請選擇結束時間"> 
+                        </div>
+
                         <input type="button" id="searchAvailableBAB" value="查詢">
+                        <input type="button" id="generateExcel" value="產出excel">
+
                     </div>
                 </div>
                 <div style="width: 90%; background-color: #F5F5F5">
