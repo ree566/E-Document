@@ -75,6 +75,8 @@
         <script src="js/jquery.cookie.js"></script>
         <script src="js/param.check.js"></script>
         <script>
+            var totalLineStatus = new Map();
+
             var hnd;//鍵盤輸入間隔
             var hnd2;//鍵盤輸入間隔
             var serverErrorConnMessage = "Error, the textbox can't connect to server now.";
@@ -133,14 +135,13 @@
                                 $(this).dialog("close");
                                 if ($("#station").val() == firstStation) {
                                     startBab();
-                                }else{
+                                } else {
                                     reload();
                                 }
                             }
                         },
                         "取消": function () {
                             $(this).dialog("close");
-//                            $("#dialog").dialog("open");
                         }
                     }
                 });
@@ -196,6 +197,10 @@
                 $("#babBegin, #clearInfo, .userWiget>div>input:eq(0)").attr("disabled", isBabInfoExist && ($.parseJSON(userInfoCookie).station != firstStation));
                 $("#babEnd").attr("disabled", !isBabInfoExist);
                 $("#changeUser").attr("disabled", isBabInfoExist);
+
+                $("#lineNo").change(function () {
+                    setStationOptions();
+                });
 
                 $(":text").keyup(function () {
                     textBoxToUpperCase($(this));
@@ -312,14 +317,14 @@
                     }
                 });
             }
-            
-            function getLine(){
+
+            function getLine() {
                 var result;
                 $.ajax({
                     type: "Post",
                     url: "GetLine",
                     data: {
-                        sitefloor: $("userSitefloorSelect").val()
+                        sitefloor: $("#userSitefloorSelect").val()
                     },
                     dataType: "json",
                     async: false,
@@ -356,6 +361,8 @@
             }
 
             function initUserInputWiget() {
+                initLineMap();
+
                 var userInfoCookie = $.cookie(userInfoCookieName);
                 var babInfoCookie = $.cookie(babInfoCookieName);
 
@@ -363,18 +370,20 @@
                     var obj = $.parseJSON(userInfoCookie);
                     $("#lineNo").val(obj.lineNo);
                     $("#jobnumber").val(obj.jobnumber);
+                    setStationOptions();
                     $("#station").val(obj.station);
                     $("#step2").unblock();
 
                     if (obj.station == firstStation) {
-                        $("#babEnd, .userWiget > .station1HintMessage, #changeUser").hide();
+                        $("#babEnd, .userWiget > .stationHintMessage, #changeUser").hide();
                         $("#step2Hint")
                                 .append("<li>輸入工單</li>")
                                 .append("<li class='importantMsg'>確定系統有帶出機種</li>")
                                 .append("<li>選擇人數</li>")
                                 .append("<li>點選<code>Begin</code>開始投入</li>");
+                        setPeopleOptions();
                     } else {
-                        $("#babEnd").show();
+                        $("#babEnd, .userWiget > .stationHintMessage").show();
                         $("#step2Hint")
                                 .append("<li>輸入工單</li>")
                                 .append("<li class='importantMsg'>確定系統有帶出機種</li>")
@@ -390,7 +399,6 @@
                     var obj = $.parseJSON(babInfoCookie);
                     $("#modelname").val(obj.modelname);
                     $("#modelname").prev().val(obj.po);
-                    $(".userWiget > .station1HintMessage").show();
 
                     if ($("#people").is(":visible")) {
                         $("#people").val(obj.people);
@@ -399,6 +407,36 @@
                     showMsg("資料已經儲存");
                 } else {
                     showInfo("尚無資料");
+                }
+            }
+
+            function initLineMap() {
+                var lines = getLine();
+                for (var i = 0; i < lines.length; i++) {
+                    var line = lines[i];
+                    setLineOptions(line);
+                    totalLineStatus.set(line.name, line);
+                }
+            }
+
+            function setLineOptions(line) {
+                $("#lineNo").append("<option value=" + line.id + " " + (line.lock == 1 ? "disabled style='opacity:0.2'" : "") + ">" + line.name + "</option>");
+            }
+
+            function setStationOptions() {
+                var selectedLineName = $("#lineNo option:selected").text();
+                $("#station").html("");
+                var line = totalLineStatus.get(selectedLineName);
+                for (var i = 1; i <= line.people; i++) {
+                    $("#station").append("<option value=" + i + ">第 " + i + " 站</option>");
+                }
+            }
+            
+            function setPeopleOptions(){
+                var selectedLineName = $("#lineNo option:selected").text();
+                var line = totalLineStatus.get(selectedLineName);
+                for (var i = 1; i <= line.people; i++) {
+                   $("#people").append("<option value=" + i + ">" + i + " 人</option>");
                 }
             }
 
@@ -611,10 +649,6 @@
                     saveBabInfo(data);
                     console.log("First station input new babs.");
                 } else {
-//                    if (station > otherStationSearchResult.people) {
-//                        showMsg("您的站別大於第一站工單投入所輸入的人數 " + otherStationSearchResult.people + " ，請重新確認。");
-//                        return false;
-//                    } else {
                     var cookieInfo = JSON.parse($.cookie(userInfoCookieName));
 
                     data.station = cookieInfo.station;
@@ -683,11 +717,6 @@
                         showMsg(xhr.responseText);
                     }
                 });
-            }
-
-            function otherStationUserLogin() {
-                //find data from step1 cookie(check jobnumber vaild before cookie add already)
-                //find the data find by
             }
 
             //data save to cookie(步驟二)
@@ -765,23 +794,14 @@
 
         <!--Contents-->
         <div class="container">
-            <!--<button id="changeDiv" class="btn btn-default">changeDiv</button>-->
-            <!--<button id="clearAllCookie" class="btn btn-default">DirectClear</button>-->
             <c:set var="lineInfo" value="${lineDAO.getLine(userSitefloor)}" />
             <div id="step1" class="step">
                 <div class="userWiget form-inline">
                     <select id="lineNo" name="lineNo">
                         <option value="-1">---請選擇線別---</option>
-                        <c:forEach var="lines" items="${lineInfo}">
-                            <option value="${lines.id}" ${lines.lock == 1 ? "disabled style='opacity:0.2'" : ""}>${lines.name}</option>
-                        </c:forEach>
                     </select>
                     <input type="text" id="jobnumber" placeholder="請輸入工號" autocomplete="off" maxlength="10"/>
                     <select id='station'>
-                        <option value="-1">---請選擇站別---</option>
-                        <c:forEach var="station" begin="1" end="4">
-                            <option value="${station}">第 ${station} 站</option>
-                        </c:forEach>
                     </select>
                     <input type="button" id="saveInfo" value="Begin" />
                     <input type="button" id="clearInfo" value="End" />
@@ -800,15 +820,12 @@
                         <input type="text" name="modelname" id="modelname" placeholder="機種" readonly style="background: #CCC">
                         <select id='people'>
                             <option value="-1">---請選擇人數---</option>
-                            <c:forEach var="people" begin="2" end="4">
-                                <option value="${people}">${people}</option>
-                            </c:forEach>
                         </select>
                         <input type="button" id="babBegin" value="Begin" />
                         <input type="button" id="babEnd" value="Save" />
                         <input type="button" id="changeUser" value="換人" />
                     </div>
-                    <div class="station1HintMessage alarm">
+                    <div class="stationHintMessage alarm">
                         <span class="glyphicon glyphicon-alert"></span>
                         做完時請記得做儲存動作
                         <span class="glyphicon glyphicon-arrow-up"></span>
