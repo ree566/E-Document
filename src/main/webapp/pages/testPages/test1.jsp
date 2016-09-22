@@ -5,6 +5,7 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html>
 <html>
     <head>
@@ -18,9 +19,21 @@
         <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.min.js"></script>
         <script src="controller.js"></script>
     </head>
-    <body ng-app>
-        <div ng-controller="MsgController">
-            {{Message}}
-        </div>
+    <body>
+        <c:set var="colMax" value="50" />
+        <table style='border:2px solid black'>
+            <tr>
+                <c:forEach var="i" begin="1" end="${colMax}">
+                    <th>${i}</th>
+                    </c:forEach>
+            </tr>
+            <c:forEach var="i" begin="1" end="${colMax}">
+                <tr>
+                    <c:forEach var="i" begin="1" end="${colMax}">
+                        <td>${i}</td>
+                    </c:forEach>
+                </tr>
+            </c:forEach>
+        </table>
     </body>
 </html>

@@ -1,8 +1,8 @@
 package com.advantech.service;
 
+import com.advantech.entity.BAB;
 import com.advantech.entity.Countermeasure;
 import com.advantech.model.CountermeasureDAO;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -37,6 +37,10 @@ public class CountermeasureService {
 
     public List<Map> getUnFillCountermeasureBabs() {
         return countermeasureDAO.getUnFillCountermeasureBabs();
+    }
+
+    public List<Map> getUnFillCountermeasureBabs(String sitefloor) {
+        return countermeasureDAO.getUnFillCountermeasureBabs(sitefloor);
     }
 
     public List<Map> getCountermeasureView(String lineType, String sitefloor, String startDate, String endDate) {

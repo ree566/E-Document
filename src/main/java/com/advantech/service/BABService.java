@@ -47,9 +47,8 @@ public class BABService {
         return babDAO.getBAB(modelName, dateFrom, dateTo);
     }
 
-    public JSONObject getProcessingBABByLine(int lineNo) throws JSONException {
-        List<BAB> babs = babDAO.getProcessingBABByLine(lineNo);
-        return (babs != null && !babs.isEmpty()) ? new JSONObject().put("BABData", babs) : null;
+    public List<BAB> getProcessingBABByLine(int lineNo) throws JSONException {
+        return babDAO.getProcessingBABByLine(lineNo);
     }
 
     public List<Array> getAvailableModelName() {

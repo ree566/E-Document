@@ -5,6 +5,7 @@
  */
 package com.advantech.quartzJob;
 
+import com.advantech.entity.BAB;
 import com.advantech.helper.MailSend;
 import com.advantech.helper.PropertiesReader;
 import com.advantech.service.BasicService;
@@ -47,22 +48,28 @@ public class CountermeasureAlarm implements Job {
 
     }
 
-    private String generateMailBody() {
+    public String generateMailBody() {
         List<Map> l = BasicService.getCountermeasureService().getUnFillCountermeasureBabs();
         StringBuilder sb = new StringBuilder();
+        sb.append("<style>table {border-collapse: collapse;} table, th, td {border: 1px solid black; padding: 5px;}</style>");
+        sb.append("<p>Dear 使用者:</p>");
+        sb.append("<p>以下是亮燈頻率高於基準值，尚未回覆異常原因的工單列表</p>");
+        sb.append("<p>請抽空至 藍燈系統 > 線平衡資料查詢頁面 > 檢視詳細 填寫相關異常因素，謝謝</p>");
+        sb.append("<table>");
+        sb.append("<tr><th>工單</th><th>機種</th><th>投入時間</th></tr>");
         for (Map m : l) {
-            sb.append("<p>")
-                    .append(m.get("工單"))
-                    .append(" / ")
-                    .append(m.get("機種"))
-                    .append(" / ")
-                    .append(m.get("人數"))
-                    .append(" / ")
-                    .append(m.get("線別"))
-                    .append(" / ")
-                    .append(m.get("開始時間"))
-                    .append("</p>");
+            sb.append("<tr><td>")
+                    .append(m.get("PO"))
+                    .append("</td><td>")
+                    .append(m.get("Model_name"))
+                    .append("</td><td>")
+                    .append(m.get("Btime"))
+                    .append("</td></tr>");
         }
+        sb.append("</table>");
+        sb.append("<p>資料共計: ");
+        sb.append(l.size());
+        sb.append(" 筆</p>");
         return sb.toString();
     }
 }

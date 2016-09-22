@@ -1078,7 +1078,7 @@
                     var startDate = $('#fini').val();
                     var endDate = $('#ffin').val();
 
-                    window.location.href = '../../TestServlet?startDate=' + startDate + '&endDate=' + endDate + '&lineType=' + lineType + '&sitefloor=' + sitefloor;
+                    window.location.href = '../../BABExcelGenerate?startDate=' + startDate + '&endDate=' + endDate + '&lineType=' + lineType + '&sitefloor=' + sitefloor;
 
                 });
 

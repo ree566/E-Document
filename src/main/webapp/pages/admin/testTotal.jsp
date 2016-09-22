@@ -99,8 +99,8 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                             "type": "html",
                             "targets": 3,
                             'render': function (data, type, full, meta) {
-                                var productivity = data;
-                                return getPercent(productivity > maxProductivity ? maxProductivity : productivity) + "%";
+                                var productivity = getPercent(data);
+                                return (productivity > maxProductivity ? maxProductivity : productivity) + "%";
                             }
                         },
                         {

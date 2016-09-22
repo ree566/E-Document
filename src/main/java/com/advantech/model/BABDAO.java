@@ -94,7 +94,7 @@ public class BABDAO extends BasicDAO {
     }
 
     public List<BAB> getProcessingBABByLine(int lineNo) {
-        return queryBABTable("SELECT * FROM LS_BAB_Sort WHERE line = ?", lineNo);
+        return queryBABTable("SELECT * FROM LS_BAB_Sort WHERE line = ? ORDER BY id", lineNo);
     }
 
     public List<BAB> getProcessingBABByPOAndLine(String PO, int line) {

@@ -55,7 +55,6 @@
             }
             .userWiget > .alarm{
                 padding-top: 5px;
-                color: red;
                 padding-left: 40%;
             }
             .stepAlarm{
@@ -65,6 +64,9 @@
                 line-height: 20px;
             }
             .importantMsg{
+                color: red;
+            }
+            .alarm{
                 color: red;
             }
         </style>
@@ -213,6 +215,10 @@
                 //從已經從站別1儲存的工單資料中尋找相關資訊(LS_BAB table)
                 $(document).on("keyup", "#po1", function () {
                     getBAB($(this).val(), $("#lineNo").val());
+                });
+
+                $("#searchProcessing").click(function () {
+                    searchProcessing();
                 });
 
                 //Re搜尋工單
@@ -365,6 +371,7 @@
 
                 var userInfoCookie = $.cookie(userInfoCookieName);
                 var babInfoCookie = $.cookie(babInfoCookieName);
+                $("#searchProcessing").attr("disabled", userInfoCookie == null);
 
                 if (userInfoCookie != null) {
                     var obj = $.parseJSON(userInfoCookie);
@@ -373,6 +380,7 @@
                     setStationOptions();
                     $("#station").val(obj.station);
                     $("#step2").unblock();
+                    searchProcessing();
 
                     if (obj.station == firstStation) {
                         $("#babEnd, .userWiget > .stationHintMessage, #changeUser").hide();
@@ -393,20 +401,6 @@
                     }
                 } else {
                     $("#step2").block({message: "請先在步驟一完成相關步驟。", css: {cursor: 'default'}, overlayCSS: {cursor: 'default'}});
-                }
-
-                if (babInfoCookie != null) {
-                    var obj = $.parseJSON(babInfoCookie);
-                    $("#modelname").val(obj.modelname);
-                    $("#modelname").prev().val(obj.po);
-
-                    if ($("#people").is(":visible")) {
-                        $("#people").val(obj.people);
-                    }
-                    showInfo("工單: " + obj.po + " | 機種 : " + obj.modelname + " | 人數 : " + obj.people);
-                    showMsg("資料已經儲存");
-                } else {
-                    showInfo("尚無資料");
                 }
             }
 
@@ -431,12 +425,12 @@
                     $("#station").append("<option value=" + i + ">第 " + i + " 站</option>");
                 }
             }
-            
-            function setPeopleOptions(){
+
+            function setPeopleOptions() {
                 var selectedLineName = $("#lineNo option:selected").text();
                 var line = totalLineStatus.get(selectedLineName);
                 for (var i = 1; i <= line.people; i++) {
-                   $("#people").append("<option value=" + i + ">" + i + " 人</option>");
+                    $("#people").append("<option value=" + i + ">" + i + " 人</option>");
                 }
             }
 
@@ -549,6 +543,38 @@
                 } else {
                     obj.val("");
                 }
+            }
+
+            function searchProcessing() {
+                showInfo("");
+                $.ajax({
+                    type: "Post",
+                    url: "BabSearch",
+                    data: {
+                        saveline: $("#lineNo").val()
+                    },
+                    dataType: "html",
+                    success: function (response) {
+                        var babs = JSON.parse(response);
+
+                        if (babs.length != 0) {
+                            for (var i = 0; i < babs.length; i++) {
+                                var processingBab = babs[i];
+                                $("#processingBab").append(
+                                        "<p" + (i == 0 ? " class='alarm'" : "") + ">工單: " + processingBab.PO +
+                                        " / 機種: " + processingBab.Model_name +
+                                        " / 人數: " + processingBab.people +
+                                        "</p>");
+                            }
+                        } else {
+                            showInfo("No data");
+                        }
+
+                    },
+                    error: function () {
+                        showMsg(serverErrorConnMessage);
+                    }
+                });
             }
 
             //取得第一站投入的工單(後面站別)
@@ -857,10 +883,14 @@
             </div>
 
             <div id="step4" class="step stepAlarm">
-                <div id="processingBab" class="userWiget"></div>
+                <div class="form-inline userWiget">
+                    <div><input type="button" id="searchProcessing" value="查詢"></div>
+                    <div id="processingBab" ></div>
+                </div>
                 <div class="wigetInfo">
                     <h3>完成:</h3>
-                    <h5>此處會顯示您正在進行的工單。</h5>
+                    <h5>此處可點選查詢按鈕搜尋正在進行的工單。</h5>
+                    <h5>紅色字體代表目前正在進行線平衡量測的工單。</h5>
                 </div>
             </div>
 
