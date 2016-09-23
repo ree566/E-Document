@@ -35,7 +35,7 @@ public class TestLineTypeRecord implements Job {
             log.info("No need to record right now.");
         } else {
             TestService tService = BasicService.getTestService();
-            List testLineTypeStatus = WebServiceRV.getInstance().getKanbantestUsers();
+            List testLineTypeStatus = WebServiceRV.getInstance().getKanbantestUser();
             boolean recordStatus = tService.recordTestLineType(testLineTypeStatus);
             log.info("Record status : " + recordStatus);
         }

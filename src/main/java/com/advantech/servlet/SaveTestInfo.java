@@ -7,6 +7,7 @@
 package com.advantech.servlet;
 
 import com.advantech.helper.ParamChecker;
+import com.advantech.helper.WebServiceTX;
 import com.advantech.service.BasicService;
 import com.advantech.service.TestService;
 import java.io.*;
@@ -23,6 +24,7 @@ public class SaveTestInfo extends HttpServlet {
 
     private TestService testService = null;
     private ParamChecker pChecker = null;
+    private final String login = "LOGIN", logout = "LOGOUT", success = "success", fail = "fail";
 
     @Override
     public void init()
@@ -49,20 +51,27 @@ public class SaveTestInfo extends HttpServlet {
         String tableNo = req.getParameter("tableNo");
         String result;
 
-        if (pChecker.checkInputVals(action)) { 
+        if (pChecker.checkInputVals(action)) {
             if (pChecker.checkInputVals(userNo, tableNo)) {
                 int tableNum = Integer.parseInt(tableNo);
                 switch (action) {
-                    case "LOGIN":
+                    case login:
                         String i = testService.checkDeskIsAvailable(tableNum, userNo);
                         if (i == null) {
-                            result = testService.addTestPeople(tableNum, userNo) ? "success" : "fail";
+                            result = testService.addTestPeople(tableNum, userNo) ? success : fail;
+                            //Kanban data 待測試
+//                            if (result.equals(success)) {
+//                                WebServiceTX.getInstance().kanbanUserLogin(userNo);
+//                            }
                         } else {
                             result = i;
                         }
                         break;
-                    case "LOGOUT":
-                        result = testService.removeTestPeople(tableNum, userNo) ? "success" : "fail";
+                    case logout:
+                        result = testService.removeTestPeople(tableNum, userNo) ? success : fail;
+//                        if (result.equals(success)) {
+//                            WebServiceTX.getInstance().kanbanUserLogout(userNo);
+//                        }
                         break;
                     default:
                         result = "Not support action.";

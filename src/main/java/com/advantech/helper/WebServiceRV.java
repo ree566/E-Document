@@ -7,8 +7,9 @@ package com.advantech.helper;
 
 import com.advantech.entity.TestLineTypeUser;
 import com.advantech.entity.TestLineTypeUsers;
-import com.google.gson.Gson;
+import com.advantech.entity.User;
 import java.io.StringWriter;
+import static java.lang.System.out;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +20,6 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import org.json.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tempuri.RvResponse;
@@ -34,15 +34,15 @@ import org.w3c.dom.Node;
  * @author Wei.Cheng
  */
 public class WebServiceRV {
-    
-    private final String sParam;
+
+    private final String queryKanbanUsers;
     private final URL url;//webservice位置(放在專案中，因為url無法讀取，裏頭標籤衝突)
     private static final Logger log = LoggerFactory.getLogger(WebServiceRV.class);
-    
+
     private static WebServiceRV instance;
-    
+
     private WebServiceRV() {
-        sParam = "<root>"
+        queryKanbanUsers = "<root>"
                 + "<METHOD ID='ETLSO.QryProductionKanban4Test'/>"
                 + "<KANBANTEST>"
                 + "<STATION_ID>4,122,124,11,3,5,6,32,30,134,151,04,105</STATION_ID>"
@@ -50,7 +50,7 @@ public class WebServiceRV {
                 + "</root>";
         url = this.getClass().getClassLoader().getResource("wsdl/Service.wsdl");
     }
-    
+
     public static WebServiceRV getInstance() {
         if (instance == null) {
             instance = new WebServiceRV();
@@ -59,17 +59,21 @@ public class WebServiceRV {
     }
 
     //Get data from WebService
-    private List<Object> getWebServiceData() throws Exception {
+    private List<Object> getWebServiceData(String queryString) throws Exception {
         Service service = new Service(url);
         ServiceSoap port = service.getServiceSoap();
-        RvResponse.RvResult result = port.rv(sParam);
+        RvResponse.RvResult result = port.rv(queryString);
         return result.getAny();
     }
-    
+
+    public List<String> queryForXml() throws Exception {
+        return this.queryForXml(queryKanbanUsers);
+    }
+
     @SuppressWarnings("ConvertToTryWithResources")
-    public List<String> getXMLString() throws Exception {
+    public List<String> queryForXml(String queryString) throws Exception {
         List list = new ArrayList();//ws = WebService
-        List data = getWebServiceData();
+        List data = getWebServiceData(queryString);
         for (Object obj : data) {
             Document doc = ((Element) obj).getOwnerDocument();
             StringWriter sw = new StringWriter();
@@ -83,26 +87,13 @@ public class WebServiceRV {
             list.add(sw.toString());
             sw.close();
         }
-        
+
         return list;
     }
 
-//    public JSONArray getKanbantestUsers() {
-//        try {
-//            List<String> list = getXMLString();
-//            JSONObject xmlJSONObj = XML.toJSONObject(list.toString());
-//            return xmlJSONObj.getJSONObject("diffgr:diffgram").getJSONObject("root").getJSONArray("QryData");
-//        } catch (JSONException e) {
-////            log.error(e.toString());
-//            return new JSONArray();//Break if KanbanService is in error.
-//        } catch (Exception e) {
-//            log.error(e.toString());
-//            return new JSONArray();
-//        }
-//    }
-    public List<TestLineTypeUser> getKanbantestUsers() {
+    public List<TestLineTypeUser> getKanbantestUser() {
         try {
-            List l = this.getWebServiceData();
+            List l = this.getWebServiceData(queryKanbanUsers);
             Document doc = ((Element) l.get(1)).getOwnerDocument();
 
             //Unmarshal the data into javaObject.
@@ -118,15 +109,41 @@ public class WebServiceRV {
             return new ArrayList();
         }
     }
-    
-    public static void main(String arg[]) {
-        List<TestLineTypeUser> l = WebServiceRV.getInstance().getKanbantestUsers();
-        for (TestLineTypeUser t : l) {
-            System.out.println(new Gson().toJson(t));
+
+    public User getMESUser(String jobnumber) {
+        try {
+            String queryString = "<root><METHOD ID='PLBSO.QryLogion'/><USER_INFO><USER_NO>"
+                    + jobnumber
+                    + "</USER_NO><PASSWORD></PASSWORD><STATUS>A</STATUS></USER_INFO></root>";
+            List l = this.getWebServiceData(queryString);
+            Document doc = ((Element) l.get(1)).getOwnerDocument();
+
+            //Unmarshal the data into javaObject.
+            JAXBContext jc = JAXBContext.newInstance(User.class);
+            Unmarshaller u = jc.createUnmarshaller();
+
+            //Skip the <diffgr:diffgram> tag, read QryData tag directly.
+            Node node = (Node) doc.getFirstChild().getFirstChild().getFirstChild();
+            User user = (User) u.unmarshal(node);
+            return user;
+        } catch (Exception ex) {
+            log.error(ex.toString());
+            return null;
         }
     }
-    
-    private JSONArray putJ(JSONArray j) {
-        return j.put(3);
+
+    public static void main(String arg[]) {
+        String str = "<root><METHOD ID='PLBSO.QryLogion'/><USER_INFO><USER_NO>A-7976</USER_NO><PASSWORD></PASSWORD><STATUS>A</STATUS></USER_INFO></root>";
+        List<String> l;
+        try {
+            l = WebServiceRV.getInstance().queryForXml(str);
+            for (String st : l) {
+                out.println(st);
+            }
+        } catch (Exception ex) {
+            out.println(ex);
+        }
+
     }
+
 }

@@ -69,12 +69,16 @@
                 //Checking if user is login the babpage.jsp or not.(Get the cookie generate by babpage.jsp)
                 //If not, login and check the user input values.
                 $("#begin").click(function () {
-                    LoginOrLogoutTestLineType(STATION_LOGIN);
+                    if (confirm("確定登入?")) {
+                        LoginOrLogoutTestLineType(STATION_LOGIN);
+                    }
                 });
 
                 //TestTable logout.(Delete data from database)
                 $("#end").click(function () {
-                    LoginOrLogoutTestLineType(STATION_LOGOUT);
+                    if (confirm("確定登出?")) {
+                        LoginOrLogoutTestLineType(STATION_LOGOUT);
+                    }
                 });
 
                 $(document).on("keyup", "#user_number", function () {
@@ -265,15 +269,15 @@
                     <h4>此處會紀錄您刷入的工號以及桌號。</h3>
                 </div>
             </div>
-<!--            <div class="Div0">
-                <div class="Div1">目前已使用中的桌次:
-                    <p id="tableUseStatus">
-                    </p>
-                </div>
-                <div class="Div2">
-                    <p><h3>步驟3:</h3>此處會顯示已經刷入成功的桌次，請確認您的桌次是否在其中。</p>
-                </div>
-            </div>-->
+            <!--            <div class="Div0">
+                            <div class="Div1">目前已使用中的桌次:
+                                <p id="tableUseStatus">
+                                </p>
+                            </div>
+                            <div class="Div2">
+                                <p><h3>步驟3:</h3>此處會顯示已經刷入成功的桌次，請確認您的桌次是否在其中。</p>
+                            </div>
+                        </div>-->
             <div class="Div0">
                 <div class="Div1">未刷入資料庫的使用者:
                     <p>

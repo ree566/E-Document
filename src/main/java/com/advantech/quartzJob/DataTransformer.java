@@ -234,7 +234,7 @@ public class DataTransformer {
             initTestMap();
             JSONArray userArr = new JSONArray();
 
-            List<TestLineTypeUser> kanbanUsers = rv.getKanbantestUsers();
+            List<TestLineTypeUser> kanbanUsers = rv.getKanbantestUser();
 
             testJsonObj = new JSONObject();
             boolean isInTheWebService = false;

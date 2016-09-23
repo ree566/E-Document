@@ -421,8 +421,10 @@
                 var selectedLineName = $("#lineNo option:selected").text();
                 $("#station").html("");
                 var line = totalLineStatus.get(selectedLineName);
-                for (var i = 1; i <= line.people; i++) {
-                    $("#station").append("<option value=" + i + ">第 " + i + " 站</option>");
+                if (line != null) {
+                    for (var i = 1; i <= line.people; i++) {
+                        $("#station").append("<option value=" + i + ">第 " + i + " 站</option>");
+                    }
                 }
             }
 
