@@ -11,14 +11,10 @@ import com.advantech.entity.FBN;
 import com.advantech.service.BABService;
 import com.advantech.service.BasicService;
 import com.advantech.service.FBNService;
-import com.advantech.test.TestClassService;
 import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.List;
 import org.joda.time.DateTime;
-import org.joda.time.Hours;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -42,6 +38,18 @@ public class BABDataSaver implements Job {
 
     //Auto save the data to Linebalancing_Main if user is not close the 工單.
     private void saveBABData() {
+
+        List<BAB> unClosedBabs = this.getUnclosedBabs();
+        log.info("Unclosed babList size = " + unClosedBabs.size());
+
+        for (BAB bab : unClosedBabs) {
+            log.info("Begin save unclose bab " + new Gson().toJson(bab));
+            log.info("Close bab status :" + (BasicService.getBabService().closeBABWithoutCheckPrevSensor(bab) ? "success" : "fail"));
+        }
+
+    }
+
+    private List getUnclosedBabs() {
         BABService babService = BasicService.getBabService();
         FBNService fbnService = BasicService.getFbnService();
         DateTime dt = new DateTime();
@@ -55,7 +63,7 @@ public class BABDataSaver implements Job {
                 if (fbn == null) {
                     continue;
                 }
-                int diffHours = Hours.hoursBetween(convert(getSensorTime(fbn)), dt).getHours();
+                int diffHours = fbnService.checkTimeDiff(fbn);
                 if (diffHours >= MAX_WAIT_HOURS) {
                     unClosedBabs.add(bab);
                     log.info("Unclosed babList add " + new Gson().toJson(bab));
@@ -65,33 +73,11 @@ public class BABDataSaver implements Job {
             unClosedBabs = babService.getProcessingBAB();
         }
 
-        log.info("Unclosed babList size = " + unClosedBabs.size());
-        
-        for (BAB bab : unClosedBabs) {
-            log.info("Begin save unclose bab " + new Gson().toJson(bab));
-            log.info("Close bab status :" + (babService.closeBABWithoutCheckPrevSensor(bab) ? "success" : "fail"));
-        }
-
+        return unClosedBabs;
     }
 
     public static void main(String[] arg0) {
 
     }
 
-    private String getSensorTime(FBN f) {
-        return convertFullDateTime(f.getLogDate(), f.getLogTime());
-    }
-
-    private String convertFullDateTime(String... str) {
-        String dateString = "";
-        for (String st : str) {
-            dateString += st.trim() + " ";
-        }
-        return dateString;
-    }
-
-    private DateTime convert(String date) {
-        DateTimeFormatter dtf = DateTimeFormat.forPattern("yy/MM/dd HH:mm:ss ");
-        return dtf.parseDateTime(date);
-    }
 }

@@ -16,7 +16,6 @@ import java.util.Date;
 import javax.mail.MessagingException;
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +27,7 @@ public class LineBalanceService {
 
     private static final Logger log = LoggerFactory.getLogger(LineBalancingDAO.class);
 
-    private final JSONObject targetMail = PropertiesReader.getInstance().getResponseUnits();
+    private final String targetMail = PropertiesReader.getInstance().getTestMail();
     private final int BALANCE_ROUNDING_DIGIT = PropertiesReader.getInstance().getBalanceRoundingDigit();
     private final int MAX_BAB_STATION = 4;
 
@@ -101,12 +100,12 @@ public class LineBalanceService {
 
     private void sendMail(BAB bab, int num1, int num2, int diff) throws JSONException, MessagingException {
         Line line = BasicService.getLineService().getLine(bab.getLine());
-        String mailto = targetMail.getString(bab.getName().trim()); //Get the responsor of linetype.
+        String mailto = targetMail; //Get the responsor of linetype.
         if ("".equals(mailto)) {
             return;
         }
         String subject = "[藍燈系統]異常訊息(" + line.getName().trim() + ")";
-        MailSend.getInstance().sendMailWithoutSender(LineBalancingDAO.class, mailto, subject,
+        MailSend.getInstance().sendMail(mailto, subject,
                 new StringBuilder()
                 .append("<p>時間 <strong>")
                 .append(new Date())

@@ -32,7 +32,7 @@ public class XMLServlet extends HttpServlet {
         PrintWriter out = res.getWriter();
         try {
             WebServiceRV rv = WebServiceRV.getInstance();
-            List<String> wsData = rv.queryForXml();
+            List<String> wsData = rv.getKanbanUsersForString();
             out.print(wsData.get(1));
         } catch (Exception ex) {
             log.error(ex.toString());

@@ -6,16 +6,12 @@
  */
 package com.advantech.test;
 
-import com.advantech.helper.ExcelGenerator;
+import com.advantech.quartzJob.CountermeasureAlarm;
 import com.advantech.service.BasicService;
 import java.io.*;
-import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,13 +27,10 @@ public class TestServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
-        res.setContentType("application/vnd.ms-excel");
-        res.setHeader("Content-Disposition",
-                "attachment; filename=sampleData" + DateTimeFormat.forPattern("yyyyMMdd").print(new DateTime()) + ".xls");
-        List l = BasicService.getCountermeasureService().getCountermeasureView();
-        HSSFWorkbook w = ExcelGenerator.generateWorkBook(l);
-        w.write(res.getOutputStream());
-        w.close();
+        res.setContentType("text/html");
+        PrintWriter out = res.getWriter();
+        String sitefloor = req.getParameter("sitefloor");
+        out.print(new CountermeasureAlarm().generateMailBody(sitefloor));
 
     }
 

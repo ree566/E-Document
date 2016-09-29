@@ -9,6 +9,10 @@ import com.advantech.model.FBNDAO;
 import com.advantech.entity.FBN;
 import java.util.List;
 import java.util.Map;
+import org.joda.time.DateTime;
+import org.joda.time.Minutes;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 /**
  *
@@ -20,6 +24,10 @@ public class FBNService {
 
     protected FBNService() {
         fbnDAO = new FBNDAO();
+    }
+
+    public FBN getLastInputData() {
+        return fbnDAO.getLastInputData();
     }
 
     public List<FBN> getSensorDataInDay() {
@@ -38,4 +46,30 @@ public class FBNService {
         return fbnDAO.getBABFinalStationSensorStatus(BABid);
     }
 
+    public Integer checkLastFBNTimeDiff() {
+        DateTime now = new DateTime();
+        return Minutes.minutesBetween(convert(getSensorTime(this.getLastInputData())), now).getMinutes();
+    }
+
+    public Integer checkTimeDiff(FBN f) {
+        DateTime now = new DateTime();
+        return Minutes.minutesBetween(convert(getSensorTime(f)), now).getMinutes();
+    }
+
+    private String getSensorTime(FBN f) {
+        return convertFullDateTime(f.getLogDate(), f.getLogTime());
+    }
+
+    private String convertFullDateTime(String... str) {
+        String dateString = "";
+        for (String st : str) {
+            dateString += st.trim() + " ";
+        }
+        return dateString;
+    }
+
+    private DateTime convert(String date) {
+        DateTimeFormatter dtf = DateTimeFormat.forPattern("yy/MM/dd HH:mm:ss ");
+        return dtf.parseDateTime(date);
+    }
 }

@@ -5,7 +5,6 @@
  */
 package com.advantech.model;
 
-import com.advantech.entity.BAB;
 import com.advantech.entity.Countermeasure;
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -56,7 +55,7 @@ public class CountermeasureDAO extends BasicDAO {
     }
 
     public List<Map> getUnFillCountermeasureBabs(String sitefloor) {
-        return queryForMapList(this.getConn(), "SELECT * FROM unFillCountermeasureView WHERE sitefloor = ?", sitefloor);
+        return queryForMapList(this.getConn(), "SELECT * FROM unFillCountermeasureView WHERE sitefloor = ? ORDER BY btime DESC", sitefloor);
     }
 
     public List<Map> getCountermeasureView(String lineType, String sitefloor, String startDate, String endDate) {

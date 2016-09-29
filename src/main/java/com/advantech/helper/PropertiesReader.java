@@ -6,7 +6,9 @@
 package com.advantech.helper;
 
 import java.io.InputStream;
+import static java.lang.System.out;
 import java.util.Properties;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +26,8 @@ public class PropertiesReader {
 
     private double testStandard, babStandard, balanceDiff;
 
-    private JSONObject cc, responseUnits, systemAbnormalAlarmMailCC;
+    private JSONArray targetMailLoop;
+    private JSONObject targetCCLoop, systemAbnormalAlarmMailCC;
     private String systemAbnormalAlarmMailTo;
 
     private int maxTestTable, maxTestRequiredPeople, limitBABData, balanceRoundingDigit;
@@ -42,7 +45,7 @@ public class PropertiesReader {
             try {
                 p = new PropertiesReader();
             } catch (Exception ex) {
-                System.out.println("Can't read the property file.");
+                out.println("Can't read the property file.");
                 log.error("Can't read the property file.");
             }
         }
@@ -71,13 +74,13 @@ public class PropertiesReader {
         testStandard = convertStringToDouble(properties.getProperty("standard"));
         babStandard = convertStringToDouble(properties.getProperty("balanceStandard"));
         balanceDiff = convertStringToDouble(properties.getProperty("balanceDifference"));
-        cc = new JSONObject(properties.getProperty("ccMails"));
+        targetMailLoop = new JSONArray(properties.getProperty("responseUnits.mailTo"));
+        targetCCLoop = new JSONObject(properties.getProperty("responseUnits.mailCC"));
         mailServerUsername = properties.getProperty("mail.server.username");
         mailServerPassword = properties.getProperty("mail.server.password");
         mailServerLocation = properties.getProperty("mail.server.location");
         mailServerPort = properties.getProperty("mail.server.port");
         sendMailAlarmUser = convertStringToBoolean(properties.getProperty("send.mail.alarm.user"));
-        responseUnits = new JSONObject(properties.getProperty("responseUnits"));
         systemAbnormalAlarmMailTo = properties.getProperty("systemAbnormalAlarm.mailTo");
         systemAbnormalAlarmMailCC = new JSONObject(properties.getProperty("systemAbnormalAlarm.mailCC"));
         maxTestTable = convertStringToInteger(properties.getProperty("maxTestTable"));
@@ -93,15 +96,16 @@ public class PropertiesReader {
     }
 
     private void logTheSystemSetting() {
-        log.info("Set output txt path : " + txtLocation);
-        log.info("Set output test txt name : " + testTxtName);
-        log.info("Set output bab txt name : " + babTxtName);
-        log.info("Set file ext name is : " + outputFilenameExt);
-        log.info("Set test lineType standard is : " + testStandard);
-        log.info("Set bab lineType standard is : " + babStandard);
-        log.info("Set balanceDiff(Need to send mail when balance is diff to prev input bab) is : " + balanceDiff);
-        log.info("Set cc mail setting is : " + cc);
-        log.info("The mail info setting -> : "
+        out.println("Set output txt path : " + txtLocation);
+        out.println("Set output test txt name : " + testTxtName);
+        out.println("Set output bab txt name : " + babTxtName);
+        out.println("Set file ext name is : " + outputFilenameExt);
+        out.println("Set test lineType standard is : " + testStandard);
+        out.println("Set bab lineType standard is : " + babStandard);
+        out.println("Set balanceDiff(Need to send mail when balance is diff to prev input bab) is : " + balanceDiff);
+        out.println("System abnormal alarm to : " + targetMailLoop);
+        out.println("Set cc mail setting is : " + targetCCLoop);
+        out.println("The mail info setting -> : "
                 + new JSONObject()
                 .put("mailServerUsername", mailServerUsername)
                 .put("mailServerPassword", mailServerPassword)
@@ -109,25 +113,24 @@ public class PropertiesReader {
                 .put("mailServerPort", mailServerPort)
                 .toString()
         );
-        log.info("Need to send mail when system abnormal? : " + sendMailAlarmUser);
-        log.info("System abnormal alarm to : " + responseUnits);
-        log.info("Abnormal mail setting : "
+        out.println("Need to send mail when system abnormal? : " + sendMailAlarmUser);
+        out.println("Abnormal mail setting : "
                 + new JSONObject()
                 .put("systemAbnormalAlarmMailTo", systemAbnormalAlarmMailTo)
                 .put("systemAbnormalAlarmMailCC", systemAbnormalAlarmMailCC)
         );
-        log.info("The max table setting in test lineType is : " + maxTestTable);
-        log.info("The max test required people in test lineType is  : " + maxTestRequiredPeople);
-        log.info("The minimum data collection need to save to database : " + limitBABData);
-        log.info("The balance rounding digit is : " + balanceRoundingDigit);
-        log.info("Other save result setting : "
+        out.println("The max table setting in test lineType is : " + maxTestTable);
+        out.println("The max test required people in test lineType is  : " + maxTestRequiredPeople);
+        out.println("The minimum data collection need to save to database : " + limitBABData);
+        out.println("The balance rounding digit is : " + balanceRoundingDigit);
+        out.println("Other save result setting : "
                 + new JSONObject()
                 .put("writeToTxt", writeToTxt)
                 .put("writeToDB", writeToDB)
                 .put("saveToOldDB", saveToOldDB)
         );
 
-        log.info("The endpoint quartz trigger : " + endpointQuartzTrigger);
+        out.println("The endpoint quartz trigger : " + endpointQuartzTrigger);
     }
 
     private int convertStringToInteger(String number) {
@@ -158,12 +161,12 @@ public class PropertiesReader {
         return systemAbnormalAlarmMailTo;
     }
 
-    public JSONObject getCc() {
-        return cc;
+    public JSONObject getTargetCCLoop() {
+        return targetCCLoop;
     }
 
-    public JSONObject getResponseUnits() {
-        return responseUnits;
+    public JSONArray getTargetMailLoop() {
+        return targetMailLoop;
     }
 
     public JSONObject getSystemAbnormalAlarmMailCC() {
@@ -245,11 +248,9 @@ public class PropertiesReader {
     public static void main(String arg0[]) {
 
         PropertiesReader p = getInstance();
-        Double d1 = 0.8000000121;
-//        System.out.println("d1 smaller than babStandard: " + (d1 < p.babStandard));
-//        System.out.println("d1 bigger than babStandard: " + (d1 > p.babStandard));
-        System.out.println(p.getMailServerUsername());
-        System.out.println(p.getMailServerPassword());
-        System.out.println(p.getMailServerLocation());
+
+        System.out.println(p.getTargetMailLoop().getJSONObject(0).get("mailloop"));
+        System.out.println(p.getTargetMailLoop().getJSONObject(1).get("mailloop"));
+//        System.out.println(p.getTargetCCLoop().get("mailloop"));
     }
 }

@@ -32,6 +32,11 @@ public class FBNDAO extends BasicDAO {
         return queryFBNTable("SELECT * FROM LS_FBN_Sort");
     }
 
+    public FBN getLastInputData() {
+        List l = queryFBNTable("SELECT TOP 1 * FROM LS_FBN_Sort ORDER BY ID DESC");
+        return !l.isEmpty() ? (FBN) l.get(0) : null;
+    }
+
     //利用檢視表(過濾後FBN資料表資訊)得到當前sensor時間 websocket用 
     public List<Map> getSensorInstantlyStatus() {
         return queryForMapList(getConn(), "SELECT * FROM LS_GetSenRealTime");

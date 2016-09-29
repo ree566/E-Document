@@ -28,39 +28,39 @@ import org.slf4j.LoggerFactory;
  */
 @WebServlet(name = "BABFirstStationServlet", urlPatterns = {"/BABFirstStationServlet"})
 public class BABFirstStationServlet extends HttpServlet {
-    
+
     private static final Logger log = LoggerFactory.getLogger(BABFirstStationServlet.class);
     private BABService babService = null;
     private ParamChecker pChecker = null;
-    
+
     @Override
     public void init() throws ServletException {
         babService = BasicService.getBabService();
         pChecker = new ParamChecker();
     }
-    
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
         res.sendError(HttpServletResponse.SC_FORBIDDEN);
     }
-    
+
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
-        
+
         res.setContentType("application/json");
         PrintWriter out = res.getWriter();
-        
+
         String po = req.getParameter("po");
         String modelName = req.getParameter("modelname");
         String line = req.getParameter("lineNo");
         String people = req.getParameter("people");
-        
+
         String jobnumber = req.getParameter("jobnumber");
-        
+
         String successMessage = "success";
-        
+
         if (pChecker.checkInputVals(po, modelName, line, people, jobnumber)) {
             try {
                 int lineNo = Integer.parseInt(line);
@@ -78,19 +78,19 @@ public class BABFirstStationServlet extends HttpServlet {
             out.print("Invaild input value");
         }
     }
-    
+
     private void sendMailAfterBABRunIn(BAB bab) throws MessagingException {
-        
+
         String targetMail = PropertiesReader.getInstance().getTestMail();
         if ("".equals(targetMail)) {
             return;
         }
-        
+
         String subject = "[藍燈系統]系統訊息";
-        MailSend.getInstance().sendMailWithoutSender(this.getClass(), targetMail, subject, generateMailBody(bab));
-        
+        MailSend.getInstance().sendMail(targetMail, subject, generateMailBody(bab));
+
     }
-    
+
     private String generateMailBody(BAB bab) {
         return new StringBuilder()
                 .append("<p>現在時間 <strong>")
@@ -110,7 +110,7 @@ public class BABFirstStationServlet extends HttpServlet {
                 .append("'>線平衡電子化系統</a> 中的歷史紀錄做查詢</p>")
                 .toString();
     }
-    
+
     private String getToday() {
         return DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.SSS").print(new DateTime());
     }

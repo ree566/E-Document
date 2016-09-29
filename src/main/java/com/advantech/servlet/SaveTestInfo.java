@@ -7,7 +7,6 @@
 package com.advantech.servlet;
 
 import com.advantech.helper.ParamChecker;
-import com.advantech.helper.WebServiceTX;
 import com.advantech.service.BasicService;
 import com.advantech.service.TestService;
 import java.io.*;

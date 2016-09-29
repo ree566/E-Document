@@ -14,7 +14,6 @@ import java.util.Properties;
 import javax.mail.*;
 import javax.mail.internet.*;
 import org.json.JSONArray;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,17 +30,14 @@ public class MailSend {
     private final String mailServerAddress;
     private final String password;
     private final String companyAddr = "@advantech.com.tw";
-    
-    private static boolean isSendMailAlarmUser;
 
-    private final JSONArray cc;
+    private static boolean isSendMailAlarmUser;
 
     private final Properties props;
     private static final Logger log = LoggerFactory.getLogger(MailSend.class);
 
     private MailSend() {
         PropertiesReader properties = PropertiesReader.getInstance();
-
         String hostaddr = null;
         try {
             String hostSetting = properties.getMailServerLocation();
@@ -53,16 +49,11 @@ public class MailSend {
         mailPort = properties.getMailServerPort();
         mailServerAddress = properties.getMailServerUsername() + "@" + hostaddr;
         password = properties.getMailServerPassword();
-
-        JSONObject mails = properties.getCc();
-        cc = mails.getJSONArray("maillist");
-
         props = new Properties();
         props.setProperty("mail.smtp.host", mailHost);
         props.setProperty("mail.smtp.auth", "true");
         props.put("mail.smtp.starttls.enable", "true");
         props.setProperty("mail.smtp.port", mailPort);
-        
         isSendMailAlarmUser = properties.isSendMailAlarmUser();
     }
 
@@ -73,22 +64,23 @@ public class MailSend {
         return instance;
     }
 
-    public boolean sendMailWithoutSender(Class cls, String to, String subject, String text) throws MessagingException {
-        return sendMailWithSender(cls, mailServerAddress, to, subject, text);
+    public boolean sendMail(String to, String subject, String content) throws MessagingException {
+        return sendMail(new JSONArray().put(to), new JSONArray(), subject, content);
     }
 
-    public boolean sendMailWithSender(Class cls, String from, String to, String subject, String text) throws MessagingException {
-        boolean b = handleSettingsAndSendMail(from, to, subject, text);
-        log.info(cls.getName() + (b ? " send success" : " send fail"));
-        return b;
+    public boolean sendMail(String to, JSONArray cc, String subject, String content) throws MessagingException {
+        return sendMail(new JSONArray().put(to), cc, subject, content);
     }
 
-    private boolean handleSettingsAndSendMail(String from, String to, String subject, String text) throws MessagingException {
-        if(!isSendMailAlarmUser){
-            log.info("The setting in options.properties is false, send mail job abandon!");
+    public boolean sendMail(JSONArray to, JSONArray cc, String subject, String content) throws MessagingException {
+        if (!isSendMailAlarmUser) {
+            log.info("The setting in options.properties is false, send mail abandon!");
+            return false;
+        } else if (to.length() == 0) {
+            log.info("The target mailLoop is empty, send mail abandon!");
             return false;
         }
-    
+
         Session session = Session.getDefaultInstance(props,
                 new Authenticator() {
             @Override
@@ -98,18 +90,20 @@ public class MailSend {
         });
 
         MimeMessage message = new MimeMessage(session);
-        message.setFrom(new InternetAddress(from));
-        message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to + companyAddr));
+        message.setFrom(new InternetAddress(mailServerAddress));
 
-        for (Object o : cc) {
-            String mail = o.toString() + companyAddr;
-            message.setRecipients(Message.RecipientType.CC, InternetAddress.parse(mail));
+        for (int i = 0; i < to.length(); i++) {
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to.get(i) + companyAddr));
+        }
+
+        for (int i = 0; i < cc.length(); i++) {
+            message.setRecipients(Message.RecipientType.CC, InternetAddress.parse(cc.get(i) + companyAddr));
         }
 
         message.setSubject(subject, "UTF-8");
         message.setSentDate(new Date());
         MimeBodyPart htmlPart = new MimeBodyPart();
-        htmlPart.setContent(text, "text/html;charset=UTF-8");
+        htmlPart.setContent(content, "text/html;charset=UTF-8");
         Multipart multipart = new MimeMultipart();
         multipart.addBodyPart(htmlPart);
         message.setContent(multipart);
@@ -124,7 +118,6 @@ public class MailSend {
         MailSend m = MailSend.getInstance();
         System.out.println(m.mailHost);
         System.out.println(m.mailPort);
-//        System.out.println();
     }
 
     //Get the Host address.

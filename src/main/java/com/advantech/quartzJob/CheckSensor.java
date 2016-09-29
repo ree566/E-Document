@@ -8,9 +8,7 @@ package com.advantech.quartzJob;
 
 import com.advantech.helper.MailSend;
 import com.advantech.helper.PropertiesReader;
-import com.advantech.service.BABService;
 import com.advantech.service.BasicService;
-import com.advantech.service.FBNService;
 import java.util.Date;
 import java.util.List;
 import javax.mail.MessagingException;
@@ -31,37 +29,36 @@ public class CheckSensor implements Job {
     @Override
     public void execute(JobExecutionContext jec) throws JobExecutionException {
         try {
-            checkSensor();
+            checkSensorAndSendMail();
         } catch (MessagingException ex) {
             log.error(ex.toString());
         }
     }
 
     //定時查看sensor資料是否又暫停or異常
-    private void checkSensor() throws MessagingException {
-        BABService babService = BasicService.getBabService();
-        FBNService fbnService = BasicService.getFbnService();
-        List isUsedBAB = babService.getProcessingBAB();
-        List l = fbnService.getSensorDataInDay();
-        if (!isUsedBAB.isEmpty() && l.isEmpty()) {
+    private void checkSensorAndSendMail() throws MessagingException {
+        List processingBAB = BasicService.getBabService().getProcessingBAB();
+        int minDiff = BasicService.getFbnService().checkLastFBNTimeDiff();
+        int maxAllowMin = 30;
+
+        if (!processingBAB.isEmpty() && minDiff >= maxAllowMin) {
             sendMail();
         }
     }
 
     private void sendMail() throws MessagingException {
-
         String targetMail = PropertiesReader.getInstance().getTestMail();
+        
         String subject = "[藍燈系統]Sensor異常訊息";
         String mailBody = generateMailBody();
-        MailSend.getInstance().sendMailWithoutSender(this.getClass(), targetMail, subject, mailBody);
-
+        MailSend.getInstance().sendMail(targetMail, subject, mailBody);
     }
 
     private String generateMailBody() {
         return new StringBuilder()
                 .append("<p>時間 <strong>")
                 .append(new Date())
-                .append("</strong> 距離工單開啟已經一段時間沒有資料寫入，</p>")
+                .append("</strong> 距離工單開啟已經一段時間感應器沒有資料寫入，</p>")
                 .append("<p>請協助確認感應器是否正常，謝謝。</p>")
                 .toString();
     }

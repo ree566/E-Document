@@ -6,10 +6,12 @@
  */
 package com.advantech.quartzJob;
 
+import com.advantech.entity.Test;
+import com.advantech.entity.TestLineTypeUser;
 import com.advantech.helper.WebServiceRV;
 import com.advantech.service.BasicService;
 import com.advantech.service.TestService;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 import org.joda.time.DateTime;
 import org.quartz.Job;
@@ -35,9 +37,24 @@ public class TestLineTypeRecord implements Job {
             log.info("No need to record right now.");
         } else {
             TestService tService = BasicService.getTestService();
-            List testLineTypeStatus = WebServiceRV.getInstance().getKanbantestUser();
+            //只存下已經刷入的使用者
+            List<TestLineTypeUser> testLineTypeStatus = separateOfflineUser(WebServiceRV.getInstance().getKanbanUsersForXml());
             boolean recordStatus = tService.recordTestLineType(testLineTypeStatus);
             log.info("Record status : " + recordStatus);
         }
     }
+
+    private List<TestLineTypeUser> separateOfflineUser(List<TestLineTypeUser> l) {
+        List<Test> tables = BasicService.getTestService().getAllTableInfo();
+        List list = new ArrayList();
+        for (TestLineTypeUser user : l) {
+            for (Test t : tables) {
+                if (user.getUserNo().equals(t.getUserid())) {
+                    list.add(user);
+                }
+            }
+        }
+        return list;
+    }
+
 }

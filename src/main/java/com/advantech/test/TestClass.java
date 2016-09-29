@@ -5,8 +5,9 @@
  */
 package com.advantech.test;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.advantech.helper.XmlGenerator;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -14,16 +15,15 @@ import java.util.List;
  */
 public class TestClass {
 
-    private static int count = 0;
+    private String[] cardElement = {
+        "WORK_ID", "LINE_ID", "STATION_ID", "FACTORY_NO", "UNIT_NO",
+        "USER_NO", "USER_NAME_CH", "WORK_DESC", "CARD_FLAG", "USER_ID"
+    };
 
     public static void main(String args[]) throws Exception {
 
     }
 
-    public List testList() {
-        return new ArrayList();
-    }
-    
-
-
 }
+
+

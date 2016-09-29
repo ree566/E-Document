@@ -68,14 +68,14 @@
             <cron>
                 <name>CheckSensor</name>
                 <job-name>CheckSensor</job-name>
-                <cron-expression>0 0 11,14 ? * MON-SAT *</cron-expression>
+                <cron-expression>0 0,30 9-16 ? * MON-SAT *</cron-expression>
             </cron>
         </trigger>
     </schedule>
     
     
     <!--把測試線別狀態記錄到資料庫-->
-    <schedule>
+<!--    <schedule>
         <job>
             <name>TestLineTypeRecord</name>
             <job-class>com.advantech.quartzJob.TestLineTypeRecord</job-class>
@@ -87,7 +87,7 @@
                 <cron-expression>0 50 9-16 ? * MON-FRI *</cron-expression>
             </cron>
         </trigger>
-    </schedule>
+    </schedule>-->
     
     <!--每日把未回覆異常原因的回覆給幹部-->
     <schedule>

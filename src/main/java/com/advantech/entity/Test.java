@@ -6,6 +6,8 @@
 package com.advantech.entity;
 
 import java.io.Serializable;
+import static java.lang.System.out;
+import java.util.Objects;
 
 /**
  *
@@ -68,9 +70,9 @@ public class Test implements Serializable {
     public void setUpdatetime(String updatetime) {
         this.updatetime = updatetime;
     }
-    
-    public int getTableNum(){
-        return Integer.parseInt(this.tableName.replaceAll("\\D+",""));
+
+    public int getTableNum() {
+        return Integer.parseInt(this.tableName.replaceAll("\\D+", ""));
     }
 
 }

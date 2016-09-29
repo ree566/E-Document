@@ -35,14 +35,14 @@ import org.w3c.dom.Node;
  */
 public class WebServiceRV {
 
-    private final String queryKanbanUsers;
+    private final String queryString;
     private final URL url;//webservice位置(放在專案中，因為url無法讀取，裏頭標籤衝突)
     private static final Logger log = LoggerFactory.getLogger(WebServiceRV.class);
 
     private static WebServiceRV instance;
 
     private WebServiceRV() {
-        queryKanbanUsers = "<root>"
+        queryString = "<root>"
                 + "<METHOD ID='ETLSO.QryProductionKanban4Test'/>"
                 + "<KANBANTEST>"
                 + "<STATION_ID>4,122,124,11,3,5,6,32,30,134,151,04,105</STATION_ID>"
@@ -66,12 +66,18 @@ public class WebServiceRV {
         return result.getAny();
     }
 
-    public List<String> queryForXml() throws Exception {
-        return this.queryForXml(queryKanbanUsers);
+    @SuppressWarnings("ConvertToTryWithResources")
+    public Document getKanbanUsers(String queryString) throws Exception {
+        List data = getWebServiceData(queryString);
+        return ((Element) data.get(1)).getOwnerDocument();
+    }
+
+    public List<String> getKanbanUsersForString() throws Exception {
+        return this.getKanbanUsersForString(queryString);
     }
 
     @SuppressWarnings("ConvertToTryWithResources")
-    public List<String> queryForXml(String queryString) throws Exception {
+    public List<String> getKanbanUsersForString(String queryString) throws Exception {
         List list = new ArrayList();//ws = WebService
         List data = getWebServiceData(queryString);
         for (Object obj : data) {
@@ -90,10 +96,15 @@ public class WebServiceRV {
 
         return list;
     }
+    
+    public Document getKanbanUserInHistory(String jobnumber) throws Exception{
+        String str = "<root><METHOD ID='WMPSO.QryWorkManPowerCard001'/><WORK_MANPOWER_CARD><WORK_ID>-1</WORK_ID><LINE_ID>-1</LINE_ID><STATION_ID>-1</STATION_ID><FACTORY_NO></FACTORY_NO><UNIT_NO></UNIT_NO><USER_NO>" + jobnumber + "</USER_NO><CARD_FLAG>1</CARD_FLAG><START_DATE>2016-09-21</START_DATE><END_DATE>2016-09-21</END_DATE></WORK_MANPOWER_CARD></root>";
+        return this.getKanbanUsers(str);
+    }
 
-    public List<TestLineTypeUser> getKanbantestUser() {
+    public List<TestLineTypeUser> getKanbanUsersForXml() {
         try {
-            List l = this.getWebServiceData(queryKanbanUsers);
+            List l = this.getWebServiceData(queryString);
             Document doc = ((Element) l.get(1)).getOwnerDocument();
 
             //Unmarshal the data into javaObject.
@@ -112,10 +123,10 @@ public class WebServiceRV {
 
     public User getMESUser(String jobnumber) {
         try {
-            String queryString = "<root><METHOD ID='PLBSO.QryLogion'/><USER_INFO><USER_NO>"
+            String str = "<root><METHOD ID='PLBSO.QryLogion'/><USER_INFO><USER_NO>"
                     + jobnumber
                     + "</USER_NO><PASSWORD></PASSWORD><STATUS>A</STATUS></USER_INFO></root>";
-            List l = this.getWebServiceData(queryString);
+            List l = this.getWebServiceData(str);
             Document doc = ((Element) l.get(1)).getOwnerDocument();
 
             //Unmarshal the data into javaObject.
@@ -136,7 +147,7 @@ public class WebServiceRV {
         String str = "<root><METHOD ID='PLBSO.QryLogion'/><USER_INFO><USER_NO>A-7976</USER_NO><PASSWORD></PASSWORD><STATUS>A</STATUS></USER_INFO></root>";
         List<String> l;
         try {
-            l = WebServiceRV.getInstance().queryForXml(str);
+            l = WebServiceRV.getInstance().getKanbanUsersForString(str);
             for (String st : l) {
                 out.println(st);
             }

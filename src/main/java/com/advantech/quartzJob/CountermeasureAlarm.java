@@ -5,13 +5,13 @@
  */
 package com.advantech.quartzJob;
 
-import com.advantech.entity.BAB;
 import com.advantech.helper.MailSend;
 import com.advantech.helper.PropertiesReader;
 import com.advantech.service.BasicService;
 import java.util.List;
 import java.util.Map;
-import javax.mail.MessagingException;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -31,34 +31,40 @@ public class CountermeasureAlarm implements Job {
         try {
             //Link the mailloop to send daily mail
             sendMail();
-        } catch (MessagingException ex) {
+        } catch (Exception ex) {
             log.error(ex.toString());
         }
     }
 
-    private void sendMail() throws MessagingException {
-
-        String targetMail = PropertiesReader.getInstance().getTestMail();
-        if ("".equals(targetMail)) {
-            return;
-        }
-
+    private void sendMail() throws Exception {
+        PropertiesReader p = PropertiesReader.getInstance();
+        JSONArray mailTarget = p.getTargetMailLoop();
+        JSONArray ccMailLoop = p.getTargetCCLoop().getJSONArray("mailloop");
         String subject = "[藍燈系統]未填寫異常回覆工單列表";
-        MailSend.getInstance().sendMailWithoutSender(this.getClass(), targetMail, subject, generateMailBody());
 
+        for (int i = 0; i < mailTarget.length(); i++) {
+            JSONObject targetInfo = mailTarget.getJSONObject(i);
+            String sitefloor = targetInfo.getString("sitefloor");
+            JSONArray mailLoop = targetInfo.getJSONArray("mailloop");
+            MailSend.getInstance().sendMail(mailLoop, ccMailLoop, subject, generateMailBody(sitefloor));
+        }
     }
 
-    public String generateMailBody() {
-        List<Map> l = BasicService.getCountermeasureService().getUnFillCountermeasureBabs();
+    public String generateMailBody(String sitefloor) {
+        List<Map> l = BasicService.getCountermeasureService().getUnFillCountermeasureBabs(sitefloor);
         StringBuilder sb = new StringBuilder();
         sb.append("<style>table {border-collapse: collapse;} table, th, td {border: 1px solid black; padding: 5px;}</style>");
         sb.append("<p>Dear 使用者:</p>");
         sb.append("<p>以下是亮燈頻率高於基準值，尚未回覆異常原因的工單列表</p>");
         sb.append("<p>請抽空至 藍燈系統 > 線平衡資料查詢頁面 > 檢視詳細 填寫相關異常因素，謝謝</p>");
         sb.append("<table>");
-        sb.append("<tr><th>工單</th><th>機種</th><th>投入時間</th></tr>");
+        sb.append("<tr><th>製程</th><th>線別</th><th>工單</th><th>機種</th><th>投入時間</th></tr>");
         for (Map m : l) {
             sb.append("<tr><td>")
+                    .append(m.get("linetype"))
+                    .append("</td><td>")
+                    .append(m.get("lineName"))
+                    .append("</td><td>")
                     .append(m.get("PO"))
                     .append("</td><td>")
                     .append(m.get("Model_name"))
