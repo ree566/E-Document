@@ -8,6 +8,7 @@ package com.advantech.servlet;
 
 import com.advantech.helper.ExcelGenerator;
 import com.advantech.service.BasicService;
+import com.advantech.service.CountermeasureService;
 import java.io.*;
 import java.util.List;
 import javax.servlet.ServletException;
@@ -36,12 +37,14 @@ public class BABExcelGenerate extends HttpServlet {
         String startDate = req.getParameter("startDate");
         String endDate = req.getParameter("endDate");
 
-        List l = BasicService.getCountermeasureService().getCountermeasureView(lineType, sitefloor, startDate, endDate);
+        CountermeasureService cs = BasicService.getCountermeasureService();
+        List countermeasures = cs.getCountermeasureView(lineType, sitefloor, startDate, endDate);
+        List personalAlms = cs.getPersonalAlm(lineType, sitefloor, startDate, endDate);
 
-        HSSFWorkbook w = ExcelGenerator.generateWorkBook(l);
+        HSSFWorkbook w = ExcelGenerator.generateWorkBook(countermeasures, personalAlms);
 
         w.write(res.getOutputStream());
         w.close();
     }
-    
+
 }

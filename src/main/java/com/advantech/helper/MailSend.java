@@ -93,11 +93,11 @@ public class MailSend {
         message.setFrom(new InternetAddress(mailServerAddress));
 
         for (int i = 0; i < to.length(); i++) {
-            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to.get(i) + companyAddr));
+            message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(to.get(i) + companyAddr));
         }
 
         for (int i = 0; i < cc.length(); i++) {
-            message.setRecipients(Message.RecipientType.CC, InternetAddress.parse(cc.get(i) + companyAddr));
+            message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(cc.get(i) + companyAddr));
         }
 
         message.setSubject(subject, "UTF-8");

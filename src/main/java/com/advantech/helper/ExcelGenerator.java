@@ -33,10 +33,28 @@ public class ExcelGenerator {
     private static final Logger log = LoggerFactory.getLogger(ExcelGenerator.class);
 
     private static HSSFWorkbook workbook;
+    private static int sheetNum = 1;
 
-    public static HSSFWorkbook generateWorkBook(List<Map> data) {
+    private static void init() {
+        sheetNum = 1;
+        log.info("New one workbook");
         workbook = new HSSFWorkbook();
-        HSSFSheet spreadsheet = workbook.createSheet("dataTable");
+    }
+
+    private static HSSFSheet createExcelSheet() {
+        return workbook.createSheet("sheet" + (sheetNum++));
+    }
+
+    public static HSSFWorkbook generateWorkBook(List<Map>... data) {
+        init();
+        for (List<Map> l : data) {
+            generateWorkBook(l);
+        }
+        return workbook;
+    }
+
+    private static HSSFWorkbook generateWorkBook(List<Map> data) {
+        HSSFSheet spreadsheet = createExcelSheet();
         HSSFRow row = spreadsheet.createRow(0);
         HSSFCell cell;
         if (!data.isEmpty()) {

@@ -15,7 +15,7 @@
             .draggable { 
                 width: 25px; 
                 height: 25px; 
-                padding: 0.5em; 
+                padding: 0.3em; 
                 float: left;
                 /*background-color: red;*/
                 margin: 0px;
@@ -59,7 +59,7 @@
             #mapGroup{
                 width: 1200px;
                 height: 500px;
-                background-image: url(../../images/totalMap_5f_1.png);
+                background-image: url(../../images/totalMap_5f_3.png);
                 background-repeat: no-repeat;
                 -o-background-size: 100% 100%, auto;
                 -moz-background-size: 100% 100%, auto;
@@ -74,8 +74,6 @@
                             padding-top: 70px;
                              Required padding for .navbar-fixed-top. Remove if using .navbar-static-top. Change if height of navigation changes. 
                         }*/
-            #wigetCtrl{
-            }
             .modal.fade.ui-draggable-dragging {
                 -moz-transition: none;
                 -o-transition: none;
@@ -88,7 +86,6 @@
                 background-color: white;
                 width: 25%; 
                 overflow: hidden;
-                padding:0 auto;
             }
             #titleArea>div, #testArea>div, #babArea>div{
                 position: absolute;
@@ -126,33 +123,34 @@
 
             $(function () {
 
-                var pXa = -20;
-                var pYa = -20;
+                var pXa = -0;
+                var pYa = -0;
 
                 var titleGroup = [
-                    {lineName: "L1", x: 1090, y: 250},
-                    {lineName: "LA", x: 1090, y: 150},
-                    {lineName: "LB", x: 1090, y: 90},
-                    {lineName: "LH", x: 380, y: 150},
-                    {lineName: "LG", x: 380, y: 90},
-                    {lineName: "LF", x: 380, y: 30}
+                    {lineName: "L1", x: 1070, y: 250},
+                    {lineName: "LA", x: 1070, y: 160},
+                    {lineName: "LB", x: 1070, y: 50},
+                    {lineName: "LH", x: 40, y: 120},
+                    {lineName: "LG", x: 370, y: 80},
+                    {lineName: "LF", x: 370, y: 160}
                 ];
 
                 var testGroup = [
-                    {people: 4, x: 600, y: 30}, // group 21-24
-                    {people: 5, x: 600, y: 100}, // group 16-20
+                    {people: 1, x: 490, y: 70}, // group 24
+                    {people: 1, x: 490, y: 150}, // group 23
+                    {people: 7, x: 530, y: 70}, // group 16-22
                     {people: 7, x: 530, y: 150}, // group 9-15
-                    {people: 4, x: 630, y: 230}, // group 5-8
-                    {people: 4, x: 630, y: 290} // group 1-4
+                    {people: 4, x: 620, y: 190}, // group 5-8
+                    {people: 4, x: 620, y: 275} // group 1-4
                 ];
 
                 var babGroup = [
-                    {people: 4, x: 930, y: 250, lineName: "L1"}, // group 1-4
-                    {people: 4, x: 930, y: 150, lineName: "LA"}, // group 21-24
-                    {people: 4, x: 930, y: 90, lineName: "LB"}, // group 16-20
-                    {people: 3, x: 250, y: 160, lineName: "LF"}, // group 9-15
-                    {people: 3, x: 250, y: 110, lineName: "LG"}, // group 5-8
-                    {people: 3, x: 250, y: 50, lineName: "LH"} // group 1-4
+                    {people: 4, x: 930, y: 220, lineName: "L1"}, 
+                    {people: 4, x: 930, y: 170, lineName: "LA"}, 
+                    {people: 4, x: 930, y: 60, lineName: "LB"}, 
+                    {people: 3, x: 100, y: 160, lineName: "LH"}, 
+                    {people: 3, x: 260, y: 90, lineName: "LG"}, 
+                    {people: 3, x: 260, y: 160, lineName: "LF"}
                 ];
 
                 for (var i = 0; i < titleGroup.length; i++) {
@@ -204,11 +202,11 @@
                 var dragableWiget = $("#titleArea>div, #testArea>div, #babArea>div");
 //                dragableWiget.after("<div class='clearWiget'></div>");
 
-//                dragableWiget.not(".clearWiget").addClass("ui-helper").draggable({
-//                    drag: function (e) {
-////                        return false;
-//                    }
-//                });
+                dragableWiget.not(".clearWiget").addClass("ui-helper").draggable({
+                    drag: function (e) {
+//                        return false;
+                    }
+                });
 
                 $('[data-toggle="tooltip"]').tooltip();
 

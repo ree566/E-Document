@@ -1,7 +1,11 @@
 package com.advantech.service;
 
 import com.advantech.entity.Countermeasure;
+import com.advantech.model.BasicDAO;
 import com.advantech.model.CountermeasureDAO;
+import com.google.gson.Gson;
+import static java.lang.System.out;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -46,6 +50,36 @@ public class CountermeasureService {
         return countermeasureDAO.getCountermeasureView(lineType, sitefloor, startDate, endDate);
     }
 
+    public List<Map> getPersonalAlm(String lineType, String sitefloor, String startDate, String endDate) {
+        List<Map> l = countermeasureDAO.getPersonalAlm(lineType, sitefloor, startDate, endDate);
+
+//        out.print(l);
+//        int babId = 0;
+//
+//        List<Map> finalData = new ArrayList();
+//
+//        Map map = null;
+//        for (Map m : l) {
+//            int id = (int) m.get("id");
+//            if (id != 0) {
+//                if (id != babId) {
+//                    if (map != null) {
+//                        finalData.add(map);
+//                        map = null;
+//                    } else {
+//                        map = m;
+//                        babId = id;
+//                    }
+//                } else if (map != null && id == babId) {
+//                    map.putAll(m);
+//                }
+//            }
+//        }
+//
+//        return finalData;
+        return l;
+    }
+
     public List<Map> getErrorCode() {
         return countermeasureDAO.getErrorCode();
     }
@@ -76,6 +110,14 @@ public class CountermeasureService {
 
     public boolean deleteCountermeasure(int id) {
         return countermeasureDAO.deleteCountermeasure(id);
+    }
+
+    public static void main(String arg0[]) {
+        BasicDAO.dataSourceInit();
+        List<Map> l = new CountermeasureService().getPersonalAlm("ASSY", "6", "16-09-01", "16-10-03");
+        for (Map m : l) {
+            out.println(new Gson().toJson(m));
+        }
     }
 
 }

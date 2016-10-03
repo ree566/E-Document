@@ -68,7 +68,7 @@
             <cron>
                 <name>CheckSensor</name>
                 <job-name>CheckSensor</job-name>
-                <cron-expression>0 0,30 9-16 ? * MON-SAT *</cron-expression>
+                <cron-expression>0 0,30 9-11,13-16 ? * MON-SAT *</cron-expression>
             </cron>
         </trigger>
     </schedule>

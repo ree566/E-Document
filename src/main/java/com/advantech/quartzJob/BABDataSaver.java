@@ -63,7 +63,7 @@ public class BABDataSaver implements Job {
                 if (fbn == null) {
                     continue;
                 }
-                int diffHours = fbnService.checkTimeDiff(fbn);
+                int diffHours = fbnService.checkHoursDiff(fbn);
                 if (diffHours >= MAX_WAIT_HOURS) {
                     unClosedBabs.add(bab);
                     log.info("Unclosed babList add " + new Gson().toJson(bab));

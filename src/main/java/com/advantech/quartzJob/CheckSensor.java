@@ -38,7 +38,7 @@ public class CheckSensor implements Job {
     //定時查看sensor資料是否又暫停or異常
     private void checkSensorAndSendMail() throws MessagingException {
         List processingBAB = BasicService.getBabService().getProcessingBAB();
-        int minDiff = BasicService.getFbnService().checkLastFBNTimeDiff();
+        int minDiff = BasicService.getFbnService().checkLastFBNMinuteDiff();
         int maxAllowMin = 30;
 
         if (!processingBAB.isEmpty() && minDiff >= maxAllowMin) {

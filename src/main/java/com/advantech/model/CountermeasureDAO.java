@@ -62,6 +62,10 @@ public class CountermeasureDAO extends BasicDAO {
         return queryProcForMapList(this.getConn(), "{CALL countermeasureDownExcel(?,?,?,?)}", lineType, sitefloor, startDate, endDate);
     }
 
+    public List<Map> getPersonalAlm(String lineType, String sitefloor, String startDate, String endDate) {
+        return queryProcForMapList(this.getConn(), "{CALL personalAlmDownExcel(?,?,?,?)}", lineType, sitefloor, startDate, endDate);
+    }
+
     public List<Map> getErrorCode() {
         return queryForMapList(getConn(), "SELECT * FROM errorCode");
     }

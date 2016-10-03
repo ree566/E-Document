@@ -10,6 +10,7 @@ import com.advantech.entity.FBN;
 import java.util.List;
 import java.util.Map;
 import org.joda.time.DateTime;
+import org.joda.time.Hours;
 import org.joda.time.Minutes;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -46,14 +47,14 @@ public class FBNService {
         return fbnDAO.getBABFinalStationSensorStatus(BABid);
     }
 
-    public Integer checkLastFBNTimeDiff() {
+    public Integer checkLastFBNMinuteDiff() {
         DateTime now = new DateTime();
         return Minutes.minutesBetween(convert(getSensorTime(this.getLastInputData())), now).getMinutes();
     }
 
-    public Integer checkTimeDiff(FBN f) {
+    public Integer checkHoursDiff(FBN f) {
         DateTime now = new DateTime();
-        return Minutes.minutesBetween(convert(getSensorTime(f)), now).getMinutes();
+        return Hours.hoursBetween(convert(getSensorTime(f)), now).getHours();
     }
 
     private String getSensorTime(FBN f) {

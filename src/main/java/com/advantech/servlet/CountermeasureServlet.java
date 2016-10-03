@@ -91,9 +91,6 @@ public class CountermeasureServlet extends HttpServlet {
             case "getActionCode":
                 out.print(new JSONObject().put("data", cService.getActionCode()));
                 break;
-            case "getExcel":
-                out.print(new JSONObject().put("data", cService.getCountermeasureView()));
-                break;
             default:
                 out.print(new JSONObject().put("data", noDataEffectMsg));
                 break;
