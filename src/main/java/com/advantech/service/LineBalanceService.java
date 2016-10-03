@@ -29,7 +29,6 @@ public class LineBalanceService {
 
     private final String targetMail = PropertiesReader.getInstance().getTestMail();
     private final int BALANCE_ROUNDING_DIGIT = PropertiesReader.getInstance().getBalanceRoundingDigit();
-    private final int MAX_BAB_STATION = 4;
 
     private final LineBalancingDAO lineBalanceDAO;
 
@@ -87,15 +86,6 @@ public class LineBalanceService {
 
     private int parseDoubleToInteger(double d) {
         return (int) Math.round(d * 100);
-    }
-
-    public Double[] fillBalanceDataToArray(JSONArray lineBalances) throws JSONException {
-        Double[] convertData = new Double[MAX_BAB_STATION];//假使目前站別max只有4(因資料庫欄位特殊)
-        int length = lineBalances.length();
-        for (int a = 0; a < length; a++) {
-            convertData[a] = (Double) lineBalances.getJSONObject(a).getDouble("average");
-        }
-        return convertData;
     }
 
     private void sendMail(BAB bab, int num1, int num2, int diff) throws JSONException, MessagingException {

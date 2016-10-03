@@ -7,7 +7,6 @@ package com.advantech.model;
 
 import com.advantech.helper.ProcRunner;
 import com.advantech.helper.CronTrigMod;
-import java.beans.PropertyVetoException;
 import java.io.Serializable;
 import java.sql.*;
 import java.util.ArrayList;
@@ -18,7 +17,6 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
-import net.sourceforge.jtds.jdbcx.JtdsDataSource;
 import org.apache.commons.dbutils.DbUtils;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
@@ -51,10 +49,8 @@ public class BasicDAO implements Serializable {
     private static final int RETRY_WAIT_TIME = 3000;
 
     private static Map<String, DataSource> dataSourceMap;
-    private static DataSource ds = null;
 
     static {
-        ds = getDataSource();
         qRunner = new QueryRunner();
         pRunner = new ProcRunner();
     }
@@ -63,7 +59,7 @@ public class BasicDAO implements Serializable {
 
         Way_Chien_TWM3("jdbc/res2"),
         Way_Chien_WebAccess("jdbc/res3"),
-        Way_Chien_LineBalcing("jdbc/res4");
+        Way_Chien_LineBalancing("jdbc/res4");
 
         SQL(String str) {
             this.str = str;
@@ -101,31 +97,30 @@ public class BasicDAO implements Serializable {
         Context envContext = (Context) initContext.lookup("java:/comp/env");
         DataSource dataSource = (DataSource) envContext.lookup(dataSourcePath);
         return dataSource;
+
+//        JtdsDataSource xaDS = new JtdsDataSource();
+//        xaDS.setServerName("M3-SERVER");
+//        xaDS.setDatabaseName(getDbName(dataSourcePath));
+//        xaDS.setUser("waychien");
+//        xaDS.setPassword("m3server");
+//        xaDS.setCharset("UTF-8");
+//        return xaDS;
+    }
+
+    private static String getDbName(String dataSourcePath) {
+        if (dataSourcePath.equals(SQL.Way_Chien_TWM3.toString())) {
+            return "TWM3";
+        } else if (dataSourcePath.equals(SQL.Way_Chien_WebAccess.toString())) {
+            return "WebAccess";
+        } else if (dataSourcePath.equals(SQL.Way_Chien_LineBalancing.toString())) {
+            return "Line_Balancing";
+        } else {
+            return "";
+        }
     }
 
     public static Connection getDBUtilConn(SQL sqlType) {
         return openConn(sqlType.toString());
-//        return getConnWithoutJndi();
-    }
-
-    private static DataSource getDataSource(){
-        JtdsDataSource xaDS = new JtdsDataSource();
-        xaDS.setServerName("M3-SERVER");
-        xaDS.setDatabaseName("WebAccess");
-        xaDS.setUser("waychien");
-        xaDS.setPassword("m3server");
-        return xaDS;
-    }
-
-    //If not use jndi
-    private static Connection getConnWithoutJndi() {
-        Connection conn = null;
-        try {
-            conn = ds.getConnection();
-        } catch (SQLException ex) {
-            log.error(ex.toString());
-        }
-        return conn;
     }
 
     private synchronized static Connection openConn(String dataSource) {

@@ -12,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tempuri.Service;
 import org.tempuri.ServiceSoap;
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
@@ -51,16 +50,18 @@ public class WebServiceTX {
         try {
             WebServiceRV rv = WebServiceRV.getInstance();
             User user = rv.getMESUser(jobnumber);
-            Document doc = rv.getKanbanUserInHistory(jobnumber);
-            Element element = doc.getDocumentElement();
-            String lineId = getString("LINE_ID1", element);
-            String stationId = getString("STATION_ID", element);
-            
-            if(lineId == null || stationId == null){
-                log.error("Can not find user in the history data, login abandon");
-                return "Login fail.";
-            }
 
+//Get the lineId & station id from the second xml(history data)
+//            Document doc = rv.getKanbanUserInHistory(jobnumber);
+//            Element element = doc.getDocumentElement();
+//            String lineId = getString("LINE_ID1", element);
+            String lineId = "21", stationId = "-1";// 目前暫時寫死，等待有固定查詢來源
+//            String stationId = getString("STATION_ID", element);
+
+//            if(lineId == null || stationId == null){
+//                log.error("Can not find user in the history data, login abandon");
+//                return "Login fail.";
+//            }
             String data = "<root><METHOD ID='WMPSO.TxWorkManPowerCard001'/><WORK_MANPOWER_CARD>"
                     + "<WORK_ID>-1</WORK_ID>"
                     + "<LINE_ID>" + lineId + "</LINE_ID>"
@@ -69,7 +70,7 @@ public class WebServiceTX {
                     + "<UNIT_NO>T</UNIT_NO>"
                     + "<USER_NO>" + user.getUserNo() + "</USER_NO>"
                     + "<USER_NAME_CH>" + user.getUserName() + "</USER_NAME_CH>"
-                    + "<WORK_DESC></WORK_DESC>"
+                    + "<WORK_DESC>\"\"</WORK_DESC>"
                     + "<CARD_FLAG>1</CARD_FLAG>"
                     + "<USER_ID>" + user.getUserId() + "</USER_ID>"
                     + "</WORK_MANPOWER_CARD></root>";

@@ -225,24 +225,29 @@ public class BABDAO extends BasicDAO {
             conn1.setAutoCommit(false);
 
             if (isSaveToOldDB) {
-                conn2 = getDBUtilConn(SQL.Way_Chien_LineBalcing);
+                conn2 = getDBUtilConn(SQL.Way_Chien_LineBalancing);
                 conn2.setAutoCommit(false);
-                Double[] data = lineBalanceService.fillBalanceDataToArray(balances);
+
+                String columnName = "";
+                String params = ""; //串接sql字串 (待解決Do_not數量與待寫入數量不一之情況)
+
+                for (int i = 0; i < balances.length(); i++) {
+                    Double avg = (Double) balances.getJSONObject(i).getDouble("average");
+                    columnName += ("Do_not" + (i + 1) + ", ");
+                    params += (avg + ",");
+                }
+
                 Object[] param2 = {
                     bab.getPeople(),
                     bab.getLinetype(),
                     bab.getPO(),
                     bab.getModel_name(),
                     baln,
-                    data[0],
-                    data[1],
-                    data[2],
-                    data[3],
                     bab.getLine()
                 };
                 qRunner.update(conn2,
                         "insert into Line_Balancing_Main(Number_of_poople, Do_not_stop, PO, PN, Balance, "
-                        + "Do_not1, Do_not2, Do_not3, Do_not4, Line) values (?,?,?,?,?,?,?,?,?,?)",
+                        + columnName + " Line) values (?,?,?,?,?, " + params + " ?)",
                         param2);
                 DbUtils.commitAndCloseQuietly(conn2);
             }
@@ -257,9 +262,7 @@ public class BABDAO extends BasicDAO {
         } catch (SQLException ex) {
             log.error(ex.toString());
             DbUtils.rollbackAndCloseQuietly(conn1);
-            if (conn2 != null) {
-                DbUtils.rollbackAndCloseQuietly(conn2);
-            }
+            DbUtils.rollbackAndCloseQuietly(conn2);
         } catch (MessagingException | JSONException ex) {
             log.error(ex.toString());
             flag = true; //即使寄信失敗一樣傳回true給使用者知道(不需要知道寄信fail log有紀錄即可)

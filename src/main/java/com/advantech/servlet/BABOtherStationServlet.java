@@ -74,7 +74,7 @@ public class BABOtherStationServlet extends HttpServlet {
                 if (stationid <= b.getPeople()) {
                     switch (action) {
                         case "LOGIN":
-                            if(!pChecker.checkInputVal("jobnumber")){
+                            if (!pChecker.checkInputVal("jobnumber")) {
                                 return;
                             }
                             BABPeopleRecord bRecord = bService.getExistUserInBAB(babid, stationid);
@@ -106,7 +106,7 @@ public class BABOtherStationServlet extends HttpServlet {
 
                         case "BAB_END":
 
-                            if (b.getPeople() == stationid) { // if the station is the last station
+                            if (stationid == b.getPeople()) { // if the station is the last station
                                 out.print(babService.closeBAB(babid));
                             } else {
                                 JSONObject message = babService.stopSensor(babid, stationid);
