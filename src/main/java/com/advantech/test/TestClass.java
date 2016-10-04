@@ -5,10 +5,6 @@
  */
 package com.advantech.test;
 
-import com.advantech.helper.XmlGenerator;
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  *
  * @author Wei.Cheng

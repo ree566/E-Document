@@ -46,7 +46,8 @@
         <script src="js/param.check.js"></script>
         <script>
             var userInfoCookieName = "userInfo", testLineTypeCookieName = "testLineTypeCookieName";
-            var STATION_LOGIN = "LOGIN", STATION_LOGOUT = "LOGOUT";
+            var STATION_LOGIN = "LOGIN", STATION_LOGOUT = "LOGOUT", CHANGE_DECK = "CHANGE_DECK";
+            var savedTable, savedJobnumber;
             var tabreg = /^[0-9a-zA-Z-]+$/;//Textbox check regex.
 
             $(document).ready(function () {
@@ -69,15 +70,21 @@
                 //Checking if user is login the babpage.jsp or not.(Get the cookie generate by babpage.jsp)
                 //If not, login and check the user input values.
                 $("#begin").click(function () {
-                    if (confirm("確定登入?")) {
-                        LoginOrLogoutTestLineType(STATION_LOGIN);
+                    if (confirm("確定登入?\n※MES系統將同步進行上線。")) {
+                        modifyTestTable(STATION_LOGIN);
                     }
                 });
 
                 //TestTable logout.(Delete data from database)
                 $("#end").click(function () {
-                    if (confirm("確定登出?")) {
-                        LoginOrLogoutTestLineType(STATION_LOGOUT);
+                    if (confirm("確定登出?\n※MES系統將同步進行下線。")) {
+                        modifyTestTable(STATION_LOGOUT);
+                    }
+                });
+
+                $("#changeDeck").click(function () {
+                    if (confirm("確定換桌?\n※MES系統\"不會\"進行下線。")) {
+                        modifyTestTable(CHANGE_DECK);
                     }
                 });
 
@@ -123,7 +130,7 @@
                 $(":input,select").not("#redirectBtn").attr("disabled", "disabled");
             }
 
-            function LoginOrLogoutTestLineType(action) {
+            function modifyTestTable(action) {
                 var userNo = $("#user_number").val();
                 var tableNo = $("#table").val();
                 var data = {
@@ -148,10 +155,10 @@
                         if (response == "success") {
                             if (action == STATION_LOGIN) {
                                 generateCookie(testLineTypeCookieName, JSON.stringify(data));
-                            } else if (action == STATION_LOGOUT) {
+                            } else if (action == STATION_LOGOUT || action == CHANGE_DECK) {
                                 $("#user_number,#table,#begin").removeAttr("disabled");
                                 $(":text").val("");
-                                removeAllStepCookie();
+                                removeTestLineTypeCookie();
                             }
                             showMsg(response);
                             reload();
@@ -167,13 +174,13 @@
             }
 
             function lockWhenUserIsLogin() {
-                $("#user_number,#table,#begin").attr("disabled", true);
-                $("#end").removeAttr("disabled");
+                $("#user_number, #table, #begin").attr("disabled", true);
+                $("#end, #changeDeck, #clearcookies").removeAttr("disabled");
             }
 
             function unlockLoginInput() {
-                $("#user_number,#table,#begin").removeAttr("disabled");
-                $("#end").attr("disabled", true);
+                $("#user_number, #table, #begin").removeAttr("disabled");
+                $("#end, #changeDeck, #clearcookies").attr("disabled", true);
             }
 
             function showTestInfo() {
@@ -194,7 +201,7 @@
             }
 
             //Logout the user saving cookie.
-            function removeAllStepCookie() {
+            function removeTestLineTypeCookie() {
                 $.removeCookie(testLineTypeCookieName);
             }
 
@@ -224,6 +231,7 @@
                 <c:set var="tb" value="${currentCookie.value.value}" />
             </c:if>
         </c:forEach>
+
         <div class="Div0" id="inputpannel">
             <div class="Div1 form-inline">
                 <input type="text" placeholder="刷入工號" id="user_number" ${key == null ?"":"disabled"} value="${key == null ?"":key}" maxlength="10">
@@ -233,9 +241,10 @@
                         <option value="${tab.id}">${tab.name}</option>
                     </c:forEach>
                 </select>
-                <input type="button" value="開始" id="begin" ${key == null ?"":"disabled"}>
+                <input type="button" value="開始" id="begin">
                 <input type="button" value="結束" id="end">
-                <input type="button" value="清除cookie" onclick="removeAllStepCookie()" id="clearcookies" ${key != null ?"":"disabled"}>
+                <input type="button" value="換桌" id="changeDeck">
+                <!--<input type="button" value="清除cookie" onclick="removeTestLineTypeCookie()" id="clearcookies">-->
             </div>
             <div class="Div2">
                 <p><h3>步驟1:</h3>先在此處輸入您的<code>桌次</code>以及<code>工號</code>，確認之後按下開始。</p>
@@ -269,15 +278,6 @@
                     <h4>此處會紀錄您刷入的工號以及桌號。</h3>
                 </div>
             </div>
-            <!--            <div class="Div0">
-                            <div class="Div1">目前已使用中的桌次:
-                                <p id="tableUseStatus">
-                                </p>
-                            </div>
-                            <div class="Div2">
-                                <p><h3>步驟3:</h3>此處會顯示已經刷入成功的桌次，請確認您的桌次是否在其中。</p>
-                            </div>
-                        </div>-->
             <div class="Div0">
                 <div class="Div1">未刷入資料庫的使用者:
                     <p>

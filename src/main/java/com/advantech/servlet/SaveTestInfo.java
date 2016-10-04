@@ -6,6 +6,7 @@
  */
 package com.advantech.servlet;
 
+import com.advantech.entity.Test;
 import com.advantech.helper.ParamChecker;
 import com.advantech.helper.WebServiceTX;
 import com.advantech.service.BasicService;
@@ -24,7 +25,7 @@ public class SaveTestInfo extends HttpServlet {
 
     private TestService testService = null;
     private ParamChecker pChecker = null;
-    private final String login = "LOGIN", logout = "LOGOUT", success = "success", fail = "fail";
+    private final String login = "LOGIN", logout = "LOGOUT", success = "success", changeDeck = "CHANGE_DECK", fail = "fail";
 
     @Override
     public void init()
@@ -47,31 +48,33 @@ public class SaveTestInfo extends HttpServlet {
         PrintWriter out = res.getWriter();
 
         String action = req.getParameter("action");
-        String userNo = req.getParameter("userNo");
+        String jobnumber = req.getParameter("userNo");
         String tableNo = req.getParameter("tableNo");
         String result;
 
         if (pChecker.checkInputVals(action)) {
-            if (pChecker.checkInputVals(userNo, tableNo)) {
+            if (pChecker.checkInputVals(jobnumber, tableNo)) {
                 int tableNum = Integer.parseInt(tableNo);
                 switch (action) {
                     case login:
-                        String i = testService.checkDeskIsAvailable(tableNum, userNo);
+                        String i = testService.checkDeskIsAvailable(tableNum, jobnumber);
                         if (i == null) {
-                            result = testService.addTestPeople(tableNum, userNo) ? success : fail;
-                            //Kanban data 待測試
+                            result = testService.addTestPeople(tableNum, jobnumber) ? success : fail;
                             if (result.equals(success)) {
-                                WebServiceTX.getInstance().kanbanUserLogin(userNo);
+                                WebServiceTX.getInstance().kanbanUserLogin(jobnumber);
                             }
                         } else {
                             result = i;
                         }
                         break;
                     case logout:
-                        result = testService.removeTestPeople(tableNum, userNo) ? success : fail;
+                        result = (testService.getTableInfo(tableNum, jobnumber) != null) ? (testService.removeTestPeople(tableNum, jobnumber) ? success : fail) : fail;
                         if (result.equals(success)) {
-                            WebServiceTX.getInstance().kanbanUserLogout(userNo);
+                            WebServiceTX.getInstance().kanbanUserLogout(jobnumber);
                         }
+                        break;
+                    case changeDeck:
+                        result = (testService.getTableInfo(tableNum, jobnumber) != null) ? (testService.removeTestPeople(tableNum, jobnumber) ? success : fail) : fail;
                         break;
                     default:
                         result = "Not support action.";

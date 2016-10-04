@@ -33,6 +33,16 @@ public class TestDAO extends BasicDAO {
         return getAllTableInfo();
     }
 
+    public Test getTableInfo(int tableNo) {
+        List<Test> l = queryTestTable("SELECT * FROM testTableView WHERE ID = ?", tableNo);
+        return !l.isEmpty() ? l.get(0) : null;
+    }
+
+    public Test getTableInfo(int tableNo, String jobnumber) {
+        List<Test> l = queryTestTable("SELECT * FROM testTableView WHERE ID = ? AND userid = ?", tableNo, jobnumber);
+        return !l.isEmpty() ? l.get(0) : null;
+    }
+
     private List queryTestTable(String sql, Object... params) {
         return queryForBeanList(getConn(), Test.class, sql, params);
     }
@@ -60,8 +70,8 @@ public class TestDAO extends BasicDAO {
         return queryProcForMapList(getConn(), "{CALL testLineRecord(?,?)}", startDate, endDate);
     }
 
-    public boolean insertTestPeople(int tableNo, String userNo) {
-        return updateTestTable("INSERT INTO LS_TEST(id,userid) VALUES (?,?)", tableNo, userNo);
+    public boolean insertTestPeople(int tableNo, String jobnumber) {
+        return updateTestTable("INSERT INTO LS_TEST(id,userid) VALUES (?,?)", tableNo, jobnumber);
     }
 
     public boolean recordTestLineType(List<TestLineTypeUser> l) {
@@ -73,8 +83,8 @@ public class TestDAO extends BasicDAO {
         );
     }
 
-    public boolean deleteTestPeople(int tableNo, String userNo) {
-        return updateTestTable("DELETE LS_TEST WHERE id=?", tableNo);
+    public boolean changeDeck(int tableNo, String jobnumber) {
+        return updateTestTable("UPDATE LS_TEST SET id = ? WHERE userid = ?", tableNo, jobnumber);
     }
 
     public boolean updateTestAlarm(List<AlarmAction> l) {
@@ -97,6 +107,10 @@ public class TestDAO extends BasicDAO {
     public Map getPeopleNotInDB() {
 //        return DataTransformer.getPeopleNotMatch();
         return TestLineTypeFacade.getInstance().getPEOPLE_NOT_MATCH();
+    }
+
+    public boolean deleteTestPeople(int tableNo) {
+        return updateTestTable("DELETE LS_TEST WHERE id=?", tableNo);
     }
 
     public boolean cleanTestTable() {

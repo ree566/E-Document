@@ -6,7 +6,6 @@
 package com.advantech.helper;
 
 import com.advantech.entity.User;
-import static java.lang.System.out;
 import java.net.URL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,18 +49,13 @@ public class WebServiceTX {
         try {
             WebServiceRV rv = WebServiceRV.getInstance();
             User user = rv.getMESUser(jobnumber);
+            
+            if(user == null){
+                return "The user is not exist.";
+            }
 
-//Get the lineId & station id from the second xml(history data)
-//            Document doc = rv.getKanbanUserInHistory(jobnumber);
-//            Element element = doc.getDocumentElement();
-//            String lineId = getString("LINE_ID1", element);
             String lineId = "21", stationId = "-1";// 目前暫時寫死，等待有固定查詢來源
-//            String stationId = getString("STATION_ID", element);
 
-//            if(lineId == null || stationId == null){
-//                log.error("Can not find user in the history data, login abandon");
-//                return "Login fail.";
-//            }
             String data = "<root><METHOD ID='WMPSO.TxWorkManPowerCard001'/><WORK_MANPOWER_CARD>"
                     + "<WORK_ID>-1</WORK_ID>"
                     + "<LINE_ID>" + lineId + "</LINE_ID>"
@@ -74,7 +68,6 @@ public class WebServiceTX {
                     + "<CARD_FLAG>1</CARD_FLAG>"
                     + "<USER_ID>" + user.getUserId() + "</USER_ID>"
                     + "</WORK_MANPOWER_CARD></root>";
-            out.print("The data input is " + data);
             return this.getWebServiceResponse(data, kanbanLogin);
         } catch (Exception ex) {
             log.error(ex.toString());

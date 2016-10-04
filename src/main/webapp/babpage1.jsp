@@ -429,9 +429,10 @@
             }
 
             function setPeopleOptions() {
+                var miniumPeople = 2;
                 var selectedLineName = $("#lineNo option:selected").text();
                 var line = totalLineStatus.get(selectedLineName);
-                for (var i = 1; i <= line.people; i++) {
+                for (var i = miniumPeople; i <= line.people; i++) {
                     $("#people").append("<option value=" + i + ">" + i + " 人</option>");
                 }
             }

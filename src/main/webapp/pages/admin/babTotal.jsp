@@ -1072,13 +1072,28 @@
                 });
 
                 $("#generateExcel").click(function () {
+
+                    $(this).attr("disabled", true);
+
                     var lineType = $('#lineType2').val();
                     var sitefloor = $('#sitefloor').val();
                     var startDate = $('#fini').val();
                     var endDate = $('#ffin').val();
 
-                    window.location.href = '../../BABExcelGenerate?startDate=' + startDate + '&endDate=' + endDate + '&lineType=' + lineType + '&sitefloor=' + sitefloor;
+                    var counter = 6;
+                    var interval = setInterval(function () {
+                        counter--;
+                        $("#generateExcel").val("產出excel( " + counter + " 秒)");
+                        // Display 'counter' wherever you want to display it.
+                        if (counter == 0) {
+                            // Display a login box
+                            $("#generateExcel").attr("disabled", false).val("產出excel");
+                            
+                            clearInterval(interval);
+                        }
+                    }, 1000);
 
+                    window.location.href = '../../BABExcelGenerate?startDate=' + startDate + '&endDate=' + endDate + '&lineType=' + lineType + '&sitefloor=' + sitefloor;
                 });
 
                 $("body").on("click", "#searchAvailableBAB, #send", function () {

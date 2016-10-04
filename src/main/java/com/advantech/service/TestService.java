@@ -28,20 +28,28 @@ public class TestService {
         return testDAO.getAllTableInfo();
     }
 
+    public Test getTableInfo(int tableNo) {
+        return testDAO.getTableInfo(tableNo);
+    }
+
+    public Test getTableInfo(int tableNo, String jobNumber) {
+        return testDAO.getTableInfo(tableNo, jobNumber);
+    }
+
     public List<Map> getRecordTestLineType(String startDate, String endDate) {
         return testDAO.getRecordTestLineType(startDate, endDate);
     }
 
-    public boolean addTestPeople(int tableNum, String jobNumber) {
-        return testDAO.insertTestPeople(tableNum, jobNumber);
+    public boolean addTestPeople(int tableNo, String jobNumber) {
+        return testDAO.insertTestPeople(tableNo, jobNumber);
     }
 
     public boolean recordTestLineType(List<TestLineTypeUser> l) {
         return testDAO.recordTestLineType(l);
     }
 
-    public boolean removeTestPeople(int tableNum, String jobNumber) {
-        return testDAO.deleteTestPeople(tableNum, jobNumber);
+    public boolean changeDeck(int tableNo, String jobnumber) {
+        return testDAO.changeDeck(tableNo, jobnumber);
     }
 
     public boolean updateTestAlarm(List<AlarmAction> l) {
@@ -50,6 +58,15 @@ public class TestService {
 
     public boolean resetTestAlarm() {
         return testDAO.resetTestAlarm();
+    }
+
+    public String checkDeskIsAvailable(int tableNo) {
+        Test t = this.getTableInfo(tableNo);
+        if (t != null) {
+            return "此桌次已有使用者";
+        } else {
+            return null;
+        }
     }
 
     public String checkDeskIsAvailable(int tableNo, String userNo) {
@@ -65,6 +82,10 @@ public class TestService {
             }
         }
         return null;
+    }
+
+    public boolean removeTestPeople(int tableNo, String jobNumber) {
+        return testDAO.deleteTestPeople(tableNo);
     }
 
     public boolean cleanTestTable() {
