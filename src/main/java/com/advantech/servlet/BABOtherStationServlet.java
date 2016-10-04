@@ -74,34 +74,34 @@ public class BABOtherStationServlet extends HttpServlet {
                 if (stationid <= b.getPeople()) {
                     switch (action) {
                         case "LOGIN":
-                            if (!pChecker.checkInputVal("jobnumber")) {
-                                return;
-                            }
-                            BABPeopleRecord bRecord = bService.getExistUserInBAB(babid, stationid);
-                            if (bRecord != null && bRecord.getUser_id().equals(jobnumber)) {
-                                out.print("success"); //當確定人是存在的，且工號站別數已經記錄起來
-                                return;
-                            }
-                            List<BABPeopleRecord> l = bService.getExistUserInBAB(babid);
-                            boolean checkStatus = true;
-                            for (BABPeopleRecord br : l) {
-                                if (br.getUser_id().equals(jobnumber)) {
-                                    out.print("您已經在 " + br.getBtime() + " 登入第 " + br.getStation() + " 站");
-                                    checkStatus = false;
-                                    break;
-
-                                } else if (br.getStation() == stationid) {
-                                    out.print("此工單本站已經有人使用(使用者: " + br.getUser_id() + " 已經在 " + br.getBtime() + " 登入)");
-                                    checkStatus = false;
-                                    break;
-                                }
-                            }
-
-                            //檢查站別有無使用，和工號有無登入其他站別
-                            if (checkStatus == true) {
-                                boolean result = bService.recordBABPeople(babid, stationid, jobnumber);
-                                out.print(result ? "success" : "fail");
-                            }
+//                            if (!pChecker.checkInputVal("jobnumber")) {
+//                                return;
+//                            }
+//                            BABPeopleRecord bRecord = bService.getExistUserInBAB(babid, stationid);
+//                            if (bRecord != null && bRecord.getUser_id().equals(jobnumber)) {
+//                                out.print("success"); //當確定人是存在的，且工號站別數已經記錄起來
+//                                return;
+//                            }
+//                            List<BABPeopleRecord> l = bService.getExistUserInBAB(babid);
+//                            boolean checkStatus = true;
+//                            for (BABPeopleRecord br : l) {
+//                                if (br.getUser_id().equals(jobnumber)) {
+//                                    out.print("您已經在 " + br.getBtime() + " 登入第 " + br.getStation() + " 站");
+//                                    checkStatus = false;
+//                                    break;
+//
+//                                } else if (br.getStation() == stationid) {
+//                                    out.print("此工單本站已經有人使用(使用者: " + br.getUser_id() + " 已經在 " + br.getBtime() + " 登入)");
+//                                    checkStatus = false;
+//                                    break;
+//                                }
+//                            }
+//
+//                            //檢查站別有無使用，和工號有無登入其他站別
+//                            if (checkStatus == true) {
+//                                boolean result = bService.recordBABPeople(babid, stationid, jobnumber);
+//                                out.print(result ? "success" : "fail");
+//                            }
                             break;
 
                         case "BAB_END":
@@ -116,7 +116,7 @@ public class BABOtherStationServlet extends HttpServlet {
 
                                 //沒有babavg，直接回傳success，等第三站關閉
                                 if (!existBabStatistics) {
-                                    out.print("success");
+                                    out.print("查無統計數據，若要關閉工單請從最後一站直接做關閉動作");
                                 } else if (!isPrevClose) {
                                     out.print("上一站尚未關閉");
                                 } else if (!isStationClose) {
