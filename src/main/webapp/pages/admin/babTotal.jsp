@@ -649,8 +649,7 @@
                     useCurrent: true,
                     maxDate: moment(),
                     format: momentFormatString,
-                    extraFormats: [momentFormatString],
-                    disabledHours: [0, 1, 2, 3, 4, 5, 6, 7, 18, 19, 20, 21, 22, 23, 24]
+                    extraFormats: [momentFormatString]
                 };
                 var beginTimeObj = $('#fini').datetimepicker(options);
                 var endTimeObj = $('#ffin').datetimepicker(options);

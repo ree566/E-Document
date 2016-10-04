@@ -95,20 +95,22 @@ public class WebServiceTX {
     }
 
     public String kanbanUserLogout(String jobnumber) {
-        User user = WebServiceRV.getInstance().getMESUser(jobnumber);
-        String data = "<root><METHOD ID='WMPSO.TxWorkManPowerCard001'/><WORK_MANPOWER_CARD>"
-                + "<WORK_ID>" + user.getUserId() + "</WORK_ID>"
-                + "<LINE_ID>-1</LINE_ID>"
-                + "<STATION_ID>-1</STATION_ID>"
-                + "<FACTORY_NO>\"\"</FACTORY_NO>"
-                + "<UNIT_NO>\"\"</UNIT_NO>"
-                + "<USER_NO>\"\"</USER_NO>"
-                + "<USER_NAME_CH>\"\"</USER_NAME_CH>"
-                + "<WORK_DESC>\"\"</WORK_DESC>"
-                + "<CARD_FLAG>-1</CARD_FLAG>"
-                + "<USER_ID>" + user.getUserId() + "</USER_ID>"
-                + "</WORK_MANPOWER_CARD></root>";
         try {
+            WebServiceRV rv = WebServiceRV.getInstance();
+            String workId = rv.getKanbanWorkId(jobnumber);
+            User user = rv.getMESUser(jobnumber);
+            String data = "<root><METHOD ID='WMPSO.TxWorkManPowerCard001'/><WORK_MANPOWER_CARD>"
+                    + "<WORK_ID>" + workId + "</WORK_ID>"
+                    + "<LINE_ID>-1</LINE_ID>"
+                    + "<STATION_ID>-1</STATION_ID>"
+                    + "<FACTORY_NO></FACTORY_NO>"
+                    + "<UNIT_NO></UNIT_NO>"
+                    + "<USER_NO></USER_NO>"
+                    + "<USER_NAME_CH></USER_NAME_CH>"
+                    + "<WORK_DESC></WORK_DESC>"
+                    + "<CARD_FLAG>-1</CARD_FLAG>"
+                    + "<USER_ID>" + user.getUserId() + "</USER_ID>" //get userid from second xml
+                    + "</WORK_MANPOWER_CARD></root>";
             return this.getWebServiceResponse(data, kanbanLogout);
         } catch (Exception ex) {
             log.error(ex.toString());

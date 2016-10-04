@@ -202,11 +202,11 @@
                 var dragableWiget = $("#titleArea>div, #testArea>div, #babArea>div");
 //                dragableWiget.after("<div class='clearWiget'></div>");
 
-                dragableWiget.not(".clearWiget").addClass("ui-helper").draggable({
-                    drag: function (e) {
-//                        return false;
-                    }
-                });
+//                dragableWiget.not(".clearWiget").addClass("ui-helper").draggable({
+//                    drag: function (e) {
+////                        return false;
+//                    }
+//                });
 
                 $('[data-toggle="tooltip"]').tooltip();
 

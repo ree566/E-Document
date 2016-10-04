@@ -11,7 +11,9 @@ import com.advantech.entity.User;
 import java.io.StringWriter;
 import static java.lang.System.out;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
@@ -28,6 +30,7 @@ import org.tempuri.ServiceSoap;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
  *
@@ -96,10 +99,37 @@ public class WebServiceRV {
 
         return list;
     }
-    
-    public Document getKanbanUserInHistory(String jobnumber) throws Exception{
-        String str = "<root><METHOD ID='WMPSO.QryWorkManPowerCard001'/><WORK_MANPOWER_CARD><WORK_ID>-1</WORK_ID><LINE_ID>-1</LINE_ID><STATION_ID>-1</STATION_ID><FACTORY_NO></FACTORY_NO><UNIT_NO></UNIT_NO><USER_NO>" + jobnumber + "</USER_NO><CARD_FLAG>1</CARD_FLAG><START_DATE>2016-09-21</START_DATE><END_DATE>2016-09-21</END_DATE></WORK_MANPOWER_CARD></root>";
+
+    public Document getKanbanUserInHistory(String jobnumber) throws Exception {
+        String today = getToday();
+        String str = "<root><METHOD ID='WMPSO.QryWorkManPowerCard001'/><WORK_MANPOWER_CARD><WORK_ID>-1</WORK_ID><LINE_ID>-1</LINE_ID><STATION_ID>-1</STATION_ID><FACTORY_NO></FACTORY_NO><UNIT_NO></UNIT_NO>"
+                + "<USER_NO>" + jobnumber + "</USER_NO>"
+                + "<CARD_FLAG>1</CARD_FLAG>"
+                + "<START_DATE>" + today + "</START_DATE>"
+                + "<END_DATE>" + today + "</END_DATE>"
+                + "</WORK_MANPOWER_CARD></root>";
         return this.getKanbanUsers(str);
+    }
+
+    public String getKanbanWorkId(String jobnumber) throws Exception {
+        Document doc = this.getKanbanUserInHistory(jobnumber);
+        String childTagName = "WORK_ID";
+        Element rootElement = doc.getDocumentElement();
+        String requestQueueName = getString(childTagName, rootElement);
+        return requestQueueName;
+    }
+
+    private String getString(String tagName, Element element) {
+        NodeList list = element.getElementsByTagName(tagName);
+        if (list != null && list.getLength() > 0) {
+            NodeList subList = list.item(0).getChildNodes();
+
+            if (subList != null && subList.getLength() > 0) {
+                return subList.item(0).getNodeValue();
+            }
+        }
+
+        return null;
     }
 
     public List<TestLineTypeUser> getKanbanUsersForXml() {
@@ -143,18 +173,14 @@ public class WebServiceRV {
         }
     }
 
-    public static void main(String arg[]) {
-        String str = "<root><METHOD ID='PLBSO.QryLogion'/><USER_INFO><USER_NO>A-7976</USER_NO><PASSWORD></PASSWORD><STATUS>A</STATUS></USER_INFO></root>";
-        List<String> l;
-        try {
-            l = WebServiceRV.getInstance().getKanbanUsersForString(str);
-            for (String st : l) {
-                out.println(st);
-            }
-        } catch (Exception ex) {
-            out.println(ex);
-        }
+    private String getToday() {
+        SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd");
+        return sdFormat.format(new Date());
+    }
 
+    public static void main(String arg[]) {
+
+        out.print(WebServiceRV.getInstance().getToday());
     }
 
 }
