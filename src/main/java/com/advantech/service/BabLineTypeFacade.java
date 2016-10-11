@@ -25,7 +25,7 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
     private final LineBalanceService lineBalanceService;
     private final BABService babService;
     private final LineBalancePeopleGenerator lbGenerator;
-    
+
     private static List<Line> babLineStatus;
 
     private final double BAB_STANDARD;
@@ -33,12 +33,13 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
     private BabLineTypeFacade() {
         lineBalanceService = BasicService.getLineBalanceService();
         babService = BasicService.getBabService();
+        babLineStatus = BasicService.getLineService().getLine();
         lbGenerator = LineBalancePeopleGenerator.getInstance();
 
         PropertiesReader p = PropertiesReader.getInstance();
         BAB_STANDARD = p.getBabStandard();
         super.setTxtName(p.getBabTxtName());
-        babLineStatus = BasicService.getLineService().getLine();
+        initDbAlarmSign();
     }
 
     public static BabLineTypeFacade getInstance() {
@@ -54,7 +55,7 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
         for (Line line : babLineStatus) {
             String lineName = line.getName().trim();
             for (int i = 1, length = line.getPeople(); i <= length; i++) {
-                dataMap.put(lineName + "-L-" + i, super.NORMAL_SIGN); 
+                dataMap.put(lineName + "-L-" + i, super.NORMAL_SIGN);
             }
         }
     }
@@ -134,13 +135,19 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
         }
     }
 
+    private void initDbAlarmSign() {
+        this.initMap();
+        babService.removeAllAlarmSign();
+        babService.insertBABAlarm(super.mapToAlarmSign(dataMap));
+    }
+
     @Override
-    protected boolean setAlarmSignToDb(List<AlarmAction> l) {
+    protected boolean setDbAlarmSign(List<AlarmAction> l) {
         return babService.updateBABAlarm(l);
     }
 
     @Override
-    protected boolean resetAlarmSignToDb() {
+    protected boolean resetDbAlarmSign() {
         return babService.resetBABAlarm();
     }
 

@@ -28,9 +28,6 @@ public class BABExcelGenerate extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
-        res.setContentType("application/vnd.ms-excel");
-        res.setHeader("Content-Disposition",
-                "attachment; filename=sampleData" + DateTimeFormat.forPattern("yyyyMMdd").print(new DateTime()) + ".xls");
 
         String lineType = req.getParameter("lineType");
         String sitefloor = req.getParameter("sitefloor");
@@ -41,10 +38,18 @@ public class BABExcelGenerate extends HttpServlet {
         List countermeasures = cs.getCountermeasureView(lineType, sitefloor, startDate, endDate);
         List personalAlms = cs.getPersonalAlm(lineType, sitefloor, startDate, endDate);
 
-        HSSFWorkbook w = ExcelGenerator.generateWorkBook(countermeasures, personalAlms);
+        if (countermeasures.isEmpty() && personalAlms.isEmpty()) {
+            res.setContentType("text/html");
+            res.getWriter().println("<script>alert('查無資料，無法彙整出excel');location='pages/admin/BabTotal';</script>");
+        } else {
+            res.setContentType("application/vnd.ms-excel");
+            res.setHeader("Content-Disposition",
+                    "attachment; filename=sampleData" + DateTimeFormat.forPattern("yyyyMMdd").print(new DateTime()) + ".xls");
+            HSSFWorkbook w = ExcelGenerator.generateWorkBook(countermeasures, personalAlms);
 
-        w.write(res.getOutputStream());
-        w.close();
+            w.write(res.getOutputStream());
+            w.close();
+        }
     }
 
 }

@@ -17,6 +17,7 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
+import net.sourceforge.jtds.jdbcx.JtdsDataSource;
 import org.apache.commons.dbutils.DbUtils;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
@@ -82,7 +83,7 @@ public class BasicDAO implements Serializable {
             for (SQL sql : SQL.values()) {
                 String dataSourceString = sql.toString();
                 try {
-                    dataSourceMap.put(dataSourceString, getDataSource(dataSourceString));
+                    dataSourceMap.put(dataSourceString, getDataSource1(dataSourceString));
                 } catch (NamingException ex) {
                     log.error(ex.toString());
                 }
@@ -97,14 +98,16 @@ public class BasicDAO implements Serializable {
         Context envContext = (Context) initContext.lookup("java:/comp/env");
         DataSource dataSource = (DataSource) envContext.lookup(dataSourcePath);
         return dataSource;
+    }
 
-//        JtdsDataSource xaDS = new JtdsDataSource();
-//        xaDS.setServerName("M3-SERVER");
-//        xaDS.setDatabaseName(getDbName(dataSourcePath));
-//        xaDS.setUser("waychien");
-//        xaDS.setPassword("m3server");
-//        xaDS.setCharset("UTF-8");
-//        return xaDS;
+    private static DataSource getDataSource1(String dataSourcePath) throws NamingException {
+        JtdsDataSource xaDS = new JtdsDataSource();
+        xaDS.setServerName("M3-SERVER");
+        xaDS.setDatabaseName(getDbName(dataSourcePath));
+        xaDS.setUser("waychien");
+        xaDS.setPassword("m3server");
+        xaDS.setCharset("UTF-8");
+        return xaDS;
     }
 
     private static String getDbName(String dataSourcePath) {

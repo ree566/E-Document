@@ -36,13 +36,13 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
     private final int TEST_USER_NOT_IN_SYSTEM_SIGN = -1, TEST_USER_NOT_IN_XML_SIGN = 2;
 
     public TestLineTypeFacade() {
+        testService = BasicService.getTestService();
         PropertiesReader p = PropertiesReader.getInstance();
         maxTestTable = p.getMaxTestTable();
         TEST_STANDARD = p.getTestStandard();
-
         rv = WebServiceRV.getInstance();
-        testService = BasicService.getTestService();
         super.setTxtName(p.getTestTxtName());
+        initDbAlarmSign();
     }
 
     public static TestLineTypeFacade getInstance() {
@@ -133,13 +133,19 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
                 .put("isalarm", status);
     }
 
+    private void initDbAlarmSign() {
+        this.initMap();
+        testService.removeAllAlarmSign();
+        testService.insertTestAlarm(super.mapToAlarmSign(dataMap));
+    }
+
     @Override
-    protected boolean setAlarmSignToDb(List<AlarmAction> l) {
+    protected boolean setDbAlarmSign(List<AlarmAction> l) {
         return testService.updateTestAlarm(l);
     }
 
     @Override
-    protected boolean resetAlarmSignToDb() {
+    protected boolean resetDbAlarmSign() {
         return testService.resetTestAlarm();
     }
 

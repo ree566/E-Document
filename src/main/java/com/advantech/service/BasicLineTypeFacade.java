@@ -40,10 +40,8 @@ public abstract class BasicLineTypeFacade {
 
     protected String txtName;//先設定txtName
 
-    private boolean txtNameCheckFlag = false;
-
     protected BasicLineTypeFacade() {
-
+        
         txtWriter = TxtWriter.getInstance();
 
         PropertiesReader p = PropertiesReader.getInstance();
@@ -56,8 +54,12 @@ public abstract class BasicLineTypeFacade {
 
     public void processingDataAndSave() throws Exception {
         isNeedToOutputResult = this.generateData();
-        if (isWriteToTxt) {
-            saveToTxt(txtName);
+        if (controlJobFlag == true) {
+            if (isNeedToOutputResult) {
+                outputResult(dataMap, txtName);
+            } else {
+                resetOutputResult(txtName);
+            }
         }
     }
 
@@ -72,6 +74,7 @@ public abstract class BasicLineTypeFacade {
 
     /**
      * Generate data and put the data into variable processingJsonObject.
+     *
      * @return Someone is under the balance or not.
      */
     protected abstract boolean generateData();
@@ -79,16 +82,6 @@ public abstract class BasicLineTypeFacade {
     protected void changeFlagStatus(boolean flagStatus) {
         if (resetFlag == false) {
             resetFlag = flagStatus;
-        }
-    }
-
-    protected void saveToTxt(String txtName) throws Exception {
-        if (controlJobFlag == true) {
-            if (isNeedToOutputResult) {
-                outputResult(dataMap, txtName);
-            } else {
-                resetOutputResult(txtName);
-            }
         }
     }
 
@@ -112,38 +105,40 @@ public abstract class BasicLineTypeFacade {
                     outputResult(dataMap, txtName);
                 }
                 if (isWriteToDB) {
-                    resetAlarmSignToDb();
+                    resetDbAlarmSign();
                 }
                 resetFlag = false;
             }
         }
     }
 
-    private boolean saveAlarmSignToDb(Map map) throws IOException {
-        if (map == null || map.isEmpty()) {
-            return false;
-        }
+    private boolean saveAlarmSignToDb(Map map){
+        return setDbAlarmSign(mapToAlarmSign(map));
+    }
+
+    protected List<AlarmAction> mapToAlarmSign(Map map) {
         List l = new ArrayList();
-        Iterator it = map.keySet().iterator();
-
-        while (it.hasNext()) {
-            Object key = it.next();
-            String tableId = key.toString();
-            int action = (int) map.get(key);
-            l.add(new AlarmAction(tableId, action));
+        if (map != null && !map.isEmpty()) {
+            Iterator it = map.keySet().iterator();
+            while (it.hasNext()) {
+                Object key = it.next();
+                String tableId = key.toString();
+                int action = (int) map.get(key);
+                l.add(new AlarmAction(tableId, action));
+            }
         }
-
-        return setAlarmSignToDb(l);
+        return l;
     }
 
     /**
      * Set the data into database signal into database.
+     *
      * @param l
-     * @return 
+     * @return
      */
-    protected abstract boolean setAlarmSignToDb(List<AlarmAction> l);
+    protected abstract boolean setDbAlarmSign(List<AlarmAction> l);
 
-    protected abstract boolean resetAlarmSignToDb();
+    protected abstract boolean resetDbAlarmSign();
 
     protected boolean hasDataInCollection(Collection c) {
         return c != null && !c.isEmpty();

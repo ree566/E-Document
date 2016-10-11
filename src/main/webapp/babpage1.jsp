@@ -85,7 +85,7 @@
                     paramNotVaildMessage = "輸入資料有誤，請重新再確認。";
 
             var userInfoCookieName = "userInfo", testLineTypeCookieName = "testLineTypeCookieName";
-            var STATION_LOGIN = "LOGIN", STATION_LOGOUT = "LOGOUT";
+            var STATION_LOGIN = "LOGIN", STATION_LOGOUT = "LOGOUT", CHANGE_USER = "CHANGE_USER";
             var BAB_END = "BAB_END";
 
             var serverMsgTimeout;
@@ -132,11 +132,6 @@
                             } else {
                                 changeJobnumber(newJobnumber);
                                 $(this).dialog("close");
-                                if ($("#station").val() == firstStation) {
-                                    startBab();
-                                } else {
-                                    reload();
-                                }
                             }
                         },
                         "取消": function () {
@@ -243,19 +238,23 @@
                         searchResult = data[0];//取最先投入的工單做關閉
                     }
 
-                    if (confirm(
-                            "站別 " + userInfo.station + " 確定儲存?\n" +
-                            "工單: " + searchResult.PO + "\n" +
-                            "機種: " + searchResult.Model_name + "\n" +
-                            "人數: " + searchResult.people
-                            )) {
-                        var data = {
-                            babId: searchResult.id,
-                            station: userInfo.station,
-                            jobnumber: userInfo.jobnumber,
-                            action: BAB_END
-                        };
-                        otherStation(data);
+                    if (searchResult == null) {
+                        showMsg("站別一無投入的工單，請重新做確認");
+                    } else {
+                        if (confirm(
+                                "站別 " + userInfo.station + " 確定儲存?\n" +
+                                "工單: " + searchResult.PO + "\n" +
+                                "機種: " + searchResult.Model_name + "\n" +
+                                "人數: " + searchResult.people
+                                )) {
+                            var data = {
+                                babId: searchResult.id,
+                                station: userInfo.station,
+                                jobnumber: userInfo.jobnumber,
+                                action: BAB_END
+                            };
+                            otherStation(data);
+                        }
                     }
                 });
 
@@ -441,8 +440,22 @@
                 }
             }
 
-            //使用者換人時，把cookievaule做更新
             function changeJobnumber(newJobnumber) {
+                var babs = searchProcessing();
+                if(babs == null || babs.length == 0){
+                    changeJobnumberInCookie(newJobnumber);
+                    reload();
+                }
+                var bab = babs[0];
+                var data = $.parseJSON($.cookie(userInfoCookieName));
+                data.babId = bab.id;
+                data.jobnumber = newJobnumber;
+                data.action = CHANGE_USER;
+                otherStation(data);
+            }
+
+            //使用者換人時，把cookievaule做更新
+            function changeJobnumberInCookie(newJobnumber) {
                 var cookieInfo = $.parseJSON($.cookie(userInfoCookieName));
                 $.removeCookie(userInfoCookieName);
                 cookieInfo.jobnumber = newJobnumber;
@@ -600,7 +613,7 @@
                     dataType: "html",
                     success: function (response) {
                         if (response == "success") {
-                            addValueToBabCookie(data);
+                            reload();
                         } else {
                             showMsg(response);
                         }
@@ -620,6 +633,11 @@
                     dataType: "html",
                     success: function (response) {
                         if (response == "success") {
+                            console.log(data.action);
+                            console.log(CHANGE_USER);
+                            if (data.action == CHANGE_USER) {
+                                changeJobnumberInCookie(data.jobnumber);
+                            }
                             showMsg(response);
                             reload();
                         } else {
@@ -733,7 +751,7 @@
                     </div>
                     <div class="stationHintMessage alarm">
                         <span class="glyphicon glyphicon-alert"></span>
-                        做完時請記得做save。(Please do "save" when you finished.)
+                        做完時請記得做save。(Please "save" when you finished.)
                         <span class="glyphicon glyphicon-alert"></span>
                     </div>
                 </div>

@@ -35,6 +35,7 @@ public class BABOtherStationServlet extends HttpServlet {
     private BABLoginStatusService bService = null;
     private BABService babService = null;
     private ParamChecker pChecker = null;
+    private final String successMsg = "success";
 
     @Override
     public void init()
@@ -73,41 +74,16 @@ public class BABOtherStationServlet extends HttpServlet {
 
                 if (stationid <= b.getPeople()) {
                     switch (action) {
-                        case "LOGIN":
-//                            if (!pChecker.checkInputVal("jobnumber")) {
-//                                return;
-//                            }
-//                            BABPeopleRecord bRecord = bService.getExistUserInBAB(babid, stationid);
-//                            if (bRecord != null && bRecord.getUser_id().equals(jobnumber)) {
-//                                out.print("success"); //當確定人是存在的，且工號站別數已經記錄起來
-//                                return;
-//                            }
-//                            List<BABPeopleRecord> l = bService.getExistUserInBAB(babid);
-//                            boolean checkStatus = true;
-//                            for (BABPeopleRecord br : l) {
-//                                if (br.getUser_id().equals(jobnumber)) {
-//                                    out.print("您已經在 " + br.getBtime() + " 登入第 " + br.getStation() + " 站");
-//                                    checkStatus = false;
-//                                    break;
-//
-//                                } else if (br.getStation() == stationid) {
-//                                    out.print("此工單本站已經有人使用(使用者: " + br.getUser_id() + " 已經在 " + br.getBtime() + " 登入)");
-//                                    checkStatus = false;
-//                                    break;
-//                                }
-//                            }
-//
-//                            //檢查站別有無使用，和工號有無登入其他站別
-//                            if (checkStatus == true) {
-//                                boolean result = bService.recordBABPeople(babid, stationid, jobnumber);
-//                                out.print(result ? "success" : "fail");
-//                            }
+                        case "CHANGE_USER":
+                            out.print(bService.recordBABPeople(babid, stationid, jobnumber) ? "success" : "fail");
                             break;
-
                         case "BAB_END":
-
                             if (stationid == b.getPeople()) { // if the station is the last station
-                                out.print(babService.closeBAB(babid));
+                                String message = babService.closeBAB(babid);
+                                if(message.equals(successMsg)){
+                                    bService.recordBABPeople(babid, stationid, jobnumber);
+                                }
+                                out.print(message);
                             } else {
                                 JSONObject message = babService.stopSensor(babid, stationid);
                                 boolean existBabStatistics = message.getBoolean("total");
@@ -122,10 +98,12 @@ public class BABOtherStationServlet extends HttpServlet {
                                 } else if (!isStationClose) {
                                     out.print("發生錯誤，本站尚未關閉，請聯絡管理人員");
                                 } else {
+                                    bService.recordBABPeople(babid, stationid, jobnumber);
                                     out.print("success");
                                 }
                             }
                             break;
+
                         default:
                             out.print("Not support action");
                     }

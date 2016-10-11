@@ -21,7 +21,7 @@ public class PrepareScheduleDAO extends BasicDAO {
     }
 
     private static Connection getConn() {
-        return getDBUtilConn(SQL.Way_Chien_TWM3);
+        return getDBUtilConn(SQL.Way_Chien_WebAccess);
     }
 
     private List<PrepareSchedule> queryPrepareScheduleTable(String sql, Object... params) {
@@ -30,10 +30,7 @@ public class PrepareScheduleDAO extends BasicDAO {
 
     //只取正負30天的工單
     public List<PrepareSchedule> getPrepareSchedule(String po) {
-        return queryPrepareScheduleTable(
-                "SELECT * FROM prepare_Schedule WHERE DATEDIFF(DAY,GETDATE(),ondatetime) BETWEEN -30 AND 30 AND PO = ?",
-                po
-        );
+        return queryPrepareScheduleTable("SELECT * FROM prepareScheduleView WHERE PO = ?", po);
     }
 
     public List<Map> getTestStandardTime(String modelName) {

@@ -50,4 +50,12 @@ public class FBNDAO extends BasicDAO {
         List l = queryProcForBeanList(getConn(), FBN.class, "{CALL LS_babFinalStationSensorStatus(?)}", BABid);
         return l.isEmpty() ? null : (FBN) l.get(0);
     }
+    
+    public List<Map> getTotalAbnormalData(int BABid){
+        return queryProcForMapList(getConn(), "{CALL sensorTotalAbnormalCheck(?)}", BABid);
+    }
+    
+    public List<Map> getAbnormalData(int BABid){
+        return queryProcForMapList(getConn(), "{CALL sensorAbnormalCheck(?)}", BABid);
+    }
 }

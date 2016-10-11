@@ -86,6 +86,10 @@ public class TestDAO extends BasicDAO {
     public boolean changeDeck(int tableNo, String jobnumber) {
         return updateTestTable("UPDATE LS_TEST SET id = ? WHERE userid = ?", tableNo, jobnumber);
     }
+    
+    public boolean insertTestAlarm(List<AlarmAction> l) {
+        return updateAlarmTable("INSERT INTO Alm_TestAction(alarm, tableId) VALUES(?, ?)", l);
+    }
 
     public boolean updateTestAlarm(List<AlarmAction> l) {
         return updateAlarmTable("UPDATE Alm_TestAction SET alarm = ? WHERE tableId = ?", l);
@@ -93,6 +97,10 @@ public class TestDAO extends BasicDAO {
 
     public boolean resetTestAlarm() {
         return update(getConn(), "UPDATE Alm_TestAction SET alarm = 0");
+    }
+    
+    public boolean removeAllAlarmSign() {
+        return update(getConn(), "TRUNCATE TABLE Alm_TestAction");
     }
 
     private boolean updateAlarmTable(String sql, List<AlarmAction> l) {

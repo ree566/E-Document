@@ -32,7 +32,7 @@ public class BABLoginStatusService {
     }
 
     public boolean changeUser(int BABid, int station, String jobnumber) {
-       return babLoginStatusDAO.changeUser(BABid, station, jobnumber);
+        return babLoginStatusDAO.changeUser(BABid, station, jobnumber);
     }
 
     public boolean deleteUserFromStation(int BABid, int station) {
@@ -40,16 +40,26 @@ public class BABLoginStatusService {
     }
 
     public boolean recordBABPeople(int BABid, int station, String jobnumber) {
-        List l = new ArrayList();
-        l.add(new BABPeopleRecord(BABid, station, jobnumber));
-        return babLoginStatusDAO.recordBABPeople(l);
+        BABPeopleRecord bRecord = this.getLastBABPeopleRecord(BABid, station);
+        if (bRecord == null || !bRecord.getUser_id().equals(jobnumber)) {
+            List l = new ArrayList();
+            l.add(new BABPeopleRecord(BABid, station, jobnumber));
+            return babLoginStatusDAO.recordBABPeople(l);
+        } else {
+            return true; //If the user is already exist, don't do anything.
+        }
     }
 
-    public BABPeopleRecord getExistUserInBAB(int BABid, int station) {
-        return babLoginStatusDAO.getExistUserInBAB(BABid, station);
+    public BABPeopleRecord getLastBABPeopleRecord(int BABid, int station) {
+        List<BABPeopleRecord> l = this.getBABPeopleRecord(BABid, station);
+        return !l.isEmpty() ? l.get(l.size() - 1) : null;
     }
 
-    public List<BABPeopleRecord> getExistUserInBAB(int BABid) {
-        return babLoginStatusDAO.getExistUserInBAB(BABid);
+    public List<BABPeopleRecord> getBABPeopleRecord(int BABid, int station) {
+        return babLoginStatusDAO.getBABPeopleRecord(BABid, station);
+    }
+
+    public List<BABPeopleRecord> getBABPeopleRecord(int BABid) {
+        return babLoginStatusDAO.getBABPeopleRecord(BABid);
     }
 }

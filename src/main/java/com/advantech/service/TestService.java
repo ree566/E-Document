@@ -51,6 +51,10 @@ public class TestService {
     public boolean changeDeck(int tableNo, String jobnumber) {
         return testDAO.changeDeck(tableNo, jobnumber);
     }
+    
+    public boolean insertTestAlarm(List<AlarmAction> l) {
+        return testDAO.insertTestAlarm(l);
+    }
 
     public boolean updateTestAlarm(List<AlarmAction> l) {
         return testDAO.updateTestAlarm(l);
@@ -58,6 +62,10 @@ public class TestService {
 
     public boolean resetTestAlarm() {
         return testDAO.resetTestAlarm();
+    }
+    
+    public boolean removeAllAlarmSign() {
+        return testDAO.removeAllAlarmSign();
     }
 
     public String checkDeskIsAvailable(int tableNo) {

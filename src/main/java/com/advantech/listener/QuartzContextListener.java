@@ -10,6 +10,9 @@ import com.advantech.quartzJob.DataTransformer;
 import com.advantech.helper.ThreadLocalCleanUtil;
 import com.advantech.endpoint.SensorEndpoint;
 import com.advantech.helper.PropertiesReader;
+import com.advantech.service.BabLineTypeFacade;
+import com.advantech.service.BasicLineTypeFacade;
+import com.advantech.service.TestLineTypeFacade;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
@@ -41,22 +44,17 @@ public class QuartzContextListener implements ServletContextListener {
     public void contextDestroyed(ServletContextEvent sce) {
 
         try {
-            DataTransformer.initInnerObjs();
             BasicDAO.objectInit();
 
 //            Thread.sleep(1000);
-            
 //            ThreadLocalCleanUtil.clearThreadLocals();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        
         //web service當tomcat在做reload會有資源為釋放之情形(多次reload可能會memory leak)
         //http://timen-zbt.iteye.com/blog/1814795
-
         //安裝quartz後當tomcat重新啟動時會出現memory leak(http://www.cnblogs.com/leeying/p/3782102.html)
         //使用以上方法
-
     }
 }

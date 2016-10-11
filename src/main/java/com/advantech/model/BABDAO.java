@@ -66,6 +66,18 @@ public class BABDAO extends BasicDAO {
         return !l.isEmpty() ? (BAB) l.get(0) : null;
     }
 
+    public List<Map> getBABForMap() {
+        return queryForMapList(getConn(), "SELECT * FROM closedBABView");
+    }
+
+    public List<Map> getBABForMap(int BABid) {
+        return queryForMapList(getConn(), "SELECT * FROM closedBABView WHERE id = ?", BABid);
+    }
+
+    public List<Map> getBABForMap(String date) {
+        return queryForMapList(getConn(), "SELECT * FROM closedBABView WHERE CONVERT(varchar(10),btime,20) = ? ORDER BY ID", date);
+    }
+
     public List<BAB> getBAB(String modelName, String dateFrom, String dateTo) {
         return queryProcForBeanList(getConn(), BAB.class, "{CALL getBABInTime(?,?,?)}", modelName, dateFrom, dateTo);
     }
@@ -163,12 +175,20 @@ public class BABDAO extends BasicDAO {
         return !historys.isEmpty();//回傳是否有東西 有true 無 false
     }
 
+    public boolean insertTestAlarm(List<AlarmAction> l) {
+        return updateAlarmTable("INSERT INTO Alm_BABAction(alarm, tableId) VALUES(?, ?)", l);
+    }
+
     public boolean updateBABAlarm(List<AlarmAction> l) {
         return updateAlarmTable("UPDATE Alm_BABAction SET alarm = ? WHERE tableId = ?", l);
     }
 
     public boolean resetBABAlarm() {
         return update(getConn(), "UPDATE Alm_BABAction SET alarm = 0");
+    }
+
+    public boolean removeAllAlarmSign() {
+        return update(getConn(), "TRUNCATE TABLE Alm_BABAction");
     }
 
     private boolean updateAlarmTable(String sql, List<AlarmAction> l) {

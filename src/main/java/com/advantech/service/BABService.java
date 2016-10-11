@@ -47,6 +47,18 @@ public class BABService {
         return babDAO.getBAB(modelName, dateFrom, dateTo);
     }
 
+    public List<Map> getBABForMap() {
+        return babDAO.getBABForMap();
+    }
+
+    public List<Map> getBABForMap(int BABid) {
+        return babDAO.getBABForMap(BABid);
+    }
+
+    public List<Map> getBABForMap(String date) {
+        return babDAO.getBABForMap(date);
+    }
+
     public List<BAB> getProcessingBABByLine(int lineNo) throws JSONException {
         return babDAO.getProcessingBABByLine(lineNo);
     }
@@ -58,7 +70,6 @@ public class BABService {
     public List<Map> getBABInfo(String lineType, String sitefloor, String startDate, String endDate) {
         return babDAO.getBABInfo(lineType, sitefloor, startDate, endDate);
     }
-
 
     public List<Map> getLineBalanceCompare(String Model_name, String lineType) {
         return babDAO.getLineBalanceCompare(Model_name, lineType);
@@ -94,12 +105,20 @@ public class BABService {
         return babDAO.getClosedBABInfoDetail(startDate, endDate);
     }
 
+    public boolean insertBABAlarm(List<AlarmAction> l) {
+        return babDAO.insertTestAlarm(l);
+    }
+
     public boolean updateBABAlarm(List<AlarmAction> l) {
         return babDAO.updateBABAlarm(l);
     }
 
     public boolean resetBABAlarm() {
         return babDAO.resetBABAlarm();
+    }
+
+    public boolean removeAllAlarmSign() {
+        return babDAO.removeAllAlarmSign();
     }
 
     public String checkAndStartBAB(BAB bab, String jobnumber) {
