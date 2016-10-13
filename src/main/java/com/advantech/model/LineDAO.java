@@ -30,6 +30,10 @@ public class LineDAO extends BasicDAO {
     private List<Line> queryLineTable(String sql, Object... params) {
         return queryForBeanList(getConn(), Line.class, sql, params);
     }
+    
+    public List<Line> getLineForJSTL() {
+        return getLine();
+    }
 
     public List<Line> getLine() {
         return queryLineTable("SELECT * FROM LS_Line");

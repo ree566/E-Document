@@ -295,7 +295,7 @@ public class ExcelGenerator {
 
     public static void main(String arg0[]) {
         BasicDAO.dataSourceInit();
-        excelGenerate("2016-10-07");
+        excelGenerate();
     }
 
 }

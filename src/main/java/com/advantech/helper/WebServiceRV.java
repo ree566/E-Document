@@ -142,9 +142,14 @@ public class WebServiceRV {
             Unmarshaller u = jc.createUnmarshaller();
 
             //Skip the <diffgr:diffgram> tag, read root tag directly.
-            Node node = (Node) doc.getFirstChild().getFirstChild();
-            TestLineTypeUsers users = (TestLineTypeUsers) u.unmarshal(node);
-            return users.getQryData();
+            Node node = doc.getFirstChild().getFirstChild();
+
+            if (node != null) {
+                TestLineTypeUsers users = (TestLineTypeUsers) u.unmarshal(node);
+                return users.getQryData();
+            } else {
+                return new ArrayList();
+            }
         } catch (Exception ex) {
             log.error(ex.toString());
             return new ArrayList();
@@ -165,8 +170,13 @@ public class WebServiceRV {
 
             //Skip the <diffgr:diffgram> tag, read QryData tag directly.
             Node node = (Node) doc.getFirstChild().getFirstChild().getFirstChild();
-            User user = (User) u.unmarshal(node);
-            return user;
+
+            if (node != null) {
+                User user = (User) u.unmarshal(node);
+                return user;
+            } else {
+                return null;
+            }
         } catch (Exception ex) {
             log.error(ex.toString());
             return null;

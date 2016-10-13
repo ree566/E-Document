@@ -6,6 +6,7 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<jsp:useBean id="cDAO" class="com.advantech.model.CountermeasureDAO" scope="application" />
 <!DOCTYPE html>
 <html>
     <head>
@@ -16,24 +17,15 @@
 
         </style>
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-        <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.min.js"></script>
-        <script src="controller.js"></script>
+
     </head>
     <body>
-        <c:set var="colMax" value="50" />
-        <table style='border:2px solid black'>
-            <tr>
-                <c:forEach var="i" begin="1" end="${colMax}">
-                    <th>${i}</th>
-                    </c:forEach>
-            </tr>
-            <c:forEach var="i" begin="1" end="${colMax}">
-                <tr>
-                    <c:forEach var="i" begin="1" end="${colMax}">
-                        <td>${i}</td>
-                    </c:forEach>
-                </tr>
+中文
+        <c:forEach var="map" items="${cDAO.getActionCode()}">
+            <c:forEach var="entry" items="${map}">
+                Key: <c:out value="${entry.key}"/>
+                Value: <c:out value="${entry.value}"/>
             </c:forEach>
-        </table>
+        </c:forEach>
     </body>
 </html>

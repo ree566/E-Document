@@ -51,8 +51,7 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                     useCurrent: true,
                     //locale: "zh-tw",
                     format: momentFormatString,
-                    extraFormats: [momentFormatString],
-                    disabledHours: [0, 1, 2, 3, 4, 5, 6, 7, 18, 19, 20, 21, 22, 23, 24]
+                    extraFormats: [momentFormatString]
                 };
                 var beginTimeObj = $('#fini').datetimepicker(options);
                 var endTimeObj = $('#ffin').datetimepicker(options);
@@ -103,6 +102,7 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                         {data: "user_id"},
                         {data: "user_name"},
                         {data: "productivity"},
+                        {data: "table_id"},
                         {data: "saveTime"}
                     ],
                     "columnDefs": [
@@ -114,7 +114,7 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                             }
                         },
                         {
-                            "targets": 4,
+                            "targets": 5,
                             'render': function (data, type, full, meta) {
                                 return formatDate(data);
                             }
@@ -135,7 +135,7 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                     "initComplete": function (settings, json) {
                         $("#testDetail").show();
                     },
-                    "order": [[4, "asc"], [1, "asc"]]
+                    "order": [[5, "asc"], [1, "asc"]]
                 });
             }
 
@@ -186,6 +186,7 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                             <th>人員工號</th>
                             <th>人員姓名</th>
                             <th>效率</th>
+                            <th>桌次</th>
                             <th>儲存時間</th>
                         </tr>
                     </thead>

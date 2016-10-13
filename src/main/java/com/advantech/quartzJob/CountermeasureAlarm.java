@@ -62,7 +62,7 @@ public class CountermeasureAlarm implements Job {
             sb.append("<style>table {border-collapse: collapse;} table, th, td {border: 1px solid black; padding: 5px;}</style>");
             sb.append("<p>Dear 使用者:</p>");
             sb.append("<p>以下是亮燈頻率高於基準值，尚未回覆異常原因的工單列表</p>");
-            sb.append("<p>請抽空至 藍燈系統 > 線平衡資料查詢頁面 > 檢視詳細 填寫相關異常因素，謝謝</p>");
+            sb.append("<p>請於 <mark><strong style='color: red'>今日下班前</strong></mark> 至 藍燈系統 > 線平衡資料查詢頁面 > 檢視詳細 填寫工單異常因素，謝謝</p>");
             sb.append("<table>");
             sb.append("<tr><th>製程</th><th>線別</th><th>工單</th><th>機種</th><th>投入時間</th></tr>");
             for (Map m : l) {

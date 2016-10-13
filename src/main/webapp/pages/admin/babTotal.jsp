@@ -7,6 +7,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <jsp:useBean id="cDAO" class="com.advantech.model.CountermeasureDAO" scope="application" />
+<jsp:useBean id="lineDAO" class="com.advantech.model.LineDAO" scope="application" />
 <!DOCTYPE html>
 <html>
     <head>
@@ -100,8 +101,11 @@
             var checkedActionCodes;
             var checkBoxs;
 
+            var table2;
+            var autoReloadInterval;
+
             function getBAB() {
-                var table = $("#data2").DataTable({
+                table2 = $("#data2").DataTable({
                     "processing": false,
                     "serverSide": false,
                     "ajax": {
@@ -149,30 +153,47 @@
                     bAutoWidth: true,
                     displayLength: -1,
                     lengthChange: false,
-                    filter: false,
-                    info: false,
+//                    filter: false,
+//                    info: false,
                     paginate: false,
                     "initComplete": function (settings, json) {
-                        generateOnlineBabDetail(json);
+                        generateOnlineBabDetail(json, -1);
+                        $("#lineTypeFilter").change(function () {
+//                    table2.search($(this).val()).draw();
+                            generateOnlineBabDetail(json, $(this).val());
+                            table2.draw();
+                        });
                     },
                     "order": [[1, "asc"], [2, "asc"]]
                 });
-                return table;
             }
 
-            function generateOnlineBabDetail(json) {
+            function generateOnlineBabDetail(json, filter) {
                 $("#balanceCount").html("");
                 var arr = json.data;
                 if (arr == null || arr.length == 0) {
                     return false;
                 }
 
-                //balance節省麻煩由alasql做前端計算
-                var res = alasql('SELECT PO, TagName, Model_name,\
+                console.log(filter);
+                var res;
+                if (filter != "-1") {
+                    res = alasql('SELECT PO, TagName, Model_name,\
+                                          SUM(diff) / (COUNT(diff) * MAX(diff)) AS balance \
+                                          FROM ? \
+                                          WHERE TagName = ?\
+                                          GROUP BY PO, TagName, Model_name \
+                                          ORDER BY TagName', [arr, filter]);
+                } else {
+                    res = alasql('SELECT PO, TagName, Model_name,\
                                           SUM(diff) / (COUNT(diff) * MAX(diff)) AS balance \
                                           FROM ? \
                                           GROUP BY PO, TagName, Model_name \
                                           ORDER BY TagName', [arr]);
+                }
+
+                //balance節省麻煩由alasql做前端計算
+
                 for (var i = 0; i < res.length; i++) {
                     $("#balanceCount").append(
                             '<p>線別: ' + res[i].TagName +
@@ -833,12 +854,28 @@
                 return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
             }
 
+//            $.fn.dataTable.ext.search.push(
+//                    function (settings, data, dataIndex) {
+//                        var lineTypeFilter = $('#lineTypeFilter').val();
+//                        var lineType = data[1];
+//                        if (lineTypeFilter == "-1") {
+//                            return true;
+//                        }
+//                        if (lineType == lineTypeFilter) {
+//                            return true;
+//                        } else {
+//                            return false;
+//                        }
+//                    }
+//            );
+
             $(document).ready(function () {
                 var interval = null;
                 var countdownnumber = 30 * 60;
                 var diff = 12;
 
-                var table2 = getBAB();
+                getBAB();
+
                 checkBoxs = $("#actionCode > div").detach();
                 actionCodes = getActionCode();
 
@@ -1088,12 +1125,24 @@
                         if (counter == 0) {
                             // Display a login box
                             $("#generateExcel").attr("disabled", false).val("產出excel");
-                            
+
                             clearInterval(interval);
                         }
                     }, 1000);
 
                     window.location.href = '../../BABExcelGenerate?startDate=' + startDate + '&endDate=' + endDate + '&lineType=' + lineType + '&sitefloor=' + sitefloor;
+                });
+
+                $(window).on("focus", function () {
+                    autoReloadInterval = setInterval(function () {
+                        table2.ajax.reload();
+                    }, 10 * 1000);
+//                    console.log("focus");
+                });
+
+                $(window).on("blur", function () {
+                    clearInterval(autoReloadInterval);
+//                    console.log("blur");
                 });
 
                 $("body").on("click", "#searchAvailableBAB, #send", function () {
@@ -1119,6 +1168,28 @@
                 <h3>組裝包裝各站別狀態</h3>
                 <div style="width: 80%; background-color: #F5F5F5">
                     <div style="padding: 10px">
+<!--                        <label>Filter for:
+                            <select id="lineTypeFilter">
+                                <option value="-1">all</option>
+                                <option value="L1">L1</option>
+                                <option value="LA">LA</option>
+                                <option value="LB">LB</option>
+                                <option value="LF">LF</option>
+                                <option value="LG">LG</option>
+                                <option value="LH">LH</option>
+                                <option value="L3">L3</option>
+                                <option value="L4">L4</option>
+                                <option value="L6">L6</option>
+                                <option value="L7">L7</option>
+                                <option value="L8">L8</option>
+                                <option value="L9">L9</option>
+                                <%--
+                                <c:forEach var="line" items="${lineDAO.lineForJSTL}">
+                                    <option value="${line.name}">${line.name}</option>
+                                </c:forEach>
+                                --%>
+                            </select>
+                        </label>-->
                         <table id="data2" class="display" cellspacing="0" width="100%" style="text-align: center">
                             <thead>
                                 <tr>
