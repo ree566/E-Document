@@ -102,6 +102,10 @@ public class TestDAO extends BasicDAO {
     public boolean removeAllAlarmSign() {
         return update(getConn(), "TRUNCATE TABLE Alm_TestAction");
     }
+    
+    public boolean setTestAlarmToTestingMode() {
+        return update(getConn(), "UPDATE Alm_TestAction SET alarm = 1");
+    }
 
     private boolean updateAlarmTable(String sql, List<AlarmAction> l) {
         return update(getConn(), sql, l, "alarm", "tableId");

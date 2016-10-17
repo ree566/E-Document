@@ -20,12 +20,15 @@
 
     </head>
     <body>
-中文
+        中文
         <c:forEach var="map" items="${cDAO.getActionCode()}">
-            <c:forEach var="entry" items="${map}">
-                Key: <c:out value="${entry.key}"/>
-                Value: <c:out value="${entry.value}"/>
-            </c:forEach>
+            <p>
+                <c:forEach var="entry" items="${map}">
+                    ( Key: <c:out value="${entry.key}"/> --- 
+                    Value: <c:out value="${entry.value}"/> )
+                </c:forEach>
+            </p>
         </c:forEach>
+
     </body>
 </html>

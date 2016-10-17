@@ -27,7 +27,7 @@ public class PropertiesReader {
     private double testStandard, babStandard, balanceDiff;
 
     private JSONArray targetMailLoop;
-    private JSONObject targetCCLoop, systemAbnormalAlarmMailCC;
+    private JSONObject targetCCLoop, systemAbnormalAlarmMailCC, responseUserPerLine;
     private String systemAbnormalAlarmMailTo;
 
     private int maxTestTable, maxTestRequiredPeople, limitBABData, balanceRoundingDigit;
@@ -76,6 +76,7 @@ public class PropertiesReader {
         balanceDiff = convertStringToDouble(properties.getProperty("balanceDifference"));
         targetMailLoop = new JSONArray(properties.getProperty("responseUnits.mailTo"));
         targetCCLoop = new JSONObject(properties.getProperty("responseUnits.mailCC"));
+        responseUserPerLine = new JSONObject(properties.getProperty("responseUser.perLine"));
         mailServerUsername = properties.getProperty("mail.server.username");
         mailServerPassword = properties.getProperty("mail.server.password");
         mailServerLocation = properties.getProperty("mail.server.location");
@@ -171,6 +172,10 @@ public class PropertiesReader {
 
     public JSONObject getSystemAbnormalAlarmMailCC() {
         return systemAbnormalAlarmMailCC;
+    }
+
+    public JSONObject getResponseUserPerLine() {
+        return responseUserPerLine;
     }
 
     public String getTxtLocation() {

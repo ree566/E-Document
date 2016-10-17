@@ -194,6 +194,10 @@ public class BABDAO extends BasicDAO {
     private boolean updateAlarmTable(String sql, List<AlarmAction> l) {
         return update(getConn(), sql, l, "alarm", "tableId");
     }
+    
+    public boolean setBABAlarmToTestingMode(){
+        return update(getConn(), "UPDATE Alm_BABAction SET alarm = 1");
+    }
 
     public boolean insertBAB(BAB bab) {
         return update(

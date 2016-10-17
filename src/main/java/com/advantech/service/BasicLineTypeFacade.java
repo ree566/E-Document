@@ -41,7 +41,7 @@ public abstract class BasicLineTypeFacade {
     protected String txtName;//先設定txtName
 
     protected BasicLineTypeFacade() {
-        
+
         txtWriter = TxtWriter.getInstance();
 
         PropertiesReader p = PropertiesReader.getInstance();
@@ -79,12 +79,6 @@ public abstract class BasicLineTypeFacade {
      */
     protected abstract boolean generateData();
 
-    protected void changeFlagStatus(boolean flagStatus) {
-        if (resetFlag == false) {
-            resetFlag = flagStatus;
-        }
-    }
-
     private void outputResult(Map m, String txtName) throws IOException {
         if (isWriteToTxt) {
             txtWriter.writeTxtWithFileName(m, txtName);
@@ -93,15 +87,15 @@ public abstract class BasicLineTypeFacade {
             saveAlarmSignToDb(m);
         }
         if (isWriteToTxt || isWriteToDB) {
-            changeFlagStatus(true);
+            resetFlag = true;
         }
     }
 
     private void resetOutputResult(String txtName) throws IOException {
         if (isWriteToTxt || isWriteToDB) {
             if (resetFlag == true) {
+                initMap();
                 if (isWriteToTxt) {
-                    initMap();
                     outputResult(dataMap, txtName);
                 }
                 if (isWriteToDB) {
@@ -112,7 +106,7 @@ public abstract class BasicLineTypeFacade {
         }
     }
 
-    private boolean saveAlarmSignToDb(Map map){
+    private boolean saveAlarmSignToDb(Map map) {
         return setDbAlarmSign(mapToAlarmSign(map));
     }
 
@@ -157,16 +151,8 @@ public abstract class BasicLineTypeFacade {
         return this.dataMap;
     }
 
-    public void setParam(boolean b) {
-        resetFlag = b;
-    }
-
-    public boolean getParam() {
-        return resetFlag;
-    }
-
-    public void setIsWriteToTxt(boolean isWriteToTxt) {
-        this.isWriteToTxt = isWriteToTxt;
+    public void isNeedToOutput(boolean controlJobFlag) {
+        this.controlJobFlag = controlJobFlag;
     }
 
 }

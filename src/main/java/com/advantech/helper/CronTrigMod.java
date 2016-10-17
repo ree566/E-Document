@@ -8,8 +8,8 @@ package com.advantech.helper;
 import com.advantech.quartzJob.DailyJobWorker;
 import com.advantech.service.BabLineTypeFacade;
 import com.advantech.service.BasicLineTypeFacade;
+import com.advantech.service.BasicService;
 import com.advantech.service.TestLineTypeFacade;
-import java.io.IOException;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
@@ -30,8 +30,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.quartz.TriggerBuilder;
 import static org.quartz.TriggerBuilder.newTrigger;
-import static org.quartz.CronScheduleBuilder.cronSchedule;
 import org.quartz.SimpleScheduleBuilder;
+import static org.quartz.CronScheduleBuilder.cronSchedule;
 import static org.quartz.TriggerKey.triggerKey;
 
 /**
@@ -48,6 +48,9 @@ public class CronTrigMod {
 
     private Scheduler scheduler;
     private static CronTrigMod instance;
+
+    BasicLineTypeFacade bf = BabLineTypeFacade.getInstance();
+    BasicLineTypeFacade tf = TestLineTypeFacade.getInstance();
 
     private CronTrigMod() {
         try {
@@ -77,24 +80,41 @@ public class CronTrigMod {
     }
 
     public boolean triggerPauseOrResume(String order) {
-        TxtWriter t = TxtWriter.getInstance();
         try {
             if ("pause".equals(order)) {
-                scheduler.standby();
-                t.turnAllSignToOpen();
-                log.info("Stop write txt function");
-            } else {
-                t.resetAllTxt();
-                log.info("Resume write txt function");
-                scheduler.start();
+                enterTestMode();
+            } else if ("resume".equals(order)) {
+                outTestMode();
             }
-        } catch (IOException ex) {
-            log.error(ex.toString());
-            return false;
         } catch (SchedulerException ex) {
             log.error(ex.toString());
+            return false;
         }
         return true;
+    }
+
+    private void enterTestMode() throws SchedulerException {
+//        scheduler.standby();
+        changeResultOutputFlag(false);
+        log.info("Stop result output");
+    }
+
+    private void outTestMode() throws SchedulerException {
+//        scheduler.start();
+        changeResultOutputFlag(true);
+        log.info("Resume result output");
+    }
+
+    private void changeResultOutputFlag(boolean flag) {
+        bf.isNeedToOutput(flag);
+        tf.isNeedToOutput(flag);
+        if (flag == true) {
+            BasicService.getBabService().resetBABAlarm();
+            BasicService.getTestService().resetTestAlarm();
+        } else {
+            BasicService.getBabService().setBABAlarmToTestingMode();
+            BasicService.getTestService().setTestAlarmToTestingMode();
+        }
     }
 
     public void updateMainJobCronExpressionToDefault() throws SchedulerException {

@@ -67,6 +67,10 @@ public class TestService {
     public boolean removeAllAlarmSign() {
         return testDAO.removeAllAlarmSign();
     }
+    
+    public boolean setTestAlarmToTestingMode(){
+        return testDAO.setTestAlarmToTestingMode();
+    }
 
     public String checkDeskIsAvailable(int tableNo) {
         Test t = this.getTableInfo(tableNo);

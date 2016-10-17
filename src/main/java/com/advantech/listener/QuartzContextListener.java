@@ -46,8 +46,8 @@ public class QuartzContextListener implements ServletContextListener {
         try {
             BasicDAO.objectInit();
 
-//            Thread.sleep(1000);
-//            ThreadLocalCleanUtil.clearThreadLocals();
+            Thread.sleep(1000);
+            ThreadLocalCleanUtil.clearThreadLocals();
         } catch (Exception e) {
             e.printStackTrace();
         }

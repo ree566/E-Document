@@ -36,17 +36,17 @@ public class BABExcelGenerate extends HttpServlet {
 
         CountermeasureService cs = BasicService.getCountermeasureService();
         List countermeasures = cs.getCountermeasureView(lineType, sitefloor, startDate, endDate);
-        List personalAlms = cs.getPersonalAlm(lineType, sitefloor, startDate, endDate);
 
-        if (countermeasures.isEmpty() && personalAlms.isEmpty()) {
+        if (countermeasures.isEmpty()) {
             res.setContentType("text/html");
             res.getWriter().println("<script>alert('查無資料，無法彙整出excel');location='pages/admin/BabTotal';</script>");
         } else {
             res.setContentType("application/vnd.ms-excel");
             res.setHeader("Content-Disposition",
                     "attachment; filename=sampleData" + DateTimeFormat.forPattern("yyyyMMdd").print(new DateTime()) + ".xls");
-            HSSFWorkbook w = ExcelGenerator.generateWorkBook(countermeasures, personalAlms);
-
+            HSSFWorkbook w = ExcelGenerator.generateWorkBooks(countermeasures);
+            ExcelGenerator.addBABPersonalAlarm(lineType, sitefloor, startDate, endDate);
+            ExcelGenerator.formatExcel();
             w.write(res.getOutputStream());
             w.close();
         }

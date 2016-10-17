@@ -83,7 +83,7 @@ public class BasicDAO implements Serializable {
             for (SQL sql : SQL.values()) {
                 String dataSourceString = sql.toString();
                 try {
-                    dataSourceMap.put(dataSourceString, getDataSource1(dataSourceString));
+                    dataSourceMap.put(dataSourceString, getDataSource(dataSourceString));
                 } catch (NamingException ex) {
                     log.error(ex.toString());
                 }
@@ -101,12 +101,12 @@ public class BasicDAO implements Serializable {
     }
 
     private static DataSource getDataSource1(String dataSourcePath) throws NamingException {
+        //中文變亂碼
         JtdsDataSource xaDS = new JtdsDataSource();
         xaDS.setServerName("M3-SERVER");
         xaDS.setDatabaseName(getDbName(dataSourcePath));
         xaDS.setUser("waychien");
         xaDS.setPassword("m3server");
-        xaDS.setCharset("UTF-8");
         return xaDS;
     }
 

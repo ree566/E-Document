@@ -121,6 +121,10 @@ public class BABService {
         return babDAO.removeAllAlarmSign();
     }
 
+    public boolean setBABAlarmToTestingMode() {
+        return babDAO.setBABAlarmToTestingMode();
+    }
+
     public String checkAndStartBAB(BAB bab, String jobnumber) {
         LineService lineService = BasicService.getLineService();
 

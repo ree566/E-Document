@@ -157,25 +157,23 @@
 //                    info: false,
                     paginate: false,
                     "initComplete": function (settings, json) {
-                        generateOnlineBabDetail(json, -1);
+                        generateOnlineBabDetail(-1);
                         $("#lineTypeFilter").change(function () {
-//                    table2.search($(this).val()).draw();
-                            generateOnlineBabDetail(json, $(this).val());
-                            table2.draw();
+                            var filterVal = $(this).val();
+                            table2.search(filterVal == -1 ? "" : filterVal).draw();
+                            generateOnlineBabDetail($(this).val());
                         });
                     },
                     "order": [[1, "asc"], [2, "asc"]]
                 });
             }
 
-            function generateOnlineBabDetail(json, filter) {
+            function generateOnlineBabDetail(filter) {
                 $("#balanceCount").html("");
-                var arr = json.data;
+                var arr = table2.rows().data().toArray();
                 if (arr == null || arr.length == 0) {
                     return false;
                 }
-
-                console.log(filter);
                 var res;
                 if (filter != "-1") {
                     res = alasql('SELECT PO, TagName, Model_name,\
@@ -331,7 +329,6 @@
 //http://canvasjs.com/docs/charts/how-to/hide-unhide-data-series-chart-legend-click/
             function generateChart(d, chartId) {
                 var totalAvg = Math.round(d.avg);
-//                console.log(totalAvg);
                 var chart = new CanvasJS.Chart(chartId,
                         {
                             zoomEnabled: true,
@@ -854,21 +851,6 @@
                 return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
             }
 
-//            $.fn.dataTable.ext.search.push(
-//                    function (settings, data, dataIndex) {
-//                        var lineTypeFilter = $('#lineTypeFilter').val();
-//                        var lineType = data[1];
-//                        if (lineTypeFilter == "-1") {
-//                            return true;
-//                        }
-//                        if (lineType == lineTypeFilter) {
-//                            return true;
-//                        } else {
-//                            return false;
-//                        }
-//                    }
-//            );
-
             $(document).ready(function () {
                 var interval = null;
                 var countdownnumber = 30 * 60;
@@ -981,7 +963,6 @@
 
                     var selectData = historyTable.row($(this).parents('tr')).data();
                     editId = selectData.id;
-//                    console.log(selectData.cm_id);
                     $("#myModal #titleMessage").html(
                             "號碼: " + editId +
                             " / 工單: " + selectData.PO +
@@ -1018,8 +999,6 @@
 
                     $("#errorCon").html("<textarea id='errorConText' maxlength='500'>" + (originErrorCon == "N/A" ? "" : originErrorCon) + "</textarea>");
                     $("#responseUser").html("<input type='text' id='responseUserText' maxlength='30'>");
-
-//                    console.log("editing");
                 });
 
                 $("#undoContent").click(function () {
@@ -1059,9 +1038,6 @@
                         } else {
                             showDialogMsg("");
                         }
-
-                        console.log(editor);
-                        console.log(solution);
                         saveCountermeasure({
                             BABid: editId,
                             solution: solution,
@@ -1105,7 +1081,6 @@
                             return value != removeVal;
                         });
                     }
-//                    console.log(checkedActionCodes);
                 });
 
                 $("#generateExcel").click(function () {
@@ -1135,14 +1110,15 @@
 
                 $(window).on("focus", function () {
                     autoReloadInterval = setInterval(function () {
-                        table2.ajax.reload();
+                        table2.ajax.reload(function (json) {
+                            generateOnlineBabDetail($("#lineTypeFilter").val());
+                        });
+
                     }, 10 * 1000);
-//                    console.log("focus");
                 });
 
                 $(window).on("blur", function () {
                     clearInterval(autoReloadInterval);
-//                    console.log("blur");
                 });
 
                 $("body").on("click", "#searchAvailableBAB, #send", function () {
@@ -1168,7 +1144,7 @@
                 <h3>組裝包裝各站別狀態</h3>
                 <div style="width: 80%; background-color: #F5F5F5">
                     <div style="padding: 10px">
-<!--                        <label>Filter for:
+                        <label>Filter for:
                             <select id="lineTypeFilter">
                                 <option value="-1">all</option>
                                 <option value="L1">L1</option>
@@ -1189,7 +1165,7 @@
                                 </c:forEach>
                                 --%>
                             </select>
-                        </label>-->
+                        </label>
                         <table id="data2" class="display" cellspacing="0" width="100%" style="text-align: center">
                             <thead>
                                 <tr>
