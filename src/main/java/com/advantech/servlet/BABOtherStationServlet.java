@@ -8,13 +8,11 @@
 package com.advantech.servlet;
 
 import com.advantech.entity.BAB;
-import com.advantech.entity.BABPeopleRecord;
 import com.advantech.helper.ParamChecker;
 import com.advantech.service.BABLoginStatusService;
 import com.advantech.service.BABService;
 import com.advantech.service.BasicService;
 import java.io.*;
-import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
@@ -80,26 +78,32 @@ public class BABOtherStationServlet extends HttpServlet {
                         case "BAB_END":
                             if (stationid == b.getPeople()) { // if the station is the last station
                                 String message = babService.closeBAB(babid);
-                                if(message.equals(successMsg)){
+                                if (message.equals(successMsg)) {
                                     bService.recordBABPeople(babid, stationid, jobnumber);
                                 }
                                 out.print(message);
                             } else {
-                                JSONObject message = babService.stopSensor(babid, stationid);
-                                boolean existBabStatistics = message.getBoolean("total");
-                                boolean isPrevClose = message.getBoolean("history");
-                                boolean isStationClose = message.getBoolean("do_sensor_end");
+                                boolean isSensorClosed = babService.checkSensorIsClosed(babid, stationid);
 
-                                //沒有babavg，直接回傳success，等第三站關閉
-                                if (!existBabStatistics) {
-                                    out.print("查無統計數據，若要關閉工單請從最後一站直接做關閉動作");
-                                } else if (!isPrevClose) {
-                                    out.print("上一站尚未關閉");
-                                } else if (!isStationClose) {
-                                    out.print("發生錯誤，本站尚未關閉，請聯絡管理人員");
+                                if (isSensorClosed) {
+                                    out.print("感應器已經關閉");
                                 } else {
-                                    bService.recordBABPeople(babid, stationid, jobnumber);
-                                    out.print("success");
+                                    JSONObject message = babService.stopSensor(babid, stationid);
+                                    boolean existBabStatistics = message.getBoolean("total");
+                                    boolean isPrevClose = message.getBoolean("history");
+                                    boolean isStationClose = message.getBoolean("do_sensor_end");
+
+                                    //沒有babavg，直接回傳success，等第三站關閉
+                                    if (!existBabStatistics) {
+                                        out.print("查無統計數據，若要關閉工單請從最後一站直接做關閉動作");
+                                    } else if (!isPrevClose) {
+                                        out.print("上一站尚未關閉");
+                                    } else if (!isStationClose) {
+                                        out.print("發生錯誤，本站尚未關閉，請聯絡管理人員");
+                                    } else {
+                                        bService.recordBABPeople(babid, stationid, jobnumber);
+                                        out.print("success");
+                                    }
                                 }
                             }
                             break;

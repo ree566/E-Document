@@ -14,7 +14,7 @@ import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 
@@ -41,12 +41,14 @@ public class BABExcelGenerate extends HttpServlet {
             res.setContentType("text/html");
             res.getWriter().println("<script>alert('查無資料，無法彙整出excel');location='pages/admin/BabTotal';</script>");
         } else {
+            Workbook w = ExcelGenerator.generateWorkBooks(countermeasures);
+            ExcelGenerator.formatExcel();
+            String fileExt = ExcelGenerator.getFileExt(w);
+            ExcelGenerator.addBABPersonalAlarm(lineType, sitefloor, startDate, endDate);
+            
             res.setContentType("application/vnd.ms-excel");
             res.setHeader("Content-Disposition",
-                    "attachment; filename=sampleData" + DateTimeFormat.forPattern("yyyyMMdd").print(new DateTime()) + ".xls");
-            HSSFWorkbook w = ExcelGenerator.generateWorkBooks(countermeasures);
-            ExcelGenerator.addBABPersonalAlarm(lineType, sitefloor, startDate, endDate);
-            ExcelGenerator.formatExcel();
+                    "attachment; filename=sampleData" + DateTimeFormat.forPattern("yyyyMMdd").print(new DateTime()) + fileExt);
             w.write(res.getOutputStream());
             w.close();
         }

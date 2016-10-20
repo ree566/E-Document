@@ -66,6 +66,10 @@ public class BABService {
     public List<Array> getAvailableModelName() {
         return babDAO.getAvailableModelName();
     }
+    
+    public boolean checkSensorIsClosed(int BABid, int sensorNo) {
+        return babDAO.checkSensorIsClosed(BABid, sensorNo);
+    }
 
     public List<Map> getBABInfo(String lineType, String sitefloor, String startDate, String endDate) {
         return babDAO.getBABInfo(lineType, sitefloor, startDate, endDate);
@@ -177,9 +181,9 @@ public class BABService {
             bab.setBabavgs(babAvgs);
             boolean prevSensorCloseFlag;
             if (bab.getPeople() != 2) {
-                prevSensorCloseFlag = babDAO.checkPrevSensorIsClosed(bab.getId(), bab.getPeople() - 1);
+                prevSensorCloseFlag = babDAO.checkSensorIsClosed(bab.getId(), bab.getPeople() - 1);
                 if (prevSensorCloseFlag == false) {
-                    return "關閉失敗，檢檢查上一站是否關閉";
+                    return "關閉失敗，請檢查上一站是否關閉";
                 }
             } else {
                 prevSensorCloseFlag = true;
@@ -310,7 +314,7 @@ public class BABService {
         message.put("total", existBabStatistics);
         if (existBabStatistics) {
             //第二站不做檢查，因為假使第一顆沒有換下一套(儲存紀錄)，後面無法做工單關閉，而且假如只開兩站不會執行此function
-            checkCloseFlag = (station == 2 ? true : babDAO.checkPrevSensorIsClosed(BABid, station - 1));
+            checkCloseFlag = (station == 2 ? true : this.checkSensorIsClosed(BABid, station - 1));
 
             if (checkCloseFlag) {
                 sensorEndFlag = babDAO.stopSingleSensor(station, BABid);

@@ -22,7 +22,7 @@
                 <name>DailyJobWorker</name>
                 <job-name>DailyJobWorker</job-name>
                 <!--<misfire-instruction>MISFIRE_INSTRUCTION_FIRE_ONCE_NOW</misfire-instruction>-->
-                <cron-expression>0/30 * 8-21 ? * MON-SAT *</cron-expression>
+                <cron-expression>0/30 * 8-20 ? * MON-SAT *</cron-expression>
             </cron>
         </trigger>
     </schedule>

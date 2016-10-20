@@ -12,7 +12,7 @@
     <properties>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <poi.version>3.14</poi.version>
+        <poi.version>3.15</poi.version>
     </properties>
 
     <dependencies>
@@ -191,7 +191,7 @@
             <artifactId>poi</artifactId>
             <version>${poi.version}</version>
         </dependency>
-        
+
         <!-- https://mvnrepository.com/artifact/org.mockito/mockito-all -->
         <dependency>
             <groupId>org.mockito</groupId>

@@ -10,15 +10,20 @@ import com.advantech.entity.BAB;
 import com.advantech.entity.Line;
 import com.advantech.helper.PropertiesReader;
 import com.advantech.quartzJob.LineBalancePeopleGenerator;
+import java.io.IOException;
 import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Wei.Cheng
  */
 public class BabLineTypeFacade extends BasicLineTypeFacade {
+    
+    private static final Logger log = LoggerFactory.getLogger(BabLineTypeFacade.class);
 
     private static BabLineTypeFacade instance;
 
@@ -26,20 +31,16 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
     private final BABService babService;
     private final LineBalancePeopleGenerator lbGenerator;
 
-    private static List<Line> babLineStatus;
-
     private final double BAB_STANDARD;
 
     private BabLineTypeFacade() {
         lineBalanceService = BasicService.getLineBalanceService();
         babService = BasicService.getBabService();
-        babLineStatus = BasicService.getLineService().getLine();
         lbGenerator = LineBalancePeopleGenerator.getInstance();
-
         PropertiesReader p = PropertiesReader.getInstance();
         BAB_STANDARD = p.getBabStandard();
         super.setTxtName(p.getBabTxtName());
-        initDbAlarmSign();
+        this.init();
     }
 
     public static BabLineTypeFacade getInstance() {
@@ -48,10 +49,29 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
         }
         return instance;
     }
+    
+    private void init() {
+        this.initMap();
+        if (isWriteToTxt) {
+            try {
+                super.resetOutputResult(txtName);
+            } catch (IOException ex) {
+                log.error("Init txt output fail." + ex);
+            }
+        }
+
+        if (isWriteToDB) {
+            boolean initStatus = this.initDbAlarmSign();
+            if (initStatus == false) {
+                log.error("Init db output fail.");
+            }
+        }
+    }
 
     @Override
     protected void initMap() {
         dataMap.clear();
+        List<Line> babLineStatus = BasicService.getLineService().getLine();
         for (Line line : babLineStatus) {
             String lineName = line.getName().trim();
             for (int i = 1, length = line.getPeople(); i <= length; i++) {
@@ -135,10 +155,15 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
         }
     }
 
-    private void initDbAlarmSign() {
-        this.initMap();
-        babService.removeAllAlarmSign();
-        babService.insertBABAlarm(super.mapToAlarmSign(dataMap));
+    @Override
+    protected boolean initDbAlarmSign() {
+        BABService bs = BasicService.getBabService();
+        return bs.removeAllAlarmSign() && bs.insertBABAlarm(super.mapToAlarmSign(dataMap));
+    }
+
+    @Override
+    public boolean setDbAlarmSignToTestMode() {
+        return babService.setBABAlarmToTestingMode();
     }
 
     @Override

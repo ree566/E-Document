@@ -57,11 +57,9 @@ public class BabSearch extends HttpServlet {
         if (pChecker.checkInputVal(po)) {
             PrepareSchedule schedule = prepareScheduleService.getScheduleByPO(po);
             out.print(schedule == null ? "data not found" : convertString(schedule.getModel_name()));
-        }
-        else if (pChecker.checkInputVal(saveLine)) {
+        } else if (pChecker.checkInputVal(saveLine)) {
             out.print(new Gson().toJson(babService.getProcessingBABByLine(Integer.parseInt(saveLine))));
-        }
-        else if (pChecker.checkInputVals(poGetBAB, poSaveLine)) {
+        } else if (pChecker.checkInputVals(poGetBAB, poSaveLine)) {
             out.print(babService.getBABInfoWithSensorState(poGetBAB, poSaveLine));
         }
     }

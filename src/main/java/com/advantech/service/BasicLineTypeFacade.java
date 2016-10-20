@@ -16,12 +16,16 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Wei.Cheng
  */
 public abstract class BasicLineTypeFacade {
+
+    private static final Logger log = LoggerFactory.getLogger(BasicLineTypeFacade.class);
 
     protected boolean controlJobFlag = true;//Change the flag if you want to pause the job outside.
 
@@ -41,13 +45,10 @@ public abstract class BasicLineTypeFacade {
     protected String txtName;//先設定txtName
 
     protected BasicLineTypeFacade() {
-
         txtWriter = TxtWriter.getInstance();
-
         PropertiesReader p = PropertiesReader.getInstance();
         isWriteToTxt = p.isWriteToTxt();
         isWriteToDB = p.isWriteToDB();
-
         resetFlag = true;
         dataMap = new HashMap();
     }
@@ -91,7 +92,7 @@ public abstract class BasicLineTypeFacade {
         }
     }
 
-    private void resetOutputResult(String txtName) throws IOException {
+    protected void resetOutputResult(String txtName) throws IOException {
         if (isWriteToTxt || isWriteToDB) {
             if (resetFlag == true) {
                 initMap();
@@ -124,6 +125,10 @@ public abstract class BasicLineTypeFacade {
         return l;
     }
 
+    protected abstract boolean initDbAlarmSign();
+
+    public abstract boolean setDbAlarmSignToTestMode();
+
     /**
      * Set the data into database signal into database.
      *
@@ -133,6 +138,16 @@ public abstract class BasicLineTypeFacade {
     protected abstract boolean setDbAlarmSign(List<AlarmAction> l);
 
     protected abstract boolean resetDbAlarmSign();
+
+    public void resetAlarm() throws IOException {
+        if (isWriteToTxt) {
+            resetOutputResult(txtName);
+        }
+        if (isWriteToDB) {
+            resetDbAlarmSign();
+        }
+        initInnerObjs();
+    }
 
     protected boolean hasDataInCollection(Collection c) {
         return c != null && !c.isEmpty();

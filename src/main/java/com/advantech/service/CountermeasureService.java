@@ -64,19 +64,19 @@ public class CountermeasureService {
                 baseMap = m;
                 baseId = (int) m.get("id");
                 baseMap.put("USER_ID" + m.get("station"), m.get("USER_ID"));
-                baseMap.put("failPercent" + m.get("station"), m.get("failPercent(Personal)"));
+                baseMap.put("亮燈頻率" + m.get("station"), m.get("failPercent(Personal)"));
                 removeUnusedKeyInMap(baseMap);
             } else if ((int) m.get("id") != baseId) {
                 tList.add(baseMap);
                 baseMap = m;
                 baseMap.put("USER_ID" + m.get("station"), m.get("USER_ID"));
-                baseMap.put("failPercent" + m.get("station"), m.get("failPercent(Personal)"));
+                baseMap.put("亮燈頻率" + m.get("station"), m.get("failPercent(Personal)"));
                 removeUnusedKeyInMap(baseMap);
                 baseId = (int) m.get("id");
             } else if (baseMap != null && (int) m.get("id") == baseId) {
                 baseMap.put("USER_ID" + m.get("station"), m.get("USER_ID"));
-                baseMap.put("failPercent" + m.get("station"), m.get("failPercent(Personal)"));
-                if(i == (l.size() - 1)){
+                baseMap.put("亮燈頻率" + m.get("station"), m.get("failPercent(Personal)"));
+                if (i == (l.size() - 1)) {
                     tList.add(baseMap);
                 }
             }
@@ -129,7 +129,7 @@ public class CountermeasureService {
         for (Map m : l) {
             out.println(m);
         }
-       
+
     }
 
 }

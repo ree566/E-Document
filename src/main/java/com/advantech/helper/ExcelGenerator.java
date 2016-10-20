@@ -21,13 +21,15 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFCellStyle;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hssf.util.CellReference;
 import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.usermodel.BorderStyle;
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +42,7 @@ public class ExcelGenerator {
 
     private static final Logger log = LoggerFactory.getLogger(ExcelGenerator.class);
 
-    private static HSSFWorkbook workbook;
+    private static Workbook workbook;
     private static int sheetNum = 1;
 
     private static final DatetimeGenerator dg = new DatetimeGenerator("E yyyy/MM/dd HH:mm");
@@ -56,11 +58,11 @@ public class ExcelGenerator {
         log.info("New one workbook");
     }
 
-    private static HSSFSheet createExcelSheet() {
+    private static Sheet createExcelSheet() {
         return workbook.createSheet("sheet" + (sheetNum++));
     }
 
-    public static HSSFWorkbook generateWorkBooks(List<Map>... data) {
+    public static Workbook generateWorkBooks(List<Map>... data) {
         init();
         for (List<Map> l : data) {
             generateWorkBook(l);
@@ -68,9 +70,9 @@ public class ExcelGenerator {
         return workbook;
     }
 
-    private static HSSFWorkbook generateWorkBook(List<Map> data) {
-        HSSFSheet spreadsheet = createExcelSheet();
-        HSSFRow row = spreadsheet.createRow(0);
+    private static Workbook generateWorkBook(List<Map> data) {
+        Sheet spreadsheet = createExcelSheet();
+        Row row = spreadsheet.createRow(0);
         if (!data.isEmpty()) {
             Map firstData = data.get(0);
             //Set the header
@@ -94,7 +96,7 @@ public class ExcelGenerator {
         return workbook;
     }
 
-    private static HSSFCell setCellValue(HSSFCell cell, Object value) {
+    private static Cell setCellValue(Cell cell, Object value) {
         if (value instanceof Clob) {
             cell.setCellValue(clobToString((Clob) value));
         } else if (value instanceof java.util.Date) {
@@ -132,20 +134,20 @@ public class ExcelGenerator {
         return sb.toString();
     }
 
-    private static HSSFCell createFloatCell(HSSFCell cell) {
+    private static Cell createFloatCell(Cell cell) {
         CellStyle style = workbook.createCellStyle();
         style.setDataFormat(workbook.createDataFormat().getFormat("0.00%"));
-        style.setBorderBottom(HSSFCellStyle.BORDER_MEDIUM);
-        style.setBorderTop(HSSFCellStyle.BORDER_MEDIUM);
-        style.setBorderRight(HSSFCellStyle.BORDER_MEDIUM);
-        style.setBorderLeft(HSSFCellStyle.BORDER_MEDIUM);
+        style.setBorderBottom(BorderStyle.MEDIUM);
+        style.setBorderTop(BorderStyle.MEDIUM);
+        style.setBorderRight(BorderStyle.MEDIUM);
+        style.setBorderLeft(BorderStyle.MEDIUM);
         cell.setCellStyle(style);
         return cell;
     }
 
     public static void formatExcel() {
         for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
-            HSSFRow row = workbook.getSheetAt(i).getRow(0);
+            Row row = workbook.getSheetAt(i).getRow(0);
             for (int colNum = 0; colNum < row.getLastCellNum(); colNum++) {
                 workbook.getSheetAt(0).autoSizeColumn(colNum);
             }
@@ -154,7 +156,9 @@ public class ExcelGenerator {
 
     public static void outputExcel(Workbook w, String fileName) {
         String filePath = System.getProperty("user.home") + "\\Desktop\\";
-        fileName += ".xls";
+        String fileExt = getFileExt(w);
+        fileName += fileExt;
+
         FileOutputStream fileOut;
         try {
             fileOut = new FileOutputStream(filePath + fileName);
@@ -164,6 +168,18 @@ public class ExcelGenerator {
         } catch (Exception ex) {
             out.println(ex.toString());
         }
+    }
+
+    public static String getFileExt(Workbook w) {
+//        if (w instanceof HSSFWorkbook) {
+//            return ".xls";
+//        } else if (w instanceof SXSSFWorkbook || w instanceof XSSFWorkbook) {
+//            return ".xlsx";
+//        } else {
+//            return null;
+//        }
+        //取消註解if system add xlsx support
+        return ".xls";
     }
 
     //客製化style的excel---------------------------------------------------------
@@ -182,7 +198,7 @@ public class ExcelGenerator {
         List<Map> babList = BasicService.getBabService().getBABForMap(date);
         workbook = new HSSFWorkbook();
 
-        HSSFSheet spreadsheet = workbook.createSheet("test");
+        Sheet spreadsheet = workbook.createSheet("test");
 
         int dataCount = 0;
 
@@ -200,9 +216,9 @@ public class ExcelGenerator {
                 abnormalData = fService.getAbnormalData(BABid);
             }
 
-            HSSFCellStyle style = workbook.createCellStyle();
+            CellStyle style = workbook.createCellStyle();
             style.setFillForegroundColor(dataCount++ % 2 == 0 ? HSSFColor.LIGHT_TURQUOISE.index : HSSFColor.LIGHT_GREEN.index);
-            style.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+            style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
             setData(spreadsheet, style, bab);
             spreadsheet.createRow(++yIndex);
@@ -216,15 +232,15 @@ public class ExcelGenerator {
         outputExcel(workbook, date);
     }
 
-    private static HSSFSheet setData(HSSFSheet spreadsheet, HSSFCellStyle style, Map m) {
+    private static Sheet setData(Sheet spreadsheet, CellStyle style, Map m) {
         List l = new ArrayList();
         l.add(m);
         return setData(spreadsheet, style, l);
     }
 
-    private static HSSFSheet setData(HSSFSheet spreadsheet, HSSFCellStyle style, List<Map> l) {
-        HSSFRow row = spreadsheet.createRow(yIndex);
-        HSSFCell cell;
+    private static Sheet setData(Sheet spreadsheet, CellStyle style, List<Map> l) {
+        Row row = spreadsheet.createRow(yIndex);
+        Cell cell;
         if (!l.isEmpty()) {
             Map firstData = l.get(0);
             //Set the header
@@ -261,17 +277,20 @@ public class ExcelGenerator {
     //客製化個人亮燈頻率excel download
     public static void addBABPersonalAlarm(String lineType, String sitefloor, String startDate, String endDate) {
         List<Map> personalAlarms = BasicService.getCountermeasureService().getPersonalAlm(lineType, sitefloor, startDate, endDate);
-//        workbook = new HSSFWorkbook();//測試單一的function需要先new 一次，此function在工單列表excel download時是合併在sheet2中的
+//        workbook = new XSSFWorkbook();//測試單一的function需要先new 一次，此function在工單列表excel download時是合併在sheet2中的
 
-//        HSSFSheet spreadsheet = workbook.createSheet("test");
-        HSSFSheet spreadsheet = createExcelSheet();
-        HSSFRow row = spreadsheet.createRow(yIndex);
-        HSSFCell cell;
-        HSSFCellStyle style = workbook.createCellStyle();
+        Sheet spreadsheet = createExcelSheet();
+        Row row = spreadsheet.createRow(yIndex);
+        Cell cell;
+        CellStyle style = workbook.createCellStyle();
         Map firstData = maxMapInList(personalAlarms);
+        int maxDataIndex, separateColIndex = 7;
+        List<String> idCols = new ArrayList();
+        List<String> failPercentCols = new ArrayList();
+
         Iterator it = firstData.keySet().iterator();
         while (it.hasNext()) {
-            if (xIndex == 7) {
+            if (xIndex == separateColIndex) {
                 cell = row.createCell(xIndex++);
                 cell.setCellStyle(style);
                 setCellValue(cell, "");
@@ -280,9 +299,19 @@ public class ExcelGenerator {
             cell = row.createCell(xIndex++);
             cell.setCellValue(key);
             cell.setCellStyle(style);
+
+            if (xIndex > separateColIndex) {
+                String colNumLetter = CellReference.convertNumToColString(cell.getColumnIndex());
+                if ((xIndex - (separateColIndex + 1)) % 2 == 0) {
+                    failPercentCols.add(colNumLetter);
+                } else {
+                    idCols.add(colNumLetter);
+                }
+            }
         }
 
-        xIndex = 0;
+        maxDataIndex = xIndex;
+        xIndex = 0;//跳回第一行
         yIndex++; //跳過head to next line
 
         for (Map data : personalAlarms) {
@@ -291,7 +320,54 @@ public class ExcelGenerator {
             setTestData(spreadsheet, style, l);
             spreadsheet.createRow(yIndex);
         }
-//        outputExcel(workbook, "test"); //Output when user need.
+
+        //設定最後兩攔formula
+        String failPersonNumLetter = "Z";
+        String failPercentNumLetter = "AA";
+
+        int targetIndex1 = CellReference.convertColStringToIndex(failPersonNumLetter);
+        int targetIndex2 = CellReference.convertColStringToIndex(failPercentNumLetter);
+
+        //Set the final two formula column.
+        spreadsheet.getRow(0).createCell(targetIndex1).setCellValue("瓶頸站");
+        spreadsheet.getRow(0).createCell(targetIndex2).setCellValue("頻率");
+
+        //set unused column to hidden
+        for (int a = maxDataIndex; a < targetIndex1 - 1; a++) {
+            spreadsheet.setColumnHidden(a, true);
+        }
+
+        for (int i = 1; i <= personalAlarms.size(); i++) {
+            Row maxium = spreadsheet.getRow(i);
+            int currentYIndex = i + 1;
+
+            //瓶頸站人名
+            cell = maxium.createCell(targetIndex1);
+            String formulaString = "";
+            String formulaStringEnding = "";
+            for (int j = 0, m = idCols.size(); j < m; j++) {
+                String formulaCol = failPercentNumLetter + currentYIndex;
+                String failPercentCol = failPercentCols.get(j) + currentYIndex;
+                String userNameCol = idCols.get(j) + currentYIndex;
+                formulaString += "if(" + failPercentCol + "=" + formulaCol + "," + userNameCol;
+                if (j < m - 1) {
+                    formulaString += ",";
+                }
+                formulaStringEnding += ")";
+            }
+            formulaString += formulaStringEnding;
+            cell.setCellFormula(formulaString);
+
+            //瓶頸站趴數
+            cell = maxium.createCell(targetIndex2);
+            String formulaString1 = "MAX(";
+            for (int j = 0; j < failPercentCols.size(); j++) {
+                formulaString1 += failPercentCols.get(j) + currentYIndex + ",";
+            }
+            formulaString1 += ")";
+            cell.setCellFormula(formulaString1);
+            createFloatCell(cell);
+        }
     }
 
     private static Map maxMapInList(List<Map> l) {
@@ -306,9 +382,9 @@ public class ExcelGenerator {
         return map;
     }
 
-    private static HSSFSheet setTestData(HSSFSheet spreadsheet, HSSFCellStyle style, List<Map> l) {
-        HSSFRow row;
-        HSSFCell cell;
+    private static Sheet setTestData(Sheet spreadsheet, CellStyle style, List<Map> l) {
+        Row row;
+        Cell cell;
         if (!l.isEmpty()) {
             //Set the header
             Iterator it;
@@ -325,6 +401,7 @@ public class ExcelGenerator {
                     cell.setCellStyle(style);
                     setCellValue(cell, m.get(it.next()));
                 }
+
                 xIndex = 0;//Reset the cell index and begin next data line insert.
             }
         } else {
@@ -338,6 +415,8 @@ public class ExcelGenerator {
 
     public static void main(String arg0[]) {
         BasicDAO.dataSourceInit();
-        ExcelGenerator.sensorAbnormalDataGenerate("2016-10-14");
+        ExcelGenerator.sensorAbnormalDataGenerate();
+//        ExcelGenerator.addBABPersonalAlarm("ASSY", "5", "16/10/01", "16/10/17");
+//        ExcelGenerator.outputExcel(workbook, "TEST");
     }
 }

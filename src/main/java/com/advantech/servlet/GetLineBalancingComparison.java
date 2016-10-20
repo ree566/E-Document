@@ -49,7 +49,7 @@ public class GetLineBalancingComparison extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
-        
+
         res.setContentType("application/json");
         PrintWriter out = res.getWriter();
 
@@ -61,28 +61,42 @@ public class GetLineBalancingComparison extends HttpServlet {
 
         JSONObject responseObject = new JSONObject();
 
-        List<Map> l;
+        List<Map> l = null;
 
         if (pChecker.checkInputVal(type)) {
 
-            l = "type1".endsWith(type) ? babService.getLineBalanceCompare(Model_name, lineType) : babService.getLineBalanceCompare(Integer.parseInt(BABid));
-            
+            if (null != type) {
+                switch (type) {
+                    case "type1":
+                        l = babService.getLineBalanceCompare(Model_name, lineType);
+                        break;
+                    case "type2":
+                        l = babService.getLineBalanceCompare(Integer.parseInt(BABid));
+                        break;
+                    default:
+                        l = new ArrayList();
+                        break;
+                }
+            }
+
             try {
-                for (Map m : l) {
-                    int ctrl_isused = parseToInt(m.get("ctrl_isused"));
-                    int ctrl_id = parseToInt(m.get("ctrl_id"));
-                    int exp_isused = parseToInt(m.get("exp_isused"));
-                    int exp_id = parseToInt(m.get("exp_id"));
+                if (l != null) {
+                    for (Map m : l) {
+                        int ctrl_isused = parseToInt(m.get("ctrl_isused"));
+                        int ctrl_id = parseToInt(m.get("ctrl_id"));
+                        int exp_isused = parseToInt(m.get("exp_isused"));
+                        int exp_id = parseToInt(m.get("exp_id"));
 
 //            JSONArray ctrlAvgs = babService.getAvg(ctrl_id, ctrl_isused);
 //            JSONArray expAvgs = babService.getAvg(exp_id, exp_isused);
-                    Double ctrlBalance = ctrl_id == 0 ? 0 : babService.getAvgType2(ctrl_id, ctrl_isused);
-                    Double expBalance = exp_id == 0 ? 0 : babService.getAvgType2(exp_id, exp_isused);
+                        Double ctrlBalance = ctrl_id == 0 ? 0 : babService.getAvgType2(ctrl_id, ctrl_isused);
+                        Double expBalance = exp_id == 0 ? 0 : babService.getAvgType2(exp_id, exp_isused);
 
 //                Double ctrlBalance = lineBalanceService.caculateLineBalance(ctrlAvgs);
 //                Double expBalance = lineBalanceService.caculateLineBalance(expAvgs);
-                    responseObject.put("ctrlAvgs", ctrlBalance).put("expAvgs", expBalance);
+                        responseObject.put("ctrlAvgs", ctrlBalance).put("expAvgs", expBalance);
 
+                    }
                 }
             } catch (Exception e) {
                 log.error(e.toString());

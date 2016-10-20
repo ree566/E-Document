@@ -170,7 +170,7 @@ public class BABDAO extends BasicDAO {
         return queryForArrayList(getConn(), "SELECT Model_name from LS_availModelName");
     }
 
-    public boolean checkPrevSensorIsClosed(int BABid, int sensorNo) {
+    public boolean checkSensorIsClosed(int BABid, int sensorNo) {
         List historys = getHistoryTable("SELECT * FROM LS_BAB_History WHERE BABid = ? and T_Num = ?", BABid, sensorNo);
         return !historys.isEmpty();//回傳是否有東西 有true 無 false
     }

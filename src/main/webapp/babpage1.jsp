@@ -195,7 +195,6 @@
                 $("#clearInfo").click(function () {
                     if (confirm("確定離開此站別?")) {
                         if (!isUserInfoExist) {
-//                            showMsg("步驟1 cookie不存在，無法登出，請聯絡系統管理員。");
                             return false;
                         }
 
@@ -314,6 +313,7 @@
 
                 if (testLineTypeCookie != null) {
                     lockAllUserInput();
+                    alert("您已經登入測試");
                     showMsg("您已經登入測試");
                     return false;
                 }
@@ -322,6 +322,7 @@
                     var cookieMsg = $.parseJSON(babLineTypeCookie);
                     if (cookieMsg.floor != null && cookieMsg.floor != $("#userSitefloorSelect").val()) {
                         lockAllUserInput();
+                        alert("您已經登入其他樓層");
                         showMsg("您已經登入其他樓層");
                         return false;
                     }
@@ -346,6 +347,14 @@
                     showProcessing();
 
                     if (obj.station == firstStation) {
+                        var line = totalLineStatus.get($("#lineNo option:selected").text());
+                        if (line.isused == 0) { //isused == 0, The line in database is closed.
+                            removeCookie(userInfoCookieName);
+                            initUserInputWiget();
+                            alert("線別已經跳出，請重新進行步驟一");
+                            reload();
+                        }
+
                         $("#babEnd, .userWiget > .stationHintMessage").hide();
                         $("#step2Hint")
                                 .append("<li>輸入工單</li>")
@@ -371,8 +380,10 @@
                 var lines = getLine();
                 for (var i = 0; i < lines.length; i++) {
                     var line = lines[i];
+                    var lineName = line.name;
+                    line.name = lineName.trim();
                     setLineOptions(line);
-                    totalLineStatus.set(line.name, line);
+                    totalLineStatus.set(lineName.trim(), line);
                 }
             }
 
@@ -442,7 +453,7 @@
 
             function changeJobnumber(newJobnumber) {
                 var babs = searchProcessing();
-                if(babs == null || babs.length == 0){
+                if (babs == null || babs.length == 0) {
                     changeJobnumberInCookie(newJobnumber);
                     reload();
                 }

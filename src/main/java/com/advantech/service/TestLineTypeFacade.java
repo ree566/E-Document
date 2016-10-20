@@ -10,24 +10,29 @@ import com.advantech.entity.Test;
 import com.advantech.entity.TestLineTypeUser;
 import com.advantech.helper.PropertiesReader;
 import com.advantech.helper.WebServiceRV;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Wei.Cheng
  */
 public class TestLineTypeFacade extends BasicLineTypeFacade {
+    
+    private static final Logger log = LoggerFactory.getLogger(TestLineTypeFacade.class);
 
     private static TestLineTypeFacade instance;
 
+    private final int maxTestTable;
     private final Map PEOPLE_NOT_MATCH = new HashMap();
 
-    private final int maxTestTable;
     private final double TEST_STANDARD;
 
     private final WebServiceRV rv;
@@ -38,11 +43,11 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
     public TestLineTypeFacade() {
         testService = BasicService.getTestService();
         PropertiesReader p = PropertiesReader.getInstance();
-        maxTestTable = p.getMaxTestTable();
         TEST_STANDARD = p.getTestStandard();
+        maxTestTable = p.getMaxTestTable();
         rv = WebServiceRV.getInstance();
         super.setTxtName(p.getTestTxtName());
-        initDbAlarmSign();
+        this.init();
     }
 
     public static TestLineTypeFacade getInstance() {
@@ -52,10 +57,29 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
         return instance;
     }
 
+    private void init() {
+        this.initMap();
+        if (isWriteToTxt) {
+            try {
+                super.resetOutputResult(txtName);
+            } catch (IOException ex) {
+                log.error("Init txt output fail." + ex);
+            }
+        }
+
+        if (isWriteToDB) {
+            boolean initStatus = this.initDbAlarmSign();
+            if (initStatus == false) {
+                log.error("Init db output fail.");
+            }
+        }
+    }
+
     @Override
     protected void initMap() {
         super.dataMap.clear();
         PEOPLE_NOT_MATCH.clear();
+        
         for (int i = 1; i <= maxTestTable; i++) {
             dataMap.put(("T" + i), NORMAL_SIGN);
         }
@@ -133,10 +157,15 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
                 .put("isalarm", status);
     }
 
-    private void initDbAlarmSign() {
-        this.initMap();
-        testService.removeAllAlarmSign();
-        testService.insertTestAlarm(super.mapToAlarmSign(dataMap));
+    @Override
+    protected boolean initDbAlarmSign() {
+        TestService ts = BasicService.getTestService();
+        return ts.removeAllAlarmSign() && ts.insertTestAlarm(super.mapToAlarmSign(dataMap));
+    }
+
+    @Override
+    public boolean setDbAlarmSignToTestMode() {
+        return testService.setTestAlarmToTestingMode();
     }
 
     @Override

@@ -8,7 +8,6 @@ package com.advantech.helper;
 import com.advantech.quartzJob.DailyJobWorker;
 import com.advantech.service.BabLineTypeFacade;
 import com.advantech.service.BasicLineTypeFacade;
-import com.advantech.service.BasicService;
 import com.advantech.service.TestLineTypeFacade;
 import java.text.ParseException;
 import java.util.Date;
@@ -108,13 +107,6 @@ public class CronTrigMod {
     private void changeResultOutputFlag(boolean flag) {
         bf.isNeedToOutput(flag);
         tf.isNeedToOutput(flag);
-        if (flag == true) {
-            BasicService.getBabService().resetBABAlarm();
-            BasicService.getTestService().resetTestAlarm();
-        } else {
-            BasicService.getBabService().setBABAlarmToTestingMode();
-            BasicService.getTestService().setTestAlarmToTestingMode();
-        }
     }
 
     public void updateMainJobCronExpressionToDefault() throws SchedulerException {

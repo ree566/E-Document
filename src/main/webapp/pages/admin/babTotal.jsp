@@ -93,6 +93,7 @@
         <script src="//cdn.datatables.net/buttons/1.2.1/js/buttons.html5.min.js"></script>
         <script src="//cdn.datatables.net/buttons/1.2.1/js/buttons.print.min.js"></script>
         <script src="../../js/param.check.js"></script>
+        <script src="../../js/urlParamGetter.js"></script>
         <script>
             var round_digit = 2;
             var historyTable;
@@ -537,6 +538,9 @@
             }
 
             function getBABCompare(BABid, Model_name, lineType, type) {
+                if (Model_name != null) {
+                    Model_name = Model_name.trim();
+                }
                 $("#lineBalnHistory").show();
                 $("#lineBalnHistory").DataTable({
                     "ajax": {
@@ -544,7 +548,7 @@
                         "type": "POST",
                         "data": {
                             "BABid": BABid,
-                            "Model_name": Model_name.trim(),
+                            "Model_name": Model_name,
                             "lineType": lineType,
                             "type": type
                         }
@@ -847,6 +851,7 @@
                 });
             }
 
+            //隔離特殊字元
             function unEntity(str) {
                 return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
             }
@@ -872,7 +877,7 @@
                 $(":button").addClass("btn btn-default");
 
                 initCountermeasureDialog();
-                initDateTimePickerWiget()
+                initDateTimePickerWiget();
 
                 //http://stackoverflow.com/questions/14493250/ajax-jquery-autocomplete-with-json-data
                 $.ajax({
@@ -1108,6 +1113,13 @@
                     window.location.href = '../../BABExcelGenerate?startDate=' + startDate + '&endDate=' + endDate + '&lineType=' + lineType + '&sitefloor=' + sitefloor;
                 });
 
+                var babId = getQueryVariable("babId");
+                if (babId != null) {
+                    console.log('Query Variable ' + babId + ' found');
+                    $("#Model_name").val("");
+                    getBABCompare(babId, null, null, 'type2');
+                }
+
                 $(window).on("focus", function () {
                     autoReloadInterval = setInterval(function () {
                         table2.ajax.reload(function (json) {
@@ -1302,7 +1314,7 @@
         <hr />
         <!----->
         <div class="wiget-ctrl form-inline">
-            <h3>機種平衡率紀錄查詢</h3>
+            <h3 id="babDetailSearch">機種平衡率紀錄查詢</h3>
             <div class="search-container">
                 <div class="ui-widget">
                     <label for="Model_name">請輸入機種號碼: </label>

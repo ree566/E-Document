@@ -89,8 +89,8 @@
             #titleArea>div, #testArea>div, #babArea>div{
                 position: absolute;
             }
-            .titleWiget, .testWiget, .babWiget{
-
+            .titleWiget{
+                cursor: pointer;
             }
             .divCustomBg{
                 background-size: 100% 100%, auto;
@@ -120,7 +120,8 @@
             var maxProductivity = 200;
 
             $(function () {
-
+                
+                $.ajaxSetup({ cache: false });
                 var pXa = -20;
                 var pYa = -20;
 
@@ -156,6 +157,7 @@
                     $("#titleArea").append("<div></div>");
                     $("#titleArea>div")
                             .eq(i)
+                            .attr("id", groupStatus.lineName + "_title")
                             .addClass("titleWiget")
                             .html(groupStatus.lineName)
                             .css({left: groupStatus.x + pXa, top: groupStatus.y + pYa});
@@ -278,10 +280,16 @@
                         if (babData != null) {
                             for (var k = 0, l = babData.length; k < l; k++) {
                                 var people = babData[k];
-                                $("#babArea #" + people.TagName + " #" + people.TagName + "_" + people.T_Num)
-                                        .removeClass("blub-empty")
-                                        .addClass((people.ismax ? "blub-alarm" : "blub-normal"))
-                                        .attr("title", "Time:" + people.diff + "秒");
+                                var obj = $("#babArea #" + people.TagName + " #" + people.TagName + "_" + people.T_Num);
+                                if (obj.length) {
+                                    obj.removeClass("blub-empty")
+                                            .addClass((people.ismax ? "blub-alarm" : "blub-normal"))
+                                            .attr("title", "Time:" + people.diff + "秒");
+                                    if (people.T_Num == 1) {
+                                        $("#titleArea #" + people.TagName + "_title").attr("onClick", "window.open( 'BabTotal?babId=" + people.BABid + "','_blank' ); return false;");
+//                                        console.log('工單:' + people.PO + ' 機種:' + people.Model_name);
+                                    }
+                                }
                             }
                         }
                     }
@@ -294,7 +302,13 @@
                 var ws = new ReconnectingWebSocket("ws://" + hostname + "/CalculatorWSApplication/echo2");
                 ws.timeoutInterval = 3000;
                 ws.onopen = function () {
-
+//                    $.getJSON("testData.json", function (data) {
+//                        var jsonArray = data.RESPONSE;
+//                        if (jsonArray.length != 0) {
+//                            testDataToWiget(jsonArray[0]);
+//                            babDataToWiget(jsonArray[1]);
+//                        }
+//                    });
                 };
 
                 //Get the server message and transform into table.
