@@ -90,6 +90,9 @@
             #titleArea>div, #testArea>div, #babArea>div{
                 position: absolute;
             }
+            .titleWiget{
+                cursor: pointer;
+            }
             .divCustomBg{
                 background-size: 100% 100%, auto;
                 background-repeat: no-repeat;
@@ -104,9 +107,11 @@
             }
             .blub-normal{
                 background-image: url(../../images/blub-icon/Green_Light_Icon.png);
+                cursor: pointer;
             }
             .blub-alarm{
                 background-image: url(../../images/blub-icon/Blue_Light_Icon.png);
+                cursor: pointer;
             }
             .blub-abnormal{
                 background-image: url(../../images/blub-icon/Yellow_Light_Icon.png);
@@ -145,11 +150,11 @@
                 ];
 
                 var babGroup = [
-                    {people: 4, x: 930, y: 220, lineName: "L1"}, 
-                    {people: 4, x: 930, y: 170, lineName: "LA"}, 
-                    {people: 4, x: 930, y: 60, lineName: "LB"}, 
-                    {people: 3, x: 100, y: 160, lineName: "LH"}, 
-                    {people: 3, x: 260, y: 90, lineName: "LG"}, 
+                    {people: 4, x: 930, y: 220, lineName: "L1"},
+                    {people: 4, x: 930, y: 170, lineName: "LA"},
+                    {people: 4, x: 930, y: 60, lineName: "LB"},
+                    {people: 3, x: 100, y: 160, lineName: "LH"},
+                    {people: 3, x: 260, y: 90, lineName: "LG"},
                     {people: 3, x: 260, y: 160, lineName: "LF"}
                 ];
 
@@ -158,6 +163,7 @@
                     $("#titleArea").append("<div></div>");
                     $("#titleArea>div")
                             .eq(i)
+                            .attr("id", groupStatus.lineName + "_title")
                             .addClass("titleWiget")
                             .html(groupStatus.lineName)
                             .css({left: groupStatus.x + pXa, top: groupStatus.y + pYa});
@@ -266,7 +272,10 @@
                                 $(".testWiget #draggable" + people.table + "_" + people.sitefloor + "f")
                                         .removeClass("blub-empty")
                                         .addClass(signalClass)
-                                        .attr("title", people.name + " 效率:" + (productivity > maxProductivity ? maxProductivity : productivity) + "%");
+                                        .attr({
+                                            "title": (people.name + " 效率:" + (productivity > maxProductivity ? maxProductivity : productivity) + "%"),
+                                            "onClick": "window.open( 'TestTotal?jobnumber=" + people.number + "','_blank' ); return false;"
+                                        });
                             }
                         }
                     }
@@ -280,10 +289,15 @@
                         if (babData != null) {
                             for (var k = 0, l = babData.length; k < l; k++) {
                                 var people = babData[k];
-                                $("#babArea #" + people.TagName + " #" + people.TagName + "_" + people.T_Num)
-                                        .removeClass("blub-empty")
-                                        .addClass((people.ismax ? "blub-alarm" : "blub-normal"))
-                                        .attr("title", "Time:" + people.diff + "秒");
+                                var obj = $("#babArea #" + people.TagName + " #" + people.TagName + "_" + people.T_Num);
+                                if (obj.length) {
+                                    obj.removeClass("blub-empty")
+                                            .addClass((people.ismax ? "blub-alarm" : "blub-normal"))
+                                            .attr("title", "Time:" + people.diff + "秒");
+                                    if (people.T_Num == 1) {
+                                        $("#titleArea #" + people.TagName + "_title").attr("onClick", "window.open( 'BabTotal?babId=" + people.BABid + "','_blank' ); return false;");
+                                    }
+                                }
                             }
                         }
                     }

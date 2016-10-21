@@ -73,7 +73,6 @@
         </trigger>
     </schedule>
     
-    
     <!--把測試線別狀態記錄到資料庫-->
     <schedule>
         <job>

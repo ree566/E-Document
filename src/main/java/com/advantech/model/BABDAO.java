@@ -91,9 +91,8 @@ public class BABDAO extends BasicDAO {
         return getHistoryTable("SELECT * FROM LS_BAB_History WHERE BABid = ?", bab.getId());
     }
 
-    //Delete when system update. unused
-    public List<Map> getBABInfo(String lineType, String sitefloor, String startDate, String endDate) {
-        return queryProcForMapList(getConn(), "{CALL getBABDetail(?,?,?,?)}", lineType, sitefloor, startDate, endDate);
+    public List<Map> getBABInfo(String startDate, String endDate) {
+        return queryProcForMapList(getConn(), "{CALL getBABDetail_1(?,?)}", startDate, endDate);
     }
 
     public List<BAB> getProcessingBAB() {

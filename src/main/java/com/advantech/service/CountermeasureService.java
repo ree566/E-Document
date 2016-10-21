@@ -1,15 +1,13 @@
 package com.advantech.service;
 
 import com.advantech.entity.Countermeasure;
-import com.advantech.helper.ExcelGenerator;
 import com.advantech.model.BasicDAO;
 import com.advantech.model.CountermeasureDAO;
-import com.google.gson.Gson;
 import static java.lang.System.out;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -48,12 +46,18 @@ public class CountermeasureService {
         return countermeasureDAO.getUnFillCountermeasureBabs(sitefloor);
     }
 
-    public List<Map> getCountermeasureView(String lineType, String sitefloor, String startDate, String endDate) {
-        return countermeasureDAO.getCountermeasureView(lineType, sitefloor, startDate, endDate);
+    public List<Map> getCountermeasure(String lineType, String sitefloor, String startDate, String endDate) {
+        List<Map> l = countermeasureDAO.getCountermeasure(startDate, endDate);
+        return BasicService.getBabService().seperateNotFilterBab(l, lineType, sitefloor);
+    }
+    
+    public List<Map> getPersonAlarm(String lineType, String sitefloor, String startDate, String endDate) {
+        List<Map> l = countermeasureDAO.getPersonalAlm(startDate, endDate);
+        l = BasicService.getBabService().seperateNotFilterBab(l, lineType, sitefloor);
+        return this.transformDataForm(l);
     }
 
-    public List<Map> getPersonalAlm(String lineType, String sitefloor, String startDate, String endDate) {
-        List<Map> l = countermeasureDAO.getPersonalAlm(lineType, sitefloor, startDate, endDate);
+    public List<Map> transformDataForm(List<Map> l) {
         List<Map> tList = new ArrayList();
         Map baseMap = null;
         int baseId = 0;
@@ -124,11 +128,11 @@ public class CountermeasureService {
     }
 
     public static void main(String arg0[]) {
-        BasicDAO.dataSourceInit();
-        List<Map> l = new CountermeasureService().countermeasureDAO.getPersonalAlm("ASSY", "6", "16-09-01", "16-10-03");
-        for (Map m : l) {
-            out.println(m);
-        }
+//        BasicDAO.dataSourceInit();
+//        List<Map> l = new CountermeasureService().countermeasureDAO.getPersonalAlm("ASSY", "6", "16-09-01", "16-10-03");
+//        for (Map m : l) {
+//            out.println(m);
+//        }
 
     }
 

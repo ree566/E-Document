@@ -58,12 +58,12 @@ public class CountermeasureDAO extends BasicDAO {
         return queryForMapList(this.getConn(), "SELECT * FROM unFillCountermeasureView WHERE sitefloor = ? ORDER BY btime DESC", sitefloor);
     }
 
-    public List<Map> getCountermeasureView(String lineType, String sitefloor, String startDate, String endDate) {
-        return queryProcForMapList(this.getConn(), "{CALL countermeasureDownExcel(?,?,?,?)}", lineType, sitefloor, startDate, endDate);
+    public List<Map> getCountermeasure(String startDate, String endDate) {
+        return queryProcForMapList(this.getConn(), "{CALL countermeasureDownExcel_1(?,?)}", startDate, endDate);
     }
 
-    public List<Map> getPersonalAlm(String lineType, String sitefloor, String startDate, String endDate) {
-        return queryProcForMapList(this.getConn(), "{CALL personalAlmDownExcel(?,?,?,?)}", lineType, sitefloor, startDate, endDate);
+    public List<Map> getPersonalAlm(String startDate, String endDate) {
+        return queryProcForMapList(this.getConn(), "{CALL personalAlmDownExcel_1(?,?)}", startDate, endDate);
     }
 
     public List<Map> getErrorCode() {

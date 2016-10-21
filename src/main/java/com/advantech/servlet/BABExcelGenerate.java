@@ -28,6 +28,8 @@ public class BABExcelGenerate extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
+        
+//http://stackoverflow.com/questions/13853300/jquery-file-download-filedownload
 
         String lineType = req.getParameter("lineType");
         String sitefloor = req.getParameter("sitefloor");
@@ -35,23 +37,25 @@ public class BABExcelGenerate extends HttpServlet {
         String endDate = req.getParameter("endDate");
 
         CountermeasureService cs = BasicService.getCountermeasureService();
-        List countermeasures = cs.getCountermeasureView(lineType, sitefloor, startDate, endDate);
+        List countermeasures = cs.getCountermeasure(lineType, sitefloor, startDate, endDate);
 
         if (countermeasures.isEmpty()) {
             res.setContentType("text/html");
-            res.getWriter().println("<script>alert('查無資料，無法彙整出excel');location='pages/admin/BabTotal';</script>");
+            res.getWriter().println("fail");
         } else {
             Workbook w = ExcelGenerator.generateWorkBooks(countermeasures);
+            ExcelGenerator.addBABPersonalAlarm(lineType, sitefloor, startDate, endDate);
             ExcelGenerator.formatExcel();
             String fileExt = ExcelGenerator.getFileExt(w);
-            ExcelGenerator.addBABPersonalAlarm(lineType, sitefloor, startDate, endDate);
-            
+
             res.setContentType("application/vnd.ms-excel");
+            res.setHeader("Set-Cookie", "fileDownload=true; path=/");
             res.setHeader("Content-Disposition",
                     "attachment; filename=sampleData" + DateTimeFormat.forPattern("yyyyMMdd").print(new DateTime()) + fileExt);
             w.write(res.getOutputStream());
             w.close();
         }
     }
-
 }
+
+        

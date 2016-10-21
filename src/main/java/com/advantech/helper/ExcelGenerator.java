@@ -47,6 +47,7 @@ public class ExcelGenerator {
 
     private static final DatetimeGenerator dg = new DatetimeGenerator("E yyyy/MM/dd HH:mm");
 
+    private static final int CUSTOM_EXCEL_SEPARATE_COLINDEX = 9;
     //Set values
     private static int xIndex = 0, yIndex = 0;
 
@@ -147,9 +148,10 @@ public class ExcelGenerator {
 
     public static void formatExcel() {
         for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
-            Row row = workbook.getSheetAt(i).getRow(0);
+            Sheet sheet = workbook.getSheetAt(i);
+            Row row = sheet.getRow(0);
             for (int colNum = 0; colNum < row.getLastCellNum(); colNum++) {
-                workbook.getSheetAt(0).autoSizeColumn(colNum);
+                sheet.autoSizeColumn(colNum);
             }
         }
     }
@@ -274,9 +276,13 @@ public class ExcelGenerator {
         return spreadsheet;
     }
 
-    //客製化個人亮燈頻率excel download
     public static void addBABPersonalAlarm(String lineType, String sitefloor, String startDate, String endDate) {
-        List<Map> personalAlarms = BasicService.getCountermeasureService().getPersonalAlm(lineType, sitefloor, startDate, endDate);
+        List personalAlarms = BasicService.getCountermeasureService().getPersonAlarm(lineType, sitefloor, startDate, endDate);
+        addBABPersonalAlarm(personalAlarms); 
+    }
+
+    //客製化個人亮燈頻率excel download
+    public static void addBABPersonalAlarm(List<Map> personalAlarms) {
 //        workbook = new XSSFWorkbook();//測試單一的function需要先new 一次，此function在工單列表excel download時是合併在sheet2中的
 
         Sheet spreadsheet = createExcelSheet();
@@ -284,13 +290,13 @@ public class ExcelGenerator {
         Cell cell;
         CellStyle style = workbook.createCellStyle();
         Map firstData = maxMapInList(personalAlarms);
-        int maxDataIndex, separateColIndex = 7;
+        int maxDataIndex;
         List<String> idCols = new ArrayList();
         List<String> failPercentCols = new ArrayList();
 
         Iterator it = firstData.keySet().iterator();
         while (it.hasNext()) {
-            if (xIndex == separateColIndex) {
+            if (xIndex == CUSTOM_EXCEL_SEPARATE_COLINDEX) {
                 cell = row.createCell(xIndex++);
                 cell.setCellStyle(style);
                 setCellValue(cell, "");
@@ -300,9 +306,9 @@ public class ExcelGenerator {
             cell.setCellValue(key);
             cell.setCellStyle(style);
 
-            if (xIndex > separateColIndex) {
+            if (xIndex > CUSTOM_EXCEL_SEPARATE_COLINDEX) {
                 String colNumLetter = CellReference.convertNumToColString(cell.getColumnIndex());
-                if ((xIndex - (separateColIndex + 1)) % 2 == 0) {
+                if ((xIndex - (CUSTOM_EXCEL_SEPARATE_COLINDEX + 1)) % 2 == 0) {
                     failPercentCols.add(colNumLetter);
                 } else {
                     idCols.add(colNumLetter);
@@ -330,7 +336,7 @@ public class ExcelGenerator {
 
         //Set the final two formula column.
         spreadsheet.getRow(0).createCell(targetIndex1).setCellValue("瓶頸站");
-        spreadsheet.getRow(0).createCell(targetIndex2).setCellValue("頻率");
+        spreadsheet.getRow(0).createCell(targetIndex2).setCellValue("亮燈頻率");
 
         //set unused column to hidden
         for (int a = maxDataIndex; a < targetIndex1 - 1; a++) {
@@ -392,7 +398,7 @@ public class ExcelGenerator {
                 it = m.keySet().iterator();
                 row = spreadsheet.createRow(yIndex++);
                 while (it.hasNext()) {
-                    if (xIndex == 7) {
+                    if (xIndex == CUSTOM_EXCEL_SEPARATE_COLINDEX) {
                         cell = row.createCell(xIndex++);
                         cell.setCellStyle(style);
                         setCellValue(cell, "");

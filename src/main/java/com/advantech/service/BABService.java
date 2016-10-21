@@ -9,6 +9,7 @@ import com.advantech.helper.PropertiesReader;
 import com.google.gson.Gson;
 import java.math.BigDecimal;
 import java.sql.Array;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.json.JSONArray;
@@ -66,13 +67,39 @@ public class BABService {
     public List<Array> getAvailableModelName() {
         return babDAO.getAvailableModelName();
     }
-    
+
     public boolean checkSensorIsClosed(int BABid, int sensorNo) {
         return babDAO.checkSensorIsClosed(BABid, sensorNo);
     }
 
     public List<Map> getBABInfo(String lineType, String sitefloor, String startDate, String endDate) {
-        return babDAO.getBABInfo(lineType, sitefloor, startDate, endDate);
+        return seperateNotFilterBab(babDAO.getBABInfo(startDate, endDate), lineType, sitefloor);
+    }
+
+    protected List<Map> seperateNotFilterBab(List<Map> l, String lineType, String sitefloor) {
+        Iterator it = l.iterator();
+        while (it.hasNext()) {
+            Map m = (Map) it.next();
+            Integer floor = (Integer) m.get("sitefloor");
+            String type = (String) m.get("lineType");
+
+            if ("-1".equals(lineType) && !"-1".equals(sitefloor)) {
+                if (!floor.toString().equals(sitefloor)) {
+                    it.remove();
+                }
+            } else if (!"-1".equals(lineType) && "-1".equals(sitefloor)) {
+                if (!type.equals(lineType)) {
+                    it.remove();
+                }
+            } else if (!"-1".equals(lineType) && !"-1".equals(sitefloor)) {
+                if (!type.equals(lineType) || !floor.toString().equals(sitefloor)) {
+                    it.remove();
+                }
+            } else {
+                break;
+            }
+        }
+        return l;
     }
 
     public List<Map> getLineBalanceCompare(String Model_name, String lineType) {

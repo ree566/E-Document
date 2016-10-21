@@ -17,6 +17,7 @@
         <link rel="stylesheet" href="../../css/jquery.dataTables.min.css">
         <link rel="stylesheet" href="../../css/bootstrap-datetimepicker.min.css">
         <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+        <!--<link rel="stylesheet" href="//code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />-->
         <link rel="stylesheet" href="//cdn.datatables.net/buttons/1.2.1/css/buttons.dataTables.min.css">
         <style>
             body{
@@ -47,10 +48,10 @@
                 width: 100%;
             }
             .exp{
-                background-color: #bce8f1;
+                background-color: #dca7a7;
             }
             .ctrl{
-                background-color: #dca7a7;
+                background-color: #bce8f1;
             }
             .search-container{
                 background-color: wheat;
@@ -74,9 +75,26 @@
             .modal-content table .lab{
                 width: 120px;
             }
+            .expose {
+                position:relative;
+            }
+            #overlay {
+                background:rgba(0,0,0,0.3);
+                display:none;
+                width:100%; height:100%;
+                position:fixed;
+                top:0;
+                left:0;
+                z-index:99998;
+            }
+            u {    
+                border-bottom: 1px dotted #000;
+                text-decoration: none;
+            }
         </style>
         <script src="//www.gstatic.com/charts/loader.js"></script>
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+        <!--<script src="//code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>-->
         <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
         <script src="../../js/canvasjs.min.js"></script>
         <script src="../../js/jquery.dataTables.min.js"></script>
@@ -94,6 +112,7 @@
         <script src="//cdn.datatables.net/buttons/1.2.1/js/buttons.print.min.js"></script>
         <script src="../../js/param.check.js"></script>
         <script src="../../js/urlParamGetter.js"></script>
+        <script src="../../js/jquery.fileDownload.js"></script>
         <script>
             var round_digit = 2;
             var historyTable;
@@ -504,7 +523,10 @@
                     "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
                     destroy: true,
                     stateSave: true,
-                    "order": [[8, "desc"]]
+                    "order": [[8, "desc"]],
+                    "drawCallback": function (settings) {
+                        $.unblockUI();
+                    }
                 });
                 return table;
             }
@@ -660,6 +682,8 @@
 
                         $("#ctrlBalance").html("線平衡率: " + getPercent(ctrlAvgs, round_digit));
                         $("#expBalance").html("線平衡率: " + getPercent(expAvgs, round_digit));
+
+                        $.unblockUI();
                     }
                 });
             }
@@ -857,6 +881,7 @@
             }
 
             $(document).ready(function () {
+                $('[data-toggle="tooltip"]').tooltip();
                 var interval = null;
                 var countdownnumber = 30 * 60;
                 var diff = 12;
@@ -1060,6 +1085,7 @@
                 });
 
                 $("#lineType2").val("ASSY");
+                $("#sitefloor").val("5");
                 $("#searchAvailableBAB").trigger("click");
 
 //                Checkbox change event.
@@ -1089,35 +1115,42 @@
                 });
 
                 $("#generateExcel").click(function () {
-
-                    $(this).attr("disabled", true);
-
                     var lineType = $('#lineType2').val();
                     var sitefloor = $('#sitefloor').val();
                     var startDate = $('#fini').val();
                     var endDate = $('#ffin').val();
 
-                    var counter = 6;
-                    var interval = setInterval(function () {
-                        counter--;
-                        $("#generateExcel").val("產出excel( " + counter + " 秒)");
-                        // Display 'counter' wherever you want to display it.
-                        if (counter == 0) {
-                            // Display a login box
-                            $("#generateExcel").attr("disabled", false).val("產出excel");
-
-                            clearInterval(interval);
+                    $("#generateExcel").attr("disabled", true);
+                    $.fileDownload('../../BABExcelGenerate?startDate=' + startDate + '&endDate=' + endDate + '&lineType=' + lineType + '&sitefloor=' + sitefloor, {
+                        preparingMessageHtml: "We are preparing your report, please wait...",
+                        failMessageHtml: "No reports generated. No Survey data is available.",
+                        successCallback: function (url) {
+                            $("#generateExcel").attr("disabled", false);
                         }
-                    }, 1000);
-
-                    window.location.href = '../../BABExcelGenerate?startDate=' + startDate + '&endDate=' + endDate + '&lineType=' + lineType + '&sitefloor=' + sitefloor;
+                        , failCallback: function (html, url) {
+                            $("#generateExcel").attr("disabled", false);
+                        }
+                    });
+//                    window.location.href = '../../BABExcelGenerate?startDate=' + startDate + '&endDate=' + endDate + '&lineType=' + lineType + '&sitefloor=' + sitefloor;
                 });
 
                 var babId = getQueryVariable("babId");
                 if (babId != null) {
-                    console.log('Query Variable ' + babId + ' found');
+                    console.log("Query Variable " + babId + " found");
                     $("#Model_name").val("");
-                    getBABCompare(babId, null, null, 'type2');
+                    getBABCompare(babId, null, null, "type2");
+
+                    block();
+                    setTimeout(function () {
+                        window.location.hash = "#babDetailSearch";
+                        $(".exp, .expDetail").addClass("expose");
+
+                        $('.expose').css('z-index', '99999');
+                        $('#overlay').fadeIn(300);
+                        $('#overlay').delay(2000).fadeOut(300, function () {
+                            $('.expose').css('z-index', '1');
+                        });
+                    }, 1000);
                 }
 
                 $(window).on("focus", function () {
@@ -1137,10 +1170,6 @@
                     block();
                 });
 
-                $(document).on("ajaxStop, ajaxComplete", function () {
-                    $.unblockUI();
-                });
-
                 $.fn.dataTable.ext.errMode = function (settings, helpPage, message) {
                     console.log(message);
                 };
@@ -1151,262 +1180,266 @@
     <body>
         <jsp:include page="header.jsp" />
         <!----->
-        <div class="wiget-ctrl form-inline">
-            <div id="bab_currentStatus">
-                <h3>組裝包裝各站別狀態</h3>
-                <div style="width: 80%; background-color: #F5F5F5">
-                    <div style="padding: 10px">
-                        <label>Filter for:
-                            <select id="lineTypeFilter">
-                                <option value="-1">all</option>
-                                <option value="L1">L1</option>
-                                <option value="LA">LA</option>
-                                <option value="LB">LB</option>
-                                <option value="LF">LF</option>
-                                <option value="LG">LG</option>
-                                <option value="LH">LH</option>
-                                <option value="L3">L3</option>
-                                <option value="L4">L4</option>
-                                <option value="L6">L6</option>
-                                <option value="L7">L7</option>
-                                <option value="L8">L8</option>
-                                <option value="L9">L9</option>
-                                <%--
-                                <c:forEach var="line" items="${lineDAO.lineForJSTL}">
-                                    <option value="${line.name}">${line.name}</option>
-                                </c:forEach>
-                                --%>
-                            </select>
-                        </label>
-                        <table id="data2" class="display" cellspacing="0" width="100%" style="text-align: center">
-                            <thead>
-                                <tr>
-                                    <th>製程</th>
-                                    <th>線別</th>
-                                    <th>站別</th>
-                                    <th>組別</th>
-                                    <th>秒數</th>
-                                    <th>亮燈</th>
-                                </tr>
-                            </thead>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            <div id="balanceCount">
-            </div>
-        </div>
-
-        <!-- Modal -->
-        <div id="myModal" class="modal fade" role="dialog">
-            <div class="modal-dialog">
-
-                <!-- Modal content-->
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
-                        <h4 id="titleMessage" class="modal-title"></h4>
-                    </div>
-                    <div class="modal-body">
-                        <div>
-                            <table id="countermeasureTable" cellspacing="10" class="table table-bordered">
-                                <tr>
-                                    <td class="lab">Error Code</td>
-                                    <td id="errorCode"> 
-                                        <div class="checkbox">
-                                            <c:forEach var="errorCode" items="${cDAO.getErrorCode()}">
-                                                <label class="checkbox-inline">
-                                                    <input type="checkbox" name="errorCode" value="${errorCode.id}">${errorCode.name}
-                                                </label>
-                                            </c:forEach>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="lab">Action Code</td>
-                                    <td id="actionCode"> 
-                                        <div class="checkbox">
-                                            <label class="checkbox-inline">
-                                                <input type="checkbox" name="actionCode">
-                                            </label>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="lab">說明</td>
-                                    <td id="errorCon">
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="lab">填寫人</td>
-                                    <td id="responseUser">
-                                    </td>
-                                </tr>
+        <div>
+            <div class="wiget-ctrl form-inline">
+                <div id="bab_currentStatus">
+                    <h3>組裝包裝各站別狀態</h3>
+                    <div style="width: 80%; background-color: #F5F5F5">
+                        <div style="padding: 10px">
+                            <label>Filter for:
+                                <select id="lineTypeFilter">
+                                    <option value="-1">all</option>
+                                    <option value="L1">L1</option>
+                                    <option value="LA">LA</option>
+                                    <option value="LB">LB</option>
+                                    <option value="LF">LF</option>
+                                    <option value="LG">LG</option>
+                                    <option value="LH">LH</option>
+                                    <option value="L3">L3</option>
+                                    <option value="L4">L4</option>
+                                    <option value="L6">L6</option>
+                                    <option value="L7">L7</option>
+                                    <option value="L8">L8</option>
+                                    <option value="L9">L9</option>
+                                </select>
+                            </label>
+                            <table id="data2" class="display" cellspacing="0" width="100%" style="text-align: center">
+                                <thead>
+                                    <tr>
+                                        <th>製程</th>
+                                        <th>線別</th>
+                                        <th>站別</th>
+                                        <th>組別</th>
+                                        <th>秒數</th>
+                                        <th>亮燈</th>
+                                    </tr>
+                                </thead>
                             </table>
-                            <div id="dialog-msg" class="alarm"></div>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" id="editCountermeasure" class="btn btn-default" >Edit</button>
-                        <button type="button" id="saveCountermeasure" class="btn btn-default">Save</button>
-                        <button type="button" id="undoContent" class="btn btn-default">Undo</button>
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+                <div id="balanceCount">
+                </div>
+            </div>
+
+            <!-- Modal -->
+            <div id="myModal" class="modal fade" role="dialog">
+                <div class="modal-dialog">
+
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 id="titleMessage" class="modal-title"></h4>
+                        </div>
+                        <div class="modal-body">
+                            <div>
+                                <table id="countermeasureTable" cellspacing="10" class="table table-bordered">
+                                    <tr>
+                                        <td class="lab">Error Code</td>
+                                        <td id="errorCode"> 
+                                            <div class="checkbox">
+                                                <c:forEach var="errorCode" items="${cDAO.getErrorCode()}">
+                                                    <label class="checkbox-inline">
+                                                        <input type="checkbox" name="errorCode" value="${errorCode.id}">${errorCode.name}
+                                                    </label>
+                                                </c:forEach>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="lab">Action Code</td>
+                                        <td id="actionCode"> 
+                                            <div class="checkbox">
+                                                <label class="checkbox-inline">
+                                                    <input type="checkbox" name="actionCode">
+                                                </label>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="lab">說明</td>
+                                        <td id="errorCon">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="lab">填寫人</td>
+                                        <td id="responseUser">
+                                        </td>
+                                    </tr>
+                                </table>
+                                <div id="dialog-msg" class="alarm"></div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" id="editCountermeasure" class="btn btn-default" >Edit</button>
+                            <button type="button" id="saveCountermeasure" class="btn btn-default">Save</button>
+                            <button type="button" id="undoContent" class="btn btn-default">Undo</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <hr />
+            <!----->
+            <div class="wiget-ctrl form-inline">
+                <div id="bab_HistoryList">
+                    <h3>可查詢歷史紀錄</h3>
+                    <p class="alarm">※雙擊表格內的內容可直接於下方帶出資料。</p>
+                    <p class="alarm">※亮燈頻率標準為30%，工單結束時低於10台者，異常回覆不用做填寫。</p>
+                    <p class="alarm">
+                        ※產出Excel可以下載工單的
+                        <u data-toggle="tooltip" data-placement="bottom" title="包含10台以下的機子">異常回覆狀況</u>
+                        以及
+                        <u data-toggle="tooltip" data-placement="bottom" title="無正常關閉的工單不會顯示在此">各工單的個人亮燈頻率</u>。
+                    </p>
+                    <div class="search-container">
+                        <div class="ui-widget">
+                            <select id="lineType2"> 
+                                <option value="-1">all</option>
+                                <option value="ASSY">ASSY</option>
+                                <option value="Packing">Packing</option>
+                            </select> /
+                            <select id="sitefloor">
+                                <option value="-1">all</option>
+                                <option value=5>5F</option>
+                                <option value=6>6F</option>
+                            </select> /
+
+                            日期:從
+                            <div class='input-group date' id='beginTime'>
+                                <input type="text" id="fini" placeholder="請選擇起始時間"> 
+                            </div> 
+                            到 
+                            <div class='input-group date' id='endTime'>
+                                <input type="text" id="ffin" placeholder="請選擇結束時間"> 
+                            </div>
+
+                            <input type="button" id="searchAvailableBAB" value="查詢">
+                            <input type="button" id="generateExcel" value="產出excel">
+
+                        </div>
+                    </div>
+                    <div style="width: 90%; background-color: #F5F5F5">
+                        <div style="padding: 10px">
+                            <table id="babHistory" class="display" cellspacing="0" width="100%" style="text-align: center">
+                                <thead>
+                                    <tr>
+                                        <th>id</th>
+                                        <th>工單</th>
+                                        <th>機種</th>
+                                        <th>線別</th>
+                                        <th>樓層</th>
+                                        <th>人數</th>
+                                        <th>紀錄flag</th>
+                                        <th>亮燈頻率(%)</th>
+                                        <th>投入時間</th>
+                                        <th>異常回覆</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
                     </div>
                 </div>
-
             </div>
-        </div>
-
-        <hr />
-        <!----->
-        <div class="wiget-ctrl form-inline">
-            <div id="bab_HistoryList">
-                <h3>可查詢歷史紀錄</h3>
-                <p class="alarm">※雙擊表格內的內容可直接於下方帶出資料。</p>
-                <p class="alarm">※亮燈頻率標準為30%。</p>
+            <hr />
+            <!----->
+            <div class="wiget-ctrl form-inline">
+                <h3 id="babDetailSearch">機種平衡率紀錄查詢</h3>
                 <div class="search-container">
                     <div class="ui-widget">
-                        <select id="lineType2"> 
+                        <label for="Model_name">請輸入機種號碼: </label>
+                        <input type="text" id="Model_name" />
+                        <select id="lineType">
+                            <option value=-1>請選擇線別</option>
                             <option value="ASSY">ASSY</option>
                             <option value="Packing">Packing</option>
-                        </select> /
-                        <select id="sitefloor">
-                            <option value=5>5F</option>
-                            <option value=6>6F</option>
-                        </select> /
+                        </select>
+                        <input type="button" id="send" value="查詢">
+                    </div>
+                </div>
 
-                        日期:從
-                        <div class='input-group date' id='beginTime'>
-                            <input type="text" id="fini" placeholder="請選擇起始時間"> 
-                        </div> 
-                        到 
-                        <div class='input-group date' id='endTime'>
-                            <input type="text" id="ffin" placeholder="請選擇結束時間"> 
+                <div id="serverMsg"></div>
+                <div>
+                    <table id="lineBalnHistory" class="table table-bordered" hidden>
+                        <thead>
+                            <tr>
+                                <th>機種</th>
+                                <th class="ctrl">上次生產Id</th>
+                                <th class="ctrl">上次生產<br/>工單</th>
+                                <th class="ctrl">上次生產<br/>線別</th>
+                                <th class="ctrl">上次生產<br/>亮燈頻率</th>
+                                <th class="ctrl">投入時間</th>
+                                <th class="exp">本次生產Id</th>
+                                <th class="exp">本次生產<br/>工單</th>
+                                <th class="exp">本次生產<br/>線別</th>
+                                <th class="exp">本次生產<br/>亮燈頻率</th>
+                                <th class="">投入時間</th>
+                                <th>狀態</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+            <!----->
+            <div class="wiget-ctrl">
+                <div id="totalDetail" hidden>
+                    <div class="ctrlDetail">
+                        <div id="ctrlBalance" class="balance">
                         </div>
+                        <h3>上次生產</h3>
+                        <div class="detail">
+                            <table id="ctrlDetail" class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>BABid</th>
+                                        <th>組別</th>
+                                        <th>平衡率</th>
+                                        <th>是否合格</th>
+                                    </tr>
+                                </thead>
+                                <tfoot>
+                                    <tr>
+                                        <th colspan="3" style="text-align:right">Total:</th>
+                                        <th></th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                        <div id="chartContainer1" class="chartContainer">
+                        </div>
+                    </div>
 
-                        <input type="button" id="searchAvailableBAB" value="查詢">
-                        <input type="button" id="generateExcel" value="產出excel">
-
-                    </div>
-                </div>
-                <div style="width: 90%; background-color: #F5F5F5">
-                    <div style="padding: 10px">
-                        <table id="babHistory" class="display" cellspacing="0" width="100%" style="text-align: center">
-                            <thead>
-                                <tr>
-                                    <th>id</th>
-                                    <th>工單</th>
-                                    <th>機種</th>
-                                    <th>線別</th>
-                                    <th>樓層</th>
-                                    <th>人數</th>
-                                    <th>紀錄flag</th>
-                                    <th>亮燈頻率(%)</th>
-                                    <th>投入時間</th>
-                                    <th>異常回覆</th>
-                                </tr>
-                            </thead>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <hr />
-        <!----->
-        <div class="wiget-ctrl form-inline">
-            <h3 id="babDetailSearch">機種平衡率紀錄查詢</h3>
-            <div class="search-container">
-                <div class="ui-widget">
-                    <label for="Model_name">請輸入機種號碼: </label>
-                    <input type="text" id="Model_name" />
-                    <select id="lineType">
-                        <option value=-1>請選擇線別</option>
-                        <option value="ASSY">ASSY</option>
-                        <option value="Packing">Packing</option>
-                    </select>
-                    <input type="button" id="send" value="查詢">
-                </div>
-            </div>
-
-            <div id="serverMsg"></div>
-            <div>
-                <table id="lineBalnHistory" class="table table-bordered" hidden>
-                    <thead>
-                        <tr>
-                            <th>機種</th>
-                            <th class="exp">上次生產Id</th>
-                            <th class="exp">上次生產<br/>工單</th>
-                            <th class="exp">上次生產<br/>線別</th>
-                            <th class="exp">上次生產<br/>亮燈頻率</th>
-                            <th class="exp">投入時間</th>
-                            <th class="ctrl">本次生產Id</th>
-                            <th class="ctrl">本次生產<br/>工單</th>
-                            <th class="ctrl">本次生產<br/>線別</th>
-                            <th class="ctrl">本次生產<br/>亮燈頻率</th>
-                            <th class="ctrl">投入時間</th>
-                            <th>狀態</th>
-                        </tr>
-                    </thead>
-                </table>
-            </div>
-        </div>
-        <!----->
-        <div class="wiget-ctrl">
-            <div id="totalDetail" hidden>
-                <s><p class="alarm">※下列圖表，組別被跳過的因為是異常資料(重複資料)而會被排除。</p></s>
-
-                <div class="ctrlDetail">
-                    <div id="ctrlBalance" class="balance">
-                    </div>
-                    <h3>上次生產</h3>
-                    <div class="detail">
-                        <table id="ctrlDetail" class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>BABid</th>
-                                    <th>組別</th>
-                                    <th>平衡率</th>
-                                    <th>是否合格</th>
-                                </tr>
-                            </thead>
-                            <tfoot>
-                                <tr>
-                                    <th colspan="3" style="text-align:right">Total:</th>
-                                    <th></th>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
-                    <div id="chartContainer1" class="chartContainer">
-                    </div>
-                </div>
-
-                <div class="expDetail">
-                    <div id="expBalance" class="balance">
-                    </div>
-                    <h3>本次生產</h3>
-                    <div class="detail">
-                        <table id="expDetail" class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>BABid</th>
-                                    <th>組別</th>
-                                    <th>平衡率</th>
-                                    <th>是否合格</th>
-                                </tr>
-                            </thead>
-                            <tfoot>
-                                <tr>
-                                    <th colspan="3" style="text-align:right">Total:</th>
-                                    <th></th>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
-                    <div id="chartContainer2" class="chartContainer">
+                    <div class="expDetail">
+                        <div id="expBalance" class="balance">
+                        </div>
+                        <h3>本次生產</h3>
+                        <div class="detail">
+                            <table id="expDetail" class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>BABid</th>
+                                        <th>組別</th>
+                                        <th>平衡率</th>
+                                        <th>是否合格</th>
+                                    </tr>
+                                </thead>
+                                <tfoot>
+                                    <tr>
+                                        <th colspan="3" style="text-align:right">Total:</th>
+                                        <th></th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                        <div id="chartContainer2" class="chartContainer">
+                        </div>
                     </div>
                 </div>
             </div>
+            <div id="overlay"></div>
         </div>
         <div style="clear: both"></div>
         <jsp:include page="footer.jsp" />

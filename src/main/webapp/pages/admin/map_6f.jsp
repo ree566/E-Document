@@ -102,9 +102,11 @@
             }
             .blub-normal{
                 background-image: url(../../images/blub-icon/Green_Light_Icon.png);
+                cursor: pointer;
             }
             .blub-alarm{
                 background-image: url(../../images/blub-icon/Blue_Light_Icon.png);
+                cursor: pointer;
             }
             .blub-abnormal{
                 background-image: url(../../images/blub-icon/Yellow_Light_Icon.png);
@@ -120,8 +122,8 @@
             var maxProductivity = 200;
 
             $(function () {
-                
-                $.ajaxSetup({ cache: false });
+
+                $.ajaxSetup({cache: false});
                 var pXa = -20;
                 var pYa = -20;
 
@@ -266,7 +268,10 @@
                                 $(".testWiget #draggable" + people.table + "_" + people.sitefloor + "f")
                                         .removeClass("blub-empty")
                                         .addClass(signalClass)
-                                        .attr("title", people.name + " 效率:" + (productivity > maxProductivity ? maxProductivity : productivity) + "%");
+                                        .attr({
+                                            "title": (people.name + " 效率:" + (productivity > maxProductivity ? maxProductivity : productivity) + "%"),
+                                            "onClick": "window.open( 'TestTotal?jobnumber=" + people.number + "','_blank' ); return false;"
+                                        });
                             }
                         }
                     }
@@ -274,6 +279,7 @@
 
                 function babDataToWiget(babObject) {
 //                    console.log(babObject);
+                    $("#titleArea > div").removeAttr("onclick");
                     initWiget(babChildElement);
                     if (babObject != null) {
                         var babData = babObject.data;
@@ -287,7 +293,6 @@
                                             .attr("title", "Time:" + people.diff + "秒");
                                     if (people.T_Num == 1) {
                                         $("#titleArea #" + people.TagName + "_title").attr("onClick", "window.open( 'BabTotal?babId=" + people.BABid + "','_blank' ); return false;");
-//                                        console.log('工單:' + people.PO + ' 機種:' + people.Model_name);
                                     }
                                 }
                             }

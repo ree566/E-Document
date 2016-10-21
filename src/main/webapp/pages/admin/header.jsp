@@ -74,6 +74,17 @@
                         <li><a href="BabDetailInfo">各站機台時間查詢</a></li>
                     </ul>
                 </li>
+<!--                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        <span class="glyphicon glyphicon-list-alt" aria-hidden="true" /> 
+                        包裝線別
+                        <span class="caret" />
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="BabTotal">線平衡資訊查詢</a></li>
+                        <li><a href="BabDetailInfo">各站機台時間查詢</a></li>
+                    </ul>
+                </li>-->
                 <li>
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                         <span class="glyphicon glyphicon-list-alt" aria-hidden="true" /> 

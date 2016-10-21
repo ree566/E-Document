@@ -39,22 +39,25 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
         <script src="//cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/vfs_fonts.js"></script>
         <script src="//cdn.datatables.net/buttons/1.2.1/js/buttons.html5.min.js"></script>
         <script src="//cdn.datatables.net/buttons/1.2.1/js/buttons.print.min.js"></script>
+        <script src="../../js/urlParamGetter.js"></script>
         <script>
             var maxProductivity = 200;
+            var table;
             $(document).ready(function () {
 
                 var momentFormatString = 'YYYY-MM-DD';
                 $(":text,input[type='number'],select").addClass("form-control");
                 $(":button").addClass("btn btn-default");
                 var options = {
-                    defaultDate: moment(),
                     useCurrent: true,
                     //locale: "zh-tw",
                     format: momentFormatString,
                     extraFormats: [momentFormatString]
                 };
-                var beginTimeObj = $('#fini').datetimepicker(options);
-                var endTimeObj = $('#ffin').datetimepicker(options);
+                options.defaultDate = moment().add(-2, "days");
+                $('#fini').datetimepicker(options);
+                options.defaultDate = moment();
+                $('#ffin').datetimepicker(options);
 
                 $("#send").click(function () {
 
@@ -74,11 +77,17 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                         $(this).addClass('selected');
                     }
                 });
+
+                var jobnumber = getQueryVariable("jobnumber");
+                if (jobnumber != null) {
+                    $("#send").trigger("click");
+                    table.search(decodeURIComponent(jobnumber)).draw();
+                }
             });
 
             function getDetail(startDate, endDate) {
 
-                $("#testDetail").DataTable({
+                table = $("#testDetail").DataTable({
                     dom: 'Bfrtip',
                     buttons: [
                         'copy', 'csv', 'excel', 'pdf', 'print'
