@@ -18,6 +18,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 import net.sourceforge.jtds.jdbcx.JtdsDataSource;
+//import net.sourceforge.jtds.jdbcx.JtdsDataSource;
 import org.apache.commons.dbutils.DbUtils;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
@@ -51,11 +52,6 @@ public class BasicDAO implements Serializable {
 
     private static Map<String, DataSource> dataSourceMap;
 
-    static {
-        qRunner = new QueryRunner();
-        pRunner = new ProcRunner();
-    }
-
     public static enum SQL {
 
         Way_Chien_TWM3("jdbc/res2"),
@@ -73,13 +69,10 @@ public class BasicDAO implements Serializable {
         }
     }
 
+    //Set dataSource with JNDI
     public static void dataSourceInit() {
-        qRunner = new QueryRunner();
-        pRunner = new ProcRunner();
         dataSourceMap = new HashMap<>();
-
         try {
-
             for (SQL sql : SQL.values()) {
                 String dataSourceString = sql.toString();
                 try {
@@ -98,6 +91,23 @@ public class BasicDAO implements Serializable {
         Context envContext = (Context) initContext.lookup("java:/comp/env");
         DataSource dataSource = (DataSource) envContext.lookup(dataSourcePath);
         return dataSource;
+    }
+
+    //Set dataSource without JNDI
+    public static void dataSourceInit1() {
+        dataSourceMap = new HashMap<>();
+        try {
+            for (SQL sql : SQL.values()) {
+                String dataSourceString = sql.toString();
+                try {
+                    dataSourceMap.put(dataSourceString, getDataSource1(dataSourceString));
+                } catch (NamingException ex) {
+                    log.error(ex.toString());
+                }
+            }
+        } catch (Exception e) {
+            log.error(e.toString());
+        }
     }
 
     private static DataSource getDataSource1(String dataSourcePath) throws NamingException {
@@ -162,6 +172,7 @@ public class BasicDAO implements Serializable {
 
     private static List query(Connection conn, ResultSetHandler rsh, String sql, Object... params) {
         List<?> data = null;
+        qRunner = new QueryRunner();
         try {
             data = (List) qRunner.query(conn, sql, rsh, params);
         } catch (SQLException e) {
@@ -173,8 +184,26 @@ public class BasicDAO implements Serializable {
         return data == null ? new ArrayList() : data;
     }
 
+    public static List queryIn(Connection conn, ResultSetHandler rsh, String sql, Object... params) {
+        List<?> data = null;
+        PreparedStatement pstmt;
+        qRunner = new QueryRunner();
+        try {
+            pstmt = conn.prepareStatement(sql);
+            Array array = conn.createArrayOf("VARCHAR", params);
+            pstmt.setArray(1, array);
+            data = (List<?>) rsh.handle(pstmt.executeQuery());
+        } catch (SQLException ex) {
+            log.error(ex.toString());
+        } finally {
+            DbUtils.closeQuietly(conn);
+        }
+        return data == null ? new ArrayList() : data;
+    }
+
     public static boolean update(Connection conn, String sql, List l, String... params) {
         boolean flag = false;
+        qRunner = new QueryRunner();
         try {
             conn.setAutoCommit(false);
 
@@ -197,6 +226,7 @@ public class BasicDAO implements Serializable {
 
     public static boolean update(Connection conn, String sql, Object... params) {
         boolean flag = false;
+        qRunner = new QueryRunner();
         try {
             conn.setAutoCommit(false);
             qRunner.update(conn, sql, params);
@@ -214,6 +244,7 @@ public class BasicDAO implements Serializable {
 
     public static boolean updateProc(Connection conn, String sql, Object... params) {
         boolean flag = false;
+        pRunner = new ProcRunner();
         try {
             pRunner.updateProc(conn, sql, params);
             flag = true;
@@ -235,6 +266,7 @@ public class BasicDAO implements Serializable {
 
     private static List queryProc(Connection conn, ResultSetHandler rsh, String sql, Object... params) {
         List data = null;
+        pRunner = new ProcRunner();
         try {
             data = (List) pRunner.queryProc(conn, sql, rsh, params);
         } catch (SQLException e) {

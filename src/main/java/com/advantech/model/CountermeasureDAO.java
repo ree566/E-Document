@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import org.apache.commons.dbutils.DbUtils;
 import org.apache.commons.dbutils.QueryRunner;
+import org.apache.commons.dbutils.handlers.MapListHandler;
 import org.apache.commons.dbutils.handlers.ScalarHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,6 +57,10 @@ public class CountermeasureDAO extends BasicDAO {
 
     public List<Map> getUnFillCountermeasureBabs(String sitefloor) {
         return queryForMapList(this.getConn(), "SELECT * FROM unFillCountermeasureView WHERE sitefloor = ? ORDER BY btime DESC", sitefloor);
+    }
+    
+    public List<Map> getCountermeasure(int[] BABid){
+        return queryIn(this.getConn(),new MapListHandler(), "SELECT * FROM CountermeasureView WHERE id IN(?)", BABid);
     }
 
     public List<Map> getCountermeasure(String startDate, String endDate) {

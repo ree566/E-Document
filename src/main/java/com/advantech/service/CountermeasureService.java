@@ -5,7 +5,6 @@ import com.advantech.model.BasicDAO;
 import com.advantech.model.CountermeasureDAO;
 import static java.lang.System.out;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -46,18 +45,22 @@ public class CountermeasureService {
         return countermeasureDAO.getUnFillCountermeasureBabs(sitefloor);
     }
 
+    public List<Map> getCountermeasure(int[] BABid) {
+        return countermeasureDAO.getCountermeasure(BABid);
+    }
+
     public List<Map> getCountermeasure(String lineType, String sitefloor, String startDate, String endDate) {
         List<Map> l = countermeasureDAO.getCountermeasure(startDate, endDate);
         return BasicService.getBabService().seperateNotFilterBab(l, lineType, sitefloor);
     }
-    
-    public List<Map> getPersonAlarm(String lineType, String sitefloor, String startDate, String endDate) {
+
+    public List<Map> getPersonalAlm(String lineType, String sitefloor, String startDate, String endDate) {
         List<Map> l = countermeasureDAO.getPersonalAlm(startDate, endDate);
         l = BasicService.getBabService().seperateNotFilterBab(l, lineType, sitefloor);
-        return this.transformDataForm(l);
+        return this.transformPersonalAlmDataPattern(l);
     }
 
-    public List<Map> transformDataForm(List<Map> l) {
+    private List<Map> transformPersonalAlmDataPattern(List<Map> l) {
         List<Map> tList = new ArrayList();
         Map baseMap = null;
         int baseId = 0;
@@ -88,7 +91,7 @@ public class CountermeasureService {
         return tList;
     }
 
-    public Map removeUnusedKeyInMap(Map m) {
+    private Map removeUnusedKeyInMap(Map m) {
         m.remove("USER_ID");
         m.remove("station");
         m.remove("failPercent(Personal)");
@@ -128,12 +131,15 @@ public class CountermeasureService {
     }
 
     public static void main(String arg0[]) {
-//        BasicDAO.dataSourceInit();
-//        List<Map> l = new CountermeasureService().countermeasureDAO.getPersonalAlm("ASSY", "6", "16-09-01", "16-10-03");
-//        for (Map m : l) {
-//            out.println(m);
-//        }
-
+        BasicDAO.dataSourceInit1();
+        int[] BABid = {
+            1018,
+            1017,
+            1016,
+            1015,
+            1014,
+            1013
+        };
+        out.println(BasicService.getCountermeasureService().getCountermeasure(BABid));
     }
-
 }

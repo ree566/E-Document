@@ -22,7 +22,7 @@ public class PropertiesReader {
     private static final Logger log = LoggerFactory.getLogger(PropertiesReader.class);
     private static PropertiesReader p;
 
-    private String testMail, txtLocation, testTxtName, babTxtName, outputFilenameExt, mailServerUsername, mailServerPassword, mailServerLocation, mailServerPort;
+    private String testMail, mailServerUsername, mailServerPassword, mailServerLocation, mailServerPort;
 
     private double testStandard, babStandard, balanceDiff;
 
@@ -32,7 +32,7 @@ public class PropertiesReader {
 
     private int maxTestTable, maxTestRequiredPeople, limitBABData, balanceRoundingDigit;
 
-    private boolean writeToTxt, writeToDB, saveToOldDB, sendMailAlarmUser;
+    private boolean writeToDB, saveToOldDB, sendMailAlarmUser;
 
     private String endpointQuartzTrigger;
 
@@ -67,10 +67,6 @@ public class PropertiesReader {
     private void loadParams(Properties properties) {
 
         testMail = properties.getProperty("testMail");
-        txtLocation = properties.getProperty("outputTxtPath");
-        testTxtName = properties.getProperty("outputTestName");
-        babTxtName = properties.getProperty("outputBABName");
-        outputFilenameExt = properties.getProperty("outputFilenameExt");
         testStandard = convertStringToDouble(properties.getProperty("standard"));
         babStandard = convertStringToDouble(properties.getProperty("balanceStandard"));
         balanceDiff = convertStringToDouble(properties.getProperty("balanceDifference"));
@@ -88,7 +84,6 @@ public class PropertiesReader {
         maxTestRequiredPeople = convertStringToInteger(properties.getProperty("maxTestRequiredPeople"));
         limitBABData = convertStringToInteger(properties.getProperty("limitBABData"));
         balanceRoundingDigit = convertStringToInteger(properties.getProperty("balanceRoundingDigit"));
-        writeToTxt = convertStringToBoolean(properties.getProperty("result.write.to.txt"));
         writeToDB = convertStringToBoolean(properties.getProperty("result.write.to.database"));
         saveToOldDB = convertStringToBoolean(properties.getProperty("result.save.to.oldServer"));
         endpointQuartzTrigger = properties.getProperty("endpoint.quartz.trigger");
@@ -97,10 +92,6 @@ public class PropertiesReader {
     }
 
     private void logTheSystemSetting() {
-        out.println("Set output txt path : " + txtLocation);
-        out.println("Set output test txt name : " + testTxtName);
-        out.println("Set output bab txt name : " + babTxtName);
-        out.println("Set file ext name is : " + outputFilenameExt);
         out.println("Set test lineType standard is : " + testStandard);
         out.println("Set bab lineType standard is : " + babStandard);
         out.println("Set balanceDiff(Need to send mail when balance is diff to prev input bab) is : " + balanceDiff);
@@ -126,7 +117,6 @@ public class PropertiesReader {
         out.println("The balance rounding digit is : " + balanceRoundingDigit);
         out.println("Other save result setting : "
                 + new JSONObject()
-                .put("writeToTxt", writeToTxt)
                 .put("writeToDB", writeToDB)
                 .put("saveToOldDB", saveToOldDB)
         );
@@ -178,22 +168,6 @@ public class PropertiesReader {
         return responseUserPerLine;
     }
 
-    public String getTxtLocation() {
-        return txtLocation;
-    }
-
-    public String getTestTxtName() {
-        return testTxtName;
-    }
-
-    public String getBabTxtName() {
-        return babTxtName;
-    }
-
-    public String getOutputFilenameExt() {
-        return outputFilenameExt;
-    }
-
     public String getTestMail() {
         return testMail;
     }
@@ -212,10 +186,6 @@ public class PropertiesReader {
 
     public int getBalanceRoundingDigit() {
         return balanceRoundingDigit;
-    }
-
-    public boolean isWriteToTxt() {
-        return writeToTxt;
     }
 
     public boolean isWriteToDB() {
@@ -250,12 +220,4 @@ public class PropertiesReader {
         return endpointQuartzTrigger;
     }
 
-    public static void main(String arg0[]) {
-
-        PropertiesReader p = getInstance();
-
-        System.out.println(p.getTargetMailLoop().getJSONObject(0).get("mailloop"));
-        System.out.println(p.getTargetMailLoop().getJSONObject(1).get("mailloop"));
-//        System.out.println(p.getTargetCCLoop().get("mailloop"));
-    }
 }

@@ -98,6 +98,7 @@
         <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
         <script src="../../js/canvasjs.min.js"></script>
         <script src="../../js/jquery.dataTables.min.js"></script>
+        <script src="//cdn.datatables.net/plug-ins/1.10.12/api/fnMultiFilter.js"></script>
         <script src="../../js/jquery.blockUI.js"></script>
         <script src="../../js/moment.js"></script>
         <script src="../../js/bootstrap-datetimepicker.min.js"></script>
@@ -124,6 +125,11 @@
             var table2;
             var autoReloadInterval;
 
+            var lineObject = {
+                ASSY: ['L1', 'LA', 'LB', 'L3', 'L4'],
+                Packing: ['LF', 'LG', 'LH', 'L6', 'L7', 'L8', 'L9']
+            };
+
             function getBAB() {
                 table2 = $("#data2").DataTable({
                     "processing": false,
@@ -147,7 +153,7 @@
                             "targets": 0,
                             "data": "TagName",
                             'render': function (data, type, row) {
-                                return ((data == 'L1' || data == 'LA' || data == 'LB' || data == 'L3' || data == 'L4') ? "ASSY" : "PKG");
+                                return ((data == 'L1' || data == 'LA' || data == 'LB' || data == 'L3' || data == 'L4') ? "ASSY" : "Packing");
                             }
                         },
                         {
@@ -178,14 +184,25 @@
                     paginate: false,
                     "initComplete": function (settings, json) {
                         generateOnlineBabDetail(-1);
+
                         $("#lineTypeFilter").change(function () {
                             var filterVal = $(this).val();
-                            table2.search(filterVal == -1 ? "" : filterVal).draw();
-                            generateOnlineBabDetail($(this).val());
+                            table2.column(0).search(filterVal == -1 ? "" : filterVal).draw();
+                            generateLineBalance(filterVal);
                         });
                     },
                     "order": [[1, "asc"], [2, "asc"]]
                 });
+            }
+
+            function generateLineBalance(lineType) {
+                if (lineType == "ASSY") {
+                    generateOnlineBabDetail(lineObject.ASSY);
+                } else if (lineType == "Packing") {
+                    generateOnlineBabDetail(lineObject.Packing);
+                } else {
+                    generateOnlineBabDetail(-1);
+                }
             }
 
             function generateOnlineBabDetail(filter) {
@@ -195,11 +212,11 @@
                     return false;
                 }
                 var res;
-                if (filter != "-1") {
+                if (filter.constructor === Array) {
                     res = alasql('SELECT PO, TagName, Model_name,\
                                           SUM(diff) / (COUNT(diff) * MAX(diff)) AS balance \
                                           FROM ? \
-                                          WHERE TagName = ?\
+                                          WHERE TagName IN @(?)\
                                           GROUP BY PO, TagName, Model_name \
                                           ORDER BY TagName', [arr, filter]);
                 } else {
@@ -689,6 +706,7 @@
             }
 
             function initDateTimePickerWiget() {
+                var lockDays = 30;
                 var momentFormatString = 'YYYY-MM-DD';
                 var options = {
                     defaultDate: moment(),
@@ -702,6 +720,21 @@
 
                 beginTimeObj.on("dp.change", function (e) {
                     endTimeObj.data("DateTimePicker").minDate(e.date);
+                    var beginDate = e.date;
+                    var endDate = endTimeObj.data("DateTimePicker").date();
+                    var dateDiff = endDate.diff(beginDate, 'days');
+                    if (dateDiff > 30) {
+                        endTimeObj.data("DateTimePicker").date(beginDate.add(lockDays, 'days'));
+                    }
+                });
+
+                endTimeObj.on("dp.change", function (e) {
+                    var beginDate = beginTimeObj.data("DateTimePicker").date();
+                    var endDate = e.date;
+                    var dateDiff = endDate.diff(beginDate, 'days');
+                    if (dateDiff > 30) {
+                        beginTimeObj.data("DateTimePicker").date(endDate.add(-lockDays, 'days'));
+                    }
                 });
             }
 
@@ -1084,10 +1117,6 @@
                     counterMeasureModeUndo();
                 });
 
-                $("#lineType2").val("ASSY");
-                $("#sitefloor").val("5");
-                $("#searchAvailableBAB").trigger("click");
-
 //                Checkbox change event.
                 $("#errorCode :checkbox").change(function () {
                     if (!$(this).is(":checked")) {
@@ -1153,6 +1182,13 @@
                     }, 1000);
                 }
 
+                var lineType = getQueryVariable("lineType");
+                if (lineType != null) {
+                    $("#lineTypeFilter,#lineType, #lineType2").val(lineType);
+                    table2.column(0).search(lineType).draw();
+                    generateLineBalance(lineType);
+                }
+
                 $(window).on("focus", function () {
                     autoReloadInterval = setInterval(function () {
                         table2.ajax.reload(function (json) {
@@ -1189,18 +1225,8 @@
                             <label>Filter for:
                                 <select id="lineTypeFilter">
                                     <option value="-1">all</option>
-                                    <option value="L1">L1</option>
-                                    <option value="LA">LA</option>
-                                    <option value="LB">LB</option>
-                                    <option value="LF">LF</option>
-                                    <option value="LG">LG</option>
-                                    <option value="LH">LH</option>
-                                    <option value="L3">L3</option>
-                                    <option value="L4">L4</option>
-                                    <option value="L6">L6</option>
-                                    <option value="L7">L7</option>
-                                    <option value="L8">L8</option>
-                                    <option value="L9">L9</option>
+                                    <option value="ASSY">ASSY</option>
+                                    <option value="Packing">Packing</option>
                                 </select>
                             </label>
                             <table id="data2" class="display" cellspacing="0" width="100%" style="text-align: center">

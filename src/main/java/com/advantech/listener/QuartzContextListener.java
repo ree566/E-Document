@@ -6,13 +6,9 @@
 package com.advantech.listener;
 
 import com.advantech.model.BasicDAO;
-import com.advantech.quartzJob.DataTransformer;
 import com.advantech.helper.ThreadLocalCleanUtil;
 import com.advantech.endpoint.SensorEndpoint;
 import com.advantech.helper.PropertiesReader;
-import com.advantech.service.BabLineTypeFacade;
-import com.advantech.service.BasicLineTypeFacade;
-import com.advantech.service.TestLineTypeFacade;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 

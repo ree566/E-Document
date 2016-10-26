@@ -10,7 +10,6 @@ import com.advantech.entity.BAB;
 import com.advantech.entity.Line;
 import com.advantech.helper.PropertiesReader;
 import com.advantech.quartzJob.LineBalancePeopleGenerator;
-import java.io.IOException;
 import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -39,7 +38,6 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
         lbGenerator = LineBalancePeopleGenerator.getInstance();
         PropertiesReader p = PropertiesReader.getInstance();
         BAB_STANDARD = p.getBabStandard();
-        super.setTxtName(p.getBabTxtName());
         this.init();
     }
 
@@ -52,14 +50,6 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
     
     private void init() {
         this.initMap();
-        if (isWriteToTxt) {
-            try {
-                super.resetOutputResult(txtName);
-            } catch (IOException ex) {
-                log.error("Init txt output fail." + ex);
-            }
-        }
-
         if (isWriteToDB) {
             boolean initStatus = this.initDbAlarmSign();
             if (initStatus == false) {

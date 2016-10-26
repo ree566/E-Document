@@ -54,7 +54,14 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                     format: momentFormatString,
                     extraFormats: [momentFormatString]
                 };
-                options.defaultDate = moment().add(-2, "days");
+                
+                //以免把時間區間定在六日沒有資料，此狀況會在moment是禮拜一時發生
+                var prevDay = moment().add(-2, "days");
+                if (prevDay.day() == 6 || prevDay.day() == 7) {
+                    prevDay.add(-2, "days");
+                }
+                
+                options.defaultDate = prevDay;
                 $('#fini').datetimepicker(options);
                 options.defaultDate = moment();
                 $('#ffin').datetimepicker(options);

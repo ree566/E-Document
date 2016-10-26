@@ -74,7 +74,7 @@
     </schedule>
     
     <!--把測試線別狀態記錄到資料庫-->
-    <schedule>
+<!--    <schedule>
         <job>
             <name>TestLineTypeRecord</name>
             <job-class>com.advantech.quartzJob.TestLineTypeRecord</job-class>
@@ -86,10 +86,10 @@
                 <cron-expression>0 50 9-16 ? * MON-FRI *</cron-expression>
             </cron>
         </trigger>
-    </schedule>
+    </schedule>-->
     
     <!--每日把未回覆異常原因的回覆給幹部-->
-    <schedule>
+<!--    <schedule>
         <job>
             <name>CountermeasureAlarm</name>
             <job-class>com.advantech.quartzJob.CountermeasureAlarm</job-class>
@@ -101,6 +101,6 @@
                 <cron-expression>0 0 11,16 ? * MON-FRI *</cron-expression>
             </cron>
         </trigger>
-    </schedule>
+    </schedule>-->
     
 </job-scheduling-data>
