@@ -6,9 +6,13 @@
  */
 package com.advantech.test;
 
+import com.advantech.model.BasicDAO;
 import com.advantech.quartzJob.CountermeasureAlarm;
 import com.advantech.service.BasicService;
+import com.advantech.service.CountermeasureService;
 import java.io.*;
+import static java.lang.System.out;
+import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
@@ -29,9 +33,13 @@ public class TestServlet extends HttpServlet {
             throws ServletException, IOException {
         res.setContentType("text/html");
         PrintWriter out = res.getWriter();
-        String sitefloor = req.getParameter("sitefloor");
-        out.print(new CountermeasureAlarm().generateMailBody(sitefloor));
-
+        BasicDAO.dataSourceInit1();
+        String lineType = "-1", sitefloor = "-1", startDate = req.getParameter("startDate"), endDate = req.getParameter("endDate");
+        CountermeasureService cs = BasicService.getCountermeasureService();
+//        List countermeasures = cs.getCountermeasure(lineType, sitefloor, startDate, endDate);
+//        List personalAlarms = cs.getPersonalAlm(lineType, sitefloor, startDate, endDate);
+//        out.println(countermeasures);
+//        out.println(personalAlarms);
     }
 
     @Override

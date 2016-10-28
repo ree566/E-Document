@@ -125,10 +125,25 @@
             var table2;
             var autoReloadInterval;
 
+            var sitefloorOptions = ["5", "6"];
+            var lineTypeOptions = ["ASSY", "Packing"];
+
             var lineObject = {
                 ASSY: ['L1', 'LA', 'LB', 'L3', 'L4'],
                 Packing: ['LF', 'LG', 'LH', 'L6', 'L7', 'L8', 'L9']
             };
+
+            function initSelectOption() {
+                for (var i = 0; i < sitefloorOptions.length; i++) {
+                    var value = sitefloorOptions[i];
+                    $("#sitefloor").append("<option value=" + value + ">" + value + "F</option>");
+                }
+
+                for (var i = 0; i < lineTypeOptions.length; i++) {
+                    var value = lineTypeOptions[i];
+                    $("#lineTypeFilter, #lineType, #lineType2").append("<option value=" + value + ">" + value + "</option>");
+                }
+            }
 
             function getBAB() {
                 table2 = $("#data2").DataTable({
@@ -445,7 +460,7 @@
                 var sitefloor = $("#sitefloor").val();
                 var startDate = $('#fini').val();
                 var endDate = $('#ffin').val();
-                var closedOnly = $("#closedOnly").is(":checked");
+                var aboveStandard = $("#aboveStandard").is(":checked");
 
                 var alarmPercentStandard = 0.3;
 
@@ -463,7 +478,7 @@
                             sitefloor: sitefloor,
                             startDate: startDate,
                             endDate: endDate,
-                            closedOnly: closedOnly
+                            aboveStandard: aboveStandard
                         }
                     },
                     "columns": [
@@ -777,7 +792,7 @@
                         setupCheckBox();
                         setActionCodeCheckBox(checkedActionCodes);
 
-                        $(":checkbox").attr("disabled", true);
+                        $(".modal-body :checkbox").attr("disabled", true);
 
                         var editors = jsonData.editors;
                         for (var i = 0; i < editors.length; i++) {
@@ -936,6 +951,7 @@
 
                 initCountermeasureDialog();
                 initDateTimePickerWiget();
+                initSelectOption();
 
                 //http://stackoverflow.com/questions/14493250/ajax-jquery-autocomplete-with-json-data
                 $.ajax({
@@ -1070,7 +1086,7 @@
                     }
                     counterMeasureModeUndo();
 
-                    $(":checkbox").attr("disabled", true);
+                    $(".modal-body :checkbox").attr("disabled", true);
 
                     $("#errorCon").html(originErrorCon.replace(/(?:\r\n|\r|\n)/g, '<br />'));
                     $("#responseUser").html(originResponseUser);
@@ -1143,14 +1159,24 @@
                     }
                 });
 
+                $("#searchAvailableBAB").trigger("click");
+
                 $("#generateExcel").click(function () {
+//                    var rows = historyTable.rows().data();
+//                    var ids = [];
+//                    for (var i = 0; i < rows.length; i++) {
+//                        ids.push(rows[i].id);
+//                    }
+//                    console.log(ids);
+
                     var lineType = $('#lineType2').val();
                     var sitefloor = $('#sitefloor').val();
                     var startDate = $('#fini').val();
                     var endDate = $('#ffin').val();
+                    var aboveStandard = $("#aboveStandard").is(":checked");
 
                     $("#generateExcel").attr("disabled", true);
-                    $.fileDownload('../../BABExcelGenerate?startDate=' + startDate + '&endDate=' + endDate + '&lineType=' + lineType + '&sitefloor=' + sitefloor, {
+                    $.fileDownload('../../BABExcelGenerate?startDate=' + startDate + '&endDate=' + endDate + '&lineType=' + lineType + '&sitefloor=' + sitefloor + '&aboveStandard=' + aboveStandard, {
                         preparingMessageHtml: "We are preparing your report, please wait...",
                         failMessageHtml: "No reports generated. No Survey data is available.",
                         successCallback: function (url) {
@@ -1160,7 +1186,6 @@
                             $("#generateExcel").attr("disabled", false);
                         }
                     });
-//                    window.location.href = '../../BABExcelGenerate?startDate=' + startDate + '&endDate=' + endDate + '&lineType=' + lineType + '&sitefloor=' + sitefloor;
                 });
 
                 var babId = getQueryVariable("babId");
@@ -1194,7 +1219,6 @@
                         table2.ajax.reload(function (json) {
                             generateOnlineBabDetail($("#lineTypeFilter").val());
                         });
-
                     }, 10 * 1000);
                 });
 
@@ -1225,8 +1249,6 @@
                             <label>Filter for:
                                 <select id="lineTypeFilter">
                                     <option value="-1">all</option>
-                                    <option value="ASSY">ASSY</option>
-                                    <option value="Packing">Packing</option>
                                 </select>
                             </label>
                             <table id="data2" class="display" cellspacing="0" width="100%" style="text-align: center">
@@ -1325,13 +1347,9 @@
                         <div class="ui-widget">
                             <select id="lineType2"> 
                                 <option value="-1">all</option>
-                                <option value="ASSY">ASSY</option>
-                                <option value="Packing">Packing</option>
                             </select> /
                             <select id="sitefloor">
                                 <option value="-1">all</option>
-                                <option value=5>5F</option>
-                                <option value=6>6F</option>
                             </select> /
 
                             日期:從
@@ -1342,7 +1360,7 @@
                             <div class='input-group date' id='endTime'>
                                 <input type="text" id="ffin" placeholder="請選擇結束時間"> 
                             </div>
-
+                            <label for="aboveStandard"><input type="checkbox" id="aboveStandard">只顯示數量大於十台</label>
                             <input type="button" id="searchAvailableBAB" value="查詢">
                             <input type="button" id="generateExcel" value="產出excel">
 
@@ -1380,8 +1398,6 @@
                         <input type="text" id="Model_name" />
                         <select id="lineType">
                             <option value=-1>請選擇線別</option>
-                            <option value="ASSY">ASSY</option>
-                            <option value="Packing">Packing</option>
                         </select>
                         <input type="button" id="send" value="查詢">
                     </div>

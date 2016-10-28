@@ -50,6 +50,9 @@ public class ExcelGenerator {
 
     private int xIndex = 0, yIndex = 0;
 
+    private int baseXIndex = 0, baseYIndex = 0;
+    private final String emptyMessage = "Data is empty.";
+
     public ExcelGenerator() {
         init();
     }
@@ -62,8 +65,8 @@ public class ExcelGenerator {
     }
 
     private void indexInit() {
-        xIndex = 0;
-        yIndex = 0;
+        xIndex = baseXIndex;
+        yIndex = baseYIndex;
     }
 
     public void createExcelSheet() {
@@ -87,29 +90,27 @@ public class ExcelGenerator {
             createExcelSheet();
         }
 
-        Row row = spreadsheet.createRow(0);
+        Row row = spreadsheet.createRow(baseXIndex);
         if (!data.isEmpty()) {
-            Map firstData = data.get(0);
+            Map firstData = data.get(baseXIndex);
             //Set the header
             Iterator it = firstData.keySet().iterator();
-            int loopCount = 0;
             while (it.hasNext()) {
-                row.createCell(loopCount++).setCellValue((String) it.next());
+                setCellValue(row.createCell(yIndex++), (String) it.next());
             }
 
-            //Set values
-            int x = 1, y = 0;
+            xIndex++;
+            yIndex = baseYIndex;
             for (Map m : data) {
                 it = m.keySet().iterator();
-                row = spreadsheet.createRow(x++);
+                row = spreadsheet.createRow(xIndex++);
                 while (it.hasNext()) {
-                    setCellValue(row.createCell(y++), m.get(it.next()));
+                    setCellValue(row.createCell(yIndex++), m.get(it.next()));
                 }
-                y = 0;//Reset the cell index and begin next data line insert.
+                yIndex = baseYIndex;//Reset the cell index and begin next data line insert.
             }
         } else {
-            Cell cell = row.createCell(xIndex);
-            cell.setCellValue("Data is empty.");
+            setCellValue(row.createCell(baseYIndex), emptyMessage);
         }
         return workbook;
     }
@@ -182,7 +183,6 @@ public class ExcelGenerator {
         String filePath = System.getProperty("user.home") + "\\Desktop\\";
         String fileExt = getFileExt(workbook);
         fileName += fileExt;
-
         FileOutputStream fileOut;
         try {
             fileOut = new FileOutputStream(filePath + fileName);
@@ -240,7 +240,7 @@ public class ExcelGenerator {
             List<Map> abnormalDataTotal = fService.getTotalAbnormalData(BABid);
             List<Map> abnormalData = fService.getAbnormalData(BABid);
 
-            //Make sure the data if empty or not(deadLock aways happend).
+            //Make sure the data if empty or not(deadLock always happen).
             if (abnormalDataTotal.isEmpty()) {
                 abnormalDataTotal = fService.getTotalAbnormalData(BABid);
             }
@@ -285,7 +285,7 @@ public class ExcelGenerator {
                 cell.setCellStyle(style);
             }
 
-            xIndex = 0;
+            xIndex = baseXIndex;
             yIndex++;
 
             for (Map m : l) {
@@ -296,13 +296,13 @@ public class ExcelGenerator {
                     cell.setCellStyle(style);
                     setCellValue(cell, m.get(it.next()));
                 }
-                xIndex = 0;//Reset the cell index and begin next data line insert.
+                xIndex = baseXIndex;//Reset the cell index and begin next data line insert.
             }
         } else {
             row = spreadsheet.createRow(yIndex++);
             cell = row.createCell(xIndex);
             cell.setCellStyle(style);
-            cell.setCellValue("Abnormal data is empty.");
+            cell.setCellValue(emptyMessage);
         }
         return spreadsheet;
     }
@@ -314,24 +314,19 @@ public class ExcelGenerator {
         }
         Row row = spreadsheet.createRow(yIndex);
         Cell cell;
-        CellStyle style = workbook.createCellStyle();
         if (!list.isEmpty()) {
             Map firstData = maxMapInList(list);
             int maxDataIndex, colSeparateColIndex = 9;
             List<String> idCols = new ArrayList();
             List<String> failPercentCols = new ArrayList();
-
             Iterator it = firstData.keySet().iterator();
+
             while (it.hasNext()) {
                 if (xIndex == colSeparateColIndex) {
-                    cell = row.createCell(xIndex++);
-                    cell.setCellStyle(style);
-                    setCellValue(cell, "");
+                    setCellValue(row.createCell(xIndex++), "");
                 }
-                String key = (String) it.next();
                 cell = row.createCell(xIndex++);
-                cell.setCellValue(key);
-                cell.setCellStyle(style);
+                setCellValue(cell, (String) it.next());
 
                 if (xIndex > colSeparateColIndex) {
                     String colNumLetter = CellReference.convertNumToColString(cell.getColumnIndex());
@@ -344,7 +339,7 @@ public class ExcelGenerator {
             }
 
             maxDataIndex = xIndex;
-            xIndex = 0;//跳回第一行
+            xIndex = baseXIndex;//跳回第一行
             yIndex++; //跳過head to next line
 
             for (Map data : list) {
@@ -352,15 +347,11 @@ public class ExcelGenerator {
                 row = spreadsheet.createRow(yIndex++);
                 while (it.hasNext()) {
                     if (xIndex == colSeparateColIndex) {
-                        cell = row.createCell(xIndex++);
-                        cell.setCellStyle(style);
-                        setCellValue(cell, "");
+                        setCellValue(row.createCell(xIndex++), "");
                     }
-                    cell = row.createCell(xIndex++);
-                    cell.setCellStyle(style);
-                    setCellValue(cell, data.get(it.next()));
+                    setCellValue(row.createCell(xIndex++), data.get(it.next()));
                 }
-                xIndex = 0;//Reset the cell index and begin next data line insert.
+                xIndex = baseXIndex;//Reset the cell index and begin next data line insert.
                 spreadsheet.createRow(yIndex);
             }
 
@@ -372,8 +363,8 @@ public class ExcelGenerator {
             int numLetterAA = CellReference.convertColStringToIndex(failPercentNumLetter);
 
             //Set the final two formula column.
-            spreadsheet.getRow(0).createCell(numLetterZ).setCellValue("瓶頸站");
-            spreadsheet.getRow(0).createCell(numLetterAA).setCellValue("亮燈頻率");
+            spreadsheet.getRow(baseXIndex).createCell(numLetterZ).setCellValue("瓶頸站");
+            spreadsheet.getRow(baseXIndex).createCell(numLetterAA).setCellValue("亮燈頻率");
 
             //set unused column to hidden
             for (int a = maxDataIndex; a < numLetterZ - 1; a++) {
@@ -413,9 +404,7 @@ public class ExcelGenerator {
                 createFloatCell(cell);
             }
         } else {
-            cell = row.createCell(xIndex);
-            cell.setCellStyle(style);
-            cell.setCellValue("Data is empty.");
+            setCellValue(row.createCell(baseYIndex), emptyMessage);
         }
     }
 
@@ -433,7 +422,11 @@ public class ExcelGenerator {
 
     public static void main(String arg0[]) {
         BasicDAO.dataSourceInit1();
-        new ExcelGenerator().generateSensorAbnormalData();
-//        outputExcel("TEST");
+        List l = BasicService.getCountermeasureService().getCountermeasures();
+        ExcelGenerator e = new ExcelGenerator();
+        e.generateWorkBook(l);
+
+        e.outputExcel("TEST2");
+
     }
 }

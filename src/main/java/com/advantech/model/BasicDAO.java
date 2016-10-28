@@ -18,7 +18,6 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 import net.sourceforge.jtds.jdbcx.JtdsDataSource;
-//import net.sourceforge.jtds.jdbcx.JtdsDataSource;
 import org.apache.commons.dbutils.DbUtils;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
@@ -181,23 +180,6 @@ public class BasicDAO implements Serializable {
             DbUtils.closeQuietly(conn);
         }
 
-        return data == null ? new ArrayList() : data;
-    }
-
-    public static List queryIn(Connection conn, ResultSetHandler rsh, String sql, Object... params) {
-        List<?> data = null;
-        PreparedStatement pstmt;
-        qRunner = new QueryRunner();
-        try {
-            pstmt = conn.prepareStatement(sql);
-            Array array = conn.createArrayOf("VARCHAR", params);
-            pstmt.setArray(1, array);
-            data = (List<?>) rsh.handle(pstmt.executeQuery());
-        } catch (SQLException ex) {
-            log.error(ex.toString());
-        } finally {
-            DbUtils.closeQuietly(conn);
-        }
         return data == null ? new ArrayList() : data;
     }
 

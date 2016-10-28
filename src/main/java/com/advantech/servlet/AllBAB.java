@@ -6,9 +6,12 @@
  */
 package com.advantech.servlet;
 
+import com.advantech.helper.UserSelectFilter;
 import com.advantech.service.BABService;
 import com.advantech.service.BasicService;
 import java.io.*;
+import java.util.List;
+import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
@@ -46,8 +49,21 @@ public class AllBAB extends HttpServlet {
         String sitefloor = req.getParameter("sitefloor");
         String startDate = req.getParameter("startDate");
         String endDate = req.getParameter("endDate");
+        String aboveStandard = req.getParameter("aboveStandard");
 
-        out.print(new JSONObject().put("data", babService.getBABInfo(lineType, sitefloor, startDate, endDate)));
+        List<Map> l = babService.getBABInfo(startDate, endDate);
+        UserSelectFilter usf = new UserSelectFilter();
+        usf.setList(l);
+        if (!"-1".equals(lineType)) {
+            usf.filterData("lineType", lineType);
+        }
+        if (!"-1".equals(sitefloor)) {
+            usf.filterData("sitefloor", Integer.parseInt(sitefloor));
+        }if("true".equals(aboveStandard)){
+            usf.greaterThan("total", 10);
+        }
+
+        out.print(new JSONObject().put("data", usf.getList()));
 
     }
 }

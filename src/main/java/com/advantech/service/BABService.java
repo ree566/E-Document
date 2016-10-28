@@ -9,7 +9,6 @@ import com.advantech.helper.PropertiesReader;
 import com.google.gson.Gson;
 import java.math.BigDecimal;
 import java.sql.Array;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.json.JSONArray;
@@ -28,7 +27,7 @@ import org.json.JSONObject;
 public class BABService {
 
     private final BABDAO babDAO;
-    private final int BALANCE_ROUNDING_DIGIT = PropertiesReader.getInstance().getBalanceRoundingDigit();
+    private final int BALANCE_ROUNDING_DIGIT;
 
     private final Integer BAB_NO_RECORD_SIGN = -1;
     private final Integer BAB_UNCLOSE_SIGN = null;
@@ -36,8 +35,13 @@ public class BABService {
 
     private final Integer FIRST_STATION_NUMBER = 1;
 
+    private final int MININUM_SAVE_TO_DB_QUANTITY;
+
     protected BABService() {
         babDAO = new BABDAO();
+        PropertiesReader p = PropertiesReader.getInstance();
+        BALANCE_ROUNDING_DIGIT = p.getBalanceRoundingDigit();
+        MININUM_SAVE_TO_DB_QUANTITY = p.getBabSaveToRecordStandardQuantity();
     }
 
     public BAB getBAB(int id) {
@@ -72,34 +76,8 @@ public class BABService {
         return babDAO.checkSensorIsClosed(BABid, sensorNo);
     }
 
-    public List<Map> getBABInfo(String lineType, String sitefloor, String startDate, String endDate) {
-        return seperateNotFilterBab(babDAO.getBABInfo(startDate, endDate), lineType, sitefloor);
-    }
-
-    protected List<Map> seperateNotFilterBab(List<Map> l, String lineType, String sitefloor) {
-        Iterator it = l.iterator();
-        while (it.hasNext()) {
-            Map m = (Map) it.next();
-            Integer floor = (Integer) m.get("sitefloor");
-            String type = (String) m.get("lineType");
-
-            if ("-1".equals(lineType) && !"-1".equals(sitefloor)) {
-                if (!floor.toString().equals(sitefloor)) {
-                    it.remove();
-                }
-            } else if (!"-1".equals(lineType) && "-1".equals(sitefloor)) {
-                if (!type.equals(lineType)) {
-                    it.remove();
-                }
-            } else if (!"-1".equals(lineType) && !"-1".equals(sitefloor)) {
-                if (!type.equals(lineType) || !floor.toString().equals(sitefloor)) {
-                    it.remove();
-                }
-            } else {
-                break;
-            }
-        }
-        return l;
+    public List<Map> getBABInfo(String startDate, String endDate) {
+        return babDAO.getBABInfo(startDate, endDate);
     }
 
     public List<Map> getLineBalanceCompare(String Model_name, String lineType) {
@@ -200,24 +178,31 @@ public class BABService {
 
     //檢查統計值是否為空，空值直接讓使用者作結束
     //檢查上一顆sensor使否有在紀錄中，有把紀錄記在LineBalancingMain
-    public String closeBAB(BAB bab) throws JSONException {
-//        JSONArray babAvgs = getBABAvgs(bab.getId()); //先各站別取平均再算平衡率
+    public String closeBAB(BAB bab) {
         JSONArray babAvgs = getBABAvgs(bab.getId()); //先各站別取平衡率再算平均
         boolean needToSave = false;
         if (babAvgs != null && babAvgs.length() != 0) {
-            bab.setBabavgs(babAvgs);
-            boolean prevSensorCloseFlag;
-            if (bab.getPeople() != 2) {
-                prevSensorCloseFlag = babDAO.checkSensorIsClosed(bab.getId(), bab.getPeople() - 1);
-                if (prevSensorCloseFlag == false) {
-                    return "關閉失敗，請檢查上一站是否關閉";
+            if (isQuantityAboveMininum(bab)) { //儲存進資料庫所需要的最少機台樣本數
+                bab.setBabavgs(babAvgs);
+                boolean prevSensorCloseFlag;
+                if (bab.getPeople() != 2) {
+                    prevSensorCloseFlag = babDAO.checkSensorIsClosed(bab.getId(), bab.getPeople() - 1);
+                    if (prevSensorCloseFlag == false) {
+                        return "關閉失敗，請檢查上一站是否關閉";
+                    }
+                } else {
+                    prevSensorCloseFlag = true;
                 }
-            } else {
-                prevSensorCloseFlag = true;
+                needToSave = prevSensorCloseFlag;
             }
-            needToSave = prevSensorCloseFlag;
         }
         return (needToSave ? babDAO.stopAndSaveBab(bab) : babDAO.closeBABDirectly(bab)) ? "success" : "發生問題，請聯絡管理人員";
+    }
+
+    //低於設定值的資料不作儲存
+    private boolean isQuantityAboveMininum(BAB bab) {
+        int dataCount = BasicService.getFbnService().getBalancePerGroup(bab.getId()).size();
+        return dataCount > MININUM_SAVE_TO_DB_QUANTITY;
     }
 
     public boolean closeBABWithoutCheckPrevSensor(BAB bab) {
@@ -351,5 +336,9 @@ public class BABService {
         message.put("do_sensor_end", sensorEndFlag);
 
         return message;
+    }
+
+    public int getMininumSaveToDbQuantity() {
+        return MININUM_SAVE_TO_DB_QUANTITY;
     }
 }

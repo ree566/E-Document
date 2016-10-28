@@ -35,14 +35,11 @@ public class BABDAO extends BasicDAO {
 
     private static final Logger log = LoggerFactory.getLogger(BABDAO.class);
 
-    private final int LIMIT_BAB_DATA;
-    private static boolean isSaveToOldDB;
+    private static boolean saveToOldDB;
 
     public BABDAO() {
-        LIMIT_BAB_DATA = PropertiesReader.getInstance().getLimitBABData();
-
         PropertiesReader p = PropertiesReader.getInstance();
-        isSaveToOldDB = p.isSaveToOldDB();
+        saveToOldDB = p.isSaveToOldDB();
     }
 
     private Connection getConn() {
@@ -193,8 +190,8 @@ public class BABDAO extends BasicDAO {
     private boolean updateAlarmTable(String sql, List<AlarmAction> l) {
         return update(getConn(), sql, l, "alarm", "tableId");
     }
-    
-    public boolean setBABAlarmToTestingMode(){
+
+    public boolean setBABAlarmToTestingMode() {
         return update(getConn(), "UPDATE Alm_BABAction SET alarm = 1");
     }
 
@@ -218,7 +215,6 @@ public class BABDAO extends BasicDAO {
     //一連串儲存動作統一commit，不然出問題時會出現A和B資料庫資料不同步問題
     public boolean stopAndSaveBab(BAB bab) {
         LineBalanceService lineBalanceService = BasicService.getLineBalanceService();
-        FBNService fbnService = BasicService.getFbnService();
 
         boolean flag = false;
         Connection conn1 = null;
@@ -231,11 +227,6 @@ public class BABDAO extends BasicDAO {
                 log.error("The babAvg in bab object is not setting value, saving action suspend.");
                 return false;
             }
-            int dataCount = fbnService.getBalancePerGroup(bab.getId()).size();
-
-            if (dataCount <= LIMIT_BAB_DATA) {
-                return closeBABDirectly(bab);
-            }
 
             LineBalancing maxBaln = lineBalanceService.getMaxBalance(bab); //先取得max才insert，不然會抓到自己
             double baln = (double) lineBalanceService.caculateLineBalance(balances);
@@ -247,7 +238,7 @@ public class BABDAO extends BasicDAO {
             conn1 = this.getConn();
             conn1.setAutoCommit(false);
 
-            if (isSaveToOldDB) {
+            if (saveToOldDB) {
                 conn2 = getDBUtilConn(SQL.Way_Chien_LineBalancing);
                 conn2.setAutoCommit(false);
 
@@ -300,5 +291,4 @@ public class BABDAO extends BasicDAO {
     public boolean closeBABDirectly(BAB bab) {
         return updateProc(getConn(), "{call LS_closeBABDirectly(?)}", bab.getId());
     }
-
 }

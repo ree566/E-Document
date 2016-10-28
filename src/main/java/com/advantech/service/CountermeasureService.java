@@ -29,6 +29,10 @@ public class CountermeasureService {
         return countermeasureDAO.getCountermeasures();
     }
 
+    public List<Map> getCountermeasures() {
+        return countermeasureDAO.getCountermeasuress();
+    }
+
     public Countermeasure getCountermeasure(int BABid) {
         return countermeasureDAO.getCountermeasure(BABid);
     }
@@ -44,23 +48,16 @@ public class CountermeasureService {
     public List<Map> getUnFillCountermeasureBabs(String sitefloor) {
         return countermeasureDAO.getUnFillCountermeasureBabs(sitefloor);
     }
-
-    public List<Map> getCountermeasure(int[] BABid) {
-        return countermeasureDAO.getCountermeasure(BABid);
+    
+    public List<Map> getCountermeasure(String startDate, String endDate) {
+        return countermeasureDAO.getCountermeasure(startDate, endDate);
     }
 
-    public List<Map> getCountermeasure(String lineType, String sitefloor, String startDate, String endDate) {
-        List<Map> l = countermeasureDAO.getCountermeasure(startDate, endDate);
-        return BasicService.getBabService().seperateNotFilterBab(l, lineType, sitefloor);
+    public List<Map> getPersonalAlm(String startDate, String endDate) {
+        return countermeasureDAO.getPersonalAlm(startDate, endDate);
     }
 
-    public List<Map> getPersonalAlm(String lineType, String sitefloor, String startDate, String endDate) {
-        List<Map> l = countermeasureDAO.getPersonalAlm(startDate, endDate);
-        l = BasicService.getBabService().seperateNotFilterBab(l, lineType, sitefloor);
-        return this.transformPersonalAlmDataPattern(l);
-    }
-
-    private List<Map> transformPersonalAlmDataPattern(List<Map> l) {
+    public List<Map> transformPersonalAlmDataPattern(List<Map> l) {
         List<Map> tList = new ArrayList();
         Map baseMap = null;
         int baseId = 0;
@@ -131,15 +128,5 @@ public class CountermeasureService {
     }
 
     public static void main(String arg0[]) {
-        BasicDAO.dataSourceInit1();
-        int[] BABid = {
-            1018,
-            1017,
-            1016,
-            1015,
-            1014,
-            1013
-        };
-        out.println(BasicService.getCountermeasureService().getCountermeasure(BABid));
     }
 }

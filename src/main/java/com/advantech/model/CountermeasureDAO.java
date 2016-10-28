@@ -42,6 +42,10 @@ public class CountermeasureDAO extends BasicDAO {
         return this.queryCountermeasureTable("SELECT * FROM Countermeasure");
     }
 
+    public List<Map> getCountermeasuress() {
+        return queryForMapList(getConn(), "SELECT * FROM Countermeasure");
+    }
+
     public Countermeasure getCountermeasure(int BABid) {
         List l = this.queryCountermeasureTable("SELECT * FROM Countermeasure WHERE BABid = ?", BABid);
         return l.isEmpty() ? null : (Countermeasure) l.get(0);
@@ -57,10 +61,6 @@ public class CountermeasureDAO extends BasicDAO {
 
     public List<Map> getUnFillCountermeasureBabs(String sitefloor) {
         return queryForMapList(this.getConn(), "SELECT * FROM unFillCountermeasureView WHERE sitefloor = ? ORDER BY btime DESC", sitefloor);
-    }
-    
-    public List<Map> getCountermeasure(int[] BABid){
-        return queryIn(this.getConn(),new MapListHandler(), "SELECT * FROM CountermeasureView WHERE id IN(?)", BABid);
     }
 
     public List<Map> getCountermeasure(String startDate, String endDate) {
