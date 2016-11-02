@@ -5,6 +5,7 @@
  */
 package com.advantech.test;
 
+import com.advantech.entity.ActionCodeMapping;
 import static java.lang.System.out;
 
 /**
@@ -14,27 +15,25 @@ import static java.lang.System.out;
 public class TestClass {
 
     public static void main(String args[]) throws Exception {
-        int len = 25;
-        int a = 0;
-        int b;
-        while (a <= len) {
-            a++;
-            b = len;
-            if (a % 2 == 0) {
-                while (b > 0) {
-                    out.print(" ");
-                    out.print("*");
-                    b--;
-                }
-            } else {
-                while (b > 0) {
-                    out.print("*");
-                    out.print(" ");
-                    b--;
-                }
+        int specCharIndex = 34;
+        String str1 = "2014 FIFA World Cup Final Winning germany Team";
+        out.println("Before special character toUpperCase is: " + str1);
+
+        char ch = str1.charAt(specCharIndex); //g是要更換為大寫的字母
+        char upperCh = Character.toUpperCase(ch);
+
+        out.println("This is the word you want to upperCase: " + ch + " -> " + upperCh); 
+
+        for (int i = 0, j = str1.length(); i <= j; i++) {  
+            if (i == specCharIndex) {
+                String nString = str1.substring(0, specCharIndex) + upperCh + str1.substring(specCharIndex + 1, j);
+                out.println("The string after upperCase is: " + nString);
+                break;
             }
-            out.println();
         }
     }
 
+    private String getResponseUser(ActionCodeMapping am) {
+        return null;
+    }
 }

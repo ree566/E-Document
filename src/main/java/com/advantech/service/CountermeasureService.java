@@ -3,7 +3,6 @@ package com.advantech.service;
 import com.advantech.entity.Countermeasure;
 import com.advantech.model.BasicDAO;
 import com.advantech.model.CountermeasureDAO;
-import static java.lang.System.out;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +40,11 @@ public class CountermeasureService {
         return countermeasureDAO.getCountermeasureView();
     }
 
+    public Map getCountermeasureView(int BABid) {
+        List<Map> l = countermeasureDAO.getCountermeasureView(BABid);
+        return l.isEmpty() ? null : l.get(0);
+    }
+
     public List<Map> getUnFillCountermeasureBabs() {
         return countermeasureDAO.getUnFillCountermeasureBabs();
     }
@@ -48,13 +52,14 @@ public class CountermeasureService {
     public List<Map> getUnFillCountermeasureBabs(String sitefloor) {
         return countermeasureDAO.getUnFillCountermeasureBabs(sitefloor);
     }
-    
-    public List<Map> getCountermeasure(String startDate, String endDate) {
-        return countermeasureDAO.getCountermeasure(startDate, endDate);
+
+    //客製化EXCEL規格
+    public List<Map> getCountermeasureForExcel(String startDate, String endDate) {
+        return countermeasureDAO.getCountermeasureForExcel(startDate, endDate);
     }
 
-    public List<Map> getPersonalAlm(String startDate, String endDate) {
-        return countermeasureDAO.getPersonalAlm(startDate, endDate);
+    public List<Map> getPersonalAlmForExcel(String startDate, String endDate) {
+        return countermeasureDAO.getPersonalAlmForExcel(startDate, endDate);
     }
 
     public List<Map> transformPersonalAlmDataPattern(List<Map> l) {
@@ -94,6 +99,7 @@ public class CountermeasureService {
         m.remove("failPercent(Personal)");
         return m;
     }
+    //--------------------------------------
 
     public List<Map> getErrorCode() {
         return countermeasureDAO.getErrorCode();
@@ -128,5 +134,9 @@ public class CountermeasureService {
     }
 
     public static void main(String arg0[]) {
+        int BABid = 856;
+        BasicDAO.dataSourceInit1();
+        List<Map> list = BasicService.getCountermeasureService().getCountermeasureForExcel("16-10-01", "16-10-20");
+
     }
 }

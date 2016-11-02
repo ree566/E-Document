@@ -11,10 +11,11 @@ import java.io.Serializable;
  *
  * @author Wei.Cheng
  */
-public class ErrorCode implements Serializable{
+public class ActionCode implements Serializable{
 
     private int id;
     private String name;
+    private int ec_id;
 
     public int getId() {
         return id;
@@ -31,4 +32,13 @@ public class ErrorCode implements Serializable{
     public void setName(String name) {
         this.name = name;
     }
+
+    public int getEc_id() {
+        return ec_id;
+    }
+
+    public void setEc_id(int ec_id) {
+        this.ec_id = ec_id;
+    }
+
 }

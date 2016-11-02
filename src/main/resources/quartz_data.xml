@@ -37,7 +37,7 @@
             <cron>
                 <name>DataBaseInit</name>
                 <job-name>DataBaseInit</job-name>
-                <cron-expression>0 30 6,21 ? * MON-SAT *</cron-expression>
+                <cron-expression>0 10 6,22 ? * MON-SAT *</cron-expression>
             </cron>
         </trigger>
     </schedule>

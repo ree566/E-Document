@@ -1217,7 +1217,7 @@
                 $(window).on("focus", function () {
                     autoReloadInterval = setInterval(function () {
                         table2.ajax.reload(function (json) {
-                            generateOnlineBabDetail($("#lineTypeFilter").val());
+                            generateLineBalance(lineType);
                         });
                     }, 10 * 1000);
                 });

@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 import org.apache.commons.dbutils.DbUtils;
 import org.apache.commons.dbutils.QueryRunner;
-import org.apache.commons.dbutils.handlers.MapListHandler;
 import org.apache.commons.dbutils.handlers.ScalarHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +51,11 @@ public class CountermeasureDAO extends BasicDAO {
     }
 
     public List<Map> getCountermeasureView() {
-        return queryForMapList(this.getConn(), "SELECT * FROM CountermeasureView");
+        return queryForMapList(this.getConn(), "SELECT * FROM CountermeasureView ORDER BY 1");
+    }
+
+    public List<Map> getCountermeasureView(int BABid) {
+        return queryForMapList(this.getConn(), "SELECT * FROM CountermeasureView WHERE id = ?", BABid);
     }
 
     public List<Map> getUnFillCountermeasureBabs() {
@@ -63,11 +66,11 @@ public class CountermeasureDAO extends BasicDAO {
         return queryForMapList(this.getConn(), "SELECT * FROM unFillCountermeasureView WHERE sitefloor = ? ORDER BY btime DESC", sitefloor);
     }
 
-    public List<Map> getCountermeasure(String startDate, String endDate) {
+    public List<Map> getCountermeasureForExcel(String startDate, String endDate) {
         return queryProcForMapList(this.getConn(), "{CALL countermeasureDownExcel_1(?,?)}", startDate, endDate);
     }
 
-    public List<Map> getPersonalAlm(String startDate, String endDate) {
+    public List<Map> getPersonalAlmForExcel(String startDate, String endDate) {
         return queryProcForMapList(this.getConn(), "{CALL personalAlmDownExcel_1(?,?)}", startDate, endDate);
     }
 
