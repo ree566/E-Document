@@ -28,6 +28,7 @@ public class BasicService {
     private static IdentitService identitService = null;
     private static BABLoginStatusService babLoginStatusService = null;
     private static ActionCodeMappingService actionCodeMappingService = null;
+    private static LineOwnerMappingService lineOwnerMappingService = null;
     private static ModelResponsorService modelResponsorService = null;
 
     static {
@@ -42,6 +43,7 @@ public class BasicService {
         identitService = new IdentitService();
         babLoginStatusService = new BABLoginStatusService();
         actionCodeMappingService = new ActionCodeMappingService();
+        lineOwnerMappingService = new LineOwnerMappingService();
         modelResponsorService = new ModelResponsorService();
     }
 
@@ -87,6 +89,10 @@ public class BasicService {
 
     public static ActionCodeMappingService getActionCodeMappingService() {
         return actionCodeMappingService;
+    }
+
+    public static LineOwnerMappingService getLineOwnerMappingService() {
+        return lineOwnerMappingService;
     }
 
     public static ModelResponsorService getModelResponsorService() {

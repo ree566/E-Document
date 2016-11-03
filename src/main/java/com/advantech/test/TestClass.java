@@ -5,8 +5,14 @@
  */
 package com.advantech.test;
 
-import com.advantech.entity.ActionCodeMapping;
+import com.advantech.model.BasicDAO;
+import com.advantech.service.BasicService;
+import com.google.gson.Gson;
 import static java.lang.System.out;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -15,25 +21,23 @@ import static java.lang.System.out;
 public class TestClass {
 
     public static void main(String args[]) throws Exception {
-        int specCharIndex = 34;
-        String str1 = "2014 FIFA World Cup Final Winning germany Team";
-        out.println("Before special character toUpperCase is: " + str1);
-
-        char ch = str1.charAt(specCharIndex); //g是要更換為大寫的字母
-        char upperCh = Character.toUpperCase(ch);
-
-        out.println("This is the word you want to upperCase: " + ch + " -> " + upperCh); 
-
-        for (int i = 0, j = str1.length(); i <= j; i++) {  
-            if (i == specCharIndex) {
-                String nString = str1.substring(0, specCharIndex) + upperCh + str1.substring(specCharIndex + 1, j);
-                out.println("The string after upperCase is: " + nString);
-                break;
-            }
-        }
+        BasicDAO.dataSourceInit1();
+        List<Map> l = BasicService.getLineOwnerMappingService().getLineOwnerMappingView();
+        separateData(l);
     }
 
-    private String getResponseUser(ActionCodeMapping am) {
-        return null;
+    private static void separateData(List<Map> ownerMappingList) {
+        Map<String, List<Map>> hashMap = new HashMap();
+        for (Map m : ownerMappingList) {
+            String lineName = (String) m.get("lineName");
+            if (!hashMap.containsKey(lineName)) {
+                List<Map> list = new ArrayList();
+                list.add(m);
+                hashMap.put(lineName, list);
+            } else {
+                hashMap.get(lineName).add(m);
+            }
+        }
+        out.println(new Gson().toJson(hashMap));
     }
 }
