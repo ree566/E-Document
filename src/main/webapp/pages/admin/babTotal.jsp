@@ -691,6 +691,7 @@
                         var arrObj = json.data;
                         if (arrObj.length == 0) {
                             $("#totalDetail").hide();
+                            $.unblockUI();
                             return;
                         }
                         var jsonObj = arrObj[arrObj.length - 1];
