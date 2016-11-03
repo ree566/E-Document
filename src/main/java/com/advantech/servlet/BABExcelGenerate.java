@@ -7,7 +7,6 @@
 package com.advantech.servlet;
 
 import com.advantech.entity.ActionCodeMapping;
-import com.advantech.entity.ModelResponsor;
 import com.advantech.helper.DatetimeGenerator;
 import com.advantech.helper.ExcelGenerator;
 import com.advantech.helper.PropertiesReader;
@@ -20,7 +19,6 @@ import com.advantech.service.ModelResponsorService;
 import java.io.*;
 import static java.lang.System.out;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +29,6 @@ import javax.servlet.http.*;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.joda.time.DateTime;
 import org.joda.time.Seconds;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
@@ -85,10 +82,6 @@ public class BABExcelGenerate extends HttpServlet {
             usf2.filterData("sitefloor", sitefloor);
         }
 
-        if (isAbove) {
-            usf1.greaterThan("測量數量", minAllowAmount);
-        }
-
         List list = usf1.getList();
         List list2 = cService.transformPersonalAlmDataPattern(usf2.getList());//把各站亮燈頻率合併為橫式(類似 sql 的 Group by格式)
 
@@ -119,15 +112,8 @@ public class BABExcelGenerate extends HttpServlet {
 
         List<Map> sheet1Data = new ArrayList(), sheet2Data = new ArrayList(), sheet3Data, sheet4Data = new ArrayList();
 
-        DateTime startTime = new DateTime();
         for (Map m : countermeasures) {
             if (m.containsKey(filterColumnName)) {
-//                DateTime d = new DateTime();
-//                Map map = this.getResponseUnit((int) m.get("id"));
-//                if (map != null) {
-//                    m.put("負責人", map.toString());
-//                }
-//                out.println("Waste " + (new Period(d, new DateTime(), PeriodType.millis()).getMillis()) + " millisecond on search data.");
                 if ((Integer) m.get(filterColumnName) >= minAllowAmount) {
                     sheet1Data.add(m);
                 } else {
@@ -135,7 +121,6 @@ public class BABExcelGenerate extends HttpServlet {
                 }
             }
         }
-//        out.println("Processing " + (Seconds.secondsBetween(startTime, new DateTime()).getSeconds()) + " SEC on insert response unit.");
 
         Iterator it = personalAlarms.iterator();
         while (it.hasNext()) {
@@ -149,6 +134,7 @@ public class BABExcelGenerate extends HttpServlet {
             }
         }
         sheet3Data = personalAlarms;
+        
         ExcelGenerator generator = new ExcelGenerator();
         generator.createExcelSheet(countermeasureSheetName + "(" + filterColumnName + "≧" + minAllowAmount + "台)");
         generator.generateWorkBooks(sheet1Data);
@@ -161,96 +147,6 @@ public class BABExcelGenerate extends HttpServlet {
             generator.appendSpecialPattern(sheet4Data);
         }
         return generator.getWorkbook();
-    }
-
-    public List<Map> getResponseUnit(List<Map> countermeasures) {
-        List userList = new ArrayList();
-
-        Integer babSitefloor, actionCodeId;
-        String modelName, lineName;
-
-        if (countermeasures.isEmpty()) {
-            return userList;
-        } else {
-            Map m = (Map) countermeasures.get(0);
-            babSitefloor = m.containsKey("sitefloor") ? (Integer) m.get("sitefloor") : null;
-            modelName = m.containsKey("Model_Name") ? (String) m.get("Model_Name") : null;
-            lineName = m.containsKey("lineName") ? (String) m.get("lineName") : null;
-        }
-
-        if (babSitefloor == null || modelName == null || lineName == null) {
-            return userList;
-        }
-
-        for (Map m : countermeasures) {
-            Map responseUserMap = new HashMap();
-
-            actionCodeId = (Integer) m.get("ac_id");
-
-            if (actionCodeId == null) {
-                userList.add(responseUserMap);
-                continue;
-            }
-
-            List<ActionCodeMapping> filterList = filterMappingList(actionCodeId);
-
-            if (filterList.isEmpty()) {
-                JSONArray arr = responseUserPerLine.getJSONArray(lineName.trim());
-                String users = "";
-                for (int i = 0, j = arr.length(); i < j; i++) {
-                    users += arr.getString(i);
-                    if (i < j - 1) {
-                        users += "、";
-                    }
-                }
-                responseUserMap.put("OTHER", users);
-            } else {
-                for (ActionCodeMapping am : filterList) {
-                    String userName = am.getUser_name();
-                    String sitefloor = am.getSitefloor();
-
-                    String departmentCode = am.getManager();
-                    String user = "";
-
-                    if (userName != null && sitefloor == null) {
-                        user = userName;
-                    } else if (userName != null && sitefloor != null) {
-                        if (Integer.parseInt(sitefloor) == babSitefloor) {
-                            user = userName;
-                        } else {
-                            continue;
-                        }
-                    } else if (userName == null && sitefloor == null) {
-                        user = mrService.getModelResponsor(departmentCode, modelName);
-                    }
-                    responseUserMap.put(departmentCode, user);
-                }
-            }
-            userList.add(responseUserMap);
-        }
-        return userList;
-    }
-
-    private List<ActionCodeMapping> filterMappingList(int actionCodeId) {
-        List l = new ArrayList();
-        for (ActionCodeMapping am : mappingList) {
-            if (am.getAc_id() == actionCodeId) {
-                l.add(am);
-            }
-        }
-        return l;
-    }
-
-    public String getResponsor(String modelName, String departmentCode) {
-        String user = null;
-        for (Map m : modelResponsor) {
-            String mod = (String) m.get("Model_name");
-            if ((modelName == null ? modelName == null : mod.equals(modelName))) {
-                user = (String) m.get(departmentCode + "_Owner");
-                break;
-            }
-        }
-        return user;
     }
 
     public static void main(String arg0[]) {
