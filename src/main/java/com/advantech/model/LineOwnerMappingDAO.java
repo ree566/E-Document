@@ -23,8 +23,12 @@ public class LineOwnerMappingDAO extends BasicDAO {
         return getDBUtilConn(SQL.Way_Chien_WebAccess);
     }
 
-    public List<Map> getLineOwnerMappingView(){
-        return queryForMapList(this.getConn(), "SELECT * FROM LineOwnerMappingView");
+    public List<Map> getLineOwnerMappingView() {
+        return queryForMapList(this.getConn(), "SELECT * FROM lineOwnerMappingView");
+    }
+
+    public List<Map> getResponsorPerSitefloorView() {
+        return queryForMapList(this.getConn(), "SELECT * FROM responsorPerSitefloorView");
     }
 
 }

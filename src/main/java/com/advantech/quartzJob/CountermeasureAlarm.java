@@ -9,6 +9,7 @@ import com.advantech.helper.DatetimeGenerator;
 import com.advantech.helper.MailSend;
 import com.advantech.helper.PropertiesReader;
 import com.advantech.service.BasicService;
+import com.advantech.service.LineOwnerMappingService;
 import java.text.DecimalFormat;
 import java.util.HashSet;
 import java.util.List;
@@ -30,7 +31,6 @@ public class CountermeasureAlarm implements Job {
 
     private static final Logger log = LoggerFactory.getLogger(CountermeasureAlarm.class);
     private final DecimalFormat formatter = new DecimalFormat("#.##%");
-    private final JSONObject responseUserPerLine = PropertiesReader.getInstance().getResponseUserPerLine();
     private final DatetimeGenerator dg = new DatetimeGenerator("yyyy-MM-dd HH:mm");
 
     @Override
@@ -44,18 +44,18 @@ public class CountermeasureAlarm implements Job {
     }
 
     public void sendMail() throws Exception {
-        PropertiesReader p = PropertiesReader.getInstance();
-        JSONArray mailTarget = p.getTargetMailLoop();
-        JSONArray ccMailLoop = p.getTargetCCLoop().getJSONArray("mailloop");
+        LineOwnerMappingService lomService = BasicService.getLineOwnerMappingService();
+        JSONObject responsorPerLine = lomService.getSeparateLineOwnerMapping();
+        JSONObject responsorPerSitefloor = lomService.getSeparateResponsorPerSitefloor();
+        
+        // when user sitefloor is not setting, turn user's mail to mail cc loop
+        JSONArray ccMailLoop = responsorPerLine.getJSONArray("null"); 
         String subject = "[藍燈系統]未填寫異常回覆工單列表 ";
-
-        for (int i = 0; i < mailTarget.length(); i++) {
-            JSONObject targetInfo = (JSONObject) mailTarget.get(i);
-            String sitefloor = (String) targetInfo.get("sitefloor");
-            JSONArray mailLoop = (JSONArray) targetInfo.get("mailloop");
-            String mailBody = this.generateMailBody(sitefloor);
+        for (String key : responsorPerSitefloor.keySet()) {
+            JSONArray mailLoop = responsorPerSitefloor.getJSONArray(key);
+            String mailBody = this.generateMailBody(key);
             if (!"".equals(mailBody)) { //有資料再寄信
-                MailSend.getInstance().sendMail(mailLoop, ccMailLoop, subject + sitefloor + "F", mailBody);
+                MailSend.getInstance().sendMail(mailLoop, ccMailLoop, subject + key + "F", mailBody);
             }
         }
     }
@@ -94,11 +94,12 @@ public class CountermeasureAlarm implements Job {
             sb.append("</table>");
             sb.append("<p>線別負責人: </p>");
 
+            JSONObject responsorPerLine = BasicService.getLineOwnerMappingService().getSeparateLineOwnerMapping();
             for (String line : highlightLines) {
                 sb.append("<p>");
                 sb.append(line);
                 sb.append(" : ");
-                JSONArray arr = responseUserPerLine.getJSONArray(line.trim());
+                JSONArray arr = responsorPerLine.getJSONArray(line.trim());
                 for (int i = 0, j = arr.length(); i < j; i++) {
                     sb.append(arr.get(i));
                     if (i != j - 1) {

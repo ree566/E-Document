@@ -34,12 +34,9 @@ public class TestServlet extends HttpServlet {
         res.setContentType("text/html");
         PrintWriter out = res.getWriter();
         BasicDAO.dataSourceInit1();
-        String lineType = "-1", sitefloor = "-1", startDate = req.getParameter("startDate"), endDate = req.getParameter("endDate");
-        CountermeasureService cs = BasicService.getCountermeasureService();
-//        List countermeasures = cs.getCountermeasure(lineType, sitefloor, startDate, endDate);
-//        List personalAlarms = cs.getPersonalAlm(lineType, sitefloor, startDate, endDate);
-//        out.println(countermeasures);
-//        out.println(personalAlarms);
+        String sitefloor = req.getParameter("sitefloor");
+        
+        out.println(new CountermeasureAlarm().generateMailBody(sitefloor));
     }
 
     @Override

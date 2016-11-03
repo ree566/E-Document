@@ -8,7 +8,6 @@ package com.advantech.helper;
 import java.io.InputStream;
 import static java.lang.System.out;
 import java.util.Properties;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,8 +25,7 @@ public class PropertiesReader {
 
     private double testStandard, babStandard, balanceDiff;
 
-    private JSONArray targetMailLoop;
-    private JSONObject targetCCLoop, systemAbnormalAlarmMailCC, responseUserPerLine;
+    private JSONObject systemAbnormalAlarmMailCC;
     private String systemAbnormalAlarmMailTo;
 
     private int maxTestTable, maxTestRequiredPeople, babSaveToRecordStandardQuantity, balanceRoundingDigit;
@@ -51,7 +49,7 @@ public class PropertiesReader {
         }
         return p;
     }
- 
+
     private void dataInit() throws Exception {
         String configFile = "/options.properties";
         Properties properties = new Properties();
@@ -78,15 +76,12 @@ public class PropertiesReader {
         mailServerPassword = properties.getProperty("mail.server.password");
         mailServerPort = properties.getProperty("mail.server.port");
         mailServerLocation = properties.getProperty("mail.server.location");
-        
+
         writeToDB = convertStringToBoolean(properties.getProperty("result.write.to.database"));
         saveToOldDB = convertStringToBoolean(properties.getProperty("result.save.to.oldServer"));
         sendMailAlarmUser = convertStringToBoolean(properties.getProperty("send.mail.alarm.user"));
         endpointQuartzTrigger = properties.getProperty("endpoint.quartz.trigger");
-        
-        responseUserPerLine = new JSONObject(properties.getProperty("responseUser.perLine"));
-        targetMailLoop = new JSONArray(properties.getProperty("responseUnits.mailTo"));
-        targetCCLoop = new JSONObject(properties.getProperty("responseUnits.mailCC"));
+
         systemAbnormalAlarmMailTo = properties.getProperty("systemAbnormalAlarm.mailTo");
         systemAbnormalAlarmMailCC = new JSONObject(properties.getProperty("systemAbnormalAlarm.mailCC"));
 
@@ -97,8 +92,6 @@ public class PropertiesReader {
         out.println("Set test lineType standard is : " + testStandard);
         out.println("Set bab lineType standard is : " + babStandard);
         out.println("Set balanceDiff(Need to send mail when balance is diff to prev input bab) is : " + balanceDiff);
-        out.println("System abnormal alarm to : " + targetMailLoop);
-        out.println("Set cc mail setting is : " + targetCCLoop);
         out.println("The mail info setting -> : "
                 + new JSONObject()
                 .put("mailServerUsername", mailServerUsername)
@@ -154,20 +147,8 @@ public class PropertiesReader {
         return systemAbnormalAlarmMailTo;
     }
 
-    public JSONObject getTargetCCLoop() {
-        return targetCCLoop;
-    }
-
-    public JSONArray getTargetMailLoop() {
-        return targetMailLoop;
-    }
-
     public JSONObject getSystemAbnormalAlarmMailCC() {
         return systemAbnormalAlarmMailCC;
-    }
-
-    public JSONObject getResponseUserPerLine() {
-        return responseUserPerLine;
     }
 
     public String getTestMail() {

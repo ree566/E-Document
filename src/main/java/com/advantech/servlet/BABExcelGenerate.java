@@ -6,16 +6,12 @@
  */
 package com.advantech.servlet;
 
-import com.advantech.entity.ActionCodeMapping;
 import com.advantech.helper.DatetimeGenerator;
 import com.advantech.helper.ExcelGenerator;
-import com.advantech.helper.PropertiesReader;
 import com.advantech.helper.UserSelectFilter;
 import com.advantech.model.BasicDAO;
-import com.advantech.service.ActionCodeMappingService;
 import com.advantech.service.BasicService;
 import com.advantech.service.CountermeasureService;
-import com.advantech.service.ModelResponsorService;
 import java.io.*;
 import static java.lang.System.out;
 import java.util.ArrayList;
@@ -29,7 +25,6 @@ import javax.servlet.http.*;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.joda.time.DateTime;
 import org.joda.time.Seconds;
-import org.json.JSONObject;
 
 /**
  *
@@ -41,14 +36,6 @@ public class BABExcelGenerate extends HttpServlet {
     private final int minAllowAmount = 10;
 
     private final CountermeasureService cService = BasicService.getCountermeasureService();
-    private final ActionCodeMappingService amService = BasicService.getActionCodeMappingService();
-    private final ModelResponsorService mrService = BasicService.getModelResponsorService();
-    private final List<ActionCodeMapping> mappingList = amService.getActionCodeMapping();
-    private final JSONObject responseUserPerLine = PropertiesReader.getInstance().getResponseUserPerLine();
-    private final List<Map> modelResponsor = mrService.getModelResponsor1();
-//    private final JSONObject responseUserPerLine = PropertiesReader.getInstance().getResponseUserPerLine();
-//    private final UserSelectFilter actionCodeMapping = new UserSelectFilter().setList(amService.getActionCodeMapping1());
-//    private final UserSelectFilter modelResponsorList = new UserSelectFilter().setList(mrService.getModelResponsor1());
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
