@@ -15,7 +15,7 @@
         <title>${initParam.pageTitle}</title>
         <link rel="shortcut icon" href="images/favicon.ico"/>
         <!--不用header 因為這裡寫入的style會被複寫-->
-        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+        <link rel="stylesheet" href="css/bootstrap.min.css">
         <style>
             body{
                 font-family: 微軟正黑體;
@@ -99,8 +99,8 @@
                 padding-bottom: 20px;
             }
         </style>
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-        <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+        <script src="js/jquery-1.11.3.min.js"></script>
+        <script src="js/bootstrap.min.js"></script>
 
         <script src="js/jquery.blockUI.js"></script>
         <script src="js/jquery.blockUI.Default.js"></script>

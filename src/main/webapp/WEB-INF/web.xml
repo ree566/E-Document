@@ -73,7 +73,7 @@
     <!--作業人員使用頁面-->
     <servlet>
         <servlet-name>bab</servlet-name>
-        <jsp-file>/babpage1.jsp</jsp-file>
+        <jsp-file>/babpage.jsp</jsp-file>
     </servlet>
     <servlet-mapping>
         <servlet-name>bab</servlet-name>

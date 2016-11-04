@@ -10,7 +10,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>5F狀態平面圖 - ${initParam.pageTitle}</title>
-        <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+        <link rel="stylesheet" href="../../css/jquery-ui.css">
         <style>
             .draggable { 
                 width: 25px; 
@@ -117,8 +117,8 @@
                 background-image: url(../../images/blub-icon/Yellow_Light_Icon.png);
             }
         </style>
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-        <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+        <script src="../../js/jquery-1.11.3.min.js"></script>
+        <script src="../../js/jquery-ui-1.10.0.custom.min.js"></script>
         <script src="../../js/reconnecting-websocket.min.js"></script>
         <script src="../../js/jquery.fullscreen-min.js"></script>
         <script>

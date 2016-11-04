@@ -1,6 +1,6 @@
 <%-- 
-    Document   : babpage
-    Created on : 2015/9/23, 下午 01:07:42
+    Document   : babpage1
+    Created on : 2016/8/1, 上午 08:58:43
     Author     : Wei.Cheng
 --%>
 
@@ -10,55 +10,263 @@
 <!DOCTYPE html>
 <html>
     <c:set var="userSitefloor" value="${param.sitefloor}" />
-    <c:if test="${(userSitefloor == null) || (userSitefloor == '')}">
+    <c:if test="${(userSitefloor == null) || (userSitefloor == '' || userSitefloor < 1 || userSitefloor > 7)}">
         <c:redirect url="/" />
     </c:if>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>組包裝 ${userSitefloor} 樓 - ${initParam.pageTitle}</title>
         <link rel="shortcut icon" href="images/favicon.ico"/>
+        <link rel="stylesheet" href="css/jquery-ui.css">
         <style>
             #titleAlert{
                 background-color: green;
                 color: white;
                 text-align: center;
             }
-            .Div0{
-                float:left; width:100%; 
-                border-bottom-style:dotted;
+            .step{
+                float:left; 
+                width:100%; 
+                /*border-bottom-style:dotted;*/
+                border-left: solid 2px;
+                border-bottom: solid 2px;
+                border-right: solid 2px;
             }
-            .Div1{
-                float:left; width:60%; 
+            #step1{
+                background-color: rosybrown;
+            }
+            #step2{
+                background-color: bisque;
+            }
+            #step3{
+                background-color: peachpuff;
+            }
+            #step4{
+                background-color: gainsboro;
+            }
+            .userWiget{
+                float:left; 
+                width:60%; 
                 padding: 10px 10px;
             }
-            .Div2{
-                float:right;width:40%;
+            .wigetInfo{
+                float:right;
+                width:40%;
             }
-            #alterinfo:hover{
-                cursor: pointer;
+            .userWiget > .alarm{
+                padding-top: 5px;
             }
-            #sensordata{
-                /*                display: none;
-                                position: fixed;
-                                right: 20px;
-                                bottom: 20px;    
-                                padding: 10px 15px;    
-                                background: #777;
-                                cursor: pointer;
-                                width: 55%;*/
+            .stepAlarm{
+                border-color: red;
             }
-            #div1{
-                text-align: center;
-                background-color: white;
-                color: #880000;
+            li{
+                line-height: 20px;
+            }
+            .importantMsg{
+                color: red;
+            }
+            .alarm{
+                color: red;
             }
         </style>
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-        <script src="js/jquery.cookie.js"></script>
+        <script src="js/jquery-1.11.3.min.js"></script>
+        <script src="js/jquery-ui.min.js"></script>
+        <script src="js/jquery-ui-1.10.0.custom.min.js"></script>
         <script src="js/jquery.blockUI.js"></script>
-        <script src="js/cookie.check.js"></script>
-        <!--<script src="js/babpage.js"></script>-->
+        <script src="js/jquery.cookie.js"></script>
+        <script src="js/param.check.js"></script>
         <script>
+            var totalLineStatus = new Map();
+
+            var hnd;//鍵盤輸入間隔
+            var hnd2;//鍵盤輸入間隔
+            var serverErrorConnMessage = "Error, the textbox can't connect to server now.";
+            var userNotFoundMessage = "使用者不存在，請重新確認，如有問題請通知系統管理人員。",
+                    paramNotVaildMessage = "輸入資料有誤，請重新再確認。";
+
+            var userInfoCookieName = "userInfo", testLineTypeCookieName = "testLineTypeCookieName";
+            var STATION_LOGIN = "LOGIN", STATION_LOGOUT = "LOGOUT", CHANGE_USER = "CHANGE_USER";
+            var BAB_END = "BAB_END";
+
+            var serverMsgTimeout;
+
+            var firstStation = 1;
+
+            var tabreg = /^[0-9a-zA-Z-]+$/;//Textbox check regex.
+
+            $(function () {
+                $(document).ajaxSend(function () {
+                    console.log("block");
+                    block();//Block the screen when ajax is sending, Prevent form submit repeatly.
+                });
+                $(document).ajaxSuccess(function () {
+                    console.log("unblock");
+                    $.unblockUI();//Unblock the ajax when success
+                });
+
+                $("select, input").addClass("form-control");
+                $("#reSearch").hide();
+                $("#people").hide();
+
+                var userInfoCookie = $.cookie(userInfoCookieName);
+                var isUserInfoExist = (userInfoCookie != null);
+
+                console.log(userInfoCookie);
+
+                $(".userWiget > .alarm").hide();
+
+                var dialogMessage = $("#dialog-message").dialog({
+                    autoOpen: false,
+                    resizable: false,
+                    height: "auto",
+                    width: 400,
+                    modal: true,
+                    buttons: {
+                        "確定": function () {
+                            var newJobnumber = $("#newJobnumber").val();
+                            if (!checkVal(newJobnumber) || !checkUserExist(newJobnumber)) {
+                                showMsg(userNotFoundMessage);
+                                $("#newJobnumber").val("");
+                                $(this).dialog("close");
+                                return false;
+                            } else {
+                                changeJobnumber(newJobnumber);
+                                $(this).dialog("close");
+                            }
+                        },
+                        "取消": function () {
+                            $(this).dialog("close");
+                        }
+                    }
+                });
+
+                //Don't do the code after this check when user cookie info is not vaild.
+                var cookieCheckStatus = checkExistCookies();
+                if (cookieCheckStatus == false) {
+                    return false;
+                }
+
+                initUserInputWiget();
+
+                $("#step1").find(":text,select").attr("disabled", isUserInfoExist);
+
+                $("#saveInfo").attr("disabled", isUserInfoExist);
+                $("#clearInfo").attr("disabled", !isUserInfoExist);
+
+//                $("#clearInfo, .userWiget>div>input:eq(0)").attr("disabled", ($.parseJSON(userInfoCookie).station != firstStation));
+
+                $("#lineNo").change(function () {
+                    setStationOptions();
+                });
+
+                $(":text").keyup(function () {
+                    textBoxToUpperCase($(this));
+                });
+
+                $(document).on("keyup", "#po", function () {
+                    getModel($(this).val(), $(this).next());
+                });
+
+                $("#searchProcessing").click(function () {
+                    showProcessing();
+                });
+
+                //Re搜尋工單
+                $("#reSearch").click(function () {
+                    $("#step2").block({message: "Please wait..."});
+                    $(this).next().trigger("keyup");
+                    setTimeout(function () {
+                        $("#step2").unblock();
+                    }, 2000);
+                });
+
+                //儲存使用者資訊
+                $("#saveInfo").click(function () {
+                    var lineNo = $("#lineNo option:selected").text();
+                    var jobnumber = $("#jobnumber").val();
+                    var station = $("#station").val();
+
+                    if (confirm("確定您所填入的資料無誤?\n" + "線別:" + lineNo + "\n工號:" + jobnumber + "\n站別:" + station)) {
+                        saveUserStatus();
+                    }
+                });
+
+                //重設使用者資訊
+                $("#clearInfo").click(function () {
+                    if (confirm("確定離開此站別?")) {
+                        if (!isUserInfoExist) {
+                            return false;
+                        }
+
+                        if ($("#station").val() == firstStation) {
+
+                            var obj = $.parseJSON(userInfoCookie);
+                            console.log(obj);
+                            firstStationLogin(obj, STATION_LOGOUT);
+                        } else {
+                            //Just remove the cookie.
+                            removeAllStepCookie();
+                            reload();
+                        }
+                    }
+                });
+
+                //站別一操作工單投入
+                $("#babBegin").click(function () {
+                    var po = $("#po").val();
+                    var modelname = $("#modelname").val();
+                    var people = $("#people").val();
+                    if (checkVal(po, modelname, people) == false) {
+                        showMsg(paramNotVaildMessage);
+                        return false;
+                    }
+                    if (confirm("確定開始工單?\n" + "工單:" + po + "\n機種:" + modelname + "\n人數:" + people)) {
+                        startBab();
+                    }
+                });
+
+                var searchResult = null;
+
+                //其他站別結束命令
+                $("#babEnd").click(function () {
+                    var userInfo = $.parseJSON(userInfoCookie);
+
+                    if (searchResult == null) {
+                        console.log("search");
+                        var data = searchProcessing();
+                        searchResult = data[0];//取最先投入的工單做關閉
+                    }
+
+                    if (searchResult == null) {
+                        showMsg("站別一無投入的工單，請重新做確認");
+                    } else {
+                        if (confirm(
+                                "站別 " + userInfo.station + " 確定儲存?\n" +
+                                "工單: " + searchResult.PO + "\n" +
+                                "機種: " + searchResult.Model_name + "\n" +
+                                "人數: " + searchResult.people
+                                )) {
+                            var data = {
+                                babId: searchResult.id,
+                                station: userInfo.station,
+                                jobnumber: userInfo.jobnumber,
+                                action: BAB_END
+                            };
+                            otherStation(data);
+                        }
+                    }
+                });
+
+                $("#changeUser").click(function () {
+                    dialogMessage.dialog("open");
+                });
+
+                $(":text").focus(function () {
+                    $(this).select();
+                });
+
+            });
+
             function block() {
                 $.blockUI({
                     css: {
@@ -77,580 +285,354 @@
                     }
                 });
             }
-            $(document).ready(function () {
 
-                printCookies();
-
-                $(document).ajaxSend(function () {
-                    block();//Block the screen when ajax is sending, Prevent form submit repeatly.
-                });
-                $(document).on("ajaxSuccess, ajaxComplete", function () {
-                    $.unblockUI();//Unblock the ajax when success
-                });
-
-                if (!are_cookies_enabled()) {
-                    alert(cookie_disabled_message);
-                    return;
-                }
-
-                var manuallyModelNameInput = false;
-
-//                $('[data-toggle="tooltip"]').tooltip();
-
-                //Init the object to boostrap's form
-                $(":button").addClass("btn btn-default");
-                $(":text,select,input[type='number']").addClass("form-control");
-
-                var hnd2;//鍵盤輸入間隔
-                var linevalue = -1; //Get user selection from the cookie
-                var hnd;//鍵盤輸入間隔
-                var jsonstring = $.cookie('babinfo');//Get the user saving information from cookie.
-                var msgstring = $.cookie('servermsg');
-                var saveline;//Get user selection from the cookie
-
-                $("#searchpeople").hide();
-                $("#step4").hide();
-
-                //裏頭存了step的四個選項的div
-                $step3_objs = $("#step3").children().detach();
-                $("#cookieinfo").html(jsonstring != null ? "BAB cookie 已經儲存" : "尚無資料");
-                $objgroup = $("#po, #line, #people, #begin");
-
-                //抓取cookie所儲存的json data讓其他元件做應對
-                if (jsonstring != null) {
-                    $obj = $.parseJSON(jsonstring);
-                    if ($obj != null) {
-                        var userSitefloorSelect = $obj.userSitefloorSelect;
-                        var pageSitefloor = $("#userSitefloorSelect").val();
-                        if (userSitefloorSelect != null && userSitefloorSelect != pageSitefloor) {
-                            $("#step2, #step3").hide();
-                            showMsg("您已經登入其他樓層");
-                        }
-                        saveline = $obj.line;
-                        if (msgstring != null) {
-                            $("#step3").html($step3_objs.eq(0));
-                            var obj = $.parseJSON(msgstring);
-                            if (obj.linestate == "success") {
-                                if (saveline != null) {
-                                    $("#isfirst").attr({
-                                        disabled: true,
-                                        checked: true
-                                    });
-                                    $("#lineselect").val(saveline);
-                                    console.log(saveline);
-                                    $("#lineselect, #step1next").attr("disabled", true);
-                                    $("#manuallyModelNameInput").prop("checked", false);
-                                }
-                            }
-                        } else {
-                            if ($obj != null) {
-                                $("#lineselect").val($obj.line);
-                                $("#lineselect, #step1next, #isfirst").attr("disabled", true);
-                                $("#step2").show();
-                            }
-                        }
-                        var json = getdata(saveline);
-                        if (json != null) {
-                            var obj;
-                            $("#end_line").html("");
-                            $("#linestate").html("");
-                            $(".sensorend").html("");
-                            for (var i = 0; i < json.BABData.length; i++) {
-                                obj = json.BABData[i];
-                                var sArr = [];
-                                sArr[sArr.length] = "<div class='bg-success'>編號: ";
-                                sArr[sArr.length] = obj.id;
-                                sArr[sArr.length] = "<input type='hidden' class='babid' value='";
-                                sArr[sArr.length] = obj.id;
-                                sArr[sArr.length] = "'>";
-                                sArr[sArr.length] = " 工單號碼: ";
-                                sArr[sArr.length] = obj.PO;
-                                sArr[sArr.length] = "<input type='hidden' class='PO' value='";
-                                sArr[sArr.length] = obj.PO;
-                                sArr[sArr.length] = "'>";
-                                sArr[sArr.length] = " | 機種 ";
-                                sArr[sArr.length] = obj.model_name;
-                                sArr[sArr.length] = " | 線別 ";
-                                sArr[sArr.length] = obj.name;
-                                sArr[sArr.length] = "<input type='hidden' class='line' value='";
-                                sArr[sArr.length] = obj.line;
-                                sArr[sArr.length] = "'>";
-                                sArr[sArr.length] = "</div>";
-                                var str = sArr.join('');
-                                $("#linestate").append(str);
-                            }
-                        }
-                    }
-                } else {
-                    $("#lineselect").removeAttr("disabled");
-                    $objgroup.removeAttr("disabled");
-                    $("#alterinfo").hide();
-                }
-
-                //Get the cookie info and setting value on the html objects.
-                var po_search_result = $.cookie("po_search_result");
-                if (po_search_result != null) {
-                    var obj = JSON.parse(po_search_result);
-                    if (obj != null) {
-                        $("#po1").val(obj.PO);
-                        $("#step3").html($step3_objs.eq(1));
-                        $("#step3 #T_Button").html(generatebutton(obj.people));
-                        var state = obj.S_State;
-                        if (state != null) {
-                            for (var i = 2; i <= obj.people; i++) {
-                                var T = "T" + i;
-                                if (state[T] == 1) {
-                                    $("#T_Button #" + T).attr("disabled", "disabled");
-                                }
-                            }
-                        }
-                    }
-                }
-
-                //Get the cookie info and setting value on the html objects, 
-                //show current sensor time by adding iframe.(WebSocket client connect page)
-                var user_sel = $.cookie('user_sel');
-                if (user_sel != null) {
-                    var obj = JSON.parse(user_sel);
-                    var string = "#T_Button #T" + obj.step3_sel;
-                    $(string).addClass("btn-success").attr("disabled", true);
-                    var isLastStation = $(string).is(':last-child');
-
-                    if (obj.step3_sel == 1) {
-                        $("#step4").hide();
-                    } else {
-                        $("#step4 :button").attr("id", isLastStation ? "end" : "s_end").val("結束按鈕" + (isLastStation ? "(儲存線平衡紀錄)" : ""));
-                        $("#step4").show();
-                    }
-
-//                    $("#sensordata #div2").html("<iframe style='width:100%; height:80px' scrolling='no' src='Sensor'></iframe>");//Show the sensor time when user is inline.
-
-                    $("#sensordata").slideToggle();
-                }
-
-                //抓取和伺服器提出開關線別所回傳的值(存在cookie中)
-                if ($.cookie('people') != null) {
-                    $("#people").children().eq($.cookie('people') - 1).attr("selected", true);
-                    $("#people").attr("disabled", true);
-                }
-
-                $("#manuallyModelNameInput").change(function () {
-                    manuallyModelNameInput = $(this).is(":checked");
-                    $("#modelname").attr("readonly", !manuallyModelNameInput).attr("style", !manuallyModelNameInput ? "background: #CCC" : "").val("");
-                });
-
-                //Search the ModelName by PO.(Station 1)
-                $("#po").on("keyup", function () {
-                    textBoxToUpperCase($(this));
-                    if (!manuallyModelNameInput) {
-                        getModel($(this).val(), $(this).next());
-                    }
-                });
-
-                $("#modelname").on("keyup", function () {
-                    textBoxToUpperCase($(this));
-                });
-
-
-                //從已經從站別1儲存的工單資料中尋找相關資訊(LS_BAB table)
-                $("#po1").on("keyup", function () {
-                    var text = $(this).val().trim().toLocaleUpperCase();
-                    $(this).val(text);
-                    getBAB(text, saveline, $step3_objs);
-//                    console.log(JSON.stringify(obj));
-                    $.removeCookie("user_sel");
-                    $("#step4").html("");
-                });
-
-                //當站別1繼續投下一套工單時,給予人數輸入
-                $("#po").keydown(function () {
-                    $("#people").removeAttr("disabled");
-                });
-
-                //站別1投入工單按鈕
-                $("#begin").click(function () {
-
-                    console.log();
-                    var po = $("#po").val().trim();
-                    var modelname = $("#modelname").val().trim();
-                    var line = $("#lineselect").val();
-                    var people = $("#people").val();
-                    if (modelname == 'data not found' || modelname == "" || po == "" || line == -1) {
-                        showMsg("請確認資料是否正確");
-                        return false;
-                    }
-                    if (parseInt(people) <= 0 || parseInt(people) > 5 || people == "") {
-                        showMsg("人數範圍錯誤");
-                        return false;
-                    }
-                    if (line == -1) {
-                        line = saveline;
-                    }
-                    if (!confirm("工單:" + po + " 機種:" + modelname + " 人數:" + people + " \n確認無誤?")) {
-                        return false;
-                    }
-                    var obj = toback(po, modelname, line, people, null, "insert");
-                    if (obj.status == "success") {
-                        $.cookie("people", people);
-                        reload();
-                    } else {
-                        showMsg(obj.status);
-                    }
-                });
-
-                //工單最後一個站別關閉工單用
-                $("#end").on("click", function () {
-                    var data;
-                    var po;
-                    if (po_search_result != null) {
-                        var obj = JSON.parse(po_search_result);
-                        var userSel = JSON.parse($.cookie("user_sel"));
-                        po = obj.PO;
-                        data = {
-                            babId: obj.id,
-                            station: userSel.step3_sel,
-                            action: "BAB_END"
-                        };
-                    }
-                    if (confirm("結束工單號碼 " + po + "?")) {
-                        otherStation(data);
-                    }
-                });
-
-                //中間站別結束sensor用
-                $("#s_end").on("click", function () {
-                    var sensor;
-                    var BABid;
-                    if (po_search_result != null) {
-                        var obj = JSON.parse(po_search_result);
-                        BABid = obj.id;
-                    }
-                    if (user_sel != null) {
-                        var obj = JSON.parse(user_sel);
-                        sensor = obj.step3_sel;
-                    }
-                    if (!confirm("確定結束Sensor?")) {
-                        return;
-                    }
-                    if (sensor != null && BABid != null) {
-                        $.ajax({
-                            type: "Post",
-                            url: "StopSensor",
-                            data: {
-                                BABid: BABid,
-                                sensor: sensor,
-                                line: saveline
-                            },
-                            dataType: "json",
-                            success: function (response) {
-                                var obj = response.servermsg;
-                                showMsg(
-                                        "<p>檢查前顆感應器是否已經結束:" +
-                                        (obj.history ? "是" : "否") +
-                                        "</p><p>檢查統計值:" +
-                                        (obj.total ? "有統計數值" : "空的(sensor有問題?)") +
-                                        "</p><p>是否已經關閉感應器:" +
-                                        (obj.do_sensor_end ? "是" : "否") +
-                                        "</p>");
-                            },
-                            error: function () {
-                                showMsg("error");
-                            }
-                        });
-                    }
-                });
-
-                //第一步登入用(卡站別1只允許1個人進入)
-                $("#step1next").click(function () {
-                    var line = $("#lineselect").val();
-                    var linetype = $("#lineselect option:selected").text().trim();
-//                    console.log(line);
-                    if (line == -1) {
-                        return false;
-                    } else if (!confirm("※確定您選擇的線別為 " + linetype + " ?")) {
-                        return false;
-                    }
-
-                    if ($("#isfirst").is(":checked")) {
-                        var id = 1;
-                        var msg = linelogin();
-                        //getdata there
-                        if (msg == "success") {
-                            if (jsonstring == null) {
-                                var json = {
-                                    line: line,
-                                    identit: id,
-                                    userSitefloorSelect: $("#userSitefloorSelect").val()
-                                };
-                                var date = new Date();
-                                var minutes = 12 * 60;
-                                date.setTime(date.getTime() + (minutes * 60 * 1000));
-                                $.cookie("babinfo", JSON.stringify(json), {expires: date});
-                                generateTagCookie(1, linetype);
-                            }
-                            reload();
-                        }
-                    } else {
-                        $("#searchpeople").show();
-                        $("#step2").show();
-                        if (jsonstring == null) {
-                            var json = {
-                                line: line,
-                                identit: id,
-                                userSitefloorSelect: $("#userSitefloorSelect").val()
-                            };
-                            generateCookie("babinfo", JSON.stringify(json));
-                        }
-                        reload();
-                    }
-                });
-
-                //離開站別1(順便clear cookie)
-                $("#exitT1").click(function () {
-                    if (linelogout() == "success") {
-                        clearcookie();
-                        reload();
-                    }
-                });
-
-                //後面站別登入用(站別選擇)
-                $("body").on("click", "#T_Button :button", function () {
-                    var val = $(this).val();
-                    var linetype = $("#lineselect option:selected").text().trim();
-                    generateTagCookie(val, linetype);
-                    reload();
-                });
-
-                //後面站別登出用
-                $("#clearcookie").on("click", function () {
-                    if (confirm("確定返回步驟1?")) {
-                        clearcookie();
-                        reload();
-                    }
-                });
-
-                //將進行中的工單第一個做標記，讓使用者知道目前亮的是哪一張工單的燈號
-                if ($("#linestate").children().length > 0) {
-                    $("#linestate").children().eq(0).attr("style", "border-color:red; border-style:solid;");
-                }
-
-                if ($.cookie('table')) {
-                    $(":input,select").not("#redirectBtn").attr("disabled", "disabled");
-                    showMsg("您已經登入測試");
-                }
-
-                function textBoxToUpperCase(obj) {
-                    obj.val(obj.val().trim().toLocaleUpperCase());
-                }
-
-                //儲存使用者站別cookie
-                function generateTagCookie(station, linetype) {
-                    var tagname = linetype + "-S-" + station;
-                    var obj = {
-                        step3_sel: station,
-                        sensor_tagname: tagname
-                    };
-                    $.cookie("user_sel", JSON.stringify(obj));
-                }
-
-                //依照工單查詢結果產生button(LS_BAB人數)
-                function generatebutton(amount) {
-                    var text = "";
-                    for (var i = 2; i <= amount; i++) {
-                        text += "<input type='button' id='T" + i + "' class='btn btn-default' value='" + i + "'>";
-                    }
-                    return text;
-                }
-
-                function clearcookie() {
-                    var cookies = $.cookie();
-                    for (var cookie in cookies) {
-                        $.removeCookie(cookie);
-                    }
-                }
-
-                var STATION1_LOGIN = "LOGIN", STATION1_OUT = "LOGOUT";
-
-                //站別1登入
-                function linelogin() {
-                    //通過後台測試 回傳直
-                    linevalue = $("#lineselect").val();
-                    var people = $("#people").val();
-                    var flag = saveIdentit(linevalue, people, STATION1_LOGIN);
-                    return flag;
-                }
-
-                //站別1登出
-                function linelogout() {
-                    linevalue = $("#lineselect").val();
-                    if (confirm('確定離開T1?')) {
-                        var flag = saveIdentit(linevalue, 0, STATION1_OUT);
-                        $.removeCookie("servermsg");
-                        return flag;
-                    }
-                }
-
-                //取得機種
-                function getModel(text, obj) {
-                    var reg = "^[0-9a-zA-Z]+$";
-                    if (text != "" && text.match(reg)) {
-                        window.clearTimeout(hnd);
-                        hnd = window.setTimeout(function () {
-                            $.ajax({
-                                type: "Post",
-                                url: "BabSearch",
-                                data: {
-                                    po: text.trim()
-                                },
-                                dataType: "html",
-                                success: function (response) {
-                                    obj.val(response);
-                                },
-                                error: function () {
-                                    showMsg("error");
-                                }
-                            });
-                        }, 1000);
-                    } else {
-                        obj.val("");
-                    }
-                }
-
-                //取得LS_BAB table
-                function getBAB(text, saveline, objs) {
-                    $("#step3").html("");
-                    var reg = "^[0-9a-zA-Z]+$";
-                    if (text != "" && text.match(reg)) {
-                        window.clearTimeout(hnd2);
-                        hnd2 = window.setTimeout(function () {
-                            $.ajax({
-                                type: "Post",
-                                url: "BabSearch",
-                                async: false,
-                                data: {
-                                    po_getBAB: text,
-                                    po_saveline: saveline
-                                },
-                                dataType: "html",
-                                success: function (response) {
-//                                    console.log(response);
-                                    var obj = JSON.parse(response);
-                                    if (obj != null) {
-                                        $("#step3").html(objs.eq(1));
-                                        $("#step3 #T_Button").html(generatebutton(obj.people));
-                                        var state = obj.S_State;
-                                        if (state != null) {
-                                            for (var i = 2; i <= obj.people; i++) {
-                                                var T = "T" + i;
-                                                if (state[T] == 1) {
-                                                    $("#T_Button #" + T).attr("disabled", "disabled");
-                                                }
-                                            }
-                                        }
-                                    }
-                                    $.cookie("po_search_result", JSON.stringify(obj));
-                                    showMsg(obj == null ? "找不到工單資料" : "找到資料");
-                                },
-                                error: function () {
-                                    showMsg("error");
-                                }
-                            });
-                        }, 1000);
-                    } else {
-                        showMsg("");
-                    }
-                }
-
-                //和伺服器確認該線別是否已經開線，以true(登入)false(登出)做區隔
-                function saveIdentit(linevalue, people, FLAG) {
-                    var result;
-                    if (linevalue != -1) {
-                        $.ajax({
-                            type: "Post",
-                            url: "LineServlet",
-                            async: false,
-                            data: {
-                                lineNo: linevalue,
-                                people: people,
-                                action: FLAG
-                            },
-                            dataType: "html",
-                            success: function (response) {
-                                //傳回來 success or fail
-                                if (response == "success") {
-                                    if (FLAG == STATION1_LOGIN) {
-                                        var obj = {
-                                            linestate: response
-                                        };
-                                        generateCookie("servermsg", JSON.stringify(obj));
-                                    } else {
-                                        removeAllCookies();
-                                    }
-                                } else {
-                                    showMsg(response);
-                                }
-                                result = response;
-                            },
-                            error: function (xhr, ajaxOptions, thrownError) {
-                                showMsg(xhr.responseText);
-                            }
-                        });
-                    }
-                    return result;
-                }
-
-                //向伺服器取得該線別目前進行中的工單
-                function getdata(saveline) {
-                    var obj;
-                    $.ajax({
-                        type: "Post",
-                        url: "BabSearch",
-                        async: false,
-                        data: {
-                            saveline: saveline
-                        },
-                        dataType: "json",
-                        success: function (response) {
-                            var json = response;
-                            obj = json;
-                        },
-                        error: function () {
-                            showMsg("error");
-                        }
-                    });
-                    return obj;
-                }
-
-                $("#refresh").on("click", function () {
-                    reload();
-                });
-            });
-
-//儲存、結束工單
-            function toback(po, modelname, line, people, id, action) {
-                showMsg("");
-                var obj;
+            function getLine() {
+                var result;
                 $.ajax({
                     type: "Post",
-                    url: "BABFirstStationServlet",
-                    async: false,
+                    url: "GetLine",
                     data: {
-                        po: po,
-                        modelname: modelname,
-                        lineNo: line,
-                        people: people,
-                        jobnumber: "jobnumber",
-                        action: action
+                        sitefloor: $("#userSitefloorSelect").val()
                     },
                     dataType: "json",
+                    async: false,
                     success: function (response) {
-                        obj = response;
+                        result = response;
                     },
                     error: function (xhr, ajaxOptions, thrownError) {
                         showMsg(xhr.responseText);
                     }
                 });
-                return obj;
+                return result;
+            }
+
+            //extra functions
+            function checkExistCookies() {
+                var testLineTypeCookie = $.cookie(testLineTypeCookieName);
+                var babLineTypeCookie = $.cookie(userInfoCookieName);
+
+                if (testLineTypeCookie != null) {
+                    lockAllUserInput();
+                    alert("您已經登入測試");
+                    showMsg("您已經登入測試");
+                    return false;
+                }
+
+                if (babLineTypeCookie != null) {
+                    var cookieMsg = $.parseJSON(babLineTypeCookie);
+                    if (cookieMsg.floor != null && cookieMsg.floor != $("#userSitefloorSelect").val()) {
+                        lockAllUserInput();
+                        alert("您已經登入其他樓層");
+                        showMsg("您已經登入其他樓層");
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+            function initUserInputWiget() {
+                initLineMap();
+
+                var userInfoCookie = $.cookie(userInfoCookieName);
+
+                $("#searchProcessing").attr("disabled", userInfoCookie == null);
+
+                if (userInfoCookie != null) {
+                    var obj = $.parseJSON(userInfoCookie);
+                    $("#lineNo").val(obj.lineNo);
+                    $("#jobnumber").val(obj.jobnumber);
+                    setStationOptions();
+                    $("#station").val(obj.station);
+                    $("#step2").unblock();
+                    showProcessing();
+
+                    if (obj.station == firstStation) {
+                        var line = totalLineStatus.get($("#lineNo option:selected").text());
+                        if (line.isused == 0) { //isused == 0, The line in database is closed.
+                            removeCookie(userInfoCookieName);
+                            initUserInputWiget();
+                            alert("線別已經跳出，請重新進行步驟一");
+                            reload();
+                        }
+
+                        $("#babEnd, .userWiget > .stationHintMessage").hide();
+                        $("#step2Hint")
+                                .append("<li>輸入工單</li>")
+                                .append("<li class='importantMsg'>確定系統有帶出機種</li>")
+                                .append("<li>選擇人數</li>")
+                                .append("<li>點選<code>Begin</code>開始投入</li>")
+                                .append("<li>如果要更換使用者，請點選<code>換人</code>，填入您的新工號之後進行工號切換</li>");
+                        setPeopleOptions();
+                        $("#people").show();
+                    } else {
+                        $("#po, #modelname, #people, #babBegin").hide();
+                        $("#babEnd, .userWiget > .stationHintMessage").show();
+                        $("#step2Hint")
+                                .append("<li>做完最後一台時點擊<code>Save</code>，告知系統您已經做完了</li>")
+                                .append("<li>如果要更換使用者，請點選<code>換人</code>，填入您的新工號之後進行工號切換</li>");
+                    }
+                } else {
+                    $("#step2").block({message: "請先在步驟一完成相關步驟。", css: {cursor: 'default'}, overlayCSS: {cursor: 'default'}});
+                }
+            }
+
+            function initLineMap() {
+                var lines = getLine();
+                for (var i = 0; i < lines.length; i++) {
+                    var line = lines[i];
+                    var lineName = line.name;
+                    line.name = lineName.trim();
+                    setLineOptions(line);
+                    totalLineStatus.set(lineName.trim(), line);
+                }
+            }
+
+            function setLineOptions(line) {
+                $("#lineNo").append("<option value=" + line.id + " " + (line.lock == 1 ? "disabled style='opacity:0.2'" : "") + ">" + line.name + "</option>");
+            }
+
+            function setStationOptions() {
+                var selectedLineName = $("#lineNo option:selected").text();
+                $("#station").html("");
+                var line = totalLineStatus.get(selectedLineName);
+                if (line != null) {
+                    for (var i = 1; i <= line.people; i++) {
+                        $("#station").append("<option value=" + i + ">第 " + i + " 站</option>");
+                    }
+                }
+            }
+
+            function setPeopleOptions() {
+                var miniumPeople = 2;
+                var selectedLineName = $("#lineNo option:selected").text();
+                var line = totalLineStatus.get(selectedLineName);
+                for (var i = miniumPeople; i <= line.people; i++) {
+                    $("#people").append("<option value=" + i + ">" + i + " 人</option>");
+                }
+            }
+
+            function lockAllUserInput() {
+                $(":input,select").not("#redirectBtn, #directlyClose").attr("disabled", "disabled");
+            }
+
+            function saveUserStatus() {
+                var userInfo = {
+                    lineNo: $("#lineNo").val(),
+                    jobnumber: $("#jobnumber").val(),
+                    station: $("#station").val()
+                };
+
+                if (checkVal(userInfo.lineNo, userInfo.jobnumber, userInfo.station) == false || !userInfo.jobnumber.match(tabreg)) {
+                    showMsg(paramNotVaildMessage);
+                    return false;
+                } else {
+                    console.log("input val checking pass");
+                }
+
+                if (!checkUserExist(userInfo.jobnumber)) {
+                    showMsg(userNotFoundMessage);
+                    return false;
+                } else {
+                    console.log("jobnumber checking pass");
+                }
+
+                saveUserInfoToCookie(userInfo);
+            }
+
+            //步驟一儲存使用者資訊
+            function saveUserInfoToCookie(userInfo) {
+                userInfo.floor = $("#userSitefloorSelect").val();
+
+                if (userInfo.station == firstStation) {
+                    firstStationLogin(userInfo, STATION_LOGIN);
+                } else {
+                    generateCookie(userInfoCookieName, JSON.stringify(userInfo));
+                    reload();
+                }
+            }
+
+            function changeJobnumber(newJobnumber) {
+                var babs = searchProcessing();
+                if (babs == null || babs.length == 0) {
+                    changeJobnumberInCookie(newJobnumber);
+                    reload();
+                }
+                var bab = babs[0];
+                var data = $.parseJSON($.cookie(userInfoCookieName));
+                data.babId = bab.id;
+                data.jobnumber = newJobnumber;
+                data.action = CHANGE_USER;
+                otherStation(data);
+            }
+
+            //使用者換人時，把cookievaule做更新
+            function changeJobnumberInCookie(newJobnumber) {
+                var cookieInfo = $.parseJSON($.cookie(userInfoCookieName));
+                $.removeCookie(userInfoCookieName);
+                cookieInfo.jobnumber = newJobnumber;
+                generateCookie(userInfoCookieName, JSON.stringify(cookieInfo));
+            }
+
+            //看使用者是否存在
+            function checkUserExist(jobnumber) {
+                var result;
+                $.ajax({
+                    type: "Post",
+                    url: "CheckUser",
+                    data: {
+                        jobnumber: jobnumber
+                    },
+                    dataType: "json",
+                    async: false,
+                    success: function (response) {
+                        result = response;
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        showMsg(xhr.responseText);
+                    }
+                });
+                return result;
+            }
+
+            //站別一取得機種
+            function getModel(text, obj) {
+                var reg = "^[0-9a-zA-Z]+$";
+                if (text != "" && text.match(reg)) {
+                    window.clearTimeout(hnd);
+                    hnd = window.setTimeout(function () {
+                        $.ajax({
+                            type: "Post",
+                            url: "BabSearch",
+                            data: {
+                                po: text.trim()
+                            },
+                            dataType: "html",
+                            success: function (response) {
+                                obj.val(response);
+                                $("#reSearch").show();
+                            },
+                            error: function () {
+                                showMsg(serverErrorConnMessage);
+                            }
+                        });
+                    }, 1000);
+                } else {
+                    obj.val("");
+                }
+            }
+
+            function searchProcessing() {
+                var data;
+                $.ajax({
+                    type: "Post",
+                    url: "BabSearch",
+                    data: {
+                        saveline: $("#lineNo").val()
+                    },
+                    dataType: "html",
+                    async: false,
+                    success: function (response) {
+                        var babs = JSON.parse(response);
+                        data = babs;
+                    },
+                    error: function () {
+                        showMsg(serverErrorConnMessage);
+                    }
+                });
+                return data;
+            }
+
+            function showProcessing() {
+                showInfo("");
+                var data = searchProcessing();
+                if (data.length != 0) {
+                    for (var i = 0; i < data.length; i++) {
+                        var processingBab = data[i];
+                        $("#processingBab").append(
+                                "<p" + (i == 0 ? " class='alarm'" : "") + ">工單: " + processingBab.PO +
+                                " / 機種: " + processingBab.Model_name +
+                                " / 人數: " + processingBab.people +
+                                "</p>");
+                    }
+                } else {
+                    showInfo("No data");
+                }
+            }
+
+            //第一站綁定線別開啟關閉，保持唯一一個能投入工單的電腦
+            function firstStationLogin(data, action) {
+                data.action = action;
+                $.ajax({
+                    type: "Post",
+                    url: "LineServlet",
+                    data: data,
+                    dataType: "html",
+                    success: function (response) {
+                        //傳回來 success or fail
+                        if (response == "success") {
+                            if (action == STATION_LOGIN) {
+                                generateCookie(userInfoCookieName, JSON.stringify(data));
+                            } else {
+                                removeAllStepCookie();
+                            }
+                            reload();
+                        } else {
+                            showMsg(response);
+                        }
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        showMsg(xhr.responseText);
+                    }
+                });
+            }
+
+            //
+            function startBab() {
+                if ($.cookie(userInfoCookieName) == null) {
+                    showMsg(userNotFoundMessage);
+                    return false;
+                }
+
+                var data = {
+                    po: $("#po").val(),
+                    modelname: $("#modelname").val()
+                };
+
+                if (!checkVal(data.po, data.modelname) || data.modelname == "data not found") {
+                    showMsg(paramNotVaildMessage);
+                    return false;
+                }
+
+                var people = $("#people").val();
+                if (!checkVal(people)) {
+                    showMsg(paramNotVaildMessage);
+                    return false;
+                } else {
+                    data.people = people;
+                }
+                saveBabInfo(data);
+
+            }
+
+            //站別一對資料庫操作
+            function saveBabInfo(data) {
+                var totalUserInfo = $.extend($.parseJSON($.cookie(userInfoCookieName)), data);
+                $.ajax({
+                    type: "Post",
+                    url: "BABFirstStationServlet",
+                    data: totalUserInfo,
+                    dataType: "html",
+                    success: function (response) {
+                        if (response == "success") {
+                            reload();
+                        } else {
+                            showMsg(response);
+                        }
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        showMsg(xhr.responseText);
+                    }
+                });
             }
 
             //其他站別動作
@@ -662,7 +644,11 @@
                     dataType: "html",
                     success: function (response) {
                         if (response == "success") {
-                            $.removeCookie("po_search_result");
+                            console.log(data.action);
+                            console.log(CHANGE_USER);
+                            if (data.action == CHANGE_USER) {
+                                changeJobnumberInCookie(data.jobnumber);
+                            }
                             showMsg(response);
                             reload();
                         } else {
@@ -675,6 +661,11 @@
                 });
             }
 
+            //auto uppercase the textbox value(PO, ModelName)
+            function textBoxToUpperCase(obj) {
+                obj.val(obj.val().trim().toLocaleUpperCase());
+            }
+
             //generate all cookies exist 12 hours
             function generateCookie(name, value) {
                 var date = new Date();
@@ -683,29 +674,30 @@
                 $.cookie(name, value, {expires: date});
             }
 
-            function removeAllCookies() {
-                var cookies = $.cookie();
-                for (var cookie in cookies) {
-                    $.removeCookie(cookie);
-                }
+            function removeAllStepCookie() {
+                removeCookie(userInfoCookieName);
             }
 
+            //removeCookieByName
+            function removeCookie(name) {
+                $.removeCookie(name);
+            }
+
+            //refresh the window
             function reload() {
-                $(":button,select,:checkbox").removeAttr("disabled");
                 window.location.reload();
             }
 
-            function printCookies() {
-                var theCookies = document.cookie.split(';');
-                var aString = '';
-                for (var i = 1; i <= theCookies.length; i++) {
-                    aString += i + ' ' + theCookies[i - 1] + "\n";
-                }
-                console.log(aString);
+            function showMsg(msg) {
+                $("#serverMsg").html(msg);
+                clearTimeout(serverMsgTimeout);
+                serverMsgTimeout = setTimeout(function () {
+                    $("#serverMsg").html("");
+                }, 3000);
             }
-            
-            function showMsg(message){
-                $("#serverMsg").html(message);
+
+            function showInfo(msg) {
+                $("#processingBab").html(msg);
             }
         </script>
     </head>
@@ -713,143 +705,103 @@
         <input id="userSitefloorSelect" type="hidden" value="${userSitefloor}">
         <div id="titleAlert">
             <c:out value="您所選擇的樓層是: ${userSitefloor}" />
-            <a href="index.jsp">
-                <button id="redirectBtn" >不是我的樓層?</button>
+            <a href="${pageContext.request.contextPath}">
+                <button id="redirectBtn" class="btn btn-default" >不是我的樓層?</button>
             </a>
         </div>
         <jsp:include page="temp/head.jsp" />
-        <div style="clear:both"></div>
-        <div id="step1">
-            <!--判斷該線別有無使用人-->
-            <div class="Div0">
-                <div class="Div1">
-                    <div id="step1obj" class="form-inline">
-                        <select style="text-align: center" id="lineselect">
-                            <option value="-1">---請選擇線別---</option>
-                            <c:forEach var="lines" items="${lineDAO.getLine(userSitefloor)}">
-                                <option value="${lines.id}" ${lines.lock == 1 ? "disabled style='opacity:0.2'" : ""}>${lines.name}</option>
-                            </c:forEach>
+        <script>
+            var btn = $.fn.button.noConflict(); // reverts $.fn.button to jqueryui btn
+            $.fn.btn = btn; // assigns bootstrap button functionality to $.fn.btn 
+        </script>
+
+        <!--Dialogs-->
+        <div id="dialog-message" title="${initParam.pageTitle}">
+            <p>
+                <span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 50px 0;"></span>
+                請再次輸入您的工號。
+            </p>
+            <p>
+                <input type="text" id="newJobnumber">
+            </p>
+        </div>
+        <!--Dialogs-->
+
+        <!--Contents-->
+        <div class="container">
+            <c:set var="lineInfo" value="${lineDAO.getLine(userSitefloor)}" />
+            <div id="step1" class="step">
+                <div class="userWiget form-inline">
+                    <select id="lineNo" name="lineNo">
+                        <option value="-1">---請選擇線別---</option>
+                    </select>
+                    <input type="text" id="jobnumber" placeholder="請輸入工號" autocomplete="off" maxlength="10"/>
+                    <select id='station'>
+                    </select>
+                    <input type="button" id="saveInfo" value="Begin" />
+                    <input type="button" id="clearInfo" value="End" />
+                </div>
+                <div class="wigetInfo">
+                    <h3>步驟1:</h3>
+                    <h5>請依序填入您的相關資訊。</h5>
+                </div>
+            </div>
+
+            <div id="step2" class="step">
+                <div class="userWiget">
+                    <div class="form-inline">
+                        <button class='btn btn-default' id='reSearch'><span class="glyphicon glyphicon-repeat"></span></button>
+                        <input type="text" name="po" id="po" placeholder="請輸入工單號碼" autocomplete="off" maxlength="50">  
+                        <input type="text" name="modelname" id="modelname" placeholder="機種" readonly style="background: #CCC">
+                        <select id='people'>
+                            <option value="-1">---請選擇人數---</option>
                         </select>
-                        <div class="checkbox">
-                            <label><input type="checkbox" id="isfirst">我是站別1</label>
-                        </div>
-                        <input type="button" id="step1next" value="下一步">
-                        <div style="color: green;font-weight: bold;padding-left: 10px">
-                            ※完成後請到<a href="http://172.20.131.208/Line_Balancing/Login.aspx" target="_blank">這裡</a>填寫您工單相關的SOP
-                        </div>
+                        <input type="button" id="babBegin" value="Begin" />
+                        <input type="button" id="babEnd" value="Save" />
+                        <input type="button" id="changeUser" value="換人" />
+                    </div>
+                    <div class="stationHintMessage alarm">
+                        <span class="glyphicon glyphicon-alert"></span>
+                        做完時請記得做save。(Please "save" when you finished.)
+                        <span class="glyphicon glyphicon-alert"></span>
                     </div>
                 </div>
-                <div class="Div2">
-                    <p><h3>步驟1:</h3>請選擇您的線別。</p>
-                </div>
-            </div>
-        </div>
-
-        <div id="step2" hidden="hidden">
-            <!--判斷該線別有無使用人-->
-            <div class="Div0">
-                <div class="Div1">
-                    <div class="form-inline ">
-                        <div class="form-group">
-                            <input type="text" name="po" id="po1" placeholder="請輸入工單號碼" autocomplete="off">  
-                        </div>
-                        <input type="button" id="clearcookie" value="返回步驟1">
-                    </div>
-                </div>
-                <div class="Div2">
-                    <p><h3>步驟2:</h3>請輸入工單號碼</p>
-                </div>
-            </div>
-        </div>
-
-        <!--*******************************************************************************************************************---->
-        <div id="step3">
-            <div id="type1">
-                <div id="totaldata">
-                    <div class="Div0">
-                        <div class="Div1">
-                            <div class="form-inline ">
-                                <div id="linename" class="form-group"></div>
-                                <input type="text" name="po" id="po" placeholder="請輸入工單號碼" autocomplete="off">  
-                                <input type="text" name="modelname" id="modelname" placeholder="機種" readonly style="background: #CCC">
-                                <select id="people" style="text-align: center">
-                                    <option value="-1">請輸入人數</option>
-                                    <c:forEach var="i" begin="2" end="4">
-                                        <option value="${i}">${i}</option>
-                                    </c:forEach>
-                                </select>
-                                <input type="button" value="開始" id="begin">
-                                <lable for="manuallyModelNameInput"><input id="manuallyModelNameInput" type="checkbox" />手動輸入工單模式</lable>
-                            </div>
-                            <div style="padding:5px 5px">
-                                <input type="button" id="exitT1" value="返回步驟1">
-                            </div>
-                        </div>
-                        <div class="Div2">
-                            <h3>步驟2:</h3>
-                            <p>輸入工單相關資訊之後按下<code>開始</code>，投工單。</p>
-                            <p>成功後可到<code>進行中的工單</code>確認相關資訊</p>
-                        </div>
-                    </div>
+                <div class="wigetInfo">
+                    <h3>步驟2:</h3>
+                    <h5>請依照下列流程操作。</h5>
+                    <h5>
+                        <ol id="step2Hint">
+                        </ol>
+                    </h5>
                 </div>
             </div>
 
-            <div id="type2">
-                <!--判斷該線別有無使用人-->
-                <div class="Div0">
-                    <div id="T_Button" class="Div1">
-                    </div>
-                    <div class="Div2">
-                        <p><h3>步驟3:</h3>請選擇站別。</p>
-                    </div>
+            <div id="step3" class="step">
+                <div id='serverMsg' class="userWiget">        
+                </div>
+                <div class="wigetInfo">
+                    <h3>步驟3:觀看伺服器訊息。</h3>
+                    <h5>此處會顯示伺服器訊息。</h5>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <div id="step4">
-        <!--判斷該線別有無使用人-->
-        <div class="Div0">
-            <div class="Div1">
-                <div class="form-inline ">
-                    <div class="form-group">
-                        <input type="button" class="btn btn-default" value="結束按鈕">
-                    </div>
+            <div id="step4" class="step stepAlarm">
+                <div class="form-inline userWiget">
+                    <div><input type="button" id="searchProcessing" value="查詢"></div>
+                    <div id="processingBab" ></div>
+                </div>
+                <div class="wigetInfo">
+                    <h3>完成:</h3>
+                    <h5>此處可點選查詢按鈕搜尋正在進行的工單。</h5>
+                    <h5>紅色字體代表目前正在進行線平衡量測的工單。</h5>
                 </div>
             </div>
-            <div class="Div2">
-                <p><h3>步驟4:</h3>完成<code>最後一台</code>機子時，請按下結束按鈕</p>
+
+            <div id="hintmsg" style="color:red;font-weight: bold;padding-left: 10px">
+                <p>※第一站人員請先Key入相關資料再把機子放到定位(否則會少一台紀錄)</p>
+                <p>機子擋住Sensor即開始計時，休息時間的操作不列入計算範圍之內。</p>
             </div>
         </div>
-    </div>
-    <!--*******************************************************************************************************************---->
-    <div id="msg_step" class="Div0 ">
-        <div class="Div1"><div id="servermsg"></div></div>
-        <div class="Div2"><p><h3>伺服器訊息</h3>此處會顯示伺服器訊息。</p></div>
-    </div>
-    <div id="final_step" class="Div0 ">
-        <div id="cookieinfo" class="Div1"></div>
-        <div class="Div2">
-            <p><h3>完成:</h3>恭喜完成資料儲存</p>
-        </div>
-    </div>
-    <div id="statusstep" class="Div0 ">
-        <div id="linestate" style="clear:both" class="bg-success Div1"></div>
-        <div class="Div2">
-            <h3>進行中的工單:</h3>
-            <p>開始人(第一顆sensor)輸入的所有工單</p>
-            <p>左邊紅框處為目前警示燈警示的工單號碼</p>
-        </div>
-    </div>
-    <div id="sensordata" hidden>
-        <div id="div1">工單最後一站人員，下班前請不要忘記在<code>步驟4</code>關閉工單，謝謝您。</div>
-        <div id="div2"></div>
-    </div>
-    <div id="hintmsg" style="color:red;font-weight: bold;padding-left: 10px">
-        <p>※第一站人員請先Key入相關資料再把機子放到定位(否則會少一台紀錄)</p>
-        <p>機子擋住Sensor即開始計時，休息時間的操作不列入計算範圍之內。</p>
-    </div>
-
-    <jsp:include page="temp/footer.jsp" />
-</body>
+        <jsp:include page="temp/footer.jsp" />
+    </body>
 </html>

@@ -11,11 +11,11 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>${initParam.pageTitle}</title>
         <link rel="shortcut icon" href="../../images/favicon.ico"/>
-        <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+        <link rel="stylesheet" href="../../css/jquery-ui.css">
         <link rel="stylesheet" href="../../css/bootstrap-datetimepicker.min.css">
         <link rel="stylesheet" href="../../css/jquery.dataTables.min.css">
         <link rel="stylesheet" href="../../css/fixedHeader.dataTables.min.css">
-        <link rel="stylesheet" href="//cdn.datatables.net/buttons/1.2.1/css/buttons.dataTables.min.css">
+        <link rel="stylesheet" href="../../css/buttons.dataTables.min.css">
         <style>
             body{
                 font-size: 16px;
@@ -32,19 +32,19 @@
                 color:red;
             }
         </style>
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-        <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+        <script src="../../js/jquery-1.11.3.min.js"></script>
+        <script src="../../js/jquery-ui-1.10.0.custom.min.js"></script>
         <script src="../../js/moment.js"></script>
         <script src="../../js/bootstrap-datetimepicker.min.js"></script>
         <script src="../../js/jquery.dataTables.min.js"></script>
         <script src="../../js/dataTables.fixedHeader.min.js"></script>
-        <script src="//cdn.datatables.net/buttons/1.2.1/js/dataTables.buttons.min.js"></script>
-        <script src="//cdn.datatables.net/buttons/1.2.1/js/buttons.flash.min.js"></script>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js"></script>
-        <script src="//cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/pdfmake.min.js"></script>
-        <script src="//cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/vfs_fonts.js"></script>
-        <script src="//cdn.datatables.net/buttons/1.2.1/js/buttons.html5.min.js"></script>
-        <script src="//cdn.datatables.net/buttons/1.2.1/js/buttons.print.min.js"></script>
+        <script src="../../js/jquery-datatable-button/dataTables.buttons.min.js"></script>
+        <script src="../../js/jquery-datatable-button/buttons.flash.min.js"></script>
+        <script src="../../js/jquery-datatable-button/jszip.min.js"></script>
+        <script src="../../js/jquery-datatable-button/pdfmake.min.js"></script>
+        <script src="../../js/jquery-datatable-button/vfs_fonts.js"></script>
+        <script src="../../js/jquery-datatable-button/buttons.html5.min.js"></script>
+        <script src="../../js/jquery-datatable-button/buttons.print.min.js"></script>
 
         <script>
             $(function () {
@@ -189,7 +189,7 @@
                 $("#BabDetail").DataTable({
                     dom: 'Bfrtip',
                     buttons: [
-                        'copy', 'csv', 'excel', 'pdf', 'print'
+                        'copy', 'excel', 'print'
                     ],
                     "processing": false,
                     "serverSide": false,

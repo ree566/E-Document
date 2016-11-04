@@ -36,7 +36,7 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                 /* Required padding for .navbar-fixed-top. Remove if using .navbar-static-top. Change if height of navigation changes. */
             }
         </style>
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+        <script src="../../js/jquery-1.11.3.min.js"></script>
         <script src="../../js/jquery.dataTables.min.js"></script>
         <script src="../../js/jquery.cookie.js"></script>
         <script>
