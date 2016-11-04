@@ -1,68 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Context antiJARLocking="true" path="/CalculatorWSApplication">
-  <!--Microsoft driver-->
-  <!--    <Resource 
+    <!--JTDS Driver-->
+    <Resource 
+        acquireIncrement="2" 
         auth="Container" 
+        driverClass="net.sourceforge.jtds.jdbc.Driver" 
         factory="org.apache.naming.factory.BeanFactory" 
-        type="com.mchange.v2.c3p0.ComboPooledDataSource"
-        
-        driverClass="com.microsoft.sqlserver.jdbc.SQLServerDriver"
+        idleConnectionTestPeriod="60" 
+        jdbcUrl="jdbc:jtds:sqlserver://M3-SERVER/TWM3" 
+        maxPoolSize="50" 
+        minPoolSize="2" 
         name="jdbc/res2" 
-        user="waychien" 
         password="m3server" 
-        
-        idleConnectionTestPeriod="60"
-        maxPoolSize="50" 
-        minPoolSize="2"
-        acquireIncrement="2" 
-        jdbcUrl="jdbc:sqlserver://M3-SERVER\M3SERVER:1433;databaseName=TWM3" 
-        
-        testConnectionOnCheckout="false"
-        testConnectionOnCheckin="true"
-        preferredTestQuery="SELECT 1"
+        preferredTestQuery="SELECT 1" 
+        testConnectionOnCheckin="true" 
+        testConnectionOnCheckout="false" 
+        type="com.mchange.v2.c3p0.ComboPooledDataSource" 
+        user="waychien"
     />
     <Resource 
-        auth="Container" 
-        factory="org.apache.naming.factory.BeanFactory" 
-        type="com.mchange.v2.c3p0.ComboPooledDataSource"
-        
-        driverClass="com.microsoft.sqlserver.jdbc.SQLServerDriver"
-        name="jdbc/res3" 
-        user="waychien" 
-        password="m3server" 
-        
-        idleConnectionTestPeriod="60"
-        maxPoolSize="50" 
-        minPoolSize="2"
         acquireIncrement="2" 
-        jdbcUrl="jdbc:sqlserver://M3-SERVER\M3SERVER:1433;databaseName=WebAccess;loginTimeout=15" 
-        
-        testConnectionOnCheckout="false"
+        auth="Container" 
+        driverClass="net.sourceforge.jtds.jdbc.Driver" 
+        factory="org.apache.naming.factory.BeanFactory" 
+        idleConnectionTestPeriod="60" 
+        jdbcUrl="jdbc:jtds:sqlserver://M3-SERVER/WebAccess;loginTimeout=15"
+        maxPoolSize="50"
+        minPoolSize="2"
+        name="jdbc/res3"
+        password="m3server" 
+        preferredTestQuery="SELECT 1" 
         testConnectionOnCheckin="true"
-        preferredTestQuery="SELECT 1"
+        testConnectionOnCheckout="false" 
+        type="com.mchange.v2.c3p0.ComboPooledDataSource" 
+        user="waychien"
     />
     <Resource 
+        acquireIncrement="2" 
         auth="Container" 
-        factory="org.apache.naming.factory.BeanFactory" 
-        type="com.mchange.v2.c3p0.ComboPooledDataSource"
-        
-        driverClass="com.microsoft.sqlserver.jdbc.SQLServerDriver"
+        driverClass="net.sourceforge.jtds.jdbc.Driver"
+        factory="org.apache.naming.factory.BeanFactory"
+        idleConnectionTestPeriod="60" 
+        jdbcUrl="jdbc:jtds:sqlserver://M3-SERVER/Line_Balancing"
+        maxPoolSize="50" 
+        minPoolSize="2" 
         name="jdbc/res4" 
-        user="waychien" 
         password="m3server" 
-        
-        idleConnectionTestPeriod="60"
-        maxPoolSize="50" 
-        minPoolSize="2"
-        acquireIncrement="2" 
-        jdbcUrl="jdbc:sqlserver://M3-SERVER\M3SERVER:1433;databaseName=Line_Balancing" 
-        
-        testConnectionOnCheckout="false"
+        preferredTestQuery="SELECT 1" 
         testConnectionOnCheckin="true"
-        preferredTestQuery="SELECT 1"
-    />-->
-  <!--JTDS Driver-->
-  <Resource acquireIncrement="2" auth="Container" driverClass="net.sourceforge.jtds.jdbc.Driver" factory="org.apache.naming.factory.BeanFactory" idleConnectionTestPeriod="60" jdbcUrl="jdbc:jtds:sqlserver://M3-SERVER/TWM3" maxPoolSize="50" minPoolSize="2" name="jdbc/res2" password="m3server" preferredTestQuery="SELECT 1" testConnectionOnCheckin="true" testConnectionOnCheckout="false" type="com.mchange.v2.c3p0.ComboPooledDataSource" user="waychien"/>
-  <Resource acquireIncrement="2" auth="Container" driverClass="net.sourceforge.jtds.jdbc.Driver" factory="org.apache.naming.factory.BeanFactory" idleConnectionTestPeriod="60" jdbcUrl="jdbc:jtds:sqlserver://M3-SERVER/WebAccess;loginTimeout=15" maxPoolSize="50" minPoolSize="2" name="jdbc/res3" password="m3server" preferredTestQuery="SELECT 1" testConnectionOnCheckin="true" testConnectionOnCheckout="false" type="com.mchange.v2.c3p0.ComboPooledDataSource" user="waychien"/>
-  <Resource acquireIncrement="2" auth="Container" driverClass="net.sourceforge.jtds.jdbc.Driver" factory="org.apache.naming.factory.BeanFactory" idleConnectionTestPeriod="60" jdbcUrl="jdbc:jtds:sqlserver://M3-SERVER/Line_Balancing" maxPoolSize="50" minPoolSize="2" name="jdbc/res4" password="m3server" preferredTestQuery="SELECT 1" testConnectionOnCheckin="true" testConnectionOnCheckout="false" type="com.mchange.v2.c3p0.ComboPooledDataSource" user="waychien"/>
+        testConnectionOnCheckout="false" 
+        type="com.mchange.v2.c3p0.ComboPooledDataSource" 
+        user="waychien"
+    />
 </Context>

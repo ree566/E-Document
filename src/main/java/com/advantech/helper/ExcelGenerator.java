@@ -117,7 +117,7 @@ public class ExcelGenerator {
 
     private Cell setCellValue(Cell cell, Object value) {
         if (value instanceof Clob) {
-            cell.setCellValue(clobToString((Clob) value));
+            cell.setCellValue(StringParser.clobToString((Clob) value));
         } else if (value instanceof java.util.Date) {
             cell.setCellValue(dg.dateFormatToString((Date) value));
         } else if (value instanceof Integer) {
@@ -134,23 +134,6 @@ public class ExcelGenerator {
             cell.setCellValue(value.toString());
         }
         return cell;
-    }
-
-    private String clobToString(Clob data) {
-        StringBuilder sb = new StringBuilder();
-        try {
-            Reader reader = data.getCharacterStream();
-            BufferedReader br = new BufferedReader(reader);
-
-            String line;
-            while (null != (line = br.readLine())) {
-                sb.append(line);
-            }
-            br.close();
-        } catch (SQLException | IOException e) {
-            log.error(e.toString());
-        }
-        return sb.toString();
     }
 
     private Cell createFloatCell(Cell cell) {
@@ -205,7 +188,7 @@ public class ExcelGenerator {
         //取消註解if system add xlsx support
         return ".xls";
     }
-    
+
     public Workbook getWorkbook() {
         return workbook;
     }

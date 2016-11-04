@@ -246,6 +246,8 @@
             20
         </session-timeout>
     </session-config>
+    
+    <!--DataSource setting reference to context.xml using jndi.-->
     <resource-ref>
         <description>MFG-SEVER</description>
         <res-ref-name>jdbc/res1</res-ref-name>
