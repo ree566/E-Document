@@ -5,17 +5,16 @@
  */
 package com.advantech.entity;
 
-import java.util.List;
+import java.io.Serializable;
 
 /**
  *
  * @author Wei.Cheng
  */
-public class ErrorCode {
+public class ErrorCode implements Serializable{
 
     private int id;
     private String name;
-    private List<Integer> actionCode;
 
     public int getId() {
         return id;
@@ -32,13 +31,4 @@ public class ErrorCode {
     public void setName(String name) {
         this.name = name;
     }
-
-    public List<Integer> getActionCode() {
-        return actionCode;
-    }
-
-    public void setActionCode(List<Integer> actionCode) {
-        this.actionCode = actionCode;
-    }
-
 }

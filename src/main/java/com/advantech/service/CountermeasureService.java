@@ -3,9 +3,7 @@ package com.advantech.service;
 import com.advantech.entity.Countermeasure;
 import com.advantech.model.BasicDAO;
 import com.advantech.model.CountermeasureDAO;
-import static java.lang.System.out;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -30,12 +28,21 @@ public class CountermeasureService {
         return countermeasureDAO.getCountermeasures();
     }
 
+    public List<Map> getCountermeasures() {
+        return countermeasureDAO.getCountermeasuress();
+    }
+
     public Countermeasure getCountermeasure(int BABid) {
         return countermeasureDAO.getCountermeasure(BABid);
     }
 
     public List<Map> getCountermeasureView() {
         return countermeasureDAO.getCountermeasureView();
+    }
+
+    public Map getCountermeasureView(int BABid) {
+        List<Map> l = countermeasureDAO.getCountermeasureView(BABid);
+        return l.isEmpty() ? null : l.get(0);
     }
 
     public List<Map> getUnFillCountermeasureBabs() {
@@ -46,18 +53,16 @@ public class CountermeasureService {
         return countermeasureDAO.getUnFillCountermeasureBabs(sitefloor);
     }
 
-    public List<Map> getCountermeasure(String lineType, String sitefloor, String startDate, String endDate) {
-        List<Map> l = countermeasureDAO.getCountermeasure(startDate, endDate);
-        return BasicService.getBabService().seperateNotFilterBab(l, lineType, sitefloor);
-    }
-    
-    public List<Map> getPersonAlarm(String lineType, String sitefloor, String startDate, String endDate) {
-        List<Map> l = countermeasureDAO.getPersonalAlm(startDate, endDate);
-        l = BasicService.getBabService().seperateNotFilterBab(l, lineType, sitefloor);
-        return this.transformDataForm(l);
+    //客製化EXCEL規格
+    public List<Map> getCountermeasureForExcel(String startDate, String endDate) {
+        return countermeasureDAO.getCountermeasureForExcel(startDate, endDate);
     }
 
-    public List<Map> transformDataForm(List<Map> l) {
+    public List<Map> getPersonalAlmForExcel(String startDate, String endDate) {
+        return countermeasureDAO.getPersonalAlmForExcel(startDate, endDate);
+    }
+
+    public List<Map> transformPersonalAlmDataPattern(List<Map> l) {
         List<Map> tList = new ArrayList();
         Map baseMap = null;
         int baseId = 0;
@@ -88,12 +93,13 @@ public class CountermeasureService {
         return tList;
     }
 
-    public Map removeUnusedKeyInMap(Map m) {
+    private Map removeUnusedKeyInMap(Map m) {
         m.remove("USER_ID");
         m.remove("station");
         m.remove("failPercent(Personal)");
         return m;
     }
+    //--------------------------------------
 
     public List<Map> getErrorCode() {
         return countermeasureDAO.getErrorCode();
@@ -128,12 +134,9 @@ public class CountermeasureService {
     }
 
     public static void main(String arg0[]) {
-//        BasicDAO.dataSourceInit();
-//        List<Map> l = new CountermeasureService().countermeasureDAO.getPersonalAlm("ASSY", "6", "16-09-01", "16-10-03");
-//        for (Map m : l) {
-//            out.println(m);
-//        }
+        int BABid = 856;
+        BasicDAO.dataSourceInit1();
+        List<Map> list = BasicService.getCountermeasureService().getCountermeasureForExcel("16-10-01", "16-10-20");
 
     }
-
 }

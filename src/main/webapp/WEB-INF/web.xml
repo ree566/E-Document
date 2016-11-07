@@ -73,7 +73,7 @@
     <!--作業人員使用頁面-->
     <servlet>
         <servlet-name>bab</servlet-name>
-        <jsp-file>/babpage1.jsp</jsp-file>
+        <jsp-file>/babpage.jsp</jsp-file>
     </servlet>
     <servlet-mapping>
         <servlet-name>bab</servlet-name>
@@ -246,6 +246,8 @@
             20
         </session-timeout>
     </session-config>
+    
+    <!--DataSource setting reference to context.xml using jndi.-->
     <resource-ref>
         <description>MFG-SEVER</description>
         <res-ref-name>jdbc/res1</res-ref-name>

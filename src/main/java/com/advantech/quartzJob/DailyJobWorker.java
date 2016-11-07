@@ -31,10 +31,9 @@ public class DailyJobWorker implements Job {
 
     @Override
     public void execute(JobExecutionContext jec) throws JobExecutionException {
-        //處理測試和組包裝線別資料，並記錄到txt中
+        //處理測試和組包裝線別資料，並依照設定output
         this.processingBabData();
         this.processingTestData();
-//        DataTransformer.getInstance().doDailyJob();  
     }
 
     private void processingTestData() {

@@ -13,6 +13,7 @@
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <poi.version>3.15</poi.version>
+        <quartz.version>2.2.3</quartz.version>
     </properties>
 
     <dependencies>
@@ -77,15 +78,29 @@
             <version>1.4.7</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/com.mchange/c3p0 -->
+        <dependency>
+            <groupId>com.mchange</groupId>
+            <artifactId>c3p0</artifactId>
+            <version>0.9.5.2</version>
+            <!--<scope>provided</scope>-->
+        </dependency>
+
         <dependency>
             <groupId>org.quartz-scheduler</groupId>
             <artifactId>quartz</artifactId>
-            <version>2.2.1</version>
+            <version>${quartz.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>c3p0</groupId>
+                    <artifactId>c3p0</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.quartz-scheduler</groupId>
             <artifactId>quartz-jobs</artifactId>
-            <version>2.2.1</version>
+            <version>${quartz.version}</version>
         </dependency>   
 
         <!-- http://mvnrepository.com/artifact/javax.transaction/jta -->
@@ -129,7 +144,6 @@
             <version>1.1.7</version>
         </dependency>
 
-
         <!-- http://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -172,12 +186,12 @@
             <version>1.2</version>
         </dependency>
         
-        <dependency>
+        <!--        <dependency>
             <groupId>com.blogspot.monstersupreme</groupId>
             <artifactId>dataaccess</artifactId>
             <version>1.0</version>
-        </dependency>
-        
+        </dependency>-->
+
         <!-- http://mvnrepository.com/artifact/net.sourceforge.jtds/jtds -->
         <dependency>
             <groupId>net.sourceforge.jtds</groupId>
@@ -190,20 +204,6 @@
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
             <version>${poi.version}</version>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.mockito/mockito-all -->
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <version>1.10.19</version>
-        </dependency>
-        
-        <!-- https://mvnrepository.com/artifact/com.mchange/c3p0 -->
-        <dependency>
-            <groupId>com.mchange</groupId>
-            <artifactId>c3p0</artifactId>
-            <version>0.9.5.2</version>
         </dependency>
 
     </dependencies>
@@ -312,6 +312,7 @@
                 <version>2.15</version>
                 <configuration>
                     <argLine>-Dfile.encoding=UTF-8</argLine>
+                    <skipTests>true</skipTests>
                 </configuration>
             </plugin>
         </plugins>

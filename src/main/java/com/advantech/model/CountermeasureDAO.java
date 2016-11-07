@@ -41,13 +41,21 @@ public class CountermeasureDAO extends BasicDAO {
         return this.queryCountermeasureTable("SELECT * FROM Countermeasure");
     }
 
+    public List<Map> getCountermeasuress() {
+        return queryForMapList(getConn(), "SELECT * FROM Countermeasure");
+    }
+
     public Countermeasure getCountermeasure(int BABid) {
         List l = this.queryCountermeasureTable("SELECT * FROM Countermeasure WHERE BABid = ?", BABid);
         return l.isEmpty() ? null : (Countermeasure) l.get(0);
     }
 
     public List<Map> getCountermeasureView() {
-        return queryForMapList(this.getConn(), "SELECT * FROM CountermeasureView");
+        return queryForMapList(this.getConn(), "SELECT * FROM CountermeasureView ORDER BY 1");
+    }
+
+    public List<Map> getCountermeasureView(int BABid) {
+        return queryForMapList(this.getConn(), "SELECT * FROM CountermeasureView WHERE id = ?", BABid);
     }
 
     public List<Map> getUnFillCountermeasureBabs() {
@@ -58,11 +66,11 @@ public class CountermeasureDAO extends BasicDAO {
         return queryForMapList(this.getConn(), "SELECT * FROM unFillCountermeasureView WHERE sitefloor = ? ORDER BY btime DESC", sitefloor);
     }
 
-    public List<Map> getCountermeasure(String startDate, String endDate) {
+    public List<Map> getCountermeasureForExcel(String startDate, String endDate) {
         return queryProcForMapList(this.getConn(), "{CALL countermeasureDownExcel_1(?,?)}", startDate, endDate);
     }
 
-    public List<Map> getPersonalAlm(String startDate, String endDate) {
+    public List<Map> getPersonalAlmForExcel(String startDate, String endDate) {
         return queryProcForMapList(this.getConn(), "{CALL personalAlmDownExcel_1(?,?)}", startDate, endDate);
     }
 

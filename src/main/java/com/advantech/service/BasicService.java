@@ -27,6 +27,9 @@ public class BasicService {
     private static CountermeasureService countermeasureService = null;
     private static IdentitService identitService = null;
     private static BABLoginStatusService babLoginStatusService = null;
+    private static ActionCodeMappingService actionCodeMappingService = null;
+    private static LineOwnerMappingService lineOwnerMappingService = null;
+    private static ModelResponsorService modelResponsorService = null;
 
     static {
         babService = new BABService();
@@ -39,6 +42,9 @@ public class BasicService {
         countermeasureService = new CountermeasureService();
         identitService = new IdentitService();
         babLoginStatusService = new BABLoginStatusService();
+        actionCodeMappingService = new ActionCodeMappingService();
+        lineOwnerMappingService = new LineOwnerMappingService();
+        modelResponsorService = new ModelResponsorService();
     }
 
     public static BABService getBabService() {
@@ -79,6 +85,18 @@ public class BasicService {
 
     public static BABLoginStatusService getBabLoginStatusService() {
         return babLoginStatusService;
+    }
+
+    public static ActionCodeMappingService getActionCodeMappingService() {
+        return actionCodeMappingService;
+    }
+
+    public static LineOwnerMappingService getLineOwnerMappingService() {
+        return lineOwnerMappingService;
+    }
+
+    public static ModelResponsorService getModelResponsorService() {
+        return modelResponsorService;
     }
 
 }

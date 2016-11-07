@@ -10,7 +10,6 @@ import com.advantech.entity.Test;
 import com.advantech.entity.TestLineTypeUser;
 import com.advantech.helper.PropertiesReader;
 import com.advantech.helper.WebServiceRV;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -46,7 +45,6 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
         TEST_STANDARD = p.getTestStandard();
         maxTestTable = p.getMaxTestTable();
         rv = WebServiceRV.getInstance();
-        super.setTxtName(p.getTestTxtName());
         this.init();
     }
 
@@ -59,14 +57,6 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
 
     private void init() {
         this.initMap();
-        if (isWriteToTxt) {
-            try {
-                super.resetOutputResult(txtName);
-            } catch (IOException ex) {
-                log.error("Init txt output fail." + ex);
-            }
-        }
-
         if (isWriteToDB) {
             boolean initStatus = this.initDbAlarmSign();
             if (initStatus == false) {

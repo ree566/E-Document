@@ -21,7 +21,7 @@
                 height: 400px;
             }
         </style>
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+        <script src="../../js/jquery-1.11.3.min.js"></script>
         <script>
             $(function () {
             });

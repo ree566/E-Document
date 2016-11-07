@@ -10,15 +10,15 @@
     <head>
         <meta charset=UTF-8>
         <title>${initParam.pageTitle}</title>
-        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+        <link rel="stylesheet" href="../../css/bootstrap.min.css">
         <link rel="stylesheet" href="../../css/jquery.dataTables.min.css">
         <style>
             .non-padding{
                 padding: 0 0;
             }
         </style>
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-        <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+        <script src="../../js/jquery-1.11.3.min.js"></script>
+        <script src="../../js/bootstrap.min.js"></script>
         <script src="../../js/reconnecting-websocket.min.js"></script>
         <script src="../../js/jquery.tablesorter.min.js"></script> 
         <script src="../../js/jquery.cookie.js"></script>
@@ -31,11 +31,6 @@
                 var cookieTNum = $.cookie("user_sel");//cookie save the user selected 站別 in babpage.jsp，search when it is exist
                 //Init the table when no data send from the server. (Datatype json, default "[]")
                 var defaultstring = "<tr style='background-color:black'><td>n/a</td><td>n/a</td><td>n/a</td><td>n/a</td><td>n/a</td><td>n/a</td></tr>";
-                var tagname = '';
-                if (cookieTNum != null) {
-                    var obj = JSON.parse(cookieTNum);
-                    tagname = obj.sensor_tagname;
-                }
 
                 var hostname = window.location.host;//Get the host ipaddress to link to the server.
                 var table;

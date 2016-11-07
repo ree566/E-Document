@@ -6,9 +6,13 @@
  */
 package com.advantech.test;
 
+import com.advantech.model.BasicDAO;
 import com.advantech.quartzJob.CountermeasureAlarm;
 import com.advantech.service.BasicService;
+import com.advantech.service.CountermeasureService;
 import java.io.*;
+import static java.lang.System.out;
+import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
@@ -29,9 +33,10 @@ public class TestServlet extends HttpServlet {
             throws ServletException, IOException {
         res.setContentType("text/html");
         PrintWriter out = res.getWriter();
+        BasicDAO.dataSourceInit1();
         String sitefloor = req.getParameter("sitefloor");
-        out.print(new CountermeasureAlarm().generateMailBody(sitefloor));
-
+        
+        out.println(new CountermeasureAlarm().generateMailBody(sitefloor));
     }
 
     @Override

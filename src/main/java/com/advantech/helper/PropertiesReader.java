@@ -8,7 +8,6 @@ package com.advantech.helper;
 import java.io.InputStream;
 import static java.lang.System.out;
 import java.util.Properties;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,17 +21,16 @@ public class PropertiesReader {
     private static final Logger log = LoggerFactory.getLogger(PropertiesReader.class);
     private static PropertiesReader p;
 
-    private String testMail, txtLocation, testTxtName, babTxtName, outputFilenameExt, mailServerUsername, mailServerPassword, mailServerLocation, mailServerPort;
+    private String testMail, mailServerUsername, mailServerPassword, mailServerLocation, mailServerPort;
 
     private double testStandard, babStandard, balanceDiff;
 
-    private JSONArray targetMailLoop;
-    private JSONObject targetCCLoop, systemAbnormalAlarmMailCC, responseUserPerLine;
+    private JSONObject systemAbnormalAlarmMailCC;
     private String systemAbnormalAlarmMailTo;
 
-    private int maxTestTable, maxTestRequiredPeople, limitBABData, balanceRoundingDigit;
+    private int maxTestTable, maxTestRequiredPeople, babSaveToRecordStandardQuantity, balanceRoundingDigit;
 
-    private boolean writeToTxt, writeToDB, saveToOldDB, sendMailAlarmUser;
+    private boolean writeToDB, saveToOldDB, sendMailAlarmUser;
 
     private String endpointQuartzTrigger;
 
@@ -65,47 +63,35 @@ public class PropertiesReader {
     }
 
     private void loadParams(Properties properties) {
+        maxTestTable = convertStringToInteger(properties.getProperty("test.maxTable"));
+        maxTestRequiredPeople = convertStringToInteger(properties.getProperty("test.maxRequiredPeople"));
+        babSaveToRecordStandardQuantity = convertStringToInteger(properties.getProperty("bab.saveToRecord.quantity"));
+        testStandard = convertStringToDouble(properties.getProperty("test.productivity.standard"));
+        babStandard = convertStringToDouble(properties.getProperty("bab.lineBalance.standard"));
+        balanceRoundingDigit = convertStringToInteger(properties.getProperty("bab.lineBalance.roundingDigit"));
+        balanceDiff = convertStringToDouble(properties.getProperty("bab.lineBalance.difference"));
 
-        testMail = properties.getProperty("testMail");
-        txtLocation = properties.getProperty("outputTxtPath");
-        testTxtName = properties.getProperty("outputTestName");
-        babTxtName = properties.getProperty("outputBABName");
-        outputFilenameExt = properties.getProperty("outputFilenameExt");
-        testStandard = convertStringToDouble(properties.getProperty("standard"));
-        babStandard = convertStringToDouble(properties.getProperty("balanceStandard"));
-        balanceDiff = convertStringToDouble(properties.getProperty("balanceDifference"));
-        targetMailLoop = new JSONArray(properties.getProperty("responseUnits.mailTo"));
-        targetCCLoop = new JSONObject(properties.getProperty("responseUnits.mailCC"));
-        responseUserPerLine = new JSONObject(properties.getProperty("responseUser.perLine"));
+        testMail = properties.getProperty("mail.testMail");
         mailServerUsername = properties.getProperty("mail.server.username");
         mailServerPassword = properties.getProperty("mail.server.password");
-        mailServerLocation = properties.getProperty("mail.server.location");
         mailServerPort = properties.getProperty("mail.server.port");
-        sendMailAlarmUser = convertStringToBoolean(properties.getProperty("send.mail.alarm.user"));
-        systemAbnormalAlarmMailTo = properties.getProperty("systemAbnormalAlarm.mailTo");
-        systemAbnormalAlarmMailCC = new JSONObject(properties.getProperty("systemAbnormalAlarm.mailCC"));
-        maxTestTable = convertStringToInteger(properties.getProperty("maxTestTable"));
-        maxTestRequiredPeople = convertStringToInteger(properties.getProperty("maxTestRequiredPeople"));
-        limitBABData = convertStringToInteger(properties.getProperty("limitBABData"));
-        balanceRoundingDigit = convertStringToInteger(properties.getProperty("balanceRoundingDigit"));
-        writeToTxt = convertStringToBoolean(properties.getProperty("result.write.to.txt"));
+        mailServerLocation = properties.getProperty("mail.server.location");
+
         writeToDB = convertStringToBoolean(properties.getProperty("result.write.to.database"));
         saveToOldDB = convertStringToBoolean(properties.getProperty("result.save.to.oldServer"));
+        sendMailAlarmUser = convertStringToBoolean(properties.getProperty("send.mail.alarm.user"));
         endpointQuartzTrigger = properties.getProperty("endpoint.quartz.trigger");
+
+        systemAbnormalAlarmMailTo = properties.getProperty("systemAbnormalAlarm.mailTo");
+        systemAbnormalAlarmMailCC = new JSONObject(properties.getProperty("systemAbnormalAlarm.mailCC"));
 
         logTheSystemSetting();
     }
 
     private void logTheSystemSetting() {
-        out.println("Set output txt path : " + txtLocation);
-        out.println("Set output test txt name : " + testTxtName);
-        out.println("Set output bab txt name : " + babTxtName);
-        out.println("Set file ext name is : " + outputFilenameExt);
         out.println("Set test lineType standard is : " + testStandard);
         out.println("Set bab lineType standard is : " + babStandard);
         out.println("Set balanceDiff(Need to send mail when balance is diff to prev input bab) is : " + balanceDiff);
-        out.println("System abnormal alarm to : " + targetMailLoop);
-        out.println("Set cc mail setting is : " + targetCCLoop);
         out.println("The mail info setting -> : "
                 + new JSONObject()
                 .put("mailServerUsername", mailServerUsername)
@@ -122,11 +108,10 @@ public class PropertiesReader {
         );
         out.println("The max table setting in test lineType is : " + maxTestTable);
         out.println("The max test required people in test lineType is  : " + maxTestRequiredPeople);
-        out.println("The minimum data collection need to save to database : " + limitBABData);
+        out.println("The minimum data collection need to save to database : " + babSaveToRecordStandardQuantity);
         out.println("The balance rounding digit is : " + balanceRoundingDigit);
         out.println("Other save result setting : "
                 + new JSONObject()
-                .put("writeToTxt", writeToTxt)
                 .put("writeToDB", writeToDB)
                 .put("saveToOldDB", saveToOldDB)
         );
@@ -162,36 +147,8 @@ public class PropertiesReader {
         return systemAbnormalAlarmMailTo;
     }
 
-    public JSONObject getTargetCCLoop() {
-        return targetCCLoop;
-    }
-
-    public JSONArray getTargetMailLoop() {
-        return targetMailLoop;
-    }
-
     public JSONObject getSystemAbnormalAlarmMailCC() {
         return systemAbnormalAlarmMailCC;
-    }
-
-    public JSONObject getResponseUserPerLine() {
-        return responseUserPerLine;
-    }
-
-    public String getTxtLocation() {
-        return txtLocation;
-    }
-
-    public String getTestTxtName() {
-        return testTxtName;
-    }
-
-    public String getBabTxtName() {
-        return babTxtName;
-    }
-
-    public String getOutputFilenameExt() {
-        return outputFilenameExt;
     }
 
     public String getTestMail() {
@@ -206,16 +163,12 @@ public class PropertiesReader {
         return maxTestRequiredPeople;
     }
 
-    public int getLimitBABData() {
-        return limitBABData;
+    public int getBabSaveToRecordStandardQuantity() {
+        return babSaveToRecordStandardQuantity;
     }
 
     public int getBalanceRoundingDigit() {
         return balanceRoundingDigit;
-    }
-
-    public boolean isWriteToTxt() {
-        return writeToTxt;
     }
 
     public boolean isWriteToDB() {
@@ -250,12 +203,4 @@ public class PropertiesReader {
         return endpointQuartzTrigger;
     }
 
-    public static void main(String arg0[]) {
-
-        PropertiesReader p = getInstance();
-
-        System.out.println(p.getTargetMailLoop().getJSONObject(0).get("mailloop"));
-        System.out.println(p.getTargetMailLoop().getJSONObject(1).get("mailloop"));
-//        System.out.println(p.getTargetCCLoop().get("mailloop"));
-    }
 }

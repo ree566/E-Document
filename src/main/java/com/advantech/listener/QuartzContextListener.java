@@ -6,13 +6,9 @@
 package com.advantech.listener;
 
 import com.advantech.model.BasicDAO;
-import com.advantech.quartzJob.DataTransformer;
 import com.advantech.helper.ThreadLocalCleanUtil;
 import com.advantech.endpoint.SensorEndpoint;
 import com.advantech.helper.PropertiesReader;
-import com.advantech.service.BabLineTypeFacade;
-import com.advantech.service.BasicLineTypeFacade;
-import com.advantech.service.TestLineTypeFacade;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
@@ -24,10 +20,6 @@ public class QuartzContextListener implements ServletContextListener {
 
     //this listener is unused http://stackoverflow.com/questions/19573457/simple-example-for-quartz-2-2-and-tomcat-7
     //quartz only need to modify at web.xml & the quartz properties/xml to start, stop, wait
-    private final SensorEndpoint se = new SensorEndpoint();
-    boolean endpointChangeFlag = false;
-//    
-//    private Logger logger = Logger.getLogger(QuartzContextListener.class);
 
     public QuartzContextListener() {
 //        getLoggerExtender();

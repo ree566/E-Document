@@ -7,6 +7,8 @@ package com.advantech.model;
 
 import com.advantech.helper.ProcRunner;
 import com.advantech.helper.CronTrigMod;
+import com.mchange.v2.c3p0.DataSources;
+import com.mchange.v2.c3p0.PooledDataSource;
 import java.io.Serializable;
 import java.sql.*;
 import java.util.ArrayList;
@@ -49,12 +51,7 @@ public class BasicDAO implements Serializable {
     private static boolean connectFlag = false;
     private static final int RETRY_WAIT_TIME = 3000;
 
-    private static Map<String, DataSource> dataSourceMap;
-
-    static {
-        qRunner = new QueryRunner();
-        pRunner = new ProcRunner();
-    }
+    private static Map<String, PooledDataSource> dataSourceMap;
 
     public static enum SQL {
 
@@ -73,17 +70,16 @@ public class BasicDAO implements Serializable {
         }
     }
 
+    //Set dataSource with JNDI
     public static void dataSourceInit() {
-        qRunner = new QueryRunner();
-        pRunner = new ProcRunner();
         dataSourceMap = new HashMap<>();
-
         try {
-
             for (SQL sql : SQL.values()) {
                 String dataSourceString = sql.toString();
                 try {
-                    dataSourceMap.put(dataSourceString, getDataSource(dataSourceString));
+                    PooledDataSource ds = getDataSource(dataSourceString);
+                    DataSources.pooledDataSource(ds);
+                    dataSourceMap.put(dataSourceString, ds);
                 } catch (NamingException ex) {
                     log.error(ex.toString());
                 }
@@ -93,14 +89,31 @@ public class BasicDAO implements Serializable {
         }
     }
 
-    private static DataSource getDataSource(String dataSourcePath) throws NamingException {
+    private static PooledDataSource getDataSource(String dataSourcePath) throws NamingException {
         Context initContext = new InitialContext();
         Context envContext = (Context) initContext.lookup("java:/comp/env");
-        DataSource dataSource = (DataSource) envContext.lookup(dataSourcePath);
+        PooledDataSource dataSource = (PooledDataSource) envContext.lookup(dataSourcePath);
         return dataSource;
     }
 
-    private static DataSource getDataSource1(String dataSourcePath) throws NamingException {
+    //Set dataSource without JNDI
+    public static void dataSourceInit1() {
+//        dataSourceMap = new HashMap<>();
+//        try {
+//            for (SQL sql : SQL.values()) {
+//                String dataSourceString = sql.toString();
+//                try {
+//                    dataSourceMap.put(dataSourceString, getDataSource1(dataSourceString));
+//                } catch (NamingException ex) {
+//                    log.error(ex.toString());
+//                }
+//            }
+//        } catch (Exception e) {
+//            log.error(e.toString());
+//        }
+    }
+
+    public static DataSource getDataSource1(String dataSourcePath) throws NamingException {
         //中文變亂碼
         JtdsDataSource xaDS = new JtdsDataSource();
         xaDS.setServerName("M3-SERVER");
@@ -125,13 +138,20 @@ public class BasicDAO implements Serializable {
     public static Connection getDBUtilConn(SQL sqlType) {
         return openConn(sqlType.toString());
     }
+    
+    public synchronized static Connection testConn(String dataSource) throws SQLException {
+        PooledDataSource ds = dataSourceMap.get(dataSource);
+        return ds.getConnection();
+    }
 
     private synchronized static Connection openConn(String dataSource) {
         Connection conn = null;
         boolean triggerChangeStatus;
         try {
-            DataSource source = dataSourceMap.get(dataSource);
-            conn = source.getConnection();
+
+            PooledDataSource ds = dataSourceMap.get(dataSource);
+            conn = ds.getConnection();
+
             if (connectFlag == true) {
                 //當連線正常時 把quartz cron調整回來
                 triggerChangeStatus = changeCronTrig(connectFlag);
@@ -162,6 +182,7 @@ public class BasicDAO implements Serializable {
 
     private static List query(Connection conn, ResultSetHandler rsh, String sql, Object... params) {
         List<?> data = null;
+        qRunner = new QueryRunner();
         try {
             data = (List) qRunner.query(conn, sql, rsh, params);
         } catch (SQLException e) {
@@ -175,6 +196,7 @@ public class BasicDAO implements Serializable {
 
     public static boolean update(Connection conn, String sql, List l, String... params) {
         boolean flag = false;
+        qRunner = new QueryRunner();
         try {
             conn.setAutoCommit(false);
 
@@ -197,6 +219,7 @@ public class BasicDAO implements Serializable {
 
     public static boolean update(Connection conn, String sql, Object... params) {
         boolean flag = false;
+        qRunner = new QueryRunner();
         try {
             conn.setAutoCommit(false);
             qRunner.update(conn, sql, params);
@@ -214,6 +237,7 @@ public class BasicDAO implements Serializable {
 
     public static boolean updateProc(Connection conn, String sql, Object... params) {
         boolean flag = false;
+        pRunner = new ProcRunner();
         try {
             pRunner.updateProc(conn, sql, params);
             flag = true;
@@ -235,6 +259,7 @@ public class BasicDAO implements Serializable {
 
     private static List queryProc(Connection conn, ResultSetHandler rsh, String sql, Object... params) {
         List data = null;
+        pRunner = new ProcRunner();
         try {
             data = (List) pRunner.queryProc(conn, sql, rsh, params);
         } catch (SQLException e) {
@@ -263,6 +288,16 @@ public class BasicDAO implements Serializable {
     }
 
     public static void objectInit() {
-        dataSourceMap.clear();
+        try {
+            for (String key : dataSourceMap.keySet()) {
+                PooledDataSource pds = dataSourceMap.get(key);
+                pds.close();
+                DataSources.destroy(pds);
+                Thread.sleep(1000);
+            } 
+            dataSourceMap.clear();
+        } catch (SQLException | InterruptedException ex) {
+            log.error(ex.toString());
+        }
     }
 }

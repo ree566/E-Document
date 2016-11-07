@@ -38,17 +38,17 @@ public class CheckSensor implements Job {
     //定時查看sensor資料是否又暫停or異常
     private void checkSensorAndSendMail() throws MessagingException {
         List processingBAB = BasicService.getBabService().getProcessingBAB();
-        int minDiff = BasicService.getFbnService().checkLastFBNMinuteDiff();
+        Integer minDiff = BasicService.getFbnService().checkLastFBNMinuteDiff();
         int maxAllowMin = 30;
 
-        if (!processingBAB.isEmpty() && minDiff >= maxAllowMin) {
+        if (minDiff == null || (!processingBAB.isEmpty() && minDiff >= maxAllowMin)) {
             sendMail();
         }
     }
 
     private void sendMail() throws MessagingException {
         String targetMail = PropertiesReader.getInstance().getTestMail();
-        
+
         String subject = "[藍燈系統]Sensor異常訊息";
         String mailBody = generateMailBody();
         MailSend.getInstance().sendMail(targetMail, subject, mailBody);

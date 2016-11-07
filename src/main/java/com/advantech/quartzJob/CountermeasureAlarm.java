@@ -7,9 +7,12 @@ package com.advantech.quartzJob;
 
 import com.advantech.helper.DatetimeGenerator;
 import com.advantech.helper.MailSend;
-import com.advantech.helper.PropertiesReader;
+import com.advantech.helper.StringParser;
 import com.advantech.service.BasicService;
+import com.advantech.service.LineOwnerMappingService;
+import java.sql.Clob;
 import java.text.DecimalFormat;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +33,6 @@ public class CountermeasureAlarm implements Job {
 
     private static final Logger log = LoggerFactory.getLogger(CountermeasureAlarm.class);
     private final DecimalFormat formatter = new DecimalFormat("#.##%");
-    private final JSONObject responseUserPerLine = PropertiesReader.getInstance().getResponseUserPerLine();
     private final DatetimeGenerator dg = new DatetimeGenerator("yyyy-MM-dd HH:mm");
 
     @Override
@@ -44,18 +46,18 @@ public class CountermeasureAlarm implements Job {
     }
 
     public void sendMail() throws Exception {
-        PropertiesReader p = PropertiesReader.getInstance();
-        JSONArray mailTarget = p.getTargetMailLoop();
-        JSONArray ccMailLoop = p.getTargetCCLoop().getJSONArray("mailloop");
-        String subject = "[藍燈系統]未填寫異常回覆工單列表 ";
+        LineOwnerMappingService lomService = BasicService.getLineOwnerMappingService();
+        JSONObject responsorPerLine = lomService.getSeparateLineOwnerMapping();
+        JSONObject responsorPerSitefloor = lomService.getSeparateResponsorPerSitefloor();
 
-        for (int i = 0; i < mailTarget.length(); i++) {
-            JSONObject targetInfo = (JSONObject) mailTarget.get(i);
-            String sitefloor = (String) targetInfo.get("sitefloor");
-            JSONArray mailLoop = (JSONArray) targetInfo.get("mailloop");
-            String mailBody = this.generateMailBody(sitefloor);
+        // when user sitefloor is not setting, turn user's mail to mail cc loop
+        JSONArray ccMailLoop = responsorPerLine.getJSONArray("null");
+        String subject = "[藍燈系統]未填寫異常回覆工單列表 ";
+        for (String key : responsorPerSitefloor.keySet()) {
+            JSONArray mailLoop = responsorPerSitefloor.getJSONArray(key);
+            String mailBody = this.generateMailBody(key);
             if (!"".equals(mailBody)) { //有資料再寄信
-                MailSend.getInstance().sendMail(mailLoop, ccMailLoop, subject + sitefloor + "F", mailBody);
+                MailSend.getInstance().sendMail(mailLoop, ccMailLoop, subject + key + "F", mailBody);
             }
         }
     }
@@ -65,7 +67,7 @@ public class CountermeasureAlarm implements Job {
         if (l.isEmpty()) {
             return "";
         } else {
-            Set<String> highlightLines = new HashSet();
+            Map<String, Set<String>> highlightLines = new HashMap();
             StringBuilder sb = new StringBuilder();
             sb.append("<style>table {border-collapse: collapse;} table, th, td {border: 1px solid black; padding: 5px;}</style>");
             sb.append("<p>Dear 使用者:</p>");
@@ -74,6 +76,7 @@ public class CountermeasureAlarm implements Job {
             sb.append("<table>");
             sb.append("<tr><th>製程</th><th>線別</th><th>工單</th><th>機種</th><th>亮燈頻率</th><th>數量</th><th>投入時間</th></tr>");
             for (Map m : l) {
+                String lineName = (String) m.get("lineName"), userName = StringParser.clobToString((Clob) m.get("user_name"));
                 sb.append("<tr><td>")
                         .append(m.get("linetype"))
                         .append("</td><td>")
@@ -89,21 +92,24 @@ public class CountermeasureAlarm implements Job {
                         .append("</td><td>")
                         .append(dg.dateFormatToString(m.get("Btime")))
                         .append("</td></tr>");
-                highlightLines.add((String) m.get("lineName"));
+                if (highlightLines.containsKey(lineName)) {
+                    highlightLines.get(lineName).add(userName);
+                } else {
+                    Set set = new HashSet();
+                    set.add(userName);
+                    highlightLines.put(lineName, set);
+                }
             }
             sb.append("</table>");
             sb.append("<p>線別負責人: </p>");
 
-            for (String line : highlightLines) {
+            for (String line : highlightLines.keySet()) {
+                Set<String> set = highlightLines.get(line);
                 sb.append("<p>");
                 sb.append(line);
                 sb.append(" : ");
-                JSONArray arr = responseUserPerLine.getJSONArray(line.trim());
-                for (int i = 0, j = arr.length(); i < j; i++) {
-                    sb.append(arr.get(i));
-                    if (i != j - 1) {
-                        sb.append("、");
-                    }
+                for (String user : set) {
+                    sb.append(user);
                 }
                 sb.append("</p>");
             }

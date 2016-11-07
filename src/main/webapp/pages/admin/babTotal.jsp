@@ -16,9 +16,8 @@
         <link rel="shortcut icon" href="../../images/favicon.ico"/>
         <link rel="stylesheet" href="../../css/jquery.dataTables.min.css">
         <link rel="stylesheet" href="../../css/bootstrap-datetimepicker.min.css">
-        <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
-        <!--<link rel="stylesheet" href="//code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />-->
-        <link rel="stylesheet" href="//cdn.datatables.net/buttons/1.2.1/css/buttons.dataTables.min.css">
+        <link rel="stylesheet" href="../../css/jquery-ui.css">
+        <link rel="stylesheet" href="../../css/buttons.dataTables.min.css">
         <style>
             body{
                 font-size: 16px;
@@ -92,24 +91,24 @@
                 text-decoration: none;
             }
         </style>
-        <script src="//www.gstatic.com/charts/loader.js"></script>
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-        <!--<script src="//code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>-->
-        <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+        <script src="../../js/charts.loader.js"></script>
+        <script src="../../js/jquery-1.11.3.min.js"></script>
+        <script src="../../js/jquery-ui-1.10.0.custom.min.js"></script>
         <script src="../../js/canvasjs.min.js"></script>
         <script src="../../js/jquery.dataTables.min.js"></script>
+        <script src="../../js/dataTables.fnMultiFilter.js"></script>
         <script src="../../js/jquery.blockUI.js"></script>
         <script src="../../js/moment.js"></script>
         <script src="../../js/bootstrap-datetimepicker.min.js"></script>
         <script src="../../js/jquery.cookie.js"></script>
-        <script src="//cdn.jsdelivr.net/alasql/0.2/alasql.min.js"></script> 
-        <script src="//cdn.datatables.net/buttons/1.2.1/js/dataTables.buttons.min.js"></script>
-        <script src="//cdn.datatables.net/buttons/1.2.1/js/buttons.flash.min.js"></script>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js"></script>
-        <script src="//cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/pdfmake.min.js"></script>
-        <script src="//cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/vfs_fonts.js"></script>
-        <script src="//cdn.datatables.net/buttons/1.2.1/js/buttons.html5.min.js"></script>
-        <script src="//cdn.datatables.net/buttons/1.2.1/js/buttons.print.min.js"></script>
+        <script src="../../js/alasql.min.js"></script> 
+        <script src="../../js/jquery-datatable-button/dataTables.buttons.min.js"></script>
+        <script src="../../js/jquery-datatable-button/buttons.flash.min.js"></script>
+        <script src="../../js/jquery-datatable-button/jszip.min.js"></script>
+        <script src="../../js/jquery-datatable-button/pdfmake.min.js"></script>
+        <script src="../../js/jquery-datatable-button/vfs_fonts.js"></script>
+        <script src="../../js/jquery-datatable-button/buttons.html5.min.js"></script>
+        <script src="../../js/jquery-datatable-button/buttons.print.min.js"></script>
         <script src="../../js/param.check.js"></script>
         <script src="../../js/urlParamGetter.js"></script>
         <script src="../../js/jquery.fileDownload.js"></script>
@@ -123,6 +122,26 @@
 
             var table2;
             var autoReloadInterval;
+
+            var sitefloorOptions = ["5", "6"];
+            var lineTypeOptions = ["ASSY", "Packing"];
+
+            var lineObject = {
+                ASSY: ['L1', 'LA', 'LB', 'L3', 'L4'],
+                Packing: ['LF', 'LG', 'LH', 'L6', 'L7', 'L8', 'L9']
+            };
+
+            function initSelectOption() {
+                for (var i = 0; i < sitefloorOptions.length; i++) {
+                    var value = sitefloorOptions[i];
+                    $("#sitefloor").append("<option value=" + value + ">" + value + "F</option>");
+                }
+
+                for (var i = 0; i < lineTypeOptions.length; i++) {
+                    var value = lineTypeOptions[i];
+                    $("#lineTypeFilter, #lineType, #lineType2").append("<option value=" + value + ">" + value + "</option>");
+                }
+            }
 
             function getBAB() {
                 table2 = $("#data2").DataTable({
@@ -147,7 +166,7 @@
                             "targets": 0,
                             "data": "TagName",
                             'render': function (data, type, row) {
-                                return ((data == 'L1' || data == 'LA' || data == 'LB' || data == 'L3' || data == 'L4') ? "ASSY" : "PKG");
+                                return ((data == 'L1' || data == 'LA' || data == 'LB' || data == 'L3' || data == 'L4') ? "ASSY" : "Packing");
                             }
                         },
                         {
@@ -178,14 +197,25 @@
                     paginate: false,
                     "initComplete": function (settings, json) {
                         generateOnlineBabDetail(-1);
+
                         $("#lineTypeFilter").change(function () {
                             var filterVal = $(this).val();
-                            table2.search(filterVal == -1 ? "" : filterVal).draw();
-                            generateOnlineBabDetail($(this).val());
+                            table2.column(0).search(filterVal == -1 ? "" : filterVal).draw();
+                            generateLineBalance(filterVal);
                         });
                     },
                     "order": [[1, "asc"], [2, "asc"]]
                 });
+            }
+
+            function generateLineBalance(lineType) {
+                if (lineType == "ASSY") {
+                    generateOnlineBabDetail(lineObject.ASSY);
+                } else if (lineType == "Packing") {
+                    generateOnlineBabDetail(lineObject.Packing);
+                } else {
+                    generateOnlineBabDetail(-1);
+                }
             }
 
             function generateOnlineBabDetail(filter) {
@@ -195,11 +225,11 @@
                     return false;
                 }
                 var res;
-                if (filter != "-1") {
+                if (filter.constructor === Array) {
                     res = alasql('SELECT PO, TagName, Model_name,\
                                           SUM(diff) / (COUNT(diff) * MAX(diff)) AS balance \
                                           FROM ? \
-                                          WHERE TagName = ?\
+                                          WHERE TagName IN @(?)\
                                           GROUP BY PO, TagName, Model_name \
                                           ORDER BY TagName', [arr, filter]);
                 } else {
@@ -226,7 +256,7 @@
                 $(tableId).DataTable({
                     dom: 'Bfrtip',
                     buttons: [
-                        'copy', 'csv', 'excel', 'pdf', 'print'
+                        'copy', 'excel', 'print'
                     ],
                     "ajax": {
                         "url": "../../LineBalanceDetail",
@@ -428,7 +458,7 @@
                 var sitefloor = $("#sitefloor").val();
                 var startDate = $('#fini').val();
                 var endDate = $('#ffin').val();
-                var closedOnly = $("#closedOnly").is(":checked");
+                var aboveStandard = $("#aboveStandard").is(":checked");
 
                 var alarmPercentStandard = 0.3;
 
@@ -446,7 +476,7 @@
                             sitefloor: sitefloor,
                             startDate: startDate,
                             endDate: endDate,
-                            closedOnly: closedOnly
+                            aboveStandard: aboveStandard
                         }
                     },
                     "columns": [
@@ -659,6 +689,7 @@
                         var arrObj = json.data;
                         if (arrObj.length == 0) {
                             $("#totalDetail").hide();
+                            $.unblockUI();
                             return;
                         }
                         var jsonObj = arrObj[arrObj.length - 1];
@@ -689,6 +720,7 @@
             }
 
             function initDateTimePickerWiget() {
+                var lockDays = 30;
                 var momentFormatString = 'YYYY-MM-DD';
                 var options = {
                     defaultDate: moment(),
@@ -702,6 +734,21 @@
 
                 beginTimeObj.on("dp.change", function (e) {
                     endTimeObj.data("DateTimePicker").minDate(e.date);
+                    var beginDate = e.date;
+                    var endDate = endTimeObj.data("DateTimePicker").date();
+                    var dateDiff = endDate.diff(beginDate, 'days');
+                    if (dateDiff > 30) {
+                        endTimeObj.data("DateTimePicker").date(beginDate.add(lockDays, 'days'));
+                    }
+                });
+
+                endTimeObj.on("dp.change", function (e) {
+                    var beginDate = beginTimeObj.data("DateTimePicker").date();
+                    var endDate = e.date;
+                    var dateDiff = endDate.diff(beginDate, 'days');
+                    if (dateDiff > 30) {
+                        beginTimeObj.data("DateTimePicker").date(endDate.add(-lockDays, 'days'));
+                    }
                 });
             }
 
@@ -744,7 +791,7 @@
                         setupCheckBox();
                         setActionCodeCheckBox(checkedActionCodes);
 
-                        $(":checkbox").attr("disabled", true);
+                        $(".modal-body :checkbox").attr("disabled", true);
 
                         var editors = jsonData.editors;
                         for (var i = 0; i < editors.length; i++) {
@@ -903,6 +950,7 @@
 
                 initCountermeasureDialog();
                 initDateTimePickerWiget();
+                initSelectOption();
 
                 //http://stackoverflow.com/questions/14493250/ajax-jquery-autocomplete-with-json-data
                 $.ajax({
@@ -1037,7 +1085,7 @@
                     }
                     counterMeasureModeUndo();
 
-                    $(":checkbox").attr("disabled", true);
+                    $(".modal-body :checkbox").attr("disabled", true);
 
                     $("#errorCon").html(originErrorCon.replace(/(?:\r\n|\r|\n)/g, '<br />'));
                     $("#responseUser").html(originResponseUser);
@@ -1084,10 +1132,6 @@
                     counterMeasureModeUndo();
                 });
 
-                $("#lineType2").val("ASSY");
-                $("#sitefloor").val("5");
-                $("#searchAvailableBAB").trigger("click");
-
 //                Checkbox change event.
                 $("#errorCode :checkbox").change(function () {
                     if (!$(this).is(":checked")) {
@@ -1114,14 +1158,24 @@
                     }
                 });
 
+//                $("#searchAvailableBAB").trigger("click");
+
                 $("#generateExcel").click(function () {
+//                    var rows = historyTable.rows().data();
+//                    var ids = [];
+//                    for (var i = 0; i < rows.length; i++) {
+//                        ids.push(rows[i].id);
+//                    }
+//                    console.log(ids);
+
                     var lineType = $('#lineType2').val();
                     var sitefloor = $('#sitefloor').val();
                     var startDate = $('#fini').val();
                     var endDate = $('#ffin').val();
+                    var aboveStandard = $("#aboveStandard").is(":checked");
 
                     $("#generateExcel").attr("disabled", true);
-                    $.fileDownload('../../BABExcelGenerate?startDate=' + startDate + '&endDate=' + endDate + '&lineType=' + lineType + '&sitefloor=' + sitefloor, {
+                    $.fileDownload('../../BABExcelGenerate?startDate=' + startDate + '&endDate=' + endDate + '&lineType=' + lineType + '&sitefloor=' + sitefloor + '&aboveStandard=' + aboveStandard, {
                         preparingMessageHtml: "We are preparing your report, please wait...",
                         failMessageHtml: "No reports generated. No Survey data is available.",
                         successCallback: function (url) {
@@ -1131,7 +1185,6 @@
                             $("#generateExcel").attr("disabled", false);
                         }
                     });
-//                    window.location.href = '../../BABExcelGenerate?startDate=' + startDate + '&endDate=' + endDate + '&lineType=' + lineType + '&sitefloor=' + sitefloor;
                 });
 
                 var babId = getQueryVariable("babId");
@@ -1153,12 +1206,18 @@
                     }, 1000);
                 }
 
+                var lineType = getQueryVariable("lineType");
+                if (lineType != null) {
+                    $("#lineTypeFilter,#lineType, #lineType2").val(lineType);
+                    table2.column(0).search(lineType).draw();
+                    generateLineBalance(lineType);
+                }
+
                 $(window).on("focus", function () {
                     autoReloadInterval = setInterval(function () {
                         table2.ajax.reload(function (json) {
-                            generateOnlineBabDetail($("#lineTypeFilter").val());
+                            generateLineBalance(lineType);
                         });
-
                     }, 10 * 1000);
                 });
 
@@ -1189,18 +1248,6 @@
                             <label>Filter for:
                                 <select id="lineTypeFilter">
                                     <option value="-1">all</option>
-                                    <option value="L1">L1</option>
-                                    <option value="LA">LA</option>
-                                    <option value="LB">LB</option>
-                                    <option value="LF">LF</option>
-                                    <option value="LG">LG</option>
-                                    <option value="LH">LH</option>
-                                    <option value="L3">L3</option>
-                                    <option value="L4">L4</option>
-                                    <option value="L6">L6</option>
-                                    <option value="L7">L7</option>
-                                    <option value="L8">L8</option>
-                                    <option value="L9">L9</option>
                                 </select>
                             </label>
                             <table id="data2" class="display" cellspacing="0" width="100%" style="text-align: center">
@@ -1299,13 +1346,9 @@
                         <div class="ui-widget">
                             <select id="lineType2"> 
                                 <option value="-1">all</option>
-                                <option value="ASSY">ASSY</option>
-                                <option value="Packing">Packing</option>
                             </select> /
                             <select id="sitefloor">
                                 <option value="-1">all</option>
-                                <option value=5>5F</option>
-                                <option value=6>6F</option>
                             </select> /
 
                             日期:從
@@ -1316,7 +1359,7 @@
                             <div class='input-group date' id='endTime'>
                                 <input type="text" id="ffin" placeholder="請選擇結束時間"> 
                             </div>
-
+                            <label for="aboveStandard"><input type="checkbox" id="aboveStandard">只顯示數量大於十台</label>
                             <input type="button" id="searchAvailableBAB" value="查詢">
                             <input type="button" id="generateExcel" value="產出excel">
 
@@ -1354,8 +1397,6 @@
                         <input type="text" id="Model_name" />
                         <select id="lineType">
                             <option value=-1>請選擇線別</option>
-                            <option value="ASSY">ASSY</option>
-                            <option value="Packing">Packing</option>
                         </select>
                         <input type="button" id="send" value="查詢">
                     </div>

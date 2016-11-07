@@ -42,64 +42,82 @@ public class ExcelGenerator {
 
     private static final Logger log = LoggerFactory.getLogger(ExcelGenerator.class);
 
-    private static Workbook workbook;
-    private static int sheetNum = 1;
+    private Workbook workbook;
+    private Sheet spreadsheet;
+    private int sheetNum = 1;
 
-    private static final DatetimeGenerator dg = new DatetimeGenerator("E yyyy/MM/dd HH:mm");
+    private final DatetimeGenerator dg = new DatetimeGenerator("E yyyy/MM/dd HH:mm");
 
-    private static final int CUSTOM_EXCEL_SEPARATE_COLINDEX = 9;
-    //Set values
-    private static int xIndex = 0, yIndex = 0;
+    private int xIndex = 0, yIndex = 0;
 
-    private static void init() {
+    private int baseXIndex = 0, baseYIndex = 0;
+    private final String emptyMessage = "Data is empty.";
+
+    public ExcelGenerator() {
+        init();
+    }
+
+    private void init() {
         sheetNum = 1;
-        xIndex = 0;
-        yIndex = 0;
+        indexInit();
         workbook = new HSSFWorkbook();
         log.info("New one workbook");
     }
 
-    private static Sheet createExcelSheet() {
-        return workbook.createSheet("sheet" + (sheetNum++));
+    private void indexInit() {
+        xIndex = baseXIndex;
+        yIndex = baseYIndex;
     }
 
-    public static Workbook generateWorkBooks(List<Map>... data) {
-        init();
+    public void createExcelSheet() {
+        createExcelSheet("sheet" + (sheetNum++));
+    }
+
+    public void createExcelSheet(String sheetName) {
+        spreadsheet = workbook.createSheet(sheetName);
+        indexInit();
+    }
+
+    public Workbook generateWorkBooks(List<Map>... data) {
         for (List<Map> l : data) {
             generateWorkBook(l);
         }
         return workbook;
     }
 
-    private static Workbook generateWorkBook(List<Map> data) {
-        Sheet spreadsheet = createExcelSheet();
-        Row row = spreadsheet.createRow(0);
+    private Workbook generateWorkBook(List<Map> data) {
+        if (spreadsheet == null) {
+            createExcelSheet();
+        }
+
+        Row row = spreadsheet.createRow(baseXIndex);
         if (!data.isEmpty()) {
-            Map firstData = data.get(0);
+            Map firstData = data.get(baseXIndex);
             //Set the header
             Iterator it = firstData.keySet().iterator();
-            int loopCount = 0;
             while (it.hasNext()) {
-                row.createCell(loopCount++).setCellValue((String) it.next());
+                setCellValue(row.createCell(yIndex++), (String) it.next());
             }
 
-            //Set values
-            int x = 1, y = 0;
+            xIndex++;
+            yIndex = baseYIndex;
             for (Map m : data) {
                 it = m.keySet().iterator();
-                row = spreadsheet.createRow(x++);
+                row = spreadsheet.createRow(xIndex++);
                 while (it.hasNext()) {
-                    setCellValue(row.createCell(y++), m.get(it.next()));
+                    setCellValue(row.createCell(yIndex++), m.get(it.next()));
                 }
-                y = 0;//Reset the cell index and begin next data line insert.
+                yIndex = baseYIndex;//Reset the cell index and begin next data line insert.
             }
+        } else {
+            setCellValue(row.createCell(baseYIndex), emptyMessage);
         }
         return workbook;
     }
 
-    private static Cell setCellValue(Cell cell, Object value) {
+    private Cell setCellValue(Cell cell, Object value) {
         if (value instanceof Clob) {
-            cell.setCellValue(clobToString((Clob) value));
+            cell.setCellValue(StringParser.clobToString((Clob) value));
         } else if (value instanceof java.util.Date) {
             cell.setCellValue(dg.dateFormatToString((Date) value));
         } else if (value instanceof Integer) {
@@ -118,24 +136,7 @@ public class ExcelGenerator {
         return cell;
     }
 
-    private static String clobToString(Clob data) {
-        StringBuilder sb = new StringBuilder();
-        try {
-            Reader reader = data.getCharacterStream();
-            BufferedReader br = new BufferedReader(reader);
-
-            String line;
-            while (null != (line = br.readLine())) {
-                sb.append(line);
-            }
-            br.close();
-        } catch (SQLException | IOException e) {
-            log.error(e.toString());
-        }
-        return sb.toString();
-    }
-
-    private static Cell createFloatCell(Cell cell) {
+    private Cell createFloatCell(Cell cell) {
         CellStyle style = workbook.createCellStyle();
         style.setDataFormat(workbook.createDataFormat().getFormat("0.00%"));
         style.setBorderBottom(BorderStyle.MEDIUM);
@@ -146,7 +147,7 @@ public class ExcelGenerator {
         return cell;
     }
 
-    public static void formatExcel() {
+    public void formatExcel() {
         for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
             Sheet sheet = workbook.getSheetAt(i);
             Row row = sheet.getRow(0);
@@ -156,15 +157,19 @@ public class ExcelGenerator {
         }
     }
 
-    public static void outputExcel(Workbook w, String fileName) {
-        String filePath = System.getProperty("user.home") + "\\Desktop\\";
-        String fileExt = getFileExt(w);
-        fileName += fileExt;
+    public void outputExcel(Workbook w, String fileName) {
+        this.workbook = w;
+        this.outputExcel(fileName);
+    }
 
+    public void outputExcel(String fileName) {
+        String filePath = System.getProperty("user.home") + "\\Desktop\\";
+        String fileExt = getFileExt(workbook);
+        fileName += fileExt;
         FileOutputStream fileOut;
         try {
             fileOut = new FileOutputStream(filePath + fileName);
-            w.write(fileOut);
+            workbook.write(fileOut);
             fileOut.close();
             out.println("Excel generate success");
         } catch (Exception ex) {
@@ -184,23 +189,32 @@ public class ExcelGenerator {
         return ".xls";
     }
 
-    //客製化style的excel---------------------------------------------------------
-    private static void sensorAbnormalDataGenerate() {
-        //異常Sensor Data generate
-        sensorAbnormalDataGenerate(new DatetimeGenerator("yyyy-MM-dd").getYesterday());
+    public Workbook getWorkbook() {
+        return workbook;
     }
 
     /**
-     * Date in yyyy-MM-dd
+     * <pre>客製化style的excel pattern.</pre>
+     * <pre>Generate sensor abnormal data in yesterday with file output.</pre>
+     * <pre>File name is a date, and file output path is setting in function outputExcel(workbookObj, fileName).</pre>
+     */
+    private void generateSensorAbnormalData() {
+        //異常Sensor Data generate
+        generateSensorAbnormalData(new DatetimeGenerator("yyyy-MM-dd").getYesterday());
+    }
+
+    /**
+     * Date in yyyy-MM-dd Generate target date sensor abnormal data with file
+     * output.
      *
      * @param date
      */
-    private static void sensorAbnormalDataGenerate(String date) {
+    private void generateSensorAbnormalData(String date) {
         FBNService fService = BasicService.getFbnService();
         List<Map> babList = BasicService.getBabService().getBABForMap(date);
         workbook = new HSSFWorkbook();
 
-        Sheet spreadsheet = workbook.createSheet("test");
+        spreadsheet = workbook.createSheet("test");
 
         int dataCount = 0;
 
@@ -209,7 +223,7 @@ public class ExcelGenerator {
             List<Map> abnormalDataTotal = fService.getTotalAbnormalData(BABid);
             List<Map> abnormalData = fService.getAbnormalData(BABid);
 
-            //Make sure the data if empty or not(deadLock aways happend).
+            //Make sure the data if empty or not(deadLock always happen).
             if (abnormalDataTotal.isEmpty()) {
                 abnormalDataTotal = fService.getTotalAbnormalData(BABid);
             }
@@ -231,16 +245,16 @@ public class ExcelGenerator {
             setData(spreadsheet, style, abnormalData);
             spreadsheet.createRow(yIndex += 2);
         }
-        outputExcel(workbook, date);
+        outputExcel(date);
     }
 
-    private static Sheet setData(Sheet spreadsheet, CellStyle style, Map m) {
+    private Sheet setData(Sheet spreadsheet, CellStyle style, Map m) {
         List l = new ArrayList();
         l.add(m);
         return setData(spreadsheet, style, l);
     }
 
-    private static Sheet setData(Sheet spreadsheet, CellStyle style, List<Map> l) {
+    private Sheet setData(Sheet spreadsheet, CellStyle style, List<Map> l) {
         Row row = spreadsheet.createRow(yIndex);
         Cell cell;
         if (!l.isEmpty()) {
@@ -254,7 +268,7 @@ public class ExcelGenerator {
                 cell.setCellStyle(style);
             }
 
-            xIndex = 0;
+            xIndex = baseXIndex;
             yIndex++;
 
             for (Map m : l) {
@@ -265,118 +279,119 @@ public class ExcelGenerator {
                     cell.setCellStyle(style);
                     setCellValue(cell, m.get(it.next()));
                 }
-                xIndex = 0;//Reset the cell index and begin next data line insert.
+                xIndex = baseXIndex;//Reset the cell index and begin next data line insert.
             }
         } else {
             row = spreadsheet.createRow(yIndex++);
             cell = row.createCell(xIndex);
             cell.setCellStyle(style);
-            cell.setCellValue("Abnormal data is empty.");
+            cell.setCellValue(emptyMessage);
         }
         return spreadsheet;
     }
 
-    public static void addBABPersonalAlarm(String lineType, String sitefloor, String startDate, String endDate) {
-        List personalAlarms = BasicService.getCountermeasureService().getPersonAlarm(lineType, sitefloor, startDate, endDate);
-        addBABPersonalAlarm(personalAlarms); 
-    }
-
     //客製化個人亮燈頻率excel download
-    public static void addBABPersonalAlarm(List<Map> personalAlarms) {
-//        workbook = new XSSFWorkbook();//測試單一的function需要先new 一次，此function在工單列表excel download時是合併在sheet2中的
-
-        Sheet spreadsheet = createExcelSheet();
+    public void appendSpecialPattern(List<Map> list) {
+        if (spreadsheet == null) {
+            createExcelSheet();
+        }
         Row row = spreadsheet.createRow(yIndex);
         Cell cell;
-        CellStyle style = workbook.createCellStyle();
-        Map firstData = maxMapInList(personalAlarms);
-        int maxDataIndex;
-        List<String> idCols = new ArrayList();
-        List<String> failPercentCols = new ArrayList();
+        if (!list.isEmpty()) {
+            Map firstData = maxMapInList(list);
+            int maxDataIndex, colSeparateColIndex = 9;
+            List<String> idCols = new ArrayList();
+            List<String> failPercentCols = new ArrayList();
+            Iterator it = firstData.keySet().iterator();
 
-        Iterator it = firstData.keySet().iterator();
-        while (it.hasNext()) {
-            if (xIndex == CUSTOM_EXCEL_SEPARATE_COLINDEX) {
+            while (it.hasNext()) {
+                if (xIndex == colSeparateColIndex) {
+                    setCellValue(row.createCell(xIndex++), "");
+                }
                 cell = row.createCell(xIndex++);
-                cell.setCellStyle(style);
-                setCellValue(cell, "");
-            }
-            String key = (String) it.next();
-            cell = row.createCell(xIndex++);
-            cell.setCellValue(key);
-            cell.setCellStyle(style);
+                setCellValue(cell, (String) it.next());
 
-            if (xIndex > CUSTOM_EXCEL_SEPARATE_COLINDEX) {
-                String colNumLetter = CellReference.convertNumToColString(cell.getColumnIndex());
-                if ((xIndex - (CUSTOM_EXCEL_SEPARATE_COLINDEX + 1)) % 2 == 0) {
-                    failPercentCols.add(colNumLetter);
-                } else {
-                    idCols.add(colNumLetter);
+                if (xIndex > colSeparateColIndex) {
+                    String colNumLetter = CellReference.convertNumToColString(cell.getColumnIndex());
+                    if ((xIndex - (colSeparateColIndex + 1)) % 2 == 0) {
+                        failPercentCols.add(colNumLetter);
+                    } else {
+                        idCols.add(colNumLetter);
+                    }
                 }
             }
-        }
 
-        maxDataIndex = xIndex;
-        xIndex = 0;//跳回第一行
-        yIndex++; //跳過head to next line
+            maxDataIndex = xIndex;
+            xIndex = baseXIndex;//跳回第一行
+            yIndex++; //跳過head to next line
 
-        for (Map data : personalAlarms) {
-            List l = new ArrayList();
-            l.add(data);
-            setTestData(spreadsheet, style, l);
-            spreadsheet.createRow(yIndex);
-        }
-
-        //設定最後兩攔formula
-        String failPersonNumLetter = "Z";
-        String failPercentNumLetter = "AA";
-
-        int targetIndex1 = CellReference.convertColStringToIndex(failPersonNumLetter);
-        int targetIndex2 = CellReference.convertColStringToIndex(failPercentNumLetter);
-
-        //Set the final two formula column.
-        spreadsheet.getRow(0).createCell(targetIndex1).setCellValue("瓶頸站");
-        spreadsheet.getRow(0).createCell(targetIndex2).setCellValue("亮燈頻率");
-
-        //set unused column to hidden
-        for (int a = maxDataIndex; a < targetIndex1 - 1; a++) {
-            spreadsheet.setColumnHidden(a, true);
-        }
-
-        for (int i = 1; i <= personalAlarms.size(); i++) {
-            Row maxium = spreadsheet.getRow(i);
-            int currentYIndex = i + 1;
-
-            //瓶頸站人名
-            cell = maxium.createCell(targetIndex1);
-            String formulaString = "";
-            String formulaStringEnding = "";
-            for (int j = 0, m = idCols.size(); j < m; j++) {
-                String formulaCol = failPercentNumLetter + currentYIndex;
-                String failPercentCol = failPercentCols.get(j) + currentYIndex;
-                String userNameCol = idCols.get(j) + currentYIndex;
-                formulaString += "if(" + failPercentCol + "=" + formulaCol + "," + userNameCol;
-                if (j < m - 1) {
-                    formulaString += ",";
+            for (Map data : list) {
+                it = data.keySet().iterator();
+                row = spreadsheet.createRow(yIndex++);
+                while (it.hasNext()) {
+                    if (xIndex == colSeparateColIndex) {
+                        setCellValue(row.createCell(xIndex++), "");
+                    }
+                    setCellValue(row.createCell(xIndex++), data.get(it.next()));
                 }
-                formulaStringEnding += ")";
+                xIndex = baseXIndex;//Reset the cell index and begin next data line insert.
+                spreadsheet.createRow(yIndex);
             }
-            formulaString += formulaStringEnding;
-            cell.setCellFormula(formulaString);
 
-            //瓶頸站趴數
-            cell = maxium.createCell(targetIndex2);
-            String formulaString1 = "MAX(";
-            for (int j = 0; j < failPercentCols.size(); j++) {
-                formulaString1 += failPercentCols.get(j) + currentYIndex + ",";
+            //設定最後兩攔formula
+            String failPersonNumLetter = "Z";
+            String failPercentNumLetter = "AA";
+
+            int numLetterZ = CellReference.convertColStringToIndex(failPersonNumLetter);
+            int numLetterAA = CellReference.convertColStringToIndex(failPercentNumLetter);
+
+            //Set the final two formula column.
+            spreadsheet.getRow(baseXIndex).createCell(numLetterZ).setCellValue("瓶頸站");
+            spreadsheet.getRow(baseXIndex).createCell(numLetterAA).setCellValue("亮燈頻率");
+
+            //set unused column to hidden
+            for (int a = maxDataIndex; a < numLetterZ - 1; a++) {
+                spreadsheet.setColumnHidden(a, true);
             }
-            formulaString1 += ")";
-            cell.setCellFormula(formulaString1);
-            createFloatCell(cell);
+
+            //set final two column formula at Num Z and Num AA
+            for (int i = 1; i <= list.size(); i++) {
+                Row maxium = spreadsheet.getRow(i);
+                int currentYIndex = i + 1;
+
+                //瓶頸站人名
+                cell = maxium.createCell(numLetterZ);
+                String formulaString = "";
+                String formulaStringEnding = "";
+                for (int j = 0, m = idCols.size(); j < m; j++) {
+                    String formulaCol = failPercentNumLetter + currentYIndex;
+                    String failPercentCol = failPercentCols.get(j) + currentYIndex;
+                    String userNameCol = idCols.get(j) + currentYIndex;
+                    formulaString += "if(" + failPercentCol + "=" + formulaCol + "," + userNameCol;
+                    if (j < m - 1) {
+                        formulaString += ",";
+                    }
+                    formulaStringEnding += ")";
+                }
+                formulaString += formulaStringEnding;
+                cell.setCellFormula(formulaString);
+
+                //瓶頸站趴數
+                cell = maxium.createCell(numLetterAA);
+                String formulaString1 = "MAX(";
+                for (int j = 0; j < failPercentCols.size(); j++) {
+                    formulaString1 += failPercentCols.get(j) + currentYIndex + ",";
+                }
+                formulaString1 += ")";
+                cell.setCellFormula(formulaString1);
+                createFloatCell(cell);
+            }
+        } else {
+            setCellValue(row.createCell(baseYIndex), emptyMessage);
         }
     }
 
-    private static Map maxMapInList(List<Map> l) {
+    private Map maxMapInList(List<Map> l) {
         int maxKeySize = 0;
         Map map = null;
         for (Map m : l) {
@@ -388,41 +403,13 @@ public class ExcelGenerator {
         return map;
     }
 
-    private static Sheet setTestData(Sheet spreadsheet, CellStyle style, List<Map> l) {
-        Row row;
-        Cell cell;
-        if (!l.isEmpty()) {
-            //Set the header
-            Iterator it;
-            for (Map m : l) {
-                it = m.keySet().iterator();
-                row = spreadsheet.createRow(yIndex++);
-                while (it.hasNext()) {
-                    if (xIndex == CUSTOM_EXCEL_SEPARATE_COLINDEX) {
-                        cell = row.createCell(xIndex++);
-                        cell.setCellStyle(style);
-                        setCellValue(cell, "");
-                    }
-                    cell = row.createCell(xIndex++);
-                    cell.setCellStyle(style);
-                    setCellValue(cell, m.get(it.next()));
-                }
-
-                xIndex = 0;//Reset the cell index and begin next data line insert.
-            }
-        } else {
-            row = spreadsheet.createRow(yIndex++);
-            cell = row.createCell(xIndex);
-            cell.setCellStyle(style);
-            cell.setCellValue("Abnormal data is empty.");
-        }
-        return spreadsheet;
-    }
-
     public static void main(String arg0[]) {
-        BasicDAO.dataSourceInit();
-        ExcelGenerator.sensorAbnormalDataGenerate();
-//        ExcelGenerator.addBABPersonalAlarm("ASSY", "5", "16/10/01", "16/10/17");
-//        ExcelGenerator.outputExcel(workbook, "TEST");
+        BasicDAO.dataSourceInit1();
+        List l = BasicService.getCountermeasureService().getCountermeasures();
+        ExcelGenerator e = new ExcelGenerator();
+        e.generateWorkBook(l);
+
+        e.outputExcel("TEST2");
+
     }
 }
