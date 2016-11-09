@@ -55,7 +55,7 @@ public class BabSearch extends HttpServlet {
         String poGetBAB = req.getParameter("po_getBAB");
         String poSaveLine = req.getParameter("po_saveline");
         if (pChecker.checkInputVal(po)) {
-            PrepareSchedule schedule = prepareScheduleService.getScheduleByPO(po);
+            PrepareSchedule schedule = prepareScheduleService.getPrepareSchedule(po);
             out.print(schedule == null ? "data not found" : convertString(schedule.getModel_name()));
         } else if (pChecker.checkInputVal(saveLine)) {
             out.print(new Gson().toJson(babService.getProcessingBABByLine(Integer.parseInt(saveLine))));
