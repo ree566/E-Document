@@ -83,6 +83,10 @@ public class BABDAO extends BasicDAO {
     public List<BAB> getBABIdForCaculate() {
         return queryBABTable("SELECT * FROM LS_BAB_Id_List");
     }
+    
+    public List<BAB> getAssyProcessing() {
+        return queryBABTable("SELECT * FROM assyProcessing");
+    } 
 
     public List<BABHistory> getBABHistory(BAB bab) {
         return getHistoryTable("SELECT * FROM LS_BAB_History WHERE BABid = ?", bab.getId());
@@ -126,8 +130,8 @@ public class BABDAO extends BasicDAO {
         return queryForMapList(getConn(), "SELECT * FROM BABAVG(?)", BABid);
     }
 
-    public List<Map> getBABAvgsInSpecGroup(int BABid) {
-        return queryProcForMapList(getConn(), "{CALL getbabAvgInSpecGroup(?)}", BABid);
+    public List<Map> getBABAvgsInSpecGroup(int BABid, int groupStart, int groupEnd) {
+        return queryProcForMapList(getConn(), "{CALL getbabAvgInSpecGroup(?,?,?)}", BABid, groupStart, groupEnd);
     }
 
     public List<Map> getClosedBABAVG(int BABid) throws JSONException {

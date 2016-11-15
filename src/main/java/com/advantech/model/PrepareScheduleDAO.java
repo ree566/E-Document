@@ -6,21 +6,14 @@
 package com.advantech.model;
 
 import com.advantech.entity.PrepareSchedule;
-import com.google.gson.Gson;
-import static java.lang.System.out;
 import java.sql.Connection;
 import java.util.List;
-import java.util.Map;
 
 /**
  *
  * @author Wei.Cheng
  */
 public class PrepareScheduleDAO extends BasicDAO {
-
-    public PrepareScheduleDAO() {
-
-    }
 
     private static Connection getConn() {
         return getDBUtilConn(SQL.Way_Chien_TWM3);
@@ -35,13 +28,4 @@ public class PrepareScheduleDAO extends BasicDAO {
         return queryPrepareScheduleTable("{CALL exp_getPschedule(?)}", po);
     }
 
-    //抓取測試工時
-    public List<Map> getTestStandardTime(String modelName) {
-        return queryForMapList(getConn(), "{CALL exp_getNschedule(?)}", modelName);
-    }
-
-    public static void main(String arg0[]) {
-        BasicDAO.dataSourceInit1();
-        out.println(new Gson().toJson(new PrepareScheduleDAO().getTestStandardTime("DACST031601E-T")));
-    }
 }

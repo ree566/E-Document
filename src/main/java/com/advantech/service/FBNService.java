@@ -74,12 +74,16 @@ public class FBNService {
         DateTimeFormatter dtf = DateTimeFormat.forPattern("yy/MM/dd HH:mm:ss ");
         return dtf.parseDateTime(date);
     }
-    
-    public List<Map> getTotalAbnormalData(int BABid){
+
+    public List<Map> getTotalAbnormalData(int BABid) {
         return fbnDAO.getTotalAbnormalData(BABid);
     }
-    
-    public List<Map> getAbnormalData(int BABid){
+
+    public List<Map> getAbnormalData(int BABid) {
         return fbnDAO.getAbnormalData(BABid);
+    }
+
+    public boolean sensorDataClean(String date) {
+        return fbnDAO.sensorDataClean(date);
     }
 }

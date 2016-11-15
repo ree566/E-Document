@@ -12,7 +12,7 @@
     </processing-directives>
     
     <!--主要工作job，把資料轉換到TXT控制燈號-->
-    <schedule>
+    <!--    <schedule>
         <job>
             <name>DailyJobWorker</name>
             <job-class>com.advantech.quartzJob.DailyJobWorker</job-class>
@@ -21,11 +21,11 @@
             <cron>
                 <name>DailyJobWorker</name>
                 <job-name>DailyJobWorker</job-name>
-                <!--<misfire-instruction>MISFIRE_INSTRUCTION_FIRE_ONCE_NOW</misfire-instruction>-->
+                <misfire-instruction>MISFIRE_INSTRUCTION_FIRE_ONCE_NOW</misfire-instruction>
                 <cron-expression>0/30 * 8-20 ? * MON-SAT *</cron-expression>
             </cron>
         </trigger>
-    </schedule>
+    </schedule>-->
     
     <!--清理資料庫job-->
     <schedule>
@@ -73,8 +73,23 @@
         </trigger>
     </schedule>
     
+    <!--禮拜三零點固定將Database的sensor unused的資料clean一次-->
+<!--    <schedule>
+        <job>
+            <name>CleanSensorData</name>
+            <job-class>com.advantech.quartzJob.CleanSensorData</job-class>
+        </job>
+        <trigger>
+            <cron>
+                <name>CleanSensorData</name>
+                <job-name>CleanSensorData</job-name>
+                <cron-expression>0 0 0 ? * WED *</cron-expression>
+            </cron>
+        </trigger>
+    </schedule>-->
+    
     <!--把測試線別狀態記錄到資料庫-->
-    <schedule>
+    <!--    <schedule>
         <job>
             <name>TestLineTypeRecord</name>
             <job-class>com.advantech.quartzJob.TestLineTypeRecord</job-class>
@@ -86,10 +101,10 @@
                 <cron-expression>0 50 9-16 ? * MON-FRI *</cron-expression>
             </cron>
         </trigger>
-    </schedule>
+    </schedule>-->
     
     <!--每日把未回覆異常原因的回覆給幹部-->
-    <schedule>
+    <!--    <schedule>
         <job>
             <name>CountermeasureAlarm</name>
             <job-class>com.advantech.quartzJob.CountermeasureAlarm</job-class>
@@ -99,6 +114,21 @@
                 <name>CountermeasureAlarm</name>
                 <job-name>CountermeasureAlarm</job-name>
                 <cron-expression>0 0 11,16 ? * MON-FRI *</cron-expression>
+            </cron>
+        </trigger>
+    </schedule>-->
+    
+    <!--線平衡測試排站人數估算-->
+    <schedule>
+        <job>
+            <name>LineBalancePeopleGenerator</name>
+            <job-class>com.advantech.quartzJob.LineBalancePeopleGenerator</job-class>
+        </job>
+        <trigger>
+            <cron>
+                <name>LineBalancePeopleGenerator</name>
+                <job-name>LineBalancePeopleGenerator</job-name>
+                <cron-expression>0/30 * 8-20 ? * MON-FRI *</cron-expression>
             </cron>
         </trigger>
     </schedule>

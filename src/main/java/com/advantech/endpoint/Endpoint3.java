@@ -11,7 +11,7 @@ package com.advantech.endpoint;
 
 import com.advantech.helper.CronTrigMod;
 import com.advantech.helper.PropertiesReader;
-import com.advantech.quartzJob.PollingDB;
+import com.advantech.quartzJob.PollingNumLampResult;
 import java.util.ArrayList;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -31,32 +31,31 @@ import org.slf4j.LoggerFactory;
  *
  * @author Wei.Cheng
  */
-@ServerEndpoint(
-        value = "/echo"
-//        , 
-//        configurator = WebSocketConfig.class
-)
-public class SensorEndpoint {
+@ServerEndpoint("/echo3")
+public class Endpoint3 {
 
-    private static final Logger log = LoggerFactory.getLogger(SensorEndpoint.class);
+    private static final Logger log = LoggerFactory.getLogger(Endpoint3.class);
     private static final Queue<Session> queue = new ConcurrentLinkedQueue<>();
 
-    private final JobKey jobKey = new JobKey("JobA", "JobAGroup");
-    private final TriggerKey trigKey = new TriggerKey("JobATrigger", "JobAGroup");
-
-    private static final String quartzTrigger = PropertiesReader.getInstance().getEndpointQuartzTrigger();
+    private static final JobKey JOB_KEY;
+    private static final TriggerKey TRIGGER_KEY;
+    private static final String POLLING_FREQUENCY;
+    
+    static {
+        String JOB_NAME = "JOB3";
+        JOB_KEY = new JobKey(JOB_NAME, JOB_NAME + "Group");
+        TRIGGER_KEY = new TriggerKey(JOB_NAME + "Trigger", JOB_NAME + "Group");
+        POLLING_FREQUENCY = PropertiesReader.getInstance().getEndpointQuartzTrigger();
+    }
 
     @OnOpen
     public void onOpen(final Session session) {
-//        HandshakeRequest req = (HandshakeRequest) conf.getUserProperties().get("handshakereq");
-//        Map<String,List<String>> headers = req.getHeaders();
         queue.add(session);
-//        System.out.println("New session opened: " + session.getId());
-
         //每次當client連接進來時，去看目前session的數量 當有1個session時把下方quartz job加入到schedule裏頭(只要執行一次，不要重複加入)
         int a = queue.size();
         if (a == 1) {
             pollingDBAndBrocast();
+            System.out.println("Some session exist, begin polling.");
         }
     }
 
@@ -69,18 +68,16 @@ public class SensorEndpoint {
     @OnClose
     public void onClose(Session session) {
         queue.remove(session);
-//        System.out.println("session closed: " + session.getId());
-
         //當client端完全沒有連結中的使用者時，把job給關閉(持續執行浪費性能)
         if (queue.isEmpty()) {
             unPollingDB();
+            System.out.println("All session closed");
         }
     }
 
     @OnError
     public void error(Session session, Throwable t) {
         queue.remove(session);
-//        System.err.println("Error on session " + session.getId());
     }
 
     ///Brocast the servermessage to all online users.
@@ -90,14 +87,12 @@ public class SensorEndpoint {
             ArrayList<Session> closedSessions = new ArrayList<>();
             for (Session session : queue) {
                 if (!session.isOpen()) {
-//                    System.err.println("Closed session: " + session.getId());
                     closedSessions.add(session);
                 } else {
                     session.getBasicRemote().sendText(msg);
                 }
             }
             queue.removeAll(closedSessions);
-//            System.out.println("Sending " + msg + " to " + queue.size() + " clients");
         } catch (Throwable ex) {
             log.error(ex.toString());
         }
@@ -106,7 +101,7 @@ public class SensorEndpoint {
     // Generate when connect users are at least one.
     private void pollingDBAndBrocast() {
         try {
-            CronTrigMod.getInstance().generateAJob(PollingDB.class, jobKey, trigKey, quartzTrigger);
+            CronTrigMod.getInstance().generateAJob(PollingNumLampResult.class, JOB_KEY, TRIGGER_KEY, POLLING_FREQUENCY);
         } catch (SchedulerException ex) {
             log.error(ex.toString());
         }
@@ -115,8 +110,7 @@ public class SensorEndpoint {
     // Delete when all users are disconnect.
     private void unPollingDB() {
         try {
-            CronTrigMod.getInstance().removeAJob(jobKey, trigKey);
-//            System.out.println("trigger has been removed");
+            CronTrigMod.getInstance().removeAJob(JOB_KEY, TRIGGER_KEY);
         } catch (SchedulerException ex) {
             log.error(ex.toString());
         }

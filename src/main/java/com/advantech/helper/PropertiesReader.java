@@ -28,7 +28,8 @@ public class PropertiesReader {
     private JSONObject systemAbnormalAlarmMailCC;
     private String systemAbnormalAlarmMailTo;
 
-    private int maxTestTable, maxTestRequiredPeople, babSaveToRecordStandardQuantity, balanceRoundingDigit;
+    private int numLampMaxTestRequiredPeople, numLampGroupStart, numLampGroupEnd;
+    private int maxTestTable, babSaveToRecordStandardQuantity, balanceRoundingDigit;
 
     private boolean writeToDB, saveToOldDB, sendMailAlarmUser;
 
@@ -64,7 +65,9 @@ public class PropertiesReader {
 
     private void loadParams(Properties properties) {
         maxTestTable = convertStringToInteger(properties.getProperty("test.maxTable"));
-        maxTestRequiredPeople = convertStringToInteger(properties.getProperty("test.maxRequiredPeople"));
+        numLampMaxTestRequiredPeople = convertStringToInteger(properties.getProperty("numLamp.test.maxRequiredPeople"));
+        numLampGroupStart = convertStringToInteger(properties.getProperty("numLamp.balanceDetect.groupStart"));
+        numLampGroupEnd = convertStringToInteger(properties.getProperty("numLamp.balanceDetect.groupEnd"));
         babSaveToRecordStandardQuantity = convertStringToInteger(properties.getProperty("bab.saveToRecord.quantity"));
         testStandard = convertStringToDouble(properties.getProperty("test.productivity.standard"));
         babStandard = convertStringToDouble(properties.getProperty("bab.lineBalance.standard"));
@@ -107,7 +110,7 @@ public class PropertiesReader {
                 .put("systemAbnormalAlarmMailCC", systemAbnormalAlarmMailCC)
         );
         out.println("The max table setting in test lineType is : " + maxTestTable);
-        out.println("The max test required people in test lineType is  : " + maxTestRequiredPeople);
+        out.println("The max test required people in test lineType is  : " + numLampMaxTestRequiredPeople);
         out.println("The minimum data collection need to save to database : " + babSaveToRecordStandardQuantity);
         out.println("The balance rounding digit is : " + balanceRoundingDigit);
         out.println("Other save result setting : "
@@ -159,8 +162,16 @@ public class PropertiesReader {
         return maxTestTable;
     }
 
-    public int getMaxTestRequiredPeople() {
-        return maxTestRequiredPeople;
+    public int getNumLampMaxTestRequiredPeople() {
+        return numLampMaxTestRequiredPeople;
+    }
+
+    public int getNumLampGroupStart() {
+        return numLampGroupStart;
+    }
+
+    public int getNumLampGroupEnd() {
+        return numLampGroupEnd;
     }
 
     public int getBabSaveToRecordStandardQuantity() {

@@ -10,8 +10,7 @@ import com.advantech.entity.BAB;
 import com.advantech.helper.PropertiesReader;
 import com.advantech.service.BABService;
 import com.advantech.service.BasicService;
-import com.advantech.service.PrepareScheduleService;
-import com.google.gson.Gson;
+import com.advantech.service.WorkTimeService;
 import static java.lang.System.out;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,7 +21,11 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import org.json.JSONArray;
 import org.json.JSONObject;
+import org.quartz.Job;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,24 +33,30 @@ import org.slf4j.LoggerFactory;
  *
  * @author Wei.Cheng
  */
-public class LineBalancePeopleGenerator {
+public class LineBalancePeopleGenerator implements Job {
 
     private static final Logger log = LoggerFactory.getLogger(LineBalancePeopleGenerator.class);
 
     private static LineBalancePeopleGenerator instance;
 
-    private final PrepareScheduleService psService;
+    private final WorkTimeService workTimeService;
     private final BABService babService;
-    private final int maxTestRequiredPeople;
+    private final int numLampMaxTestRequiredPeople, numLampGroupStart, numLampGroupEnd;
     private final Double babStandard;
 
-    private static JSONObject babToTestAssignNumOfPeopleStatus;
+    private static JSONArray babToTestAssignNumOfPeopleStatus;
+
+    private List<String> message;
 
     public LineBalancePeopleGenerator() {
-        this.psService = BasicService.getPrepareScheduleService();
+        this.workTimeService = BasicService.getWorkTimeService();
         this.babService = BasicService.getBabService();
-        this.maxTestRequiredPeople = PropertiesReader.getInstance().getMaxTestRequiredPeople();
-        this.babStandard = PropertiesReader.getInstance().getBabStandard();
+
+        PropertiesReader p = PropertiesReader.getInstance();
+        this.numLampMaxTestRequiredPeople = p.getNumLampMaxTestRequiredPeople();
+        this.numLampGroupStart = p.getNumLampGroupStart();
+        this.numLampGroupEnd = p.getNumLampGroupEnd();
+        this.babStandard = p.getBabStandard();
     }
 
     public static LineBalancePeopleGenerator getInstance() {
@@ -57,72 +66,51 @@ public class LineBalancePeopleGenerator {
         return instance;
     }
 
-    public static void main(String arg0[]) {
-        instance = LineBalancePeopleGenerator.getInstance();
-        int babCTAvg = 200;
-        int testAvgTime = 800;
-
-        int babCTFloatingRange = 150;
-        int peopleDetectMininum = 2;
-
-        int countFlag = 0;
-        int maxDetectCountTime = 10;
-
-        int loopCount = 0;
-        int maxLoopTime = 100;
-
-        try {
-            while (true) {
-                if (countFlag == maxDetectCountTime || loopCount == maxLoopTime) {
-                    out.println("Reach max detect count time, loop break;");
-                    break;
-                }
-
-                int babCT = babCTAvg + (int) ((Math.random() * babCTFloatingRange * 2) + 1) - (babCTFloatingRange);
-                int people = instance.generatePeople1(babCT + 0.0, testAvgTime + 0.0);
-                out.println("The babCT is " + babCT + " and the testAvgTime is " + testAvgTime + " ,we suggest " + people + " peoples.");
-                if (people >= peopleDetectMininum) {
-                    ++countFlag;
-                }
-                ++loopCount;
-                Thread.sleep(1 * 1000);
-            }
-        } catch (InterruptedException ex) {
-            out.println(ex);
-        }
-
+    @Override
+    public void execute(JobExecutionContext jec) throws JobExecutionException {
+        LineBalancePeopleGenerator.getInstance().generateTestPeople();
     }
 
     public void generateTestPeople() {
-        out.println("--------------------------------------------------");
-        babToTestAssignNumOfPeopleStatus = new JSONObject();
-        List<BAB> l = babService.getProcessingBAB();
+        babToTestAssignNumOfPeopleStatus = new JSONArray();
+        List<BAB> l = babService.getAssyProcessing();
         for (BAB bab : l) {
-            out.println(new Gson().toJson(bab));
-            Double standardVal = getStandardTime(bab.getModel_name());
-            List balanceGroup = babService.getBABAvgsInSpecGroup(bab.getId());
-            if (balanceGroup.isEmpty() || standardVal == -1) {
-                out.println("balance group size is " + balanceGroup.size());
-                out.println("standardVal is " + standardVal);
+            JSONObject obj = new JSONObject(bab);
+            message = new ArrayList();
+            Double standardVal;
+
+            //Get the babAvg in setting group
+            List balanceGroup = babService.getBABAvgsInSpecGroup(bab.getId(), numLampGroupStart, numLampGroupEnd);
+
+            if (balanceGroup.isEmpty()) {
+                message.add("The current balance is empty.");
+                continue;
+            } else {
+                standardVal = workTimeService.getTestStandardTime(bab.getModel_name());
+            }
+
+            if (standardVal == null) {
                 continue;
             }
             int maxVal = findMaxInList(balanceGroup);
-            int suggestPeople = generatePeople((double) maxVal, standardVal);
-            out.println("The maxium average is " + maxVal + " , and the standard time is " + standardVal + " ...");
-            out.println(bab.getName() + " suggest people = " + suggestPeople);
-            babToTestAssignNumOfPeopleStatus.put(bab.getName(), suggestPeople);
+            int suggestPeople = generatePeople1((double) maxVal, standardVal);
+            message.add("AssyCT: " + maxVal + " , T1 standard: " + standardVal);
+            message.add(bab.getLineName() + " suggest people: " + suggestPeople);
+            obj.put("suggestTestPeople", suggestPeople);
+            obj.put("message", message);
+            babToTestAssignNumOfPeopleStatus.put(obj);
         }
     }
 
     private int generatePeople(Double maxVal, Double standardVal) {
-        Double[] balances = new Double[maxTestRequiredPeople];
-        Double[] abs = new Double[maxTestRequiredPeople];
+        Double[] balances = new Double[numLampMaxTestRequiredPeople];
+        Double[] abs = new Double[numLampMaxTestRequiredPeople];
         int people = 1;
         Double balance;
         int min = 0;
 
         do {
-            if (people == maxTestRequiredPeople) {
+            if (people == numLampMaxTestRequiredPeople) {
                 return people;
             }
 
@@ -142,37 +130,38 @@ public class LineBalancePeopleGenerator {
             out.println("Continue finding...");
             people++;
 
-        } while (balance - babStandard > 0 && people <= maxTestRequiredPeople);
+        } while (balance - babStandard > 0 && people <= numLampMaxTestRequiredPeople);
 
         out.println("The closet value is " + balances[min]);
 
         return min + 1;
     }
 
-    private int generatePeople1(Double maxVal, Double standardVal) {
+    public int generatePeople1(Double maxVal, Double standardVal) {
         Map<Integer, Double> balanceResults = new HashMap();
         int people = 1;
         do {
             balanceResults.put(people, calculateBalance(maxVal, standardVal, people));
             people++;
-        } while (people <= maxTestRequiredPeople);
+        } while (people <= numLampMaxTestRequiredPeople);
 
         balanceResults = this.sortByValue(balanceResults);
-        out.println("Array status: " + new Gson().toJson(balanceResults));
 
-        Double bestVal = 0.0;
+        for (Map.Entry<Integer, Double> entry : balanceResults.entrySet()) {
+            message.add(entry.getKey() + " 人 / 計算平衡率:" + entry.getValue());
+        }
+
         int bestSetupPeople = 0;
         int loopCount = 0;
 
         for (Map.Entry<Integer, Double> entry : balanceResults.entrySet()) {
             ++loopCount;
-            if (entry.getValue() >= babStandard || loopCount == maxTestRequiredPeople) {
+            if (entry.getValue() >= babStandard || loopCount == numLampMaxTestRequiredPeople) {
                 bestSetupPeople = entry.getKey();
-                bestVal = entry.getValue();
                 break;
             }
         }
-        out.println("The best situation in these value is set people = " + bestSetupPeople + " and lineBalance is " + bestVal + " .");
+//        out.println("The best situation in these value is set people = " + bestSetupPeople + " and lineBalance is " + bestVal + " .");
         return bestSetupPeople;
     }
 
@@ -198,15 +187,6 @@ public class LineBalancePeopleGenerator {
         Double denominator = findMax(maxVal, standardVal / people) * 2;
         Double result = numerator / denominator;
         return result;
-    }
-
-    private Double getStandardTime(String modelName) {
-        List<Map> l = psService.getTestStandardTime(modelName);
-        if (l.isEmpty()) {
-            return -1.0;
-        }
-        Map date = l.get(0);
-        return (Double) date.get("standardTime") * 60;
     }
 
     private Integer findMaxInList(List<Map> l) {
@@ -262,8 +242,8 @@ public class LineBalancePeopleGenerator {
         return numbers[idx];
     }
 
-    public static JSONObject getBabToTestAssignNumOfPeopleStatus() {
-        return babToTestAssignNumOfPeopleStatus;
+    public JSONArray getBabToTestAssignNumOfPeopleStatus() {
+        return babToTestAssignNumOfPeopleStatus == null ? new JSONArray() : babToTestAssignNumOfPeopleStatus;
     }
 
 }
