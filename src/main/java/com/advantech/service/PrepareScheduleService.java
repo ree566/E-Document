@@ -5,8 +5,8 @@
  */
 package com.advantech.service;
 
-import com.advantech.model.PrepareScheduleDAO;
 import com.advantech.entity.PrepareSchedule;
+import com.advantech.model.PrepareScheduleDAO;
 import java.util.List;
 
 /**

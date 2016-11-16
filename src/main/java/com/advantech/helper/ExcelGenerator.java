@@ -8,16 +8,11 @@ package com.advantech.helper;
 import com.advantech.model.BasicDAO;
 import com.advantech.service.BasicService;
 import com.advantech.service.FBNService;
-import java.io.BufferedReader;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.Reader;
 import static java.lang.System.out;
 import java.math.BigDecimal;
 import java.sql.Clob;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -96,7 +91,7 @@ public class ExcelGenerator {
             //Set the header
             Iterator it = firstData.keySet().iterator();
             while (it.hasNext()) {
-                setCellValue(row.createCell(yIndex++), (String) it.next());
+                setCellValue(row.createCell(yIndex++), it.next());
             }
 
             xIndex++;
@@ -119,14 +114,14 @@ public class ExcelGenerator {
         if (value instanceof Clob) {
             cell.setCellValue(StringParser.clobToString((Clob) value));
         } else if (value instanceof java.util.Date) {
-            cell.setCellValue(dg.dateFormatToString((Date) value));
+            cell.setCellValue(dg.dateFormatToString(value));
         } else if (value instanceof Integer) {
             cell.setCellValue((Integer) value);
         } else if (value instanceof Double) {
             cell.setCellValue((Double) value);
             createFloatCell(cell);
         } else if (value instanceof BigDecimal) {
-            cell.setCellValue(((BigDecimal) value).doubleValue());
+            cell.setCellValue(((Number) value).doubleValue());
             createFloatCell(cell);
         } else if (value == null) {
             cell.setCellValue("");
@@ -309,7 +304,7 @@ public class ExcelGenerator {
                     setCellValue(row.createCell(xIndex++), "");
                 }
                 cell = row.createCell(xIndex++);
-                setCellValue(cell, (String) it.next());
+                setCellValue(cell, it.next());
 
                 if (xIndex > colSeparateColIndex) {
                     String colNumLetter = CellReference.convertNumToColString(cell.getColumnIndex());

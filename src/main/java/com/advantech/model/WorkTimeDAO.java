@@ -20,8 +20,8 @@ public class WorkTimeDAO {
     private static Connection getConn() {
         return getDBUtilConn(BasicDAO.SQL.Way_Chien_WebAccess);
     }
+    
     //抓取測試工時
-
     public List<Map> getTestStandardTime(String modelName) {
         return queryForMapList(getConn(), "SELECT * FROM workTimePerModelView WHERE Model_name = ?", modelName);
     }

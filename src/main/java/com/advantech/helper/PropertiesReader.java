@@ -29,6 +29,7 @@ public class PropertiesReader {
     private String systemAbnormalAlarmMailTo;
 
     private int numLampMaxTestRequiredPeople, numLampGroupStart, numLampGroupEnd;
+    private int numLampMinStandardTime, numLampMinQuantity, numLampMinTotalStandardTime;
     private int maxTestTable, babSaveToRecordStandardQuantity, balanceRoundingDigit;
 
     private boolean writeToDB, saveToOldDB, sendMailAlarmUser;
@@ -68,6 +69,9 @@ public class PropertiesReader {
         numLampMaxTestRequiredPeople = convertStringToInteger(properties.getProperty("numLamp.test.maxRequiredPeople"));
         numLampGroupStart = convertStringToInteger(properties.getProperty("numLamp.balanceDetect.groupStart"));
         numLampGroupEnd = convertStringToInteger(properties.getProperty("numLamp.balanceDetect.groupEnd"));
+        numLampMinStandardTime = convertStringToInteger(properties.getProperty("numLamp.mininum.standardTime"));
+        numLampMinQuantity = convertStringToInteger(properties.getProperty("numLamp.mininum.quantity"));
+        numLampMinTotalStandardTime = convertStringToInteger(properties.getProperty("numLamp.mininum.totalStandardTime"));
         babSaveToRecordStandardQuantity = convertStringToInteger(properties.getProperty("bab.saveToRecord.quantity"));
         testStandard = convertStringToDouble(properties.getProperty("test.productivity.standard"));
         babStandard = convertStringToDouble(properties.getProperty("bab.lineBalance.standard"));
@@ -172,6 +176,18 @@ public class PropertiesReader {
 
     public int getNumLampGroupEnd() {
         return numLampGroupEnd;
+    }
+
+    public int getNumLampMinStandardTime() {
+        return numLampMinStandardTime;
+    }
+
+    public int getNumLampMinQuantity() {
+        return numLampMinQuantity;
+    }
+
+    public int getNumLampMinTotalStandardTime() {
+        return numLampMinTotalStandardTime;
     }
 
     public int getBabSaveToRecordStandardQuantity() {

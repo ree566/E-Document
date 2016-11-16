@@ -10,11 +10,11 @@ import com.advantech.service.BabLineTypeFacade;
 import com.advantech.service.BasicService;
 import com.advantech.service.TestLineTypeFacade;
 import java.io.IOException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *

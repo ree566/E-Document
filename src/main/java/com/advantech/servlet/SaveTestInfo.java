@@ -6,7 +6,6 @@
  */
 package com.advantech.servlet;
 
-import com.advantech.entity.Test;
 import com.advantech.helper.ParamChecker;
 import com.advantech.helper.WebServiceTX;
 import com.advantech.service.BasicService;

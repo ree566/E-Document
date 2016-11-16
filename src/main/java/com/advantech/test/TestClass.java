@@ -6,7 +6,6 @@
 package com.advantech.test;
 
 import com.advantech.entity.BAB;
-import static java.lang.System.out;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,6 +27,5 @@ public class TestClass {
         Map m = new HashMap();
         m.put("test", b1);
         
-        out.println(m.containsValue(b2));
     }
 }

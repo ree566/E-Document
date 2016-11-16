@@ -6,13 +6,12 @@
 package com.advantech.model;
 
 import com.advantech.entity.AlarmAction;
+import com.advantech.entity.BAB;
+import com.advantech.entity.BABHistory;
+import com.advantech.entity.LineBalancing;
 import com.advantech.helper.ProcRunner;
 import com.advantech.helper.PropertiesReader;
-import com.advantech.entity.BABHistory;
-import com.advantech.entity.BAB;
-import com.advantech.entity.LineBalancing;
 import com.advantech.service.BasicService;
-import com.advantech.service.FBNService;
 import com.advantech.service.LineBalanceService;
 import java.sql.Array;
 import java.sql.Connection;
@@ -83,10 +82,10 @@ public class BABDAO extends BasicDAO {
     public List<BAB> getBABIdForCaculate() {
         return queryBABTable("SELECT * FROM LS_BAB_Id_List");
     }
-    
+
     public List<BAB> getAssyProcessing() {
         return queryBABTable("SELECT * FROM assyProcessing");
-    } 
+    }
 
     public List<BABHistory> getBABHistory(BAB bab) {
         return getHistoryTable("SELECT * FROM LS_BAB_History WHERE BABid = ?", bab.getId());
@@ -175,6 +174,11 @@ public class BABDAO extends BasicDAO {
         return !historys.isEmpty();//回傳是否有東西 有true 無 false
     }
 
+    public Integer getPoTotalQuantity(String PO) {
+        List<Map> l = queryForMapList(this.getConn(), "SELECT * FROM poQuantityView WHERE PO = ?", PO);
+        return l.isEmpty() ? null : (Integer) l.get(0).get("qty");
+    }
+
     public boolean insertTestAlarm(List<AlarmAction> l) {
         return updateAlarmTable("INSERT INTO Alm_BABAction(alarm, tableId) VALUES(?, ?)", l);
     }
@@ -233,7 +237,7 @@ public class BABDAO extends BasicDAO {
             }
 
             LineBalancing maxBaln = lineBalanceService.getMaxBalance(bab); //先取得max才insert，不然會抓到自己
-            double baln = (double) lineBalanceService.caculateLineBalance(balances);
+            double baln = lineBalanceService.caculateLineBalance(balances);
 
             QueryRunner qRunner = new QueryRunner();
             ProcRunner pRunner = new ProcRunner();
@@ -250,7 +254,7 @@ public class BABDAO extends BasicDAO {
                 String params = ""; //串接sql字串 (待解決Do_not數量與待寫入數量不一之情況)
 
                 for (int i = 0; i < balances.length(); i++) {
-                    Double avg = (Double) balances.getJSONObject(i).getDouble("average");
+                    Double avg = balances.getJSONObject(i).getDouble("average");
                     columnName += ("Do_not" + (i + 1) + ", ");
                     params += (avg + ",");
                 }

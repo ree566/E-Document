@@ -9,7 +9,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>5F狀態平面圖 - ${initParam.pageTitle}</title>
+        <title>6F狀態平面圖 - ${initParam.pageTitle}</title>
         <link rel="stylesheet" href="../../css/jquery-ui.css">
         <link rel="stylesheet" href="../../css/tooltipster.bundle.min.css">
         <style>
@@ -20,48 +20,47 @@
                 cursor: default;
                 text-align: center;
             }
+
             #wigetInfo .draggable{
                 width: 25px; 
                 height: 25px; 
                 padding: 0.3em; 
             }
+
             #babArea .draggable{
                 width: 25px; 
                 height: 25px; 
                 padding: 1.0em; 
                 font-size: 36px;
             }
-            #messageBoxArea .messageBoxWiget{
-                width: 230px; 
-                height: 100px; 
-                padding: 0 auto;  
-                background-color: white;
-                font-size: 12px;
-                float: left;
-                border:5px green solid;
-                cursor: default;
-            }
+
             #generateArea{
                 height: 20px;
             }
+
             .alarm{
                 background-color: #0066FF;
                 /*color: white;*/
             }
+
             .normal{
                 background-color: greenyellow;
                 /*color: white;*/
             }
+
             .abnormal{
                 background-color: yellow;
             }
+
             .offLine{
                 background-color: white;
             }
+
             #goback{
                 cursor: pointer;
                 color: blue;
             }
+
             .lineTitle{
                 padding: 0 auto; 
                 width: 40px; 
@@ -72,13 +71,15 @@
                 border:5px green solid;
                 cursor: default;
             }
+
             .clearWiget{
                 clear: both;
             }
+
             #mapGroup{
                 width: 1200px;
                 height: 500px;
-                background-image: url(../../images/totalMap_5f_3.png);
+                background-image: url(../../images/totalMap_6f.png);
                 background-repeat: no-repeat;
                 -o-background-size: 100% 100%, auto;
                 -moz-background-size: 100% 100%, auto;
@@ -99,6 +100,7 @@
                 -webkit-transition: none;
                 transition: none;
             }
+
             #wigetInfo{
                 border-bottom: 5px red solid;
                 border-right: 5px red solid;
@@ -106,39 +108,45 @@
                 width: 25%; 
                 overflow: hidden;
             }
-            #titleArea>div, #messageBoxArea>div, #babArea>div{
+
+            #titleArea>div, #babArea>div{
                 position: absolute;
             }
+            
             .titleWiget{
                 cursor: pointer;
             }
+            
             .divCustomBg{
                 background-size: 100% 100%, auto;
                 background-repeat: no-repeat;
             }
+            
             .ui-helper {
                 /*width: 100% !important;*/
                 float: left;
             }
+            
             .blub-empty{
                 background-image: url(../../images/blub-icon/Gray_Light_Icon.png);
                 /*background-color: red;*/
             }
+            
             .blub-normal{
                 background-image: url(../../images/blub-icon/Green_Light_Icon.png);
                 cursor: pointer;
             }
+            
             .blub-alarm{
                 background-image: url(../../images/blub-icon/Blue_Light_Icon.png);
                 cursor: pointer;
             }
+            
             .blub-abnormal{
                 background-image: url(../../images/blub-icon/Yellow_Light_Icon.png);
             }
-            .tooltip_templates { 
-                display: none; 
-            }
-            #tooltipTest{
+            
+            #tooltipTrig{
                 position: fixed;
                 bottom: 0px;
             }
@@ -146,7 +154,6 @@
         <script src="../../js/jquery-1.11.3.min.js"></script>
         <script src="../../js/jquery-ui-1.10.0.custom.min.js"></script>
         <script src="../../js/reconnecting-websocket.min.js"></script>
-        <script src="../../js/jquery.fullscreen-min.js"></script>
         <script src="../../js/tooltipster.bundle.min.js"></script>
         <script>
             var sitefloor = 5;
@@ -157,30 +164,23 @@
                 var pYa = -0;
 
                 var titleGroup = [
-                    {lineName: "L1", x: 1070, y: 250},
-                    {lineName: "LA", x: 1070, y: 160},
-                    {lineName: "LB", x: 1070, y: 50},
-                    {lineName: "LH", x: 40, y: 120},
-                    {lineName: "LG", x: 370, y: 80},
-                    {lineName: "LF", x: 370, y: 160}
+                    //assy
+                    {lineName: "L3", x: 1080, y: 280},
+                    {lineName: "L4", x: 1080, y: 180},
+                    //pkg
+                    {lineName: "L6", x: 190, y: 200},
+                    {lineName: "L7", x: 190, y: 105},
+                    {lineName: "L8", x: 525, y: 220},
+                    {lineName: "L9", x: 525, y: 280}
                 ];
 
                 var babGroup = [
-                    {people: 1, x: 715, y: 265, lineName: "L1"},
-                    {people: 1, x: 715, y: 145, lineName: "LA"},
-                    {people: 1, x: 715, y: 25, lineName: "LB"}
-                    //{people: 1, x: 100, y: 160, lineName: "LH"},
-                    //{people: 1, x: 260, y: 90, lineName: "LG"},
-                    //{people: 1, x: 260, y: 160, lineName: "LF"}
-                ];
-
-                var babMessageGroup = [
-                    {people: 1, x: 820, y: 265, lineName: "L1"},
-                    {people: 1, x: 820, y: 145, lineName: "LA"},
-                    {people: 1, x: 820, y: 25, lineName: "LB"}
-                    //{people: 1, x: 100, y: 160, lineName: "LH"},
-                    //{people: 1, x: 260, y: 90, lineName: "LG"},
-                    //{people: 1, x: 260, y: 160, lineName: "LF"}
+                    {people: 1, x: 725, y: 285, lineName: "L3"}, // group 1-4
+                    {people: 1, x: 725, y: 130, lineName: "L4"}, // group 21-24
+//                    {people: 3, x: 255, y: 210, lineName: "L6"}, // group 16-20
+//                    {people: 3, x: 255, y: 120, lineName: "L7"}, // group 9-15
+//                    {people: 4, x: 400, y: 190, lineName: "L8"}, // group 5-8
+//                    {people: 4, x: 400, y: 320, lineName: "L9"} // group 1-4
                 ];
 
                 for (var i = 0; i < titleGroup.length; i++) {
@@ -207,27 +207,13 @@
                     }
                 }
 
-                for (var i = 0; i < babMessageGroup.length; i++) {
-                    $("#messageBoxArea").append("<div></div>");
-                    var groupStatus = babMessageGroup[i];
-                    for (var j = 0, k = groupStatus.people; j < k; j++) {
-                        $("#messageBoxArea>div")
-                                .eq(i)
-                                .append("<div></div>")
-                                .addClass("messageBoxWiget tooltip_templates")
-                                .attr("id", groupStatus.lineName + "_messageBox")
-                                .css({left: groupStatus.x + pXa, top: groupStatus.y + pYa})
-                                .html("<strong>This is some content inside messageBox.</strong>");
-                    }
-                }
-
                 var babChildElement = $("#babArea>.babWiget div");
 
                 babObjectInit();
 
                 $("#titleArea>div").not(".clearWiget").addClass("lineTitle");
 
-                var dragableWiget = $("#titleArea>div, #babArea>div, #messageBoxArea>div");
+                var dragableWiget = $("#titleArea>div, #babArea>div");
 //                dragableWiget.after("<div class='clearWiget'></div>");
 
                 dragableWiget.not(".clearWiget").addClass("ui-helper").draggable({
@@ -236,18 +222,13 @@
                     }
                 });
 
-                $('[data-toggle="tooltip"]').tooltip();
-                $('.tooltip').tooltipster({
-                    trigger: "click"
-                });
-                $('.tooltip').tooltipster('open');
-
-                $("#fullBtn").click(function () {
-                    $("#wigetCtrl").fullScreen(true);
+                $("#tooltipTrig").click(function(){
+                    $("#babArea > div").tooltipster('open');
                 });
 
                 function initWiget(obj) {
-                    obj.addClass("blub-empty").removeClass("blub-alarm blub-normal blub-abnormal").removeAttr("title");
+                    obj.addClass("blub-empty").removeClass("blub-alarm blub-normal blub-abnormal").html(0);
+                    obj.parent().tooltipster('content', "empty");
                 }
 
                 function babObjectInit() {
@@ -255,11 +236,15 @@
                         var lineName = $(this).attr("id");
                         var childAmount = $(this).children().length;
                         $(this).children().each(function () {
-                            $(this).attr({"id": (lineName + "_" + childAmount), "data-toggle": "tooltip", "data-tooltip-content": "#" + lineName + "_messageBox"})
-                                    .addClass("draggable blub-empty divCustomBg tooltip")
+                            $(this).attr({"id": (lineName + "_" + childAmount)})
+                                    .addClass("draggable blub-empty divCustomBg")
                                     .html(0);
                             childAmount--;
                         });
+                        $("#" + lineName)
+                                .attr({title: "empty"})
+                                .tooltipster({trigger: "click", side: "right", contentAsHTML: true})
+                                .tooltipster('open');
                     });
                 }
 
@@ -279,9 +264,11 @@
                                             .addClass((suggestPeople == null ? "blub-abnormal" : "blub-normal"))
                                             .html(suggestPeople);
                                     var messageArray = details.message;
+                                    var message = "";
                                     for (var i = 0; i < messageArray.length; i++) {
-                                        $("#" + lineName.trim() + "_messageBox").append(messageArray[i] + "<br/>");
+                                        message += messageArray[i] + "<br/>";
                                     }
+                                    $("#" + lineName.trim()).tooltipster('content', message);
                                 }
                             }
                         }
@@ -357,7 +344,6 @@
         </script>
     </head>
     <body style="cursor: auto;">
-        <!--<button id="fullBtn">Full</button>-->
         <div id="wigetCtrl">
             <div id="mapGroup">
                 <div id="wigetInfo">
@@ -373,24 +359,11 @@
                     <label for="normalSign" style="float:left">異常</label>
                     <div class="draggable blub-abnormal divCustomBg"></div>
                 </div>
-                <!--<div class="clearWiget" /></div>-->
-
                 <div id="titleArea"></div>
-                <!--<div class="clearWiget" /></div>-->
-
-                <div id="messageBoxArea"></div>
-                <!--<div class="clearWiget" /></div>-->
-
                 <div id="babArea"></div>
-                <!--<div class="clearWiget"></div>-->
             </div>
-        </div>
-
-        <span id="tooltipTest" class="tooltip" data-tooltip-content="#tooltip_content">This span has a tooltip with HTML when you hover over it!</span>
-
-        <div class="tooltip_templates">
-            <div id="tooltip_content">
-                <img src="../../images/bulb.png" /> <strong>This is the content of my tooltip!</strong>
+            <div id="tooltipTrig">
+                <span>Trigger Button</span>
             </div>
         </div>
         <div class="clearWiget" />

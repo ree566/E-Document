@@ -12,6 +12,13 @@ import org.json.JSONObject;
  * @author Wei.Cheng
  */
 public class TestClassService {
+    public static void main(String arg[]) {
+        
+        JSONObject obj1 = new JSONObject();
+        obj1.put("data", 1);
+        JSONObject obj2 = new JSONObject();
+        obj2.put("data", 1);
+    }
     
     private final TestClass t;
 
@@ -20,12 +27,4 @@ public class TestClassService {
     }
 
     
-    public static void main(String arg[]) {
-
-        JSONObject obj1 = new JSONObject();
-        obj1.put("data", 1);
-        JSONObject obj2 = new JSONObject();
-        obj2.put("data", 1);
-        System.out.print(obj1.equals(obj2));
-    }
 }

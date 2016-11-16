@@ -12,6 +12,8 @@ import com.advantech.service.BABService;
 import com.advantech.service.BasicService;
 import com.advantech.service.WorkTimeService;
 import static java.lang.System.out;
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -48,6 +50,11 @@ public class LineBalancePeopleGenerator implements Job {
 
     private List<String> message;
 
+    private final DecimalFormat formatter;
+    private final DecimalFormat formatter2;
+
+    private final int startCountMininumQuantity, startCountMininumStandardTime, minTotalStandardTime, basicSuggestPeople = 1;
+
     public LineBalancePeopleGenerator() {
         this.workTimeService = BasicService.getWorkTimeService();
         this.babService = BasicService.getBabService();
@@ -57,6 +64,12 @@ public class LineBalancePeopleGenerator implements Job {
         this.numLampGroupStart = p.getNumLampGroupStart();
         this.numLampGroupEnd = p.getNumLampGroupEnd();
         this.babStandard = p.getBabStandard();
+        this.startCountMininumQuantity = p.getNumLampMinQuantity();
+        this.startCountMininumStandardTime = p.getNumLampMinStandardTime();
+        this.minTotalStandardTime = p.getNumLampMinTotalStandardTime();
+
+        formatter = new DecimalFormat("#.##%");
+        formatter2 = new DecimalFormat("#.##");
     }
 
     public static LineBalancePeopleGenerator getInstance() {
@@ -77,10 +90,10 @@ public class LineBalancePeopleGenerator implements Job {
         for (BAB bab : l) {
             JSONObject obj = new JSONObject(bab);
             message = new ArrayList();
-            Double standardVal;
 
             //Get the babAvg in setting group
-            List balanceGroup = babService.getBABAvgsInSpecGroup(bab.getId(), numLampGroupStart, numLampGroupEnd);
+            List<Map> balanceGroup = babService.getBABAvgsInSpecGroup(bab.getId(), numLampGroupStart, numLampGroupEnd);
+            Integer standardVal;
 
             if (balanceGroup.isEmpty()) {
                 message.add("The current balance is empty.");
@@ -90,11 +103,25 @@ public class LineBalancePeopleGenerator implements Job {
             }
 
             if (standardVal == null) {
+                message.add("This model's standardTime is not setting.");
                 continue;
             }
-            int maxVal = findMaxInList(balanceGroup);
-            int suggestPeople = generatePeople1((double) maxVal, standardVal);
-            message.add("AssyCT: " + maxVal + " , T1 standard: " + standardVal);
+
+            Map firstData = balanceGroup.get(0);
+            Integer currentGroup = firstData.containsKey("currentGroup") ? (Integer) firstData.get("currentGroup") : null;
+
+            Integer suggestPeople;
+            Integer totalQuantity = BasicService.getBabService().getPoTotalQuantity(bab.getPO());
+            if (totalQuantity < startCountMininumQuantity || standardVal <= startCountMininumStandardTime || totalQuantity == null || standardVal * totalQuantity <= minTotalStandardTime) {
+                message.add("Total quantity is: " + totalQuantity + " piece");
+                message.add("T1 standard: " + standardVal);
+                suggestPeople = basicSuggestPeople;
+            } else {
+                Double maxVal = ((BigDecimal) findMaxInList(balanceGroup)).doubleValue();
+                suggestPeople = generatePeople1((int) Math.floor(maxVal), standardVal);
+                message.add("AssyCT: " + formatter2.format(maxVal) + " , T1 standard: " + standardVal);
+            }
+            message.add("Current piece: " + currentGroup + " piece");
             message.add(bab.getLineName() + " suggest people: " + suggestPeople);
             obj.put("suggestTestPeople", suggestPeople);
             obj.put("message", message);
@@ -102,12 +129,12 @@ public class LineBalancePeopleGenerator implements Job {
         }
     }
 
-    private int generatePeople(Double maxVal, Double standardVal) {
+    private int generatePeople(Integer maxVal, Integer standardVal) {
         Double[] balances = new Double[numLampMaxTestRequiredPeople];
         Double[] abs = new Double[numLampMaxTestRequiredPeople];
-        int people = 1;
+        Integer people = 1;
         Double balance;
-        int min = 0;
+        Integer min = 0;
 
         do {
             if (people == numLampMaxTestRequiredPeople) {
@@ -137,9 +164,9 @@ public class LineBalancePeopleGenerator implements Job {
         return min + 1;
     }
 
-    public int generatePeople1(Double maxVal, Double standardVal) {
+    public int generatePeople1(Integer maxVal, Integer standardVal) {
         Map<Integer, Double> balanceResults = new HashMap();
-        int people = 1;
+        Integer people = basicSuggestPeople;
         do {
             balanceResults.put(people, calculateBalance(maxVal, standardVal, people));
             people++;
@@ -148,7 +175,7 @@ public class LineBalancePeopleGenerator implements Job {
         balanceResults = this.sortByValue(balanceResults);
 
         for (Map.Entry<Integer, Double> entry : balanceResults.entrySet()) {
-            message.add(entry.getKey() + " 人 / 計算平衡率:" + entry.getValue());
+            message.add("People: " + entry.getKey() + " / Balance:" + formatter.format(entry.getValue()));
         }
 
         int bestSetupPeople = 0;
@@ -182,14 +209,16 @@ public class LineBalancePeopleGenerator implements Job {
         return result;
     }
 
-    private Double calculateBalance(Double maxVal, Double standardVal, int people) {
-        Double numerator = maxVal + (standardVal / people);
-        Double denominator = findMax(maxVal, standardVal / people) * 2;
+    //(組裝CT + (測試標工 / 人數)) / (max(組裝CT, (測試標工 / 人數)) * 2)  因為取組裝&測試的線平衡率，所以需要*2
+    private Double calculateBalance(Integer maxVal, Integer standardVal, Integer people) {
+        Double babCT = (double) maxVal, testStandard = (double) standardVal;
+        Double numerator = babCT + (testStandard / people);
+        Double denominator = findMax(babCT, testStandard / people) * 2;
         Double result = numerator / denominator;
         return result;
     }
 
-    private Integer findMaxInList(List<Map> l) {
+    private Object findMaxInList(List<Map> l) {
         List avgs = new ArrayList();
         for (Map m : l) {
             avgs.add(m.get("average"));
@@ -197,7 +226,7 @@ public class LineBalancePeopleGenerator implements Job {
         return findMax(avgs);
     }
 
-    private Integer findMax(List<Integer> l) {
+    private Object findMax(List l) {
         return l.isEmpty() ? null : Collections.max(l);
     }
 

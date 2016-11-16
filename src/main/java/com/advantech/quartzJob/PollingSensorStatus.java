@@ -8,8 +8,8 @@ package com.advantech.quartzJob;
 
 import com.advantech.endpoint.Endpoint;
 import com.advantech.service.BasicService;
-import com.google.gson.Gson;
 import com.advantech.service.FBNService;
+import com.google.gson.Gson;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;

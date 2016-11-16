@@ -65,11 +65,12 @@ public class BABExcelGenerate extends HttpServlet {
         }
 
         if (!"-1".equals(sitefloor)) {
-            usf1.filterData("sitefloor", sitefloor);
-            usf2.filterData("sitefloor", sitefloor);
+            usf1.filterData("sitefloor", Integer.parseInt(sitefloor));
+            usf2.filterData("sitefloor", Integer.parseInt(sitefloor));
         }
 
         List list = usf1.getList();
+        out.println(sitefloor);
         List list2 = cService.transformPersonalAlmDataPattern(usf2.getList());//把各站亮燈頻率合併為橫式(類似 sql 的 Group by格式)
 
         if (list.isEmpty() || (list.isEmpty() && list2.isEmpty())) {
@@ -113,7 +114,7 @@ public class BABExcelGenerate extends HttpServlet {
         while (it.hasNext()) {
             Map personalAlarm = (Map) it.next();
             for (Map cm : sheet2Data) {
-                if (Objects.equals((Integer) cm.get("id"), (Integer) personalAlarm.get("id"))) {
+                if (Objects.equals(cm.get("id"), personalAlarm.get("id"))) {
                     sheet4Data.add(personalAlarm);
                     it.remove();
                     break;

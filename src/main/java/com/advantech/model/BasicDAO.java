@@ -5,11 +5,10 @@
  */
 package com.advantech.model;
 
-import com.advantech.helper.ProcRunner;
 import com.advantech.helper.CronTrigMod;
+import com.advantech.helper.ProcRunner;
 import com.mchange.v2.c3p0.DataSources;
 import com.mchange.v2.c3p0.PooledDataSource;
-import com.mchange.v2.c3p0.management.PooledDataSourceManager;
 import java.io.Serializable;
 import java.sql.*;
 import java.util.ArrayList;

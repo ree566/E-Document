@@ -6,7 +6,6 @@
  */
 package com.advantech.quartzJob;
 
-import com.advantech.endpoint.Endpoint;
 import com.advantech.endpoint.Endpoint3;
 import com.google.gson.Gson;
 import org.quartz.Job;

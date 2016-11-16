@@ -6,7 +6,6 @@
 package com.advantech.test;
 
 import java.awt.Desktop;
-import static java.lang.System.out;
 import java.net.URI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +24,6 @@ public class TestClass2 {
             try {
                 Desktop.getDesktop().browse(new URI("http://172.20.131.225/mesdashboard/"));
             } catch (Exception ex) {
-                out.println(ex.toString());
             }
         }
     }

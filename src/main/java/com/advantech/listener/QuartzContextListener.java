@@ -5,10 +5,9 @@
  */
 package com.advantech.listener;
 
-import com.advantech.model.BasicDAO;
-import com.advantech.helper.ThreadLocalCleanUtil;
-import com.advantech.endpoint.Endpoint;
 import com.advantech.helper.PropertiesReader;
+import com.advantech.helper.ThreadLocalCleanUtil;
+import com.advantech.model.BasicDAO;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 

@@ -2,13 +2,11 @@ package com.advantech.test;
 
 import java.io.*;
 import java.util.*;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
@@ -90,7 +88,6 @@ public class UploadServlet extends HttpServlet {
                         file = new File(filePath + "\\"
                                 + fileName.substring(fileName.lastIndexOf("\\") + 1));
                     }
-                    System.out.println(file.getAbsolutePath());
                     fi.write(file);
                     out.println("Uploaded Filename: " + fileName + "<br>");
                 }
@@ -98,7 +95,6 @@ public class UploadServlet extends HttpServlet {
             out.println("</body>");
             out.println("</html>");
         } catch (Exception ex) {
-            System.out.println(ex);
         }
     }
 

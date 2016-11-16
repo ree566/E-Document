@@ -21,7 +21,7 @@ public class WorkTimeService {
         workTimeDAO = new WorkTimeDAO();
     }
 
-    public Double getTestStandardTime(String modelName) {
+    public Integer getTestStandardTime(String modelName) {
         List<Map> l = workTimeDAO.getTestStandardTime(modelName);
         
         if (l.isEmpty()) {
@@ -30,6 +30,7 @@ public class WorkTimeService {
 
         String columnName = "T1_Time";
         Map data = l.get(0);
-        return data.containsKey(columnName) ? (Double) data.get(columnName) * 60 : null;
+        Double testStandard = (Double) data.get(columnName);
+        return data.containsKey(columnName) ? (int)(testStandard * 60) : null;
     }
 }

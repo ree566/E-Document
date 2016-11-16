@@ -1,14 +1,12 @@
 package com.advantech.service;
 
 import com.advantech.entity.AlarmAction;
-import com.advantech.model.BABDAO;
 import com.advantech.entity.BAB;
 import com.advantech.entity.BABHistory;
 import com.advantech.entity.Line;
 import com.advantech.helper.PropertiesReader;
-import com.advantech.model.BasicDAO;
+import com.advantech.model.BABDAO;
 import com.google.gson.Gson;
-import static java.lang.System.out;
 import java.math.BigDecimal;
 import java.sql.Array;
 import java.util.List;
@@ -76,6 +74,10 @@ public class BABService {
 
     public boolean checkSensorIsClosed(int BABid, int sensorNo) {
         return babDAO.checkSensorIsClosed(BABid, sensorNo);
+    }
+    
+    public Integer getPoTotalQuantity(String PO) {
+        return babDAO.getPoTotalQuantity(PO);
     }
 
     public List<Map> getBABInfo(String startDate, String endDate) {
