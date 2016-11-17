@@ -22,7 +22,6 @@ public class PollingNumLampResult implements Job {
 
     private static final Gson gson = new Gson();
     private static final Logger log = LoggerFactory.getLogger(PollingNumLampResult.class);
-    private static final LineBalancePeopleGenerator balnGenerator = LineBalancePeopleGenerator.getInstance();
 
     @Override
     public void execute(JobExecutionContext jec) throws JobExecutionException {
@@ -39,7 +38,7 @@ public class PollingNumLampResult implements Job {
          */
         try {
             
-            Endpoint3.sendAll(balnGenerator.getBabToTestAssignNumOfPeopleStatus().toString());
+            Endpoint3.sendAll(NumLamp.getNumLampStatus().toString());
         } catch (Exception e) {
             log.error(e.toString());
         }

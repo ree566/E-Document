@@ -11,6 +11,7 @@ import com.advantech.helper.PropertiesReader;
 import com.advantech.service.BABService;
 import com.advantech.service.BasicService;
 import com.advantech.service.WorkTimeService;
+import com.google.gson.Gson;
 import static java.lang.System.out;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
@@ -23,11 +24,12 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.quartz.Job;
+import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.quartz.JobKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,14 +41,10 @@ public class LineBalancePeopleGenerator implements Job {
 
     private static final Logger log = LoggerFactory.getLogger(LineBalancePeopleGenerator.class);
 
-    private static LineBalancePeopleGenerator instance;
-
     private final WorkTimeService workTimeService;
     private final BABService babService;
     private final int numLampMaxTestRequiredPeople, numLampGroupStart, numLampGroupEnd;
     private final Double babStandard;
-
-    private static JSONArray babToTestAssignNumOfPeopleStatus;
 
     private List<String> message;
 
@@ -72,61 +70,64 @@ public class LineBalancePeopleGenerator implements Job {
         formatter2 = new DecimalFormat("#.##");
     }
 
-    public static LineBalancePeopleGenerator getInstance() {
-        if (instance == null) {
-            instance = new LineBalancePeopleGenerator();
-        }
-        return instance;
-    }
-
     @Override
     public void execute(JobExecutionContext jec) throws JobExecutionException {
-        LineBalancePeopleGenerator.getInstance().generateTestPeople();
+        JobDataMap dataMap = jec.getJobDetail().getJobDataMap();
+        BAB bab = (BAB) dataMap.get("dataMap");
+        this.generateTestPeople(bab);
+    }
+    
+    public void generateTestPeople() {
+        List<BAB> l = babService.getAssyProcessing();
+        for(BAB b:l){
+            this.generateTestPeople(b);
+        }
     }
 
-    public void generateTestPeople() {
-        babToTestAssignNumOfPeopleStatus = new JSONArray();
-        List<BAB> l = babService.getAssyProcessing();
-        for (BAB bab : l) {
-            JSONObject obj = new JSONObject(bab);
-            message = new ArrayList();
-
-            //Get the babAvg in setting group
-            List<Map> balanceGroup = babService.getBABAvgsInSpecGroup(bab.getId(), numLampGroupStart, numLampGroupEnd);
-            Integer standardVal;
-
-            if (balanceGroup.isEmpty()) {
-                message.add("The current balance is empty.");
-                continue;
-            } else {
-                standardVal = workTimeService.getTestStandardTime(bab.getModel_name());
-            }
-
-            if (standardVal == null) {
-                message.add("This model's standardTime is not setting.");
-                continue;
-            }
-
-            Map firstData = balanceGroup.get(0);
-            Integer currentGroup = firstData.containsKey("currentGroup") ? (Integer) firstData.get("currentGroup") : null;
-
-            Integer suggestPeople;
-            Integer totalQuantity = BasicService.getBabService().getPoTotalQuantity(bab.getPO());
-            if (totalQuantity < startCountMininumQuantity || standardVal <= startCountMininumStandardTime || totalQuantity == null || standardVal * totalQuantity <= minTotalStandardTime) {
-                message.add("Total quantity is: " + totalQuantity + " piece");
-                message.add("T1 standard: " + standardVal);
-                suggestPeople = basicSuggestPeople;
-            } else {
-                Double maxVal = ((BigDecimal) findMaxInList(balanceGroup)).doubleValue();
-                suggestPeople = generatePeople1((int) Math.floor(maxVal), standardVal);
-                message.add("AssyCT: " + formatter2.format(maxVal) + " , T1 standard: " + standardVal);
-            }
-            message.add("Current piece: " + currentGroup + " piece");
-            message.add(bab.getLineName() + " suggest people: " + suggestPeople);
-            obj.put("suggestTestPeople", suggestPeople);
-            obj.put("message", message);
-            babToTestAssignNumOfPeopleStatus.put(obj);
+    public void generateTestPeople(BAB bab) {
+        if(bab == null){
+            out.println("BAB is null, abort mission.");
+            return;
         }
+        
+        JSONObject obj = new JSONObject(bab);
+        message = new ArrayList();
+
+        //Get the babAvg in setting group
+        List<Map> balanceGroup = babService.getBABAvgsInSpecGroup(bab.getId(), numLampGroupStart, numLampGroupEnd);
+        Integer standardVal;
+
+        if (balanceGroup.isEmpty()) {
+            message.add("The current balance is empty.");
+            return;
+        } else {
+            standardVal = workTimeService.getTestStandardTime(bab.getModel_name());
+        }
+
+        if (standardVal == null) {
+            message.add("This model's standardTime is not setting.");
+            return;
+        }
+
+        Map firstData = balanceGroup.get(0);
+        Integer currentGroup = firstData.containsKey("currentGroup") ? (Integer) firstData.get("currentGroup") : null;
+
+        Integer suggestPeople;
+        Integer totalQuantity = BasicService.getBabService().getPoTotalQuantity(bab.getPO());
+        if (totalQuantity < startCountMininumQuantity || standardVal <= startCountMininumStandardTime || totalQuantity == null || standardVal * totalQuantity <= minTotalStandardTime) {
+            message.add("Total quantity is: " + totalQuantity + " piece");
+            message.add("T1 standard: " + standardVal);
+            suggestPeople = basicSuggestPeople;
+        } else {
+            Double maxVal = ((BigDecimal) findMaxInList(balanceGroup)).doubleValue();
+            suggestPeople = generatePeople1((int) Math.floor(maxVal), standardVal);
+            message.add("AssyCT: " + formatter2.format(maxVal) + " , T1 standard: " + standardVal);
+        }
+        message.add("Current piece: " + currentGroup + " piece");
+        message.add(bab.getLineName() + " suggest people: " + suggestPeople);
+        obj.put("suggestTestPeople", suggestPeople);
+        obj.put("message", message);
+        NumLamp.getNumLampStatus().put(bab.getLineName(), obj);
     }
 
     private int generatePeople(Integer maxVal, Integer standardVal) {
@@ -269,10 +270,6 @@ public class LineBalancePeopleGenerator implements Job {
             }
         }
         return numbers[idx];
-    }
-
-    public JSONArray getBabToTestAssignNumOfPeopleStatus() {
-        return babToTestAssignNumOfPeopleStatus == null ? new JSONArray() : babToTestAssignNumOfPeopleStatus;
     }
 
 }

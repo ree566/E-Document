@@ -58,10 +58,7 @@ public class MailSend {
     }
 
     public static MailSend getInstance() {
-        if (instance == null) {
-            instance = new MailSend();
-        }
-        return instance;
+        return instance == null ? new MailSend() : instance;
     }
 
     public boolean sendMail(String to, String subject, String content) throws MessagingException {

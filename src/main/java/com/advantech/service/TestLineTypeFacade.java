@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
  * @author Wei.Cheng
  */
 public class TestLineTypeFacade extends BasicLineTypeFacade {
-    
+
     private static final Logger log = LoggerFactory.getLogger(TestLineTypeFacade.class);
 
     private static TestLineTypeFacade instance;
@@ -49,10 +49,7 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
     }
 
     public static TestLineTypeFacade getInstance() {
-        if (instance == null) {
-            instance = new TestLineTypeFacade();
-        }
-        return instance;
+        return instance == null ? new TestLineTypeFacade() : instance;
     }
 
     private void init() {
@@ -69,7 +66,7 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
     protected void initMap() {
         super.dataMap.clear();
         PEOPLE_NOT_MATCH.clear();
-        
+
         for (int i = 1; i <= maxTestTable; i++) {
             dataMap.put(("T" + i), NORMAL_SIGN);
         }

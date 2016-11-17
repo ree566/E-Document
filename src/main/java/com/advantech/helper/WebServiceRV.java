@@ -55,10 +55,7 @@ public class WebServiceRV {
     }
 
     public static WebServiceRV getInstance() {
-        if (instance == null) {
-            instance = new WebServiceRV();
-        }
-        return instance;
+        return instance == null ? new WebServiceRV() : instance;
     }
 
     //Get data from WebService

@@ -15,9 +15,9 @@ import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.CronScheduleBuilder;
-import static org.quartz.CronScheduleBuilder.cronSchedule;
 import org.quartz.CronTrigger;
 import org.quartz.JobBuilder;
+import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
@@ -25,13 +25,13 @@ import org.quartz.SchedulerException;
 import org.quartz.SimpleScheduleBuilder;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
-import static org.quartz.TriggerBuilder.newTrigger;
 import org.quartz.TriggerKey;
 import static org.quartz.TriggerKey.triggerKey;
 import org.quartz.impl.StdSchedulerFactory;
 import org.quartz.impl.triggers.CronTriggerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import static org.quartz.TriggerKey.triggerKey;
 
 /**
  *
@@ -62,10 +62,22 @@ public class CronTrigMod {
 //    http://openhome.cc/Gossip/DesignPattern/SingletonPattern.htm
     @SuppressWarnings("DoubleCheckedLocking")
     public static CronTrigMod getInstance() {
-        if (instance == null) {
-            instance = new CronTrigMod();
-        }
-        return instance;
+        return instance == null ? new CronTrigMod() : instance;
+    }
+
+    public JobKey createJobKey(String jobName) {
+        return new JobKey(jobName, jobName + "Group");
+    }
+
+    public TriggerKey createTriggerKey(String triggerName) {
+        return new TriggerKey(triggerName, triggerName + "Group");
+    }
+
+    public JobDetail createJobDetail(String jobName, Class jobClass, Map<String, Object> jobData) {
+        return JobBuilder.newJob(jobClass)
+                .withIdentity(jobName, jobName + "Group")
+                .usingJobData(new JobDataMap(jobData))
+                .build();
     }
 
     public String getTriggerByJobKey(String jobKey) {
@@ -166,29 +178,59 @@ public class CronTrigMod {
         return true;
     }
 
+    public void generateAJob(Class jobClass, String jobName, String crontrigger) throws SchedulerException {
+        this.generateAJob(jobClass, this.createJobKey(jobName), this.createTriggerKey(jobName), crontrigger);
+    }
+
     public void generateAJob(Class jobClass, JobKey jobKey, TriggerKey trigKey, String crontrigger) throws SchedulerException {
         if (scheduler.isStarted()) {
-            if (!scheduler.checkExists(jobKey)) {
+            if (!isKeyInScheduleExist(jobKey)) {
                 JobDetail job = JobBuilder.newJob(jobClass).withIdentity(jobKey).build();
                 CronTrigger trigger = TriggerBuilder.newTrigger().withIdentity(trigKey)
                         .withSchedule(CronScheduleBuilder.cronSchedule(crontrigger)).build();
                 scheduler.scheduleJob(job, trigger);
+            } else {
+                log.info("The job with key name " + jobKey + " is exist.");
             }
         }
     }
 
-    public void removeAJob(JobKey jobKey, TriggerKey trigKey) throws SchedulerException {
+    public void generateAJob(JobDetail job, TriggerKey trigKey, String crontrigger) throws SchedulerException {
         if (scheduler.isStarted()) {
-            scheduler.unscheduleJob(trigKey);
-            scheduler.deleteJob(jobKey);
+            JobKey jobKey = job.getKey();
+            if (!isKeyInScheduleExist(jobKey)) {
+                CronTrigger trigger = TriggerBuilder.newTrigger().withIdentity(trigKey)
+                        .withSchedule(CronScheduleBuilder.cronSchedule(crontrigger)).build();
+                scheduler.scheduleJob(job, trigger);
+            } else {
+                log.info("The job with key name " + jobKey + " is exist.");
+            }
         }
     }
 
-    public static void main(String arg0[]) {
-        CronTrigger trigger = newTrigger()
-                .withIdentity("trigger3", "group1")
-                .withSchedule(cronSchedule("0 0/2 8-17 * * ?").withMisfireHandlingInstructionDoNothing())
-                .forJob("myJob", "group1")
-                .build();
+    public void removeAJob(String jobName) throws SchedulerException {
+        this.removeAJob(this.createJobKey(jobName), this.createTriggerKey(jobName));
+    }
+
+    public void removeAJob(JobKey jobKey, TriggerKey trigKey) throws SchedulerException {
+        if (scheduler.isStarted()) {
+            if (isKeyInScheduleExist(jobKey) && isKeyInScheduleExist(trigKey)) {
+                scheduler.unscheduleJob(trigKey);
+                scheduler.deleteJob(jobKey);
+            }
+        }
+    }
+
+    public boolean isJobInScheduleExist(String jobName) throws SchedulerException {
+        JobKey jobKey = this.createJobKey(jobName);
+        return this.isKeyInScheduleExist(jobKey);
+    }
+    
+    public boolean isKeyInScheduleExist(Object key) throws SchedulerException {
+        if (key instanceof JobKey) {
+            return scheduler.checkExists((JobKey) key);
+        } else {
+            return scheduler.checkExists((TriggerKey) key);
+        }
     }
 }

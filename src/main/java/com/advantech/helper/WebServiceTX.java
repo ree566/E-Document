@@ -31,10 +31,7 @@ public class WebServiceTX {
     }
 
     public static WebServiceTX getInstance() {
-        if (instance == null) {
-            instance = new WebServiceTX();
-        }
-        return instance;
+        return instance == null ? new WebServiceTX() : instance;
     }
 
     //Get data from WebService
@@ -49,8 +46,8 @@ public class WebServiceTX {
         try {
             WebServiceRV rv = WebServiceRV.getInstance();
             User user = rv.getMESUser(jobnumber);
-            
-            if(user == null){
+
+            if (user == null) {
                 return "The user is not exist.";
             }
 

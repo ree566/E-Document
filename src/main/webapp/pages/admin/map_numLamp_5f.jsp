@@ -112,40 +112,40 @@
             #titleArea>div, #babArea>div{
                 position: absolute;
             }
-            
+
             .titleWiget{
                 cursor: pointer;
             }
-            
+
             .divCustomBg{
                 background-size: 100% 100%, auto;
                 background-repeat: no-repeat;
             }
-            
+
             .ui-helper {
                 /*width: 100% !important;*/
                 float: left;
             }
-            
+
             .blub-empty{
                 background-image: url(../../images/blub-icon/Gray_Light_Icon.png);
                 /*background-color: red;*/
             }
-            
+
             .blub-normal{
                 background-image: url(../../images/blub-icon/Green_Light_Icon.png);
                 cursor: pointer;
             }
-            
+
             .blub-alarm{
                 background-image: url(../../images/blub-icon/Blue_Light_Icon.png);
                 cursor: pointer;
             }
-            
+
             .blub-abnormal{
                 background-image: url(../../images/blub-icon/Yellow_Light_Icon.png);
             }
-            
+
             #tooltipTrig{
                 position: fixed;
                 bottom: 0px;
@@ -220,7 +220,7 @@
                     }
                 });
 
-                $("#tooltipTrig").click(function(){
+                $("#tooltipTrig").click(function () {
                     $("#babArea > div").tooltipster('open');
                 });
 
@@ -252,21 +252,23 @@
                     if (babObject != null) {
                         var babData = babObject;
                         if (babData != null) {
-                            for (var k = 0, l = babData.length; k < l; k++) {
-                                var details = babData[k];
-                                var lineName = details.lineName;
-                                var suggestPeople = details.suggestTestPeople;
-                                var obj = $("#babArea #" + lineName.trim() + " #" + lineName.trim() + "_" + 1);//統一寫到數字燈1
-                                if (obj.length) {
-                                    obj.removeClass("blub-empty")
-                                            .addClass((suggestPeople == null ? "blub-abnormal" : "blub-normal"))
-                                            .html(suggestPeople);
-                                    var messageArray = details.message;
-                                    var message = "";
-                                    for (var i = 0; i < messageArray.length; i++) {
-                                        message += messageArray[i] + "<br/>";
+                            for (var k = 0, l = babGroup.length; k < l; k++) {
+                                var lineName = babGroup[k].lineName;
+                                var details = babObject[lineName];
+                                if (details != null) {
+                                    var suggestPeople = details.suggestTestPeople;
+                                    var obj = $("#babArea #" + lineName.trim() + " #" + lineName.trim() + "_" + 1);//統一寫到數字燈1
+                                    if (obj.length) {
+                                        obj.removeClass("blub-empty")
+                                                .addClass((suggestPeople == null ? "blub-abnormal" : "blub-normal"))
+                                                .html(suggestPeople);
+                                        var messageArray = details.message;
+                                        var message = "";
+                                        for (var i = 0; i < messageArray.length; i++) {
+                                            message += messageArray[i] + "<br/>";
+                                        }
+                                        $("#" + lineName.trim()).tooltipster('content', message);
                                     }
-                                    $("#" + lineName.trim()).tooltipster('content', message);
                                 }
                             }
                         }
