@@ -77,9 +77,9 @@ public class BasicDAO implements Serializable {
             for (SQL sql : SQL.values()) {
                 String dataSourceString = sql.toString();
                 try {
-                    PooledDataSource ds = getDataSource(dataSourceString);
-                    DataSources.pooledDataSource(ds);
-                    dataSourceMap.put(dataSourceString, ds);
+                    DataSource ds = (DataSource) getDataSource(dataSourceString);
+                    DataSource pooledDs = DataSources.pooledDataSource(ds);
+                    dataSourceMap.put(dataSourceString, pooledDs);
                 } catch (NamingException ex) {
                     log.error(ex.toString());
                 }
@@ -89,10 +89,10 @@ public class BasicDAO implements Serializable {
         }
     }
 
-    private static PooledDataSource getDataSource(String dataSourcePath) throws NamingException {
+    private static DataSource getDataSource(String dataSourcePath) throws NamingException {
         Context initContext = new InitialContext();
         Context envContext = (Context) initContext.lookup("java:/comp/env");
-        PooledDataSource dataSource = (PooledDataSource) envContext.lookup(dataSourcePath);
+        DataSource dataSource = (DataSource) envContext.lookup(dataSourcePath);
         return dataSource;
     }
 
@@ -103,7 +103,7 @@ public class BasicDAO implements Serializable {
             for (SQL sql : SQL.values()) {
                 String dataSourceString = sql.toString();
                 try {
-                    dataSourceMap.put(dataSourceString, getDataSource1(dataSourceString));
+                    dataSourceMap.put(dataSourceString, DataSources.pooledDataSource(getDataSource1(dataSourceString)));
                 } catch (NamingException ex) {
                     log.error(ex.toString());
                 }
@@ -285,9 +285,12 @@ public class BasicDAO implements Serializable {
     public static void objectInit() {
         try {
             for (String key : dataSourceMap.keySet()) {
-                PooledDataSource pds = (PooledDataSource) dataSourceMap.get(key);
-                pds.close();
-                DataSources.destroy(pds);
+                DataSource ds = dataSourceMap.get(key);
+                if (ds instanceof PooledDataSource) {
+                    PooledDataSource pds = (PooledDataSource) ds;
+                    pds.close();
+                }
+                DataSources.destroy(ds);
                 Thread.sleep(1000);
             }
             dataSourceMap.clear();
