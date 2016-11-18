@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  */
 public class NumLamp implements Job {
 
-    private static final Logger log = LoggerFactory.getLogger(LineBalancePeopleGenerator.class);
+    private static final Logger log = LoggerFactory.getLogger(NumLamp.class);
     private static final JSONObject NUMLAMP_STATUS = new JSONObject();
 
     private static NumLamp instance;
@@ -68,6 +68,7 @@ public class NumLamp implements Job {
                     this.unschedulePollingJob(b.getLineName());
                     out.println("This job is closed, unsched it. " + b.getId());
                     tempBab.remove(b);
+                    NUMLAMP_STATUS.remove(b.getLineName());
                 } else if (processingBab.contains(b)) {
                     tempBab.add(b);
                     out.println("This job is new, sched it. " + b.getId());
@@ -97,10 +98,10 @@ public class NumLamp implements Job {
 
     public void unschedulePollingJob(String lineName) {
         try {
-            String jobKey = lineName + quartzNameExt;
+            String jobName = lineName + quartzNameExt;
             out.println("Unsched job on line " + lineName);
-            ctm.removeAJob(jobKey);
-            out.println(!ctm.isKeyInScheduleExist(jobKey) ? "Job is success unsched.":"Job unsched fail");
+            ctm.removeAJob(jobName);
+            out.println(!ctm.isKeyInScheduleExist(jobName) ? "Job is success unsched.":"Job unsched fail");
         } catch (SchedulerException ex) {
             log.error(ex.toString());
         }

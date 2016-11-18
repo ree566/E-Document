@@ -214,11 +214,11 @@
                 var dragableWiget = $("#titleArea>div, #babArea>div");
 //                dragableWiget.after("<div class='clearWiget'></div>");
 
-                dragableWiget.not(".clearWiget").addClass("ui-helper").draggable({
-                    drag: function (e) {
-//                        return false;
-                    }
-                });
+//                dragableWiget.not(".clearWiget").addClass("ui-helper").draggable({
+//                    drag: function (e) {
+////                        return false;
+//                    }
+//                });
 
                 $("#tooltipTrig").click(function () {
                     $("#babArea > div").tooltipster('open');
@@ -263,7 +263,7 @@
                                                 .addClass((suggestPeople == null ? "blub-abnormal" : "blub-normal"))
                                                 .html(suggestPeople);
                                         var messageArray = details.message;
-                                        var message = "";
+                                        var message = "PO: " + details.PO + "<br/>ModelName: " + details.model_name + "<br/>";
                                         for (var i = 0; i < messageArray.length; i++) {
                                             message += messageArray[i] + "<br/>";
                                         }

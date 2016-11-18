@@ -11,7 +11,6 @@ import com.advantech.helper.PropertiesReader;
 import com.advantech.service.BABService;
 import com.advantech.service.BasicService;
 import com.advantech.service.WorkTimeService;
-import com.google.gson.Gson;
 import static java.lang.System.out;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
@@ -29,7 +28,6 @@ import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.quartz.JobKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,38 +36,38 @@ import org.slf4j.LoggerFactory;
  * @author Wei.Cheng
  */
 public class LineBalancePeopleGenerator implements Job {
-
+    
     private static final Logger log = LoggerFactory.getLogger(LineBalancePeopleGenerator.class);
-
+    
     private final WorkTimeService workTimeService;
     private final BABService babService;
     private final int numLampMaxTestRequiredPeople, numLampGroupStart, numLampGroupEnd;
     private final Double babStandard;
-
+    
     private List<String> message;
-
+    
     private final DecimalFormat formatter;
     private final DecimalFormat formatter2;
-
+    
     private final int startCountMininumQuantity, startCountMininumStandardTime, minTotalStandardTime, basicSuggestPeople = 1;
-
+    
     public LineBalancePeopleGenerator() {
         this.workTimeService = BasicService.getWorkTimeService();
         this.babService = BasicService.getBabService();
-
+        
         PropertiesReader p = PropertiesReader.getInstance();
         this.numLampMaxTestRequiredPeople = p.getNumLampMaxTestRequiredPeople();
         this.numLampGroupStart = p.getNumLampGroupStart();
         this.numLampGroupEnd = p.getNumLampGroupEnd();
         this.babStandard = p.getBabStandard();
         this.startCountMininumQuantity = p.getNumLampMinQuantity();
-        this.startCountMininumStandardTime = p.getNumLampMinStandardTime();
-        this.minTotalStandardTime = p.getNumLampMinTotalStandardTime();
-
+        this.startCountMininumStandardTime = minToSec(p.getNumLampMinStandardTime());
+        this.minTotalStandardTime = minToSec(p.getNumLampMinTotalStandardTime());
+        
         formatter = new DecimalFormat("#.##%");
         formatter2 = new DecimalFormat("#.##");
     }
-
+    
     @Override
     public void execute(JobExecutionContext jec) throws JobExecutionException {
         JobDataMap dataMap = jec.getJobDetail().getJobDataMap();
@@ -79,13 +77,13 @@ public class LineBalancePeopleGenerator implements Job {
     
     public void generateTestPeople() {
         List<BAB> l = babService.getAssyProcessing();
-        for(BAB b:l){
+        for (BAB b : l) {
             this.generateTestPeople(b);
         }
     }
-
+    
     public void generateTestPeople(BAB bab) {
-        if(bab == null){
+        if (bab == null) {
             out.println("BAB is null, abort mission.");
             return;
         }
@@ -96,26 +94,32 @@ public class LineBalancePeopleGenerator implements Job {
         //Get the babAvg in setting group
         List<Map> balanceGroup = babService.getBABAvgsInSpecGroup(bab.getId(), numLampGroupStart, numLampGroupEnd);
         Integer standardVal;
-
+        
         if (balanceGroup.isEmpty()) {
-            message.add("The current balance is empty.");
+            out.println("The current balance is empty.");
             return;
         } else {
-            standardVal = workTimeService.getTestStandardTime(bab.getModel_name());
+            standardVal = minToSec(workTimeService.getTestStandardTime(bab.getModel_name()));
         }
-
+        
         if (standardVal == null) {
-            message.add("This model's standardTime is not setting.");
+            out.println("This model's standardTime is not setting.");
             return;
         }
-
+        
         Map firstData = balanceGroup.get(0);
         Integer currentGroup = firstData.containsKey("currentGroup") ? (Integer) firstData.get("currentGroup") : null;
-
+        
         Integer suggestPeople;
-        Integer totalQuantity = BasicService.getBabService().getPoTotalQuantity(bab.getPO());
-        if (totalQuantity < startCountMininumQuantity || standardVal <= startCountMininumStandardTime || totalQuantity == null || standardVal * totalQuantity <= minTotalStandardTime) {
-            message.add("Total quantity is: " + totalQuantity + " piece");
+        Integer totalQuantity = babService.getPoTotalQuantity(bab.getPO());
+        
+        if (totalQuantity == null) {
+            out.println("This PO total quantity is not setting.");
+            return;
+        }
+        
+        if (!isFilterCountRule2(totalQuantity, standardVal) || !isPcsFilterCountRule(currentGroup)) {
+            message.add("Total quantity is: " + totalQuantity + " pcs");
             message.add("T1 standard: " + standardVal);
             suggestPeople = basicSuggestPeople;
         } else {
@@ -123,30 +127,42 @@ public class LineBalancePeopleGenerator implements Job {
             suggestPeople = generatePeople1((int) Math.floor(maxVal), standardVal);
             message.add("AssyCT: " + formatter2.format(maxVal) + " , T1 standard: " + standardVal);
         }
-        message.add("Current piece: " + currentGroup + " piece");
+        message.add("Current piece: " + currentGroup + " pcs");
         message.add(bab.getLineName() + " suggest people: " + suggestPeople);
         obj.put("suggestTestPeople", suggestPeople);
         obj.put("message", message);
         NumLamp.getNumLampStatus().put(bab.getLineName(), obj);
     }
-
+    
+    public boolean isFilterCountRule(Integer totalQuantity, Integer standardVal) {
+        return totalQuantity > startCountMininumQuantity && standardVal >= startCountMininumStandardTime && standardVal * totalQuantity >= minTotalStandardTime;
+    }
+    
+    public boolean isFilterCountRule2(Integer totalQuantity, Integer standardVal) {
+        return standardVal >= startCountMininumStandardTime && standardVal * totalQuantity >= minTotalStandardTime;
+    }
+    
+    public boolean isPcsFilterCountRule(Integer pcs) {
+        return pcs % 5 == 0;
+    }
+    
     private int generatePeople(Integer maxVal, Integer standardVal) {
         Double[] balances = new Double[numLampMaxTestRequiredPeople];
         Double[] abs = new Double[numLampMaxTestRequiredPeople];
         Integer people = 1;
         Double balance;
         Integer min = 0;
-
+        
         do {
             if (people == numLampMaxTestRequiredPeople) {
                 return people;
             }
-
+            
             balance = calculateBalance(maxVal, standardVal, people);
-
+            
             out.println("Caculate balance :" + balance);
             out.println("Balance - standard = " + (balance - babStandard));
-
+            
             int index = people - 1;
             balances[index] = balance;
             abs[index] = Math.abs(balances[index] - babStandard);
@@ -154,17 +170,30 @@ public class LineBalancePeopleGenerator implements Job {
             if (abs[index] < abs[min]) {
                 min = index;
             }
-
+            
             out.println("Continue finding...");
             people++;
-
+            
         } while (balance - babStandard > 0 && people <= numLampMaxTestRequiredPeople);
-
+        
         out.println("The closet value is " + balances[min]);
-
+        
         return min + 1;
     }
-
+    
+    public static void main(String arg0[]) {
+        int babCT = 100, testStandard = babCT;
+        LineBalancePeopleGenerator generator = new LineBalancePeopleGenerator();
+        
+        for (Double i = 1.0; i <= 5.0; i += 0.25) {
+            int t = (int) (testStandard * i);
+            out.printf("The assyCT is %d and testStandard is %d...%n", babCT, t);
+            generator.message = new ArrayList();
+            int suggest = generator.generatePeople1(babCT, t);
+            out.printf("Array status: %s , people: %d%n--------%n", generator.message, suggest);
+        }
+    }
+    
     public int generatePeople1(Integer maxVal, Integer standardVal) {
         Map<Integer, Double> balanceResults = new HashMap();
         Integer people = basicSuggestPeople;
@@ -172,16 +201,16 @@ public class LineBalancePeopleGenerator implements Job {
             balanceResults.put(people, calculateBalance(maxVal, standardVal, people));
             people++;
         } while (people <= numLampMaxTestRequiredPeople);
-
+        
         balanceResults = this.sortByValue(balanceResults);
-
+        
         for (Map.Entry<Integer, Double> entry : balanceResults.entrySet()) {
             message.add("People: " + entry.getKey() + " / Balance:" + formatter.format(entry.getValue()));
         }
-
+        
         int bestSetupPeople = 0;
         int loopCount = 0;
-
+        
         for (Map.Entry<Integer, Double> entry : balanceResults.entrySet()) {
             ++loopCount;
             if (entry.getValue() >= babStandard || loopCount == numLampMaxTestRequiredPeople) {
@@ -192,7 +221,7 @@ public class LineBalancePeopleGenerator implements Job {
 //        out.println("The best situation in these value is set people = " + bestSetupPeople + " and lineBalance is " + bestVal + " .");
         return bestSetupPeople;
     }
-
+    
     public <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {
         List<Map.Entry<K, V>> list = new LinkedList<>(map.entrySet());
         Collections.sort(list, new Comparator<Map.Entry<K, V>>() {
@@ -201,12 +230,12 @@ public class LineBalancePeopleGenerator implements Job {
                 return (e1.getValue()).compareTo(e2.getValue());
             }
         });
-
+        
         Map<K, V> result = new LinkedHashMap<>();
         for (Map.Entry<K, V> entry : list) {
             result.put(entry.getKey(), entry.getValue());
         }
-
+        
         return result;
     }
 
@@ -218,7 +247,7 @@ public class LineBalancePeopleGenerator implements Job {
         Double result = numerator / denominator;
         return result;
     }
-
+    
     private Object findMaxInList(List<Map> l) {
         List avgs = new ArrayList();
         for (Map m : l) {
@@ -226,24 +255,24 @@ public class LineBalancePeopleGenerator implements Job {
         }
         return findMax(avgs);
     }
-
+    
     private Object findMax(List l) {
         return l.isEmpty() ? null : Collections.max(l);
     }
-
+    
     private Integer findMax(Integer... vals) {
         return (Integer) this.findMaxObj((Object[]) vals);
     }
-
+    
     private Double findMax(Double... vals) {
         return (Double) this.findMaxObj((Object[]) vals);
     }
-
+    
     private Object findMaxObj(Object... obj) {
         Arrays.sort(obj);
         return obj.length == 0 ? null : obj[obj.length - 1];
     }
-
+    
     private int findCloset(int... numbers) {
         int myNumber = (int) Math.floor(this.babStandard * 100);
         int distance = Math.abs(numbers[0] - myNumber);
@@ -257,7 +286,7 @@ public class LineBalancePeopleGenerator implements Job {
         }
         return numbers[idx];
     }
-
+    
     private Double findCloset(Double... numbers) {
         Double myNumber = this.babStandard;
         Double distance = Math.abs(numbers[0] - myNumber);
@@ -271,5 +300,12 @@ public class LineBalancePeopleGenerator implements Job {
         }
         return numbers[idx];
     }
-
+    
+    private Integer minToSec(Integer minute) {
+        return minute == null ? null : minute * 60;
+    }
+    
+    private Integer minToSec(Double minute) {
+        return minute == null ? null : (int) (minute * 60);
+    }
 }

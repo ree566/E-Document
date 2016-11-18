@@ -177,6 +177,7 @@
                 var babGroup = [
                     {people: 1, x: 725, y: 285, lineName: "L3"}, // group 1-4
                     {people: 1, x: 725, y: 130, lineName: "L4"}, // group 21-24
+                    {people: 1, x: 725, y: 30, lineName: "NA"} // group 21-24
 //                    {people: 3, x: 255, y: 210, lineName: "L6"}, // group 16-20
 //                    {people: 3, x: 255, y: 120, lineName: "L7"}, // group 9-15
 //                    {people: 4, x: 400, y: 190, lineName: "L8"}, // group 5-8
@@ -216,11 +217,11 @@
                 var dragableWiget = $("#titleArea>div, #babArea>div");
 //                dragableWiget.after("<div class='clearWiget'></div>");
 
-                dragableWiget.not(".clearWiget").addClass("ui-helper").draggable({
-                    drag: function (e) {
-//                        return false;
-                    }
-                });
+//                dragableWiget.not(".clearWiget").addClass("ui-helper").draggable({
+//                    drag: function (e) {
+////                        return false;
+//                    }
+//                });
 
                 $("#tooltipTrig").click(function(){
                     $("#babArea > div").tooltipster('open');
@@ -265,7 +266,7 @@
                                                 .addClass((suggestPeople == null ? "blub-abnormal" : "blub-normal"))
                                                 .html(suggestPeople);
                                         var messageArray = details.message;
-                                        var message = "";
+                                        var message = "PO: " + details.PO + "<br/>ModelName: " + details.model_name + "<br/>";
                                         for (var i = 0; i < messageArray.length; i++) {
                                             message += messageArray[i] + "<br/>";
                                         }
@@ -290,6 +291,7 @@
                 //Get the server message and transform into table.
                 ws.onmessage = function (message) {
                     var jsonArray = $.parseJSON(message.data);
+                    console.log(jsonArray);
                     if (jsonArray.length != 0) {
                         babDataToWiget(jsonArray);
                     }

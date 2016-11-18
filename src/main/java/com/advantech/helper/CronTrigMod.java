@@ -5,7 +5,6 @@
  */
 package com.advantech.helper;
 
-import com.advantech.quartzJob.DailyJobWorker;
 import com.advantech.service.BabLineTypeFacade;
 import com.advantech.service.BasicLineTypeFacade;
 import com.advantech.service.TestLineTypeFacade;
@@ -26,7 +25,6 @@ import org.quartz.SimpleScheduleBuilder;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 import org.quartz.TriggerKey;
-import static org.quartz.TriggerKey.triggerKey;
 import org.quartz.impl.StdSchedulerFactory;
 import org.quartz.impl.triggers.CronTriggerImpl;
 import org.slf4j.Logger;
@@ -39,7 +37,7 @@ import static org.quartz.TriggerKey.triggerKey;
  */
 public class CronTrigMod {
 
-    private static final Logger log = LoggerFactory.getLogger(DailyJobWorker.class);
+    private static final Logger log = LoggerFactory.getLogger(CronTrigMod.class);
 
     public static Map changedJobKey = new HashMap();
 
@@ -225,12 +223,16 @@ public class CronTrigMod {
         JobKey jobKey = this.createJobKey(jobName);
         return this.isKeyInScheduleExist(jobKey);
     }
-    
+
     public boolean isKeyInScheduleExist(Object key) throws SchedulerException {
         if (key instanceof JobKey) {
             return scheduler.checkExists((JobKey) key);
-        } else {
+        } else if (key instanceof TriggerKey) {
             return scheduler.checkExists((TriggerKey) key);
+        } else if (key instanceof String) {
+            return scheduler.checkExists(new JobKey((String) key));
+        } else {
+            return false;
         }
     }
 }
