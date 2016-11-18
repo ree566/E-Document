@@ -6,7 +6,7 @@
  */
 package com.advantech.quartzJob;
 
-import com.advantech.endpoint.SensorEndpoint1;
+import com.advantech.endpoint.Endpoint2;
 import com.advantech.service.BabLineTypeFacade;
 import com.advantech.service.TestLineTypeFacade;
 import com.google.gson.Gson;
@@ -21,10 +21,10 @@ import org.slf4j.LoggerFactory;
  *
  * @author Wei.Cheng
  */
-public class PollingServer implements Job {
+public class PollingServerParmater implements Job {
 
     private static final Gson gson = new Gson();
-    private static final Logger log = LoggerFactory.getLogger(PollingServer.class);
+    private static final Logger log = LoggerFactory.getLogger(PollingServerParmater.class);
 
     @Override
     public void execute(JobExecutionContext jec) throws JobExecutionException {
@@ -43,7 +43,7 @@ public class PollingServer implements Job {
             JSONArray arr = new JSONArray();
             arr.put(TestLineTypeFacade.getInstance().getJSONObject())
                     .put(BabLineTypeFacade.getInstance().getJSONObject());
-            SensorEndpoint1.sendAll(arr.toString());
+            Endpoint2.sendAll(arr.toString());
         } catch (Exception e) {
             log.error(e.toString());
         }

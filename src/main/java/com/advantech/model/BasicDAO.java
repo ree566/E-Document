@@ -5,8 +5,8 @@
  */
 package com.advantech.model;
 
-import com.advantech.helper.ProcRunner;
 import com.advantech.helper.CronTrigMod;
+import com.advantech.helper.ProcRunner;
 import com.mchange.v2.c3p0.DataSources;
 import com.mchange.v2.c3p0.PooledDataSource;
 import java.io.Serializable;
@@ -51,7 +51,7 @@ public class BasicDAO implements Serializable {
     private static boolean connectFlag = false;
     private static final int RETRY_WAIT_TIME = 3000;
 
-    private static Map<String, PooledDataSource> dataSourceMap;
+    private static Map<String, DataSource> dataSourceMap;
 
     public static enum SQL {
 
@@ -77,9 +77,9 @@ public class BasicDAO implements Serializable {
             for (SQL sql : SQL.values()) {
                 String dataSourceString = sql.toString();
                 try {
-                    PooledDataSource ds = getDataSource(dataSourceString);
-                    DataSources.pooledDataSource(ds);
-                    dataSourceMap.put(dataSourceString, ds);
+                    DataSource ds = (DataSource) getDataSource(dataSourceString);
+                    DataSource pooledDs = DataSources.pooledDataSource(ds);
+                    dataSourceMap.put(dataSourceString, pooledDs);
                 } catch (NamingException ex) {
                     log.error(ex.toString());
                 }
@@ -89,28 +89,28 @@ public class BasicDAO implements Serializable {
         }
     }
 
-    private static PooledDataSource getDataSource(String dataSourcePath) throws NamingException {
+    private static DataSource getDataSource(String dataSourcePath) throws NamingException {
         Context initContext = new InitialContext();
         Context envContext = (Context) initContext.lookup("java:/comp/env");
-        PooledDataSource dataSource = (PooledDataSource) envContext.lookup(dataSourcePath);
+        DataSource dataSource = (DataSource) envContext.lookup(dataSourcePath);
         return dataSource;
     }
 
     //Set dataSource without JNDI
     public static void dataSourceInit1() {
-//        dataSourceMap = new HashMap<>();
-//        try {
-//            for (SQL sql : SQL.values()) {
-//                String dataSourceString = sql.toString();
-//                try {
-//                    dataSourceMap.put(dataSourceString, getDataSource1(dataSourceString));
-//                } catch (NamingException ex) {
-//                    log.error(ex.toString());
-//                }
-//            }
-//        } catch (Exception e) {
-//            log.error(e.toString());
-//        }
+        dataSourceMap = new HashMap<>();
+        try {
+            for (SQL sql : SQL.values()) {
+                String dataSourceString = sql.toString();
+                try {
+                    dataSourceMap.put(dataSourceString, DataSources.pooledDataSource(getDataSource1(dataSourceString)));
+                } catch (NamingException ex) {
+                    log.error(ex.toString());
+                }
+            }
+        } catch (Exception e) {
+            log.error(e.toString());
+        }
     }
 
     public static DataSource getDataSource1(String dataSourcePath) throws NamingException {
@@ -138,18 +138,13 @@ public class BasicDAO implements Serializable {
     public static Connection getDBUtilConn(SQL sqlType) {
         return openConn(sqlType.toString());
     }
-    
-    public synchronized static Connection testConn(String dataSource) throws SQLException {
-        PooledDataSource ds = dataSourceMap.get(dataSource);
-        return ds.getConnection();
-    }
 
     private synchronized static Connection openConn(String dataSource) {
         Connection conn = null;
         boolean triggerChangeStatus;
         try {
 
-            PooledDataSource ds = dataSourceMap.get(dataSource);
+            DataSource ds = dataSourceMap.get(dataSource);
             conn = ds.getConnection();
 
             if (connectFlag == true) {
@@ -290,11 +285,14 @@ public class BasicDAO implements Serializable {
     public static void objectInit() {
         try {
             for (String key : dataSourceMap.keySet()) {
-                PooledDataSource pds = dataSourceMap.get(key);
-                pds.close();
-                DataSources.destroy(pds);
+                DataSource ds = dataSourceMap.get(key);
+                if (ds instanceof PooledDataSource) {
+                    PooledDataSource pds = (PooledDataSource) ds;
+                    pds.close();
+                }
+                DataSources.destroy(ds);
                 Thread.sleep(1000);
-            } 
+            }
             dataSourceMap.clear();
         } catch (SQLException | InterruptedException ex) {
             log.error(ex.toString());

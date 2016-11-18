@@ -21,7 +21,7 @@
             <cron>
                 <name>DailyJobWorker</name>
                 <job-name>DailyJobWorker</job-name>
-                <!--<misfire-instruction>MISFIRE_INSTRUCTION_FIRE_ONCE_NOW</misfire-instruction>-->
+                <misfire-instruction>MISFIRE_INSTRUCTION_FIRE_ONCE_NOW</misfire-instruction>
                 <cron-expression>0/30 * 8-20 ? * MON-SAT *</cron-expression>
             </cron>
         </trigger>
@@ -73,6 +73,21 @@
         </trigger>
     </schedule>
     
+    <!--禮拜三零點固定將Database的sensor unused的資料clean一次-->
+    <schedule>
+        <job>
+            <name>CleanSensorData</name>
+            <job-class>com.advantech.quartzJob.CleanSensorData</job-class>
+        </job>
+        <trigger>
+            <cron>
+                <name>CleanSensorData</name>
+                <job-name>CleanSensorData</job-name>
+                <cron-expression>0 0 0 ? * WED *</cron-expression>
+            </cron>
+        </trigger>
+    </schedule>
+    
     <!--把測試線別狀態記錄到資料庫-->
     <schedule>
         <job>
@@ -102,5 +117,20 @@
             </cron>
         </trigger>
     </schedule>
+    
+    <!--線平衡測試排站人數估算-->
+<!--    <schedule>
+        <job>
+            <name>LineBalancePeopleGenerator</name>
+            <job-class>com.advantech.quartzJob.LineBalancePeopleGenerator</job-class>
+        </job>
+        <trigger>
+            <cron>
+                <name>LineBalancePeopleGenerator</name>
+                <job-name>LineBalancePeopleGenerator</job-name>
+                <cron-expression>0/30 * 8-20 ? * MON-FRI *</cron-expression>
+            </cron>
+        </trigger>
+    </schedule>-->
     
 </job-scheduling-data>

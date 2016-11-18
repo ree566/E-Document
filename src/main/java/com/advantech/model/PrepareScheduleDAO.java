@@ -8,7 +8,6 @@ package com.advantech.model;
 import com.advantech.entity.PrepareSchedule;
 import java.sql.Connection;
 import java.util.List;
-import java.util.Map;
 
 /**
  *
@@ -16,12 +15,8 @@ import java.util.Map;
  */
 public class PrepareScheduleDAO extends BasicDAO {
 
-    public PrepareScheduleDAO() {
-
-    }
-
     private static Connection getConn() {
-        return getDBUtilConn(SQL.Way_Chien_WebAccess);
+        return getDBUtilConn(SQL.Way_Chien_TWM3);
     }
 
     private List<PrepareSchedule> queryPrepareScheduleTable(String sql, Object... params) {
@@ -30,13 +25,7 @@ public class PrepareScheduleDAO extends BasicDAO {
 
     //只取正負30天的工單
     public List<PrepareSchedule> getPrepareSchedule(String po) {
-        return queryPrepareScheduleTable("SELECT * FROM prepareScheduleView WHERE PO = ?", po);
+        return queryPrepareScheduleTable("{CALL exp_getPschedule(?)}", po);
     }
 
-    public List<Map> getTestStandardTime(String modelName) {
-        return queryForMapList(getConn(), "{CALL exp_getNschedule(?)}", modelName);
-    }
-
-    public static void main(String arg0[]) {
-    }
 }

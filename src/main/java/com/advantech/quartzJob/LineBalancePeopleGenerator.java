@@ -10,13 +10,24 @@ import com.advantech.entity.BAB;
 import com.advantech.helper.PropertiesReader;
 import com.advantech.service.BABService;
 import com.advantech.service.BasicService;
-import com.advantech.service.PrepareScheduleService;
-import com.google.gson.Gson;
+import com.advantech.service.WorkTimeService;
+import static java.lang.System.out;
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import org.json.JSONArray;
 import org.json.JSONObject;
+import org.quartz.Job;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,24 +35,41 @@ import org.slf4j.LoggerFactory;
  *
  * @author Wei.Cheng
  */
-public class LineBalancePeopleGenerator {
+public class LineBalancePeopleGenerator implements Job {
 
     private static final Logger log = LoggerFactory.getLogger(LineBalancePeopleGenerator.class);
 
     private static LineBalancePeopleGenerator instance;
 
-    private final PrepareScheduleService psService;
+    private final WorkTimeService workTimeService;
     private final BABService babService;
-    private final int maxTestRequiredPeople;
-    private final double babStandard;
+    private final int numLampMaxTestRequiredPeople, numLampGroupStart, numLampGroupEnd;
+    private final Double babStandard;
 
-    private static JSONObject babToTestAssignNumOfPeopleStatus;
+    private static JSONArray babToTestAssignNumOfPeopleStatus;
+
+    private List<String> message;
+
+    private final DecimalFormat formatter;
+    private final DecimalFormat formatter2;
+
+    private final int startCountMininumQuantity, startCountMininumStandardTime, minTotalStandardTime, basicSuggestPeople = 1;
 
     public LineBalancePeopleGenerator() {
-        this.psService = BasicService.getPrepareScheduleService();
+        this.workTimeService = BasicService.getWorkTimeService();
         this.babService = BasicService.getBabService();
-        this.maxTestRequiredPeople = PropertiesReader.getInstance().getMaxTestRequiredPeople();
-        this.babStandard = PropertiesReader.getInstance().getBabStandard();
+
+        PropertiesReader p = PropertiesReader.getInstance();
+        this.numLampMaxTestRequiredPeople = p.getNumLampMaxTestRequiredPeople();
+        this.numLampGroupStart = p.getNumLampGroupStart();
+        this.numLampGroupEnd = p.getNumLampGroupEnd();
+        this.babStandard = p.getBabStandard();
+        this.startCountMininumQuantity = p.getNumLampMinQuantity();
+        this.startCountMininumStandardTime = p.getNumLampMinStandardTime();
+        this.minTotalStandardTime = p.getNumLampMinTotalStandardTime();
+
+        formatter = new DecimalFormat("#.##%");
+        formatter2 = new DecimalFormat("#.##");
     }
 
     public static LineBalancePeopleGenerator getInstance() {
@@ -51,87 +79,146 @@ public class LineBalancePeopleGenerator {
         return instance;
     }
 
-    public static void main(String arg0[]) {
-        int people = LineBalancePeopleGenerator.getInstance().generatePeople(5.5, 10.0);
-        System.out.println("Suggess people = " + people);
+    @Override
+    public void execute(JobExecutionContext jec) throws JobExecutionException {
+        LineBalancePeopleGenerator.getInstance().generateTestPeople();
     }
 
     public void generateTestPeople() {
-        System.out.println("--------------------------------------------------");
-        babToTestAssignNumOfPeopleStatus = new JSONObject();
-        List<BAB> l = babService.getProcessingBAB();
+        babToTestAssignNumOfPeopleStatus = new JSONArray();
+        List<BAB> l = babService.getAssyProcessing();
         for (BAB bab : l) {
-            System.out.println(new Gson().toJson(bab));
-            Double standardVal = getStandardTime(bab.getModel_name());
-            List balanceGroup = babService.getBABAvgsInSpecGroup(bab.getId());
-            if (balanceGroup.isEmpty() || standardVal == -1) {
-                System.out.println("balance group size is " + balanceGroup.size());
-                System.out.println("standardVal is " + standardVal);
+            JSONObject obj = new JSONObject(bab);
+            message = new ArrayList();
+
+            //Get the babAvg in setting group
+            List<Map> balanceGroup = babService.getBABAvgsInSpecGroup(bab.getId(), numLampGroupStart, numLampGroupEnd);
+            Integer standardVal;
+
+            if (balanceGroup.isEmpty()) {
+                message.add("The current balance is empty.");
+                continue;
+            } else {
+                standardVal = workTimeService.getTestStandardTime(bab.getModel_name());
+            }
+
+            if (standardVal == null) {
+                message.add("This model's standardTime is not setting.");
                 continue;
             }
-            int maxVal = findMaxInList(balanceGroup);
-            int suggessPeople = generatePeople((double) maxVal, standardVal);
-            System.out.println("The maxium average is " + maxVal + " , and the standard time is " + standardVal + " ...");
-            System.out.println(bab.getName() + " suggess people = " + suggessPeople);
-            babToTestAssignNumOfPeopleStatus.put(bab.getName(), suggessPeople);
+
+            Map firstData = balanceGroup.get(0);
+            Integer currentGroup = firstData.containsKey("currentGroup") ? (Integer) firstData.get("currentGroup") : null;
+
+            Integer suggestPeople;
+            Integer totalQuantity = BasicService.getBabService().getPoTotalQuantity(bab.getPO());
+            if (totalQuantity < startCountMininumQuantity || standardVal <= startCountMininumStandardTime || totalQuantity == null || standardVal * totalQuantity <= minTotalStandardTime) {
+                message.add("Total quantity is: " + totalQuantity + " piece");
+                message.add("T1 standard: " + standardVal);
+                suggestPeople = basicSuggestPeople;
+            } else {
+                Double maxVal = ((BigDecimal) findMaxInList(balanceGroup)).doubleValue();
+                suggestPeople = generatePeople1((int) Math.floor(maxVal), standardVal);
+                message.add("AssyCT: " + formatter2.format(maxVal) + " , T1 standard: " + standardVal);
+            }
+            message.add("Current piece: " + currentGroup + " piece");
+            message.add(bab.getLineName() + " suggest people: " + suggestPeople);
+            obj.put("suggestTestPeople", suggestPeople);
+            obj.put("message", message);
+            babToTestAssignNumOfPeopleStatus.put(obj);
         }
     }
 
-    private int generatePeople(Double maxVal, Double standardVal) {
-        Double[] balances = new Double[4];
-        Double[] abs = new Double[4];
-        int people = 1;
-        double balance;
-        int min = 0;
+    private int generatePeople(Integer maxVal, Integer standardVal) {
+        Double[] balances = new Double[numLampMaxTestRequiredPeople];
+        Double[] abs = new Double[numLampMaxTestRequiredPeople];
+        Integer people = 1;
+        Double balance;
+        Integer min = 0;
 
         do {
-            if (people == maxTestRequiredPeople) {
+            if (people == numLampMaxTestRequiredPeople) {
                 return people;
             }
 
             balance = calculateBalance(maxVal, standardVal, people);
 
-            System.out.println("Caculate balance :" + balance);
-            System.out.println("Balance - standard = " + (balance - babStandard));
+            out.println("Caculate balance :" + balance);
+            out.println("Balance - standard = " + (balance - babStandard));
 
             int index = people - 1;
             balances[index] = balance;
             abs[index] = Math.abs(balances[index] - babStandard);
-            System.out.println("Caculate abs :" + abs[index]);
+            out.println("Caculate abs :" + abs[index]);
             if (abs[index] < abs[min]) {
                 min = index;
             }
 
-            System.out.println("Continue finding...");
+            out.println("Continue finding...");
             people++;
 
-        } while (balance - babStandard > 0 && people <= maxTestRequiredPeople);
+        } while (balance - babStandard > 0 && people <= numLampMaxTestRequiredPeople);
 
-        System.out.println("Ths closet value is " + balances[min]);
+        out.println("The closet value is " + balances[min]);
 
         return min + 1;
     }
 
-    private Double calculateBalance(Double maxVal, Double standardVal, int people) {
-//        double numerator = maxVal + standardVal;
-//        double denominator = findMax(maxVal, standardVal) * people;
+    public int generatePeople1(Integer maxVal, Integer standardVal) {
+        Map<Integer, Double> balanceResults = new HashMap();
+        Integer people = basicSuggestPeople;
+        do {
+            balanceResults.put(people, calculateBalance(maxVal, standardVal, people));
+            people++;
+        } while (people <= numLampMaxTestRequiredPeople);
 
-        double numerator = maxVal + (standardVal / people);
-        double denominator = findMax(maxVal, standardVal / people) * 2;
-        double result = numerator / denominator;
+        balanceResults = this.sortByValue(balanceResults);
+
+        for (Map.Entry<Integer, Double> entry : balanceResults.entrySet()) {
+            message.add("People: " + entry.getKey() + " / Balance:" + formatter.format(entry.getValue()));
+        }
+
+        int bestSetupPeople = 0;
+        int loopCount = 0;
+
+        for (Map.Entry<Integer, Double> entry : balanceResults.entrySet()) {
+            ++loopCount;
+            if (entry.getValue() >= babStandard || loopCount == numLampMaxTestRequiredPeople) {
+                bestSetupPeople = entry.getKey();
+                break;
+            }
+        }
+//        out.println("The best situation in these value is set people = " + bestSetupPeople + " and lineBalance is " + bestVal + " .");
+        return bestSetupPeople;
+    }
+
+    public <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {
+        List<Map.Entry<K, V>> list = new LinkedList<>(map.entrySet());
+        Collections.sort(list, new Comparator<Map.Entry<K, V>>() {
+            @Override
+            public int compare(Map.Entry<K, V> e1, Map.Entry<K, V> e2) {
+                return (e1.getValue()).compareTo(e2.getValue());
+            }
+        });
+
+        Map<K, V> result = new LinkedHashMap<>();
+        for (Map.Entry<K, V> entry : list) {
+            result.put(entry.getKey(), entry.getValue());
+        }
+
         return result;
     }
 
-    private Double getStandardTime(String modelName) {
-        List<Map> l = psService.getTestStandardTime(modelName);
-        if (l.isEmpty()) {
-            return -1.0;
-        }
-        Map date = l.get(0);
-        return (Double) date.get("standardTime") * 60;
+    //(組裝CT + (測試標工 / 人數)) / (max(組裝CT, (測試標工 / 人數)) * 2)  因為取組裝&測試的線平衡率，所以需要*2
+    private Double calculateBalance(Integer maxVal, Integer standardVal, Integer people) {
+        Double babCT = (double) maxVal, testStandard = (double) standardVal;
+        Double numerator = babCT + (testStandard / people);
+        Double denominator = findMax(babCT, testStandard / people) * 2;
+        Double result = numerator / denominator;
+        return result;
     }
 
-    private Integer findMaxInList(List<Map> l) {
+    private Object findMaxInList(List<Map> l) {
         List avgs = new ArrayList();
         for (Map m : l) {
             avgs.add(m.get("average"));
@@ -139,39 +226,53 @@ public class LineBalancePeopleGenerator {
         return findMax(avgs);
     }
 
-    private Integer findMax(List<Integer> l) {
-        if (l.isEmpty()) {
-            return null;
-        }
-        Collections.sort(l);
-        return l.get(l.size() - 1);
+    private Object findMax(List l) {
+        return l.isEmpty() ? null : Collections.max(l);
     }
 
     private Integer findMax(Integer... vals) {
-
-        int max = 0;
-
-        for (Integer i : vals) {
-            if (i > max) {
-                max = i;
-            }
-        }
-        return max;
+        return (Integer) this.findMaxObj((Object[]) vals);
     }
 
     private Double findMax(Double... vals) {
-        double max = Double.NEGATIVE_INFINITY;
-
-        for (double d : vals) {
-            if (d > max) {
-                max = d;
-            }
-        }
-        return max;
+        return (Double) this.findMaxObj((Object[]) vals);
     }
 
-    public static JSONObject getBabToTestAssignNumOfPeopleStatus() {
-        return babToTestAssignNumOfPeopleStatus;
+    private Object findMaxObj(Object... obj) {
+        Arrays.sort(obj);
+        return obj.length == 0 ? null : obj[obj.length - 1];
+    }
+
+    private int findCloset(int... numbers) {
+        int myNumber = (int) Math.floor(this.babStandard * 100);
+        int distance = Math.abs(numbers[0] - myNumber);
+        int idx = 0;
+        for (int c = 1; c < numbers.length; c++) {
+            int cdistance = Math.abs(numbers[c] - myNumber);
+            if (cdistance < distance) {
+                idx = c;
+                distance = cdistance;
+            }
+        }
+        return numbers[idx];
+    }
+
+    private Double findCloset(Double... numbers) {
+        Double myNumber = this.babStandard;
+        Double distance = Math.abs(numbers[0] - myNumber);
+        int idx = 0;
+        for (int c = 1; c < numbers.length; c++) {
+            Double cdistance = Math.abs(numbers[c] - myNumber);
+            if (cdistance < distance) {
+                idx = c;
+                distance = cdistance;
+            }
+        }
+        return numbers[idx];
+    }
+
+    public JSONArray getBabToTestAssignNumOfPeopleStatus() {
+        return babToTestAssignNumOfPeopleStatus == null ? new JSONArray() : babToTestAssignNumOfPeopleStatus;
     }
 
 }

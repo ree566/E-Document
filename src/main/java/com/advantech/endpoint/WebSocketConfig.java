@@ -19,6 +19,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author Wei.Cheng
  */
+
+//Config testing, 目標為避免跨網域的request link.(check header first)
 public class WebSocketConfig extends Configurator {
 
     private static final Logger log = LoggerFactory.getLogger(WebSocketConfig.class);

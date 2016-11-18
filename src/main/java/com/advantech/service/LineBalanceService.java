@@ -5,12 +5,12 @@
  */
 package com.advantech.service;
 
-import com.advantech.model.LineBalancingDAO;
-import com.advantech.helper.MailSend;
-import com.advantech.helper.PropertiesReader;
 import com.advantech.entity.BAB;
 import com.advantech.entity.Line;
 import com.advantech.entity.LineBalancing;
+import com.advantech.helper.MailSend;
+import com.advantech.helper.PropertiesReader;
+import com.advantech.model.LineBalancingDAO;
 import java.math.BigDecimal;
 import java.util.Date;
 import javax.mail.MessagingException;
@@ -49,7 +49,7 @@ public class LineBalanceService {
         if (balances != null) {
             int babPeople = balances.length();
             for (int a = 0; a < babPeople; a++) {//Find the max avg and sum the avgs.
-                double avg = (double) balances.getJSONObject(a).getInt("average");
+                double avg = balances.getJSONObject(a).getInt("average");
                 if (max < avg) {
                     max = avg;
                 }

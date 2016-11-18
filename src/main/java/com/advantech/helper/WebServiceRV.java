@@ -72,7 +72,7 @@ public class WebServiceRV {
     @SuppressWarnings("ConvertToTryWithResources")
     public Document getKanbanUsers(String queryString) throws Exception {
         List data = getWebServiceData(queryString);
-        return ((Element) data.get(1)).getOwnerDocument();
+        return ((Node) data.get(1)).getOwnerDocument();
     }
 
     public List<String> getKanbanUsersForString() throws Exception {
@@ -84,7 +84,7 @@ public class WebServiceRV {
         List list = new ArrayList();//ws = WebService
         List data = getWebServiceData(queryString);
         for (Object obj : data) {
-            Document doc = ((Element) obj).getOwnerDocument();
+            Document doc = ((Node) obj).getOwnerDocument();
             StringWriter sw = new StringWriter();
             TransformerFactory tf = TransformerFactory.newInstance();
             Transformer transformer = tf.newTransformer();
@@ -135,7 +135,7 @@ public class WebServiceRV {
     public List<TestLineTypeUser> getKanbanUsersForXml() {
         try {
             List l = this.getWebServiceData(queryString);
-            Document doc = ((Element) l.get(1)).getOwnerDocument();
+            Document doc = ((Node) l.get(1)).getOwnerDocument();
 
             //Unmarshal the data into javaObject.
             JAXBContext jc = JAXBContext.newInstance(TestLineTypeUsers.class);
@@ -162,14 +162,14 @@ public class WebServiceRV {
                     + jobnumber
                     + "</USER_NO><PASSWORD></PASSWORD><STATUS>A</STATUS></USER_INFO></root>";
             List l = this.getWebServiceData(str);
-            Document doc = ((Element) l.get(1)).getOwnerDocument();
+            Document doc = ((Node) l.get(1)).getOwnerDocument();
 
             //Unmarshal the data into javaObject.
             JAXBContext jc = JAXBContext.newInstance(User.class);
             Unmarshaller u = jc.createUnmarshaller();
 
             //Skip the <diffgr:diffgram> tag, read QryData tag directly.
-            Node node = (Node) doc.getFirstChild().getFirstChild().getFirstChild();
+            Node node = doc.getFirstChild().getFirstChild().getFirstChild();
 
             if (node != null) {
                 User user = (User) u.unmarshal(node);

@@ -6,8 +6,6 @@
 package com.advantech.entity;
 
 import java.io.Serializable;
-import static java.lang.System.out;
-import java.util.Objects;
 
 /**
  *

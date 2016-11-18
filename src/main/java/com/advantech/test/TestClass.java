@@ -5,14 +5,9 @@
  */
 package com.advantech.test;
 
-import com.advantech.model.BasicDAO;
-import static java.lang.System.out;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.naming.NamingException;
-import javax.sql.DataSource;
+import com.advantech.entity.BAB;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -21,24 +16,16 @@ import javax.sql.DataSource;
 public class TestClass {
 
     public static void main(String args[]) {
-        Connection conn = null;
-        DataSource ds = null;
-        try {
-            ds = BasicDAO.getDataSource1(BasicDAO.SQL.Way_Chien_TWM3.toString());
-        } catch (NamingException ex) {
-            out.println("Get DataSource fail.");
-        }
-        do {
-            try {
-                conn = ds.getConnection();
-            } catch (SQLException ex) {
-                out.println("Connect fail.");
-                try {
-                    Thread.sleep(10 * 1000);
-                } catch (InterruptedException ex1) {
-                    out.println(ex1);
-                }
-            }
-        } while (conn == null);
+        BAB b1 = new BAB();
+        BAB b2 = new BAB();
+        b1.setId(1999);
+        b1.setModel_name("1");
+        b2.setId(19991);
+        b1.setModel_name("2");
+        
+        
+        Map m = new HashMap();
+        m.put("test", b1);
+        
     }
 }

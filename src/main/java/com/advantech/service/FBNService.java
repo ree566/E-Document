@@ -5,8 +5,8 @@
  */
 package com.advantech.service;
 
-import com.advantech.model.FBNDAO;
 import com.advantech.entity.FBN;
+import com.advantech.model.FBNDAO;
 import java.util.List;
 import java.util.Map;
 import org.joda.time.DateTime;
@@ -74,12 +74,16 @@ public class FBNService {
         DateTimeFormatter dtf = DateTimeFormat.forPattern("yy/MM/dd HH:mm:ss ");
         return dtf.parseDateTime(date);
     }
-    
-    public List<Map> getTotalAbnormalData(int BABid){
+
+    public List<Map> getTotalAbnormalData(int BABid) {
         return fbnDAO.getTotalAbnormalData(BABid);
     }
-    
-    public List<Map> getAbnormalData(int BABid){
+
+    public List<Map> getAbnormalData(int BABid) {
         return fbnDAO.getAbnormalData(BABid);
+    }
+
+    public boolean sensorDataClean(String date) {
+        return fbnDAO.sensorDataClean(date);
     }
 }

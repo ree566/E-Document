@@ -1,11 +1,11 @@
 package com.advantech.service;
 
 import com.advantech.entity.AlarmAction;
-import com.advantech.model.BABDAO;
 import com.advantech.entity.BAB;
 import com.advantech.entity.BABHistory;
 import com.advantech.entity.Line;
 import com.advantech.helper.PropertiesReader;
+import com.advantech.model.BABDAO;
 import com.google.gson.Gson;
 import java.math.BigDecimal;
 import java.sql.Array;
@@ -75,6 +75,10 @@ public class BABService {
     public boolean checkSensorIsClosed(int BABid, int sensorNo) {
         return babDAO.checkSensorIsClosed(BABid, sensorNo);
     }
+    
+    public Integer getPoTotalQuantity(String PO) {
+        return babDAO.getPoTotalQuantity(PO);
+    }
 
     public List<Map> getBABInfo(String startDate, String endDate) {
         return babDAO.getBABInfo(startDate, endDate);
@@ -90,6 +94,10 @@ public class BABService {
 
     public List<BAB> getBABIdForCaculate() {
         return babDAO.getBABIdForCaculate();
+    }
+    
+    public List<BAB> getAssyProcessing() {
+        return babDAO.getAssyProcessing();
     }
 
     public JSONArray getClosedBABAVG(int BABid) throws JSONException {
@@ -236,8 +244,8 @@ public class BABService {
         return new JSONArray(l);
     }
 
-    public List<Map> getBABAvgsInSpecGroup(int BABid) {
-        return babDAO.getBABAvgsInSpecGroup(BABid);
+    public List<Map> getBABAvgsInSpecGroup(int BABid, int groupStart, int groupEnd) {
+        return babDAO.getBABAvgsInSpecGroup(BABid, groupStart, groupEnd);
     }
 
     public double getAvgType2(int BABid, int closedSign) throws Exception {

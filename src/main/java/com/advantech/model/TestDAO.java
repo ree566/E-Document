@@ -6,8 +6,8 @@
 package com.advantech.model;
 
 import com.advantech.entity.AlarmAction;
-import com.advantech.entity.Test;
 import com.advantech.entity.Desk;
+import com.advantech.entity.Test;
 import com.advantech.entity.TestLineTypeUser;
 import com.advantech.service.TestLineTypeFacade;
 import java.sql.Connection;

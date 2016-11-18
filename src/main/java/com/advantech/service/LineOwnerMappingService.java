@@ -5,10 +5,7 @@
  */
 package com.advantech.service;
 
-import com.advantech.entity.ActionCodeMapping;
-import com.advantech.model.ActionCodeMappingDAO;
 import com.advantech.model.LineOwnerMappingDAO;
-import static java.lang.System.out;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

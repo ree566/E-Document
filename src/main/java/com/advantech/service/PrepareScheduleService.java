@@ -5,10 +5,9 @@
  */
 package com.advantech.service;
 
-import com.advantech.model.PrepareScheduleDAO;
 import com.advantech.entity.PrepareSchedule;
+import com.advantech.model.PrepareScheduleDAO;
 import java.util.List;
-import java.util.Map;
 
 /**
  *
@@ -22,16 +21,8 @@ public class PrepareScheduleService {
         prepareScheduleDAO = new PrepareScheduleDAO();
     }
 
-    public PrepareSchedule getScheduleByPO(String po) {
-        List l = this.getAllSchedule(po);
+    public PrepareSchedule getPrepareSchedule(String po) {
+        List l = prepareScheduleDAO.getPrepareSchedule(po);
         return l != null && !l.isEmpty() ? (PrepareSchedule) l.get(0) : null;
-    }
-
-    public List<PrepareSchedule> getAllSchedule(String po) {
-        return prepareScheduleDAO.getPrepareSchedule(po);
-    }
-
-    public List<Map> getTestStandardTime(String modelName) {
-        return prepareScheduleDAO.getTestStandardTime(modelName);
     }
 }

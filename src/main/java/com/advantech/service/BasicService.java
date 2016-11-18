@@ -30,6 +30,7 @@ public class BasicService {
     private static ActionCodeMappingService actionCodeMappingService = null;
     private static LineOwnerMappingService lineOwnerMappingService = null;
     private static ModelResponsorService modelResponsorService = null;
+    private static WorkTimeService workTimeService = null;
 
     static {
         babService = new BABService();
@@ -45,6 +46,7 @@ public class BasicService {
         actionCodeMappingService = new ActionCodeMappingService();
         lineOwnerMappingService = new LineOwnerMappingService();
         modelResponsorService = new ModelResponsorService();
+        workTimeService = new WorkTimeService();
     }
 
     public static BABService getBabService() {
@@ -97,6 +99,10 @@ public class BasicService {
 
     public static ModelResponsorService getModelResponsorService() {
         return modelResponsorService;
+    }
+
+    public static WorkTimeService getWorkTimeService() {
+        return workTimeService;
     }
 
 }

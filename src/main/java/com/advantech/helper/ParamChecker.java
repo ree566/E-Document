@@ -5,8 +5,6 @@
  */
 package com.advantech.helper;
 
-import java.util.Arrays;
-
 /**
  *
  * @author Wei.Cheng

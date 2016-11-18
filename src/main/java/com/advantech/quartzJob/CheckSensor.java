@@ -41,7 +41,7 @@ public class CheckSensor implements Job {
         Integer minDiff = BasicService.getFbnService().checkLastFBNMinuteDiff();
         int maxAllowMin = 30;
 
-        if (minDiff == null || (!processingBAB.isEmpty() && minDiff >= maxAllowMin)) {
+        if ((!processingBAB.isEmpty() && minDiff == null) || (!processingBAB.isEmpty() && minDiff >= maxAllowMin)) {
             sendMail();
         }
     }
