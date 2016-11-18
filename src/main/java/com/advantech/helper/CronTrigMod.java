@@ -46,9 +46,6 @@ public class CronTrigMod {
     private Scheduler scheduler;
     private static CronTrigMod instance;
 
-    BasicLineTypeFacade bf = BabLineTypeFacade.getInstance();
-    BasicLineTypeFacade tf = TestLineTypeFacade.getInstance();
-
     private CronTrigMod() {
         try {
             scheduler = new StdSchedulerFactory().getScheduler();
@@ -115,8 +112,8 @@ public class CronTrigMod {
     }
 
     private void changeResultOutputFlag(boolean flag) {
-        bf.isNeedToOutput(flag);
-        tf.isNeedToOutput(flag);
+        BabLineTypeFacade.getInstance().isNeedToOutput(flag);
+        TestLineTypeFacade.getInstance().isNeedToOutput(flag);
     }
 
     public void updateMainJobCronExpressionToDefault() throws SchedulerException {
@@ -233,6 +230,14 @@ public class CronTrigMod {
             return scheduler.checkExists(new JobKey((String) key));
         } else {
             return false;
+        }
+    }
+
+    public void unScheduleAllJob() {
+        try {
+            this.scheduler.clear();
+        } catch (SchedulerException ex) {
+            log.error(ex.toString());
         }
     }
 }

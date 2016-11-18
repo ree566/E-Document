@@ -41,7 +41,7 @@
     <body>
         <jsp:include page="header.jsp" />
         <div id="wigetCtrl">
-            <iframe id="iframe1" style='width:100%; height:650px' frameborder="0" scrolling="no" src="map_${userSitefloor}f.jsp" webkitAllowFullScreen mozAllowFullScreen allowFullScreen></iframe>
+            <iframe id="iframe1" style='width:100%; height:650px' frameborder="0" scrolling="no" src="map_totalStatus.jsp?sitefloor=${userSitefloor}" webkitAllowFullScreen mozAllowFullScreen allowFullScreen></iframe>
         </div>
         <jsp:include page="footer.jsp" />
     </body>
