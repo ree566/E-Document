@@ -12,7 +12,7 @@
     </processing-directives>
     
     <!--主要工作job，把資料轉換到TXT控制燈號-->
-<!--    <schedule>
+    <!--    <schedule>
         <job>
             <name>DailyJobWorker</name>
             <job-class>com.advantech.quartzJob.DailyJobWorker</job-class>
@@ -28,7 +28,7 @@
     </schedule>-->
     
     <!--清理資料庫job-->
-<!--    <schedule>
+    <!--    <schedule>
         <job>
             <name>DataBaseInit</name>
             <job-class>com.advantech.quartzJob.DataBaseInit</job-class>
@@ -43,7 +43,7 @@
     </schedule>-->
     
     <!--晚上十點把未完結工單做儲存的job-->
-<!--    <schedule>
+    <!--    <schedule>
         <job>
             <name>SaveBABDataToDB</name>
             <job-class>com.advantech.quartzJob.BABDataSaver</job-class>
@@ -59,7 +59,7 @@
     
     
     <!--定時查看sensor是否異常，回報-->
-<!--    <schedule>
+    <!--    <schedule>
         <job>
             <name>CheckSensor</name>
             <job-class>com.advantech.quartzJob.CheckSensor</job-class>
@@ -74,7 +74,7 @@
     </schedule>-->
     
     <!--禮拜三零點固定將Database的sensor unused的資料clean一次-->
-<!--    <schedule>
+    <!--    <schedule>
         <job>
             <name>CleanSensorData</name>
             <job-class>com.advantech.quartzJob.CleanSensorData</job-class>
@@ -89,7 +89,7 @@
     </schedule>-->
     
     <!--把測試線別狀態記錄到資料庫-->
-<!--    <schedule>
+    <!--    <schedule>
         <job>
             <name>TestLineTypeRecord</name>
             <job-class>com.advantech.quartzJob.TestLineTypeRecord</job-class>
@@ -104,7 +104,7 @@
     </schedule>-->
     
     <!--每日把未回覆異常原因的回覆給幹部-->
-<!--    <schedule>
+    <!--    <schedule>
         <job>
             <name>CountermeasureAlarm</name>
             <job-class>com.advantech.quartzJob.CountermeasureAlarm</job-class>
@@ -128,9 +128,23 @@
             <cron>
                 <name>NumLamp</name>
                 <job-name>NumLamp</job-name>
-                <cron-expression>15 0/1 8-20 ? * MON-FRI *</cron-expression>
+                <cron-expression>15,45 0/1 8-20 ? * MON-FRI *</cron-expression>
             </cron>
         </trigger>
-    </schedule><!--
-    -->
+    </schedule>
+    
+    <!--晚上9點半把NumLamp這個job所分配的子polling job全數移除-->
+    <schedule>
+        <job>
+            <name>NumLampClearAllocation</name>
+            <job-class>com.advantech.quartzJob.NumLampClearAllocation</job-class>
+        </job>
+        <trigger>
+            <cron>
+                <name>NumLampClearAllocation</name>
+                <job-name>NumLampClearAllocation</job-name>
+                <cron-expression>0 30 21 ? * MON-FRI *</cron-expression>
+            </cron>
+        </trigger>
+    </schedule>
 </job-scheduling-data>

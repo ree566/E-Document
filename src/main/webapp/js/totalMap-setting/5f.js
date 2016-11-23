@@ -29,3 +29,4 @@ var babGroup = [
 ];
 
 var maxTestTableNo = 24;
+var sitefloor = 5;

@@ -13,7 +13,7 @@
         <c:if test="${(userSitefloor == null) || (userSitefloor == '' || userSitefloor < 1 || userSitefloor > 7)}">
             <c:redirect url="/SysInfo" />
         </c:if>
-        
+
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>${userSitefloor}F狀態平面圖 - ${initParam.pageTitle}</title>
         <link rel="stylesheet" href="../../css/jquery-ui.css">
@@ -156,10 +156,18 @@
                 position: fixed;
                 bottom: 0px;
             }
-            .strokeme{
-                font-size: 20px;
+
+            .suggestMsg{
+                background-color: white;
                 color: red;
-                text-shadow: -2px 0 #fff, 0 2px #fff, 2px 0 #fff, 0 -2px #fff;
+                margin: 5px;
+                padding: 5px;
+            }
+            .stretch_it{
+                white-space: nowrap;
+            }
+            .justify{
+                text-align:justify;
             }
         </style>
         <script src="../../js/jquery-1.11.3.min.js"></script>
@@ -167,6 +175,7 @@
         <script src="../../js/reconnecting-websocket.min.js"></script>
         <script src="../../js/tooltipster.bundle.min.js"></script>
         <script src="../../js/numLamp-setting/${userSitefloor}f.js"></script>
+        <script src="../../js/strech-text.js"></script>
 
         <script>
 
@@ -213,9 +222,8 @@
 ////                        return false;
 //                    }
 //                });
-
-                $("#tooltipTrig").click(function () {
-                    $("#babArea > div").tooltipster('open');
+                $('.stretch').each(function () {
+                    $(this).strech_text();
                 });
 
                 function initWiget(obj) {
@@ -235,8 +243,7 @@
                         });
                         $("#" + lineName)
                                 .attr({title: "empty"})
-                                .tooltipster({trigger: "click", side: "right", contentAsHTML: true})
-                                .tooltipster('open');
+                                .tooltipster({trigger: "click", side: "right", contentAsHTML: true, updateAnimation: null});
                     });
                 }
 
@@ -262,7 +269,7 @@
                                         for (var i = 0; i < messageArray.length; i++) {
                                             message += messageArray[i] + "<br/>";
                                         }
-                                        message += "<p class='strokeme'>" + lineName.trim() + " Suggestion station Action: " + details.suggestTestPeople + "</p>";
+                                        message += "<div class='suggestMsg'>" + lineName.trim() + " Suggestion station Action: " + details.suggestTestPeople + "</div>";
                                         $("#" + lineName.trim()).tooltipster('content', message);
                                     }
                                 }
@@ -343,23 +350,12 @@
         <div id="wigetCtrl">
             <div id="mapGroup">
                 <div id="wigetInfo">
-                    <label for="empty" style="float:left">空</label>
-                    <div class="draggable blub-empty divCustomBg"></div>
-
-                    <label for="normalSign" style="float:left">正常</label>
-                    <div class="draggable blub-normal divCustomBg"></div>
-
-                    <label for="normalSign" style="float:left">警告</label>
-                    <div class="draggable blub-alarm divCustomBg"></div>
-
-                    <label for="normalSign" style="float:left">異常</label>
-                    <div class="draggable blub-abnormal divCustomBg"></div>
+                    <p class="stretch">
+                        數字燈
+                    </p>
                 </div>
                 <div id="titleArea"></div>
                 <div id="babArea"></div>
-            </div>
-            <div id="tooltipTrig">
-                <span>Trigger Button</span>
             </div>
         </div>
         <div class="clearWiget" />

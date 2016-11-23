@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.json.JSONObject;
@@ -41,6 +42,7 @@ public class NumLamp implements Job {
     private final BABService babService;
     private final CronTrigMod ctm;
     private final String quartzNameExt = "_NumLamp";
+    private final String groupName = "NumLamp";
 
     private static List<BAB> tempBab = null;
 
@@ -67,7 +69,7 @@ public class NumLamp implements Job {
                 if (tempBab.contains(b)) {
                     this.unschedulePollingJob(b.getLineName());
                     out.println("This job is closed, unsched it. " + b.getId());
-                    tempBab.remove(b);
+                    removeBabFromTempList(b);
                     NUMLAMP_STATUS.remove(b.getLineName());
                 } else if (processingBab.contains(b)) {
                     tempBab.add(b);
@@ -81,6 +83,16 @@ public class NumLamp implements Job {
 
     }
 
+    private void removeBabFromTempList(BAB bab) {
+        Iterator it = tempBab.iterator();
+        while (it.hasNext()) {
+            BAB b = (BAB) it.next();
+            if (b.equals(bab)) {
+                it.remove();
+            }
+        }
+    }
+
     public void schedulePollingJob(List<BAB> l) {
         for (BAB b : l) {
             try {
@@ -88,8 +100,8 @@ public class NumLamp implements Job {
                 String jobName = b.getLineName() + quartzNameExt;
                 Map m = new HashMap();
                 m.put("dataMap", b);
-                JobDetail jobDetail = ctm.createJobDetail(jobName, LineBalancePeopleGenerator.class, m);
-                ctm.generateAJob(jobDetail, ctm.createTriggerKey(jobName), "0/30 * 8-20 ? * MON-SAT *");
+                JobDetail jobDetail = ctm.createJobDetail(jobName, groupName, LineBalancePeopleGenerator.class, m);
+                ctm.generateAJob(jobDetail, ctm.createTriggerKey(jobName, groupName), "0/30 * 8-20 ? * MON-SAT *");
             } catch (SchedulerException ex) {
                 log.error(ex.toString());
             }
@@ -101,7 +113,7 @@ public class NumLamp implements Job {
             String jobName = lineName + quartzNameExt;
             out.println("Unsched job on line " + lineName);
             ctm.removeAJob(jobName);
-            out.println(!ctm.isKeyInScheduleExist(jobName) ? "Job is success unsched.":"Job unsched fail");
+            out.println(!ctm.isKeyInScheduleExist(jobName) ? "Job is success unsched." : "Job unsched fail");
         } catch (SchedulerException ex) {
             log.error(ex.toString());
         }

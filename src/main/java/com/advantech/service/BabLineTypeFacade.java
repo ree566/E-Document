@@ -78,7 +78,7 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
             for (BAB bab : babGroups) {
                 int BABid = bab.getId();
 
-                JSONArray sensorDatas = babService.getLastGroupStatus(BABid);
+                JSONArray sensorDatas = babService.getLastGroupStatusForJson(BABid);
 
                 int peoples = sensorDatas.length();
                 if (peoples == 0) {

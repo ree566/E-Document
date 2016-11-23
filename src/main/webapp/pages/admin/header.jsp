@@ -93,7 +93,9 @@
                     </a>
                     <ul class="dropdown-menu">
                         <li><a href="TotalMap?sitefloor=5">狀態平面圖5F</a></li>
+                        <li><a href="NumLamp?sitefloor=5">數字燈5F</a></li>
                         <li><a href="TotalMap?sitefloor=6">狀態平面圖6F</a></li>
+                        <li><a href="NumLamp?sitefloor=6">數字燈6F</a></li>
                     </ul>
                 </li>
                 <li>
@@ -106,18 +108,6 @@
                         <li><a href="SensorAdjust?sitefloor=5">5樓感應器狀態(校正用)</a></li>
                         <li><a href="SensorAdjust?sitefloor=6">6樓感應器狀態(校正用)</a></li>
                     </ul>
-                </li>
-                <li>
-                    <a href="modify/Countermeasure">
-                        <span class="glyphicon glyphicon-wrench" aria-hidden="true" /> 
-                        系統維護區
-                    </a>
-                </li>
-                <li>
-                    <a href="About">
-                        <span class="glyphicon glyphicon-info-sign" aria-hidden="true" /> 
-                        關於系統
-                    </a>
                 </li>
             </ul>
         </div>
