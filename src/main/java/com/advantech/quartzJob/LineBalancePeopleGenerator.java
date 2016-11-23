@@ -29,6 +29,7 @@ import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.quartz.JobKey;
 import org.quartz.SchedulerException;
 import org.quartz.TriggerKey;
 import org.slf4j.Logger;
@@ -58,6 +59,7 @@ public class LineBalancePeopleGenerator implements Job {
     private final int startCountMininumQuantity, startCountMininumStandardTime, minTotalStandardTime, basicSuggestPeople = 1;
 
     private BAB currentBab;
+    private JobKey currentJobKey;
     private TriggerKey currentTriggerKey;
 
     public LineBalancePeopleGenerator() {
@@ -83,14 +85,15 @@ public class LineBalancePeopleGenerator implements Job {
         JobDataMap dataMap = jec.getJobDetail().getJobDataMap();
         BAB bab = (BAB) dataMap.get("dataMap");
         this.currentBab = bab;
-        out.println(bab.getLineName() + " processing...");
         this.currentTriggerKey = jec.getTrigger().getKey();
+        this.currentJobKey = jec.getJobDetail().getKey();
         this.generateTestPeople();
     }
 
     private void jobSelfRemove() {
+        CronTrigMod ctm = CronTrigMod.getInstance();
         try {
-            CronTrigMod.getInstance().jobUnSchedule(currentTriggerKey);
+            ctm.jobPause(currentJobKey);
         } catch (SchedulerException ex) {
             log.error(ex.toString());
         }
@@ -135,8 +138,14 @@ public class LineBalancePeopleGenerator implements Job {
                 caculateAndReportDataToParentJob(currentBab, babCT, testStandardTime);
             }
         }
-        //Update the current group status finally anyway.
-        updateCurrentGroup(currentBab.getLineName());
+
+        if (testStandardTime < startCountMininumStandardTime || currentGroup >= numLampGroupEnd) {
+            if (currentGroup < numLampGroupEnd) {
+                //Update the current group status finally anyway.
+                updateCurrentGroup(currentBab.getLineName());
+            }
+            jobSelfRemove();
+        }
     }
 
     private boolean isStatusExist(String lineName) {
@@ -169,9 +178,7 @@ public class LineBalancePeopleGenerator implements Job {
                 obj.put("quantity", currentGroup);
                 NumLamp.getNumLampStatus().put(lineName, obj);
             }
-        } catch (Exception e) {
-
-        }
+        } catch (Exception e) {} //Do nothing when object is not found
     }
 
     private void caculateAndReportDataToParentJob(BAB bab, Integer babCT, Integer testStandardTime) {
@@ -195,9 +202,8 @@ public class LineBalancePeopleGenerator implements Job {
         }
 
         if (testStandardTime < startCountMininumStandardTime || currentGroup >= numLampGroupEnd) {
-            message.add("※Reach pcs " + numLampGroupEnd + " or test standard time < " + formatter2.format(secToMin(startCountMininumStandardTime)));
+            message.add("※Reach " + numLampGroupEnd + " pcs or T1 standard < " + formatter2.format(secToMin(startCountMininumStandardTime)) + " min");
             message.add("※Stop updates");
-            jobSelfRemove();
         }
 
         obj.put("suggestTestPeople", suggestPeople);
@@ -228,23 +234,16 @@ public class LineBalancePeopleGenerator implements Job {
             if (people == numLampMaxTestRequiredPeople) {
                 return people;
             }
-
             balance = calculateBalance(maxVal, standardVal, people);
-
-            out.println("Caculate balance :" + balance);
-            out.println("Balance - standard = " + (balance - babStandard));
-
             int index = people - 1;
             balances[index] = balance;
             abs[index] = Math.abs(balances[index] - babStandard);
             if (abs[index] < abs[min]) {
                 min = index;
             }
-
             people++;
-
         } while (balance - babStandard > 0 && people <= numLampMaxTestRequiredPeople);
-
+        
         return min + 1;
     }
 

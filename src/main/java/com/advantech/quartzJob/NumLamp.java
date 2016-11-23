@@ -7,11 +7,8 @@ package com.advantech.quartzJob;
 
 import com.advantech.entity.BAB;
 import com.advantech.helper.CronTrigMod;
-import com.advantech.model.BasicDAO;
 import com.advantech.service.BABService;
 import com.advantech.service.BasicService;
-import com.google.gson.Gson;
-import static java.lang.System.out;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -24,7 +21,10 @@ import org.quartz.Job;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.quartz.JobKey;
 import org.quartz.SchedulerException;
+import org.quartz.TriggerKey;
+import org.quartz.utils.Key;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,6 +46,8 @@ public class NumLamp implements Job {
 
     private static List<BAB> tempBab = null;
 
+    private static final Map<String, Map<String, Key>> STORE_KEYS = new HashMap();
+
     public NumLamp() {
         this.babService = BasicService.getBabService();
         this.ctm = CronTrigMod.getInstance();
@@ -59,26 +61,22 @@ public class NumLamp implements Job {
     public void execute(JobExecutionContext jec) throws JobExecutionException {
         List<BAB> processingBab = babService.getAssyProcessing();
         if (tempBab == null) {
-            out.println("First bab scan...");
             tempBab = processingBab;
             schedulePollingJob(processingBab);
         } else if (processingBab.size() != tempBab.size() || !processingBab.containsAll(tempBab)) {
-            out.println("List is different...");
             List<BAB> different = this.getDifferent(processingBab, tempBab);
             for (BAB b : different) {
                 if (tempBab.contains(b)) {
                     this.unschedulePollingJob(b.getLineName());
-                    out.println("This job is closed, unsched it. " + b.getId());
                     removeBabFromTempList(b);
                     NUMLAMP_STATUS.remove(b.getLineName());
+                    STORE_KEYS.remove(b.getLineName());
                 } else if (processingBab.contains(b)) {
                     tempBab.add(b);
-                    out.println("This job is new, sched it. " + b.getId());
                 }
             }
             this.schedulePollingJob(tempBab);
         } else {
-            out.println("List is not different, waiting next trigger time...");
         }
 
     }
@@ -96,12 +94,23 @@ public class NumLamp implements Job {
     public void schedulePollingJob(List<BAB> l) {
         for (BAB b : l) {
             try {
-                out.println("Sched job for line " + b.getLineName() + " , id: " + b.getId());
                 String jobName = b.getLineName() + quartzNameExt;
-                Map m = new HashMap();
-                m.put("dataMap", b);
-                JobDetail jobDetail = ctm.createJobDetail(jobName, groupName, LineBalancePeopleGenerator.class, m);
-                ctm.generateAJob(jobDetail, ctm.createTriggerKey(jobName, groupName), "0/30 * 8-20 ? * MON-SAT *");
+                JobKey jobKey = ctm.createJobKey(jobName, groupName);
+
+                if (!ctm.isJobInScheduleExist(jobKey)) {
+                    TriggerKey triggerKey = ctm.createTriggerKey(jobName, groupName);
+
+                    Map m = new HashMap();
+                    m.put("dataMap", b);
+                    JobDetail jobDetail = ctm.createJobDetail(jobKey, groupName, LineBalancePeopleGenerator.class, m);
+                    ctm.scheduleJob(jobDetail, triggerKey, "0/30 * 8-20 ? * MON-SAT *");
+
+                    //put key in map when sche is success
+                    Map keyMap = new HashMap();
+                    keyMap.put("job", jobKey);
+                    keyMap.put("trigger", triggerKey);
+                    STORE_KEYS.put(b.getLineName(), keyMap);
+                }
             } catch (SchedulerException ex) {
                 log.error(ex.toString());
             }
@@ -111,9 +120,9 @@ public class NumLamp implements Job {
     public void unschedulePollingJob(String lineName) {
         try {
             String jobName = lineName + quartzNameExt;
-            out.println("Unsched job on line " + lineName);
-            ctm.removeAJob(jobName);
-            out.println(!ctm.isKeyInScheduleExist(jobName) ? "Job is success unsched." : "Job unsched fail");
+            Map keyMap = STORE_KEYS.get(lineName);
+            JobKey jobKey = (JobKey) keyMap.get("job");
+            ctm.removeJob(jobKey);
         } catch (SchedulerException ex) {
             log.error(ex.toString());
         }
@@ -121,17 +130,6 @@ public class NumLamp implements Job {
 
     public static JSONObject getNumLampStatus() {
         return NUMLAMP_STATUS;
-    }
-
-    public static void main(String arg0[]) {
-        BasicDAO.dataSourceInit1();
-        BABService bService = BasicService.getBabService();
-        List<BAB> listOne = bService.getAssyProcessing();
-        List<BAB> listTwo = bService.getBABIdForCaculate();
-
-        List<BAB> different = NumLamp.getInstance().getDifferent(listOne, listTwo);
-
-        out.printf("One:%s%nTwo:%s%nDifferent:%s%n", new Gson().toJson(listOne), new Gson().toJson(listTwo), new Gson().toJson(different));
     }
 
     public List<BAB> getDifferent(List<BAB> listOne, List<BAB> listTwo) {

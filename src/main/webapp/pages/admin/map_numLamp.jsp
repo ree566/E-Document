@@ -265,7 +265,9 @@
                                                 .html(suggestPeople);
                                         var messageArray = details.message;
                                         var message = "PO: " + details.PO + "<br/>ModelName: " + details.model_name + "<br/>";
-                                        message += "Current piece: " + details.quantity + " pcs<br/>";
+                                        if (details.quantity != null) {
+                                            message += "Current piece: " + details.quantity + " pcs<br/>";
+                                        }
                                         for (var i = 0; i < messageArray.length; i++) {
                                             message += messageArray[i] + "<br/>";
                                         }

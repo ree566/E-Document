@@ -9,7 +9,6 @@ import com.advantech.entity.AlarmAction;
 import com.advantech.entity.BAB;
 import com.advantech.entity.Line;
 import com.advantech.helper.PropertiesReader;
-import com.advantech.quartzJob.LineBalancePeopleGenerator;
 import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;

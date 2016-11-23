@@ -106,7 +106,7 @@ public class Endpoint {
     // Generate when connect users are at least one.
     private void pollingDBAndBrocast() {
         try {
-            CronTrigMod.getInstance().generateAJob(PollingSensorStatus.class, JOB_NAME, POLLING_FREQUENCY);
+            CronTrigMod.getInstance().scheduleJob(PollingSensorStatus.class, JOB_NAME, POLLING_FREQUENCY);
         } catch (SchedulerException ex) {
             log.error(ex.toString());
         }
@@ -115,7 +115,7 @@ public class Endpoint {
     // Delete when all users are disconnect. 
     private void unPollingDB() {
         try {
-            CronTrigMod.getInstance().removeAJob(JOB_NAME);
+            CronTrigMod.getInstance().removeJob(JOB_NAME);
 //            System.out.println("trigger has been removed");
         } catch (SchedulerException ex) {
             log.error(ex.toString());
