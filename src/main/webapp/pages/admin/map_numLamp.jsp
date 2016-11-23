@@ -5,44 +5,65 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html>
     <head>
+        <c:set var="userSitefloor" value="${param.sitefloor}" />
+        <c:if test="${(userSitefloor == null) || (userSitefloor == '' || userSitefloor < 1 || userSitefloor > 7)}">
+            <c:redirect url="/SysInfo" />
+        </c:if>
+
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>5F狀態平面圖 - ${initParam.pageTitle}</title>
+        <title>${userSitefloor}F狀態平面圖 - ${initParam.pageTitle}</title>
         <link rel="stylesheet" href="../../css/jquery-ui.css">
+        <link rel="stylesheet" href="../../css/tooltipster.bundle.min.css">
         <style>
+            body{
+                font-family: 微軟正黑體;
+            }
             .draggable { 
-                width: 25px; 
-                height: 25px; 
-                padding: 0.3em; 
                 float: left;
                 /*background-color: red;*/
                 margin: 0px;
                 cursor: default;
                 text-align: center;
             }
+
+            #babArea .draggable{
+                width: 25px; 
+                height: 25px; 
+                padding: 1.0em; 
+                font-size: 36px;
+            }
+
             #generateArea{
                 height: 20px;
             }
+
             .alarm{
                 background-color: #0066FF;
                 /*color: white;*/
             }
+
             .normal{
                 background-color: greenyellow;
                 /*color: white;*/
             }
+
             .abnormal{
                 background-color: yellow;
             }
+
             .offLine{
                 background-color: white;
             }
+
             #goback{
                 cursor: pointer;
                 color: blue;
             }
+
             .lineTitle{
                 padding: 0 auto; 
                 width: 40px; 
@@ -53,13 +74,15 @@
                 border:5px green solid;
                 cursor: default;
             }
+
             .clearWiget{
                 clear: both;
             }
+
             #mapGroup{
                 width: 1200px;
                 height: 500px;
-                background-image: url(../../images/totalMap_5f_3.png);
+                background-image: url(../../images/totalMap_${userSitefloor}f.png);
                 background-repeat: no-repeat;
                 -o-background-size: 100% 100%, auto;
                 -moz-background-size: 100% 100%, auto;
@@ -80,6 +103,7 @@
                 -webkit-transition: none;
                 transition: none;
             }
+
             #wigetInfo{
                 border-bottom: 5px red solid;
                 border-right: 5px red solid;
@@ -87,76 +111,79 @@
                 width: 25%; 
                 overflow: hidden;
             }
-            #titleArea>div, #testArea>div, #babArea>div{
+
+            #titleArea>div, #babArea>div{
                 position: absolute;
             }
+
             .titleWiget{
                 cursor: pointer;
             }
+
             .divCustomBg{
                 background-size: 100% 100%, auto;
                 background-repeat: no-repeat;
             }
+
             .ui-helper {
                 /*width: 100% !important;*/
                 float: left;
             }
+
             .blub-empty{
                 background-image: url(../../images/blub-icon/Gray_Light_Icon.png);
                 /*background-color: red;*/
             }
+
             .blub-normal{
                 background-image: url(../../images/blub-icon/Green_Light_Icon.png);
                 cursor: pointer;
             }
+
             .blub-alarm{
                 background-image: url(../../images/blub-icon/Blue_Light_Icon.png);
                 cursor: pointer;
             }
+
             .blub-abnormal{
                 background-image: url(../../images/blub-icon/Yellow_Light_Icon.png);
+            }
+
+            #tooltipTrig{
+                position: fixed;
+                bottom: 0px;
+            }
+
+            .suggestMsg{
+                background-color: white;
+                color: red;
+                margin: 5px;
+                padding: 5px;
+            }
+
+            #wigetInfo > p{
+                font-size: 24px;
+            }
+            .stretch_it{
+                white-space: nowrap;
+            }
+            .justify{
+                text-align: justify;
             }
         </style>
         <script src="../../js/jquery-1.11.3.min.js"></script>
         <script src="../../js/jquery-ui-1.10.0.custom.min.js"></script>
         <script src="../../js/reconnecting-websocket.min.js"></script>
-        <script src="../../js/jquery.fullscreen-min.js"></script>
+        <script src="../../js/tooltipster.bundle.min.js"></script>
+        <script src="../../js/numLamp-setting/${userSitefloor}f.js"></script>
+        <script src="../../js/stretch-text.js"></script>
+
         <script>
-            var sitefloor = 5;
-            var maxTestTableNo = 24;
-            var maxProductivity = 200;
 
             $(function () {
 
                 var pXa = -0;
                 var pYa = -0;
-
-                var titleGroup = [
-                    {lineName: "L1", x: 1070, y: 250},
-                    {lineName: "LA", x: 1070, y: 160},
-                    {lineName: "LB", x: 1070, y: 50},
-                    {lineName: "LH", x: 40, y: 120},
-                    {lineName: "LG", x: 370, y: 80},
-                    {lineName: "LF", x: 370, y: 160}
-                ];
-
-                var testGroup = [
-                    {people: 1, x: 490, y: 70}, // group 24
-                    {people: 1, x: 490, y: 150}, // group 23
-                    {people: 7, x: 530, y: 70}, // group 16-22
-                    {people: 7, x: 530, y: 150}, // group 9-15
-                    {people: 4, x: 620, y: 190}, // group 5-8
-                    {people: 4, x: 620, y: 275} // group 1-4
-                ];
-
-                var babGroup = [
-                    {people: 4, x: 930, y: 220, lineName: "L1"},
-                    {people: 4, x: 930, y: 170, lineName: "LA"},
-                    {people: 4, x: 930, y: 60, lineName: "LB"},
-                    {people: 3, x: 100, y: 160, lineName: "LH"},
-                    {people: 3, x: 260, y: 90, lineName: "LG"},
-                    {people: 3, x: 260, y: 160, lineName: "LF"}
-                ];
 
                 for (var i = 0; i < titleGroup.length; i++) {
                     var groupStatus = titleGroup[i];
@@ -167,18 +194,6 @@
                             .addClass("titleWiget")
                             .html(groupStatus.lineName)
                             .css({left: groupStatus.x + pXa, top: groupStatus.y + pYa});
-                }
-
-                for (var i = 0; i < testGroup.length; i++) {
-                    $("#testArea").append("<div></div>");
-                    var groupStatus = testGroup[i];
-                    for (var j = 0, k = groupStatus.people; j < k; j++) {
-                        $("#testArea>div")
-                                .eq(i)
-                                .append("<div></div>")
-                                .addClass("testWiget")
-                                .css({left: groupStatus.x + pXa, top: groupStatus.y + pYa});
-                    }
                 }
 
                 for (var i = 0; i < babGroup.length; i++) {
@@ -194,18 +209,13 @@
                     }
                 }
 
-//                $(".titleWiget, .testWiget, .babWiget").after("<div class='clearWiget'></div>");
-
-                var testChildElement = $("#testArea>.testWiget div");
                 var babChildElement = $("#babArea>.babWiget div");
 
-                testObjectInit();
                 babObjectInit();
-
 
                 $("#titleArea>div").not(".clearWiget").addClass("lineTitle");
 
-                var dragableWiget = $("#titleArea>div, #testArea>div, #babArea>div");
+                var dragableWiget = $("#titleArea>div, #babArea>div");
 //                dragableWiget.after("<div class='clearWiget'></div>");
 
 //                dragableWiget.not(".clearWiget").addClass("ui-helper").draggable({
@@ -213,26 +223,11 @@
 ////                        return false;
 //                    }
 //                });
-
-                $('[data-toggle="tooltip"]').tooltip();
-
-                $("#fullBtn").click(function () {
-                    $("#wigetCtrl").fullScreen(true);
-                });
+                $('#wigetInfo > p').strech_text();
 
                 function initWiget(obj) {
-                    obj.addClass("blub-empty").removeClass("blub-alarm blub-normal blub-abnormal").removeAttr("title");
-                }
-
-                function testObjectInit() {
-                    var object = $("#testArea>.testWiget div");
-                    var loopCount = maxTestTableNo;
-                    object.each(function () {
-                        $(this).attr({"id": "draggable" + loopCount + "_" + sitefloor + "f", "data-toggle": "tooltip"})
-                                .addClass("draggable blub-empty divCustomBg")
-                                .html(loopCount);
-                        loopCount--;
-                    });
+                    obj.addClass("blub-empty").removeClass("blub-alarm blub-normal blub-abnormal").html(0);
+                    obj.parent().tooltipster('content', "empty");
                 }
 
                 function babObjectInit() {
@@ -240,62 +235,43 @@
                         var lineName = $(this).attr("id");
                         var childAmount = $(this).children().length;
                         $(this).children().each(function () {
-                            $(this).attr({"id": (lineName + "_" + childAmount), "data-toggle": "tooltip"})
+                            $(this).attr({"id": (lineName + "_" + childAmount)})
                                     .addClass("draggable blub-empty divCustomBg")
-                                    .html(childAmount);
+                                    .html(0);
                             childAmount--;
                         });
+                        $("#" + lineName)
+                                .attr({title: "empty"})
+                                .tooltipster({trigger: "click", side: "right", contentAsHTML: true, updateAnimation: null});
                     });
                 }
 
-                function testDataToWiget(testObject) {
-                    initWiget(testChildElement);
-                    if (testObject != null) {
-                        var testData = testObject.data;
-                        if (testData != null) {
-                            for (var k = 0, l = testData.length; k < l; k++) {
-                                var people = testData[k];
-                                var alarmSignal = people.isalarm;
-                                var signalClass;
-                                switch (alarmSignal) {
-                                    case 0:
-                                        signalClass = "blub-normal";
-                                        break;
-                                    case 1:
-                                        signalClass = "blub-alarm";
-                                        break;
-                                    case 2:
-                                        signalClass = "blub-abnormal";
-                                        break;
-                                }
-                                var productivity = Math.floor(people.PRODUCTIVITY * 100);
-                                $(".testWiget #draggable" + people.table + "_" + people.sitefloor + "f")
-                                        .removeClass("blub-empty")
-                                        .addClass(signalClass)
-                                        .attr({
-                                            "title": (people.name + " 效率:" + (productivity > maxProductivity ? maxProductivity : productivity) + "%"),
-                                            "onClick": "window.open( 'TestTotal?jobnumber=" + people.number + "','_blank' ); return false;"
-                                        });
-                            }
-                        }
-                    }
-                }
-
                 function babDataToWiget(babObject) {
-//                    console.log(babObject);
+                    $("#messageBoxArea > div").html("");
                     initWiget(babChildElement);
                     if (babObject != null) {
-                        var babData = babObject.data;
+                        var babData = babObject;
                         if (babData != null) {
-                            for (var k = 0, l = babData.length; k < l; k++) {
-                                var people = babData[k];
-                                var obj = $("#babArea #" + people.TagName + " #" + people.TagName + "_" + people.T_Num);
-                                if (obj.length) {
-                                    obj.removeClass("blub-empty")
-                                            .addClass((people.ismax ? "blub-alarm" : "blub-normal"))
-                                            .attr("title", "Time:" + people.diff + "秒");
-                                    if (people.T_Num == 1) {
-                                        $("#titleArea #" + people.TagName + "_title").attr("onClick", "window.open( 'BabTotal?babId=" + people.BABid + "','_blank' ); return false;");
+                            for (var k = 0, l = babGroup.length; k < l; k++) {
+                                var lineName = babGroup[k].lineName;
+                                var details = babObject[lineName];
+                                if (details != null) {
+                                    var suggestPeople = details.suggestTestPeople;
+                                    var obj = $("#babArea #" + lineName.trim() + " #" + lineName.trim() + "_" + 1);//統一寫到數字燈1
+                                    if (obj.length) {
+                                        obj.removeClass("blub-empty")
+                                                .addClass((suggestPeople == null ? "blub-abnormal" : "blub-normal"))
+                                                .html(suggestPeople);
+                                        var messageArray = details.message;
+                                        var message = "PO: " + details.PO + "<br/>ModelName: " + details.model_name + "<br/>";
+                                        if (details.quantity != null) {
+                                            message += "Current piece: " + details.quantity + " pcs<br/>";
+                                        }
+                                        for (var i = 0; i < messageArray.length; i++) {
+                                            message += messageArray[i] + "<br/>";
+                                        }
+                                        message += "<div class='suggestMsg'>" + lineName.trim() + " Suggestion station Action: " + details.suggestTestPeople + "</div>";
+                                        $("#" + lineName.trim()).tooltipster('content', message);
                                     }
                                 }
                             }
@@ -307,7 +283,7 @@
 //                var hostname = "172.20.131.52:8080";
                 //--------------websocket functions
                 //websocket will reconnect by reconnecting-websocket.min.js when client or server is disconnect
-                var ws = new ReconnectingWebSocket("ws://" + hostname + "/CalculatorWSApplication/echo2");
+                var ws = new ReconnectingWebSocket("ws://" + hostname + "/CalculatorWSApplication/echo3");
                 ws.timeoutInterval = 3000;
                 ws.onopen = function () {
 
@@ -317,8 +293,7 @@
                 ws.onmessage = function (message) {
                     var jsonArray = $.parseJSON(message.data);
                     if (jsonArray.length != 0) {
-                        testDataToWiget(jsonArray[0]);
-                        babDataToWiget(jsonArray[1]);
+                        babDataToWiget(jsonArray);
                     }
                 };
 
@@ -373,32 +348,13 @@
         </script>
     </head>
     <body style="cursor: auto;">
-        <!--<button id="fullBtn">Full</button>-->
         <div id="wigetCtrl">
             <div id="mapGroup">
                 <div id="wigetInfo">
-                    <label for="empty" style="float:left">空</label>
-                    <div class="draggable blub-empty divCustomBg"></div>
-
-                    <label for="normalSign" style="float:left">正常</label>
-                    <div class="draggable blub-normal divCustomBg"></div>
-
-                    <label for="normalSign" style="float:left">警告</label>
-                    <div class="draggable blub-alarm divCustomBg"></div>
-
-                    <label for="normalSign" style="float:left">異常</label>
-                    <div class="draggable blub-abnormal divCustomBg"></div>
+                    <p class="stretch">數字燈</p>
                 </div>
-                <!--<div class="clearWiget" /></div>-->
-
                 <div id="titleArea"></div>
-                <!--<div class="clearWiget" /></div>-->
-
-                <div id="testArea"></div>
-                <!--<div class="clearWiget" /></div>-->
-
                 <div id="babArea"></div>
-                <!--<div class="clearWiget"></div>-->
             </div>
         </div>
         <div class="clearWiget" />

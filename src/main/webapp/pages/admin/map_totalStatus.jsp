@@ -5,62 +5,49 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html>
     <head>
+        <c:set var="userSitefloor" value="${param.sitefloor}" />
+        <c:if test="${(userSitefloor == null) || (userSitefloor == '' || userSitefloor < 1 || userSitefloor > 7)}">
+            <c:redirect url="/SysInfo" />
+        </c:if>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>6F狀態平面圖 - ${initParam.pageTitle}</title>
+        <title>${userSitefloor}F狀態平面圖 - ${initParam.pageTitle}</title>
         <link rel="stylesheet" href="../../css/jquery-ui.css">
-        <link rel="stylesheet" href="../../css/tooltipster.bundle.min.css">
         <style>
             .draggable { 
+                width: 25px; 
+                height: 25px; 
+                padding: 0.3em; 
                 float: left;
                 /*background-color: red;*/
                 margin: 0px;
                 cursor: default;
                 text-align: center;
             }
-
-            #wigetInfo .draggable{
-                width: 25px; 
-                height: 25px; 
-                padding: 0.3em; 
-            }
-
-            #babArea .draggable{
-                width: 25px; 
-                height: 25px; 
-                padding: 1.0em; 
-                font-size: 36px;
-            }
-
             #generateArea{
                 height: 20px;
             }
-
             .alarm{
                 background-color: #0066FF;
                 /*color: white;*/
             }
-
             .normal{
                 background-color: greenyellow;
                 /*color: white;*/
             }
-
             .abnormal{
                 background-color: yellow;
             }
-
             .offLine{
                 background-color: white;
             }
-
             #goback{
                 cursor: pointer;
                 color: blue;
             }
-
             .lineTitle{
                 padding: 0 auto; 
                 width: 40px; 
@@ -71,15 +58,13 @@
                 border:5px green solid;
                 cursor: default;
             }
-
             .clearWiget{
                 clear: both;
             }
-
             #mapGroup{
                 width: 1200px;
                 height: 500px;
-                background-image: url(../../images/totalMap_6f.png);
+                background-image: url(../../images/totalMap_${userSitefloor}f.png);
                 background-repeat: no-repeat;
                 -o-background-size: 100% 100%, auto;
                 -moz-background-size: 100% 100%, auto;
@@ -100,7 +85,6 @@
                 -webkit-transition: none;
                 transition: none;
             }
-
             #wigetInfo{
                 border-bottom: 5px red solid;
                 border-right: 5px red solid;
@@ -108,80 +92,46 @@
                 width: 25%; 
                 overflow: hidden;
             }
-
-            #titleArea>div, #babArea>div{
+            #titleArea>div, #testArea>div, #babArea>div{
                 position: absolute;
             }
-            
             .titleWiget{
                 cursor: pointer;
             }
-            
             .divCustomBg{
                 background-size: 100% 100%, auto;
                 background-repeat: no-repeat;
             }
-            
             .ui-helper {
                 /*width: 100% !important;*/
                 float: left;
             }
-            
             .blub-empty{
                 background-image: url(../../images/blub-icon/Gray_Light_Icon.png);
                 /*background-color: red;*/
             }
-            
             .blub-normal{
                 background-image: url(../../images/blub-icon/Green_Light_Icon.png);
                 cursor: pointer;
             }
-            
             .blub-alarm{
                 background-image: url(../../images/blub-icon/Blue_Light_Icon.png);
                 cursor: pointer;
             }
-            
             .blub-abnormal{
                 background-image: url(../../images/blub-icon/Yellow_Light_Icon.png);
-            }
-            
-            #tooltipTrig{
-                position: fixed;
-                bottom: 0px;
             }
         </style>
         <script src="../../js/jquery-1.11.3.min.js"></script>
         <script src="../../js/jquery-ui-1.10.0.custom.min.js"></script>
         <script src="../../js/reconnecting-websocket.min.js"></script>
-        <script src="../../js/tooltipster.bundle.min.js"></script>
+        <script src="../../js/jquery.fullscreen-min.js"></script>
+        <script src="../../js/totalMap-setting/${userSitefloor}f.js"></script>
         <script>
-            var sitefloor = 5;
+            var sitefloor = ${userSitefloor};
+            var maxProductivity = 200;
 
             $(function () {
-
-                var pXa = -0;
-                var pYa = -0;
-
-                var titleGroup = [
-                    //assy
-                    {lineName: "L3", x: 1080, y: 280},
-                    {lineName: "L4", x: 1080, y: 180},
-                    //pkg
-                    {lineName: "L6", x: 190, y: 200},
-                    {lineName: "L7", x: 190, y: 105},
-                    {lineName: "L8", x: 525, y: 220},
-                    {lineName: "L9", x: 525, y: 280}
-                ];
-
-                var babGroup = [
-                    {people: 1, x: 725, y: 285, lineName: "L3"}, // group 1-4
-                    {people: 1, x: 725, y: 130, lineName: "L4"}, // group 21-24
-//                    {people: 3, x: 255, y: 210, lineName: "L6"}, // group 16-20
-//                    {people: 3, x: 255, y: 120, lineName: "L7"}, // group 9-15
-//                    {people: 4, x: 400, y: 190, lineName: "L8"}, // group 5-8
-//                    {people: 4, x: 400, y: 320, lineName: "L9"} // group 1-4
-                ];
 
                 for (var i = 0; i < titleGroup.length; i++) {
                     var groupStatus = titleGroup[i];
@@ -192,6 +142,18 @@
                             .addClass("titleWiget")
                             .html(groupStatus.lineName)
                             .css({left: groupStatus.x + pXa, top: groupStatus.y + pYa});
+                }
+
+                for (var i = 0; i < testGroup.length; i++) {
+                    $("#testArea").append("<div></div>");
+                    var groupStatus = testGroup[i];
+                    for (var j = 0, k = groupStatus.people; j < k; j++) {
+                        $("#testArea>div")
+                                .eq(i)
+                                .append("<div></div>")
+                                .addClass("testWiget")
+                                .css({left: groupStatus.x + pXa, top: groupStatus.y + pYa});
+                    }
                 }
 
                 for (var i = 0; i < babGroup.length; i++) {
@@ -207,28 +169,45 @@
                     }
                 }
 
+//                $(".titleWiget, .testWiget, .babWiget").after("<div class='clearWiget'></div>");
+
+                var testChildElement = $("#testArea>.testWiget div");
                 var babChildElement = $("#babArea>.babWiget div");
 
+                testObjectInit();
                 babObjectInit();
+
 
                 $("#titleArea>div").not(".clearWiget").addClass("lineTitle");
 
-                var dragableWiget = $("#titleArea>div, #babArea>div");
+                var dragableWiget = $("#titleArea>div, #testArea>div, #babArea>div");
 //                dragableWiget.after("<div class='clearWiget'></div>");
 
-                dragableWiget.not(".clearWiget").addClass("ui-helper").draggable({
-                    drag: function (e) {
-//                        return false;
-                    }
-                });
+//                dragableWiget.not(".clearWiget").addClass("ui-helper").draggable({
+//                    drag: function (e) {
+////                        return false;
+//                    }
+//                });
 
-                $("#tooltipTrig").click(function(){
-                    $("#babArea > div").tooltipster('open');
+                $('[data-toggle="tooltip"]').tooltip();
+
+                $("#fullBtn").click(function () {
+                    $("#wigetCtrl").fullScreen(true);
                 });
 
                 function initWiget(obj) {
-                    obj.addClass("blub-empty").removeClass("blub-alarm blub-normal blub-abnormal").html(0);
-                    obj.parent().tooltipster('content', "empty");
+                    obj.addClass("blub-empty").removeClass("blub-alarm blub-normal blub-abnormal").removeAttr("title");
+                }
+
+                function testObjectInit() {
+                    var object = $("#testArea>.testWiget div");
+                    var loopCount = maxTestTableNo;
+                    object.each(function () {
+                        $(this).attr({"id": "draggable" + loopCount + "_" + sitefloor + "f", "data-toggle": "tooltip"})
+                                .addClass("draggable blub-empty divCustomBg")
+                                .html(loopCount);
+                        loopCount--;
+                    });
                 }
 
                 function babObjectInit() {
@@ -236,39 +215,63 @@
                         var lineName = $(this).attr("id");
                         var childAmount = $(this).children().length;
                         $(this).children().each(function () {
-                            $(this).attr({"id": (lineName + "_" + childAmount)})
+                            $(this).attr({"id": (lineName + "_" + childAmount), "data-toggle": "tooltip"})
                                     .addClass("draggable blub-empty divCustomBg")
-                                    .html(0);
+                                    .html(childAmount);
                             childAmount--;
                         });
-                        $("#" + lineName)
-                                .attr({title: "empty"})
-                                .tooltipster({trigger: "click", side: "right", contentAsHTML: true})
-                                .tooltipster('open');
                     });
                 }
 
+                function testDataToWiget(testObject) {
+                    initWiget(testChildElement);
+                    if (testObject != null) {
+                        var testData = testObject.data;
+                        if (testData != null) {
+                            for (var k = 0, l = testData.length; k < l; k++) {
+                                var people = testData[k];
+                                var alarmSignal = people.isalarm;
+                                var signalClass;
+                                switch (alarmSignal) {
+                                    case 0:
+                                        signalClass = "blub-normal";
+                                        break;
+                                    case 1:
+                                        signalClass = "blub-alarm";
+                                        break;
+                                    case 2:
+                                        signalClass = "blub-abnormal";
+                                        break;
+                                }
+                                var productivity = Math.floor(people.PRODUCTIVITY * 100);
+                                $(".testWiget #draggable" + people.table + "_" + people.sitefloor + "f")
+                                        .removeClass("blub-empty")
+                                        .addClass(signalClass)
+                                        .attr({
+                                            "title": (people.name + " 效率:" + (productivity > maxProductivity ? maxProductivity : productivity) + "%"),
+                                            "onClick": "window.open( 'TestTotal?jobnumber=" + people.number + "','_blank' ); return false;"
+                                        });
+                            }
+                        }
+                    }
+                }
+
                 function babDataToWiget(babObject) {
-                    $("#messageBoxArea > div").html("");
+//                    console.log(babObject);
                     initWiget(babChildElement);
                     if (babObject != null) {
-                        var babData = babObject;
+                        var babData = babObject.data;
                         if (babData != null) {
                             for (var k = 0, l = babData.length; k < l; k++) {
-                                var details = babData[k];
-                                var lineName = details.lineName;
-                                var suggestPeople = details.suggestTestPeople;
-                                var obj = $("#babArea #" + lineName.trim() + " #" + lineName.trim() + "_" + 1);//統一寫到數字燈1
+                                var people = babData[k];
+                                var obj = $("#babArea #" + people.TagName + " #" + people.TagName + "_" + people.T_Num);
                                 if (obj.length) {
                                     obj.removeClass("blub-empty")
-                                            .addClass((suggestPeople == null ? "blub-abnormal" : "blub-normal"))
-                                            .html(suggestPeople);
-                                    var messageArray = details.message;
-                                    var message = "";
-                                    for (var i = 0; i < messageArray.length; i++) {
-                                        message += messageArray[i] + "<br/>";
+                                            .addClass((people.ismax ? "blub-alarm" : "blub-normal"))
+                                            .attr("title", "Time:" + people.diff + "秒");
+                                    if (people.T_Num == 1) {
+                                        $("#titleArea #" + people.TagName + "_title").attr("onClick", "window.open( 'BabTotal?babId=" + people.BABid + "','_blank' ); return false;");
                                     }
-                                    $("#" + lineName.trim()).tooltipster('content', message);
                                 }
                             }
                         }
@@ -279,7 +282,7 @@
 //                var hostname = "172.20.131.52:8080";
                 //--------------websocket functions
                 //websocket will reconnect by reconnecting-websocket.min.js when client or server is disconnect
-                var ws = new ReconnectingWebSocket("ws://" + hostname + "/CalculatorWSApplication/echo3");
+                var ws = new ReconnectingWebSocket("ws://" + hostname + "/CalculatorWSApplication/echo2");
                 ws.timeoutInterval = 3000;
                 ws.onopen = function () {
 
@@ -289,7 +292,8 @@
                 ws.onmessage = function (message) {
                     var jsonArray = $.parseJSON(message.data);
                     if (jsonArray.length != 0) {
-                        babDataToWiget(jsonArray);
+                        testDataToWiget(jsonArray[0]);
+                        babDataToWiget(jsonArray[1]);
                     }
                 };
 
@@ -344,6 +348,7 @@
         </script>
     </head>
     <body style="cursor: auto;">
+        <!--<button id="fullBtn">Full</button>-->
         <div id="wigetCtrl">
             <div id="mapGroup">
                 <div id="wigetInfo">
@@ -359,11 +364,16 @@
                     <label for="normalSign" style="float:left">異常</label>
                     <div class="draggable blub-abnormal divCustomBg"></div>
                 </div>
+                <!--<div class="clearWiget" /></div>-->
+
                 <div id="titleArea"></div>
+                <!--<div class="clearWiget" /></div>-->
+
+                <div id="testArea"></div>
+                <!--<div class="clearWiget" /></div>-->
+
                 <div id="babArea"></div>
-            </div>
-            <div id="tooltipTrig">
-                <span>Trigger Button</span>
+                <!--<div class="clearWiget"></div>-->
             </div>
         </div>
         <div class="clearWiget" />

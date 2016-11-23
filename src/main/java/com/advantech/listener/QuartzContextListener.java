@@ -5,6 +5,7 @@
  */
 package com.advantech.listener;
 
+import com.advantech.helper.CronTrigMod;
 import com.advantech.helper.PropertiesReader;
 import com.advantech.helper.ThreadLocalCleanUtil;
 import com.advantech.model.BasicDAO;
@@ -36,6 +37,7 @@ public class QuartzContextListener implements ServletContextListener {
 
         try {
             BasicDAO.objectInit();
+            CronTrigMod.getInstance().unScheduleAllJob();
 
             Thread.sleep(1000);
             ThreadLocalCleanUtil.clearThreadLocals();

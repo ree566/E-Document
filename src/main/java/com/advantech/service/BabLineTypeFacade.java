@@ -9,7 +9,6 @@ import com.advantech.entity.AlarmAction;
 import com.advantech.entity.BAB;
 import com.advantech.entity.Line;
 import com.advantech.helper.PropertiesReader;
-import com.advantech.quartzJob.LineBalancePeopleGenerator;
 import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -21,33 +20,28 @@ import org.slf4j.LoggerFactory;
  * @author Wei.Cheng
  */
 public class BabLineTypeFacade extends BasicLineTypeFacade {
-    
+
     private static final Logger log = LoggerFactory.getLogger(BabLineTypeFacade.class);
 
     private static BabLineTypeFacade instance;
 
     private final LineBalanceService lineBalanceService;
     private final BABService babService;
-    private final LineBalancePeopleGenerator lbGenerator;
 
     private final double BAB_STANDARD;
 
     private BabLineTypeFacade() {
         lineBalanceService = BasicService.getLineBalanceService();
         babService = BasicService.getBabService();
-        lbGenerator = LineBalancePeopleGenerator.getInstance();
         PropertiesReader p = PropertiesReader.getInstance();
         BAB_STANDARD = p.getBabStandard();
         this.init();
     }
 
     public static BabLineTypeFacade getInstance() {
-        if (instance == null) {
-            instance = new BabLineTypeFacade();
-        }
-        return instance;
+        return instance == null ? new BabLineTypeFacade() : instance;
     }
-    
+
     private void init() {
         this.initMap();
         if (isWriteToDB) {
@@ -83,7 +77,7 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
             for (BAB bab : babGroups) {
                 int BABid = bab.getId();
 
-                JSONArray sensorDatas = babService.getLastGroupStatus(BABid);
+                JSONArray sensorDatas = babService.getLastGroupStatusForJson(BABid);
 
                 int peoples = sensorDatas.length();
                 if (peoples == 0) {

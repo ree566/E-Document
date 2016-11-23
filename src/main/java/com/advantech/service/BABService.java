@@ -113,9 +113,12 @@ public class BABService {
         return babDAO.getProcessingBAB();
     }
 
-    public JSONArray getLastGroupStatus(int BABid) {
-        List l = babDAO.getLastGroupStatus(BABid);
-        return new JSONArray(l);
+    public JSONArray getLastGroupStatusForJson(int BABid) {
+        return new JSONArray(getLastGroupStatus(BABid));
+    }
+    
+    public List<Map> getLastGroupStatus(int BABid) {
+        return babDAO.getLastGroupStatus(BABid);
     }
 
     public List<Map> getClosedBABInfo(String startDate, String endDate) {

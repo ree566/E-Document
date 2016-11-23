@@ -28,7 +28,7 @@ public class PropertiesReader {
     private JSONObject systemAbnormalAlarmMailCC;
     private String systemAbnormalAlarmMailTo;
 
-    private int numLampMaxTestRequiredPeople, numLampGroupStart, numLampGroupEnd;
+    private int numLampMaxTestRequiredPeople, numLampGroupStart, numLampGroupEnd, numLampSpecCuttingGroup;
     private int numLampMinStandardTime, numLampMinQuantity, numLampMinTotalStandardTime;
     private int maxTestTable, babSaveToRecordStandardQuantity, balanceRoundingDigit;
 
@@ -69,6 +69,7 @@ public class PropertiesReader {
         numLampMaxTestRequiredPeople = convertStringToInteger(properties.getProperty("numLamp.test.maxRequiredPeople"));
         numLampGroupStart = convertStringToInteger(properties.getProperty("numLamp.balanceDetect.groupStart"));
         numLampGroupEnd = convertStringToInteger(properties.getProperty("numLamp.balanceDetect.groupEnd"));
+        numLampSpecCuttingGroup = convertStringToInteger(properties.getProperty("numLamp.balanceDetect.specCuttingGroup"));
         numLampMinStandardTime = convertStringToInteger(properties.getProperty("numLamp.mininum.standardTime"));
         numLampMinQuantity = convertStringToInteger(properties.getProperty("numLamp.mininum.quantity"));
         numLampMinTotalStandardTime = convertStringToInteger(properties.getProperty("numLamp.mininum.totalStandardTime"));
@@ -176,6 +177,10 @@ public class PropertiesReader {
 
     public int getNumLampGroupEnd() {
         return numLampGroupEnd;
+    }
+
+    public int getNumLampSpecCuttingGroup() {
+        return numLampSpecCuttingGroup;
     }
 
     public int getNumLampMinStandardTime() {

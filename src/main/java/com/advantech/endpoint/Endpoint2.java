@@ -21,9 +21,7 @@ import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
-import org.quartz.JobKey;
 import org.quartz.SchedulerException;
-import org.quartz.TriggerKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,14 +35,10 @@ public class Endpoint2 {
     private static final Logger log = LoggerFactory.getLogger(Endpoint2.class);
     private static final Queue<Session> queue = new ConcurrentLinkedQueue<>();
 
-    private static final JobKey JOB_KEY;
-    private static final TriggerKey TRIGGER_KEY;
     private static final String POLLING_FREQUENCY;
+    private static final String JOB_NAME = "JOB2";
 
     static {
-        String JOB_NAME = "JOB2";
-        JOB_KEY = new JobKey(JOB_NAME, JOB_NAME + "Group");
-        TRIGGER_KEY = new TriggerKey(JOB_NAME + "Trigger", JOB_NAME + "Group");
         POLLING_FREQUENCY = PropertiesReader.getInstance().getEndpointQuartzTrigger();
     }
 
@@ -101,7 +95,7 @@ public class Endpoint2 {
     // Generate when connect users are at least one.
     private void pollingDBAndBrocast() {
         try {
-            CronTrigMod.getInstance().generateAJob(PollingServerParmater.class, JOB_KEY, TRIGGER_KEY, POLLING_FREQUENCY);
+            CronTrigMod.getInstance().scheduleJob(PollingServerParmater.class, JOB_NAME, POLLING_FREQUENCY);
         } catch (SchedulerException ex) {
             log.error(ex.toString());
         }
@@ -110,7 +104,8 @@ public class Endpoint2 {
     // Delete when all users are disconnect.
     private void unPollingDB() {
         try {
-            CronTrigMod.getInstance().removeAJob(JOB_KEY, TRIGGER_KEY);
+            CronTrigMod.getInstance().removeJob(JOB_NAME);
+//            System.out.println("trigger has been removed");
         } catch (SchedulerException ex) {
             log.error(ex.toString());
         }
