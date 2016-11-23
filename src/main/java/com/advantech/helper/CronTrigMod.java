@@ -223,7 +223,9 @@ public class CronTrigMod {
     }
     
     public void removeJob(String jobName) throws SchedulerException {
-        scheduler.deleteJob(this.createJobKey(jobName));
+        JobKey jobKey = this.createJobKey(jobName);
+        scheduler.deleteJob(jobKey);
+        log.info("The job with key name " + jobKey + (scheduler.checkExists(jobKey) ?  " remove fail." : " remove success."));
     }
 
     public void removeJob(JobKey jobKey) throws SchedulerException {

@@ -19,18 +19,15 @@
         <link rel="stylesheet" href="../../css/jquery-ui.css">
         <link rel="stylesheet" href="../../css/tooltipster.bundle.min.css">
         <style>
+            body{
+                font-family: 微軟正黑體;
+            }
             .draggable { 
                 float: left;
                 /*background-color: red;*/
                 margin: 0px;
                 cursor: default;
                 text-align: center;
-            }
-
-            #wigetInfo .draggable{
-                width: 25px; 
-                height: 25px; 
-                padding: 0.3em; 
             }
 
             #babArea .draggable{
@@ -163,11 +160,15 @@
                 margin: 5px;
                 padding: 5px;
             }
+
+            #wigetInfo > p{
+                font-size: 24px;
+            }
             .stretch_it{
                 white-space: nowrap;
             }
             .justify{
-                text-align:justify;
+                text-align: justify;
             }
         </style>
         <script src="../../js/jquery-1.11.3.min.js"></script>
@@ -175,7 +176,7 @@
         <script src="../../js/reconnecting-websocket.min.js"></script>
         <script src="../../js/tooltipster.bundle.min.js"></script>
         <script src="../../js/numLamp-setting/${userSitefloor}f.js"></script>
-        <script src="../../js/strech-text.js"></script>
+        <script src="../../js/stretch-text.js"></script>
 
         <script>
 
@@ -222,9 +223,7 @@
 ////                        return false;
 //                    }
 //                });
-                $('.stretch').each(function () {
-                    $(this).strech_text();
-                });
+                $('#wigetInfo > p').strech_text();
 
                 function initWiget(obj) {
                     obj.addClass("blub-empty").removeClass("blub-alarm blub-normal blub-abnormal").html(0);
@@ -352,9 +351,7 @@
         <div id="wigetCtrl">
             <div id="mapGroup">
                 <div id="wigetInfo">
-                    <p class="stretch">
-                        數字燈
-                    </p>
+                    <p class="stretch">數字燈</p>
                 </div>
                 <div id="titleArea"></div>
                 <div id="babArea"></div>
