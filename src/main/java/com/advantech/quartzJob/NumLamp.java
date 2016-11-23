@@ -54,7 +54,10 @@ public class NumLamp implements Job {
     }
 
     public static NumLamp getInstance() {
-        return instance == null ? new NumLamp() : instance;
+        if (instance == null) {
+            instance = new NumLamp();
+        }
+        return instance;
     }
 
     @Override

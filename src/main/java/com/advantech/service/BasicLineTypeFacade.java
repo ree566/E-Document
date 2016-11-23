@@ -8,6 +8,7 @@ package com.advantech.service;
 import com.advantech.entity.AlarmAction;
 import com.advantech.helper.PropertiesReader;
 import java.io.IOException;
+import static java.lang.System.out;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;

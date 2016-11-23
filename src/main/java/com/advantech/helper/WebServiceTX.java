@@ -31,7 +31,10 @@ public class WebServiceTX {
     }
 
     public static WebServiceTX getInstance() {
-        return instance == null ? new WebServiceTX() : instance;
+        if(instance == null){
+            instance = new WebServiceTX();
+        }
+        return instance;
     }
 
     //Get data from WebService

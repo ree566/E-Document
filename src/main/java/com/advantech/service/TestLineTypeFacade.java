@@ -10,6 +10,7 @@ import com.advantech.entity.Test;
 import com.advantech.entity.TestLineTypeUser;
 import com.advantech.helper.PropertiesReader;
 import com.advantech.helper.WebServiceRV;
+import static java.lang.System.out;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -39,7 +40,7 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
 
     private final int TEST_USER_NOT_IN_SYSTEM_SIGN = -1, TEST_USER_NOT_IN_XML_SIGN = 2;
 
-    public TestLineTypeFacade() {
+    private TestLineTypeFacade() {
         testService = BasicService.getTestService();
         PropertiesReader p = PropertiesReader.getInstance();
         TEST_STANDARD = p.getTestStandard();
@@ -49,7 +50,10 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
     }
 
     public static TestLineTypeFacade getInstance() {
-        return instance == null ? new TestLineTypeFacade() : instance;
+        if(instance == null){
+            instance = new TestLineTypeFacade();
+        }
+        return instance;
     }
 
     private void init() {

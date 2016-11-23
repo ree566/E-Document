@@ -153,7 +153,11 @@ public class LineBalancePeopleGenerator implements Job {
     }
 
     private boolean isGroupTheSame(String lineName) {
-        return NumLamp.getNumLampStatus().getJSONObject(lineName).get("quantity").equals(currentGroup);
+        try {
+            return NumLamp.getNumLampStatus().getJSONObject(lineName).get("quantity").equals(currentGroup);
+        } catch (Exception ex) {
+            return true;
+        }
     }
 
     //依照組別得知目前線平衡狀態
@@ -178,7 +182,8 @@ public class LineBalancePeopleGenerator implements Job {
                 obj.put("quantity", currentGroup);
                 NumLamp.getNumLampStatus().put(lineName, obj);
             }
-        } catch (Exception e) {} //Do nothing when object is not found
+        } catch (Exception e) {
+        } //Do nothing when object is not found
     }
 
     private void caculateAndReportDataToParentJob(BAB bab, Integer babCT, Integer testStandardTime) {
@@ -243,7 +248,7 @@ public class LineBalancePeopleGenerator implements Job {
             }
             people++;
         } while (balance - babStandard > 0 && people <= numLampMaxTestRequiredPeople);
-        
+
         return min + 1;
     }
 

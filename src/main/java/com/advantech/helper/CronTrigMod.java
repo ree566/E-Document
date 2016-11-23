@@ -60,7 +60,10 @@ public class CronTrigMod {
 //    http://openhome.cc/Gossip/DesignPattern/SingletonPattern.htm
     @SuppressWarnings("DoubleCheckedLocking")
     public static CronTrigMod getInstance() {
-        return instance == null ? new CronTrigMod() : instance;
+        if (instance == null) {
+            instance = new CronTrigMod();
+        }
+        return instance;
     }
 
     public JobKey createJobKey(String jobName) {
@@ -221,16 +224,16 @@ public class CronTrigMod {
         scheduler.interrupt(jobKey);
         log.info("Job " + jobKey + "  -- INTERRUPTING --");
     }
-    
+
     public void removeJob(String jobName) throws SchedulerException {
         JobKey jobKey = this.createJobKey(jobName);
         scheduler.deleteJob(jobKey);
-        log.info("The job with key name " + jobKey + (scheduler.checkExists(jobKey) ?  " remove fail." : " remove success."));
+        log.info("The job with key name " + jobKey + (scheduler.checkExists(jobKey) ? " remove fail." : " remove success."));
     }
 
     public void removeJob(JobKey jobKey) throws SchedulerException {
         scheduler.deleteJob(jobKey);
-        log.info("The job with key name " + jobKey + (scheduler.checkExists(jobKey) ?  " remove fail." : " remove success."));
+        log.info("The job with key name " + jobKey + (scheduler.checkExists(jobKey) ? " remove fail." : " remove success."));
     }
 
     public void removeJobs(String jobGroupName) throws SchedulerException {

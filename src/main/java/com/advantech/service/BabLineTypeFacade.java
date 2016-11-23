@@ -39,7 +39,10 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
     }
 
     public static BabLineTypeFacade getInstance() {
-        return instance == null ? new BabLineTypeFacade() : instance;
+        if(instance == null){
+            instance = new BabLineTypeFacade();
+        }
+        return instance;
     }
 
     private void init() {

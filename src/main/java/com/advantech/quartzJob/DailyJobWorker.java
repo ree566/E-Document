@@ -9,6 +9,7 @@ package com.advantech.quartzJob;
 import com.advantech.service.BabLineTypeFacade;
 import com.advantech.service.BasicLineTypeFacade;
 import com.advantech.service.TestLineTypeFacade;
+import static java.lang.System.out;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;

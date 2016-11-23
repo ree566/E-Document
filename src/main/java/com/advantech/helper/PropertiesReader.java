@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 public class PropertiesReader {
 
     private static final Logger log = LoggerFactory.getLogger(PropertiesReader.class);
-    private static PropertiesReader p;
+    private static PropertiesReader instance;
 
     private String testMail, mailServerUsername, mailServerPassword, mailServerLocation, mailServerPort;
 
@@ -41,15 +41,15 @@ public class PropertiesReader {
     }
 
     public static PropertiesReader getInstance() {
-        if (p == null) {
+        if (instance == null) {
             try {
-                p = new PropertiesReader();
+                instance = new PropertiesReader();
             } catch (Exception ex) {
                 out.println("Can't read the property file.");
                 log.error("Can't read the property file.");
             }
         }
-        return p;
+        return instance;
     }
 
     private void dataInit() throws Exception {
