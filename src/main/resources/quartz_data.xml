@@ -42,7 +42,7 @@
         </trigger>
     </schedule>
     
-    <!--晚上十點把未完結工單做儲存的job-->
+    <!--把未完結工單做儲存的job-->
     <schedule>
         <job>
             <name>SaveBABDataToDB</name>

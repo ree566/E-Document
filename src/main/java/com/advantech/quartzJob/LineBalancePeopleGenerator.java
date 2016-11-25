@@ -12,7 +12,6 @@ import com.advantech.helper.PropertiesReader;
 import com.advantech.service.BABService;
 import com.advantech.service.BasicService;
 import com.advantech.service.WorkTimeService;
-import static java.lang.System.out;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -140,11 +139,11 @@ public class LineBalancePeopleGenerator implements Job {
         }
 
         if (testStandardTime < startCountMininumStandardTime || currentGroup >= numLampGroupEnd) {
-            if (currentGroup < numLampGroupEnd) {
-                //Update the current group status finally anyway.
-                updateCurrentGroup(currentBab.getLineName());
-            }
             jobSelfRemove();
+        } else {
+            //Update the current group status finally anyway.
+            updateCurrentGroup(currentBab.getLineName());
+
         }
     }
 

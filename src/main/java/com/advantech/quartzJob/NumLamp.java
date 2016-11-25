@@ -106,7 +106,7 @@ public class NumLamp implements Job {
                     Map m = new HashMap();
                     m.put("dataMap", b);
                     JobDetail jobDetail = ctm.createJobDetail(jobKey, groupName, LineBalancePeopleGenerator.class, m);
-                    ctm.scheduleJob(jobDetail, triggerKey, "0/30 * 8-20 ? * MON-SAT *");
+                    ctm.scheduleJob(jobDetail, triggerKey, "25,55 * 8-20 ? * MON-SAT *");
 
                     //put key in map when sche is success
                     Map keyMap = new HashMap();
