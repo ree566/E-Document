@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.advantech.helper;
+package com.advantech.webservice;
 
 import com.advantech.entity.User;
 import java.net.URL;

@@ -5,6 +5,7 @@
  */
 package com.advantech.service;
 
+import com.advantech.entity.PassStation;
 import com.advantech.test.TestClassService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +32,7 @@ public class BasicService {
     private static LineOwnerMappingService lineOwnerMappingService = null;
     private static ModelResponsorService modelResponsorService = null;
     private static WorkTimeService workTimeService = null;
+    private static PassStationService passStationService = null;
 
     static {
         babService = new BABService();
@@ -47,6 +49,7 @@ public class BasicService {
         lineOwnerMappingService = new LineOwnerMappingService();
         modelResponsorService = new ModelResponsorService();
         workTimeService = new WorkTimeService();
+        passStationService = new PassStationService();
     }
 
     public static BABService getBabService() {
@@ -103,6 +106,10 @@ public class BasicService {
 
     public static WorkTimeService getWorkTimeService() {
         return workTimeService;
+    }
+
+    public static PassStationService getPassStationService() {
+        return passStationService;
     }
 
 }

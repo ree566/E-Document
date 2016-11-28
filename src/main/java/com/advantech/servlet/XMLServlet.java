@@ -6,7 +6,7 @@
  */
 package com.advantech.servlet;
 
-import com.advantech.helper.WebServiceRV;
+import com.advantech.webservice.WebServiceRV;
 import java.io.*;
 import java.util.List;
 import javax.servlet.ServletException;

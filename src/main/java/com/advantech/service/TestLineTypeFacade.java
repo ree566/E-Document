@@ -9,7 +9,7 @@ import com.advantech.entity.AlarmAction;
 import com.advantech.entity.Test;
 import com.advantech.entity.TestLineTypeUser;
 import com.advantech.helper.PropertiesReader;
-import com.advantech.helper.WebServiceRV;
+import com.advantech.webservice.WebServiceRV;
 import static java.lang.System.out;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -84,7 +84,7 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
             initMap();
             JSONArray userArr = new JSONArray();
 
-            List<TestLineTypeUser> kanbanUsers = rv.getKanbanUsersForXml();
+            List<TestLineTypeUser> kanbanUsers = rv.getKanbanUsers();
 
             processingJsonObject = new JSONObject();
             boolean isInTheWebService = false;
