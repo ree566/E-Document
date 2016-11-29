@@ -5,7 +5,6 @@
  */
 package com.advantech.service;
 
-import com.advantech.entity.PassStation;
 import com.advantech.test.TestClassService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +32,7 @@ public class BasicService {
     private static ModelResponsorService modelResponsorService = null;
     private static WorkTimeService workTimeService = null;
     private static PassStationService passStationService = null;
+    private static CellProcessService cellProcessService = null;
 
     static {
         babService = new BABService();
@@ -50,6 +50,7 @@ public class BasicService {
         modelResponsorService = new ModelResponsorService();
         workTimeService = new WorkTimeService();
         passStationService = new PassStationService();
+        cellProcessService = new CellProcessService();
     }
 
     public static BABService getBabService() {
@@ -110,6 +111,10 @@ public class BasicService {
 
     public static PassStationService getPassStationService() {
         return passStationService;
+    }
+
+    public static CellProcessService getCellProcessService() {
+        return cellProcessService;
     }
 
 }

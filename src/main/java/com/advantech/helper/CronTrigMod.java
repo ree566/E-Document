@@ -42,14 +42,13 @@ public class CronTrigMod {
 
     private static final Logger log = LoggerFactory.getLogger(CronTrigMod.class);
 
-    public static Map changedJobKey = new HashMap();
-
-    private final String mainJobKey = "DailyJobWorker";
+    public Map changedJobKey;
 
     private Scheduler scheduler;
     private static CronTrigMod instance;
 
     private CronTrigMod() {
+        this.changedJobKey = new HashMap();
         try {
             scheduler = new StdSchedulerFactory().getScheduler();
         } catch (SchedulerException ex) {
@@ -131,6 +130,8 @@ public class CronTrigMod {
     }
 
     public void updateMainJobCronExpressionToDefault() throws SchedulerException {
+        String mainJobKey = "DailyJobWorker";
+
         // retrieve the trigger
         Object trig = changedJobKey.get(mainJobKey);
         Trigger oldTrigger = (trig != null) ? (Trigger) trig : scheduler.getTrigger(triggerKey(mainJobKey));
@@ -139,6 +140,8 @@ public class CronTrigMod {
     }
 
     public void updateMainJobCronExpression() throws SchedulerException {
+        String mainJobKey = "DailyJobWorker";
+
         // retrieve the trigger
         Object trig = changedJobKey.get(mainJobKey);
 
@@ -276,5 +279,13 @@ public class CronTrigMod {
 
     public void unScheduleAllJob() throws SchedulerException {
         this.scheduler.clear();
+    }
+
+    public static void main(String arg0[]) {
+        Trigger trigger = TriggerBuilder.newTrigger()
+                .withIdentity("trigger3", "group1")
+                .withSchedule(CronScheduleBuilder.dailyAtHourAndMinute(10, 42))
+                .forJob(new JobKey("AAA"))
+                .build();
     }
 }

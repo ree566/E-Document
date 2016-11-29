@@ -39,7 +39,7 @@ public class QuartzContextListener implements ServletContextListener {
 
         try {
             BasicDAO.objectInit();
-            CronTrigMod.getInstance().unScheduleAllJob();
+//            CronTrigMod.getInstance().unScheduleAllJob();
             Endpoint2.clearSessions();
             Endpoint3.clearSessions();
 

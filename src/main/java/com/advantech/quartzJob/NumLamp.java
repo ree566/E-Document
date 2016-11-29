@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 /**
  *
  * @author Wei.Cheng
+ * Detect the bab begin and end perLine
  */
 public class NumLamp implements Job {
 

@@ -2,7 +2,7 @@
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
- * 每兩個小時幫忙把BAB資料做儲存
+ * 
  */
 package com.advantech.quartzJob;
 
@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
 /**
  *
  * @author Wei.Cheng
+ * Job separate by class NumLamp, caculate the lineBalance between testLine and babLine.
  */
 public class LineBalancePeopleGenerator implements Job {
 

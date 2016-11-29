@@ -199,11 +199,16 @@ public class WebServiceRV {
         }
     }
 
-    public List<PassStation> getPassStationRecords(String po) {
+    public List<PassStation> getPassStationRecords(String po, Integer lineId) {
         try {
-            String str = "<root><METHOD ID='ETLSO.QryT_SnPassTime'/><WIP_INFO><WIP_NO>"+ 
-                    po
-                    +"</WIP_NO><UNIT_NO>B</UNIT_NO><LINE_ID>55</LINE_ID><STATION_ID>'2','20'</STATION_ID></WIP_INFO></root>";
+            
+            String str = 
+                    "<root><METHOD ID='ETLSO.QryT_SnPassTime'/><WIP_INFO><WIP_NO>"
+                    + po
+                    + "</WIP_NO><UNIT_NO>B</UNIT_NO><LINE_ID>"
+                    + lineId
+                    + "</LINE_ID><STATION_ID>'2','20'</STATION_ID></WIP_INFO></root>";
+            
             List l = this.getWebServiceData(str);
             Document doc = ((Node) l.get(1)).getOwnerDocument();
 
@@ -230,27 +235,4 @@ public class WebServiceRV {
         SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd");
         return sdFormat.format(new Date());
     }
-
-    public static void main(String arg[]) throws InterruptedException {
-        BasicDAO.dataSourceInit1();
-        String po = "";
-        while (true) {
-            //先看紀錄幾筆了
-            List<PassStation> l = WebServiceRV.getInstance().getPassStationRecords(po); 
-            
-            //get po quantity view 得到該工單所要做的機台數，超過Job self unsched.(台數 * 2 == 紀錄)
-            
-            //未到達台數持續Polling database find new data.
-            List<PassStation> history = BasicService.getPassStationService().getPassStation();
-            List<PassStation> newData = (List<PassStation>) CollectionUtils.subtract(l, history);
-            if (newData.isEmpty()) {
-                out.println("No different");
-            } else {
-                out.println(BasicService.getPassStationService().insertPassStation(newData) ? "Success" : "Fail");
-            }
-
-            Thread.sleep(30 * 1000);
-        }
-    }
-
 }
