@@ -136,13 +136,13 @@
     <!--晚上9點半把NumLamp這個job所分配的子polling job全數移除-->
 <!--    <schedule>
         <job>
-            <name>NumLampClearAllocation</name>
-            <job-class>com.advantech.quartzJob.NumLampClearAllocation</job-class>
+            <name>ClearPollingJob</name>
+            <job-class>com.advantech.quartzJob.ClearPollingJob</job-class>
         </job>
         <trigger>
             <cron>
-                <name>NumLampClearAllocation</name>
-                <job-name>NumLampClearAllocation</job-name>
+                <name>ClearPollingJob</name>
+                <job-name>ClearPollingJob</job-name>
                 <cron-expression>0 30 21 ? * MON-FRI *</cron-expression>
             </cron>
         </trigger>

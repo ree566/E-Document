@@ -90,6 +90,15 @@
     </servlet-mapping>
     
     <servlet>
+        <servlet-name>cell</servlet-name>
+        <jsp-file>/cellpage.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>cell</servlet-name>
+        <url-pattern>/Cell</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
         <servlet-name>Error</servlet-name>
         <jsp-file>/temp/error.jsp</jsp-file>
     </servlet>

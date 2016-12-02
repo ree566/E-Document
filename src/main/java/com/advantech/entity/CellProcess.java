@@ -17,6 +17,8 @@ public class CellProcess implements Serializable {
     private int id;
     private int lineId;
     private String PO;
+    private Integer isused;
+    private String btime;
 
     public int getId() {
         return id;
@@ -40,6 +42,22 @@ public class CellProcess implements Serializable {
 
     public void setPO(String PO) {
         this.PO = PO;
+    }
+
+    public Integer getIsused() {
+        return isused;
+    }
+
+    public void setIsused(Integer isused) {
+        this.isused = isused;
+    }
+
+    public String getBtime() {
+        return btime;
+    }
+
+    public void setBtime(String btime) {
+        this.btime = btime;
     }
 
 }

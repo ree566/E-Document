@@ -5,10 +5,8 @@
  */
 package com.advantech.quartzJob;
 
-import com.advantech.entity.BAB;
 import com.advantech.entity.PassStation;
 import com.advantech.helper.CronTrigMod;
-import com.advantech.model.BasicDAO;
 import com.advantech.service.BasicService;
 import com.advantech.webservice.WebServiceRV;
 import static java.lang.System.out;
@@ -32,6 +30,9 @@ public class CellStation implements Job {
     private Integer currentLineId;
     private JobKey currentJobKey;
     private TriggerKey currentTriggerKey;
+    private String today;
+    
+    
 
     @Override
     public void execute(JobExecutionContext jec) throws JobExecutionException {
@@ -40,6 +41,7 @@ public class CellStation implements Job {
         this.currentLineId = (Integer) dataMap.get("LineId");
         this.currentTriggerKey = jec.getTrigger().getKey();
         this.currentJobKey = jec.getJobDetail().getKey();
+        this.today = (String) dataMap.get("today");
         syncMesDataToDatabase();
     }
 
@@ -62,13 +64,13 @@ public class CellStation implements Job {
             if (isPieceReachMaxium(l)) {
                 jobSelfRemove();
             }
+        }else{
+            out.println("Data is empty");
         }
     }
 
     private boolean isPieceReachMaxium(List<PassStation> l) {
         int totalPiece = BasicService.getBabService().getPoTotalQuantity(currentPO);
-        out.println(totalPiece);
-        out.println(l.size());
         return (l.size() / 2) == totalPiece;
     }
 

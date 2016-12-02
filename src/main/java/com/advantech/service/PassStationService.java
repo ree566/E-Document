@@ -24,9 +24,13 @@ public class PassStationService {
     public List<PassStation> getPassStation() {
         return passStationDAO.getPassStation();
     }
-
+    
     public List<PassStation> getPassStation(String PO) {
         return passStationDAO.getPassStation(PO);
+    }
+
+    public List<PassStation> getPassStationToday(String PO) {
+        return passStationDAO.getPassStationToday(PO);
     }
 
     public boolean insertPassStation(List<PassStation> l) {

@@ -6,13 +6,20 @@
  */
 package com.advantech.test;
 
+import com.advantech.helper.CronTrigMod;
 import com.advantech.model.BasicDAO;
+import com.advantech.quartzJob.ClearPollingJob;
 import com.advantech.quartzJob.CountermeasureAlarm;
 import com.advantech.service.BasicService;
 import java.io.*;
+import java.util.List;
+import java.util.logging.Level;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
+import org.quartz.JobExecutionException;
+import org.quartz.JobKey;
+import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,12 +35,23 @@ public class TestServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
-        res.setContentType("text/html");
+        res.setContentType("text/plain");
         PrintWriter out = res.getWriter();
-        BasicDAO.dataSourceInit1();
-        String sitefloor = req.getParameter("sitefloor");
-        
-        out.println(new CountermeasureAlarm().generateMailBody(sitefloor));
+        try {
+            List<JobKey> l = CronTrigMod.getInstance().getJobKeys("Cell");
+            if (l.isEmpty()) {
+                out.println("No jobKey exist");
+            } else {
+                for (JobKey j : l) {
+                    out.println(j);
+                }
+            }
+//            new ClearPollingJob().execute(null);
+        } catch (JobExecutionException ex) {
+            out.println(ex.toString());
+        } catch (SchedulerException ex) {
+            out.println(ex.toString());
+        }
     }
 
     @Override

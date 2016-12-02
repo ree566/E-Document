@@ -64,6 +64,14 @@ public class CronTrigMod {
         }
         return instance;
     }
+    
+    public List<JobKey> getJobKeys(String jobGroup) throws SchedulerException{
+        return new ArrayList(scheduler.getJobKeys(GroupMatcher.jobGroupEquals(jobGroup)));
+    }
+    
+    public List<TriggerKey> getTriggerKeys(String jobGroup) throws SchedulerException{
+        return new ArrayList(scheduler.getTriggerKeys(GroupMatcher.triggerGroupEquals(jobGroup)));
+    }
 
     public JobKey createJobKey(String jobName) {
         return new JobKey(jobName);
@@ -215,6 +223,7 @@ public class CronTrigMod {
             log.info("The job with key name " + jobKey + " ,TriggerKey " + trigKey + " is sched");
         } else {
             log.info("The job with key name " + jobKey + " is already exist.");
+            throw new SchedulerException("The job with key name " + jobKey + " is already exist.");
         }
     }
 
@@ -242,6 +251,7 @@ public class CronTrigMod {
     public void removeJobs(String jobGroupName) throws SchedulerException {
         Set<JobKey> jobs = scheduler.getJobKeys(GroupMatcher.jobGroupEquals(jobGroupName));
         this.removeJobs(new ArrayList(jobs));
+        log.info("Job group " + jobGroupName + " remove " + (this.getJobKeys(jobGroupName).isEmpty() ? "success" : "fail"));
     }
 
     public void removeJobs(List<JobKey> l) throws SchedulerException {
@@ -251,6 +261,7 @@ public class CronTrigMod {
     public void removeTriggers(String jobGroupName) throws SchedulerException {
         Set<TriggerKey> triggers = scheduler.getTriggerKeys(GroupMatcher.triggerGroupEquals(jobGroupName));
         this.removeTriggers(new ArrayList(triggers));
+        log.info("Trigger group " + jobGroupName + " remove " + (this.getTriggerKeys(jobGroupName).isEmpty() ? "success" : "fail"));
     }
 
     public void removeTrigger(TriggerKey triggerKey) throws SchedulerException {
