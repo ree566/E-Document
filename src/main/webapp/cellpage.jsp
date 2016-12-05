@@ -6,7 +6,7 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<jsp:useBean id="testDAO" class="com.advantech.model.TestDAO" scope="application" />
+<jsp:useBean id="cellDAO" class="com.advantech.model.CELLDAO" scope="application" />
 <!DOCTYPE html>
 <html>
     <c:set var="userSitefloor" value="${param.sitefloor}" />
@@ -39,12 +39,98 @@
                 $(":text").each(resizeInput);
 
                 $("#send").click(function () {
+                    insertCellInfo();
+                });
+
+                $("#clear").click(function () {
+                    deleteSchedJob();
+                });
+
+                $("#refresh").click(function () {
+                    showProcessing();
+                });
+
+                $("#truncate").click(function () {
+                    truncate();
+                });
+
+                showProcessing();
+
+                function resizeInput() {
+                    $(this).attr('size', $(this).attr('placeholder').length);
+                }
+
+                function insertCellInfo() {
                     $.ajax({
                         type: "Get",
                         url: "CellScheduleJobServlet",
                         data: {
                             lineId: $("#lineId").val(),
-                            PO: $("#PO").val()
+                            PO: $("#PO").val(),
+                            action: "insert"
+                        },
+                        dataType: "html",
+                        success: function (response) {
+                            $("#serverMsg").html(response);
+                            showProcessing();
+                        },
+                        error: function () {
+                            $("#serverMsg").html("error");
+                        }
+                    });
+                }
+
+                function deleteSchedJob() {
+                    $.ajax({
+                        type: "Get",
+                        url: "CellScheduleJobServlet",
+                        data: {
+                            jobKey: $("#JobKey").val(),
+                            action: "delete"
+                        },
+                        dataType: "html",
+                        success: function (response) {
+                            $("#serverMsg").html(response);
+                            showProcessing();
+                            $("#JobKey").val("");
+                        },
+                        error: function () {
+                            $("#serverMsg").html("error");
+                        }
+                    });
+                }
+
+                function showProcessing() {
+                    $("#processingArea").html("");
+                    $.ajax({
+                        type: "Get",
+                        url: "CellScheduleJobServlet",
+                        data: {
+                            action: "select"
+                        },
+                        success: function (response, status, xhr) {
+                            var ct = xhr.getResponseHeader("content-type") || "";
+                            var obj = response;
+                            if (ct.indexOf('json') > -1) {
+                                for (var i = 0; i < obj.length; i++) {
+                                    $("#processingArea").append(JSON.stringify(obj[i]) + "<br />");
+                                }
+                            } else {
+                                $("#processingArea").html(obj);
+                            }
+                        },
+                        error: function () {
+                            $("#serverMsg").html("error");
+                        }
+                    });
+                }
+
+                function truncate() {
+                    $.ajax({
+                        type: "Get",
+                        url: "CellScheduleJobServlet",
+                        data: {
+                            action: "truncate"
                         },
                         dataType: "html",
                         success: function (response) {
@@ -54,10 +140,6 @@
                             $("#serverMsg").html("error");
                         }
                     });
-                });
-
-                function resizeInput() {
-                    $(this).attr('size', $(this).attr('placeholder').length);
                 }
             });
         </script>
@@ -72,15 +154,42 @@
         </div>
         <jsp:include page="temp/head.jsp" />
         <div class="container">
-            <div>
+            <div class="row">
                 <h1>CELL 站別入口</h1>
             </div>
-            <div class="form-inline">
-                <input type="text" id="PO" placeholder="Please insert your PO">
-                <input type="text" id="lineId" placeholder="Please insert your lineId">
-                <input type="button" id="send" value="send">
+
+            <div class="form-group form-inline">
+                <label>Insert</label>
+                <input type="text" id="PO" placeholder="Please insert your PO" />
+                <select id="lineId">
+                    <option value="-1">請選擇線別</option>
+                    <c:forEach var="cell" items="${cellDAO.findAll()}">
+                        <option value="${cell.lineId}">線別 ${cell.name} / 代號 ${cell.lineId}</option>
+                    </c:forEach>
+                </select>
+                <input type="button" id="send" value="send" />
             </div>
-            <div id="serverMsg"></div>
+            <div class="form-group form-inline">
+                <label>Remove</label>
+                <input type="text" id="JobKey" placeholder="example: [lineId]_[PO]" />
+                <input type="button" id="clear" value="clear" />
+            </div>
+
+            <div class="form-group form-inline">
+                <label>Search</label>
+                <input type="button" value="refresh" id="refresh">
+                <input type="button" value="truncate" id="truncate">
+            </div>
+
+            <div class="form-group">
+                <label>Processing keys</label>
+                <div id="processingArea"></div>
+            </div>
+
+            <div class="form-group">
+                <label>Server message</label>
+                <div id="serverMsg"></div>
+            </div>
         </div>
         <jsp:include page="temp/footer.jsp" />
     </body>

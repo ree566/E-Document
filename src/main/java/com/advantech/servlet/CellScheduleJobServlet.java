@@ -14,12 +14,16 @@ import com.advantech.quartzJob.CellStation;
 import com.advantech.service.BasicService;
 import java.io.*;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
-import org.joda.time.format.DateTimeParser;
+import org.json.JSONArray;
 import org.quartz.JobDetail;
+import org.quartz.JobExecutionException;
 import org.quartz.JobKey;
 import org.quartz.SchedulerException;
 import org.quartz.TriggerKey;
@@ -37,50 +41,106 @@ public class CellScheduleJobServlet extends HttpServlet {
     private CronTrigMod ctm = null;
     private ParamChecker pc = null;
     private DatetimeGenerator dg = null;
+    private Map<String, JobKey> schedJobs;
 
     @Override
     public void init() throws ServletException {
         ctm = CronTrigMod.getInstance();
         pc = new ParamChecker();
         dg = new DatetimeGenerator("yy-MM-dd");
+        schedJobs = new HashMap();
     }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
-        res.setContentType("text/plain");
-        PrintWriter out = res.getWriter();
 
-        //Update the jobKey to lineId
-        //combine LineId and PO to jobKey
-        //重複投入工單問題
-        try {
-            String PO = req.getParameter("PO");
-            String lineId = req.getParameter("lineId");
+        String action = req.getParameter("action");
 
-            if (pc.checkInputVals(PO, lineId)) {
+        Object responseObject = null;
 
-                if (BasicService.getBabService().getPoTotalQuantity(PO) != null) {
-                    jobName = lineId + "_" + PO;
-                    Map data = new HashMap();
-                    data.put("PO", PO);
-                    data.put("LineId", StringParser.strToInt(lineId));
-                    data.put("today", dg.getToday());
+        switch (action) {
+            case "insert":
+                res.setContentType("text/plain");
+                try {
+                    String PO = req.getParameter("PO");
+                    String lineId = req.getParameter("lineId");
 
-                    JobKey jobKey = ctm.createJobKey(jobName, jobGroup);
-                    TriggerKey triggerKey = ctm.createTriggerKey(jobName, jobGroup);
-                    JobDetail detail = ctm.createJobDetail(jobKey, jobGroup, CellStation.class, data);
-                    ctm.scheduleJob(detail, triggerKey, cronTrig);
-                    out.println("Job sched success.");
-                } else {
-                    out.println("This PO is not exist, please check again.");
+                    if (pc.checkInputVals(PO, lineId)) {
+
+                        if (BasicService.getBabService().getPoTotalQuantity(PO) != null) {
+                            jobName = lineId + "_" + PO;
+                            Map data = new HashMap();
+                            data.put("PO", PO);
+                            data.put("LineId", StringParser.strToInt(lineId));
+                            data.put("today", dg.getToday());
+
+                            JobKey jobKey = ctm.createJobKey(jobName, jobGroup);
+                            TriggerKey triggerKey = ctm.createTriggerKey(jobName, jobGroup);
+                            JobDetail detail = ctm.createJobDetail(jobKey, jobGroup, CellStation.class, data);
+                            ctm.scheduleJob(detail, triggerKey, cronTrig);
+                            schedJobs.put(jobName, jobKey);
+                            responseObject = "Job sched success.";
+                        } else {
+                            responseObject = "This PO is not exist, please check again.";
+                        }
+                    } else {
+                        responseObject = "Invalid input val.";
+                    }
+                } catch (SchedulerException ex) {
+                    responseObject = ex;
                 }
-            } else {
-                out.println("Invalid input val.");
+                break;
+            case "select":
+                res.setContentType("text/plain");
+                try {
+                    List<JobKey> l = ctm.getJobKeys("Cell");
+                    if (l.isEmpty()) {
+                        responseObject = "No jobKey exist";
+                    } else {
+                        res.setContentType("application/json");
+                        responseObject = new JSONArray(l);
+                    }
+                } catch (JobExecutionException ex) {
+                    responseObject = ex.getCause();
+                } catch (SchedulerException ex) {
+                    responseObject = ex.getCause();
+                }
+                break;
+            case "delete":
+                res.setContentType("text/plain");
+                String key = req.getParameter("jobKey");
+                JobKey jobKey = schedJobs.get(key);
+                if (jobKey == null) {
+                    jobKey = ctm.createJobKey(key, this.jobGroup);
+                }
+                try {
+                    if (ctm.isJobInScheduleExist(jobKey)) {
+                        ctm.removeJob(jobKey);
+                        responseObject = "Remove success";
+                    } else {
+                        responseObject = "Can't find this key in schedule";
+                    }
+                } catch (SchedulerException ex) {
+                    responseObject = ex.toString();
+                }
+                break;
+            case "truncate": {
+                res.setContentType("text/plain");
+                try {
+                    ctm.removeJobs(this.jobGroup);
+                    responseObject = "truncate success";
+                } catch (SchedulerException ex) {
+                    responseObject = ex.toString();
+                }
+                break;
             }
-        } catch (SchedulerException ex) {
-            out.println(ex);
+            default:
+                res.setContentType("text/plain");
+                responseObject = "Unsupport action.";
+                break;
         }
+        res.getWriter().print(responseObject);
     }
 
     @Override
