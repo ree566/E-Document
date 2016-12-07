@@ -168,16 +168,19 @@
         <c:set var="sitefloorMain" value="5" />
         <c:set var="sitefloorSecond" value="6" />
         <div class="container">
-
             <label for="s${sitefloorMain}wiget">${sitefloorMain}F人員請按此</label>
             <div id="s${sitefloorMain}wiget" class="form-inline row linkWiget">
 
                 <a href="Bab?sitefloor=${sitefloorMain}">
-                    <button class="btn btn-default col-xs-4">組裝 / 包裝</button>
+                    <button class="btn btn-default col-xs-2">組裝 / 包裝</button>
                 </a>
 
                 <a href="Test?sitefloor=${sitefloorMain}">
-                    <button class="btn btn-default col-xs-4">測試</button>
+                    <button class="btn btn-default col-xs-2">測試</button>
+                </a>
+
+                <a href="Cell?sitefloor=${sitefloorMain}">
+                    <button class="btn btn-default col-xs-2">Cell</button>
                 </a>
             </div>
 
@@ -185,11 +188,15 @@
             <div id="s${sitefloorSecond}wiget" class="form-inline row linkWiget">
 
                 <a href="Bab?sitefloor=${sitefloorSecond}">
-                    <button class="btn btn-default col-xs-4">組裝 / 包裝</button>
+                    <button class="btn btn-default col-xs-2">組裝 / 包裝</button>
                 </a>
 
                 <a href="Test?sitefloor=${sitefloorSecond}">
-                    <button class="btn btn-default col-xs-4">測試</button>
+                    <button class="btn btn-default col-xs-2">測試</button>
+                </a>
+                    
+                <a href="Cell?sitefloor=${sitefloorSecond}">
+                    <button class="btn btn-default col-xs-2">Cell</button>
                 </a>
             </div>
             <div class="row">

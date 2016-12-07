@@ -199,6 +199,15 @@
     </servlet-mapping>
     
     <servlet>
+        <servlet-name>CellRecord</servlet-name>
+        <jsp-file>/pages/admin/cellRecord.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>CellRecord</servlet-name>
+        <url-pattern>/pages/admin/CellRecord</url-pattern>  
+    </servlet-mapping>
+    
+    <servlet>
         <servlet-name>About</servlet-name>
         <jsp-file>/pages/admin/about.jsp</jsp-file>
     </servlet>

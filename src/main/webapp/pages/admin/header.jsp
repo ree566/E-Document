@@ -88,6 +88,16 @@
                 <li>
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                         <span class="glyphicon glyphicon-list-alt" aria-hidden="true" /> 
+                        Cell
+                        <span class="caret" />
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="CellRecord">歷史紀錄查詢</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        <span class="glyphicon glyphicon-list-alt" aria-hidden="true" /> 
                         平面圖
                         <span class="caret" />
                     </a>

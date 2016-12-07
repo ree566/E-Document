@@ -155,7 +155,7 @@ public class BABService {
 
         Line line = lineService.getLine(bab.getLine());
 
-        if (line.isIsOpened()) {
+        if (line.isOpened()) {
             if (startBAB(bab)) {
                 BAB b = this.babDAO.getLastInputBAB(bab.getLine());//get last insert id
                 BABLoginStatusService bs = BasicService.getBabLoginStatusService();

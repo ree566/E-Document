@@ -44,7 +44,7 @@ public class LineService {
 
     private boolean isLineOpened(int lineNo) {
         Line line = lineDAO.getLine(lineNo);
-        return line.isIsOpened();
+        return line.isOpened();
     }
 
     private boolean isLineClosed(int lineNo) {

@@ -32,7 +32,8 @@ public class BasicService {
     private static ModelResponsorService modelResponsorService = null;
     private static WorkTimeService workTimeService = null;
     private static PassStationService passStationService = null;
-    private static CellProcessService cellProcessService = null;
+    private static CellService cellService = null;
+    private static CellLineService cellLineService = null;
 
     static {
         babService = new BABService();
@@ -50,7 +51,8 @@ public class BasicService {
         modelResponsorService = new ModelResponsorService();
         workTimeService = new WorkTimeService();
         passStationService = new PassStationService();
-        cellProcessService = new CellProcessService();
+        cellService = new CellService();
+        cellLineService = new CellLineService();
     }
 
     public static BABService getBabService() {
@@ -113,8 +115,12 @@ public class BasicService {
         return passStationService;
     }
 
-    public static CellProcessService getCellProcessService() {
-        return cellProcessService;
+    public static CellService getCellService() {
+        return cellService;
+    }
+
+    public static CellLineService getCellLineService() {
+        return cellLineService;
     }
 
 }

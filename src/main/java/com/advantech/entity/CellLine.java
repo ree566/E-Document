@@ -12,17 +12,18 @@ import java.io.Serializable;
  * @author Wei.Cheng
  */
 //@Entity
-public class CELL implements Serializable {
+public class CellLine implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     private int id;
     private String name;
-    private int lineId;
-    private Integer isused;
+    private int aps_lineId;
+    private int sitefloor;
+    private int isused;
     private String lastUpdateTime;
 
-    public CELL() {
+    public CellLine() {
 
     }
 
@@ -42,19 +43,27 @@ public class CELL implements Serializable {
         this.name = name;
     }
 
-    public int getLineId() {
-        return lineId;
+    public int getAps_lineId() {
+        return aps_lineId;
     }
 
-    public void setLineId(int lineId) {
-        this.lineId = lineId;
+    public void setAps_lineId(int aps_lineId) {
+        this.aps_lineId = aps_lineId;
     }
 
-    public Integer getIsused() {
+    public int getSitefloor() {
+        return sitefloor;
+    }
+
+    public void setSitefloor(int sitefloor) {
+        this.sitefloor = sitefloor;
+    }
+
+    public int getIsused() {
         return isused;
     }
 
-    public void setIsused(Integer isused) {
+    public void setIsused(int isused) {
         this.isused = isused;
     }
 
@@ -66,9 +75,8 @@ public class CELL implements Serializable {
         this.lastUpdateTime = lastUpdateTime;
     }
     
-    
+    public boolean isOpened(){
+        return this.isused == 1;
+    }
 
-    
-
-    
 }

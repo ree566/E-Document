@@ -6,6 +6,7 @@
  */
 package com.advantech.servlet;
 
+import com.advantech.entity.CellLine;
 import com.advantech.helper.CronTrigMod;
 import com.advantech.helper.DatetimeGenerator;
 import com.advantech.helper.ParamChecker;
@@ -16,8 +17,6 @@ import java.io.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
@@ -67,12 +66,13 @@ public class CellScheduleJobServlet extends HttpServlet {
                     String lineId = req.getParameter("lineId");
 
                     if (pc.checkInputVals(PO, lineId)) {
+                        CellLine cellLine = BasicService.getCellLineService().findOne(Integer.parseInt(lineId));
 
                         if (BasicService.getBabService().getPoTotalQuantity(PO) != null) {
-                            jobName = lineId + "_" + PO;
+                            jobName = cellLine.getAps_lineId() + "_" + PO;
                             Map data = new HashMap();
                             data.put("PO", PO);
-                            data.put("LineId", StringParser.strToInt(lineId));
+                            data.put("LineId", cellLine.getAps_lineId());
                             data.put("today", dg.getToday());
 
                             JobKey jobKey = ctm.createJobKey(jobName, jobGroup);

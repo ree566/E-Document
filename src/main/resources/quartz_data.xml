@@ -37,7 +37,7 @@
             <cron>
                 <name>DataBaseInit</name>
                 <job-name>DataBaseInit</job-name>
-                <cron-expression>0 10 6,22 ? * MON-SAT *</cron-expression>
+                <cron-expression>0 30 6,21 ? * MON-SAT *</cron-expression>
             </cron>
         </trigger>
     </schedule>
@@ -52,7 +52,7 @@
             <cron>
                 <name>SaveBABDataToDB</name>
                 <job-name>SaveBABDataToDB</job-name>
-                <cron-expression>0 0 12,16,22 ? * MON-SAT *</cron-expression>
+                <cron-expression>0 10 12,16,22 ? * MON-SAT *</cron-expression>
             </cron>
         </trigger>
     </schedule>-->

@@ -31,14 +31,6 @@ public class PassStationDAO extends BasicDAO {
     public List<PassStation> getPassStation(String PO) {
         return queryForBeanList(this.getConn(), PassStation.class, "SELECT * FROM machineThrough WHERE PO = ?", PO);
     }
-    
-    public List<PassStation> getPassStationToday() {
-        return queryForBeanList(this.getConn(), PassStation.class, "SELECT * FROM machineThroughToday");
-    }
-
-    public List<PassStation> getPassStationToday(String PO) {
-        return queryForBeanList(this.getConn(), PassStation.class, "SELECT * FROM machineThroughToday WHERE PO = ?", PO);
-    }
 
     public boolean insertPassStation(List<PassStation> l) {
         return update(

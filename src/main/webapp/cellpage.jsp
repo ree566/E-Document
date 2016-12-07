@@ -6,7 +6,7 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<jsp:useBean id="cellDAO" class="com.advantech.model.CELLDAO" scope="application" />
+<jsp:useBean id="cellLineDAO" class="com.advantech.model.CellLineDAO" scope="application" />
 <!DOCTYPE html>
 <html>
     <c:set var="userSitefloor" value="${param.sitefloor}" />
@@ -31,6 +31,8 @@
         <script src="js/cookie.check.js"></script>
         <script src="js/param.check.js"></script>
         <script>
+            var cellCookieName = "cellCookieName";
+
             $(function () {
                 //Add class to transform the button type to bootstrap.
                 $(":button").addClass("btn btn-default");
@@ -39,6 +41,11 @@
                 $(":text").each(resizeInput);
 
                 $("#send").click(function () {
+                    console.log($("#lineId").val());
+                    if (checkVal($("#lineId").val(), $("#PO").val()) == false) {
+                        alert("Input field can not be empty.");
+                        return false;
+                    }
                     insertCellInfo();
                 });
 
@@ -50,14 +57,71 @@
                     showProcessing();
                 });
 
-                $("#truncate").click(function () {
-                    truncate();
+                $("#login").click(function () {
+                    var lineId = $("#lineId").val();
+                    var lineName = $("#lineId option:selected").text().trim();
+                    if (confirm("Login " + lineName + " ?")) {
+                        var obj = {
+                            lineId: lineId,
+                            lineName: lineName,
+                            action: "LOGIN"
+                        };
+                        cellLineSwitch(obj);
+                    }
+                });
+
+                var cellCookie = $.cookie(cellCookieName);
+                var cellLoginObj;
+                if (cellCookie != null) {
+                    var cellLoginObj = $.parseJSON(cellCookie);
+                    $("#lineId").val(cellLoginObj.lineId).attr("disabled", true);
+                }
+
+                $("#logout").click(function () {
+                    if (cellLoginObj != null) {
+                        if (confirm("Logout " + cellLoginObj.lineName.trim() + " ?")) {
+                            var obj = {
+                                lineId: cellLoginObj.lineId,
+                                action: "LOGOUT"
+                            };
+                            cellLineSwitch(obj);
+                        }
+                    } else {
+                        alert("Can't find your login status");
+                    }
                 });
 
                 showProcessing();
 
                 function resizeInput() {
                     $(this).attr('size', $(this).attr('placeholder').length);
+                }
+
+                function cellLineSwitch(data) {
+                    if (checkVal(data.lineId) == false) {
+                        alert("Please select a line");
+                        return false;
+                    }
+                    $.ajax({
+                        type: "Post",
+                        url: "CellLineServlet",
+                        data: data,
+                        dataType: "html",
+                        success: function (response) {
+                            if (data.action == "LOGIN") {
+                                generateCookie(cellCookieName, JSON.stringify(data));
+                                $("#lineId").attr("disabled", true);
+                            } else if (data.action == "LOGOUT") {
+                                removeCookie(cellCookieName);
+                                $("#lineId").removeAttr("disabled").val(-1);
+                            }
+                            alert(response);
+                            reload();
+                        },
+                        error: function () {
+                            alert("error");
+                        }
+                    });
                 }
 
                 function insertCellInfo() {
@@ -71,11 +135,11 @@
                         },
                         dataType: "html",
                         success: function (response) {
-                            $("#serverMsg").html(response);
+                            alert(response);
                             showProcessing();
                         },
                         error: function () {
-                            $("#serverMsg").html("error");
+                            alert("error");
                         }
                     });
                 }
@@ -90,12 +154,12 @@
                         },
                         dataType: "html",
                         success: function (response) {
-                            $("#serverMsg").html(response);
+                            alert(response);
                             showProcessing();
                             $("#JobKey").val("");
                         },
                         error: function () {
-                            $("#serverMsg").html("error");
+                            alert("error");
                         }
                     });
                 }
@@ -125,22 +189,24 @@
                     });
                 }
 
-                function truncate() {
-                    $.ajax({
-                        type: "Get",
-                        url: "CellScheduleJobServlet",
-                        data: {
-                            action: "truncate"
-                        },
-                        dataType: "html",
-                        success: function (response) {
-                            $("#serverMsg").html(response);
-                        },
-                        error: function () {
-                            $("#serverMsg").html("error");
-                        }
-                    });
+                //generate all cookies exist 12 hours
+                function generateCookie(name, value) {
+                    var date = new Date();
+                    var minutes = 12 * 60;
+                    date.setTime(date.getTime() + (minutes * 60 * 1000));
+                    $.cookie(name, value, {expires: date});
                 }
+
+                //removeCookieByName
+                function removeCookie(name) {
+                    $.removeCookie(name);
+                }
+
+                //refresh the window
+                function reload() {
+                    window.location.reload();
+                }
+
             });
         </script>
     </head>
@@ -159,26 +225,33 @@
             </div>
 
             <div class="form-group form-inline">
-                <label>Insert</label>
-                <input type="text" id="PO" placeholder="Please insert your PO" />
+                <label>Line login</label>
                 <select id="lineId">
                     <option value="-1">請選擇線別</option>
-                    <c:forEach var="cell" items="${cellDAO.findAll()}">
-                        <option value="${cell.lineId}">線別 ${cell.name} / 代號 ${cell.lineId}</option>
+                    <c:forEach var="cellLine" items="${cellLineDAO.findBySitefloor(userSitefloor)}">
+                        <option value="${cellLine.id}">
+                            線別 ${cellLine.name} / 代號 ${cellLine.aps_lineId} 
+                        </option>
                     </c:forEach>
                 </select>
-                <input type="button" id="send" value="send" />
+                <input type="button" id="login" value="Login" />
+                <input type="button" id="logout" value="Logout" />
+            </div>
+
+            <div class="form-group form-inline">
+                <label>Insert</label>
+                <input type="text" id="PO" placeholder="Please insert your PO" />
+                <input type="button" id="send" value="Send" />
             </div>
             <div class="form-group form-inline">
                 <label>Remove</label>
                 <input type="text" id="JobKey" placeholder="example: [lineId]_[PO]" />
-                <input type="button" id="clear" value="clear" />
+                <input type="button" id="clear" value="Clear" />
             </div>
 
             <div class="form-group form-inline">
                 <label>Search</label>
-                <input type="button" value="refresh" id="refresh">
-                <input type="button" value="truncate" id="truncate">
+                <input type="button" value="Refresh" id="refresh">
             </div>
 
             <div class="form-group">
@@ -191,6 +264,7 @@
                 <div id="serverMsg"></div>
             </div>
         </div>
+        
         <jsp:include page="temp/footer.jsp" />
     </body>
 </html>

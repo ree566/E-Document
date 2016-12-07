@@ -29,10 +29,6 @@ public class PassStationService {
         return passStationDAO.getPassStation(PO);
     }
 
-    public List<PassStation> getPassStationToday(String PO) {
-        return passStationDAO.getPassStationToday(PO);
-    }
-
     public boolean insertPassStation(List<PassStation> l) {
         return passStationDAO.insertPassStation(l);
     }
