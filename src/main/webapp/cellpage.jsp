@@ -40,26 +40,14 @@
 
                 $(":text").each(resizeInput);
 
-                $("#send").click(function () {
-                    console.log($("#lineId").val());
-                    if (checkVal($("#lineId").val(), $("#PO").val()) == false) {
-                        alert("Input field can not be empty.");
-                        return false;
-                    }
-                    insertCellInfo();
-                });
-
-                $("#clear").click(function () {
-                    deleteSchedJob();
-                });
-
-                $("#refresh").click(function () {
-                    showProcessing();
-                });
-
                 $("#login").click(function () {
                     var lineId = $("#lineId").val();
                     var lineName = $("#lineId option:selected").text().trim();
+
+                    if (checkVal(lineId) == false) {
+                        alert("Please select a line");
+                        return false;
+                    }
                     if (confirm("Login " + lineName + " ?")) {
                         var obj = {
                             lineId: lineId,
@@ -75,6 +63,15 @@
                 if (cellCookie != null) {
                     var cellLoginObj = $.parseJSON(cellCookie);
                     $("#lineId").val(cellLoginObj.lineId).attr("disabled", true);
+                    $("#login").attr("disabled", true);
+                    $("#logout").attr("disabled", false);
+                    $("#startSchedArea").unblock();
+                    showProcessing();
+                } else {
+                    $("#login").attr("disabled", false);
+                    $("#logout").attr("disabled", true);
+                    $("#startSchedArea").block({message: "請先登入線別。", css: {cursor: 'default'}, overlayCSS: {cursor: 'default'}});
+                    return false;
                 }
 
                 $("#logout").click(function () {
@@ -91,32 +88,49 @@
                     }
                 });
 
-                showProcessing();
+                $("#send").click(function () {
+                    var lineId = $("#lineId").val();
+                    var PO = $("#PO").val();
+                    if (checkVal(lineId, PO) == false) {
+                        alert("Input field can not be empty.");
+                        return false;
+                    }
+                    if (confirm("Begin PO: " + PO + " on line " + $("#lineId option:selected").text().trim() + " ?")) {
+                        insertCellInfo();
+                    }
+                });
+
+                $("#clear").click(function () {
+                    deleteSchedJob();
+                });
+
+                $("#refresh").click(function () {
+                    showProcessing();
+                });
 
                 function resizeInput() {
                     $(this).attr('size', $(this).attr('placeholder').length);
                 }
 
                 function cellLineSwitch(data) {
-                    if (checkVal(data.lineId) == false) {
-                        alert("Please select a line");
-                        return false;
-                    }
                     $.ajax({
                         type: "Post",
                         url: "CellLineServlet",
                         data: data,
                         dataType: "html",
                         success: function (response) {
-                            if (data.action == "LOGIN") {
-                                generateCookie(cellCookieName, JSON.stringify(data));
-                                $("#lineId").attr("disabled", true);
-                            } else if (data.action == "LOGOUT") {
-                                removeCookie(cellCookieName);
-                                $("#lineId").removeAttr("disabled").val(-1);
+                            if (response == "success") {
+                                if (data.action == "LOGIN") {
+                                    generateCookie(cellCookieName, JSON.stringify(data));
+                                    $("#lineId").attr("disabled", true);
+                                } else if (data.action == "LOGOUT") {
+                                    removeCookie(cellCookieName);
+                                    $("#lineId").removeAttr("disabled").val(-1);
+                                }
+                                reload();
+                            } else {
+                                alert(response);
                             }
-                            alert(response);
-                            reload();
                         },
                         error: function () {
                             alert("error");
@@ -238,25 +252,27 @@
                 <input type="button" id="logout" value="Logout" />
             </div>
 
-            <div class="form-group form-inline">
-                <label>Insert</label>
-                <input type="text" id="PO" placeholder="Please insert your PO" />
-                <input type="button" id="send" value="Send" />
-            </div>
-            <div class="form-group form-inline">
-                <label>Remove</label>
-                <input type="text" id="JobKey" placeholder="example: [lineId]_[PO]" />
-                <input type="button" id="clear" value="Clear" />
-            </div>
+            <div id="startSchedArea">
+                <div class="form-group form-inline">
+                    <label>Insert</label>
+                    <input type="text" id="PO" placeholder="Please insert your PO" />
+                    <input type="button" id="send" value="Send" />
+                </div>
+                <div class="form-group form-inline">
+                    <label>Remove</label>
+                    <input type="text" id="JobKey" placeholder="example: [lineId]_[PO]" />
+                    <input type="button" id="clear" value="Clear" />
+                </div>
 
-            <div class="form-group form-inline">
-                <label>Search</label>
-                <input type="button" value="Refresh" id="refresh">
-            </div>
+                <div class="form-group form-inline">
+                    <label>Search</label>
+                    <input type="button" value="Refresh" id="refresh">
+                </div>
 
-            <div class="form-group">
-                <label>Processing keys</label>
-                <div id="processingArea"></div>
+                <div class="form-group">
+                    <label>Processing keys</label>
+                    <div id="processingArea"></div>
+                </div>
             </div>
 
             <div class="form-group">
@@ -264,7 +280,7 @@
                 <div id="serverMsg"></div>
             </div>
         </div>
-        
+
         <jsp:include page="temp/footer.jsp" />
     </body>
 </html>

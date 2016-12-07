@@ -69,7 +69,7 @@ public class CellScheduleJobServlet extends HttpServlet {
                         CellLine cellLine = BasicService.getCellLineService().findOne(Integer.parseInt(lineId));
 
                         if (BasicService.getBabService().getPoTotalQuantity(PO) != null) {
-                            jobName = cellLine.getAps_lineId() + "_" + PO;
+                            jobName = cellLine.getName() + "_" + cellLine.getAps_lineId() + "_" + PO;
                             Map data = new HashMap();
                             data.put("PO", PO);
                             data.put("LineId", cellLine.getAps_lineId());
