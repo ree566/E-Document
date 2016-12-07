@@ -13,9 +13,10 @@
         <c:if test="${(userSitefloor == null) || (userSitefloor == '' || userSitefloor < 1 || userSitefloor > 7)}">
             <c:redirect url="/SysInfo" />
         </c:if>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" CONTENT="no-cache">
         <title>${userSitefloor}F狀態平面圖 - ${initParam.pageTitle}</title>
         <link rel="stylesheet" href="../../css/jquery-ui.css">
+        <link rel="stylesheet" href="../../css/tooltipster.bundle.min.css">
         <style>
             .draggable { 
                 width: 25px; 
@@ -26,6 +27,10 @@
                 margin: 0px;
                 cursor: default;
                 text-align: center;
+            }
+            #numLampArea .draggable{
+                padding: 1.0em; 
+                font-size: 25px;
             }
             #generateArea{
                 height: 20px;
@@ -92,7 +97,7 @@
                 width: 25%; 
                 overflow: hidden;
             }
-            #titleArea>div, #testArea>div, #babArea>div{
+            #titleArea>div, #testArea>div, #babArea>div, #numLampArea>div{
                 position: absolute;
             }
             .titleWiget{
@@ -121,67 +126,39 @@
             .blub-abnormal{
                 background-image: url(../../images/blub-icon/Yellow_Light_Icon.png);
             }
+            .suggestMsg{
+                background-color: white;
+                color: red;
+                margin: 5px;
+                padding: 5px;
+            }
         </style>
         <script src="../../js/jquery-1.11.3.min.js"></script>
         <script src="../../js/jquery-ui-1.10.0.custom.min.js"></script>
         <script src="../../js/reconnecting-websocket.min.js"></script>
         <script src="../../js/jquery.fullscreen-min.js"></script>
+        <script src="../../js/tooltipster.bundle.min.js"></script>
         <script src="../../js/totalMap-setting/${userSitefloor}f.js"></script>
+        <script src="../../js/numLamp-setting/${userSitefloor}f.js"></script>
         <script>
-            var sitefloor = ${userSitefloor};
             var maxProductivity = 200;
 
             $(function () {
-
-                for (var i = 0; i < titleGroup.length; i++) {
-                    var groupStatus = titleGroup[i];
-                    $("#titleArea").append("<div></div>");
-                    $("#titleArea>div")
-                            .eq(i)
-                            .attr("id", groupStatus.lineName + "_title")
-                            .addClass("titleWiget")
-                            .html(groupStatus.lineName)
-                            .css({left: groupStatus.x + pXa, top: groupStatus.y + pYa});
-                }
-
-                for (var i = 0; i < testGroup.length; i++) {
-                    $("#testArea").append("<div></div>");
-                    var groupStatus = testGroup[i];
-                    for (var j = 0, k = groupStatus.people; j < k; j++) {
-                        $("#testArea>div")
-                                .eq(i)
-                                .append("<div></div>")
-                                .addClass("testWiget")
-                                .css({left: groupStatus.x + pXa, top: groupStatus.y + pYa});
-                    }
-                }
-
-                for (var i = 0; i < babGroup.length; i++) {
-                    $("#babArea").append("<div></div>");
-                    var groupStatus = babGroup[i];
-                    for (var j = 0, k = groupStatus.people; j < k; j++) {
-                        $("#babArea>div")
-                                .eq(i)
-                                .append("<div></div>")
-                                .addClass("babWiget")
-                                .attr("id", groupStatus.lineName)
-                                .css({left: groupStatus.x + pXa, top: groupStatus.y + pYa});
-                    }
-                }
-
-//                $(".titleWiget, .testWiget, .babWiget").after("<div class='clearWiget'></div>");
+                initTitleGroup();
+                initTestGroup();
+                initBabGroup();
+                initNumLampGroup();
 
                 var testChildElement = $("#testArea>.testWiget div");
                 var babChildElement = $("#babArea>.babWiget div");
 
                 testObjectInit();
                 babObjectInit();
-
+                numLampObjectInit();
 
                 $("#titleArea>div").not(".clearWiget").addClass("lineTitle");
 
-                var dragableWiget = $("#titleArea>div, #testArea>div, #babArea>div");
-//                dragableWiget.after("<div class='clearWiget'></div>");
+                var dragableWiget = $("#titleArea>div, #testArea>div, #babArea>div, #numLampArea>div");
 
 //                dragableWiget.not(".clearWiget").addClass("ui-helper").draggable({
 //                    drag: function (e) {
@@ -195,8 +172,71 @@
                     $("#wigetCtrl").fullScreen(true);
                 });
 
+                function initTitleGroup() {
+                    for (var i = 0; i < titleGroup.length; i++) {
+                        var groupStatus = titleGroup[i];
+                        $("#titleArea").append("<div></div>");
+                        $("#titleArea>div")
+                                .eq(i)
+                                .attr("id", groupStatus.lineName + "_title")
+                                .addClass("titleWiget")
+                                .html(groupStatus.lineName)
+                                .css({left: groupStatus.x + pXa, top: groupStatus.y + pYa});
+                    }
+                }
+
+                function initTestGroup() {
+                    for (var i = 0; i < testGroup.length; i++) {
+                        $("#testArea").append("<div></div>");
+                        var groupStatus = testGroup[i];
+                        for (var j = 0, k = groupStatus.people; j < k; j++) {
+                            $("#testArea>div")
+                                    .eq(i)
+                                    .append("<div></div>")
+                                    .addClass("testWiget")
+                                    .css({left: groupStatus.x + pXa, top: groupStatus.y + pYa});
+                        }
+                    }
+                }
+
+                function initBabGroup() {
+                    for (var i = 0; i < babGroup.length; i++) {
+                        $("#babArea").append("<div></div>");
+                        var groupStatus = babGroup[i];
+                        for (var j = 0, k = groupStatus.people; j < k; j++) {
+                            $("#babArea>div")
+                                    .eq(i)
+                                    .append("<div></div>")
+                                    .addClass("babWiget")
+                                    .attr("id", groupStatus.lineName)
+                                    .css({left: groupStatus.x + pXa, top: groupStatus.y + pYa});
+                        }
+                    }
+                }
+
+                function initNumLampGroup() {
+                    for (var i = 0; i < numLampGroup.length; i++) {
+                        $("#numLampArea").append("<div></div>");
+                        var groupStatus = numLampGroup[i];
+                        for (var j = 0, k = groupStatus.people; j < k; j++) {
+                            $("#numLampArea>div")
+                                    .eq(i)
+                                    .append("<div></div>")
+                                    .addClass("numLampWiget")
+                                    .attr("id", groupStatus.lineName + "_numLamp")
+                                    .css({left: groupStatus.x + pXa, top: groupStatus.y + pYa});
+                        }
+                    }
+                }
+
                 function initWiget(obj) {
                     obj.addClass("blub-empty").removeClass("blub-alarm blub-normal blub-abnormal").removeAttr("title");
+                }
+                
+                function initNumLampWiget() {
+                    var obj = $("#numLampArea>.numLampWiget div");
+                    obj.addClass("blub-empty").removeClass("blub-alarm blub-normal blub-abnormal").html(0);
+                    obj.parent().tooltipster('content', "empty");
                 }
 
                 function testObjectInit() {
@@ -220,6 +260,22 @@
                                     .html(childAmount);
                             childAmount--;
                         });
+                    });
+                }
+                
+                function numLampObjectInit() {
+                    $(".numLampWiget").each(function () {
+                        var lineName = $(this).attr("id");
+                        var childAmount = $(this).children().length;
+                        $(this).children().each(function () {
+                            $(this).attr({"id": (lineName + "_" + childAmount)})
+                                    .addClass("draggable blub-empty divCustomBg")
+                                    .html(0);
+                            childAmount--;
+                        });
+                        $("#" + lineName)
+                                .attr({title: "empty"})
+                                .tooltipster({trigger: "click", side: "right", contentAsHTML: true, updateAnimation: null});
                     });
                 }
 
@@ -278,15 +334,54 @@
                     }
                 }
 
+                function numLampDataToWiget(babObject) {
+                    initNumLampWiget();
+                    if (babObject != null) {
+                        var babData = babObject;
+                        if (babData != null) {
+                            for (var k = 0, l = babGroup.length; k < l; k++) {
+                                var lineName = babGroup[k].lineName;
+                                var details = babObject[lineName];
+                                if (details != null) {
+                                    var suggestPeople = details.suggestTestPeople;
+                                    var lineName = lineName.trim() + "_numLamp";
+                                    var obj = $("#numLampArea #" + lineName + " #" + lineName + "_" + 1);//統一寫到數字燈1
+                                    if (obj.length) {
+                                        obj.removeClass("blub-empty")
+                                                .addClass((suggestPeople == null ? "blub-abnormal" : "blub-normal"))
+                                                .html(suggestPeople);
+                                        var messageArray = details.message;
+                                        var message = "PO: " + details.PO + "<br/>ModelName: " + details.model_name + "<br/>";
+                                        if (details.quantity != null) {
+                                            message += "Current piece: " + details.quantity + " pcs<br/>";
+                                        }
+                                        for (var i = 0; i < messageArray.length; i++) {
+                                            message += messageArray[i] + "<br/>";
+                                        }
+                                        message += "<div class='suggestMsg'>" + lineName.trim() + " Suggestion station Action: " + details.suggestTestPeople + "</div>";
+                                        $("#" + lineName.trim()).tooltipster('content', message);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
                 var hostname = window.location.host;//Get the host ipaddress to link to the server.
 //                var hostname = "172.20.131.52:8080";
                 //--------------websocket functions
                 //websocket will reconnect by reconnecting-websocket.min.js when client or server is disconnect
                 var ws = new ReconnectingWebSocket("ws://" + hostname + "/CalculatorWSApplication/echo2");
+                var ws2 = new ReconnectingWebSocket("ws://" + hostname + "/CalculatorWSApplication/echo3");
                 ws.timeoutInterval = 3000;
-                ws.onopen = function () {
+                ws2.timeoutInterval = 3000;
+
+                var onopen = function () {
 
                 };
+                
+                ws.onopen = onopen;
+                ws2.onopen = onopen;
 
                 //Get the server message and transform into table.
                 ws.onmessage = function (message) {
@@ -297,13 +392,23 @@
                     }
                 };
 
-                ws.onerror = function (event) {
+                ws2.onmessage = function (message) {
+                    var jsonArray = $.parseJSON(message.data);
+                    console.log(jsonArray);
+                    if (jsonArray.length != 0) {
+                        numLampDataToWiget(jsonArray);
+                    }
+                };
+
+                var onerror = function (event) {
                     console.log("error");
                     console.log(event.data);
                 };
-
+                ws.onerror = onerror;
+                ws2.onerror = onerror;
+                
                 //generate the unnormal close event hint
-                ws.onclose = function (event) {
+                var onclose = function (event) {
                     var reason;
                     if (event.code == 1000)
                         reason = "Normal closure, meaning that the purpose for which the connection was established has been fulfilled.";
@@ -335,12 +440,16 @@
                         reason = "Unknown reason";
                     console.log("The connection was closed for reason: " + reason);
                 };
+                
+                ws.onclose = onclose;
+                ws2.onclose = onclose;
 
                 function postToServer() {
                 }
 
                 function closeConnect() {
                     ws.close();
+                    ws2.close();
                     console.log("websocket connection is now end");
                 }
 //-----------------------
@@ -373,6 +482,9 @@
                 <!--<div class="clearWiget" /></div>-->
 
                 <div id="babArea"></div>
+                <!--<div class="clearWiget"></div>-->
+
+                <div id="numLampArea"></div>
                 <!--<div class="clearWiget"></div>-->
             </div>
         </div>

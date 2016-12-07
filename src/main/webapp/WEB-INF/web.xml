@@ -181,15 +181,6 @@
     </servlet-mapping>
     
     <servlet>
-        <servlet-name>NumLamp</servlet-name>
-        <jsp-file>/pages/admin/totalMap_numLamp.jsp</jsp-file>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>NumLamp</servlet-name>
-        <url-pattern>/pages/admin/NumLamp</url-pattern>  
-    </servlet-mapping>
-    
-    <servlet>
         <servlet-name>BabDetailInfo</servlet-name>
         <jsp-file>/pages/admin/babDetailInfo.jsp</jsp-file>
     </servlet>

@@ -103,7 +103,7 @@ public class LineBalancePeopleGenerator implements Job {
 
         if (currentBab == null) {
             return;
-        }
+        } 
 
         message = new ArrayList();
 

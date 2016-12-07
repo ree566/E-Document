@@ -103,9 +103,7 @@
                     </a>
                     <ul class="dropdown-menu">
                         <li><a href="TotalMap?sitefloor=5">狀態平面圖5F</a></li>
-                        <li><a href="NumLamp?sitefloor=5">數字燈5F</a></li>
                         <li><a href="TotalMap?sitefloor=6">狀態平面圖6F</a></li>
-                        <li><a href="NumLamp?sitefloor=6">數字燈6F</a></li>
                     </ul>
                 </li>
                 <li>
