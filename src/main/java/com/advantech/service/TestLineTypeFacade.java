@@ -151,7 +151,7 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
     @Override
     protected boolean initDbAlarmSign() {
         TestService ts = BasicService.getTestService();
-        return ts.removeAllAlarmSign() && ts.insertTestAlarm(super.mapToAlarmSign(dataMap));
+        return ts.removeAlarmSign() && ts.insertAlarm(super.mapToAlarmSign(dataMap));
     }
 
     @Override
@@ -161,12 +161,12 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
 
     @Override
     protected boolean setDbAlarmSign(List<AlarmAction> l) {
-        return testService.updateTestAlarm(l);
+        return testService.updateAlarm(l);
     }
 
     @Override
     protected boolean resetDbAlarmSign() {
-        return testService.resetTestAlarm();
+        return testService.resetAlarm();
     }
 
     public Map getPEOPLE_NOT_MATCH() {

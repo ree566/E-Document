@@ -45,7 +45,7 @@
         <script src="js/cookie.check.js"></script>
         <script src="js/param.check.js"></script>
         <script>
-            var userInfoCookieName = "userInfo", testLineTypeCookieName = "testLineTypeCookieName";
+            var userInfoCookieName = "userInfo", testLineTypeCookieName = "testLineTypeCookieName", cellCookieName = "cellCookieName";
             var STATION_LOGIN = "LOGIN", STATION_LOGOUT = "LOGOUT", CHANGE_DECK = "CHANGE_DECK";
             var savedTable, savedJobnumber;
             var tabreg = /^[0-9a-zA-Z-]+$/;//Textbox check regex.
@@ -98,10 +98,11 @@
                 $("#cookieinfo").html("尚無資料");
                 var testLineTypeCookie = $.cookie(testLineTypeCookieName);
                 var babLineTypeCookie = $.cookie(userInfoCookieName);
+                var cellCookie = $.cookie(cellCookieName);
 
-                if (babLineTypeCookie) {
+                if (babLineTypeCookie || cellCookie) {
                     lockAllUserInput();
-                    showMsg("您已經登入組包裝");
+                    showMsg("您已經登入組包裝或Cell桌");
                     return false;
                 }
 

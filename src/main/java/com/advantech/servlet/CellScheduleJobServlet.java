@@ -6,14 +6,16 @@
  */
 package com.advantech.servlet;
 
+import com.advantech.entity.Cell;
 import com.advantech.entity.CellLine;
 import com.advantech.helper.CronTrigMod;
 import com.advantech.helper.DatetimeGenerator;
 import com.advantech.helper.ParamChecker;
-import com.advantech.helper.StringParser;
 import com.advantech.quartzJob.CellStation;
 import com.advantech.service.BasicService;
+import com.advantech.service.CellService;
 import java.io.*;
+import static java.lang.System.out;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,7 +24,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 import org.json.JSONArray;
 import org.quartz.JobDetail;
-import org.quartz.JobExecutionException;
 import org.quartz.JobKey;
 import org.quartz.SchedulerException;
 import org.quartz.TriggerKey;
@@ -41,6 +42,7 @@ public class CellScheduleJobServlet extends HttpServlet {
     private ParamChecker pc = null;
     private DatetimeGenerator dg = null;
     private Map<String, JobKey> schedJobs;
+    private CellService cellService;
 
     @Override
     public void init() throws ServletException {
@@ -48,6 +50,10 @@ public class CellScheduleJobServlet extends HttpServlet {
         pc = new ParamChecker();
         dg = new DatetimeGenerator("yy-MM-dd");
         schedJobs = new HashMap();
+        cellService = BasicService.getCellService();
+
+        this.initProcessingCells();
+
     }
 
     @Override
@@ -56,7 +62,7 @@ public class CellScheduleJobServlet extends HttpServlet {
 
         String action = req.getParameter("action");
 
-        Object responseObject = null;
+        Object responseObject;
 
         switch (action) {
             case "insert":
@@ -64,29 +70,18 @@ public class CellScheduleJobServlet extends HttpServlet {
                 try {
                     String PO = req.getParameter("PO");
                     String lineId = req.getParameter("lineId");
-
-                    if (pc.checkInputVals(PO, lineId)) {
-                        CellLine cellLine = BasicService.getCellLineService().findOne(Integer.parseInt(lineId));
-
-                        if (BasicService.getBabService().getPoTotalQuantity(PO) != null) {
-                            jobName = cellLine.getName() + "_" + cellLine.getAps_lineId() + "_" + PO;
-                            Map data = new HashMap();
-                            data.put("PO", PO);
-                            data.put("LineId", cellLine.getAps_lineId());
-                            data.put("today", dg.getToday());
-
-                            JobKey jobKey = ctm.createJobKey(jobName, jobGroup);
-                            TriggerKey triggerKey = ctm.createTriggerKey(jobName, jobGroup);
-                            JobDetail detail = ctm.createJobDetail(jobKey, jobGroup, CellStation.class, data);
-                            ctm.scheduleJob(detail, triggerKey, cronTrig);
-                            schedJobs.put(jobName, jobKey);
-                            responseObject = "Job sched success.";
+                    if (pc.checkInputVals(PO, lineId) == true) {
+                        int line = Integer.parseInt(lineId);
+                        if (this.schedNewJobs(line, PO) == true) {
+                            responseObject = "Insert new Job success";
+                            cellService.insertCell(new Cell(line, PO));
                         } else {
-                            responseObject = "This PO is not exist, please check again.";
+                            responseObject = "Insert new Job fail";
                         }
                     } else {
-                        responseObject = "Invalid input val.";
+                        responseObject = "Invalid input values";
                     }
+
                 } catch (SchedulerException ex) {
                     responseObject = ex;
                 }
@@ -94,15 +89,13 @@ public class CellScheduleJobServlet extends HttpServlet {
             case "select":
                 res.setContentType("text/plain");
                 try {
-                    List<JobKey> l = ctm.getJobKeys("Cell");
+                    List l = getSchedJobs();
                     if (l.isEmpty()) {
                         responseObject = "No jobKey exist";
                     } else {
                         res.setContentType("application/json");
                         responseObject = new JSONArray(l);
                     }
-                } catch (JobExecutionException ex) {
-                    responseObject = ex.getCause();
                 } catch (SchedulerException ex) {
                     responseObject = ex.getCause();
                 }
@@ -110,31 +103,12 @@ public class CellScheduleJobServlet extends HttpServlet {
             case "delete":
                 res.setContentType("text/plain");
                 String key = req.getParameter("jobKey");
-                JobKey jobKey = schedJobs.get(key);
-                if (jobKey == null) {
-                    jobKey = ctm.createJobKey(key, this.jobGroup);
-                }
                 try {
-                    if (ctm.isJobInScheduleExist(jobKey)) {
-                        ctm.removeJob(jobKey);
-                        responseObject = "Remove success";
-                    } else {
-                        responseObject = "Can't find this key in schedule";
-                    }
+                    responseObject = removeJob(key);
                 } catch (SchedulerException ex) {
                     responseObject = ex.toString();
                 }
                 break;
-            case "truncate": {
-                res.setContentType("text/plain");
-                try {
-                    ctm.removeJobs(this.jobGroup);
-                    responseObject = "truncate success";
-                } catch (SchedulerException ex) {
-                    responseObject = ex.toString();
-                }
-                break;
-            }
             default:
                 res.setContentType("text/plain");
                 responseObject = "Unsupport action.";
@@ -147,6 +121,53 @@ public class CellScheduleJobServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
         res.sendError(HttpServletResponse.SC_FORBIDDEN);
+    }
+
+    private void initProcessingCells() {
+        List<Cell> l = cellService.getCellProcessing();
+        for (Cell cell : l) {
+            try {
+                this.schedNewJobs(cell.getLineId(), cell.getPO());
+            } catch (SchedulerException ex) {
+                out.println(ex);
+            }
+        }
+    }
+
+    private List<JobKey> getSchedJobs() throws SchedulerException {
+        return ctm.getJobKeys("Cell");
+    }
+
+    private boolean schedNewJobs(int lineId, String PO) throws SchedulerException {
+        CellLine cellLine = BasicService.getCellLineService().findOne(lineId);
+        if (BasicService.getBabService().getPoTotalQuantity(PO) != null) {
+            jobName = cellLine.getName() + "_" + cellLine.getAps_lineId() + "_" + PO;
+            Map data = new HashMap();
+            data.put("PO", PO);
+            data.put("LineId", cellLine.getAps_lineId());
+            data.put("today", dg.getToday());
+            JobKey jobKey = ctm.createJobKey(jobName, jobGroup);
+            TriggerKey triggerKey = ctm.createTriggerKey(jobName, jobGroup);
+            JobDetail detail = ctm.createJobDetail(jobKey, jobGroup, CellStation.class, data);
+            ctm.scheduleJob(detail, triggerKey, cronTrig);
+            schedJobs.put(jobName, jobKey);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private boolean removeJob(String key) throws SchedulerException {
+        JobKey jobKey = schedJobs.get(key);
+        if (jobKey == null) {
+            jobKey = ctm.createJobKey(key, this.jobGroup);
+        }
+        if (ctm.isJobInScheduleExist(jobKey)) {
+            ctm.removeJob(jobKey);
+            return true;
+        } else {
+            return false;
+        }
     }
 
 }

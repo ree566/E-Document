@@ -77,7 +77,8 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                         "type": "Get",
                         data: {
                             PO: $("#PO").val(),
-                            topN: $("#amount").val()
+                            minPcs: $("#minPcs").val(),
+                            maxPcs: $("#maxPcs").val()
                         }
                     },
                     "columns": [
@@ -155,8 +156,10 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                 <div>
                     <label for="PO">Please insert your PO:</label>
                     <input type="text" id="PO" placeholder="PO insert here">
-                    <label for="amount">Pcs maxinum:</label>
-                    <input type="number" id="amount" min="1" placeholder="不設定上限請留空" />
+                    <label for="amount">MinPcs:</label>
+                    <input type="number" id="minPcs" min="1" placeholder="不設定下限請留空" />
+                    <label for="amount">MaxPcs:</label>
+                    <input type="number" id="maxPcs" min="1" placeholder="不設定上限請留空" />
                     <input type="button" id="send" value="send" />
                 </div>
             </div>

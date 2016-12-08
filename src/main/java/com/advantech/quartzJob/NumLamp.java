@@ -28,8 +28,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author Wei.Cheng
- * Detect the bab begin and end perLine
+ * @author Wei.Cheng Detect the bab begin and end perLine
  */
 public class NumLamp implements Job {
 
@@ -101,9 +100,13 @@ public class NumLamp implements Job {
 
                 if (!ctm.isJobInScheduleExist(jobKey)) {
                     TriggerKey triggerKey = ctm.createTriggerKey(jobName, groupName);
+                    Double testStandardTime = BasicService.getWorkTimeService().getTestStandardTime(b.getModel_name());
+                    Integer totalQuantity = babService.getPoTotalQuantity(b.getPO());
 
                     Map m = new HashMap();
                     m.put("dataMap", b);
+                    m.put("testStandardTime", testStandardTime);
+                    m.put("totalQuantity", totalQuantity);
                     JobDetail jobDetail = ctm.createJobDetail(jobKey, groupName, LineBalancePeopleGenerator.class, m);
                     ctm.scheduleJob(jobDetail, triggerKey, "25,55 * 8-20 ? * MON-SAT *");
 

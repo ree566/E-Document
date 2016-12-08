@@ -18,10 +18,12 @@ public class CellLine implements Serializable {
 
     private int id;
     private String name;
+    private String outputName;
     private int aps_lineId;
     private int sitefloor;
     private int isused;
     private String lastUpdateTime;
+    private int lock;
 
     public CellLine() {
 
@@ -41,6 +43,14 @@ public class CellLine implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getOutputName() {
+        return outputName;
+    }
+
+    public void setOutputName(String outputName) {
+        this.outputName = outputName;
     }
 
     public int getAps_lineId() {
@@ -74,8 +84,16 @@ public class CellLine implements Serializable {
     public void setLastUpdateTime(String lastUpdateTime) {
         this.lastUpdateTime = lastUpdateTime;
     }
-    
-    public boolean isOpened(){
+
+    public int getLock() {
+        return lock;
+    }
+
+    public void setLock(int lock) {
+        this.lock = lock;
+    }
+
+    public boolean isOpened() {
         return this.isused == 1;
     }
 

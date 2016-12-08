@@ -8,7 +8,7 @@ package com.advantech.servlet;
 
 import com.advantech.helper.ParamChecker;
 import com.advantech.service.BasicService;
-import com.advantech.service.CellService;
+import com.advantech.service.PassStationService;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,39 +23,48 @@ import org.json.JSONObject;
  */
 @WebServlet(name = "CellRecordServlet", urlPatterns = {"/CellRecordServlet"})
 public class CellRecordServlet extends HttpServlet {
-
-    private CellService cellService;
+    
+    private PassStationService passStationService;
     private ParamChecker pChecker;
-
+    
     @Override
     public void init() throws ServletException {
-        cellService = BasicService.getCellService();
+        passStationService = BasicService.getPassStationService();
         pChecker = new ParamChecker();
     }
-
+    
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
         res.setContentType("application/json");
         PrintWriter out = res.getWriter();
-
+        
         String PO = req.getParameter("PO");
-        String topN = req.getParameter("topN");
-
+        String minPcs = req.getParameter("minPcs");
+        String maxPcs = req.getParameter("maxPcs");
+        
         JSONObject jsonObject = new JSONObject();
-
+        
         List l = null;
         if (pChecker.checkInputVal(PO)) {
             //equals false = not setting topN filter
-            l = pChecker.checkInputVal(topN) == false ? cellService.getCellPerPcsHistory(PO) : cellService.getCellPerPcsHistory(PO, Integer.parseInt(topN));
+            if (pChecker.checkInputVal(minPcs) == false && pChecker.checkInputVal(maxPcs) == false) {
+                l = passStationService.getCellPerPcsHistory(PO);
+            } else {
+                l = passStationService.getCellPerPcsHistory(
+                        PO,
+                        pChecker.checkInputVal(minPcs) ? Integer.parseInt(minPcs) : null,
+                        pChecker.checkInputVal(maxPcs) ? Integer.parseInt(maxPcs) : null
+                );
+            }
         }
         out.print(jsonObject.put("data", l == null ? new ArrayList() : l));
     }
-
+    
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
         res.sendError(HttpServletResponse.SC_FORBIDDEN);
     }
-
+    
 }

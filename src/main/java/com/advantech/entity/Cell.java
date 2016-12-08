@@ -20,6 +20,14 @@ public class Cell implements Serializable {
     private Integer isused;
     private String btime;
 
+    public Cell() {
+    }
+
+    public Cell(int lineId, String PO) {
+        this.lineId = lineId;
+        this.PO = PO;
+    }
+
     public int getId() {
         return id;
     }
@@ -60,4 +68,7 @@ public class Cell implements Serializable {
         this.btime = btime;
     }
 
+    public boolean isClosed() {
+        return this.isused != null;
+    }
 }

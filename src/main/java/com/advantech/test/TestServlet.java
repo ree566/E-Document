@@ -10,7 +10,9 @@ import com.advantech.helper.CronTrigMod;
 import com.advantech.model.BasicDAO;
 import com.advantech.quartzJob.ClearPollingJob;
 import com.advantech.quartzJob.CountermeasureAlarm;
+import com.advantech.service.BasicLineTypeFacade;
 import com.advantech.service.BasicService;
+import com.advantech.service.CellLineTypeFacade;
 import java.io.*;
 import java.util.List;
 import java.util.logging.Level;
@@ -37,21 +39,8 @@ public class TestServlet extends HttpServlet {
             throws ServletException, IOException {
         res.setContentType("text/plain");
         PrintWriter out = res.getWriter();
-        try {
-            List<JobKey> l = CronTrigMod.getInstance().getJobKeys("Cell");
-            if (l.isEmpty()) {
-                out.println("No jobKey exist");
-            } else {
-                for (JobKey j : l) {
-                    out.println(j);
-                }
-            }
-//            new ClearPollingJob().execute(null);
-        } catch (JobExecutionException ex) {
-            out.println(ex.toString());
-        } catch (SchedulerException ex) {
-            out.println(ex.toString());
-        }
+        BasicLineTypeFacade cf = CellLineTypeFacade.getInstance();
+        out.println(cf.getJSONObject());
     }
 
     @Override

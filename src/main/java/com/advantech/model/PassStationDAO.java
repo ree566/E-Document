@@ -9,6 +9,7 @@ import com.advantech.entity.PassStation;
 import static com.advantech.model.BasicDAO.getDBUtilConn;
 import java.sql.Connection;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -30,6 +31,14 @@ public class PassStationDAO extends BasicDAO {
     
     public List<PassStation> getPassStation(String PO) {
         return queryForBeanList(this.getConn(), PassStation.class, "SELECT * FROM machineThrough WHERE PO = ?", PO);
+    }
+    
+    public List<Map> getCellPerPcsHistory(String PO) {
+        return queryProcForMapList(this.getConn(), "{CALL cellDiffPerPcs(?)}", PO);
+    }
+    
+    public List<Map> getCellLastGroupStatusView(){
+        return queryForMapList(this.getConn(), "SELECT * FROM cellLastGroupStatusView");
     }
 
     public boolean insertPassStation(List<PassStation> l) {

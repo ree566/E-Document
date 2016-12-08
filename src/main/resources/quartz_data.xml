@@ -12,7 +12,7 @@
     </processing-directives>
     
     <!--主要工作job，把資料轉換到TXT控制燈號-->
-    <schedule>
+    <schedule> 
         <job>
             <name>DailyJobWorker</name>
             <job-class>com.advantech.quartzJob.DailyJobWorker</job-class>
@@ -119,7 +119,7 @@
     </schedule>
     
     <!--線平衡測試排站人數估算-->
-    <schedule>
+<!--    <schedule>
         <job>
             <name>NumLamp</name>
             <job-class>com.advantech.quartzJob.NumLamp</job-class>
@@ -131,7 +131,7 @@
                 <cron-expression>15,45 0/1 8-20 ? * MON-FRI *</cron-expression>
             </cron>
         </trigger>
-    </schedule>
+    </schedule>-->
     
     <!--晚上9點半把NumLamp這個job所分配的子polling job全數移除-->
 <!--    <schedule>

@@ -8,8 +8,8 @@ package com.advantech.quartzJob;
 
 import com.advantech.service.BabLineTypeFacade;
 import com.advantech.service.BasicLineTypeFacade;
+import com.advantech.service.CellLineTypeFacade;
 import com.advantech.service.TestLineTypeFacade;
-import static java.lang.System.out;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -25,6 +25,7 @@ public class DailyJobWorker implements Job {
     private static final Logger log = LoggerFactory.getLogger(DailyJobWorker.class);
     private final BasicLineTypeFacade tF = TestLineTypeFacade.getInstance();
     private final BasicLineTypeFacade bF = BabLineTypeFacade.getInstance();
+    private final BasicLineTypeFacade cF = CellLineTypeFacade.getInstance();
 
     public DailyJobWorker() {
 
@@ -35,6 +36,7 @@ public class DailyJobWorker implements Job {
         //處理測試和組包裝線別資料，並依照設定output
         this.processingBabData();
         this.processingTestData();
+        this.processingCellData();
     }
 
     private void processingTestData() {
@@ -49,6 +51,14 @@ public class DailyJobWorker implements Job {
         try {
             bF.processingDataAndSave();
         } catch (Exception ex) {
+            log.error(ex.toString());
+        }
+    }
+    
+    private void processingCellData(){
+        try{
+            cF.processingDataAndSave();
+        }catch(Exception ex){
             log.error(ex.toString());
         }
     }

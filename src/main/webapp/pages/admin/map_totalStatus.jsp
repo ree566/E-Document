@@ -166,8 +166,6 @@
 //                    }
 //                });
 
-                $('[data-toggle="tooltip"]').tooltip();
-
                 $("#fullBtn").click(function () {
                     $("#wigetCtrl").fullScreen(true);
                 });
@@ -232,7 +230,7 @@
                 function initWiget(obj) {
                     obj.addClass("blub-empty").removeClass("blub-alarm blub-normal blub-abnormal").removeAttr("title");
                 }
-                
+
                 function initNumLampWiget() {
                     var obj = $("#numLampArea>.numLampWiget div");
                     obj.addClass("blub-empty").removeClass("blub-alarm blub-normal blub-abnormal").html(0);
@@ -243,9 +241,10 @@
                     var object = $("#testArea>.testWiget div");
                     var loopCount = maxTestTableNo;
                     object.each(function () {
-                        $(this).attr({"id": "draggable" + loopCount + "_" + sitefloor + "f", "data-toggle": "tooltip"})
+                        $(this).attr({"id": "draggable" + loopCount + "_" + sitefloor + "f"})
                                 .addClass("draggable blub-empty divCustomBg")
-                                .html(loopCount);
+                                .html(loopCount)
+                                .tooltipster({updateAnimation: null});
                         loopCount--;
                     });
                 }
@@ -255,14 +254,15 @@
                         var lineName = $(this).attr("id");
                         var childAmount = $(this).children().length;
                         $(this).children().each(function () {
-                            $(this).attr({"id": (lineName + "_" + childAmount), "data-toggle": "tooltip"})
+                            $(this).attr({"id": (lineName + "_" + childAmount)})
                                     .addClass("draggable blub-empty divCustomBg")
-                                    .html(childAmount);
+                                    .html(childAmount)
+                                    .tooltipster({updateAnimation: null});
                             childAmount--;
                         });
                     });
                 }
-                
+
                 function numLampObjectInit() {
                     $(".numLampWiget").each(function () {
                         var lineName = $(this).attr("id");
@@ -303,10 +303,8 @@
                                 $(".testWiget #draggable" + people.table + "_" + people.sitefloor + "f")
                                         .removeClass("blub-empty")
                                         .addClass(signalClass)
-                                        .attr({
-                                            "title": (people.name + " 效率:" + (productivity > maxProductivity ? maxProductivity : productivity) + "%"),
-                                            "onClick": "window.open( 'TestTotal?jobnumber=" + people.number + "','_blank' ); return false;"
-                                        });
+                                        .attr({"onClick": "window.open( 'TestTotal?jobnumber=" + people.number + "','_blank' ); return false;"})
+                                        .tooltipster('content', (people.name + " 效率:" + (productivity > maxProductivity ? maxProductivity : productivity) + "%"));
                             }
                         }
                     }
@@ -324,7 +322,7 @@
                                 if (obj.length) {
                                     obj.removeClass("blub-empty")
                                             .addClass((people.ismax ? "blub-alarm" : "blub-normal"))
-                                            .attr("title", "Time:" + people.diff + "秒");
+                                            .tooltipster('content', "Time:" + people.diff + "秒");
                                     if (people.T_Num == 1) {
                                         $("#titleArea #" + people.TagName + "_title").attr("onClick", "window.open( 'BabTotal?babId=" + people.BABid + "','_blank' ); return false;");
                                     }
@@ -379,7 +377,7 @@
                 var onopen = function () {
 
                 };
-                
+
                 ws.onopen = onopen;
                 ws2.onopen = onopen;
 
@@ -394,7 +392,6 @@
 
                 ws2.onmessage = function (message) {
                     var jsonArray = $.parseJSON(message.data);
-                    console.log(jsonArray);
                     if (jsonArray.length != 0) {
                         numLampDataToWiget(jsonArray);
                     }
@@ -406,7 +403,7 @@
                 };
                 ws.onerror = onerror;
                 ws2.onerror = onerror;
-                
+
                 //generate the unnormal close event hint
                 var onclose = function (event) {
                     var reason;
@@ -440,7 +437,7 @@
                         reason = "Unknown reason";
                     console.log("The connection was closed for reason: " + reason);
                 };
-                
+
                 ws.onclose = onclose;
                 ws2.onclose = onclose;
 

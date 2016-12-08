@@ -9,6 +9,7 @@ import com.advantech.entity.AlarmAction;
 import com.advantech.entity.Desk;
 import com.advantech.entity.Test;
 import com.advantech.entity.TestLineTypeUser;
+import com.advantech.interfaces.AlarmActions;
 import com.advantech.service.TestLineTypeFacade;
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -19,7 +20,7 @@ import java.util.Map;
  *
  * @author Wei.Cheng
  */
-public class TestDAO extends BasicDAO {
+public class TestDAO extends BasicDAO implements AlarmActions{
 
     public TestDAO() {
 
@@ -87,19 +88,23 @@ public class TestDAO extends BasicDAO {
         return updateTestTable("UPDATE LS_TEST SET id = ? WHERE userid = ?", tableNo, jobnumber);
     }
     
-    public boolean insertTestAlarm(List<AlarmAction> l) {
+    @Override
+    public boolean insertAlarm(List<AlarmAction> l) {
         return updateAlarmTable("INSERT INTO Alm_TestAction(alarm, tableId) VALUES(?, ?)", l);
     }
 
-    public boolean updateTestAlarm(List<AlarmAction> l) {
+    @Override
+    public boolean updateAlarm(List<AlarmAction> l) {
         return updateAlarmTable("UPDATE Alm_TestAction SET alarm = ? WHERE tableId = ?", l);
     }
 
-    public boolean resetTestAlarm() {
+    @Override
+    public boolean resetAlarm() {
         return update(getConn(), "UPDATE Alm_TestAction SET alarm = 0");
     }
     
-    public boolean removeAllAlarmSign() {
+    @Override
+    public boolean removeAlarmSign() {
         return update(getConn(), "TRUNCATE TABLE Alm_TestAction");
     }
     

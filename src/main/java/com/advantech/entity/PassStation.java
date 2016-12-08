@@ -112,7 +112,7 @@ public class PassStation implements Serializable{
     public int hashCode() {
         int hash = 3;
         hash = 89 * hash + Objects.hashCode(this.barcode);
-        hash = 89 * hash + Objects.hashCode(this.station);
+        hash = 89 * hash + Objects.hashCode(this.lineName);
         return hash;
     }
 
@@ -131,7 +131,7 @@ public class PassStation implements Serializable{
         if (!Objects.equals(this.barcode, other.barcode)) {
             return false;
         }
-        if (!Objects.equals(this.station, other.station)) {
+        if (!Objects.equals(this.lineName, other.lineName)) {
             return false;
         }
         return true;

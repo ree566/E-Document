@@ -31,8 +31,6 @@ public class CellStation implements Job {
     private JobKey currentJobKey;
     private TriggerKey currentTriggerKey;
     private String today;
-    
-    
 
     @Override
     public void execute(JobExecutionContext jec) throws JobExecutionException {
@@ -64,7 +62,7 @@ public class CellStation implements Job {
             if (isPieceReachMaxium(l)) {
                 jobSelfRemove();
             }
-        }else{
+        } else {
             out.println("Data is empty");
         }
     }
@@ -78,6 +76,7 @@ public class CellStation implements Job {
         CronTrigMod ctm = CronTrigMod.getInstance();
         try {
             ctm.removeJob(currentJobKey);
+            BasicService.getCellService().deleteCell(currentLineId, currentPO);
         } catch (SchedulerException ex) {
             out.println(ex.toString());
         }

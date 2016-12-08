@@ -84,7 +84,7 @@
             var userNotFoundMessage = "使用者不存在，請重新確認，如有問題請通知系統管理人員。",
                     paramNotVaildMessage = "輸入資料有誤，請重新再確認。";
 
-            var userInfoCookieName = "userInfo", testLineTypeCookieName = "testLineTypeCookieName";
+            var userInfoCookieName = "userInfo", testLineTypeCookieName = "testLineTypeCookieName", cellCookieName = "cellCookieName";
             var STATION_LOGIN = "LOGIN", STATION_LOGOUT = "LOGOUT", CHANGE_USER = "CHANGE_USER";
             var BAB_END = "BAB_END";
 
@@ -309,12 +309,14 @@
             //extra functions
             function checkExistCookies() {
                 var testLineTypeCookie = $.cookie(testLineTypeCookieName);
+                var cellCookie = $.cookie(cellCookieName);
                 var babLineTypeCookie = $.cookie(userInfoCookieName);
 
-                if (testLineTypeCookie != null) {
+                if (testLineTypeCookie != null || cellCookie != null) {
                     lockAllUserInput();
-                    alert("您已經登入測試");
-                    showMsg("您已經登入測試");
+                    var message = "您已經登入測試或Cell桌";
+                    alert(message);
+                    showMsg(message);
                     return false;
                 }
 

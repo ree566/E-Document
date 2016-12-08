@@ -31,21 +31,27 @@
         <script src="js/cookie.check.js"></script>
         <script src="js/param.check.js"></script>
         <script>
-            var cellCookieName = "cellCookieName";
+            var userInfoCookieName = "userInfo", testLineTypeCookieName = "testLineTypeCookieName", cellCookieName = "cellCookieName";
+            var serverMsgTimeout;
 
             $(function () {
                 //Add class to transform the button type to bootstrap.
                 $(":button").addClass("btn btn-default");
+                $("#refresh").addClass("btn-xs");
                 $(":text,select,input[type='number']").addClass("form-control");
 
                 $(":text").each(resizeInput);
+
+                if (checkExistCookies() == false) {
+                    return false;
+                }
 
                 $("#login").click(function () {
                     var lineId = $("#lineId").val();
                     var lineName = $("#lineId option:selected").text().trim();
 
                     if (checkVal(lineId) == false) {
-                        alert("Please select a line");
+                        showMsg("Please select a line");
                         return false;
                     }
                     if (confirm("Login " + lineName + " ?")) {
@@ -84,7 +90,7 @@
                             cellLineSwitch(obj);
                         }
                     } else {
-                        alert("Can't find your login status");
+                        showMsg("Can't find your login status");
                     }
                 });
 
@@ -92,7 +98,7 @@
                     var lineId = $("#lineId").val();
                     var PO = $("#PO").val();
                     if (checkVal(lineId, PO) == false) {
-                        alert("Input field can not be empty.");
+                        showMsg("Input field can not be empty.");
                         return false;
                     }
                     if (confirm("Begin PO: " + PO + " on line " + $("#lineId option:selected").text().trim() + " ?")) {
@@ -107,6 +113,19 @@
                 $("#refresh").click(function () {
                     showProcessing();
                 });
+
+                function checkExistCookies() {
+                    var testLineTypeCookie = $.cookie(testLineTypeCookieName);
+                    var cellCookie = $.cookie(cellCookieName);
+                    var babLineTypeCookie = $.cookie(userInfoCookieName);
+
+                    if (testLineTypeCookie != null || babLineTypeCookie != null) {
+                        lockAllUserInput();
+                        var message = "您已經登入組包裝或測試";
+                        showMsg(message);
+                        return false;
+                    }
+                }
 
                 function resizeInput() {
                     $(this).attr('size', $(this).attr('placeholder').length);
@@ -129,11 +148,11 @@
                                 }
                                 reload();
                             } else {
-                                alert(response);
+                                showMsg(response);
                             }
                         },
                         error: function () {
-                            alert("error");
+                            showMsg("error");
                         }
                     });
                 }
@@ -149,11 +168,11 @@
                         },
                         dataType: "html",
                         success: function (response) {
-                            alert(response);
+                            showMsg(response);
                             showProcessing();
                         },
                         error: function () {
-                            alert("error");
+                            showMsg("error");
                         }
                     });
                 }
@@ -168,12 +187,12 @@
                         },
                         dataType: "html",
                         success: function (response) {
-                            alert(response);
+                            showMsg(response);
                             showProcessing();
                             $("#JobKey").val("");
                         },
                         error: function () {
-                            alert("error");
+                            showMsg("error");
                         }
                     });
                 }
@@ -221,6 +240,18 @@
                     window.location.reload();
                 }
 
+                function showMsg(msg) {
+                    $("#serverMsg").html(msg);
+                    clearTimeout(serverMsgTimeout);
+                    serverMsgTimeout = setTimeout(function () {
+                        $("#serverMsg").html("");
+                    }, 5000);
+                }
+
+                function lockAllUserInput() {
+                    $(":input,select").not("#redirectBtn, #directlyClose").attr("disabled", "disabled");
+                }
+
             });
         </script>
     </head>
@@ -243,7 +274,7 @@
                 <select id="lineId">
                     <option value="-1">請選擇線別</option>
                     <c:forEach var="cellLine" items="${cellLineDAO.findBySitefloor(userSitefloor)}">
-                        <option value="${cellLine.id}">
+                        <option value="${cellLine.id}" ${cellLine.lock == 1 ? "disabled style='opacity:0.5'" : ""}>
                             線別 ${cellLine.name} / 代號 ${cellLine.aps_lineId} 
                         </option>
                     </c:forEach>
@@ -264,13 +295,9 @@
                     <input type="button" id="clear" value="Clear" />
                 </div>
 
-                <div class="form-group form-inline">
-                    <label>Search</label>
-                    <input type="button" value="Refresh" id="refresh">
-                </div>
-
                 <div class="form-group">
                     <label>Processing keys</label>
+                    <button id="refresh"><span class="glyphicon glyphicon-repeat"></span></button>
                     <div id="processingArea"></div>
                 </div>
             </div>
