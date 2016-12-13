@@ -6,9 +6,8 @@
  */
 package com.advantech.quartzJob;
 
-import com.advantech.endpoint.Endpoint;
-import com.advantech.service.BasicService;
-import com.advantech.service.FBNService;
+import com.advantech.endpoint.Endpoint4;
+import com.advantech.service.CellLineTypeFacade;
 import com.google.gson.Gson;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
@@ -20,11 +19,10 @@ import org.slf4j.LoggerFactory;
  *
  * @author Wei.Cheng
  */
-public class PollingSensorStatus implements Job {
+public class PollingCellResult implements Job {
 
     private static final Gson gson = new Gson();
-    private static final Logger log = LoggerFactory.getLogger(PollingSensorStatus.class);
-    private static final FBNService fbnService = BasicService.getFbnService();
+    private static final Logger log = LoggerFactory.getLogger(PollingCellResult.class);
 
     @Override
     public void execute(JobExecutionContext jec) throws JobExecutionException {
@@ -40,13 +38,14 @@ public class PollingSensorStatus implements Job {
          Query: select * from LS_GetSenRealTime Parameters: []
          */
         try {
-            Endpoint.sendAll(getData());
+            
+            Endpoint4.sendAll(getData());
         } catch (Exception e) {
             log.error(e.toString());
         }
     }
     
     public String getData(){
-        return gson.toJson(fbnService.getSensorInstantlyStatus());
+        return CellLineTypeFacade.getInstance().getJSONObject().toString();
     }
 }

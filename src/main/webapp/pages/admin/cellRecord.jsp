@@ -6,6 +6,8 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<jsp:useBean id="cellLineDAO" class="com.advantech.model.CellLineDAO" scope="application" />
 <!DOCTYPE html>
 <html>
     <head>
@@ -40,14 +42,21 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
         <script src="../../js/urlParamGetter.js"></script>
         <script>
             var maxProductivity = 200;
+            var availHistoryTable;
             var table;
             $(document).ready(function () {
 
                 $(":text,input[type='number'],select").addClass("form-control");
                 $(":button").addClass("btn btn-default");
 
+                getAllCell();
+
                 $("#send").click(function () {
                     getDetail();
+                });
+
+                $("#cellHistoryResearch").click(function () {
+                    getAllCell();
                 });
 
                 $("body").on('click', '#cellHistoryDetail tbody tr', function () {
@@ -58,7 +67,78 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                         $(this).addClass('selected');
                     }
                 });
+
+                $("body").on('dblclick', '#cellHistory tbody tr', function () {
+                    var selectData = availHistoryTable.row(this).data();
+                    $("#PO").val(selectData.PO);
+                    $("#lineId").val(selectData.lineId);
+                    $("#send").trigger("click");
+                    
+                    if ($(this).hasClass('selected')) {
+                        $(this).removeClass('selected');
+                    } else {
+                        availHistoryTable.$('tr.selected').removeClass('selected');
+                        $(this).addClass('selected');
+                    }
+                    
+                    $("html, body").animate({ scrollTop: $('#cellHistoryDetail').offset().top }, 500);
+                });
             });
+
+            function getAllCell() {
+                availHistoryTable = $("#cellHistory").DataTable({
+                    "processing": true,
+                    "serverSide": false,
+                    fixedHeader: {
+                        headerOffset: 50
+                    },
+                    "ajax": {
+                        "url": "../../CellSearch",
+                        "type": "Post",
+                        data: {
+                            action: "getHistory"
+                        }
+                    },
+                    "columns": [
+                        {data: "id", visible: false},
+                        {data: "lineId", visible: false},
+                        {data: "PO"},
+                        {data: "lineName"},
+                        {data: "isused"},
+                        {data: "btime"},
+                        {data: "lastUpdateTime"}
+                    ],
+                    "columnDefs": [
+                        {
+                            "targets": 4,
+                            'render': function (data, type, full, meta) {
+                                return data == null ? "進行中" : "已完結";
+                            }
+                        },
+                        {
+                            "targets": 6,
+                            'render': function (data, type, full, meta) {
+                                return data == null ? "N/A" : data;
+                            }
+                        }
+                    ],
+                    "oLanguage": {
+                        "sLengthMenu": "顯示 _MENU_ 筆記錄",
+                        "sZeroRecords": "無符合資料",
+                        "sInfo": "目前記錄：_START_ 至 _END_, 總筆數：_TOTAL_"
+                    },
+                    bAutoWidth: false,
+                    displayLength: 10,
+                    lengthChange: true,
+                    info: true,
+                    paginate: true,
+                    destroy: true,
+                    "initComplete": function (settings, json) {
+                        $("#cellHistory").show();
+                    },
+                    "order": [[5, "desc"]]
+                });
+            }
 
             function getDetail() {
 
@@ -77,6 +157,7 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                         "type": "Get",
                         data: {
                             PO: $("#PO").val(),
+                            lineId: $("#lineId").val(),
                             minPcs: $("#minPcs").val(),
                             maxPcs: $("#maxPcs").val()
                         }
@@ -151,37 +232,62 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
         <jsp:include page="header.jsp" />
 
         <div class="container">
-            <h3>Cell桌資料擷取紀錄查詢</h3>
-            <div class="container form-inline">
-                <div>
-                    <label for="PO">Please insert your PO:</label>
-                    <input type="text" id="PO" placeholder="PO insert here">
-                    <label for="amount">MinPcs:</label>
-                    <input type="number" id="minPcs" min="1" placeholder="不設定下限請留空" />
-                    <label for="amount">MaxPcs:</label>
-                    <input type="number" id="maxPcs" min="1" placeholder="不設定上限請留空" />
-                    <input type="button" id="send" value="send" />
-                </div>
-            </div>
-            <div>
-                <table id="cellHistoryDetail" class="display" cellspacing="0" width="100%" style="text-align: center" hidden>
+            <div class="row">
+                <h3>Cell桌個線別投入工單列表<button id="cellHistoryResearch"><span class="glyphicon glyphicon-repeat"></span></button></h3>
+                <table id="cellHistory" class="display" cellspacing="0" width="100%" style="text-align: center" hidden>
                     <thead>
                         <tr>
-                            <th>barcode</th>
+                            <th>id</th>
+                            <th>lineId</th>
                             <th>PO</th>
-                            <th>line</th>
-                            <th>time spent(Full)</th>
-                            <th>time spent(Min)</th>
-                            <th>standard(Min)</th>
-                            <th>spent percent</th>
-                            <th>begin time</th>
-                            <th>end time</th>
+                            <th>lineName</th>
+                            <th>isused</th>
+                            <th>btime</th>
+                            <th>lastUpdateTime</th>
                         </tr>
                     </thead>
                 </table>
             </div>
+            <div class="row">
+                <h3>Cell桌資料擷取紀錄查詢</h3>
+                <div class="form-inline">
+                    <div>
+                        <label for="PO">Please insert your PO:</label>
+                        <input type="text" id="PO" placeholder="PO insert here">
+                        <select id="lineId">
+                            <option value="-1">請選擇線別</option>
+                            <c:forEach var="cellLine" items="${cellLineDAO.findAll()}">
+                                <option value="${cellLine.id}"}>
+                                    線別 ${cellLine.name} / 代號 ${cellLine.aps_lineId} 
+                                </option>
+                            </c:forEach>
+                        </select>
+                        <label for="amount">MinPcs:</label>
+                        <input type="number" id="minPcs" min="1" placeholder="不設定下限請留空" />
+                        <label for="amount">MaxPcs:</label>
+                        <input type="number" id="maxPcs" min="1" placeholder="不設定上限請留空" />
+                        <input type="button" id="send" value="send" />
+                    </div>
+                </div>
+                <div>
+                    <table id="cellHistoryDetail" class="display" cellspacing="0" width="100%" style="text-align: center" hidden>
+                        <thead>
+                            <tr>
+                                <th>barcode</th>
+                                <th>PO</th>
+                                <th>line</th>
+                                <th>time spent(Full)</th>
+                                <th>time spent(Min)</th>
+                                <th>standard(Min)</th>
+                                <th>spent percent</th>
+                                <th>begin time</th>
+                                <th>end time</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
         </div>
-
         <jsp:include page="footer.jsp" />
     </body>
 </html>

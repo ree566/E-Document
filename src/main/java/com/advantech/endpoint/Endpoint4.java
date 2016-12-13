@@ -11,7 +11,7 @@ package com.advantech.endpoint;
 
 import com.advantech.helper.CronTrigMod;
 import com.advantech.helper.PropertiesReader;
-import com.advantech.quartzJob.PollingNumLampResult;
+import com.advantech.quartzJob.PollingCellResult;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,15 +31,15 @@ import org.slf4j.LoggerFactory;
  *
  * @author Wei.Cheng
  */
-@ServerEndpoint("/echo3")
-public class Endpoint3 {
+@ServerEndpoint("/echo4")
+public class Endpoint4 {
 
-    private static final Logger log = LoggerFactory.getLogger(Endpoint3.class);
+    private static final Logger log = LoggerFactory.getLogger(Endpoint4.class);
 //    private static final Queue<Session> queue = new ConcurrentLinkedQueue<>();
     private static final Set<Session> sessions = Collections.synchronizedSet(new HashSet<Session>());
 
     private static final String POLLING_FREQUENCY;
-    private static final String JOB_NAME = "JOB3";
+    private static final String JOB_NAME = "JOB4";
 
     static {
         POLLING_FREQUENCY = PropertiesReader.getInstance().getEndpointQuartzTrigger();
@@ -49,7 +49,7 @@ public class Endpoint3 {
     public void onOpen(final Session session) {
         //Push the current status on client first connect
         try {
-            session.getBasicRemote().sendText(new PollingNumLampResult().getData());
+            session.getBasicRemote().sendText(new PollingCellResult().getData());
         } catch (IOException ex) {
             log.error(ex.toString());
         }
@@ -105,7 +105,7 @@ public class Endpoint3 {
     // Generate when connect users are at least one.
     private void pollingDBAndBrocast() {
         try {
-            CronTrigMod.getInstance().scheduleJob(PollingNumLampResult.class, JOB_NAME, POLLING_FREQUENCY);
+            CronTrigMod.getInstance().scheduleJob(PollingCellResult.class, JOB_NAME, POLLING_FREQUENCY);
         } catch (SchedulerException ex) {
             log.error(ex.toString());
         }

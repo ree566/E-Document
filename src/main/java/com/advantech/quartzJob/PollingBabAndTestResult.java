@@ -9,7 +9,6 @@ package com.advantech.quartzJob;
 import com.advantech.endpoint.Endpoint2;
 import com.advantech.service.BabLineTypeFacade;
 import com.advantech.service.TestLineTypeFacade;
-import com.google.gson.Gson;
 import org.json.JSONArray;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
@@ -21,10 +20,9 @@ import org.slf4j.LoggerFactory;
  *
  * @author Wei.Cheng
  */
-public class PollingServerParmater implements Job {
+public class PollingBabAndTestResult implements Job {
 
-    private static final Gson gson = new Gson();
-    private static final Logger log = LoggerFactory.getLogger(PollingServerParmater.class);
+    private static final Logger log = LoggerFactory.getLogger(PollingBabAndTestResult.class);
 
     @Override
     public void execute(JobExecutionContext jec) throws JobExecutionException {
@@ -40,12 +38,15 @@ public class PollingServerParmater implements Job {
          Query: select * from LS_GetSenRealTime Parameters: []
          */
         try {
-            JSONArray arr = new JSONArray();
-            arr.put(TestLineTypeFacade.getInstance().getJSONObject())
-                    .put(BabLineTypeFacade.getInstance().getJSONObject());
-            Endpoint2.sendAll(arr.toString());
+
+            Endpoint2.sendAll(getData());
         } catch (Exception e) {
             log.error(e.toString());
         }
+    }
+
+    public String getData() {
+        return new JSONArray().put(TestLineTypeFacade.getInstance().getJSONObject())
+                .put(BabLineTypeFacade.getInstance().getJSONObject()).toString();
     }
 }

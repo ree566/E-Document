@@ -11,12 +11,13 @@ import com.advantech.interfaces.AlarmActions;
 import static com.advantech.model.BasicDAO.update;
 import java.sql.Connection;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
  * @author Wei.Cheng
  */
-public class CellDAO extends BasicDAO implements AlarmActions{
+public class CellDAO extends BasicDAO implements AlarmActions {
 
     public CellDAO() {
 
@@ -37,17 +38,25 @@ public class CellDAO extends BasicDAO implements AlarmActions{
     public List<Cell> getCell(String PO) {
         return queryCellTable("SELECT * FROM Cell WHERE PO = ?", PO);
     }
-    
-    public List<Cell> getCellProcessing(){
+
+    public List<Cell> getCellProcessing() {
         return queryCellTable("SELECT * FROM cellProcessing");
+    }
+
+    public List<Cell> getCellProcessing(int lineId) {
+        return queryCellTable("SELECT * FROM cellProcessing WHERE lineId = ?", lineId);
+    }
+
+    public List<Map> cellHistoryView() {
+        return queryForMapList(this.getConn(), "SELECT * FROM cellHistoryView");
     }
 
     public boolean insertCell(List<Cell> l) {
         return update(getConn(), "INSERT INTO Cell(lineId, PO) VALUES(?,?)", l, "lineId", "PO");
     }
 
-    public boolean deleteCell(int lineId, String PO) {
-        return update(getConn(), "UPDATE Cell SET isused = 1 WHERE lineId = ? AND PO = ?", lineId, PO);
+    public boolean deleteCell(Cell cell) {
+        return update(getConn(), "UPDATE Cell SET isused = 1 WHERE id = ?", cell.getId());
     }
 
     @Override

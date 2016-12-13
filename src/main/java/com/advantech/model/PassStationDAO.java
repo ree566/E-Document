@@ -33,8 +33,8 @@ public class PassStationDAO extends BasicDAO {
         return queryForBeanList(this.getConn(), PassStation.class, "SELECT * FROM machineThrough WHERE PO = ?", PO);
     }
     
-    public List<Map> getCellPerPcsHistory(String PO) {
-        return queryProcForMapList(this.getConn(), "{CALL cellDiffPerPcs(?)}", PO);
+    public List<Map> getCellPerPcsHistory(String PO, int lineId) {
+        return queryProcForMapList(this.getConn(), "{CALL cellDiffPerPcs(?,?)}", PO, lineId);
     }
     
     public List<Map> getCellLastGroupStatusView(){

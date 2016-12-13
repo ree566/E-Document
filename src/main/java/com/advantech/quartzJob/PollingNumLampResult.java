@@ -8,6 +8,7 @@ package com.advantech.quartzJob;
 
 import com.advantech.endpoint.Endpoint3;
 import com.google.gson.Gson;
+import org.json.JSONObject;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -38,9 +39,13 @@ public class PollingNumLampResult implements Job {
          */
         try {
             
-            Endpoint3.sendAll(NumLamp.getNumLampStatus().toString());
+            Endpoint3.sendAll(getData());
         } catch (Exception e) {
             log.error(e.toString());
         }
+    }
+    
+    public String getData(){
+        return NumLamp.getNumLampStatus().toString();
     }
 }

@@ -12,7 +12,7 @@
     </processing-directives>
     
     <!--主要工作job，把資料轉換到TXT控制燈號-->
-    <schedule> 
+<!--    <schedule> 
         <job>
             <name>DailyJobWorker</name>
             <job-class>com.advantech.quartzJob.DailyJobWorker</job-class>
@@ -25,7 +25,7 @@
                 <cron-expression>0/30 * 8-20 ? * MON-SAT *</cron-expression>
             </cron>
         </trigger>
-    </schedule>
+    </schedule>-->
     
     <!--清理資料庫job-->
     <schedule>
@@ -147,4 +147,20 @@
             </cron>
         </trigger>
     </schedule>-->
+    
+    <!--把Cell是否合格資訊轉換到資料庫-->
+    <schedule> 
+        <job>
+            <name>CellJobWorker</name>
+            <job-class>com.advantech.quartzJob.CellJobWorker</job-class>
+        </job>
+        <trigger>
+            <cron>
+                <name>CellJobWorker</name>
+                <job-name>CellJobWorker</job-name>
+                <misfire-instruction>MISFIRE_INSTRUCTION_FIRE_ONCE_NOW</misfire-instruction>
+                <cron-expression>0/30 * 8-20 ? * MON-SAT *</cron-expression>
+            </cron>
+        </trigger>
+    </schedule>
 </job-scheduling-data>

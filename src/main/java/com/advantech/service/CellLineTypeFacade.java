@@ -7,7 +7,7 @@ package com.advantech.service;
 
 import com.advantech.entity.AlarmAction;
 import com.advantech.entity.CellLine;
-import java.util.HashMap;
+import com.advantech.helper.PropertiesReader;
 import java.util.List;
 import java.util.Map;
 import org.json.JSONObject;
@@ -19,15 +19,19 @@ import org.slf4j.LoggerFactory;
  * @author Wei.Cheng
  */
 public class CellLineTypeFacade extends BasicLineTypeFacade {
-    
+
     private static final Logger log = LoggerFactory.getLogger(CellLineTypeFacade.class);
 
     private static CellLineTypeFacade instance;
     private final CellService cellService;
-    private final Double cellStandardMin = 0.8, cellStandardMax = 1.2;
+    private final Double cellStandardMin, cellStandardMax;
 
     private CellLineTypeFacade() {
         cellService = BasicService.getCellService();
+        processingJsonObject = new JSONObject();
+        PropertiesReader p = PropertiesReader.getInstance();
+        cellStandardMin = p.getCellStandardMin();
+        cellStandardMax = p.getCellStandardMax();
         this.init();
     }
 
@@ -37,7 +41,7 @@ public class CellLineTypeFacade extends BasicLineTypeFacade {
         }
         return instance;
     }
-    
+
     private void init() {
         this.initMap();
         if (isWriteToDB) {
@@ -60,19 +64,34 @@ public class CellLineTypeFacade extends BasicLineTypeFacade {
     @Override
     protected boolean generateData() {
         List<Map> l = BasicService.getPassStationService().getCellLastGroupStatusView();
-        processingJsonObject = new JSONObject();
-        for (Map m : l) {
-            if (m.containsKey("percent") && m.containsKey("linename")) {
-                String lineName = (String) m.get("linename");
-                Double percent = (Double) m.get("percent");
-                dataMap.put(lineName, isInTheRange(percent) ? this.NORMAL_SIGN : this.ALARM_SIGN);
-            } else {
-                log.error("Can not find the spec key in map");
-                return false;
+        boolean isCellsUnderBalance = false;
+        this.initMap();
+        if (!l.isEmpty()) {
+            String percentKeyName = "percent";
+            String lineNameKeyName = "linename";
+            String outputLineNameKeyName = "outputLinename";
+            for (Map m : l) {
+                if (m.containsKey(percentKeyName) && m.containsKey(lineNameKeyName) && m.containsKey(outputLineNameKeyName)) {
+                    String outputLineName = (String) m.get(outputLineNameKeyName);
+                    Double percent = (Double) m.get(percentKeyName);
+
+                    boolean isPass = isInTheRange(percent);
+                    if (isPass) {
+                        dataMap.put(outputLineName, this.NORMAL_SIGN);
+                    } else {
+                        dataMap.put(outputLineName, this.ALARM_SIGN);
+                        isCellsUnderBalance = true;
+                    }
+                    m.put("isAlarm", !isPass);
+                } else {
+                    log.error("Can not find the spec key in map, need keys " + percentKeyName + " " + lineNameKeyName + " " + outputLineNameKeyName);
+                    return false;
+                }
             }
+
         }
         this.processingJsonObject.put("data", l);
-        return true;
+        return isCellsUnderBalance;
     }
 
     private boolean isInTheRange(Double percent) {
@@ -96,7 +115,7 @@ public class CellLineTypeFacade extends BasicLineTypeFacade {
 
     @Override
     protected boolean resetDbAlarmSign() {
-        return cellService.removeAlarmSign();
+        return cellService.resetAlarm();
     }
 
 }

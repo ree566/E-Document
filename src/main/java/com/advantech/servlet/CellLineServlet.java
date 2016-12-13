@@ -11,6 +11,7 @@ import com.advantech.helper.ParamChecker;
 import com.advantech.service.BasicService;
 import com.advantech.service.CellLineService;
 import com.advantech.service.LineService;
+import com.google.gson.Gson;
 import java.io.*;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -61,10 +62,10 @@ public class CellLineServlet extends HttpServlet {
 
             int line = Integer.parseInt(lineId);
 
+            CellLine cellLine = cellLineService.findOne(line);
             String msg;
             switch (action) {
                 case LOGIN:
-                    CellLine cellLine = cellLineService.findOne(line);
                     if (cellLine.isOpened()) {
                         msg = "This line is already in used";
                     } else {
@@ -72,7 +73,14 @@ public class CellLineServlet extends HttpServlet {
                     }
                     break;
                 case LOGOUT:
-                    msg = cellLineService.logout(line) ? "success" : "fail";
+                    if (cellLine.isOpened()) {
+                        msg = cellLineService.logout(line) ? "success" : "fail";
+                    } else {
+                        msg = "This line is already closed";
+                    }
+                    break;
+                case "select":
+                    msg = new Gson().toJson(cellLine);
                     break;
                 default:
                     msg = "未知的動作。";
@@ -81,7 +89,6 @@ public class CellLineServlet extends HttpServlet {
             out.print(msg);
 
         } else {
-            log.error("no data filter the check");
             out.print("no data filter the check");
         }
     }

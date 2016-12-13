@@ -23,16 +23,21 @@ public class PropertiesReader {
 
     private String testMail, mailServerUsername, mailServerPassword, mailServerLocation, mailServerPort;
 
-    private double testStandard, babStandard, balanceDiff;
+    private Double testStandard, babStandard, balanceDiff;
 
     private JSONObject systemAbnormalAlarmMailCC;
     private String systemAbnormalAlarmMailTo;
 
-    private int numLampMaxTestRequiredPeople, numLampGroupStart, numLampGroupEnd, numLampSpecCuttingGroup;
-    private int numLampMinStandardTime, numLampMinQuantity, numLampMinTotalStandardTime;
-    private int maxTestTable, babSaveToRecordStandardQuantity, balanceRoundingDigit;
+    private Integer numLampMaxTestRequiredPeople, numLampGroupStart, numLampGroupEnd, numLampSpecCuttingGroup;
+    private Integer numLampMinStandardTime, numLampMinQuantity, numLampMinTotalStandardTime;
 
-    private boolean writeToDB, saveToOldDB, sendMailAlarmUser;
+    private Integer maxTestTable;
+
+    private Integer babSaveToRecordStandardQuantity, balanceRoundingDigit;
+
+    private Double cellStandardMin, cellStandardMax;
+
+    private Boolean writeToDB, saveToOldDB, sendMailAlarmUser;
 
     private String endpointQuartzTrigger;
 
@@ -66,6 +71,7 @@ public class PropertiesReader {
 
     private void loadParams(Properties properties) {
         maxTestTable = convertStringToInteger(properties.getProperty("test.maxTable"));
+
         numLampMaxTestRequiredPeople = convertStringToInteger(properties.getProperty("numLamp.test.maxRequiredPeople"));
         numLampGroupStart = convertStringToInteger(properties.getProperty("numLamp.balanceDetect.groupStart"));
         numLampGroupEnd = convertStringToInteger(properties.getProperty("numLamp.balanceDetect.groupEnd"));
@@ -73,11 +79,16 @@ public class PropertiesReader {
         numLampMinStandardTime = convertStringToInteger(properties.getProperty("numLamp.mininum.standardTime"));
         numLampMinQuantity = convertStringToInteger(properties.getProperty("numLamp.mininum.quantity"));
         numLampMinTotalStandardTime = convertStringToInteger(properties.getProperty("numLamp.mininum.totalStandardTime"));
+
         babSaveToRecordStandardQuantity = convertStringToInteger(properties.getProperty("bab.saveToRecord.quantity"));
-        testStandard = convertStringToDouble(properties.getProperty("test.productivity.standard"));
         babStandard = convertStringToDouble(properties.getProperty("bab.lineBalance.standard"));
         balanceRoundingDigit = convertStringToInteger(properties.getProperty("bab.lineBalance.roundingDigit"));
         balanceDiff = convertStringToDouble(properties.getProperty("bab.lineBalance.difference"));
+
+        testStandard = convertStringToDouble(properties.getProperty("test.productivity.standard"));
+
+        cellStandardMin = convertStringToDouble(properties.getProperty("cell.standard.min"));
+        cellStandardMax = convertStringToDouble(properties.getProperty("cell.standard.max"));
 
         testMail = properties.getProperty("mail.testMail");
         mailServerUsername = properties.getProperty("mail.server.username");
@@ -127,27 +138,27 @@ public class PropertiesReader {
         out.println("The endpoint quartz trigger : " + endpointQuartzTrigger);
     }
 
-    private int convertStringToInteger(String number) {
+    private Integer convertStringToInteger(String number) {
         return (number != null && !"".equals(number)) ? Integer.parseInt(number) : 0;
     }
 
-    private double convertStringToDouble(String number) {
+    private Double convertStringToDouble(String number) {
         return (number != null && !"".equals(number)) ? Double.parseDouble(number) : 0;
     }
 
-    private boolean convertStringToBoolean(String str) {
+    private Boolean convertStringToBoolean(String str) {
         return (str != null && !"".equals(str)) ? str.equals("true") : false;
     }
 
-    public double getTestStandard() {
+    public Double getTestStandard() {
         return testStandard;
     }
 
-    public double getBabStandard() {
+    public Double getBabStandard() {
         return babStandard;
     }
 
-    public double getBalanceDiff() {
+    public Double getBalanceDiff() {
         return balanceDiff;
     }
 
@@ -163,51 +174,51 @@ public class PropertiesReader {
         return testMail;
     }
 
-    public int getMaxTestTable() {
+    public Integer getMaxTestTable() {
         return maxTestTable;
     }
 
-    public int getNumLampMaxTestRequiredPeople() {
+    public Integer getNumLampMaxTestRequiredPeople() {
         return numLampMaxTestRequiredPeople;
     }
 
-    public int getNumLampGroupStart() {
+    public Integer getNumLampGroupStart() {
         return numLampGroupStart;
     }
 
-    public int getNumLampGroupEnd() {
+    public Integer getNumLampGroupEnd() {
         return numLampGroupEnd;
     }
 
-    public int getNumLampSpecCuttingGroup() {
+    public Integer getNumLampSpecCuttingGroup() {
         return numLampSpecCuttingGroup;
     }
 
-    public int getNumLampMinStandardTime() {
+    public Integer getNumLampMinStandardTime() {
         return numLampMinStandardTime;
     }
 
-    public int getNumLampMinQuantity() {
+    public Integer getNumLampMinQuantity() {
         return numLampMinQuantity;
     }
 
-    public int getNumLampMinTotalStandardTime() {
+    public Integer getNumLampMinTotalStandardTime() {
         return numLampMinTotalStandardTime;
     }
 
-    public int getBabSaveToRecordStandardQuantity() {
+    public Integer getBabSaveToRecordStandardQuantity() {
         return babSaveToRecordStandardQuantity;
     }
 
-    public int getBalanceRoundingDigit() {
+    public Integer getBalanceRoundingDigit() {
         return balanceRoundingDigit;
     }
 
-    public boolean isWriteToDB() {
+    public Boolean isWriteToDB() {
         return writeToDB;
     }
 
-    public boolean isSaveToOldDB() {
+    public Boolean isSaveToOldDB() {
         return saveToOldDB;
     }
 
@@ -227,12 +238,20 @@ public class PropertiesReader {
         return mailServerPort;
     }
 
-    public boolean isSendMailAlarmUser() {
+    public Boolean isSendMailAlarmUser() {
         return sendMailAlarmUser;
     }
 
     public String getEndpointQuartzTrigger() {
         return endpointQuartzTrigger;
+    }
+
+    public Double getCellStandardMin() {
+        return cellStandardMin;
+    }
+
+    public Double getCellStandardMax() {
+        return cellStandardMax;
     }
 
 }

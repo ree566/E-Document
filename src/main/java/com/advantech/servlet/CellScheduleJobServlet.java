@@ -71,19 +71,28 @@ public class CellScheduleJobServlet extends HttpServlet {
                     String PO = req.getParameter("PO");
                     String lineId = req.getParameter("lineId");
                     if (pc.checkInputVals(PO, lineId) == true) {
+
                         int line = Integer.parseInt(lineId);
-                        if (this.schedNewJobs(line, PO) == true) {
-                            responseObject = "Insert new Job success";
-                            cellService.insertCell(new Cell(line, PO));
+
+                        if (cellService.getCellProcessing(line).isEmpty()) {
+                            if (BasicService.getBabService().getPoTotalQuantity(PO) != null) {
+                                if (cellService.insertCell(new Cell(line, PO))) {
+                                    responseObject = this.schedNewJobs(line, PO) ? "success" : "fail";
+                                } else {
+                                    responseObject = "fail";
+                                }
+                            } else {
+                                responseObject = "PO is not exist";
+                            }
                         } else {
-                            responseObject = "Insert new Job fail";
+                            responseObject = "Some PO in this line is already processing";
                         }
                     } else {
                         responseObject = "Invalid input values";
                     }
 
                 } catch (SchedulerException ex) {
-                    responseObject = ex;
+                    responseObject = "fail";
                 }
                 break;
             case "select":
@@ -97,16 +106,27 @@ public class CellScheduleJobServlet extends HttpServlet {
                         responseObject = new JSONArray(l);
                     }
                 } catch (SchedulerException ex) {
-                    responseObject = ex.getCause();
+                    responseObject = "fail";
                 }
                 break;
             case "delete":
                 res.setContentType("text/plain");
-                String key = req.getParameter("jobKey");
-                try {
-                    responseObject = removeJob(key);
-                } catch (SchedulerException ex) {
-                    responseObject = ex.toString();
+                String lineId = req.getParameter("lineId");
+                String PO = req.getParameter("PO");
+                if (pc.checkInputVals(PO, lineId) == true) {
+                    try {
+                        int line = Integer.parseInt(lineId);
+                        List<Cell> cells = cellService.getCellProcessing(line);
+                        if (!cells.isEmpty() && cellService.deleteCell((Cell) cells.get(0))) {
+                            responseObject = removeJob(line, PO) ? "success" : "fail";
+                        } else {
+                            responseObject = "fail";
+                        }
+                    } catch (SchedulerException ex) {
+                        responseObject = "fail";
+                    }
+                } else {
+                    responseObject = "Invalid input values";
                 }
                 break;
             default:
@@ -140,27 +160,30 @@ public class CellScheduleJobServlet extends HttpServlet {
 
     private boolean schedNewJobs(int lineId, String PO) throws SchedulerException {
         CellLine cellLine = BasicService.getCellLineService().findOne(lineId);
-        if (BasicService.getBabService().getPoTotalQuantity(PO) != null) {
-            jobName = cellLine.getName() + "_" + cellLine.getAps_lineId() + "_" + PO;
-            Map data = new HashMap();
-            data.put("PO", PO);
-            data.put("LineId", cellLine.getAps_lineId());
-            data.put("today", dg.getToday());
-            JobKey jobKey = ctm.createJobKey(jobName, jobGroup);
-            TriggerKey triggerKey = ctm.createTriggerKey(jobName, jobGroup);
-            JobDetail detail = ctm.createJobDetail(jobKey, jobGroup, CellStation.class, data);
-            ctm.scheduleJob(detail, triggerKey, cronTrig);
-            schedJobs.put(jobName, jobKey);
-            return true;
-        } else {
-            return false;
-        }
+        jobName = cellLine.getName() + "_" + cellLine.getAps_lineId() + "_" + PO;
+        Map data = new HashMap();
+        data.put("PO", PO);
+        data.put("lineId", cellLine.getId());
+        data.put("apsLineId", cellLine.getAps_lineId());
+        data.put("today", dg.getToday());
+        JobKey jobKey = ctm.createJobKey(jobName, jobGroup);
+        TriggerKey triggerKey = ctm.createTriggerKey(jobName, jobGroup);
+        JobDetail detail = ctm.createJobDetail(jobKey, jobGroup, CellStation.class, data);
+        ctm.scheduleJob(detail, triggerKey, cronTrig);
+        schedJobs.put(Integer.toString(cellLine.getId()), jobKey);
+        return true;
     }
 
-    private boolean removeJob(String key) throws SchedulerException {
+    private boolean removeJob(int lineId, String PO) throws SchedulerException {
+        CellLine cellLine = BasicService.getCellLineService().findOne(lineId);
+        if (cellLine == null) {
+            return false;
+        }
+//        String key = cellLine.getName() + "_" + cellLine.getAps_lineId() + "_" + PO;
+        String key = Integer.toString(lineId);
         JobKey jobKey = schedJobs.get(key);
         if (jobKey == null) {
-            jobKey = ctm.createJobKey(key, this.jobGroup);
+            jobKey = ctm.createJobKey(cellLine.getName() + "_" + cellLine.getAps_lineId() + "_" + PO, this.jobGroup);
         }
         if (ctm.isJobInScheduleExist(jobKey)) {
             ctm.removeJob(jobKey);

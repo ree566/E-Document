@@ -5,9 +5,11 @@
  */
 package com.advantech.quartzJob;
 
+import com.advantech.entity.Cell;
 import com.advantech.entity.PassStation;
 import com.advantech.helper.CronTrigMod;
 import com.advantech.service.BasicService;
+import com.advantech.service.CellService;
 import com.advantech.webservice.WebServiceRV;
 import static java.lang.System.out;
 import java.util.List;
@@ -28,6 +30,7 @@ public class CellStation implements Job {
 
     private String currentPO;
     private Integer currentLineId;
+    private Integer currentApsLineId;
     private JobKey currentJobKey;
     private TriggerKey currentTriggerKey;
     private String today;
@@ -36,7 +39,8 @@ public class CellStation implements Job {
     public void execute(JobExecutionContext jec) throws JobExecutionException {
         JobDataMap dataMap = jec.getJobDetail().getJobDataMap();
         this.currentPO = (String) dataMap.get("PO");
-        this.currentLineId = (Integer) dataMap.get("LineId");
+        this.currentLineId = (Integer) dataMap.get("lineId");
+        this.currentApsLineId = (Integer) dataMap.get("apsLineId");
         this.currentTriggerKey = jec.getTrigger().getKey();
         this.currentJobKey = jec.getJobDetail().getKey();
         this.today = (String) dataMap.get("today");
@@ -45,7 +49,7 @@ public class CellStation implements Job {
 
     private void syncMesDataToDatabase() {
         //先看紀錄幾筆了
-        List<PassStation> l = WebServiceRV.getInstance().getPassStationRecords(currentPO, currentLineId);
+        List<PassStation> l = WebServiceRV.getInstance().getPassStationRecords(currentPO, currentApsLineId);
 
         //確認已經開始了
         if (!l.isEmpty()) {
@@ -76,7 +80,11 @@ public class CellStation implements Job {
         CronTrigMod ctm = CronTrigMod.getInstance();
         try {
             ctm.removeJob(currentJobKey);
-            BasicService.getCellService().deleteCell(currentLineId, currentPO);
+            CellService cellService = BasicService.getCellService();
+            List<Cell> list = cellService.getCellProcessing(currentLineId);
+            if (!list.isEmpty()) {
+                cellService.deleteCell((Cell) list.get(0));
+            }
         } catch (SchedulerException ex) {
             out.println(ex.toString());
         }

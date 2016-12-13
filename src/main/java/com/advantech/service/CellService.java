@@ -17,7 +17,7 @@ import java.util.Map;
  *
  * @author Wei.Cheng
  */
-public class CellService implements AlarmActions{
+public class CellService implements AlarmActions {
 
     private final CellDAO cellProcessDAO;
 
@@ -32,9 +32,17 @@ public class CellService implements AlarmActions{
     public List<Cell> getCell(String PO) {
         return cellProcessDAO.getCell(PO);
     }
-    
-    public List<Cell> getCellProcessing(){
+
+    public List<Cell> getCellProcessing() {
         return cellProcessDAO.getCellProcessing();
+    }
+
+    public List<Cell> getCellProcessing(int lineId) {
+        return cellProcessDAO.getCellProcessing(lineId);
+    }
+
+    public List<Map> cellHistoryView() {
+        return cellProcessDAO.cellHistoryView();
     }
 
     public boolean insertCell(Cell cell) {
@@ -47,10 +55,10 @@ public class CellService implements AlarmActions{
         return cellProcessDAO.insertCell(l);
     }
 
-    public boolean deleteCell(int lineId, String PO) {
-        return cellProcessDAO.deleteCell(lineId, PO);
+    public boolean deleteCell(Cell cell) {
+        return cellProcessDAO.deleteCell(cell);
     }
-    
+
     @Override
     public boolean insertAlarm(List<AlarmAction> l) {
         return cellProcessDAO.insertAlarm(l);

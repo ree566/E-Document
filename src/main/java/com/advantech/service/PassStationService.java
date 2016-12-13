@@ -33,17 +33,17 @@ public class PassStationService {
     public boolean insertPassStation(List<PassStation> l) {
         return passStationDAO.insertPassStation(l);
     }
-    
-    public List<Map> getCellLastGroupStatusView(){
+
+    public List<Map> getCellLastGroupStatusView() {
         return passStationDAO.getCellLastGroupStatusView();
     }
 
-    public List<Map> getCellPerPcsHistory(String PO) {
-        return passStationDAO.getCellPerPcsHistory(PO);
+    public List<Map> getCellPerPcsHistory(String PO, int lineId) {
+        return passStationDAO.getCellPerPcsHistory(PO, lineId);
     }
 
-    public List<Map> getCellPerPcsHistory(String PO, Integer minPcs, Integer maxPcs) {
-        List l = passStationDAO.getCellPerPcsHistory(PO);
+    public List<Map> getCellPerPcsHistory(String PO, int lineId, Integer minPcs, Integer maxPcs) {
+        List l = passStationDAO.getCellPerPcsHistory(PO, lineId);
         if (l.isEmpty()) {
             return l;
         } else {

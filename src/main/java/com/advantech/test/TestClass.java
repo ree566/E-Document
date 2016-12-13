@@ -15,12 +15,7 @@ import org.json.JSONObject;
 public class TestClass {
 
     public static void main(String arg0[]) {
-        Double d = null;
-        JSONObject obj = new JSONObject();
-        obj.put("data", d);
-        
-        Double dd = obj.getDouble("data");
-        
-        out.println(dd);
+        Integer 中文 = 1;
+        out.println(中文.hashCode());
     }
 }

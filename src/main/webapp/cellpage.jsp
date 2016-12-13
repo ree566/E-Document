@@ -46,6 +46,41 @@
                     return false;
                 }
 
+                var cellCookie = $.cookie(cellCookieName);
+                var cellLoginObj;
+                if (cellCookie != null) {
+                    var cellLoginObj = $.parseJSON(cellCookie);
+
+                    getLineStatus(cellLoginObj.lineId);
+
+                    if (cellLoginObj.floor != $("#userSitefloorSelect").val()) {
+                        lockAllUserInput();
+                        showMsg("您已經登入其他樓層");
+                        return false;
+                    }
+
+                    $("#lineId").val(cellLoginObj.lineId).attr("disabled", true);
+                    $("#login, #lineId").attr("disabled", true);
+                    $("#logout").attr("disabled", false);
+
+                    poDetect();
+
+                    if (cellLoginObj.PO != null) {
+                        $("#PO").val(cellLoginObj.PO);
+                        $("#begin, #PO").attr("disabled", true).unbind("click");
+                        $("#end").removeAttr("disabled");
+                    } else {
+                        $("#end").attr("disabled", true).unbind("click");
+                        $("#begin, #PO").removeAttr("disabled");
+                    }
+                    $("#startSchedArea").unblock();
+                    showProcessing();
+                } else {
+                    $("#login, #lineId").attr("disabled", false);
+                    $("#logout").attr("disabled", true);
+                    $("#startSchedArea").block({message: "請先登入線別。", css: {cursor: 'default'}, overlayCSS: {cursor: 'default'}});
+                }
+
                 $("#login").click(function () {
                     var lineId = $("#lineId").val();
                     var lineName = $("#lineId option:selected").text().trim();
@@ -58,27 +93,12 @@
                         var obj = {
                             lineId: lineId,
                             lineName: lineName,
+                            floor: $("#userSitefloorSelect").val(),
                             action: "LOGIN"
                         };
                         cellLineSwitch(obj);
                     }
                 });
-
-                var cellCookie = $.cookie(cellCookieName);
-                var cellLoginObj;
-                if (cellCookie != null) {
-                    var cellLoginObj = $.parseJSON(cellCookie);
-                    $("#lineId").val(cellLoginObj.lineId).attr("disabled", true);
-                    $("#login").attr("disabled", true);
-                    $("#logout").attr("disabled", false);
-                    $("#startSchedArea").unblock();
-                    showProcessing();
-                } else {
-                    $("#login").attr("disabled", false);
-                    $("#logout").attr("disabled", true);
-                    $("#startSchedArea").block({message: "請先登入線別。", css: {cursor: 'default'}, overlayCSS: {cursor: 'default'}});
-                    return false;
-                }
 
                 $("#logout").click(function () {
                     if (cellLoginObj != null) {
@@ -94,7 +114,7 @@
                     }
                 });
 
-                $("#send").click(function () {
+                $("#begin").click(function () {
                     var lineId = $("#lineId").val();
                     var PO = $("#PO").val();
                     if (checkVal(lineId, PO) == false) {
@@ -106,12 +126,15 @@
                     }
                 });
 
-                $("#clear").click(function () {
-                    deleteSchedJob();
+                $("#end").click(function () {
+                    if (confirm("End this PO?")) {
+                        deleteSchedJob();
+                    }
                 });
 
                 $("#refresh").click(function () {
                     showProcessing();
+                    poDetect();
                 });
 
                 function checkExistCookies() {
@@ -131,6 +154,29 @@
                     $(this).attr('size', $(this).attr('placeholder').length);
                 }
 
+                function getLineStatus(lineId) {
+                    $.ajax({
+                        type: "Post",
+                        url: "CellLineServlet",
+                        data: {
+                            action: "select",
+                            lineId: lineId
+                        },
+                        dataType: "html",
+                        success: function (response) {
+                            var obj = $.parseJSON(response);
+                            console.log(obj);
+                            if (obj.isused == 0) {
+                                removeCookie(cellCookieName);
+                                reload();
+                            }
+                        },
+                        error: function () {
+                            showMsg("error");
+                        }
+                    });
+                }
+
                 function cellLineSwitch(data) {
                     $.ajax({
                         type: "Post",
@@ -146,9 +192,40 @@
                                     removeCookie(cellCookieName);
                                     $("#lineId").removeAttr("disabled").val(-1);
                                 }
+                                $("#PO").val("");
                                 reload();
                             } else {
                                 showMsg(response);
+                            }
+                        },
+                        error: function () {
+                            showMsg("error");
+                        }
+                    });
+                }
+
+                function poDetect() {
+                    $.ajax({
+                        type: "Post",
+                        url: "CellSearch",
+                        data: {
+                            lineId: $("#lineId").val(),
+                            action: "getProcessing"
+                        },
+                        success: function (response) {
+                            var cellInfo = response.data;
+                            var cellLoginObj = getCellCookie();
+                            if (cellInfo != null && cellInfo.length != 0 && cellLoginObj.PO == null) {
+                                var cell = cellInfo[0]; //always get the first input cell info
+                                addPOInCellCookie(cell.PO);
+                                reload();
+                            } else if ((cellInfo == null || cellInfo.length == 0)) {
+                                var PO = cellLoginObj.PO;
+                                if (PO != null) {
+                                    addPOInCellCookie(null);
+                                }
+//                                deleteSchedJob();
+                                $("#PO").val("");
                             }
                         },
                         error: function () {
@@ -169,6 +246,10 @@
                         dataType: "html",
                         success: function (response) {
                             showMsg(response);
+                            if (response == "success") {
+                                addPOInCellCookie($("#PO").val());
+                                reload();
+                            }
                             showProcessing();
                         },
                         error: function () {
@@ -182,14 +263,18 @@
                         type: "Get",
                         url: "CellScheduleJobServlet",
                         data: {
-                            jobKey: $("#JobKey").val(),
+                            lineId: $("#lineId").val(),
+                            PO: $("#PO").val(),
                             action: "delete"
                         },
                         dataType: "html",
                         success: function (response) {
                             showMsg(response);
                             showProcessing();
-                            $("#JobKey").val("");
+                            if (response == "success") {
+                                addPOInCellCookie(null);
+                                reload();
+                            }
                         },
                         error: function () {
                             showMsg("error");
@@ -220,6 +305,19 @@
                             $("#serverMsg").html("error");
                         }
                     });
+                }
+
+                function getCellCookie() {
+                    var cellCookie = $.cookie(cellCookieName);
+                    var cellLoginObj = $.parseJSON(cellCookie);
+                    return cellLoginObj;
+                }
+
+                //If po is null will remove key from cookie
+                function addPOInCellCookie(PO) {
+                    var cellLoginObj = getCellCookie();
+                    cellLoginObj.PO = PO;
+                    $.cookie(cellCookieName, JSON.stringify(cellLoginObj));
                 }
 
                 //generate all cookies exist 12 hours
@@ -285,14 +383,10 @@
 
             <div id="startSchedArea">
                 <div class="form-group form-inline">
-                    <label>Insert</label>
+                    <label>Processing</label>
                     <input type="text" id="PO" placeholder="Please insert your PO" />
-                    <input type="button" id="send" value="Send" />
-                </div>
-                <div class="form-group form-inline">
-                    <label>Remove</label>
-                    <input type="text" id="JobKey" placeholder="example: [lineId]_[PO]" />
-                    <input type="button" id="clear" value="Clear" />
+                    <input type="button" id="begin" value="Begin" />
+                    <input type="button" id="end" value="End" />
                 </div>
 
                 <div class="form-group">
