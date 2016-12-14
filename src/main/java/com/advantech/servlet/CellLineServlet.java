@@ -10,7 +10,6 @@ import com.advantech.entity.CellLine;
 import com.advantech.helper.ParamChecker;
 import com.advantech.service.BasicService;
 import com.advantech.service.CellLineService;
-import com.advantech.service.LineService;
 import com.google.gson.Gson;
 import java.io.*;
 import javax.servlet.ServletException;
@@ -68,6 +67,8 @@ public class CellLineServlet extends HttpServlet {
                 case LOGIN:
                     if (cellLine.isOpened()) {
                         msg = "This line is already in used";
+                    } else if (cellLine.isLocked()) {
+                        msg = "This line is locked right now";
                     } else {
                         msg = cellLineService.login(line) ? "success" : "fail";
                     }

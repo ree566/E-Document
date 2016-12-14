@@ -177,13 +177,13 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                         {
                             "targets": 4,
                             'render': function (data, type, full, meta) {
-                                return roundDecimal(data, 2);
+                                return data < 1 ? data : roundDecimal(data, 2) ;
                             }
                         },
                         {
                             "targets": 6,
                             'render': function (data, type, full, meta) {
-                                var percent = getPercent(data);
+                                var percent = (data * 100 < 1 ? roundDecimal(data * 100, 5) : getPercent(data));
                                 return percent + "%";
                             }
                         },

@@ -15,7 +15,12 @@ import org.json.JSONObject;
 public class TestClass {
 
     public static void main(String arg0[]) {
-        Integer 中文 = 1;
-        out.println(中文.hashCode());
+        JSONObject obj = new JSONObject();
+        JSONObject obj2 = new JSONObject();
+        
+        obj.put("abb", 1);
+        obj2.put("abb", 1);
+        
+        out.println(obj.equals(obj2));
     }
 }

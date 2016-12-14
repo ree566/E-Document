@@ -4,7 +4,7 @@
  * and open the template in the editor.
  * 每兩個小時幫忙把BAB資料做儲存
  */
-package com.advantech.quartzJob;
+package com.advantech.quartzJob; 
 
 import com.advantech.helper.MailSend;
 import com.advantech.helper.PropertiesReader;

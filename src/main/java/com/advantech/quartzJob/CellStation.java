@@ -63,9 +63,9 @@ public class CellStation implements Job {
             } else {
                 out.println("Data insert " + (BasicService.getPassStationService().insertPassStation(newData) ? "Success" : "Fail"));
             }
-            if (isPieceReachMaxium(l)) {
-                jobSelfRemove();
-            }
+//            if (isPieceReachMaxium(l)) {
+//                jobSelfRemove();
+//            }
         } else {
             out.println("Data is empty");
         }

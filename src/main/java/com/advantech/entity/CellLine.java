@@ -97,4 +97,8 @@ public class CellLine implements Serializable {
         return this.isused == 1;
     }
 
+    public boolean isLocked() {
+        return this.lock == 1;
+    }
+
 }

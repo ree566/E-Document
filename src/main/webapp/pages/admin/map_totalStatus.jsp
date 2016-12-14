@@ -301,9 +301,12 @@
                         var lineName = $(this).attr("id");
                         var childAmount = $(this).children().length;
                         $(this).children().each(function () {
-                            $(this).attr({"id": (lineName + "_" + childAmount), "style": "padding:" + lineName.length + "px"})
+                            $(this).attr({"id": (lineName + "_" + childAmount)})
+                                    .css({
+                                        display: "inline-block"
+                                    })
                                     .addClass("draggable blub-empty divCustomBg")
-                                    .html(lineName);
+                                    .html(lineName.substring(0, 1));
                             childAmount--;
                         });
                         $("#" + lineName)
@@ -426,51 +429,17 @@
 //                var hostname = "172.20.131.52:8080";
                 //--------------websocket functions
                 //websocket will reconnect by reconnecting-websocket.min.js when client or server is disconnect
-                var ws = new ReconnectingWebSocket("ws://" + hostname + "/CalculatorWSApplication/echo2");
-                var ws2 = new ReconnectingWebSocket("ws://" + hostname + "/CalculatorWSApplication/echo3");
-                var ws3 = new ReconnectingWebSocket("ws://" + hostname + "/CalculatorWSApplication/echo4");
-                ws.timeoutInterval = 3000;
-                ws2.timeoutInterval = 3000;
-                ws3.timeoutInterval = 3000;
+                
+                var ws2, ws3, ws4;
 
                 var onopen = function () {
 
-                };
-
-                ws.onopen = onopen;
-                ws2.onopen = onopen;
-                ws3.onopen = onopen;
-
-                //Get the server message and transform into table.
-                ws.onmessage = function (message) {
-                    var jsonArray = $.parseJSON(message.data);
-                    if (jsonArray.length != 0) {
-                        testDataToWiget(jsonArray[0]);
-                        babDataToWiget(jsonArray[1]);
-                    }
-                };
-
-                ws2.onmessage = function (message) {
-                    var jsonArray = $.parseJSON(message.data);
-                    if (jsonArray.length != 0) {
-                        numLampDataToWiget(jsonArray);
-                    }
-                };
-
-                ws3.onmessage = function (message) {
-                    var jsonArray = $.parseJSON(message.data);
-                    if (jsonArray.length != 0) {
-                        cellDataToWiget(jsonArray);
-                    }
                 };
 
                 var onerror = function (event) {
                     console.log("error");
                     console.log(event.data);
                 };
-                ws.onerror = onerror;
-                ws2.onerror = onerror;
-//                ws3.onerror = onerror;
 
                 //generate the unnormal close event hint
                 var onclose = function (event) {
@@ -506,17 +475,58 @@
                     console.log("The connection was closed for reason: " + reason);
                 };
 
-                ws.onclose = onclose;
-                ws2.onclose = onclose;
-                ws3.onclose = onclose;
+                if (testGroup.length != 0 || babGroup.length != 0) {
+                    ws2 = new ReconnectingWebSocket("ws://" + hostname + "/CalculatorWSApplication/echo2");
+                    setWebSocketClient(ws2);
+                }
+
+                if (numLampGroup.length != 0) {
+                    ws3 = new ReconnectingWebSocket("ws://" + hostname + "/CalculatorWSApplication/echo3");
+                    setWebSocketClient(ws2);
+                }
+
+                if (cellGroup.length != 0) {
+                    ws4 = new ReconnectingWebSocket("ws://" + hostname + "/CalculatorWSApplication/echo4");
+                    setWebSocketClient(ws4);
+                }
+                
+                //Get the server message and transform into table.
+                ws2.onmessage = function (message) {
+                    var jsonArray = $.parseJSON(message.data);
+                    if (jsonArray.length != 0) {
+                        testDataToWiget(jsonArray[0]);
+                        babDataToWiget(jsonArray[1]);
+                    }
+                };
+
+                ws3.onmessage = function (message) {
+                    var jsonArray = $.parseJSON(message.data);
+                    if (jsonArray.length != 0) {
+                        numLampDataToWiget(jsonArray);
+                    }
+                };
+
+                ws4.onmessage = function (message) {
+                    var jsonArray = $.parseJSON(message.data);
+                    if (jsonArray.length != 0) {
+                        cellDataToWiget(jsonArray);
+                    }
+                };
+                
+                function setWebSocketClient(webSocket){
+                    webSocket.timeoutInterval = 3000;
+                    webSocket.onopen = onopen;
+                    webSocket.onerror = onerror;
+                    webSocket.onclose = onclose;
+                }
 
                 function postToServer() {
                 }
 
                 function closeConnect() {
-                    ws.close();
                     ws2.close();
                     ws3.close();
+                    ws4.close();
                     console.log("websocket connection is now end");
                 }
 //-----------------------

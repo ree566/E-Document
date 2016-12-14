@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
@@ -50,10 +52,11 @@ public class Endpoint4 {
         //Push the current status on client first connect
         try {
             session.getBasicRemote().sendText(new PollingCellResult().getData());
+//            showUrlParam(session);
         } catch (IOException ex) {
             log.error(ex.toString());
         }
-        
+
         sessions.add(session);
         //每次當client連接進來時，去看目前session的數量 當有1個session時把下方quartz job加入到schedule裏頭(只要執行一次，不要重複加入)
         int a = sessions.size();
@@ -71,6 +74,7 @@ public class Endpoint4 {
 
     @OnClose
     public void onClose(Session session) {
+//        showUrlParam(session);
         sessions.remove(session);
         //當client端完全沒有連結中的使用者時，把job給關閉(持續執行浪費性能)
         if (sessions.isEmpty()) {
@@ -105,6 +109,7 @@ public class Endpoint4 {
     // Generate when connect users are at least one.
     private void pollingDBAndBrocast() {
         try {
+            System.out.println("Polling");
             CronTrigMod.getInstance().scheduleJob(PollingCellResult.class, JOB_NAME, POLLING_FREQUENCY);
         } catch (SchedulerException ex) {
             log.error(ex.toString());
@@ -119,8 +124,16 @@ public class Endpoint4 {
             log.error(ex.toString());
         }
     }
-    
-    public static void clearSessions(){
+
+    public static void clearSessions() {
         sessions.clear();
+    }
+
+    private void showUrlParam(Session session) {
+        Map map = session.getRequestParameterMap();
+        Iterator it = map.keySet().iterator();
+        while (it.hasNext()) {
+            System.out.println("Receive endpoint param: " + map.get(it.next()));
+        }
     }
 }
