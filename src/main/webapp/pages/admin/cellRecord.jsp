@@ -27,6 +27,9 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
             table th{
                 text-align: center;
             }
+            .alarm{
+                color: red;
+            }
         </style>
         <script src="../../js/jquery-1.11.3.min.js"></script>
         <script src="../../js/jquery-ui-1.10.0.custom.min.js"></script>
@@ -73,15 +76,15 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                     $("#PO").val(selectData.PO);
                     $("#lineId").val(selectData.lineId);
                     $("#send").trigger("click");
-                    
+
                     if ($(this).hasClass('selected')) {
                         $(this).removeClass('selected');
                     } else {
                         availHistoryTable.$('tr.selected').removeClass('selected');
                         $(this).addClass('selected');
                     }
-                    
-                    $("html, body").animate({ scrollTop: $('#cellHistoryDetail').offset().top }, 500);
+
+                    $("html, body").animate({scrollTop: $('#cellHistoryDetail').offset().top}, 500);
                 });
             });
 
@@ -177,7 +180,7 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                         {
                             "targets": 4,
                             'render': function (data, type, full, meta) {
-                                return data < 1 ? data : roundDecimal(data, 2) ;
+                                return data < 1 ? data : roundDecimal(data, 2);
                             }
                         },
                         {
@@ -233,7 +236,9 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
 
         <div class="container">
             <div class="row">
-                <h3>Cell桌個線別投入工單列表<button id="cellHistoryResearch"><span class="glyphicon glyphicon-repeat"></span></button></h3>
+
+                <h5 class="alarm">※雙擊表格內容可查看工單完整資訊</h5>
+                <h3>Cell桌各線別投入工單列表<button id="cellHistoryResearch"><span class="glyphicon glyphicon-repeat"></span></button></h3>
                 <table id="cellHistory" class="display" cellspacing="0" width="100%" style="text-align: center" hidden>
                     <thead>
                         <tr>

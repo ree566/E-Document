@@ -45,7 +45,8 @@ public class MailSend {
         } catch (UnknownHostException | SocketException ex) {
             log.error(ex.toString());
         }
-        mailHost = hostaddr;
+//        mailHost = hostaddr;
+        mailHost = "Relay.advantech.com.tw";
         mailPort = properties.getMailServerPort();
         mailServerAddress = properties.getMailServerUsername() + "@" + hostaddr;
         password = properties.getMailServerPassword();

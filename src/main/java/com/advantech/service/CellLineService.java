@@ -39,5 +39,9 @@ public class CellLineService {
     public boolean logout(int id) {
         return cellDAO.updateStatus(id, LINE_CLOSE_SIGN);
     }
+    
+    public boolean closeAll(){
+        return cellDAO.updateStatus(LINE_CLOSE_SIGN);
+    }
 
 }

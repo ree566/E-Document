@@ -8,6 +8,7 @@ package com.advantech.quartzJob;
 
 import com.advantech.service.BabLineTypeFacade;
 import com.advantech.service.BasicService;
+import com.advantech.service.CellLineTypeFacade;
 import com.advantech.service.TestLineTypeFacade;
 import java.io.IOException;
 import org.quartz.Job;
@@ -33,8 +34,10 @@ public class DataBaseInit implements Job {
         try {
             BasicService.getTestService().cleanTestTable();
             BasicService.getLineService().closeAllLine();
+            BasicService.getCellLineService().closeAll();
             BabLineTypeFacade.getInstance().resetAlarm();
             TestLineTypeFacade.getInstance().resetAlarm();
+            CellLineTypeFacade.getInstance().resetAlarm();
             log.info("Data has been initialized.");
         } catch (IOException ex) {
             log.error("Data initialized fail because: " + ex);

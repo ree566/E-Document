@@ -32,6 +32,10 @@ public class CellLineDAO extends BasicDAO {
         return queryForBeanList(this.getConn(), CellLine.class, "SELECT * FROM CellLine WHERE sitefloor = ?", sitefloor);
     }
 
+    public boolean updateStatus(int status) {
+        return update(this.getConn(), "UPDATE CellLine set isused = ?", status);
+    }
+
     public boolean updateStatus(int id, int status) {
         return update(this.getConn(), "UPDATE CellLine set isused = ? WHERE id = ?", status, id);
     }

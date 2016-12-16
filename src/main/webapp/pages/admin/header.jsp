@@ -85,7 +85,7 @@
                         <li><a href="BabDetailInfo">各站機台時間查詢</a></li>
                     </ul>
                 </li>
-                <li style="display:none">
+                <li>
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                         <span class="glyphicon glyphicon-list-alt" aria-hidden="true" /> 
                         Cell
