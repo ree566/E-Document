@@ -37,15 +37,11 @@ public class PollingNumLampResult implements Job {
          and has been chosen as the deadlock victim. Rerun the transaction. 
          Query: select * from LS_GetSenRealTime Parameters: []
          */
-        try {
-            
-            Endpoint3.sendAll(getData());
-        } catch (Exception e) {
-            log.error(e.toString());
-        }
+        Endpoint3.sendAll(getData());
     }
-    
-    public String getData(){
-        return NumLamp.getNumLampStatus().toString();
+
+    public String getData() {
+        JSONObject data = NumLamp.getNumLampStatus();
+        return (data == null ? new JSONObject() : data).toString();
     }
 }

@@ -9,9 +9,9 @@ package com.advantech.quartzJob;
 import com.advantech.endpoint.Endpoint4;
 import com.advantech.service.CellLineTypeFacade;
 import com.google.gson.Gson;
-import static java.lang.System.out;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.quartz.Job;
-import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
@@ -39,15 +39,11 @@ public class PollingCellResult implements Job {
          and has been chosen as the deadlock victim. Rerun the transaction. 
          Query: select * from LS_GetSenRealTime Parameters: []
          */
-        try {
-            
-            Endpoint4.sendAll(getData());
-        } catch (Exception e) {
-            log.error(e.toString());
-        }
+        Endpoint4.sendAll(getData());
     }
-    
-    public String getData(){
-        return CellLineTypeFacade.getInstance().getJSONObject().toString();
+
+    public String getData() {
+        JSONObject data = CellLineTypeFacade.getInstance().getJSONObject();
+        return (data == null ? new JSONObject() : data).toString();
     }
 }

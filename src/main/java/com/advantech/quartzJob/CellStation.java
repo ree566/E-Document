@@ -55,19 +55,25 @@ public class CellStation implements Job {
         if (!l.isEmpty()) {
             //get PO quantity view 得到該工單所要做的機台數，超過Job self unsched.(台數 * 2 == 紀錄)
             //未到達台數持續Polling database find new data.
-            List<PassStation> history = BasicService.getPassStationService().getPassStation(currentPO);
-            List<PassStation> newData = (List<PassStation>) CollectionUtils.subtract(l, history);
-            out.println("Job with " + currentJobKey + " begin insert data...");
-            if (newData.isEmpty()) {
-                out.println("Data No different");
-            } else {
-                out.println("Data insert " + (BasicService.getPassStationService().insertPassStation(newData) ? "Success" : "Fail"));
-            }
+            checkDifferenceAndInsert(currentPO, currentApsLineId);
 //            if (isPieceReachMaxium(l)) {
 //                jobSelfRemove();
 //            }
+        }
+    }
+
+    public static void checkDifferenceAndInsert(String PO, int apsLineId) {
+
+        out.println("Begin check");
+        List<PassStation> l = WebServiceRV.getInstance().getPassStationRecords(PO, apsLineId);
+        List<PassStation> history = BasicService.getPassStationService().getPassStation(PO);
+        List<PassStation> newData = (List<PassStation>) CollectionUtils.subtract(l, history);
+
+        if (!newData.isEmpty()) {
+            out.println("Begin insert");
+            BasicService.getPassStationService().insertPassStation(newData);
         } else {
-            out.println("Data is empty");
+            out.println("No difference");
         }
     }
 

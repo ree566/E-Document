@@ -117,8 +117,15 @@ public class CellScheduleJobServlet extends HttpServlet {
                     try {
                         int line = Integer.parseInt(lineId);
                         List<Cell> cells = cellService.getCellProcessing(line);
-                        if (!cells.isEmpty() && cellService.deleteCell((Cell) cells.get(0))) {
-                            responseObject = removeJob(line, PO) ? "success" : "fail";
+                        if (!cells.isEmpty()) {
+                            Cell cell = (Cell) cells.get(0);
+                            CellLine cellLine = BasicService.getCellLineService().findOne(cell.getLineId());
+                            CellStation.checkDifferenceAndInsert(PO, cellLine.getAps_lineId()); //Don't forget to check the xml data and insert at last.
+                            if (cellService.deleteCell(cell) == true) {
+                                responseObject = removeJob(line, PO) ? "success" : "fail";
+                            } else {
+                                responseObject = "fail";
+                            }
                         } else {
                             responseObject = "fail";
                         }
@@ -192,5 +199,4 @@ public class CellScheduleJobServlet extends HttpServlet {
             return false;
         }
     }
-
 }

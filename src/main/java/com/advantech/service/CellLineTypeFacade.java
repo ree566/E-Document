@@ -28,7 +28,6 @@ public class CellLineTypeFacade extends BasicLineTypeFacade {
 
     private CellLineTypeFacade() {
         cellService = BasicService.getCellService();
-        processingJsonObject = new JSONObject();
         PropertiesReader p = PropertiesReader.getInstance();
         cellStandardMin = p.getCellStandardMin();
         cellStandardMax = p.getCellStandardMax();
@@ -67,6 +66,7 @@ public class CellLineTypeFacade extends BasicLineTypeFacade {
         boolean isCellsUnderBalance = false;
         this.initMap();
         if (!l.isEmpty()) {
+            processingJsonObject = new JSONObject();
             String percentKeyName = "percent";
             String lineNameKeyName = "linename";
             String outputLineNameKeyName = "outputLinename";
@@ -88,9 +88,10 @@ public class CellLineTypeFacade extends BasicLineTypeFacade {
                     return false;
                 }
             }
-
+            processingJsonObject.put("data", l);
+        } else {
+            processingJsonObject = null;
         }
-        this.processingJsonObject.put("data", l);
         return isCellsUnderBalance;
     }
 
