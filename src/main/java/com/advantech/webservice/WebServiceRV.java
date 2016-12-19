@@ -3,18 +3,28 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.advantech.helper;
+package com.advantech.webservice;
 
+import com.advantech.entity.PassStation;
+import com.advantech.entity.PassStationRecords;
 import com.advantech.entity.TestLineTypeUser;
 import com.advantech.entity.TestLineTypeUsers;
 import com.advantech.entity.User;
+import com.advantech.helper.CronTrigMod;
+import com.advantech.model.BasicDAO;
+import com.advantech.service.BasicService;
+import com.advantech.test.TestClass;
+import com.google.gson.Gson;
 import java.io.StringWriter;
 import static java.lang.System.out;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.OutputKeys;
@@ -22,6 +32,12 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ArrayUtils;
+import org.quartz.Job;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
+import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tempuri.RvResponse;
@@ -132,7 +148,7 @@ public class WebServiceRV {
         return null;
     }
 
-    public List<TestLineTypeUser> getKanbanUsersForXml() {
+    public List<TestLineTypeUser> getKanbanUsers() {
         try {
             List l = this.getWebServiceData(queryString);
             Document doc = ((Node) l.get(1)).getOwnerDocument();
@@ -183,14 +199,40 @@ public class WebServiceRV {
         }
     }
 
+    public List<PassStation> getPassStationRecords(String po, Integer lineId) {
+        try {
+            
+            String str = 
+                    "<root><METHOD ID='ETLSO.QryT_SnPassTime'/><WIP_INFO><WIP_NO>"
+                    + po
+                    + "</WIP_NO><UNIT_NO>B</UNIT_NO><LINE_ID>"
+                    + lineId
+                    + "</LINE_ID><STATION_ID>'2','20'</STATION_ID></WIP_INFO></root>";
+            
+            List l = this.getWebServiceData(str);
+            Document doc = ((Node) l.get(1)).getOwnerDocument();
+
+            //Unmarshal the data into javaObject.
+            JAXBContext jc = JAXBContext.newInstance(PassStationRecords.class);
+            Unmarshaller u = jc.createUnmarshaller();
+
+            //Skip the <diffgr:diffgram> tag, read root tag directly.
+            Node node = doc.getFirstChild().getFirstChild();
+
+            if (node != null) {
+                PassStationRecords records = (PassStationRecords) u.unmarshal(node);
+                return records.getQryData();
+            } else {
+                return new ArrayList();
+            }
+        } catch (Exception ex) {
+            log.error(ex.toString());
+            return new ArrayList();
+        }
+    }
+
     private String getToday() {
         SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd");
         return sdFormat.format(new Date());
     }
-
-    public static void main(String arg[]) {
-
-        out.print(WebServiceRV.getInstance().getToday());
-    }
-
 }

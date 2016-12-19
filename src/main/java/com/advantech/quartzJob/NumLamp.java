@@ -9,13 +9,11 @@ import com.advantech.entity.BAB;
 import com.advantech.helper.CronTrigMod;
 import com.advantech.service.BABService;
 import com.advantech.service.BasicService;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.collections4.CollectionUtils;
 import org.json.JSONObject;
 import org.quartz.Job;
 import org.quartz.JobDetail;
@@ -30,7 +28,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author Wei.Cheng
+ * @author Wei.Cheng Detect the bab begin and end perLine
  */
 public class NumLamp implements Job {
 
@@ -67,7 +65,7 @@ public class NumLamp implements Job {
             tempBab = processingBab;
             schedulePollingJob(processingBab);
         } else if (processingBab.size() != tempBab.size() || !processingBab.containsAll(tempBab)) {
-            List<BAB> different = this.getDifferent(processingBab, tempBab);
+            List<BAB> different = (List<BAB>) CollectionUtils.disjunction(processingBab, tempBab);
             for (BAB b : different) {
                 if (tempBab.contains(b)) {
                     this.unschedulePollingJob(b.getLineName());
@@ -102,9 +100,13 @@ public class NumLamp implements Job {
 
                 if (!ctm.isJobInScheduleExist(jobKey)) {
                     TriggerKey triggerKey = ctm.createTriggerKey(jobName, groupName);
+                    Double testStandardTime = BasicService.getWorkTimeService().getTestStandardTime(b.getModel_name());
+                    Integer totalQuantity = babService.getPoTotalQuantity(b.getPO());
 
                     Map m = new HashMap();
                     m.put("dataMap", b);
+                    m.put("testStandardTime", testStandardTime);
+                    m.put("totalQuantity", totalQuantity);
                     JobDetail jobDetail = ctm.createJobDetail(jobKey, groupName, LineBalancePeopleGenerator.class, m);
                     ctm.scheduleJob(jobDetail, triggerKey, "25,55 * 8-20 ? * MON-SAT *");
 
@@ -122,7 +124,6 @@ public class NumLamp implements Job {
 
     public void unschedulePollingJob(String lineName) {
         try {
-            String jobName = lineName + quartzNameExt;
             Map keyMap = STORE_KEYS.get(lineName);
             JobKey jobKey = (JobKey) keyMap.get("job");
             ctm.removeJob(jobKey);
@@ -135,15 +136,4 @@ public class NumLamp implements Job {
         return NUMLAMP_STATUS;
     }
 
-    public List<BAB> getDifferent(List<BAB> listOne, List<BAB> listTwo) {
-        Collection<BAB> similar = new HashSet<>(listOne);
-        Collection<BAB> different = new HashSet<>();
-        different.addAll(listOne);
-        different.addAll(listTwo);
-
-        similar.retainAll(listTwo);
-        different.removeAll(similar);
-
-        return new ArrayList(different);
-    }
 }

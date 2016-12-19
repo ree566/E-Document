@@ -11,6 +11,7 @@ import com.advantech.entity.BABHistory;
 import com.advantech.entity.LineBalancing;
 import com.advantech.helper.ProcRunner;
 import com.advantech.helper.PropertiesReader;
+import com.advantech.interfaces.AlarmActions;
 import com.advantech.service.BasicService;
 import com.advantech.service.LineBalanceService;
 import java.sql.Array;
@@ -30,7 +31,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Wei.Cheng bab資料表就是生產工單資料表
  */
-public class BABDAO extends BasicDAO {
+public class BABDAO extends BasicDAO implements AlarmActions{
 
     private static final Logger log = LoggerFactory.getLogger(BABDAO.class);
 
@@ -179,19 +180,23 @@ public class BABDAO extends BasicDAO {
         return l.isEmpty() ? null : (Integer) l.get(0).get("qty");
     }
 
-    public boolean insertTestAlarm(List<AlarmAction> l) {
+    @Override
+    public boolean insertAlarm(List<AlarmAction> l) {
         return updateAlarmTable("INSERT INTO Alm_BABAction(alarm, tableId) VALUES(?, ?)", l);
     }
 
-    public boolean updateBABAlarm(List<AlarmAction> l) {
+    @Override
+    public boolean updateAlarm(List<AlarmAction> l) {
         return updateAlarmTable("UPDATE Alm_BABAction SET alarm = ? WHERE tableId = ?", l);
     }
 
-    public boolean resetBABAlarm() {
+    @Override
+    public boolean resetAlarm() {
         return update(getConn(), "UPDATE Alm_BABAction SET alarm = 0");
     }
 
-    public boolean removeAllAlarmSign() {
+    @Override
+    public boolean removeAlarmSign() {
         return update(getConn(), "TRUNCATE TABLE Alm_BABAction");
     }
 

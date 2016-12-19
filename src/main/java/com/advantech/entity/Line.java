@@ -84,7 +84,7 @@ public class Line implements Serializable {
         this.lock = lock;
     }
 
-    public boolean isIsOpened() {
+    public boolean isOpened() {
         return this.isused == 1;
     }
 

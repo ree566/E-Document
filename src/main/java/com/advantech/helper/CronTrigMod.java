@@ -42,14 +42,13 @@ public class CronTrigMod {
 
     private static final Logger log = LoggerFactory.getLogger(CronTrigMod.class);
 
-    public static Map changedJobKey = new HashMap();
-
-    private final String mainJobKey = "DailyJobWorker";
+    public Map changedJobKey;
 
     private Scheduler scheduler;
     private static CronTrigMod instance;
 
     private CronTrigMod() {
+        this.changedJobKey = new HashMap();
         try {
             scheduler = new StdSchedulerFactory().getScheduler();
         } catch (SchedulerException ex) {
@@ -64,6 +63,14 @@ public class CronTrigMod {
             instance = new CronTrigMod();
         }
         return instance;
+    }
+    
+    public List<JobKey> getJobKeys(String jobGroup) throws SchedulerException{
+        return new ArrayList(scheduler.getJobKeys(GroupMatcher.jobGroupEquals(jobGroup)));
+    }
+    
+    public List<TriggerKey> getTriggerKeys(String jobGroup) throws SchedulerException{
+        return new ArrayList(scheduler.getTriggerKeys(GroupMatcher.triggerGroupEquals(jobGroup)));
     }
 
     public JobKey createJobKey(String jobName) {
@@ -131,6 +138,8 @@ public class CronTrigMod {
     }
 
     public void updateMainJobCronExpressionToDefault() throws SchedulerException {
+        String mainJobKey = "DailyJobWorker";
+
         // retrieve the trigger
         Object trig = changedJobKey.get(mainJobKey);
         Trigger oldTrigger = (trig != null) ? (Trigger) trig : scheduler.getTrigger(triggerKey(mainJobKey));
@@ -139,6 +148,8 @@ public class CronTrigMod {
     }
 
     public void updateMainJobCronExpression() throws SchedulerException {
+        String mainJobKey = "DailyJobWorker";
+
         // retrieve the trigger
         Object trig = changedJobKey.get(mainJobKey);
 
@@ -212,6 +223,7 @@ public class CronTrigMod {
             log.info("The job with key name " + jobKey + " ,TriggerKey " + trigKey + " is sched");
         } else {
             log.info("The job with key name " + jobKey + " is already exist.");
+            throw new SchedulerException("The job with key name " + jobKey + " is already exist.");
         }
     }
 
@@ -239,6 +251,7 @@ public class CronTrigMod {
     public void removeJobs(String jobGroupName) throws SchedulerException {
         Set<JobKey> jobs = scheduler.getJobKeys(GroupMatcher.jobGroupEquals(jobGroupName));
         this.removeJobs(new ArrayList(jobs));
+        log.info("Job group " + jobGroupName + " remove " + (this.getJobKeys(jobGroupName).isEmpty() ? "success" : "fail"));
     }
 
     public void removeJobs(List<JobKey> l) throws SchedulerException {
@@ -248,6 +261,7 @@ public class CronTrigMod {
     public void removeTriggers(String jobGroupName) throws SchedulerException {
         Set<TriggerKey> triggers = scheduler.getTriggerKeys(GroupMatcher.triggerGroupEquals(jobGroupName));
         this.removeTriggers(new ArrayList(triggers));
+        log.info("Trigger group " + jobGroupName + " remove " + (this.getTriggerKeys(jobGroupName).isEmpty() ? "success" : "fail"));
     }
 
     public void removeTrigger(TriggerKey triggerKey) throws SchedulerException {
@@ -276,5 +290,13 @@ public class CronTrigMod {
 
     public void unScheduleAllJob() throws SchedulerException {
         this.scheduler.clear();
+    }
+
+    public static void main(String arg0[]) {
+        Trigger trigger = TriggerBuilder.newTrigger()
+                .withIdentity("trigger3", "group1")
+                .withSchedule(CronScheduleBuilder.dailyAtHourAndMinute(10, 42))
+                .forJob(new JobKey("AAA"))
+                .build();
     }
 }

@@ -88,14 +88,22 @@
                 <li>
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                         <span class="glyphicon glyphicon-list-alt" aria-hidden="true" /> 
+                        Cell
+                        <span class="caret" />
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="CellRecord">歷史紀錄查詢</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        <span class="glyphicon glyphicon-list-alt" aria-hidden="true" /> 
                         平面圖
                         <span class="caret" />
                     </a>
                     <ul class="dropdown-menu">
                         <li><a href="TotalMap?sitefloor=5">狀態平面圖5F</a></li>
-                        <li><a href="NumLamp?sitefloor=5">數字燈5F</a></li>
                         <li><a href="TotalMap?sitefloor=6">狀態平面圖6F</a></li>
-                        <li><a href="NumLamp?sitefloor=6">數字燈6F</a></li>
                     </ul>
                 </li>
                 <li>

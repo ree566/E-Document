@@ -9,7 +9,7 @@ import com.advantech.entity.AlarmAction;
 import com.advantech.entity.Test;
 import com.advantech.entity.TestLineTypeUser;
 import com.advantech.helper.PropertiesReader;
-import com.advantech.helper.WebServiceRV;
+import com.advantech.webservice.WebServiceRV;
 import static java.lang.System.out;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -84,7 +84,7 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
             initMap();
             JSONArray userArr = new JSONArray();
 
-            List<TestLineTypeUser> kanbanUsers = rv.getKanbanUsersForXml();
+            List<TestLineTypeUser> kanbanUsers = rv.getKanbanUsers();
 
             processingJsonObject = new JSONObject();
             boolean isInTheWebService = false;
@@ -151,7 +151,7 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
     @Override
     protected boolean initDbAlarmSign() {
         TestService ts = BasicService.getTestService();
-        return ts.removeAllAlarmSign() && ts.insertTestAlarm(super.mapToAlarmSign(dataMap));
+        return ts.removeAlarmSign() && ts.insertAlarm(super.mapToAlarmSign(dataMap));
     }
 
     @Override
@@ -161,12 +161,12 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
 
     @Override
     protected boolean setDbAlarmSign(List<AlarmAction> l) {
-        return testService.updateTestAlarm(l);
+        return testService.updateAlarm(l);
     }
 
     @Override
     protected boolean resetDbAlarmSign() {
-        return testService.resetTestAlarm();
+        return testService.resetAlarm();
     }
 
     public Map getPEOPLE_NOT_MATCH() {

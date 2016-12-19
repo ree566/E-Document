@@ -9,7 +9,6 @@ package com.advantech.quartzJob;
 import com.advantech.service.BabLineTypeFacade;
 import com.advantech.service.BasicLineTypeFacade;
 import com.advantech.service.TestLineTypeFacade;
-import static java.lang.System.out;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -32,7 +31,7 @@ public class DailyJobWorker implements Job {
 
     @Override
     public void execute(JobExecutionContext jec) throws JobExecutionException {
-        //處理測試和組包裝線別資料，並依照設定output
+        //處理測試和組包裝線別資料，並依照設定output to db or txt
         this.processingBabData();
         this.processingTestData();
     }
@@ -52,4 +51,5 @@ public class DailyJobWorker implements Job {
             log.error(ex.toString());
         }
     }
+    
 }

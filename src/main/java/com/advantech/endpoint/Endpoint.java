@@ -12,6 +12,7 @@ package com.advantech.endpoint;
 import com.advantech.helper.CronTrigMod;
 import com.advantech.helper.PropertiesReader;
 import com.advantech.quartzJob.PollingSensorStatus;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -48,6 +49,13 @@ public class Endpoint {
 
     @OnOpen
     public void onOpen(final Session session) {
+        //Push the current status on client first connect
+        try {
+            session.getBasicRemote().sendText(new PollingSensorStatus().getData());
+        } catch (IOException ex) {
+            log.error(ex.toString());
+        }
+        
 //        HandshakeRequest req = (HandshakeRequest) conf.getUserProperties().get("handshakereq");
 //        Map<String,List<String>> headers = req.getHeaders();
         queue.add(session);

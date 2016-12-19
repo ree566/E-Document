@@ -6,6 +6,7 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page import="java.util.UUID" %>
 <!DOCTYPE html>
 <html>
     <head>
@@ -16,6 +17,7 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>${userSitefloor}F狀態平面圖 - ${initParam.pageTitle}</title>
         <link rel="stylesheet" href="../../css/jquery-ui.css">
+        <link rel="stylesheet" href="../../css/tooltipster.bundle.min.css">
         <style>
             .draggable { 
                 width: 25px; 
@@ -26,6 +28,10 @@
                 margin: 0px;
                 cursor: default;
                 text-align: center;
+            }
+            #numLampArea .draggable{
+                padding: 1.0em; 
+                font-size: 25px;
             }
             #generateArea{
                 height: 20px;
@@ -92,9 +98,6 @@
                 width: 25%; 
                 overflow: hidden;
             }
-            #titleArea>div, #testArea>div, #babArea>div{
-                position: absolute;
-            }
             .titleWiget{
                 cursor: pointer;
             }
@@ -121,91 +124,144 @@
             .blub-abnormal{
                 background-image: url(../../images/blub-icon/Yellow_Light_Icon.png);
             }
+            .suggestMsg{
+                background-color: white;
+                color: red;
+                margin: 5px;
+                padding: 5px;
+            }
         </style>
         <script src="../../js/jquery-1.11.3.min.js"></script>
         <script src="../../js/jquery-ui-1.10.0.custom.min.js"></script>
         <script src="../../js/reconnecting-websocket.min.js"></script>
         <script src="../../js/jquery.fullscreen-min.js"></script>
+        <script src="../../js/tooltipster.bundle.min.js"></script>
         <script src="../../js/totalMap-setting/${userSitefloor}f.js"></script>
+        <script src="../../js/numLamp-setting/${userSitefloor}f.js"></script>
+        <script src="../../js/cell-setting/${userSitefloor}f.js"></script>
         <script>
-            var sitefloor = ${userSitefloor};
             var maxProductivity = 200;
 
             $(function () {
-
-                for (var i = 0; i < titleGroup.length; i++) {
-                    var groupStatus = titleGroup[i];
-                    $("#titleArea").append("<div></div>");
-                    $("#titleArea>div")
-                            .eq(i)
-                            .attr("id", groupStatus.lineName + "_title")
-                            .addClass("titleWiget")
-                            .html(groupStatus.lineName)
-                            .css({left: groupStatus.x + pXa, top: groupStatus.y + pYa});
-                }
-
-                for (var i = 0; i < testGroup.length; i++) {
-                    $("#testArea").append("<div></div>");
-                    var groupStatus = testGroup[i];
-                    for (var j = 0, k = groupStatus.people; j < k; j++) {
-                        $("#testArea>div")
-                                .eq(i)
-                                .append("<div></div>")
-                                .addClass("testWiget")
-                                .css({left: groupStatus.x + pXa, top: groupStatus.y + pYa});
-                    }
-                }
-
-                for (var i = 0; i < babGroup.length; i++) {
-                    $("#babArea").append("<div></div>");
-                    var groupStatus = babGroup[i];
-                    for (var j = 0, k = groupStatus.people; j < k; j++) {
-                        $("#babArea>div")
-                                .eq(i)
-                                .append("<div></div>")
-                                .addClass("babWiget")
-                                .attr("id", groupStatus.lineName)
-                                .css({left: groupStatus.x + pXa, top: groupStatus.y + pYa});
-                    }
-                }
-
-//                $(".titleWiget, .testWiget, .babWiget").after("<div class='clearWiget'></div>");
+                initTitleGroup();
+                initTestGroup();
+                initBabGroup();
+                initNumLampGroup();
+                initCellGroup();
 
                 var testChildElement = $("#testArea>.testWiget div");
                 var babChildElement = $("#babArea>.babWiget div");
 
                 testObjectInit();
                 babObjectInit();
-
+                numLampObjectInit();
+                cellObjectInit();
 
                 $("#titleArea>div").not(".clearWiget").addClass("lineTitle");
 
-                var dragableWiget = $("#titleArea>div, #testArea>div, #babArea>div");
-//                dragableWiget.after("<div class='clearWiget'></div>");
+                var dragableWiget = $("#mapGroup > div:not(#wigetInfo) > div");
 
+                dragableWiget.css("position", "absolute");
 //                dragableWiget.not(".clearWiget").addClass("ui-helper").draggable({
 //                    drag: function (e) {
 ////                        return false;
 //                    }
 //                });
 
-                $('[data-toggle="tooltip"]').tooltip();
-
                 $("#fullBtn").click(function () {
                     $("#wigetCtrl").fullScreen(true);
                 });
 
+                function initTitleGroup() {
+                    for (var i = 0; i < titleGroup.length; i++) {
+                        var groupStatus = titleGroup[i];
+                        $("#titleArea").append("<div></div>");
+                        $("#titleArea>div")
+                                .eq(i)
+                                .attr("id", groupStatus.lineName + "_title")
+                                .addClass("titleWiget")
+                                .html(groupStatus.lineName)
+                                .css({left: groupStatus.x + pXa, top: groupStatus.y + pYa});
+                    }
+                }
+
+                function initTestGroup() {
+                    for (var i = 0; i < testGroup.length; i++) {
+                        $("#testArea").append("<div></div>");
+                        var groupStatus = testGroup[i];
+                        for (var j = 0, k = groupStatus.people; j < k; j++) {
+                            $("#testArea>div")
+                                    .eq(i)
+                                    .append("<div></div>")
+                                    .addClass("testWiget")
+                                    .css({left: groupStatus.x + pXa, top: groupStatus.y + pYa});
+                        }
+                    }
+                }
+
+                function initBabGroup() {
+                    for (var i = 0; i < babGroup.length; i++) {
+                        $("#babArea").append("<div></div>");
+                        var groupStatus = babGroup[i];
+                        for (var j = 0, k = groupStatus.people; j < k; j++) {
+                            $("#babArea>div")
+                                    .eq(i)
+                                    .append("<div></div>")
+                                    .addClass("babWiget")
+                                    .attr("id", groupStatus.lineName)
+                                    .css({left: groupStatus.x + pXa, top: groupStatus.y + pYa});
+                        }
+                    }
+                }
+
+                function initNumLampGroup() {
+                    for (var i = 0; i < numLampGroup.length; i++) {
+                        $("#numLampArea").append("<div></div>");
+                        var groupStatus = numLampGroup[i];
+                        for (var j = 0, k = groupStatus.people; j < k; j++) {
+                            $("#numLampArea>div")
+                                    .eq(i)
+                                    .append("<div></div>")
+                                    .addClass("numLampWiget")
+                                    .attr("id", groupStatus.lineName + "_numLamp")
+                                    .css({left: groupStatus.x + pXa, top: groupStatus.y + pYa});
+                        }
+                    }
+                }
+
+                function initCellGroup() {
+                    for (var i = 0; i < cellGroup.length; i++) {
+                        $("#cellArea").append("<div></div>");
+                        var groupStatus = cellGroup[i];
+                        for (var j = 0, k = groupStatus.people; j < k; j++) {
+                            $("#cellArea>div")
+                                    .eq(i)
+                                    .append("<div></div>")
+                                    .addClass("cellWiget")
+                                    .attr("id", groupStatus.lineName + "_cell")
+                                    .css({left: groupStatus.x + pXa, top: groupStatus.y + pYa});
+                        }
+                    }
+                }
+
                 function initWiget(obj) {
                     obj.addClass("blub-empty").removeClass("blub-alarm blub-normal blub-abnormal").removeAttr("title");
+                }
+
+                function initNumLampWiget() {
+                    var obj = $("#numLampArea>.numLampWiget div");
+                    obj.addClass("blub-empty").removeClass("blub-alarm blub-normal blub-abnormal").html(0);
+                    obj.parent().tooltipster('content', "empty");
                 }
 
                 function testObjectInit() {
                     var object = $("#testArea>.testWiget div");
                     var loopCount = maxTestTableNo;
                     object.each(function () {
-                        $(this).attr({"id": "draggable" + loopCount + "_" + sitefloor + "f", "data-toggle": "tooltip"})
+                        $(this).attr({"id": "draggable" + loopCount + "_" + sitefloor + "f"})
                                 .addClass("draggable blub-empty divCustomBg")
-                                .html(loopCount);
+                                .html(loopCount)
+                                .tooltipster({updateAnimation: null});
                         loopCount--;
                     });
                 }
@@ -215,18 +271,54 @@
                         var lineName = $(this).attr("id");
                         var childAmount = $(this).children().length;
                         $(this).children().each(function () {
-                            $(this).attr({"id": (lineName + "_" + childAmount), "data-toggle": "tooltip"})
+                            $(this).attr({"id": (lineName + "_" + childAmount)})
                                     .addClass("draggable blub-empty divCustomBg")
-                                    .html(childAmount);
+                                    .html(childAmount)
+                                    .tooltipster({updateAnimation: null});
                             childAmount--;
                         });
                     });
                 }
 
-                function testDataToWiget(testObject) {
+                function numLampObjectInit() {
+                    $(".numLampWiget").each(function () {
+                        var lineName = $(this).attr("id");
+                        var childAmount = $(this).children().length;
+                        $(this).children().each(function () {
+                            $(this).attr({"id": (lineName + "_" + childAmount)})
+                                    .addClass("draggable blub-empty divCustomBg")
+                                    .html(0);
+                            childAmount--;
+                        });
+                        $("#" + lineName)
+                                .attr({title: "empty"})
+                                .tooltipster({trigger: "hover", side: "right", contentAsHTML: true, updateAnimation: null});
+                    });
+                }
+
+                function cellObjectInit() {
+                    $(".cellWiget").each(function () {
+                        var lineName = $(this).attr("id");
+                        var childAmount = $(this).children().length;
+                        $(this).children().each(function () {
+                            $(this).attr({"id": (lineName + "_" + childAmount)})
+                                    .css({
+                                        display: "inline-block"
+                                    })
+                                    .addClass("draggable blub-empty divCustomBg")
+                                    .html(lineName.substring(0, 1));
+                            childAmount--;
+                        });
+                        $("#" + lineName)
+                                .attr({title: "empty"})
+                                .tooltipster({trigger: "hover", side: "right", contentAsHTML: true, updateAnimation: null});
+                    });
+                }
+
+                function testDataToWiget(obj) {
                     initWiget(testChildElement);
-                    if (testObject != null) {
-                        var testData = testObject.data;
+                    if (obj != null) {
+                        var testData = obj.data;
                         if (testData != null) {
                             for (var k = 0, l = testData.length; k < l; k++) {
                                 var people = testData[k];
@@ -247,28 +339,25 @@
                                 $(".testWiget #draggable" + people.table + "_" + people.sitefloor + "f")
                                         .removeClass("blub-empty")
                                         .addClass(signalClass)
-                                        .attr({
-                                            "title": (people.name + " 效率:" + (productivity > maxProductivity ? maxProductivity : productivity) + "%"),
-                                            "onClick": "window.open( 'TestTotal?jobnumber=" + people.number + "','_blank' ); return false;"
-                                        });
+                                        .attr({"onClick": "window.open( 'TestTotal?jobnumber=" + people.number + "','_blank' ); return false;"})
+                                        .tooltipster('content', (people.name + " 效率:" + (productivity > maxProductivity ? maxProductivity : productivity) + "%"));
                             }
                         }
                     }
                 }
 
-                function babDataToWiget(babObject) {
-//                    console.log(babObject);
+                function babDataToWiget(obj) {
                     initWiget(babChildElement);
-                    if (babObject != null) {
-                        var babData = babObject.data;
+                    if (obj != null) {
+                        var babData = obj.data;
                         if (babData != null) {
                             for (var k = 0, l = babData.length; k < l; k++) {
                                 var people = babData[k];
-                                var obj = $("#babArea #" + people.TagName + " #" + people.TagName + "_" + people.T_Num);
-                                if (obj.length) {
-                                    obj.removeClass("blub-empty")
+                                var childElement = $("#babArea #" + people.TagName + " #" + people.TagName + "_" + people.T_Num);
+                                if (childElement.length) {
+                                    childElement.removeClass("blub-empty")
                                             .addClass((people.ismax ? "blub-alarm" : "blub-normal"))
-                                            .attr("title", "Time:" + people.diff + "秒");
+                                            .tooltipster('content', "Time:" + people.diff + "秒");
                                     if (people.T_Num == 1) {
                                         $("#titleArea #" + people.TagName + "_title").attr("onClick", "window.open( 'BabTotal?babId=" + people.BABid + "','_blank' ); return false;");
                                     }
@@ -278,32 +367,83 @@
                     }
                 }
 
-                var hostname = window.location.host;//Get the host ipaddress to link to the server.
-//                var hostname = "172.20.131.52:8080";
+                function numLampDataToWiget(obj) {
+                    initNumLampWiget();
+                    if (obj != null) {
+                        var numLampData = obj;
+                        if (numLampData != null) {
+                            for (var k = 0, l = babGroup.length; k < l; k++) {
+                                var lineName = babGroup[k].lineName;
+                                var details = obj[lineName];
+                                if (details != null) {
+                                    var suggestPeople = details.suggestTestPeople;
+                                    var lineName = lineName.trim() + "_numLamp";
+                                    var childElement = $("#numLampArea #" + lineName + " #" + lineName + "_" + 1);//統一寫到數字燈1
+                                    if (childElement.length) {
+                                        childElement.removeClass("blub-empty")
+                                                .addClass((suggestPeople == null ? "blub-abnormal" : "blub-normal"))
+                                                .html(suggestPeople);
+                                        var messageArray = details.message;
+                                        var message = "PO: " + details.PO + "<br/>ModelName: " + details.model_name + "<br/>";
+                                        if (details.quantity != null) {
+                                            message += "Current piece: " + details.quantity + " pcs<br/>";
+                                        }
+                                        for (var i = 0; i < messageArray.length; i++) {
+                                            message += messageArray[i] + "<br/>";
+                                        }
+                                        message += "<div class='suggestMsg'>" + lineName.trim() + " Suggestion station Action: " + details.suggestTestPeople + "</div>";
+                                        $("#" + lineName.trim()).tooltipster('content', message);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                function cellDataToWiget(obj) {
+                    initWiget($("#cellArea>.cellWiget div"));
+                    if (obj != null) {
+                        var cellData = obj.data;
+                        if (cellData != null) {
+                            for (var k = 0, l = cellData.length; k < l; k++) {
+                                var cell = cellData[k];
+                                var childElement = $("#cellArea #" + cell.lineName + "_cell" + " #" + cell.lineName + "_cell_1");
+
+                                if (childElement.length) {
+                                    childElement.removeClass("blub-empty")
+                                            .addClass((cell.isAlarm ? "blub-alarm" : "blub-normal"));
+                                    var cellInfo =
+                                            "PO:" + cell.PO + "<br/>" +
+                                            "Barcode:" + cell.barcode + "<br/>" +
+                                            "Standard:" + cell.standard + " Min<br/>" +
+                                            "Diff:" + cell.diff + " Min<br/>" +
+                                            "Percent:" + getPercent(cell.percent) + "%<br/>";
+                                    childElement.parent().tooltipster('content', cellInfo);
+                                }
+                            }
+                        }
+                    }
+                }
+
+               var hostname = window.location.host;//Get the host ipaddress to link to the server.
+ //              var hostname = "172.20.131.52:8084";
+                var contextPath = "${pageContext.request.contextPath}";
                 //--------------websocket functions
                 //websocket will reconnect by reconnecting-websocket.min.js when client or server is disconnect
-                var ws = new ReconnectingWebSocket("ws://" + hostname + "/CalculatorWSApplication/echo2");
-                ws.timeoutInterval = 3000;
-                ws.onopen = function () {
+
+                var ws2, ws3, ws4;
+
+                var onopen = function () {
 
                 };
 
-                //Get the server message and transform into table.
-                ws.onmessage = function (message) {
-                    var jsonArray = $.parseJSON(message.data);
-                    if (jsonArray.length != 0) {
-                        testDataToWiget(jsonArray[0]);
-                        babDataToWiget(jsonArray[1]);
-                    }
-                };
-
-                ws.onerror = function (event) {
+                var onerror = function (event) {
                     console.log("error");
                     console.log(event.data);
                 };
 
                 //generate the unnormal close event hint
-                ws.onclose = function (event) {
+                var onclose = function (event) {
                     var reason;
                     if (event.code == 1000)
                         reason = "Normal closure, meaning that the purpose for which the connection was established has been fulfilled.";
@@ -336,14 +476,70 @@
                     console.log("The connection was closed for reason: " + reason);
                 };
 
+                if (testGroup.length != 0 || babGroup.length != 0) {
+                    ws2 = new ReconnectingWebSocket("ws://" + hostname + contextPath + "/echo2");
+                    setWebSocketClient(ws2);
+                }
+
+                if (numLampGroup.length != 0) {
+                    ws3 = new ReconnectingWebSocket("ws://" + hostname + contextPath + "/echo3");
+                    setWebSocketClient(ws2);
+                }
+
+                if (cellGroup.length != 0) {
+                    ws4 = new ReconnectingWebSocket("ws://" + hostname + contextPath + "/echo4");
+                    setWebSocketClient(ws4);
+                }
+
+                //Get the server message and transform into table.
+                ws2.onmessage = function (message) {
+                    var jsonArray = $.parseJSON(message.data);
+                    if (jsonArray.length != 0) {
+                        testDataToWiget(jsonArray[0]);
+                        babDataToWiget(jsonArray[1]);
+                    }
+                };
+
+                ws3.onmessage = function (message) {
+                    var jsonArray = $.parseJSON(message.data);
+                    if (jsonArray.length != 0) {
+                        numLampDataToWiget(jsonArray);
+                    }
+                };
+
+                ws4.onmessage = function (message) {
+                    var jsonArray = $.parseJSON(message.data);
+                    if (jsonArray.length != 0) {
+                        cellDataToWiget(jsonArray);
+                    }
+                };
+
+                function setWebSocketClient(webSocket) {
+                    webSocket.timeoutInterval = 3000;
+                    webSocket.onopen = onopen;
+                    webSocket.onerror = onerror;
+                    webSocket.onclose = onclose;
+                }
+
                 function postToServer() {
                 }
 
                 function closeConnect() {
-                    ws.close();
+                    ws2.close();
+                    ws3.close();
+                    ws4.close();
                     console.log("websocket connection is now end");
                 }
 //-----------------------
+
+                function getPercent(val) {
+                    return roundDecimal((val * 100), 0);
+                }
+
+                function roundDecimal(val, precision) {
+                    var size = Math.pow(10, precision);
+                    return Math.round(val * size) / size;
+                }
             });
         </script>
     </head>
@@ -373,6 +569,12 @@
                 <!--<div class="clearWiget" /></div>-->
 
                 <div id="babArea"></div>
+                <!--<div class="clearWiget"></div>-->
+
+                <div id="numLampArea"></div>
+                <!--<div class="clearWiget"></div>-->
+
+                <div id="cellArea"></div>
                 <!--<div class="clearWiget"></div>-->
             </div>
         </div>

@@ -12,7 +12,7 @@
     </processing-directives>
     
     <!--主要工作job，把資料轉換到TXT控制燈號-->
-    <schedule>
+<!--    <schedule> 
         <job>
             <name>DailyJobWorker</name>
             <job-class>com.advantech.quartzJob.DailyJobWorker</job-class>
@@ -25,10 +25,10 @@
                 <cron-expression>0/30 * 8-20 ? * MON-SAT *</cron-expression>
             </cron>
         </trigger>
-    </schedule>
+    </schedule>-->
     
     <!--清理資料庫job-->
-    <schedule>
+<!--    <schedule>
         <job>
             <name>DataBaseInit</name>
             <job-class>com.advantech.quartzJob.DataBaseInit</job-class>
@@ -37,13 +37,13 @@
             <cron>
                 <name>DataBaseInit</name>
                 <job-name>DataBaseInit</job-name>
-                <cron-expression>0 10 6,22 ? * MON-SAT *</cron-expression>
+                <cron-expression>0 30 6,21 ? * MON-SAT *</cron-expression>
             </cron>
         </trigger>
-    </schedule>
+    </schedule>-->
     
     <!--把未完結工單做儲存的job-->
-    <schedule>
+<!--    <schedule>
         <job>
             <name>SaveBABDataToDB</name>
             <job-class>com.advantech.quartzJob.BABDataSaver</job-class>
@@ -52,10 +52,10 @@
             <cron>
                 <name>SaveBABDataToDB</name>
                 <job-name>SaveBABDataToDB</job-name>
-                <cron-expression>0 0 12,16,22 ? * MON-SAT *</cron-expression>
+                <cron-expression>0 10 12,16,22 ? * MON-SAT *</cron-expression>
             </cron>
         </trigger>
-    </schedule>
+    </schedule>-->
     
     
     <!--定時查看sensor是否異常，回報-->
@@ -89,7 +89,7 @@
     </schedule>
     
     <!--把測試線別狀態記錄到資料庫-->
-    <schedule>
+<!--    <schedule>
         <job>
             <name>TestLineTypeRecord</name>
             <job-class>com.advantech.quartzJob.TestLineTypeRecord</job-class>
@@ -101,10 +101,10 @@
                 <cron-expression>0 50 9-16 ? * MON-FRI *</cron-expression>
             </cron>
         </trigger>
-    </schedule>
+    </schedule>-->
     
     <!--每日把未回覆異常原因的回覆給幹部-->
-    <schedule>
+<!--    <schedule>
         <job>
             <name>CountermeasureAlarm</name>
             <job-class>com.advantech.quartzJob.CountermeasureAlarm</job-class>
@@ -116,10 +116,10 @@
                 <cron-expression>0 0 11,16 ? * MON-FRI *</cron-expression>
             </cron>
         </trigger>
-    </schedule>
+    </schedule>-->
     
     <!--線平衡測試排站人數估算-->
-    <schedule>
+<!--    <schedule>
         <job>
             <name>NumLamp</name>
             <job-class>com.advantech.quartzJob.NumLamp</job-class>
@@ -131,19 +131,35 @@
                 <cron-expression>15,45 0/1 8-20 ? * MON-FRI *</cron-expression>
             </cron>
         </trigger>
-    </schedule>
+    </schedule>-->
     
-    <!--晚上9點半把NumLamp這個job所分配的子polling job全數移除-->
+    <!--Clear all subPolling job separate by system-->
     <schedule>
         <job>
-            <name>NumLampClearAllocation</name>
-            <job-class>com.advantech.quartzJob.NumLampClearAllocation</job-class>
+            <name>ClearPollingJob</name>
+            <job-class>com.advantech.quartzJob.ClearPollingJob</job-class>
         </job>
         <trigger>
             <cron>
-                <name>NumLampClearAllocation</name>
-                <job-name>NumLampClearAllocation</job-name>
+                <name>ClearPollingJob</name>
+                <job-name>ClearPollingJob</job-name>
                 <cron-expression>0 30 21 ? * MON-FRI *</cron-expression>
+            </cron>
+        </trigger>
+    </schedule>
+    
+    <!--把Cell是否合格資訊轉換到資料庫-->
+    <schedule> 
+        <job>
+            <name>CellJobWorker</name>
+            <job-class>com.advantech.quartzJob.CellJobWorker</job-class>
+        </job>
+        <trigger>
+            <cron>
+                <name>CellJobWorker</name>
+                <job-name>CellJobWorker</job-name>
+                <misfire-instruction>MISFIRE_INSTRUCTION_FIRE_ONCE_NOW</misfire-instruction>
+                <cron-expression>0/30 * 8-20 ? * MON-SAT *</cron-expression>
             </cron>
         </trigger>
     </schedule>

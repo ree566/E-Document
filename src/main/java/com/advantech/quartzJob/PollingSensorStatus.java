@@ -40,9 +40,13 @@ public class PollingSensorStatus implements Job {
          Query: select * from LS_GetSenRealTime Parameters: []
          */
         try {
-            Endpoint.sendAll(gson.toJson(fbnService.getSensorInstantlyStatus()));
+            Endpoint.sendAll(getData());
         } catch (Exception e) {
             log.error(e.toString());
         }
+    }
+    
+    public String getData(){
+        return gson.toJson(fbnService.getSensorInstantlyStatus());
     }
 }

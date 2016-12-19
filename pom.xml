@@ -185,13 +185,7 @@
             <artifactId>jstl</artifactId>
             <version>1.2</version>
         </dependency>
-        
-        <!--        <dependency>
-            <groupId>com.blogspot.monstersupreme</groupId>
-            <artifactId>dataaccess</artifactId>
-            <version>1.0</version>
-        </dependency>-->
-
+       
         <!-- http://mvnrepository.com/artifact/net.sourceforge.jtds/jtds -->
         <dependency>
             <groupId>net.sourceforge.jtds</groupId>

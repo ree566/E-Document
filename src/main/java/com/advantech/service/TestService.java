@@ -8,6 +8,7 @@ package com.advantech.service;
 import com.advantech.entity.AlarmAction;
 import com.advantech.entity.Test;
 import com.advantech.entity.TestLineTypeUser;
+import com.advantech.interfaces.AlarmActions;
 import com.advantech.model.TestDAO;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +17,7 @@ import java.util.Map;
  *
  * @author Wei.Cheng
  */
-public class TestService {
+public class TestService implements AlarmActions{
 
     private final TestDAO testDAO;
 
@@ -52,20 +53,24 @@ public class TestService {
         return testDAO.changeDeck(tableNo, jobnumber);
     }
     
-    public boolean insertTestAlarm(List<AlarmAction> l) {
-        return testDAO.insertTestAlarm(l);
+    @Override
+    public boolean insertAlarm(List<AlarmAction> l) {
+        return testDAO.insertAlarm(l);
     }
 
-    public boolean updateTestAlarm(List<AlarmAction> l) {
-        return testDAO.updateTestAlarm(l);
+    @Override
+    public boolean updateAlarm(List<AlarmAction> l) {
+        return testDAO.updateAlarm(l);
     }
 
-    public boolean resetTestAlarm() {
-        return testDAO.resetTestAlarm();
+    @Override
+    public boolean resetAlarm() {
+        return testDAO.resetAlarm();
     }
     
-    public boolean removeAllAlarmSign() {
-        return testDAO.removeAllAlarmSign();
+    @Override
+    public boolean removeAlarmSign() {
+        return testDAO.removeAlarmSign();
     }
     
     public boolean setTestAlarmToTestingMode(){

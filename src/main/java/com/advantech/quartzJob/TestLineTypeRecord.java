@@ -8,7 +8,7 @@ package com.advantech.quartzJob;
 
 import com.advantech.entity.Test;
 import com.advantech.entity.TestLineTypeUser;
-import com.advantech.helper.WebServiceRV;
+import com.advantech.webservice.WebServiceRV;
 import com.advantech.service.BasicService;
 import com.advantech.service.TestService;
 import java.util.ArrayList;
@@ -38,7 +38,7 @@ public class TestLineTypeRecord implements Job {
         } else {
             TestService tService = BasicService.getTestService();
             //只存下已經刷入的使用者
-            List<TestLineTypeUser> testLineTypeStatus = separateOfflineUser(WebServiceRV.getInstance().getKanbanUsersForXml());
+            List<TestLineTypeUser> testLineTypeStatus = separateOfflineUser(WebServiceRV.getInstance().getKanbanUsers());
             boolean recordStatus = tService.recordTestLineType(testLineTypeStatus);
             log.info("Record status : " + recordStatus);
         }

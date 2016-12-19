@@ -12,6 +12,7 @@ package com.advantech.endpoint;
 import com.advantech.helper.CronTrigMod;
 import com.advantech.helper.PropertiesReader;
 import com.advantech.quartzJob.PollingNumLampResult;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -46,6 +47,13 @@ public class Endpoint3 {
 
     @OnOpen
     public void onOpen(final Session session) {
+        //Push the current status on client first connect
+        try {
+            session.getBasicRemote().sendText(new PollingNumLampResult().getData());
+        } catch (IOException ex) {
+            log.error(ex.toString());
+        }
+        
         sessions.add(session);
         //每次當client連接進來時，去看目前session的數量 當有1個session時把下方quartz job加入到schedule裏頭(只要執行一次，不要重複加入)
         int a = sessions.size();

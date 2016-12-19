@@ -144,8 +144,7 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
 
     @Override
     protected boolean initDbAlarmSign() {
-        BABService bs = BasicService.getBabService();
-        return bs.removeAllAlarmSign() && bs.insertBABAlarm(super.mapToAlarmSign(dataMap));
+        return babService.removeAlarmSign() && babService.insertAlarm(super.mapToAlarmSign(dataMap));
     }
 
     @Override
@@ -155,12 +154,12 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
 
     @Override
     protected boolean setDbAlarmSign(List<AlarmAction> l) {
-        return babService.updateBABAlarm(l);
+        return babService.updateAlarm(l);
     }
 
     @Override
     protected boolean resetDbAlarmSign() {
-        return babService.resetBABAlarm();
+        return babService.resetAlarm();
     }
 
 }

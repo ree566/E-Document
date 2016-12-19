@@ -2,7 +2,7 @@
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
- * 每兩個小時幫忙把BAB資料做儲存
+ * 
  */
 package com.advantech.quartzJob;
 
@@ -36,19 +36,21 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author Wei.Cheng
+ * @author Wei.Cheng Job separate by class NumLamp, caculate the lineBalance
+ * between testLine and babLine.
  */
 public class LineBalancePeopleGenerator implements Job {
 
     private static final Logger log = LoggerFactory.getLogger(LineBalancePeopleGenerator.class);
 
-    private final WorkTimeService workTimeService;
     private final BABService babService;
     private final int numLampMaxTestRequiredPeople, numLampGroupStart, numLampGroupEnd, numLampSpecCuttingGroup;
 
     private int currentGroup;
 
     private final Double babStandard;
+    private Integer testStandard;
+    private Integer totalQuantity;
 
     private List<String> message;
 
@@ -62,7 +64,6 @@ public class LineBalancePeopleGenerator implements Job {
     private TriggerKey currentTriggerKey;
 
     public LineBalancePeopleGenerator() {
-        this.workTimeService = BasicService.getWorkTimeService();
         this.babService = BasicService.getBabService();
 
         PropertiesReader p = PropertiesReader.getInstance();
@@ -86,6 +87,8 @@ public class LineBalancePeopleGenerator implements Job {
         this.currentBab = bab;
         this.currentTriggerKey = jec.getTrigger().getKey();
         this.currentJobKey = jec.getJobDetail().getKey();
+        this.testStandard = dataMap.get("testStandardTime") == null ? null : minToSec((Double) dataMap.get("testStandardTime"));
+        this.totalQuantity = dataMap.get("totalQuantity") == null ? null : (Integer) dataMap.get("totalQuantity");
         this.generateTestPeople();
     }
 
@@ -112,17 +115,9 @@ public class LineBalancePeopleGenerator implements Job {
 
         //依照目前組別取得lineBalance
         List<Map> balanceGroup = getCurrentLineBalance(currentBab);
-        Integer testStandardTime;
 
         //連第一組都沒有，返回
         if (balanceGroup.isEmpty()) {
-            return;
-        } else {
-            //取測試工時
-            testStandardTime = minToSec(workTimeService.getTestStandardTime(currentBab.getModel_name()));
-        }
-
-        if (testStandardTime == null) {
             return;
         }
 
@@ -134,11 +129,11 @@ public class LineBalancePeopleGenerator implements Job {
                 return;
             } else {
                 //計算人數，傳回給parent
-                caculateAndReportDataToParentJob(currentBab, babCT, testStandardTime);
+                caculateAndReportDataToParentJob(currentBab, babCT);
             }
         }
 
-        if (testStandardTime < startCountMininumStandardTime || currentGroup >= numLampGroupEnd) {
+        if (testStandard != null && (testStandard < startCountMininumStandardTime || currentGroup >= numLampGroupEnd)) {
             jobSelfRemove();
         } else {
             //Update the current group status finally anyway.
@@ -185,32 +180,35 @@ public class LineBalancePeopleGenerator implements Job {
         } //Do nothing when object is not found
     }
 
-    private void caculateAndReportDataToParentJob(BAB bab, Integer babCT, Integer testStandardTime) {
+    private void caculateAndReportDataToParentJob(BAB bab, Integer babCT) {
 
         JSONObject obj = new JSONObject(bab);
-        Integer totalQuantity = babService.getPoTotalQuantity(bab.getPO());
 
-        if (totalQuantity == null) {
-            return;
-        }
-
-        Integer suggestPeople;
-
-        if ((isFilterCountRule2(totalQuantity, testStandardTime) && isPcsFilterCountRule()) || (!isStatusExist(bab.getLineName()) && isFilterCountRule2(totalQuantity, testStandardTime) && currentGroup >= numLampSpecCuttingGroup)) {
-            suggestPeople = generatePeople1(babCT, testStandardTime);
-            message.add("AssyCT: " + formatter2.format(secToMin(babCT)) + " min, T1 standard: " + formatter2.format(secToMin(testStandardTime)) + " min");
+        if (totalQuantity == null || testStandard == null) {
+            if (totalQuantity == null) {
+                message.add("TotalQuantity is not setting");
+            }
+            if (testStandard == null) {
+                message.add("TestStandard time is not setting");
+            }
         } else {
-            message.add("Total quantity is: " + totalQuantity + " pcs");
-            message.add("T1 standard: " + formatter2.format(secToMin(testStandardTime)) + " min");
-            suggestPeople = basicSuggestPeople;
-        }
+            Integer suggestPeople;
 
-        if (testStandardTime < startCountMininumStandardTime || currentGroup >= numLampGroupEnd) {
-            message.add("※Reach " + numLampGroupEnd + " pcs or T1 standard < " + formatter2.format(secToMin(startCountMininumStandardTime)) + " min");
-            message.add("※Stop updates");
-        }
+            if ((isFilterCountRule2(totalQuantity, testStandard) && isPcsFilterCountRule()) || (!isStatusExist(bab.getLineName()) && isFilterCountRule2(totalQuantity, testStandard) && currentGroup >= numLampSpecCuttingGroup)) {
+                suggestPeople = generatePeople1(babCT, testStandard);
+                message.add("AssyCT: " + formatter2.format(secToMin(babCT)) + " min, T1 standard: " + formatter2.format(secToMin(testStandard)) + " min");
+            } else {
+                message.add("Total quantity is: " + totalQuantity + " pcs");
+                message.add("T1 standard: " + formatter2.format(secToMin(testStandard)) + " min");
+                suggestPeople = basicSuggestPeople;
+            }
 
-        obj.put("suggestTestPeople", suggestPeople);
+            if (testStandard < startCountMininumStandardTime || currentGroup >= numLampGroupEnd) {
+                message.add("※Reach " + numLampGroupEnd + " pcs or T1 standard < " + formatter2.format(secToMin(startCountMininumStandardTime)) + " min");
+                message.add("※Stop updates");
+            }
+            obj.put("suggestTestPeople", suggestPeople);
+        }
         obj.put("message", message);
         NumLamp.getNumLampStatus().put(bab.getLineName(), obj);
     }

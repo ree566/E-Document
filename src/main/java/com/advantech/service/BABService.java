@@ -5,6 +5,7 @@ import com.advantech.entity.BAB;
 import com.advantech.entity.BABHistory;
 import com.advantech.entity.Line;
 import com.advantech.helper.PropertiesReader;
+import com.advantech.interfaces.AlarmActions;
 import com.advantech.model.BABDAO;
 import com.google.gson.Gson;
 import java.math.BigDecimal;
@@ -24,7 +25,7 @@ import org.json.JSONObject;
  *
  * @author Wei.Cheng
  */
-public class BABService {
+public class BABService implements AlarmActions{
 
     private final BABDAO babDAO;
     private final int BALANCE_ROUNDING_DIGIT;
@@ -125,20 +126,24 @@ public class BABService {
         return babDAO.getClosedBABInfoDetail(startDate, endDate);
     }
 
-    public boolean insertBABAlarm(List<AlarmAction> l) {
-        return babDAO.insertTestAlarm(l);
+    @Override
+    public boolean insertAlarm(List<AlarmAction> l) {
+        return babDAO.insertAlarm(l);
     }
 
-    public boolean updateBABAlarm(List<AlarmAction> l) {
-        return babDAO.updateBABAlarm(l);
+    @Override
+    public boolean updateAlarm(List<AlarmAction> l) {
+        return babDAO.updateAlarm(l);
     }
 
-    public boolean resetBABAlarm() {
-        return babDAO.resetBABAlarm();
+    @Override
+    public boolean resetAlarm() {
+        return babDAO.resetAlarm();
     }
 
-    public boolean removeAllAlarmSign() {
-        return babDAO.removeAllAlarmSign();
+    @Override
+    public boolean removeAlarmSign() {
+        return babDAO.removeAlarmSign();
     }
 
     public boolean setBABAlarmToTestingMode() {
@@ -155,7 +160,7 @@ public class BABService {
 
         Line line = lineService.getLine(bab.getLine());
 
-        if (line.isIsOpened()) {
+        if (line.isOpened()) {
             if (startBAB(bab)) {
                 BAB b = this.babDAO.getLastInputBAB(bab.getLine());//get last insert id
                 BABLoginStatusService bs = BasicService.getBabLoginStatusService();

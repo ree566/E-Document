@@ -90,6 +90,15 @@
     </servlet-mapping>
     
     <servlet>
+        <servlet-name>cell</servlet-name>
+        <jsp-file>/cellpage.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>cell</servlet-name>
+        <url-pattern>/Cell</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
         <servlet-name>Error</servlet-name>
         <jsp-file>/temp/error.jsp</jsp-file>
     </servlet>
@@ -172,21 +181,21 @@
     </servlet-mapping>
     
     <servlet>
-        <servlet-name>NumLamp</servlet-name>
-        <jsp-file>/pages/admin/totalMap_numLamp.jsp</jsp-file>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>NumLamp</servlet-name>
-        <url-pattern>/pages/admin/NumLamp</url-pattern>  
-    </servlet-mapping>
-    
-    <servlet>
         <servlet-name>BabDetailInfo</servlet-name>
         <jsp-file>/pages/admin/babDetailInfo.jsp</jsp-file>
     </servlet>
     <servlet-mapping>
         <servlet-name>BabDetailInfo</servlet-name>
         <url-pattern>/pages/admin/BabDetailInfo</url-pattern>  
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>CellRecord</servlet-name>
+        <jsp-file>/pages/admin/cellRecord.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>CellRecord</servlet-name>
+        <url-pattern>/pages/admin/CellRecord</url-pattern>  
     </servlet-mapping>
     
     <servlet>

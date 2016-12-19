@@ -11,11 +11,13 @@ package com.advantech.endpoint;
 
 import com.advantech.helper.CronTrigMod;
 import com.advantech.helper.PropertiesReader;
-import com.advantech.quartzJob.PollingServerParmater;
+import com.advantech.quartzJob.PollingBabAndTestResult;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Level;
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
 import javax.websocket.OnMessage;
@@ -32,20 +34,28 @@ import org.slf4j.LoggerFactory;
  */
 @ServerEndpoint("/echo2")
 public class Endpoint2 {
-
+    
     private static final Logger log = LoggerFactory.getLogger(Endpoint2.class);
 //    private static final Queue<Session> queue = new ConcurrentLinkedQueue<>();
     private static final Set<Session> sessions = Collections.synchronizedSet(new HashSet<Session>());
-
+    
     private static final String POLLING_FREQUENCY;
     private static final String JOB_NAME = "JOB2";
-
+    
     static {
         POLLING_FREQUENCY = PropertiesReader.getInstance().getEndpointQuartzTrigger();
     }
-
+    
     @OnOpen
     public void onOpen(final Session session) {
+        
+        //Push the current status on client first connect
+        try {
+            session.getBasicRemote().sendText(new PollingBabAndTestResult().getData());
+        } catch (IOException ex) {
+            log.error(ex.toString());
+        }
+        
         sessions.add(session);
         //每次當client連接進來時，去看目前session的數量 當有1個session時把下方quartz job加入到schedule裏頭(只要執行一次，不要重複加入)
         int a = sessions.size();
@@ -54,13 +64,13 @@ public class Endpoint2 {
             System.out.println("Some session exist, begin polling.");
         }
     }
-
+    
     @OnMessage
     public void onMessage(String message, Session session) {
         //無作用，目前暫時當作echo測試
         System.out.println("received msg " + message + " from " + session.getId());
     }
-
+    
     @OnClose
     public void onClose(Session session) {
         sessions.remove(session);
@@ -70,7 +80,7 @@ public class Endpoint2 {
             System.out.println("All session closed");
         }
     }
-
+    
     @OnError
     public void error(Session session, Throwable t) {
         sessions.remove(session);
@@ -97,7 +107,7 @@ public class Endpoint2 {
     // Generate when connect users are at least one.
     private void pollingDBAndBrocast() {
         try {
-            CronTrigMod.getInstance().scheduleJob(PollingServerParmater.class, JOB_NAME, POLLING_FREQUENCY);
+            CronTrigMod.getInstance().scheduleJob(PollingBabAndTestResult.class, JOB_NAME, POLLING_FREQUENCY);
         } catch (SchedulerException ex) {
             log.error(ex.toString());
         }
@@ -112,7 +122,7 @@ public class Endpoint2 {
             log.error(ex.toString());
         }
     }
-
+    
     public static void clearSessions() {
         sessions.clear();
     }
