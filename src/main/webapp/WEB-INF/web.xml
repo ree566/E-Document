@@ -226,7 +226,7 @@
     </servlet-mapping>
  
     <!--若要停用quartz請從此開始註解-->
-<!--    <servlet>
+    <servlet>
         <servlet-name>QuartzInitializer</servlet-name>
         <servlet-class>
             org.quartz.ee.servlet.QuartzInitializerServlet
@@ -244,7 +244,7 @@
             <param-value>true</param-value>
         </init-param>
         <load-on-startup>2</load-on-startup>
-    </servlet>-->
+    </servlet>
     <!---若要停用quartz請從此結束註解-->
 
     <context-param>
