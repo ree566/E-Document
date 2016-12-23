@@ -44,6 +44,10 @@ public class CellService implements AlarmActions {
     public List<Map> cellHistoryView() {
         return cellProcessDAO.cellHistoryView();
     }
+    
+    public List<Map> cellHistoryView(String startDate, String endDate) {
+        return cellProcessDAO.cellHistoryView(startDate, endDate);
+    }
 
     public boolean insertCell(Cell cell) {
         List l = new ArrayList();
@@ -53,6 +57,10 @@ public class CellService implements AlarmActions {
 
     public boolean insertCell(List<Cell> l) {
         return cellProcessDAO.insertCell(l);
+    }
+    
+    public boolean deleteCell(List<Cell> l) {
+        return cellProcessDAO.deleteCell(l);
     }
 
     public boolean deleteCell(Cell cell) {

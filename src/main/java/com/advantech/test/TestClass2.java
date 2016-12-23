@@ -5,10 +5,7 @@
  */
 package com.advantech.test;
 
-import java.awt.Desktop;
-import java.net.URI;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static java.lang.System.out;
 
 /**
  *
@@ -16,15 +13,7 @@ import org.slf4j.LoggerFactory;
  */
 public class TestClass2 {
 
-    private static final Logger log = LoggerFactory.getLogger(TestClass2.class);
-
     public static void main(String arg0[]) {
-
-        if (Desktop.isDesktopSupported()) {
-            try {
-                Desktop.getDesktop().browse(new URI("http://172.20.131.225/mesdashboard/"));
-            } catch (Exception ex) {
-            }
-        }
+        out.println("Begin hacking shenMe coolGuang...");
     }
 }

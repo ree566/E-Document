@@ -51,8 +51,16 @@ public class CellDAO extends BasicDAO implements AlarmActions {
         return queryForMapList(this.getConn(), "SELECT * FROM cellHistoryView");
     }
 
+    public List<Map> cellHistoryView(String startDate, String endDate) {
+        return queryForMapList(this.getConn(), "SELECT * FROM cellHistoryView WHERE CONVERT(VARCHAR(10), btime, 20) BETWEEN ? AND ?", startDate, endDate);
+    }
+
     public boolean insertCell(List<Cell> l) {
         return update(getConn(), "INSERT INTO Cell(lineId, PO) VALUES(?,?)", l, "lineId", "PO");
+    }
+
+    public boolean deleteCell(List<Cell> l) {
+        return update(getConn(), "UPDATE Cell SET isused = 2 WHERE id = ?", l, "id");
     }
 
     public boolean deleteCell(Cell cell) {

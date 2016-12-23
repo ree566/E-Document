@@ -138,7 +138,7 @@
         <script src="../../js/tooltipster.bundle.min.js"></script>
         <script src="../../js/totalMap-setting/${userSitefloor}f.js"></script>
         <script src="../../js/numLamp-setting/${userSitefloor}f.js"></script>
-        <script src="../../js/cell-setting/${userSitefloor}f.js"></script>
+        <script src="../../js/cell-setting/${userSitefloor}f.js?"></script>
         <script>
             var maxProductivity = 200;
 
@@ -161,7 +161,7 @@
 
                 var dragableWiget = $("#mapGroup > div:not(#wigetInfo) > div");
 
-                dragableWiget.css("position", "absolute");
+                dragableWiget.css("position", " absolute");
 //                dragableWiget.not(".clearWiget").addClass("ui-helper").draggable({
 //                    drag: function (e) {
 ////                        return false;
@@ -425,9 +425,8 @@
                     }
                 }
 
-               var hostname = window.location.host;//Get the host ipaddress to link to the server.
- //              var hostname = "172.20.131.52:8084";
-                var contextPath = "${pageContext.request.contextPath}";
+//                var hostname = window.location.host;//Get the host ipaddress to link to the server.
+               var hostname = "172.20.131.52:8080";
                 //--------------websocket functions
                 //websocket will reconnect by reconnecting-websocket.min.js when client or server is disconnect
 
@@ -477,42 +476,39 @@
                 };
 
                 if (testGroup.length != 0 || babGroup.length != 0) {
-                    ws2 = new ReconnectingWebSocket("ws://" + hostname + contextPath + "/echo2");
+                    ws2 = new ReconnectingWebSocket("ws://" + hostname + "/CalculatorWSApplication/echo2");
                     setWebSocketClient(ws2);
+                    //Get the server message and transform into table.
+                    ws2.onmessage = function (message) {
+                        var jsonArray = $.parseJSON(message.data);
+                        if (jsonArray.length != 0) {
+                            testDataToWiget(jsonArray[0]);
+                            babDataToWiget(jsonArray[1]);
+                        }
+                    };
                 }
 
                 if (numLampGroup.length != 0) {
-                    ws3 = new ReconnectingWebSocket("ws://" + hostname + contextPath + "/echo3");
-                    setWebSocketClient(ws2);
+                    ws3 = new ReconnectingWebSocket("ws://" + hostname + "/CalculatorWSApplication/echo3");
+                    setWebSocketClient(ws3);
+                    ws3.onmessage = function (message) {
+                        var jsonArray = $.parseJSON(message.data);
+                        if (jsonArray.length != 0) {
+                            numLampDataToWiget(jsonArray);
+                        }
+                    };
                 }
 
                 if (cellGroup.length != 0) {
-                    ws4 = new ReconnectingWebSocket("ws://" + hostname + contextPath + "/echo4");
+                    ws4 = new ReconnectingWebSocket("ws://" + hostname + "/CalculatorWSApplication/echo4");
                     setWebSocketClient(ws4);
+                    ws4.onmessage = function (message) {
+                        var jsonArray = $.parseJSON(message.data);
+                        if (jsonArray.length != 0) {
+                            cellDataToWiget(jsonArray);
+                        }
+                    };
                 }
-
-                //Get the server message and transform into table.
-                ws2.onmessage = function (message) {
-                    var jsonArray = $.parseJSON(message.data);
-                    if (jsonArray.length != 0) {
-                        testDataToWiget(jsonArray[0]);
-                        babDataToWiget(jsonArray[1]);
-                    }
-                };
-
-                ws3.onmessage = function (message) {
-                    var jsonArray = $.parseJSON(message.data);
-                    if (jsonArray.length != 0) {
-                        numLampDataToWiget(jsonArray);
-                    }
-                };
-
-                ws4.onmessage = function (message) {
-                    var jsonArray = $.parseJSON(message.data);
-                    if (jsonArray.length != 0) {
-                        cellDataToWiget(jsonArray);
-                    }
-                };
 
                 function setWebSocketClient(webSocket) {
                     webSocket.timeoutInterval = 3000;

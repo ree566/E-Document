@@ -30,6 +30,9 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
             .alarm{
                 color: red;
             }
+            #cellhistoryFilter td{
+                padding: 5px;
+            }
         </style>
         <script src="../../js/jquery-1.11.3.min.js"></script>
         <script src="../../js/jquery-ui-1.10.0.custom.min.js"></script>
@@ -42,6 +45,8 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
         <script src="../../js/jquery-datatable-button/vfs_fonts.js"></script>
         <script src="../../js/jquery-datatable-button/buttons.html5.min.js"></script>
         <script src="../../js/jquery-datatable-button/buttons.print.min.js"></script>
+        <script src="../../js/moment.js"></script>
+        <script src="../../js/bootstrap-datetimepicker.min.js"></script>
         <script src="../../js/urlParamGetter.js"></script>
         <script>
             var maxProductivity = 200;
@@ -73,6 +78,7 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
 
                 $("body").on('dblclick', '#cellHistory tbody tr', function () {
                     var selectData = availHistoryTable.row(this).data();
+                    $("#reset").trigger("click");
                     $("#PO").val(selectData.PO);
                     $("#lineId").val(selectData.lineId);
                     $("#send").trigger("click");
@@ -86,10 +92,35 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
 
                     $("html, body").animate({scrollTop: $('#cellHistoryDetail').offset().top}, 500);
                 });
+
+                var momentFormatString = 'YYYY-MM-DD';
+                var options = {
+//                    defaultDate: moment(),
+                    useCurrent: true,
+                    maxDate: moment(),
+                    format: momentFormatString,
+                    extraFormats: [momentFormatString]
+                };
+                $('#fini, #ffin, #fini_1, #ffin_1').datetimepicker(options);
+                $("#fini").click(function () {
+                    if ($("#ffin").val() == "") {
+                        $("#ffin").val($(this).val());
+                    }
+                });
+
+                $("#fini_1").click(function () {
+                    if ($("#ffin_1").val() == "") {
+                        $("#ffin_1").val($(this).val());
+                    }
+                });
             });
 
             function getAllCell() {
                 availHistoryTable = $("#cellHistory").DataTable({
+                    dom: 'lf<"floatright"B>rtip',
+                    buttons: [
+                        'copy', 'excel', 'print'
+                    ],
                     "processing": true,
                     "serverSide": false,
                     fixedHeader: {
@@ -99,29 +130,40 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                         "url": "../../CellSearch",
                         "type": "Post",
                         data: {
-                            action: "getHistory"
+                            action: "getHistory",
+                            startDate: $("#fini").val(),
+                            endDate: $("#ffin").val()
                         }
                     },
                     "columns": [
                         {data: "id", visible: false},
                         {data: "lineId", visible: false},
                         {data: "PO"},
+                        {data: "Model_name"},
                         {data: "lineName"},
+                        {data: "failPercent"},
+                        {data: "total"},
                         {data: "isused"},
                         {data: "btime"},
                         {data: "lastUpdateTime"}
                     ],
                     "columnDefs": [
                         {
-                            "targets": 4,
+                            "targets": 5,
+                            'render': function (data, type, full, meta) {
+                                return ((data * 100 < 1 && data !== 0) ? getPercent(data, 2) : getPercent(data, 1)) + '%';
+                            }
+                        },
+                        {
+                            "targets": 7,
                             'render': function (data, type, full, meta) {
                                 return data == null ? "進行中" : "已完結";
                             }
                         },
                         {
-                            "targets": 6,
+                            "targets": [8, 9],
                             'render': function (data, type, full, meta) {
-                                return data == null ? "N/A" : data;
+                                return data == null ? "N/A" : formatDate(data);
                             }
                         }
                     ],
@@ -139,14 +181,14 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                     "initComplete": function (settings, json) {
                         $("#cellHistory").show();
                     },
-                    "order": [[5, "desc"]]
+                    "order": [[8, "desc"]]
                 });
             }
 
             function getDetail() {
 
                 table = $("#cellHistoryDetail").DataTable({
-                    dom: 'Bfrtip',
+                    dom: 'lf<"floatright"B>rtip',
                     buttons: [
                         'copy', 'excel', 'print'
                     ],
@@ -162,17 +204,20 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                             PO: $("#PO").val(),
                             lineId: $("#lineId").val(),
                             minPcs: $("#minPcs").val(),
-                            maxPcs: $("#maxPcs").val()
+                            maxPcs: $("#maxPcs").val(),
+                            startDate: $("#fini_1").val(),
+                            endDate: $("#ffin_1").val()
                         }
                     },
                     "columns": [
-                        {data: "barcode"},
+                        {data: "barcode", visible: false},
                         {data: "PO"},
                         {data: "linename"},
-                        {data: "diffTime"},
+                        {data: "diffTime", visible: false},
                         {data: "diff"},
                         {data: "standard"},
                         {data: "PERCENT"},
+                        {data: "pass"},
                         {data: "beginTime"},
                         {data: "endtime"}
                     ],
@@ -180,18 +225,24 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                         {
                             "targets": 4,
                             'render': function (data, type, full, meta) {
-                                return data < 1 ? data : roundDecimal(data, 2);
+                                return roundDecimal(data, 2);
                             }
                         },
                         {
                             "targets": 6,
                             'render': function (data, type, full, meta) {
-                                var percent = (data * 100 < 1 ? roundDecimal(data * 100, 5) : getPercent(data));
+                                var percent = (data * 100 < 1 ? getPercent(data, 2) : getPercent(data, 1));
                                 return percent + "%";
                             }
                         },
                         {
-                            "targets": [7, 8],
+                            "targets": 7,
+                            'render': function (data, type, full, meta) {
+                                return data == 1 ? "是" : "否";
+                            }
+                        },
+                        {
+                            "targets": [8, 9],
                             'render': function (data, type, full, meta) {
                                 return formatDate(data);
                             }
@@ -203,16 +254,16 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                         "sInfo": "目前記錄：_START_ 至 _END_, 總筆數：_TOTAL_"
                     },
                     bAutoWidth: false,
-                    displayLength: -1,
-                    lengthChange: false,
-                    filter: false,
+                    displayLength: 10,
+                    lengthChange: true,
                     info: true,
-                    paginate: false,
+                    paginate: true,
                     destroy: true,
+                    stateSave: true,
                     "initComplete": function (settings, json) {
                         $("#cellHistoryDetail").show();
                     },
-                    "order": [[8, "asc"]]
+                    "order": [[1, "asc"], [9, "asc"]]
                 });
             }
 
@@ -220,8 +271,8 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                 return dateString.substring(0, 19);
             }
 
-            function getPercent(val) {
-                return roundDecimal((val * 100), 0);
+            function getPercent(val, precision) {
+                return roundDecimal((val * 100), precision == null ? 0 : precision);
             }
 
             function roundDecimal(val, precision) {
@@ -236,57 +287,101 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
 
         <div class="container">
             <div class="row">
-
                 <h5 class="alarm">※雙擊表格內容可查看工單完整資訊</h5>
-                <h3>Cell桌各線別投入工單列表<button id="cellHistoryResearch"><span class="glyphicon glyphicon-repeat"></span></button></h3>
+                <h3>Cell桌各線別投入過工單列表</h3>
+                <div class="form-inline">
+                    <label>篩選日期:從</label>
+                    <div class='input-group date' id='beginTime'>
+                        <input type="text" id="fini" placeholder="請選擇起始時間"> 
+                    </div> 
+                    <label>到</label>
+                    <div class='input-group date' id='endTime'>
+                        <input type="text" id="ffin" placeholder="請選擇結束時間"> 
+                    </div>
+                    <button id="cellHistoryResearch">確定</button>
+                </div>
                 <table id="cellHistory" class="display" cellspacing="0" width="100%" style="text-align: center" hidden>
                     <thead>
                         <tr>
                             <th>id</th>
                             <th>lineId</th>
-                            <th>PO</th>
-                            <th>lineName</th>
-                            <th>isused</th>
-                            <th>btime</th>
-                            <th>lastUpdateTime</th>
+                            <th>工單</th>
+                            <th>機種</th>
+                            <th>線別</th>
+                            <th>亮燈頻率</th>
+                            <th>投入數量</th>
+                            <th>狀態</th>
+                            <th>開始時間</th>
+                            <th>結束時間</th>
                         </tr>
                     </thead>
                 </table>
             </div>
             <div class="row">
                 <h3>Cell桌資料擷取紀錄查詢</h3>
-                <div class="form-inline">
-                    <div>
-                        <label for="PO">Please insert your PO:</label>
-                        <input type="text" id="PO" placeholder="PO insert here">
-                        <select id="lineId">
-                            <option value="-1">請選擇線別</option>
-                            <c:forEach var="cellLine" items="${cellLineDAO.findAll()}">
-                                <option value="${cellLine.id}"}>
-                                    線別 ${cellLine.name} / 代號 ${cellLine.aps_lineId} 
-                                </option>
-                            </c:forEach>
-                        </select>
-                        <label for="amount">MinPcs:</label>
-                        <input type="number" id="minPcs" min="1" placeholder="不設定下限請留空" />
-                        <label for="amount">MaxPcs:</label>
-                        <input type="number" id="maxPcs" min="1" placeholder="不設定上限請留空" />
-                        <input type="button" id="send" value="send" />
-                    </div>
-                </div>
+                <form class="form-inline">
+                    <table id="cellhistoryFilter">
+                        <tr>
+                            <td colspan="2"><span>請選擇篩選條件</span></td>
+                        </tr>
+                        <tr>
+                            <td><label>PO</label></td>
+                            <td><input type="text" id="PO" placeholder="Please insert your PO"></td>
+                        </tr>
+                        <tr>
+                            <td><label>線別</label></td>
+                            <td>
+                                <select id="lineId">
+                                    <option value="">請選擇線別</option>
+                                    <c:forEach var="cellLine" items="${cellLineDAO.findAll()}">
+                                        <option value="${cellLine.id}"}>
+                                            線別 ${cellLine.name} / 代號 ${cellLine.aps_lineId} 
+                                        </option>
+                                    </c:forEach>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><label>Pcs</label></td>
+                            <td>
+                                <input type="number" id="minPcs" min="1" placeholder="不設定下限請留空" />
+                                <input type="number" id="maxPcs" min="1" placeholder="不設定上限請留空" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><label>日期</label></td>
+                            <td>
+                                <div class='input-group date' id='beginTime'>
+                                    <input type="text" id="fini_1" placeholder="請選擇起始時間"> 
+                                </div> 
+                                <label>到</label>
+                                <div class='input-group date' id='endTime'>
+                                    <input type="text" id="ffin_1" placeholder="請選擇結束時間"> 
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <input type="button" id="send" value="確定" />
+                                <input class="form-control" type="reset" id="reset" value="reset" />
+                            </td>
+                        </tr>
+                    </table>
+                </form>
                 <div>
                     <table id="cellHistoryDetail" class="display" cellspacing="0" width="100%" style="text-align: center" hidden>
                         <thead>
                             <tr>
                                 <th>barcode</th>
-                                <th>PO</th>
-                                <th>line</th>
-                                <th>time spent(Full)</th>
-                                <th>time spent(Min)</th>
-                                <th>standard(Min)</th>
-                                <th>spent percent</th>
-                                <th>begin time</th>
-                                <th>end time</th>
+                                <th>工單</th>
+                                <th>線別</th>
+                                <th>耗時(時間詳細)</th>
+                                <th>耗時(分鐘)</th>
+                                <th>標工(分鐘)</th>
+                                <th>百分比</th>
+                                <th>是否合格</th>
+                                <th>開始時間</th>
+                                <th>結束時間</th>
                             </tr>
                         </thead>
                     </table>

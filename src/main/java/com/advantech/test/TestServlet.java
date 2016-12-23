@@ -6,22 +6,13 @@
  */
 package com.advantech.test;
 
-import com.advantech.helper.CronTrigMod;
-import com.advantech.model.BasicDAO;
-import com.advantech.quartzJob.ClearPollingJob;
-import com.advantech.quartzJob.CountermeasureAlarm;
 import com.advantech.service.BasicLineTypeFacade;
 import com.advantech.service.BasicService;
 import com.advantech.service.CellLineTypeFacade;
 import java.io.*;
-import java.util.List;
-import java.util.logging.Level;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
-import org.quartz.JobExecutionException;
-import org.quartz.JobKey;
-import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

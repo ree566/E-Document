@@ -28,16 +28,16 @@ public class PassStationDAO extends BasicDAO {
     public List<PassStation> getPassStation() {
         return queryForBeanList(this.getConn(), PassStation.class, "SELECT * FROM machineThrough");
     }
-    
+
     public List<PassStation> getPassStation(String PO) {
         return queryForBeanList(this.getConn(), PassStation.class, "SELECT * FROM machineThrough WHERE PO = ?", PO);
     }
-    
-    public List<Map> getCellPerPcsHistory(String PO, int lineId) {
-        return queryProcForMapList(this.getConn(), "{CALL cellDiffPerPcs(?,?)}", PO, lineId);
+
+    public List<Map> getAllCellPerPcsHistory(String PO, Integer lineName, Integer minPcs, Integer maxPcs, String startDate, String endDate) {
+        return queryProcForMapList(this.getConn(), "{CALL cellDiffPerPcs_1(?,?,?,?,?,?)}", PO, lineName, minPcs, maxPcs, startDate, endDate);
     }
-    
-    public List<Map> getCellLastGroupStatusView(){
+
+    public List<Map> getCellLastGroupStatusView() {
         return queryForMapList(this.getConn(), "SELECT * FROM cellLastGroupStatusView");
     }
 

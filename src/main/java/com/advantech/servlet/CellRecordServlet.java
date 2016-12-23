@@ -43,23 +43,36 @@ public class CellRecordServlet extends HttpServlet {
         String lineId = req.getParameter("lineId");
         String minPcs = req.getParameter("minPcs");
         String maxPcs = req.getParameter("maxPcs");
+        String startDate = req.getParameter("startDate");
+        String endDate = req.getParameter("endDate");
 
         JSONObject jsonObject = new JSONObject();
 
         List l = null;
-        if (pChecker.checkInputVals(PO, lineId)) {
-            //equals false = not setting topN filter
-            if (pChecker.checkInputVal(minPcs) == false && pChecker.checkInputVal(maxPcs) == false) {
-                l = passStationService.getCellPerPcsHistory(PO, Integer.parseInt(lineId));
-            } else {
-                l = passStationService.getCellPerPcsHistory(
-                        PO,
-                        Integer.parseInt(lineId),
-                        pChecker.checkInputVal(minPcs) ? Integer.parseInt(minPcs) : null,
-                        pChecker.checkInputVal(maxPcs) ? Integer.parseInt(maxPcs) : null
-                );
-            }
-        }
+//        if (pChecker.checkInputVals(PO, lineId)) {
+//            //equals false = not setting topN filter
+//            if (pChecker.checkInputVal(minPcs) == false && pChecker.checkInputVal(maxPcs) == false) {
+//                l = passStationService.getCellPerPcsHistory(PO, Integer.parseInt(lineId));
+//            } else {
+        l = passStationService.getAllCellPerPcsHistory(
+                pChecker.checkInputVal(PO) ? PO : null,
+                pChecker.checkInputVal(lineId) ? Integer.parseInt(lineId) : null,
+                pChecker.checkInputVal(minPcs) ? Integer.parseInt(minPcs) : null,
+                pChecker.checkInputVal(maxPcs) ? Integer.parseInt(maxPcs) : null,
+                pChecker.checkInputVal(startDate) ? startDate : null,
+                pChecker.checkInputVal(endDate) ? endDate : null
+        );
+//            }
+//        } else {
+//            String startDate = req.getParameter("startDate");
+//            String endDate = req.getParameter("endDate");
+//            l = pChecker.checkInputVals(startDate, endDate) ? passStationService.getAllCellPerPcsHistory(
+//                    pChecker.checkInputVal(minPcs) == false ? 0 : Integer.parseInt(minPcs),
+//                    pChecker.checkInputVal(maxPcs) == false ? Integer.MAX_VALUE : Integer.parseInt(maxPcs), 
+//                    startDate, 
+//                    endDate
+//            ) : new ArrayList();
+//        }
         out.print(jsonObject.put("data", l == null ? new ArrayList() : l));
     }
 

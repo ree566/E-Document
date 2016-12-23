@@ -10,6 +10,7 @@ import com.advantech.helper.ParamChecker;
 import com.advantech.service.BasicService;
 import com.advantech.service.CellService;
 import java.io.*;
+import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
@@ -49,7 +50,15 @@ public class CellSearch extends HttpServlet {
         if (pc.checkInputVal(action)) {
             switch (action) {
                 case "getHistory":
-                    out.print(new JSONObject().put("data", cellService.cellHistoryView()));
+                    String startDate = req.getParameter("startDate");
+                    String endDate = req.getParameter("endDate");
+                    List l = null;
+                    if (pc.checkInputVals(startDate, endDate)) {
+                        l = cellService.cellHistoryView(startDate, endDate);
+                    } else {
+                        l = cellService.cellHistoryView();
+                    }
+                    out.print(new JSONObject().put("data", l));
                     break;
                 case "getProcessing":
                     String lineId = req.getParameter("lineId");
