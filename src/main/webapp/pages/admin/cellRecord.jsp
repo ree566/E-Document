@@ -57,8 +57,6 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                 $(":text,input[type='number'],select").addClass("form-control");
                 $(":button").addClass("btn btn-default");
 
-                getAllCell();
-
                 $("#send").click(function () {
                     getDetail();
                 });
@@ -95,13 +93,24 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
 
                 var momentFormatString = 'YYYY-MM-DD';
                 var options = {
-//                    defaultDate: moment(),
+                    defaultDate: moment(),
                     useCurrent: true,
                     maxDate: moment(),
                     format: momentFormatString,
                     extraFormats: [momentFormatString]
                 };
-                $('#fini, #ffin, #fini_1, #ffin_1').datetimepicker(options);
+                
+                var options2 = {
+                    useCurrent: true,
+                    maxDate: moment(),
+                    format: momentFormatString,
+                    extraFormats: [momentFormatString]
+                }; 
+                
+                $('#fini, #ffin').datetimepicker(options);
+
+                $('#fini_1, #ffin_1').datetimepicker(options2);
+                
                 $("#fini").click(function () {
                     if ($("#ffin").val() == "") {
                         $("#ffin").val($(this).val());
@@ -113,6 +122,7 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                         $("#ffin_1").val($(this).val());
                     }
                 });
+                getAllCell();
             });
 
             function getAllCell() {
@@ -322,7 +332,7 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                 <form class="form-inline">
                     <table id="cellhistoryFilter">
                         <tr>
-                            <td colspan="2"><span>請選擇篩選條件</span></td>
+                            <td colspan="2"><span>請選擇篩選條件(選填)</span></td>
                         </tr>
                         <tr>
                             <td><label>PO</label></td>
@@ -349,7 +359,7 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                             </td>
                         </tr>
                         <tr>
-                            <td><label>日期</label></td>
+                            <td><label>結束日期</label></td>
                             <td>
                                 <div class='input-group date' id='beginTime'>
                                     <input type="text" id="fini_1" placeholder="請選擇起始時間"> 
