@@ -99,18 +99,18 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                     format: momentFormatString,
                     extraFormats: [momentFormatString]
                 };
-                
+
                 var options2 = {
                     useCurrent: true,
                     maxDate: moment(),
                     format: momentFormatString,
                     extraFormats: [momentFormatString]
-                }; 
-                
+                };
+
                 $('#fini, #ffin').datetimepicker(options);
 
                 $('#fini_1, #ffin_1').datetimepicker(options2);
-                
+
                 $("#fini").click(function () {
                     if ($("#ffin").val() == "") {
                         $("#ffin").val($(this).val());
@@ -129,7 +129,24 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                 availHistoryTable = $("#cellHistory").DataTable({
                     dom: 'lf<"floatright"B>rtip',
                     buttons: [
-                        'copy', 'excel', 'print'
+                        {
+                            extend: 'copyHtml5',
+                            exportOptions: {
+                                columns: ':visible'
+                            }
+                        },
+                        {
+                            extend: 'excelHtml5',
+                            exportOptions: {
+                                columns: ':visible'
+                            }
+                        },
+                        {
+                            extend: 'print',
+                            exportOptions: {
+                                columns: ':visible'
+                            }
+                        }
                     ],
                     "processing": true,
                     "serverSide": false,
@@ -200,7 +217,24 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                 table = $("#cellHistoryDetail").DataTable({
                     dom: 'lf<"floatright"B>rtip',
                     buttons: [
-                        'copy', 'excel', 'print'
+                        {
+                            extend: 'copyHtml5',
+                            exportOptions: {
+                                columns: ':visible'
+                            }
+                        },
+                        {
+                            extend: 'excelHtml5',
+                            exportOptions: {
+                                columns: ':visible'
+                            }
+                        },
+                        {
+                            extend: 'print',
+                            exportOptions: {
+                                columns: ':visible'
+                            }
+                        }
                     ],
                     "processing": true,
                     "serverSide": false,

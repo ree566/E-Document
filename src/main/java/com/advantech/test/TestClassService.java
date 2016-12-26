@@ -20,11 +20,6 @@ public class TestClassService {
         obj2.put("data", 1);
     }
     
-    private final TestClass t;
-
-    public TestClassService() {
-        t = new TestClass();
-    }
 
     
 }

@@ -24,6 +24,7 @@ import org.apache.commons.dbutils.DbUtils;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.dbutils.handlers.*;
+import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,7 +85,7 @@ public class BasicDAO implements Serializable {
                     log.error(ex.toString());
                 }
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             log.error(e.toString());
         }
     }
@@ -108,7 +109,7 @@ public class BasicDAO implements Serializable {
                     log.error(ex.toString());
                 }
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             log.error(e.toString());
         }
     }
@@ -195,14 +196,13 @@ public class BasicDAO implements Serializable {
         try {
             conn.setAutoCommit(false);
 
-            PreparedStatement ps = conn.prepareStatement(sql);
-
-            for (Object o : l) {
-                qRunner.fillStatementWithBean(ps, o, params);
-                ps.addBatch();
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                for (Object o : l) {
+                    qRunner.fillStatementWithBean(ps, o, params);
+                    ps.addBatch();
+                }
+                ps.executeBatch();
             }
-            ps.executeBatch();
-            ps.close();
             DbUtils.commitAndClose(conn);
             flag = true;
         } catch (SQLException e) {
@@ -276,7 +276,7 @@ public class BasicDAO implements Serializable {
             }
             connectFlag = !connectFlag;//有更改時調整flag(開關)做判斷，避免重複修改
             return true;
-        } catch (Exception e) {
+        } catch (SchedulerException e) {
             log.error(e.toString());
             return false;
         }

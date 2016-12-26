@@ -5,7 +5,7 @@
  */
 package com.advantech.test;
 
-import static java.lang.System.out;
+import java.util.ArrayList;
 
 /**
  *
@@ -14,6 +14,22 @@ import static java.lang.System.out;
 public class TestClass2 {
 
     public static void main(String arg0[]) {
-        out.println("Begin hacking shenMe coolGuang...");
+        System.out.println("\n字串===========");
+        String array4 = "MSPO";
+        new TestClass<String>(array4);
+    }
+}
+
+class Cla {
+
+    String s;
+
+    Cla(String s) {
+        this.s = s;
+    }
+
+    @Override
+    public String toString() {//改寫toString，不然會引出記憶體位址
+        return s;
     }
 }

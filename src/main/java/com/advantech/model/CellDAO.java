@@ -8,7 +8,6 @@ package com.advantech.model;
 import com.advantech.entity.AlarmAction;
 import com.advantech.entity.Cell;
 import com.advantech.interfaces.AlarmActions;
-import static com.advantech.model.BasicDAO.update;
 import java.sql.Connection;
 import java.util.List;
 import java.util.Map;

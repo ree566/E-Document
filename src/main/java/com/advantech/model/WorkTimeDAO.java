@@ -5,8 +5,6 @@
  */
 package com.advantech.model;
 
-import static com.advantech.model.BasicDAO.getDBUtilConn;
-import static com.advantech.model.BasicDAO.queryForMapList;
 import java.sql.Connection;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +13,7 @@ import java.util.Map;
  *
  * @author Wei.Cheng
  */
-public class WorkTimeDAO {
+public class WorkTimeDAO extends BasicDAO{
 
     private static Connection getConn() {
         return getDBUtilConn(BasicDAO.SQL.Way_Chien_WebAccess);
