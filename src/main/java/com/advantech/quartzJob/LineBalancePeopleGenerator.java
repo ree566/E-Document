@@ -294,9 +294,9 @@ public class LineBalancePeopleGenerator implements Job {
 
     //(組裝CT + (測試標工 / 人數)) / (max(組裝CT, (測試標工 / 人數)) * 2)  因為取組裝&測試的線平衡率，所以需要*2
     private Double calculateBalance(Integer maxVal, Integer standardVal, Integer people) {
-        Double babCT = (double) maxVal, testStandard = (double) standardVal;
-        Double numerator = babCT + (testStandard / people);
-        Double denominator = findMax(babCT, testStandard / people) * 2;
+        Double babCT = (double) maxVal, standard = (double) standardVal;
+        Double numerator = babCT + (standard / people);
+        Double denominator = findMax(babCT, standard / people) * 2;
         Double result = numerator / denominator;
         return result;
     }
