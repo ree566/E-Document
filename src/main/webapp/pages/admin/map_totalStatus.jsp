@@ -130,6 +130,9 @@
                 margin: 5px;
                 padding: 5px;
             }
+            .adjustPosition{
+                position: absolute;
+            }
         </style>
         <script src="../../js/jquery-1.11.3.min.js"></script>
         <script src="../../js/jquery-ui-1.10.0.custom.min.js"></script>
@@ -161,7 +164,7 @@
 
                 var dragableWiget = $("#mapGroup > div:not(#wigetInfo) > div");
 
-                dragableWiget.css("position", " absolute");
+                dragableWiget.addClass("adjustPosition");
 //                dragableWiget.not(".clearWiget").addClass("ui-helper").draggable({
 //                    drag: function (e) {
 ////                        return false;
@@ -426,7 +429,7 @@
                 }
 
 //                var hostname = window.location.host;//Get the host ipaddress to link to the server.
-               var hostname = "172.20.131.52:8080";
+                var hostname = "172.20.131.52:8080";
                 //--------------websocket functions
                 //websocket will reconnect by reconnecting-websocket.min.js when client or server is disconnect
 

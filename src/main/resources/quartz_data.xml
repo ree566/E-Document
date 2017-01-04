@@ -28,7 +28,7 @@
     </schedule>
     
     <!--清理資料庫job-->
-    <schedule>
+<!--    <schedule>
         <job>
             <name>DataBaseInit</name>
             <job-class>com.advantech.quartzJob.DataBaseInit</job-class>
@@ -40,10 +40,10 @@
                 <cron-expression>0 30 6,21 ? * MON-SAT *</cron-expression>
             </cron>
         </trigger>
-    </schedule>
+    </schedule>-->
     
     <!--把未完結工單做儲存的job-->
-    <schedule>
+<!--    <schedule>
         <job>
             <name>SaveBABDataToDB</name>
             <job-class>com.advantech.quartzJob.BABDataSaver</job-class>
@@ -55,7 +55,7 @@
                 <cron-expression>0 10 12,16,22 ? * MON-SAT *</cron-expression>
             </cron>
         </trigger>
-    </schedule>
+    </schedule>-->
     
     
     <!--定時查看sensor是否異常，回報-->
@@ -89,7 +89,7 @@
     </schedule>
     
     <!--把測試線別狀態記錄到資料庫-->
-    <schedule>
+<!--    <schedule>
         <job>
             <name>TestLineTypeRecord</name>
             <job-class>com.advantech.quartzJob.TestLineTypeRecord</job-class>
@@ -101,7 +101,7 @@
                 <cron-expression>0 50 9-16 ? * MON-FRI *</cron-expression>
             </cron>
         </trigger>
-    </schedule>
+    </schedule>-->
     
     <!--每日把未回覆異常原因的回覆給幹部-->
     <schedule>
@@ -119,7 +119,7 @@
     </schedule>
     
     <!--線平衡測試排站人數估算-->
-    <schedule>
+<!--    <schedule>
         <job>
             <name>NumLamp</name>
             <job-class>com.advantech.quartzJob.NumLamp</job-class>
@@ -131,7 +131,7 @@
                 <cron-expression>15,45 0/1 8-20 ? * MON-FRI *</cron-expression>
             </cron>
         </trigger>
-    </schedule>
+    </schedule>-->
     
     <!--Clear all subPolling job separate by system-->
     <schedule>
@@ -149,7 +149,7 @@
     </schedule>
     
     <!--把Cell是否合格資訊轉換到資料庫-->
-    <schedule> 
+<!--    <schedule> 
         <job>
             <name>CellJobWorker</name>
             <job-class>com.advantech.quartzJob.CellJobWorker</job-class>
@@ -162,10 +162,10 @@
                 <cron-expression>0/30 * 8-20 ? * MON-SAT *</cron-expression>
             </cron>
         </trigger>
-    </schedule>
+    </schedule>-->
     
      <!--Cell auto close-->
-    <schedule> 
+<!--    <schedule> 
         <job>
             <name>CellDataSaver</name>
             <job-class>com.advantech.quartzJob.CellDataSaver</job-class>
@@ -177,5 +177,5 @@
                 <cron-expression>0 10 22 ? * MON-SAT *</cron-expression>
             </cron>
         </trigger>
-    </schedule>
+    </schedule>-->
 </job-scheduling-data>

@@ -95,7 +95,7 @@
                 left: 0;
                 z-index: -2;
             }
-            .row.linkWiget{
+            .row .linkWiget{
                 padding-bottom: 20px;
             }
         </style>
