@@ -236,7 +236,7 @@
 
                 function insertCellInfo() {
                     $.ajax({
-                        type: "Get",
+                        type: "Post",
                         url: "CellScheduleJobServlet",
                         data: {
                             lineId: $("#lineId").val(),
@@ -260,7 +260,7 @@
 
                 function deleteSchedJob() {
                     $.ajax({
-                        type: "Get",
+                        type: "Post",
                         url: "CellScheduleJobServlet",
                         data: {
                             lineId: $("#lineId").val(),
@@ -285,7 +285,7 @@
                 function showProcessing() {
                     $("#processingArea").html("");
                     $.ajax({
-                        type: "Get",
+                        type: "Post",
                         url: "CellScheduleJobServlet",
                         data: {
                             action: "select"

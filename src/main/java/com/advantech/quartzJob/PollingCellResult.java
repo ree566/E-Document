@@ -39,7 +39,11 @@ public class PollingCellResult implements Job {
          and has been chosen as the deadlock victim. Rerun the transaction. 
          Query: select * from LS_GetSenRealTime Parameters: []
          */
-        Endpoint4.sendAll(getData());
+        try {
+            Endpoint4.sendAll(getData());
+        } catch (Exception e) {
+            log.error(e.toString());
+        }
     }
 
     public String getData() {

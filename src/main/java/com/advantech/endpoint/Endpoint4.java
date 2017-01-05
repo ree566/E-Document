@@ -51,7 +51,8 @@ public class Endpoint4 {
     public void onOpen(final Session session) {
         //Push the current status on client first connect
         try {
-            session.getBasicRemote().sendText(new PollingCellResult().getData());
+            Object obj = new PollingCellResult().getData();
+            session.getBasicRemote().sendText(obj.toString());
 //            showUrlParam(session);
         } catch (IOException ex) {
             log.error(ex.toString());

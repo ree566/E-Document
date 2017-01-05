@@ -53,13 +53,17 @@ public class CellScheduleJobServlet extends HttpServlet {
         cellService = BasicService.getCellService();
 
         this.initProcessingCells();
-
     }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
+        res.sendError(HttpServletResponse.SC_FORBIDDEN);
+    }
 
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse res)
+            throws ServletException, IOException {
         String action = req.getParameter("action");
 
         Object responseObject;
@@ -142,12 +146,6 @@ public class CellScheduleJobServlet extends HttpServlet {
                 break;
         }
         res.getWriter().print(responseObject);
-    }
-
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse res)
-            throws ServletException, IOException {
-        res.sendError(HttpServletResponse.SC_FORBIDDEN);
     }
 
     private void initProcessingCells() {

@@ -55,7 +55,7 @@
     </filter>
     <filter-mapping>
         <filter-name>LoginFilter</filter-name>
-        <url-pattern>/pages/admin/modify/*</url-pattern>
+        <url-pattern>/pages/admin/setting/*</url-pattern>
     </filter-mapping>
     <!--
     <filter>

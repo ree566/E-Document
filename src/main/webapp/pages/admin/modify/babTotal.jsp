@@ -700,6 +700,7 @@
                         var term = $.trim(request.term);
                         var matcher = new RegExp('^' + $.ui.autocomplete.escapeRegex(term), "i");
                         $.ajax({
+                            type: "Post",
                             url: "GetAvailableModelName",
                             dataType: "json",
                             success: function (data) {

@@ -154,6 +154,7 @@
                 });
 
                 $.ajax({
+                    type: "Post",
                     url: "../../GetAvailableModelName",
                     dataType: "json",
                     success: function (data) {

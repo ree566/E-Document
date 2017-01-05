@@ -12,9 +12,12 @@ import com.advantech.service.BasicService;
 import com.advantech.service.CellLineService;
 import com.google.gson.Gson;
 import java.io.*;
+import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,7 +47,18 @@ public class CellLineServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
-        res.sendError(HttpServletResponse.SC_FORBIDDEN);
+
+        res.setContentType("application/json");
+        PrintWriter out = res.getWriter();
+
+        List<CellLine> l = cellLineService.findAll();
+        JSONArray arr = new JSONArray();
+        for (CellLine cellLine : l) {
+            arr.put(new JSONObject().put(Integer.toString(cellLine.getId()), cellLine.getName()));
+        }
+
+        out.println(arr);
+
     }
 
     @Override

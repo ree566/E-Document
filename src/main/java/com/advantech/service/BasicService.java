@@ -34,6 +34,7 @@ public class BasicService {
     private static PassStationService passStationService = null;
     private static CellService cellService = null;
     private static CellLineService cellLineService = null;
+    private static TagNameComparisonService tagNameComparisonService = null;
 
     static {
         babService = new BABService();
@@ -53,6 +54,7 @@ public class BasicService {
         passStationService = new PassStationService();
         cellService = new CellService();
         cellLineService = new CellLineService();
+        tagNameComparisonService = new TagNameComparisonService();
     }
 
     public static BABService getBabService() {
@@ -121,6 +123,10 @@ public class BasicService {
 
     public static CellLineService getCellLineService() {
         return cellLineService;
+    }
+
+    public static TagNameComparisonService getTagNameComparisonService() {
+        return tagNameComparisonService;
     }
 
 }

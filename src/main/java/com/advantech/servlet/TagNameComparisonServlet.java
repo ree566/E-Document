@@ -6,37 +6,33 @@
  */
 package com.advantech.servlet;
 
-import com.advantech.entity.Line;
 import com.advantech.service.BasicService;
-import com.google.gson.Gson;
+import com.advantech.service.TagNameComparisonService;
 import java.io.*;
-import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
  *
  * @author Wei.Cheng
  */
-@WebServlet(name = "GetLine", urlPatterns = {"/GetLine"})
-public class GetLine extends HttpServlet {
+@WebServlet(name = "TagNameComparisonServlet", urlPatterns = {"/TagNameComparisonServlet"})
+public class TagNameComparisonServlet extends HttpServlet {
+
+    private TagNameComparisonService tcService = null;
+
+    @Override
+    public void init()
+            throws ServletException {
+        tcService = BasicService.getTagNameComparisonService();
+    }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
-        res.setContentType("application/json");
-        PrintWriter out = res.getWriter();
-
-        List<Line> l = BasicService.getLineService().getLine();
-        JSONArray arr = new JSONArray();
-        for (Line line : l) {
-            arr.put(new JSONObject().put(Integer.toString(line.getId()), line.getName()));
-        }
-
-        out.println(arr);
+        res.sendError(HttpServletResponse.SC_FORBIDDEN);
     }
 
     @Override
@@ -45,10 +41,9 @@ public class GetLine extends HttpServlet {
 
         res.setContentType("application/json");
         PrintWriter out = res.getWriter();
-        
-        String sitefloor = req.getParameter("sitefloor");
 
-        out.print(new Gson().toJson(BasicService.getLineService().getLine(sitefloor)));
+
+        out.print(new JSONObject().put("data", tcService.getAll()));
 
     }
 }

@@ -34,8 +34,7 @@ public class GetAvailableModelName extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
-//        res.sendError(HttpServletResponse.SC_FORBIDDEN);
-        doPost(req, res);
+        res.sendError(HttpServletResponse.SC_FORBIDDEN);
     }
 
     @Override

@@ -248,9 +248,11 @@
                 }
 
                 function initWiget(obj) {
-                    obj.addClass("blub-empty").removeClass("blub-alarm blub-normal blub-abnormal").removeAttr("title");
+                    obj.addClass("blub-empty")
+                            .removeClass("blub-alarm blub-normal blub-abnormal")
+                            .removeAttr("title");
                 }
-
+                
                 function initNumLampWiget() {
                     var obj = $("#numLampArea>.numLampWiget div");
                     obj.addClass("blub-empty").removeClass("blub-alarm blub-normal blub-abnormal").html(0);
@@ -276,7 +278,6 @@
                         $(this).children().each(function () {
                             $(this).attr({"id": (lineName + "_" + childAmount)})
                                     .addClass("draggable blub-empty divCustomBg")
-                                    .html(childAmount)
                                     .tooltipster({updateAnimation: null});
                             childAmount--;
                         });
@@ -351,6 +352,7 @@
 
                 function babDataToWiget(obj) {
                     initWiget(babChildElement);
+                    babChildElement.html("");
                     if (obj != null) {
                         var babData = obj.data;
                         if (babData != null) {
@@ -360,6 +362,7 @@
                                 if (childElement.length) {
                                     childElement.removeClass("blub-empty")
                                             .addClass((people.ismax ? "blub-alarm" : "blub-normal"))
+                                            .html(people.stationId)
                                             .tooltipster('content', "Time:" + people.diff + "秒");
                                     if (people.T_Num == 1) {
                                         $("#titleArea #" + people.TagName + "_title").attr("onClick", "window.open( 'BabTotal?babId=" + people.BABid + "','_blank' ); return false;");
@@ -428,8 +431,8 @@
                     }
                 }
 
-//                var hostname = window.location.host;//Get the host ipaddress to link to the server.
-                var hostname = "172.20.131.52:8080";
+                var hostname = window.location.host;//Get the host ipaddress to link to the server.
+                //var hostname = "172.20.131.52:8080";
                 //--------------websocket functions
                 //websocket will reconnect by reconnecting-websocket.min.js when client or server is disconnect
 

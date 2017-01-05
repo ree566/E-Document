@@ -16,7 +16,8 @@ import javax.servlet.http.HttpSession;
 
 @WebServlet(urlPatterns = {"/Login"},
         initParams = {
-            @WebInitParam(name = "SUCCESS", value = "index.jsp"),
+            @WebInitParam(name = "SUCCESS", value = "pages/admin/setting/options.jsp")
+            ,
             @WebInitParam(name = "FAIL", value = "login.jsp")
         }
 )
@@ -56,7 +57,7 @@ public class Login extends HttpServlet {
     public void doPost(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
         HttpSession session = req.getSession();
-        
+
         PrintWriter out = res.getWriter();
         res.setContentType("text/plain");
         String jobnumber = req.getParameter("jobnumber");
@@ -65,7 +66,7 @@ public class Login extends HttpServlet {
 //        Identit i = checkInputValAndLogin(jobnumber, password);
 //        if (i != null) {
 //            session.setAttribute("id", i.getId());
-            session.setAttribute("jobnumber", jobnumber);
+        session.setAttribute("jobnumber", jobnumber);
 //            session.setAttribute("jobnumber", i.getJobnumber());
 //            session.setAttribute("name", i.getName());
 //            session.setAttribute("permission", i.getPermission());
@@ -75,7 +76,11 @@ public class Login extends HttpServlet {
 //            req.setAttribute("errormsg", "錯誤的帳號或密碼");
 //            req.getRequestDispatcher(FAIL).forward(req, res);
 //        }
-        out.print("jobnumber" + (jobnumber != null ? "已經" : "尚未") + "儲存");
+        if (jobnumber != null) {
+            res.sendRedirect(SUCCESS);
+        } else {
+            out.print("jobnumber尚未儲存");
+        }
     }
 
     private Identit checkInputValAndLogin(String jobnumber, String password) {
@@ -86,8 +91,7 @@ public class Login extends HttpServlet {
         //change the sql query
 //        return identitService.getIdentit(jobnumber, password);
         return null;
-      
-       
+
     }
 
 }

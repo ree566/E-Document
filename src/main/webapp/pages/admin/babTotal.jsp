@@ -954,6 +954,7 @@
 
                 //http://stackoverflow.com/questions/14493250/ajax-jquery-autocomplete-with-json-data
                 $.ajax({
+                    type: "Post",
                     url: "../../GetAvailableModelName",
                     dataType: "json",
                     success: function (data) {
