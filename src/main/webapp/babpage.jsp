@@ -96,11 +96,9 @@
 
             $(function () {
                 $(document).ajaxSend(function () {
-                    console.log("block");
                     block();//Block the screen when ajax is sending, Prevent form submit repeatly.
                 });
                 $(document).ajaxSuccess(function () {
-                    console.log("unblock");
                     $.unblockUI();//Unblock the ajax when success
                 });
 
@@ -110,8 +108,6 @@
 
                 var userInfoCookie = $.cookie(userInfoCookieName);
                 var isUserInfoExist = (userInfoCookie != null);
-
-                console.log(userInfoCookie);
 
                 $(".userWiget > .alarm").hide();
 
@@ -201,7 +197,6 @@
                         if ($("#station").val() == firstStation) {
 
                             var obj = $.parseJSON(userInfoCookie);
-                            console.log(obj);
                             firstStationLogin(obj, STATION_LOGOUT);
                         } else {
                             //Just remove the cookie.
@@ -232,7 +227,6 @@
                     var userInfo = $.parseJSON(userInfoCookie);
 
                     if (searchResult == null) {
-                        console.log("search");
                         var data = searchProcessing();
                         searchResult = data[0];//取最先投入的工單做關閉
                     }
@@ -357,7 +351,7 @@
                             reload();
                         }
 
-                        $("#babEnd, .userWiget > .stationHintMessage").hide();
+                        $("#otherStationWiget").hide();
                         $("#step2Hint")
                                 .append("<li>輸入工單</li>")
                                 .append("<li class='importantMsg'>確定系統有帶出機種</li>")
@@ -367,8 +361,8 @@
                         setPeopleOptions();
                         $("#people").show();
                     } else {
-                        $("#po, #modelname, #people, #babBegin").hide();
-                        $("#babEnd, .userWiget > .stationHintMessage").show();
+                        $("#firstStationWiget").hide();
+                        $("#otherStationWiget").show();
                         $("#step2Hint")
                                 .append("<li>做完最後一台時點擊<code>Save</code>，告知系統您已經做完了</li>")
                                 .append("<li>如果要更換使用者，請點選<code>換人</code>，填入您的新工號之後進行工號切換</li>");
@@ -427,16 +421,12 @@
                 if (checkVal(userInfo.lineNo, userInfo.jobnumber, userInfo.station) == false || !userInfo.jobnumber.match(tabreg)) {
                     showMsg(paramNotVaildMessage);
                     return false;
-                } else {
-                    console.log("input val checking pass");
-                }
+                } 
 
                 if (!checkUserExist(userInfo.jobnumber)) {
                     showMsg(userNotFoundMessage);
                     return false;
-                } else {
-                    console.log("jobnumber checking pass");
-                }
+                } 
 
                 saveUserInfoToCookie(userInfo);
             }
@@ -646,8 +636,6 @@
                     dataType: "html",
                     success: function (response) {
                         if (response == "success") {
-                            console.log(data.action);
-                            console.log(CHANGE_USER);
                             if (data.action == CHANGE_USER) {
                                 changeJobnumberInCookie(data.jobnumber);
                             }
@@ -752,15 +740,23 @@
             <div id="step2" class="step">
                 <div class="userWiget">
                     <div class="form-inline">
-                        <button class='btn btn-default' id='reSearch'><span class="glyphicon glyphicon-repeat"></span></button>
-                        <input type="text" name="po" id="po" placeholder="請輸入工單號碼" autocomplete="off" maxlength="50">  
-                        <input type="text" name="modelname" id="modelname" placeholder="機種" readonly style="background: #CCC">
-                        <select id='people'>
-                            <option value="-1">---請選擇人數---</option>
-                        </select>
-                        <input type="button" id="babBegin" value="Begin" />
-                        <input type="button" id="babEnd" value="Save" />
-                        <input type="button" id="changeUser" value="換人" />
+                        <div id="firstStationWiget">
+                            <button class='btn btn-default' id='reSearch'><span class="glyphicon glyphicon-repeat"></span></button>
+                            <input type="text" name="po" id="po" placeholder="請輸入工單號碼" autocomplete="off" maxlength="50">  
+                            <input type="text" name="modelname" id="modelname" placeholder="機種" readonly style="background: #CCC">
+                            <select id='people'>
+                                <option value="-1">---請選擇人數---</option>
+                            </select>
+                            <input type="button" id="babBegin" value="Begin" />
+                        </div>
+
+                        <div id="otherStationWiget">
+                            <input type="button" id="babEnd" value="Save" />
+                        </div>
+
+                        <div>
+                            <input type="button" id="changeUser" value="換人" />
+                        </div>
                     </div>
                     <div class="stationHintMessage alarm">
                         <span class="glyphicon glyphicon-alert"></span>

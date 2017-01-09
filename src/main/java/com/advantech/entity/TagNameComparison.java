@@ -6,19 +6,24 @@
 package com.advantech.entity;
 
 import java.io.Serializable;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
  * @author Wei.Cheng
  */
-//@Entity
+@XmlRootElement
 public class TagNameComparison implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     private String orginTagName;
+
     private String lampSysTagName;
+
     private Integer lineId;
+
     private Integer stationId;
 
     public TagNameComparison() {
@@ -36,6 +41,7 @@ public class TagNameComparison implements Serializable {
         return orginTagName;
     }
 
+    @XmlElement
     public void setOrginTagName(String orginTagName) {
         this.orginTagName = orginTagName;
     }
@@ -44,6 +50,7 @@ public class TagNameComparison implements Serializable {
         return lampSysTagName;
     }
 
+    @XmlElement
     public void setLampSysTagName(String lampSysTagName) {
         this.lampSysTagName = lampSysTagName;
     }
@@ -52,6 +59,7 @@ public class TagNameComparison implements Serializable {
         return lineId;
     }
 
+    @XmlElement
     public void setLineId(Integer lineId) {
         this.lineId = lineId;
     }
@@ -60,6 +68,7 @@ public class TagNameComparison implements Serializable {
         return stationId;
     }
 
+    @XmlElement
     public void setStationId(Integer stationId) {
         this.stationId = stationId;
     }

@@ -44,35 +44,31 @@
 
         <script>
             $(function () {
-                $("#tagNameList").bootstrapTable({
+                var $table = $("#tagNameList");
+
+                $table.bootstrapTable({
                     idField: 'orginTagName',
                     url: "../../../TagNameComparisonServlet",
-                    method: 'POST',
+                    method: 'Get',
                     columns: [
                         {
                             field: "orginTagName",
                             title: "原始TagName",
-                            editable: {
-                                type: 'text'
-                            },
                             sortable: true
                         },
                         {
                             field: "lampSysTagName",
                             title: "藍燈TagName",
-                            editable: {
-                                type: 'text'
-                            },
                             sortable: true
                         },
                         {
                             field: "lineId",
                             title: "線別",
-                            editable: {
-                                type: 'select',
-                                source: "../../../GetLine",
-                                'prepend': {none: "none"}
-                            },
+//                            editable: {
+//                                type: 'select',
+//                                source: "../../../GetLine",
+//                                'prepend': {none: "none"}
+//                            },
                             sortable: true
                         },
                         {
@@ -86,11 +82,30 @@
                     ],
                     pagination: true,
                     search: true,
-                    escape: true
-                });
+                    escape: true,
+                    showRefresh: true,
+                    onEditableSave: function (field, row, oldValue, $el) {
+                        $.ajax({
+                            type: "post",
+                            url: "../../../TagNameComparisonServlet",
+                            data: row,
+                            dataType: 'JSON',
+                            success: function (data, status) {
+                                console.log(status);
+                                if (data.Result == "OK") {
+                                    alert('提交数据成功');
+                                } else {
+                                    alert(data.Result);
+                                }
+                            },
+                            error: function () {
+                                alert('编辑失败');
+                            },
+                            complete: function () {
 
-                $('#tagNameList').on('update', function (e, editable) {
-                    alert('new value: ' + editable.value);
+                            }
+                        });
+                    }
                 });
             });
         </script>
@@ -141,16 +156,21 @@
                     </tr>
                 </table>
             </div>
+            <hr />
 
             <div class="row">
                 <h5>Sensor tagName setting</h5>
+                <div><input type="button" id="getSelect" class="btn btn-default" value="getSelect"></div>
                 <table id="tagNameList">
                 </table>
             </div>
+            <hr />
 
             <div class="row">
                 <h5>Relative options setting</h5>
             </div>
+            <hr />
+
         </div>
     </body>
 </html>

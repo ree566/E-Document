@@ -5,71 +5,69 @@
  */
 package com.advantech.test;
 
-import java.util.Collection;
+import com.advantech.entity.TagNameComparison;
+import com.advantech.model.BasicDAO;
+import com.advantech.service.BasicService;
+import com.google.gson.Gson;
+import java.io.File;
+import static java.lang.System.out;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.namespace.QName;
+import javax.xml.transform.stream.StreamSource;
 
 /**
  *
  * @author Wei.Cheng
- * @param <T>
  */
-public class TestClass<T> {
+public class TestClass {
 
-    public TestClass(T obj) {//  泛型（支援任何陣列、集合、字串）
+    public static void main(String[] args) {
 
-        if (obj instanceof Collection) {// 如果是集合，就轉成Object陣列
+        BasicDAO.dataSourceInit1();
 
-            Object[] o = new Object[((Collection) obj).size()];
-            int i = 0;
-            for (Object x : (Collection) obj) {
-                o[i++] = x;
-            }
+        List<TagNameComparison> tagSettings = BasicService.getTagNameComparisonService().getAll();
 
-            int len = ((Collection) obj).size() - 1;
-            perm(o, 0, len);
-
-        } else if (obj instanceof String) {//如果是字串，就切割成Object陣列
-
-            String[] s = ((String) obj).split("");
-
-//            String[] s2 = new String[s.length - 1];//第一個是空白，所以必須去掉
-//            for (int i = 0; i < s2.length; i++) {
-//                s2[i] = s[i + 1];
-//            }
+        try {
+            JAXBContext jc = JAXBContext.newInstance(Wrapper.class, TagNameComparison.class);
+            Unmarshaller unmarshaller = jc.createUnmarshaller();
+            // Marshal
+            Marshaller marshaller = jc.createMarshaller();
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+//            marshal(marshaller, tagSettings, "tagSettings");
 //
-//            int len = ((Object[]) s2).length - 1;
-            perm((Object[]) s, 0, s.length - 1);
+            List<TagNameComparison> l = unmarshal(unmarshaller, TagNameComparison.class, "D:\\tagSettings.xml");
 
-        } else {//  任何陣列都可以直接轉換成Object陣列
-
-            int len = ((Object[]) obj).length - 1;
-            perm((Object[]) obj, 0, len);
-
-        }
-    }
-
-    private void perm(Object[] list, int k, int m) {
-
-        if (k == m) {//  印出行
-
-            for (int i = 0; i <= m; i++) {
-                System.out.print(list[i] + "　");
+            for (Object o : l) {
+                out.println(new Gson().toJson(o));
             }
-            System.out.println();
-
-        } else {//  繼續交換
-
-            for (int i = k; i <= m; i++) {
-                swap(list, k, i);  //  交換
-                perm(list, k + 1, m);  //  遞迴，後面2個參數相等表示可印出
-                swap(list, k, i);  //  （因為是傳址呼叫，所以要換回來）
-            }
-
+        } catch (JAXBException ex) {
+            Logger.getLogger(TestClass.class.getName()).log(Level.SEVERE, null, ex);
         }
+
     }
 
-    private void swap(Object[] array, int x1, int x2) {//  交換
-        Object z = array[x1];
-        array[x1] = array[x2];
-        array[x2] = z;
+    private static void marshal(Marshaller marshaller, List<?> list, String name)
+            throws JAXBException {
+        QName qName = new QName(name);
+        Wrapper wrapper = new Wrapper(list);
+        JAXBElement<Wrapper> jaxbElement = new JAXBElement<>(qName,
+                Wrapper.class, wrapper);
+        marshaller.marshal(jaxbElement, new File("D://" + name + ".xml"));
     }
+
+    private static <T> List<T> unmarshal(Unmarshaller unmarshaller,
+            Class<T> clazz, String xmlLocation) throws JAXBException {
+        StreamSource xml = new StreamSource(xmlLocation);
+        Wrapper<T> wrapper = (Wrapper<T>) unmarshaller.unmarshal(xml,
+                Wrapper.class).getValue();
+        return wrapper.getItems();
+    }
+
 }

@@ -32,6 +32,10 @@ public class TagNameComparisonService{
     public boolean insert(List<TagNameComparison> l) {
         return tagNameComparisonDAO.insert(l);
     }
+    
+    public boolean update(List<TagNameComparison> l) {
+        return tagNameComparisonDAO.update(l);
+    }
 
     public boolean delete(List<TagNameComparison> l) {
         return tagNameComparisonDAO.delete(l);

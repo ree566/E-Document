@@ -14,7 +14,7 @@ import java.util.List;
  *
  * @author Wei.Cheng
  */
-public class TagNameComparisonDAO extends BasicDAO{
+public class TagNameComparisonDAO extends BasicDAO {
 
     public TagNameComparisonDAO() {
 
@@ -35,13 +35,21 @@ public class TagNameComparisonDAO extends BasicDAO{
     public List<TagNameComparison> getOne(String orginTagName) {
         return query("SELECT * FROM LS_TagNameComparison WHERE orginTagName = ?", orginTagName);
     }
- 
+
     public boolean insert(List<TagNameComparison> l) {
         return update(
-                getConn(), 
+                getConn(),
                 "INSERT INTO LS_TagNameComparison(orginTagName, lampSysTagName, lineId, stationId) VALUES(?,?,?,?)",
-                l, 
+                l,
                 "orginTagName", "lampSysTagName", "lineId", "stationId");
+    }
+
+    public boolean update(List<TagNameComparison> l) {
+        return update(
+                getConn(),
+                "UPDATE LS_TagNameComparison SET lineId = ?, stationId = ? WHERE orginTagName = ?",
+                l,
+                "lineId", "stationId", "orginTagName");
     }
 
     public boolean delete(List<TagNameComparison> l) {
