@@ -11,7 +11,6 @@ import com.advantech.helper.CronTrigMod;
 import com.advantech.helper.PropertiesReader;
 import com.advantech.service.BABService;
 import com.advantech.service.BasicService;
-import com.advantech.service.WorkTimeService;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -62,6 +61,8 @@ public class LineBalancePeopleGenerator implements Job {
     private BAB currentBab;
     private JobKey currentJobKey;
     private TriggerKey currentTriggerKey;
+    
+    private NumLamp numLamp;
 
     public LineBalancePeopleGenerator() {
         this.babService = BasicService.getBabService();
@@ -78,6 +79,8 @@ public class LineBalancePeopleGenerator implements Job {
 
         formatter = new DecimalFormat("#.##%");
         formatter2 = new DecimalFormat("#.##");
+        
+        this.numLamp = new NumLamp();
     }
 
     @Override
@@ -143,12 +146,12 @@ public class LineBalancePeopleGenerator implements Job {
     }
 
     private boolean isStatusExist(String lineName) {
-        return NumLamp.getNumLampStatus().has(lineName);
+        return numLamp.getProcessStatus().has(lineName);
     }
 
     private boolean isGroupTheSame(String lineName) {
         try {
-            return NumLamp.getNumLampStatus().getJSONObject(lineName).get("quantity").equals(currentGroup);
+            return numLamp.getProcessStatus().getJSONObject(lineName).get("quantity").equals(currentGroup);
         } catch (Exception ex) {
             return true;
         }
@@ -171,10 +174,10 @@ public class LineBalancePeopleGenerator implements Job {
 
     private void updateCurrentGroup(String lineName) {
         try {
-            JSONObject obj = NumLamp.getNumLampStatus().getJSONObject(lineName);
+            JSONObject obj = numLamp.getProcessStatus().getJSONObject(lineName);
             if (obj != null) {
                 obj.put("quantity", currentGroup);
-                NumLamp.getNumLampStatus().put(lineName, obj);
+                numLamp.getProcessStatus().put(lineName, obj);
             }
         } catch (Exception e) {
         } //Do nothing when object is not found
@@ -210,7 +213,7 @@ public class LineBalancePeopleGenerator implements Job {
             obj.put("suggestTestPeople", suggestPeople);
         }
         obj.put("message", message);
-        NumLamp.getNumLampStatus().put(bab.getLineName(), obj);
+        numLamp.getProcessStatus().put(bab.getLineName(), obj);
     }
 
     private boolean isFilterCountRule(Integer totalQuantity, Integer standardVal) {

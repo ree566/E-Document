@@ -22,8 +22,8 @@ public class DatetimeGenerator {
         dateFormateType = generateType;
         fmt = DateTimeFormat.forPattern(dateFormateType);
     }
-    
-    public DateTime getDate(){
+
+    public DateTime getDate() {
         return new DateTime();
     }
 
@@ -34,8 +34,8 @@ public class DatetimeGenerator {
     public String getYesterday() {
         return fmt.print(getDate().minusDays(1));
     }
-    
-      public String dateFormatToString(Object date) {
+
+    public String dateFormatToString(Object date) {
         return fmt.print(new DateTime(date));
     }
 }

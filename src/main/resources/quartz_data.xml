@@ -12,7 +12,7 @@
     </processing-directives>
     
     <!--主要工作job，把資料轉換到TXT控制燈號-->
-    <schedule> 
+<!--    <schedule> 
         <job>
             <name>DailyJobWorker</name>
             <job-class>com.advantech.quartzJob.DailyJobWorker</job-class>
@@ -25,7 +25,7 @@
                 <cron-expression>0/30 * 8-20 ? * MON-SAT *</cron-expression>
             </cron>
         </trigger>
-    </schedule>
+    </schedule>-->
     
     <!--清理資料庫job-->
 <!--    <schedule>
@@ -61,14 +61,14 @@
     <!--定時查看sensor是否異常，回報-->
     <schedule>
         <job>
-            <name>CheckSensor</name>
-            <job-class>com.advantech.quartzJob.CheckSensor</job-class>
+            <name>SensorDetect</name>
+            <job-class>com.advantech.quartzJob.SensorDetect</job-class>
         </job>
         <trigger>
             <cron>
-                <name>CheckSensor</name>
-                <job-name>CheckSensor</job-name>
-                <cron-expression>0 0,30 9-11,13-16 ? * MON-SAT *</cron-expression>
+                <name>SensorDetect</name>
+                <job-name>SensorDetect</job-name>
+                <cron-expression>15,45 0/1 8-20 ? * MON-FRI *</cron-expression>
             </cron>
         </trigger>
     </schedule>
@@ -119,7 +119,7 @@
     </schedule>
     
     <!--線平衡測試排站人數估算-->
-<!--    <schedule>
+    <schedule>
         <job>
             <name>NumLamp</name>
             <job-class>com.advantech.quartzJob.NumLamp</job-class>
@@ -131,7 +131,7 @@
                 <cron-expression>15,45 0/1 8-20 ? * MON-FRI *</cron-expression>
             </cron>
         </trigger>
-    </schedule>-->
+    </schedule>
     
     <!--Clear all subPolling job separate by system-->
     <schedule>

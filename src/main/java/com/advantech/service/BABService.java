@@ -93,8 +93,8 @@ public class BABService implements AlarmActions{
         return babDAO.getLineBalanceCompare(BABid);
     }
 
-    public List<BAB> getBABIdForCaculate() {
-        return babDAO.getBABIdForCaculate();
+    public List<BAB> getAllProcessing() {
+        return babDAO.getAllProcessing();
     }
     
     public List<BAB> getAssyProcessing() {

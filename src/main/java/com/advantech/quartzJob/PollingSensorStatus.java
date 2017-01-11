@@ -47,6 +47,6 @@ public class PollingSensorStatus implements Job {
     }
     
     public String getData(){
-        return gson.toJson(fbnService.getSensorInstantlyStatus());
+        return gson.toJson(fbnService.getSensorCurrentStatus());
     }
 }

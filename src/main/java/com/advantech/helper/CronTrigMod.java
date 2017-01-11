@@ -9,7 +9,9 @@ import com.advantech.service.BabLineTypeFacade;
 import com.advantech.service.TestLineTypeFacade;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.quartz.impl.matchers.GroupMatcher;
 import static org.quartz.TriggerKey.triggerKey;
+import org.quartz.impl.calendar.DailyCalendar;
 
 /**
  *
@@ -64,12 +67,12 @@ public class CronTrigMod {
         }
         return instance;
     }
-    
-    public List<JobKey> getJobKeys(String jobGroup) throws SchedulerException{
+
+    public List<JobKey> getJobKeys(String jobGroup) throws SchedulerException {
         return new ArrayList(scheduler.getJobKeys(GroupMatcher.jobGroupEquals(jobGroup)));
     }
-    
-    public List<TriggerKey> getTriggerKeys(String jobGroup) throws SchedulerException{
+
+    public List<TriggerKey> getTriggerKeys(String jobGroup) throws SchedulerException {
         return new ArrayList(scheduler.getTriggerKeys(GroupMatcher.triggerGroupEquals(jobGroup)));
     }
 

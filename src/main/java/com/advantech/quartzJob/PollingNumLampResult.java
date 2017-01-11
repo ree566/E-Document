@@ -7,7 +7,6 @@
 package com.advantech.quartzJob;
 
 import com.advantech.endpoint.Endpoint3;
-import com.google.gson.Gson;
 import org.json.JSONObject;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
@@ -21,7 +20,6 @@ import org.slf4j.LoggerFactory;
  */
 public class PollingNumLampResult implements Job {
 
-    private static final Gson gson = new Gson();
     private static final Logger log = LoggerFactory.getLogger(PollingNumLampResult.class);
 
     @Override
@@ -41,7 +39,7 @@ public class PollingNumLampResult implements Job {
     }
 
     public String getData() {
-        JSONObject data = NumLamp.getNumLampStatus();
+        JSONObject data = new NumLamp().getProcessStatus();
         return (data == null ? new JSONObject() : data).toString();
     }
 }

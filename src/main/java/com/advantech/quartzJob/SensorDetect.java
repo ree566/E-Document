@@ -6,6 +6,7 @@
 package com.advantech.quartzJob;
 
 import com.advantech.entity.BAB;
+import com.advantech.helper.PropertiesReader;
 import com.advantech.service.BasicService;
 import java.util.HashMap;
 import java.util.List;
@@ -21,25 +22,23 @@ import org.quartz.PersistJobDataAfterExecution;
 /**
  *
  * @author Wei.Cheng Detect the bab begin and end perLine
+ * http://ifeve.com/quartz-tutorial-job-jobdetail/
  */
 @PersistJobDataAfterExecution
 @DisallowConcurrentExecution
-public class NumLamp extends ProcessingBabDetector implements Job {
-
+public class SensorDetect extends ProcessingBabDetector implements Job{
+    
     public static JobDataMap jobDataMap = null;
-
-    public NumLamp() {
-        super("_NumLamp", "NumLamp", "25,55 * 8-20 ? * MON-SAT *", LineBalancePeopleGenerator.class);
+ 
+    public SensorDetect() {
+        super("_SensorCheck", "SensorCheck", "0 0/1 8-11,13-20 ? * MON-SAT *", CheckSensor.class);
     }
 
     @Override
     public Map createJobDetails(BAB b) {
-        Double testStandardTime = BasicService.getWorkTimeService().getTestStandardTime(b.getModel_name());
-        Integer totalQuantity = BasicService.getBabService().getPoTotalQuantity(b.getPO());
         Map m = new HashMap();
         m.put("dataMap", b);
-        m.put("testStandardTime", testStandardTime);
-        m.put("totalQuantity", totalQuantity);
+        m.put("expireTime", PropertiesReader.getInstance().getSensorDetectExpireTime());
         return m;
     }
 
@@ -59,6 +58,6 @@ public class NumLamp extends ProcessingBabDetector implements Job {
 
     @Override
     public List<BAB> getProcessingBab() {
-        return BasicService.getBabService().getAssyProcessing();
+        return BasicService.getBabService().getAllProcessing();
     }
 }

@@ -41,6 +41,8 @@ public class PropertiesReader {
 
     private String endpointQuartzTrigger;
 
+    private Integer sensorDetectExpireTime;
+
     private PropertiesReader() throws Exception {
         dataInit();
     }
@@ -104,6 +106,8 @@ public class PropertiesReader {
         systemAbnormalAlarmMailTo = properties.getProperty("systemAbnormalAlarm.mailTo");
         systemAbnormalAlarmMailCC = new JSONObject(properties.getProperty("systemAbnormalAlarm.mailCC"));
 
+        sensorDetectExpireTime = convertStringToInteger(properties.getProperty("sensorDetect.expireTime"));
+
         logTheSystemSetting();
     }
 
@@ -113,17 +117,17 @@ public class PropertiesReader {
         out.println("Set balanceDiff(Need to send mail when balance is diff to prev input bab) is : " + balanceDiff);
         out.println("The mail info setting -> : "
                 + new JSONObject()
-                .put("mailServerUsername", mailServerUsername)
-                .put("mailServerPassword", mailServerPassword)
-                .put("mailServerLocation", mailServerLocation)
-                .put("mailServerPort", mailServerPort)
-                .toString()
+                        .put("mailServerUsername", mailServerUsername)
+                        .put("mailServerPassword", mailServerPassword)
+                        .put("mailServerLocation", mailServerLocation)
+                        .put("mailServerPort", mailServerPort)
+                        .toString()
         );
         out.println("Need to send mail when system abnormal? : " + sendMailAlarmUser);
         out.println("Abnormal mail setting : "
                 + new JSONObject()
-                .put("systemAbnormalAlarmMailTo", systemAbnormalAlarmMailTo)
-                .put("systemAbnormalAlarmMailCC", systemAbnormalAlarmMailCC)
+                        .put("systemAbnormalAlarmMailTo", systemAbnormalAlarmMailTo)
+                        .put("systemAbnormalAlarmMailCC", systemAbnormalAlarmMailCC)
         );
         out.println("The max table setting in test lineType is : " + maxTestTable);
         out.println("The max test required people in test lineType is  : " + numLampMaxTestRequiredPeople);
@@ -131,8 +135,8 @@ public class PropertiesReader {
         out.println("The balance rounding digit is : " + balanceRoundingDigit);
         out.println("Other save result setting : "
                 + new JSONObject()
-                .put("writeToDB", writeToDB)
-                .put("saveToOldDB", saveToOldDB)
+                        .put("writeToDB", writeToDB)
+                        .put("saveToOldDB", saveToOldDB)
         );
 
         out.println("The endpoint quartz trigger : " + endpointQuartzTrigger);
@@ -252,6 +256,10 @@ public class PropertiesReader {
 
     public Double getCellStandardMax() {
         return cellStandardMax;
+    }
+
+    public Integer getSensorDetectExpireTime() {
+        return sensorDetectExpireTime;
     }
 
 }

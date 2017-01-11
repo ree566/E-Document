@@ -71,7 +71,7 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
     @Override
     public boolean generateData() {
         boolean isSomeBabUnderStandard = false;
-        List<BAB> babGroups = babService.getBABIdForCaculate();
+        List<BAB> babGroups = babService.getAllProcessing();
         if (hasDataInCollection(babGroups)) {
             //把所有有在bab資料表的id集合起來，找到統計值之後依序寫入txt(各線別取當日最早輸入的工單id來亮燈)
             JSONArray transBabData = new JSONArray();

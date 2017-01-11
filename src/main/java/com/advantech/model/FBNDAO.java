@@ -38,8 +38,12 @@ public class FBNDAO extends BasicDAO {
     }
 
     //利用檢視表(過濾後FBN資料表資訊)得到當前sensor時間 websocket用 
-    public List<Map> getSensorInstantlyStatus() {
+    public List<Map> getSensorCurrentStatus() {
         return queryForMapList(getConn(), "SELECT * FROM LS_GetSenRealTime");
+    }
+
+    public List<FBN> getSensorStatus(int BABid) {
+        return queryFBNTable("{CALL sp_sensorStatus(?)}", BABid);
     }
 
     public List<Map> getBalancePerGroup(int BABid) {

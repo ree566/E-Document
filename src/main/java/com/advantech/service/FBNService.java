@@ -35,8 +35,12 @@ public class FBNService {
         return fbnDAO.getSensorDataInDay();
     }
 
-    public List<Map> getSensorInstantlyStatus() {
-        return fbnDAO.getSensorInstantlyStatus();
+    public List<Map> getSensorCurrentStatus() {
+        return fbnDAO.getSensorCurrentStatus();
+    }
+    
+    public List<FBN> getSensorStatus(int BABid) {
+        return fbnDAO.getSensorStatus(BABid);
     }
 
     public List<Map> getBalancePerGroup(int BABid) {

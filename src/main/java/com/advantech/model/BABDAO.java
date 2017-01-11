@@ -80,7 +80,7 @@ public class BABDAO extends BasicDAO implements AlarmActions{
     }
 
     //Quartz用，獲得需要計算ouput的工單
-    public List<BAB> getBABIdForCaculate() {
+    public List<BAB> getAllProcessing() {
         return queryBABTable("SELECT * FROM LS_BAB_Id_List");
     }
 
