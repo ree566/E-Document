@@ -84,7 +84,7 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
             initMap();
             JSONArray userArr = new JSONArray();
 
-            List<TestLineTypeUser> kanbanUsers = rv.getKanbanUsers();
+            List<TestLineTypeUser> kanbanUsers = rv.getTestLineTypeUsers();
 
             processingJsonObject = new JSONObject();
             boolean isInTheWebService = false;

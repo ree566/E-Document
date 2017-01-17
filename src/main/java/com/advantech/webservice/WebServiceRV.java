@@ -10,34 +10,20 @@ import com.advantech.entity.PassStationRecords;
 import com.advantech.entity.TestLineTypeUser;
 import com.advantech.entity.TestLineTypeUsers;
 import com.advantech.entity.User;
-import com.advantech.helper.CronTrigMod;
-import com.advantech.model.BasicDAO;
-import com.advantech.service.BasicService;
-import com.advantech.test.TestClass;
-import com.google.gson.Gson;
 import java.io.StringWriter;
-import static java.lang.System.out;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.ArrayUtils;
-import org.quartz.Job;
-import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
-import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tempuri.RvResponse;
@@ -54,19 +40,12 @@ import org.w3c.dom.NodeList;
  */
 public class WebServiceRV {
 
-    private final String queryString;
     private final URL url;//webservice位置(放在專案中，因為url無法讀取，裏頭標籤衝突)
     private static final Logger log = LoggerFactory.getLogger(WebServiceRV.class);
 
     private static WebServiceRV instance;
 
     private WebServiceRV() {
-        queryString = "<root>"
-                + "<METHOD ID='ETLSO.QryProductionKanban4Test'/>"
-                + "<KANBANTEST>"
-                + "<STATION_ID>4,122,124,11,3,5,6,32,30,134,151,04,105</STATION_ID>"
-                + "</KANBANTEST>"
-                + "</root>";
         url = this.getClass().getClassLoader().getResource("wsdl/Service.wsdl");
     }
 
@@ -85,20 +64,24 @@ public class WebServiceRV {
         return result.getAny();
     }
 
-    @SuppressWarnings("ConvertToTryWithResources")
-    public Document getKanbanUsers(String queryString) throws Exception {
+    private Document getWebServiceDataForDocument(String queryString) throws Exception {
         List data = getWebServiceData(queryString);
         return ((Node) data.get(1)).getOwnerDocument();
     }
 
-    public List<String> getKanbanUsersForString() throws Exception {
-        return this.getKanbanUsersForString(queryString);
+    private List getKanbanUsers() throws Exception {
+        String queryString = "<root>"
+                + "<METHOD ID='ETLSO.QryProductionKanban4Test'/>"
+                + "<KANBANTEST>"
+                + "<STATION_ID>4,122,124,11,3,5,6,32,30,134,151,04,105</STATION_ID>"
+                + "</KANBANTEST>"
+                + "</root>";
+        return this.getWebServiceData(queryString);
     }
 
-    @SuppressWarnings("ConvertToTryWithResources")
-    public List<String> getKanbanUsersForString(String queryString) throws Exception {
+    public List<String> getKanbanUsersForString() throws Exception {
         List list = new ArrayList();//ws = WebService
-        List data = getWebServiceData(queryString);
+        List data = getKanbanUsers();
         for (Object obj : data) {
             Document doc = ((Node) obj).getOwnerDocument();
             StringWriter sw = new StringWriter();
@@ -116,83 +99,47 @@ public class WebServiceRV {
         return list;
     }
 
-    public Document getKanbanUserInHistory(String jobnumber) throws Exception {
+    public String getKanbanWorkId(String jobnumber) throws Exception {
         String today = getToday();
-        String str = "<root><METHOD ID='WMPSO.QryWorkManPowerCard001'/><WORK_MANPOWER_CARD><WORK_ID>-1</WORK_ID><LINE_ID>-1</LINE_ID><STATION_ID>-1</STATION_ID><FACTORY_NO></FACTORY_NO><UNIT_NO></UNIT_NO>"
+        String queryString = "<root><METHOD ID='WMPSO.QryWorkManPowerCard001'/><WORK_MANPOWER_CARD><WORK_ID>-1</WORK_ID><LINE_ID>-1</LINE_ID><STATION_ID>-1</STATION_ID><FACTORY_NO></FACTORY_NO><UNIT_NO></UNIT_NO>"
                 + "<USER_NO>" + jobnumber + "</USER_NO>"
                 + "<CARD_FLAG>1</CARD_FLAG>"
                 + "<START_DATE>" + today + "</START_DATE>"
                 + "<END_DATE>" + today + "</END_DATE>"
                 + "</WORK_MANPOWER_CARD></root>";
-        return this.getKanbanUsers(str);
-    }
 
-    public String getKanbanWorkId(String jobnumber) throws Exception {
-        Document doc = this.getKanbanUserInHistory(jobnumber);
+        Document doc = this.getWebServiceDataForDocument(queryString);
         String childTagName = "WORK_ID";
         Element rootElement = doc.getDocumentElement();
         String requestQueueName = getString(childTagName, rootElement);
         return requestQueueName;
     }
 
-    private String getString(String tagName, Element element) {
-        NodeList list = element.getElementsByTagName(tagName);
-        if (list != null && list.getLength() > 0) {
-            NodeList subList = list.item(0).getChildNodes();
-
-            if (subList != null && subList.getLength() > 0) {
-                return subList.item(0).getNodeValue();
-            }
-        }
-
-        return null;
-    }
-
-    public List<TestLineTypeUser> getKanbanUsers() {
-        try {
-            List l = this.getWebServiceData(queryString);
-            Document doc = ((Node) l.get(1)).getOwnerDocument();
-
-            //Unmarshal the data into javaObject.
-            JAXBContext jc = JAXBContext.newInstance(TestLineTypeUsers.class);
-            Unmarshaller u = jc.createUnmarshaller();
-
-            //Skip the <diffgr:diffgram> tag, read root tag directly.
-            Node node = doc.getFirstChild().getFirstChild();
-
-            if (node != null) {
-                TestLineTypeUsers users = (TestLineTypeUsers) u.unmarshal(node);
-                return users.getQryData();
-            } else {
-                return new ArrayList();
-            }
-        } catch (Exception ex) {
-            log.error(ex.toString());
-            return new ArrayList();
-        }
+    public String getModelnameByPo(String po) throws Exception {
+        String queryString = "<root><METHOD ID='WIPSO.QryWipAtt001'/><WIP_ATT><WIP_NO>"
+                + po
+                + "</WIP_NO><ITEM_NO></ITEM_NO></WIP_ATT></root>";
+        Document doc = this.getWebServiceDataForDocument(queryString);
+        String childTagName = "ITEM_NO";
+        Element rootElement = doc.getDocumentElement();
+        String requestQueueName = getString(childTagName, rootElement);
+        return requestQueueName;
     }
 
     public User getMESUser(String jobnumber) {
         try {
-            String str = "<root><METHOD ID='PLBSO.QryLogion'/><USER_INFO><USER_NO>"
+            String queryString = "<root><METHOD ID='PLBSO.QryLogion'/><USER_INFO><USER_NO>"
                     + jobnumber
                     + "</USER_NO><PASSWORD></PASSWORD><STATUS>A</STATUS></USER_INFO></root>";
-            List l = this.getWebServiceData(str);
+
+            List l = this.getWebServiceData(queryString);
             Document doc = ((Node) l.get(1)).getOwnerDocument();
-
-            //Unmarshal the data into javaObject.
-            JAXBContext jc = JAXBContext.newInstance(User.class);
-            Unmarshaller u = jc.createUnmarshaller();
-
             //Skip the <diffgr:diffgram> tag, read QryData tag directly.
             Node node = doc.getFirstChild().getFirstChild().getFirstChild();
+            
+            Object o = this.unmarshalFromList(node, User.class);
 
-            if (node != null) {
-                User user = (User) u.unmarshal(node);
-                return user;
-            } else {
-                return null;
-            }
+            return o == null ? null : (User) o;
         } catch (Exception ex) {
             log.error(ex.toString());
             return null;
@@ -201,38 +148,63 @@ public class WebServiceRV {
 
     public List<PassStation> getPassStationRecords(String po, Integer lineId) {
         try {
-            
-            String str = 
-                    "<root><METHOD ID='ETLSO.QryT_SnPassTime'/><WIP_INFO><WIP_NO>"
+            String queryString
+                    = "<root><METHOD ID='ETLSO.QryT_SnPassTime'/><WIP_INFO><WIP_NO>"
                     + po
                     + "</WIP_NO><UNIT_NO>B</UNIT_NO><LINE_ID>"
                     + lineId
                     + "</LINE_ID><STATION_ID>'2','20'</STATION_ID></WIP_INFO></root>";
             
-            List l = this.getWebServiceData(str);
+            List l = this.getWebServiceData(queryString);
             Document doc = ((Node) l.get(1)).getOwnerDocument();
-
-            //Unmarshal the data into javaObject.
-            JAXBContext jc = JAXBContext.newInstance(PassStationRecords.class);
-            Unmarshaller u = jc.createUnmarshaller();
-
-            //Skip the <diffgr:diffgram> tag, read root tag directly.
+            //Skip the <diffgr:diffgram> tag, read QryData tag directly.
             Node node = doc.getFirstChild().getFirstChild();
 
-            if (node != null) {
-                PassStationRecords records = (PassStationRecords) u.unmarshal(node);
-                return records.getQryData();
-            } else {
-                return new ArrayList();
-            }
+            Object o = this.unmarshalFromList(node, PassStationRecords.class);
+            return o == null ? new ArrayList() : ((PassStationRecords) o).getQryData();
         } catch (Exception ex) {
             log.error(ex.toString());
             return new ArrayList();
         }
     }
 
+    public List<TestLineTypeUser> getTestLineTypeUsers() {
+        try {
+            List l = this.getKanbanUsers();
+            Document doc = ((Node) l.get(1)).getOwnerDocument();
+            //Skip the <diffgr:diffgram> tag, read QryData tag directly.
+            Node node = doc.getFirstChild().getFirstChild();
+            
+            Object o = this.unmarshalFromList(node, TestLineTypeUsers.class);
+            
+            return o == null ? new ArrayList() : ((TestLineTypeUsers) o).getQryData();
+        } catch (Exception ex) {
+            log.error(ex.toString());
+            return new ArrayList();
+        }
+    }
+
+    private Object unmarshalFromList(Node node, Class clz) throws JAXBException {
+
+        //Unmarshal the data into javaObject.
+        JAXBContext jc = JAXBContext.newInstance(clz);
+        Unmarshaller u = jc.createUnmarshaller();
+
+        return node == null ? null : u.unmarshal(node);
+    }
+
+    private String getString(String tagName, Element element) {
+        NodeList list = element.getElementsByTagName(tagName);
+        if (list != null && list.getLength() > 0) {
+            NodeList subList = list.item(0).getChildNodes();
+            if (subList != null && subList.getLength() > 0) {
+                return subList.item(0).getNodeValue();
+            }
+        }
+        return null;
+    }
+
     private String getToday() {
-        SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd");
-        return sdFormat.format(new Date());
+        return new SimpleDateFormat("yyyy-MM-dd").format(new Date());
     }
 }

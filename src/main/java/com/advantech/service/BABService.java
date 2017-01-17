@@ -25,7 +25,7 @@ import org.json.JSONObject;
  *
  * @author Wei.Cheng
  */
-public class BABService implements AlarmActions{
+public class BABService implements AlarmActions {
 
     private final BABDAO babDAO;
     private final int BALANCE_ROUNDING_DIGIT;
@@ -76,7 +76,7 @@ public class BABService implements AlarmActions{
     public boolean checkSensorIsClosed(int BABid, int sensorNo) {
         return babDAO.checkSensorIsClosed(BABid, sensorNo);
     }
-    
+
     public Integer getPoTotalQuantity(String PO) {
         return babDAO.getPoTotalQuantity(PO);
     }
@@ -96,7 +96,7 @@ public class BABService implements AlarmActions{
     public List<BAB> getAllProcessing() {
         return babDAO.getAllProcessing();
     }
-    
+
     public List<BAB> getAssyProcessing() {
         return babDAO.getAssyProcessing();
     }
@@ -117,7 +117,7 @@ public class BABService implements AlarmActions{
     public JSONArray getLastGroupStatusForJson(int BABid) {
         return new JSONArray(getLastGroupStatus(BABid));
     }
-    
+
     public List<Map> getLastGroupStatus(int BABid) {
         return babDAO.getLastGroupStatus(BABid);
     }
@@ -158,10 +158,20 @@ public class BABService implements AlarmActions{
             return "工單號碼已經存在";
         }
 
+        BAB prevBab = babDAO.getLastInputBAB(bab.getLine());
+        boolean needToClosePrev = (prevBab != null && getBABAvgs(prevBab.getId()).length() == 0);
+
+        if (prevBab != null && !needToClosePrev && prevBab.getStartPosition() != bab.getStartPosition()) {
+            return "上一套工單與本次工單的起始站別不符，請等待上套工單完成再做投入";
+        }
+
         Line line = lineService.getLine(bab.getLine());
 
         if (line.isOpened()) {
-            if (startBAB(bab)) {
+            if (babDAO.insertBAB(bab)) {
+                if (needToClosePrev) {
+                    babDAO.closeBABDirectly(prevBab);
+                }
                 BAB b = this.babDAO.getLastInputBAB(bab.getLine());//get last insert id
                 BABLoginStatusService bs = BasicService.getBabLoginStatusService();
                 return bs.recordBABPeople(b.getId(), this.FIRST_STATION_NUMBER, jobnumber) ? "success" : "發生錯誤，工單已經投入，人員資訊無法記錄";
@@ -171,15 +181,6 @@ public class BABService implements AlarmActions{
         } else {
             return "線別尚未開啟";
         }
-    }
-
-    public boolean startBAB(BAB bab) {
-        BAB prevBab = babDAO.getLastInputBAB(bab.getLine());
-        if (prevBab != null && getBABAvgs(prevBab.getId()).length() == 0) {
-            //沒有的話把上一筆工單直接結束掉
-            babDAO.closeBABDirectly(prevBab);
-        }
-        return babDAO.insertBAB(bab);
     }
 
     public String closeBAB(int BABid) {

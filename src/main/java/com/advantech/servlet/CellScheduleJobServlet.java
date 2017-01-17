@@ -13,6 +13,7 @@ import com.advantech.helper.DatetimeGenerator;
 import com.advantech.helper.ParamChecker;
 import com.advantech.quartzJob.CellStation;
 import com.advantech.service.BasicService;
+import com.advantech.service.CellLineService;
 import com.advantech.service.CellService;
 import java.io.*;
 import static java.lang.System.out;
@@ -43,6 +44,7 @@ public class CellScheduleJobServlet extends HttpServlet {
     private DatetimeGenerator dg = null;
     private Map<String, JobKey> schedJobs;
     private CellService cellService;
+    private CellLineService cellLineService;
 
     @Override
     public void init() throws ServletException {
@@ -51,6 +53,7 @@ public class CellScheduleJobServlet extends HttpServlet {
         dg = new DatetimeGenerator("yy-MM-dd");
         schedJobs = new HashMap();
         cellService = BasicService.getCellService();
+        cellLineService = BasicService.getCellLineService();
 
         this.initProcessingCells();
     }
@@ -78,18 +81,24 @@ public class CellScheduleJobServlet extends HttpServlet {
 
                         int line = Integer.parseInt(lineId);
 
-                        if (cellService.getCellProcessing(line).isEmpty()) {
-                            if (BasicService.getBabService().getPoTotalQuantity(PO) != null) {
-                                if (cellService.insertCell(new Cell(line, PO))) {
-                                    responseObject = this.schedNewJobs(line, PO) ? "success" : "fail";
+                        CellLine cellLine = cellLineService.findOne(line);
+
+                        if (cellLine.isOpened()) {
+                            if (cellService.getCellProcessing(line).isEmpty()) {
+                                if (BasicService.getBabService().getPoTotalQuantity(PO) != null) {
+                                    if (cellService.insertCell(new Cell(line, PO))) {
+                                        responseObject = this.schedNewJobs(line, PO) ? "success" : "fail";
+                                    } else {
+                                        responseObject = "fail";
+                                    }
                                 } else {
-                                    responseObject = "fail";
+                                    responseObject = "PO is not exist";
                                 }
                             } else {
-                                responseObject = "PO is not exist";
+                                responseObject = "Some PO in this line is already processing";
                             }
                         } else {
-                            responseObject = "Some PO in this line is already processing";
+                            responseObject = "This line is not opened, data insert fail";
                         }
                     } else {
                         responseObject = "Invalid input values";

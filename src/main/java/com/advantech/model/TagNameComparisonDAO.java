@@ -5,7 +5,6 @@
  */
 package com.advantech.model;
 
-import com.advantech.entity.Cell;
 import com.advantech.entity.TagNameComparison;
 import java.sql.Connection;
 import java.util.List;
@@ -35,6 +34,10 @@ public class TagNameComparisonDAO extends BasicDAO {
     public List<TagNameComparison> getOne(String orginTagName) {
         return query("SELECT * FROM LS_TagNameComparison WHERE orginTagName = ?", orginTagName);
     }
+    
+    public List<TagNameComparison> getByLine(int lineId) {
+        return query("SELECT * FROM LS_TagNameComparison WHERE lineId = ?", lineId);
+    }
 
     public boolean insert(List<TagNameComparison> l) {
         return update(
@@ -47,9 +50,9 @@ public class TagNameComparisonDAO extends BasicDAO {
     public boolean update(List<TagNameComparison> l) {
         return update(
                 getConn(),
-                "UPDATE LS_TagNameComparison SET lineId = ?, stationId = ? WHERE orginTagName = ?",
+                "UPDATE LS_TagNameComparison SET defaultStationId = ?, stationId = ? WHERE orginTagName = ?",
                 l,
-                "lineId", "stationId", "orginTagName");
+                "defaultStationId", "stationId", "orginTagName");
     }
 
     public boolean delete(List<TagNameComparison> l) {
@@ -60,4 +63,8 @@ public class TagNameComparisonDAO extends BasicDAO {
         return update(getConn(), "DELETE LS_TagNameComparison WHERE orginTagName = ?", tagNameComparison.getOrginTagName());
     }
 
+    public boolean sensorStationInit(){
+        return updateProc(getConn(), "{CALL sp_SensorStationInit}");
+    }
+    
 }

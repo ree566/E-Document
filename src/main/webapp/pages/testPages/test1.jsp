@@ -6,7 +6,6 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<jsp:useBean id="cDAO" class="com.advantech.model.CountermeasureDAO" scope="application" />
 <!DOCTYPE html>
 <html>
     <head>
@@ -18,23 +17,23 @@
         </style>
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
         <script>
-            $(function () {
-                $(":text").each(function(){
-                    $(this).attr("placeholder",$(this).attr("name"));
-                });
-            });
+            var flag = true;
+            
+            console.log('testing');
+            
+            var f1 = function() {
+                console.log('f1');
+            };
+            
+            var f2 = function () {
+                console.log('f2');
+            };
+            
+            (flag ? f1 : f2)();
         </script>
     </head>
     <body>
-        <form class="form-inline" action="../../CellRecordServlet" method="get">
-            <input class="form-control" type="text" name="PO">
-            <input class="form-control" type="text" name="lineId">
-            <input class="form-control" type="text" name="minPcs">
-            <input class="form-control" type="text" name="maxPcs">
-            <input class="form-control" type="text" name="startDate">
-            <input class="form-control" type="text" name="endDate">
-            <input class="form-control" type="submit" value="Submit">
-        </form>
+
 
     </body>
 </html>

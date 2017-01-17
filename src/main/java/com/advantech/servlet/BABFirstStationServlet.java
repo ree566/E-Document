@@ -56,15 +56,16 @@ public class BABFirstStationServlet extends HttpServlet {
         String modelName = req.getParameter("modelname");
         String line = req.getParameter("lineNo");
         String people = req.getParameter("people");
+        String startPosition = req.getParameter("startPosition");
 
         String jobnumber = req.getParameter("jobnumber");
 
         String successMessage = "success";
 
-        if (pChecker.checkInputVals(po, modelName, line, people, jobnumber)) {
+        if (pChecker.checkInputVals(po, modelName, line, people, jobnumber, startPosition)) {
             try {
                 int lineNo = Integer.parseInt(line);
-                BAB bab = new BAB(po, modelName, lineNo, Integer.parseInt(people));
+                BAB bab = new BAB(po, modelName, lineNo, Integer.parseInt(people), Integer.parseInt(startPosition));
                 String result = babService.checkAndStartBAB(bab, jobnumber);
                 if (successMessage.equals(result)) {
                     sendMailAfterBABRunIn(bab);

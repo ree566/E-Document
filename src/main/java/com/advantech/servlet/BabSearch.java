@@ -11,6 +11,7 @@ import com.advantech.helper.ParamChecker;
 import com.advantech.service.BABService;
 import com.advantech.service.BasicService;
 import com.advantech.service.PrepareScheduleService;
+import com.advantech.webservice.WebServiceRV;
 import com.google.gson.Gson;
 import java.io.*;
 import java.util.regex.Matcher;
@@ -55,8 +56,13 @@ public class BabSearch extends HttpServlet {
         String poGetBAB = req.getParameter("po_getBAB");
         String poSaveLine = req.getParameter("po_saveline");
         if (pChecker.checkInputVal(po)) {
-            PrepareSchedule schedule = prepareScheduleService.getPrepareSchedule(po);
-            out.print(schedule == null ? "data not found" : convertString(schedule.getModel_name()));
+//            PrepareSchedule schedule = prepareScheduleService.getPrepareSchedule(po);
+            try {
+                String modelname = WebServiceRV.getInstance().getModelnameByPo(po);
+                out.print(modelname == null ? "data not found" : convertString(modelname));
+            } catch (Exception e) {
+                out.print("data not found");
+            }
         } else if (pChecker.checkInputVal(saveLine)) {
             out.print(new Gson().toJson(babService.getProcessingBABByLine(Integer.parseInt(saveLine))));
         } else if (pChecker.checkInputVals(poGetBAB, poSaveLine)) {

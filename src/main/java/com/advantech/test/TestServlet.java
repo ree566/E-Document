@@ -6,13 +6,16 @@
  */
 package com.advantech.test;
 
+import com.advantech.helper.CronTrigMod;
 import com.advantech.service.BasicLineTypeFacade;
 import com.advantech.service.BasicService;
 import com.advantech.service.CellLineTypeFacade;
 import java.io.*;
+import java.util.logging.Level;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
+import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,8 +33,11 @@ public class TestServlet extends HttpServlet {
             throws ServletException, IOException {
         res.setContentType("text/plain");
         PrintWriter out = res.getWriter();
-        BasicLineTypeFacade cf = CellLineTypeFacade.getInstance();
-        out.println(cf.getJSONObject());
+        try {
+            out.println(CronTrigMod.getInstance().getJobKeys());
+        } catch (SchedulerException ex) {
+            out.println(ex);
+        }
     }
 
     @Override

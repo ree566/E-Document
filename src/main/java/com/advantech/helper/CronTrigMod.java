@@ -68,6 +68,10 @@ public class CronTrigMod {
         return instance;
     }
 
+    public List<JobKey> getJobKeys() throws SchedulerException {
+        return new ArrayList(scheduler.getJobKeys(GroupMatcher.anyJobGroup()));
+    }
+
     public List<JobKey> getJobKeys(String jobGroup) throws SchedulerException {
         return new ArrayList(scheduler.getJobKeys(GroupMatcher.jobGroupEquals(jobGroup)));
     }

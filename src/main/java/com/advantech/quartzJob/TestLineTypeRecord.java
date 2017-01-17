@@ -38,7 +38,7 @@ public class TestLineTypeRecord implements Job {
         } else {
             TestService tService = BasicService.getTestService();
             //只存下已經刷入的使用者
-            List<TestLineTypeUser> testLineTypeStatus = separateOfflineUser(WebServiceRV.getInstance().getKanbanUsers());
+            List<TestLineTypeUser> testLineTypeStatus = separateOfflineUser(WebServiceRV.getInstance().getTestLineTypeUsers());
             boolean recordStatus = tService.recordTestLineType(testLineTypeStatus);
             log.info("Record status : " + recordStatus);
         }

@@ -13,7 +13,7 @@ import java.util.List;
  *
  * @author Wei.Cheng
  */
-public class TagNameComparisonService{
+public class TagNameComparisonService {
 
     private final TagNameComparisonDAO tagNameComparisonDAO;
 
@@ -28,11 +28,15 @@ public class TagNameComparisonService{
     public List<TagNameComparison> getOne(String orginTagName) {
         return tagNameComparisonDAO.getOne(orginTagName);
     }
- 
+
+    public List<TagNameComparison> getByLine(int lineId) {
+        return tagNameComparisonDAO.getByLine(lineId);
+    }
+
     public boolean insert(List<TagNameComparison> l) {
         return tagNameComparisonDAO.insert(l);
     }
-    
+
     public boolean update(List<TagNameComparison> l) {
         return tagNameComparisonDAO.update(l);
     }
@@ -44,4 +48,9 @@ public class TagNameComparisonService{
     public boolean deleteOne(TagNameComparison tagNameComparison) {
         return tagNameComparisonDAO.deleteOne(tagNameComparison);
     }
+    
+    public boolean sensorStationInit(){
+        return tagNameComparisonDAO.sensorStationInit();
+    }
+    
 }

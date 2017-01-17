@@ -211,11 +211,12 @@ public class BABDAO extends BasicDAO implements AlarmActions{
     public boolean insertBAB(BAB bab) {
         return update(
                 getConn(),
-                "INSERT INTO LS_BAB(PO,Model_name,line,people) VALUES (?,?,?,?)",
+                "INSERT INTO LS_BAB(PO,Model_name,line,people,startPosition) VALUES (?,?,?,?,?)",
                 bab.getPO(),
                 bab.getModel_name(),
                 bab.getLine(),
-                bab.getPeople()
+                bab.getPeople(),
+                bab.getStartPosition()
         );
     }
 

@@ -25,6 +25,8 @@ public class TagNameComparison implements Serializable {
     private Integer lineId;
 
     private Integer stationId;
+    
+    private Integer defaultStationId;
 
     public TagNameComparison() {
 
@@ -72,5 +74,16 @@ public class TagNameComparison implements Serializable {
     public void setStationId(Integer stationId) {
         this.stationId = stationId;
     }
+
+    public Integer getDefaultStationId() {
+        return defaultStationId;
+    }
+
+    @XmlElement
+    public void setDefaultStationId(Integer defaultStationId) {
+        this.defaultStationId = defaultStationId;
+    }
+    
+    
 
 }

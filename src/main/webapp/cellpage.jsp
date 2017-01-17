@@ -30,6 +30,7 @@
         <script src="js/jquery.blockUI.Default.js"></script>
         <script src="js/cookie.check.js"></script>
         <script src="js/param.check.js"></script>
+        <script src="js/moment.js"></script>
         <script>
             var userInfoCookieName = "userInfo", testLineTypeCookieName = "testLineTypeCookieName", cellCookieName = "cellCookieName";
             var serverMsgTimeout;
@@ -317,15 +318,12 @@
                 function addPOInCellCookie(PO) {
                     var cellLoginObj = getCellCookie();
                     cellLoginObj.PO = PO;
-                    $.cookie(cellCookieName, JSON.stringify(cellLoginObj));
+                    $.cookie(cellCookieName, JSON.stringify(cellLoginObj), {expires: getExpireDate()});
                 }
 
                 //generate all cookies exist 12 hours
                 function generateCookie(name, value) {
-                    var date = new Date();
-                    var minutes = 12 * 60;
-                    date.setTime(date.getTime() + (minutes * 60 * 1000));
-                    $.cookie(name, value, {expires: date});
+                    $.cookie(name, value, {expires: getExpireDate()});
                 }
 
                 //removeCookieByName
@@ -348,6 +346,12 @@
 
                 function lockAllUserInput() {
                     $(":input,select").not("#redirectBtn, #directlyClose").attr("disabled", "disabled");
+                }
+                
+                function getExpireDate(){
+                    var date = moment().startOf('day');
+                    date = date.add(2, 'days');
+                    return date.toDate();
                 }
 
             });

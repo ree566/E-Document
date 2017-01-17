@@ -22,6 +22,7 @@ public class BAB implements Serializable {
     private String Model_name;
     private int line;
     private int people;
+    private int startPosition;
     private int isused;
     private String name;
     private String lineName;
@@ -36,11 +37,12 @@ public class BAB implements Serializable {
 
     }
 
-    public BAB(String PO, String Model_name, int line, int people) {
+    public BAB(String PO, String Model_name, int line, int people, int startPosition) {
         this.PO = PO;
         this.Model_name = Model_name;
         this.line = line;
         this.people = people;
+        this.startPosition = startPosition;
     }
 
     public int getId() {
@@ -81,6 +83,14 @@ public class BAB implements Serializable {
 
     public void setPeople(int people) {
         this.people = people;
+    }
+
+    public int getStartPosition() {
+        return startPosition;
+    }
+
+    public void setStartPosition(int startPosition) {
+        this.startPosition = startPosition;
     }
 
     public int getIsused() {
