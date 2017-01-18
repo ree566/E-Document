@@ -123,7 +123,6 @@
             var table2;
             var autoReloadInterval;
 
-            var sitefloorOptions = ["5", "6"];
             var lineTypeOptions = ["ASSY", "Packing"];
 
             var lineObject = {
@@ -132,10 +131,14 @@
             };
 
             function initSelectOption() {
-                for (var i = 0; i < sitefloorOptions.length; i++) {
-                    var value = sitefloorOptions[i];
-                    $("#sitefloor").append("<option value=" + value + ">" + value + "F</option>");
-                }
+                $.getJSON("../../json/sitefloor.json", function (data) {
+                    var sitefloors = data.sitefloors;
+                    for (var i = 0, j = sitefloors.length; i < j; i++) {
+                        var sitefloor = sitefloors[i].floor;
+                        $("#sitefloor").append("<option value=" + sitefloor + ">" + sitefloor + "F</option>");
+
+                    }
+                });
 
                 for (var i = 0; i < lineTypeOptions.length; i++) {
                     var value = lineTypeOptions[i];

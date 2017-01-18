@@ -31,13 +31,15 @@ public class TestServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
-        res.setContentType("text/plain");
-        PrintWriter out = res.getWriter();
-        try {
-            out.println(CronTrigMod.getInstance().getJobKeys());
-        } catch (SchedulerException ex) {
-            out.println(ex);
-        }
+//        res.setContentType("text/plain");
+//        PrintWriter out = res.getWriter();
+//        try {
+//            out.println(CronTrigMod.getInstance().getJobKeys());
+//        } catch (SchedulerException ex) {
+//            out.println(ex);
+//        }
+//        res.sendError(HttpServletResponse.SC_FORBIDDEN);
+        throw new ServletException("This servlet is busy now...");
     }
 
     @Override

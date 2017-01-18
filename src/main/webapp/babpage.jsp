@@ -663,7 +663,7 @@
                                 startPosition: $("#startStation").val(),
                                 people: $("#people").val()
                             });
-                            
+
                         } else {
                             showMsg(response);
                         }
@@ -806,9 +806,14 @@
                                     </td>
                                 </tr>
                                 <tr>
+                                    <td colspan="2" class="alarm">※連續投入工單時，前一套工單未關閉的狀況下，將無法修改起始站別(可選擇與前套工單相同起始站別)</td>
+                                </tr>
+                                <tr>
                                     <td>投入工單</td>
                                     <td>
-                                        <input type="button" id="babBegin" value="Begin" />
+                                        <div class="col-md-6">
+                                            <input type="button" id="babBegin" class="btn-block" value="Begin" />
+                                        </div>
                                     </td>
                                 </tr>
                             </table>

@@ -146,6 +146,7 @@
             var maxProductivity = 200;
 
             $(function () {
+                
                 initTitleGroup();
                 initTestGroup();
                 initBabGroup();
@@ -252,7 +253,7 @@
                             .removeClass("blub-alarm blub-normal blub-abnormal")
                             .removeAttr("title");
                 }
-                
+
                 function initNumLampWiget() {
                     var obj = $("#numLampArea>.numLampWiget div");
                     obj.addClass("blub-empty").removeClass("blub-alarm blub-normal blub-abnormal").html(0);

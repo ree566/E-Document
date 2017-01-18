@@ -17,19 +17,12 @@
         </style>
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
         <script>
-            var flag = true;
-            
-            console.log('testing');
-            
-            var f1 = function() {
-                console.log('f1');
-            };
-            
-            var f2 = function () {
-                console.log('f2');
-            };
-            
-            (flag ? f1 : f2)();
+            $.getJSON("../../json/sitefloor.json", function (data) {
+                console.log("JSON Data: " + data);
+                $.each(data, function (key, val) {
+                    console.log(key + "value:: " + val);
+                });
+            });
         </script>
     </head>
     <body>

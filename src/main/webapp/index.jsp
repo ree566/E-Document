@@ -95,7 +95,7 @@
                 left: 0;
                 z-index: -2;
             }
-            .row .linkWiget{
+            .selectGroup{
                 padding-bottom: 20px;
             }
         </style>
@@ -111,6 +111,23 @@
             $(document).ready(function () {
 
                 $("input").addClass("form-control");
+
+                var $selectGroup = $(".selectGroup").detach();
+
+                $.getJSON("json/sitefloor.json", function (data) {
+                    var sitefloors = data.sitefloors;
+                    for (var i = 0, j = sitefloors.length; i < j; i++) {
+                        var sitefloor = sitefloors[i].floor;
+                        var cloneObj = $selectGroup.clone();
+
+                        cloneObj.find("label").html(sitefloor + "F人員請按此");
+                        cloneObj.find(".bab").attr("href", "Bab?sitefloor=" + sitefloor);
+                        cloneObj.find(".test").attr("href", "Test?sitefloor=" + sitefloor);
+                        cloneObj.find(".cell").attr("href", "Cell?sitefloor=" + sitefloor);
+
+                        $("#selectGroupArea").append(cloneObj);
+                    }
+                });
 
                 if (!are_cookies_enabled()) {
                     alert(cookie_disabled_message);
@@ -164,40 +181,23 @@
             <p class="lead">+ Dynamic management the production bottleneck.</p>
         </div>
 
-
-        <c:set var="sitefloorMain" value="5" />
-        <c:set var="sitefloorSecond" value="6" />
         <div class="container">
-            <label for="s${sitefloorMain}wiget">${sitefloorMain}F人員請按此</label>
-            <div id="s${sitefloorMain}wiget" class="form-inline row linkWiget">
+            <div id="selectGroupArea"></div>
+            <div class="selectGroup">
+                <label></label>
+                <div class="sitefloorWiget form-inline row linkWiget">
+                    <a class="bab">
+                        <button class="btn btn-default col-xs-2">組裝 / 包裝</button>
+                    </a>
 
-                <a href="Bab?sitefloor=${sitefloorMain}">
-                    <button class="btn btn-default col-xs-2">組裝 / 包裝</button>
-                </a>
+                    <a class="test">
+                        <button class="btn btn-default col-xs-2">測試</button>
+                    </a>
 
-                <a href="Test?sitefloor=${sitefloorMain}">
-                    <button class="btn btn-default col-xs-2">測試</button>
-                </a>
-
-                <a href="Cell?sitefloor=${sitefloorMain}">
-                    <button class="btn btn-default col-xs-2">Cell</button>
-                </a>
-            </div>
-
-            <label for="s${sitefloorMain}wiget">${sitefloorSecond}F人員請按此</label>
-            <div id="s${sitefloorSecond}wiget" class="form-inline row linkWiget">
-
-                <a href="Bab?sitefloor=${sitefloorSecond}">
-                    <button class="btn btn-default col-xs-2">組裝 / 包裝</button>
-                </a>
-
-                <a href="Test?sitefloor=${sitefloorSecond}">
-                    <button class="btn btn-default col-xs-2">測試</button>
-                </a>
-                    
-                <a href="Cell?sitefloor=${sitefloorSecond}">
-                    <button class="btn btn-default col-xs-2">Cell</button>
-                </a>
+                    <a class="cell">
+                        <button class="btn btn-default col-xs-2">Cell</button>
+                    </a>
+                </div>
             </div>
             <div class="row">
                 <div id="trigobj" hidden="hidden">

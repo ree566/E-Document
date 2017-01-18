@@ -104,7 +104,7 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>Error</servlet-name>
-        <url-pattern>/temp/Error</url-pattern>  
+        <url-pattern>/Error</url-pattern>  
     </servlet-mapping>
     
     <servlet>
@@ -264,6 +264,11 @@
             20
         </session-timeout>
     </session-config>
+    
+    <error-page>
+        <exception-type>java.lang.Throwable</exception-type>
+        <location>/Error</location>
+    </error-page>
     
     <!--DataSource setting reference to context.xml using jndi.-->
     <resource-ref>

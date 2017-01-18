@@ -65,6 +65,7 @@ public class CheckSensor implements Job {
             if (b.getPeople() != sensorStatus.size()) {
                 //看是第幾站沒有資料，回報
                 Integer lostStation = sensorStatus.size() + 1;
+//                sendMail(b.getLineName(), "Lost the signal at station " + lostStation);
                 out.println(b.getLineName() + " lost the signal at station " + lostStation);
             } else {
                 //看看時間距離現在多久了，超過N秒沒動作，回報
@@ -83,6 +84,7 @@ public class CheckSensor implements Job {
 
                 int periodTime = periodToNow(date + time);
                 if (isExpire(periodTime)) {
+//                    sendMail(b.getLineName(), "Sensor is expired almost " + periodTime + " minutes on " + lastStatus.getTagName());
                     out.println(b.getLineName() + "'s sensor is expired almost " + periodTime + " minutes on " + lastStatus.getTagName());
                 } else {
                     out.println(b.getLineName() + " sensor is normal processing...");
@@ -106,19 +108,25 @@ public class CheckSensor implements Job {
         return time > expireTime;
     }
 
-    private void sendMail() throws MessagingException {
+    private void sendMail(String tagName, String message) throws MessagingException {
         String targetMail = PropertiesReader.getInstance().getTestMail();
 
         String subject = "[藍燈系統]Sensor異常訊息";
-        String mailBody = generateMailBody();
+        String mailBody = generateMailBody(tagName, message);
         MailSend.getInstance().sendMail(targetMail, subject, mailBody);
     }
 
-    private String generateMailBody() {
+    private String generateMailBody(String tagName, String message) {
         return new StringBuilder()
                 .append("<p>時間 <strong>")
                 .append(new Date())
-                .append("</strong> 距離工單開啟已經一段時間感應器沒有資料寫入，</p>")
+                .append("</strong> sensor異常訊息如下</p>")
+                .append("<p>")
+                .append(tagName)
+                .append("</p>")
+                .append("<p>")
+                .append(message)
+                .append("</p>")
                 .append("<p>請協助確認感應器是否正常，謝謝。</p>")
                 .toString();
     }

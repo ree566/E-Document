@@ -30,6 +30,17 @@
                 "Sorry, this page require jquery plugin\
                 , please check your system environment or contact system administrator";
     }
+    $(function () {
+        $.getJSON("../../json/sitefloor.json", function (data) {
+            var sitefloors = data.sitefloors;
+            var navbar = $("#bs-example-navbar-collapse-1");
+            for (var i = 0, j = sitefloors.length; i < j; i++) {
+                var sitefloor = sitefloors[i].floor;
+                navbar.find(".totalMapSelect").append("<li><a href='TotalMap?sitefloor=" + sitefloor + "'>狀態平面圖" + sitefloor + "F</a></li>");
+                navbar.find(".sensorAdjustSelect").append("<li><a href='SensorAdjust?sitefloor=" + sitefloor + "'>" + sitefloor + "樓感應器狀態(校正用)</a></li>");
+            }
+        });
+    });
 </script>
 <!-- Navigation -->
 <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
@@ -101,10 +112,7 @@
                         平面圖
                         <span class="caret" />
                     </a>
-                    <ul class="dropdown-menu">
-                        <li><a href="TotalMap?sitefloor=5">狀態平面圖5F</a></li>
-                        <li><a href="TotalMap?sitefloor=6">狀態平面圖6F</a></li>
-                    </ul>
+                    <ul class="dropdown-menu totalMapSelect"></ul>
                 </li>
                 <li>
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">
@@ -112,10 +120,7 @@
                         感應器
                         <span class="caret" />
                     </a>
-                    <ul class="dropdown-menu">
-                        <li><a href="SensorAdjust?sitefloor=5">5樓感應器狀態(校正用)</a></li>
-                        <li><a href="SensorAdjust?sitefloor=6">6樓感應器狀態(校正用)</a></li>
-                    </ul>
+                    <ul class="dropdown-menu sensorAdjustSelect"></ul>
                 </li>
             </ul>
         </div>
