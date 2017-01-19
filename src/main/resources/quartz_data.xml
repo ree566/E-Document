@@ -119,7 +119,7 @@
     </schedule>
     
     <!--線平衡測試排站人數估算-->
-    <schedule>
+<!--    <schedule>
         <job>
             <name>NumLamp</name>
             <job-class>com.advantech.quartzJob.NumLamp</job-class>
@@ -131,7 +131,7 @@
                 <cron-expression>15,45 0/1 8-20 ? * MON-FRI *</cron-expression>
             </cron>
         </trigger>
-    </schedule>
+    </schedule>-->
     
     <!--Clear all subPolling job separate by system-->
     <schedule>
