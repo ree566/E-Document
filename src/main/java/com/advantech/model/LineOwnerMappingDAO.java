@@ -5,6 +5,7 @@
  */
 package com.advantech.model;
 
+import com.advantech.entity.LineOwnerMapping;
 import java.sql.Connection;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +22,22 @@ public class LineOwnerMappingDAO extends BasicDAO {
 
     private Connection getConn() {
         return getDBUtilConn(SQL.Way_Chien_WebAccess);
+    }
+
+    private List<LineOwnerMapping> query(String sql, Object... params) {
+        return queryForBeanList(this.getConn(), LineOwnerMapping.class, sql, params);
+    }
+
+    public List<LineOwnerMapping> getAll() {
+        return this.query("SELECT * FROM LineOwnerMapping");
+    }
+
+    public List<LineOwnerMapping> getOne(int id) {
+        return this.query("SELECT * FROM LineOwnerMapping WHERE id = ?", id);
+    }
+    
+    public List<LineOwnerMapping> getByLine(int lineId){
+        return this.query("SELECT * FROM LineOwnerMapping WHERE line_id = ?", lineId);
     }
 
     public List<Map> getLineOwnerMappingView() {

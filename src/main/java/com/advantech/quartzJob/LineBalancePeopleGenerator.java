@@ -58,10 +58,10 @@ public class LineBalancePeopleGenerator implements Job {
 
     private final int startCountMininumQuantity, startCountMininumStandardTime, minTotalStandardTime, basicSuggestPeople = 1;
 
-    private BAB currentBab;
+    private BAB bab;
     private JobKey currentJobKey;
     private TriggerKey currentTriggerKey;
-    
+
     private NumLamp numLamp;
 
     public LineBalancePeopleGenerator() {
@@ -79,19 +79,14 @@ public class LineBalancePeopleGenerator implements Job {
 
         formatter = new DecimalFormat("#.##%");
         formatter2 = new DecimalFormat("#.##");
-        
+
         this.numLamp = new NumLamp();
     }
 
     @Override
     public void execute(JobExecutionContext jec) throws JobExecutionException {
-        JobDataMap dataMap = jec.getJobDetail().getJobDataMap();
-        BAB bab = (BAB) dataMap.get("dataMap");
-        this.currentBab = bab;
         this.currentTriggerKey = jec.getTrigger().getKey();
         this.currentJobKey = jec.getJobDetail().getKey();
-        this.testStandard = dataMap.get("testStandardTime") == null ? null : minToSec((Double) dataMap.get("testStandardTime"));
-        this.totalQuantity = dataMap.get("totalQuantity") == null ? null : (Integer) dataMap.get("totalQuantity");
         this.generateTestPeople();
     }
 
@@ -106,18 +101,20 @@ public class LineBalancePeopleGenerator implements Job {
 
     private void generateTestPeople() {
 
-        if (currentBab == null) {
+        if (bab == null || testStandard == null) {
             return;
         }
+
+        testStandard = minToSec(testStandard);
 
         message = new ArrayList();
 
         //查看目前分配到第幾組了
-        List<Map> l = babService.getLastGroupStatus(currentBab.getId());
+        List<Map> l = babService.getLastGroupStatus(bab.getId());
         currentGroup = l.isEmpty() ? 1 : (int) l.get(0).get("groupid");
 
         //依照目前組別取得lineBalance
-        List<Map> balanceGroup = getCurrentLineBalance(currentBab);
+        List<Map> balanceGroup = getCurrentLineBalance(bab);
 
         //連第一組都沒有，返回
         if (balanceGroup.isEmpty()) {
@@ -127,12 +124,12 @@ public class LineBalancePeopleGenerator implements Job {
         //取得組裝CT
         Integer babCT = (int) Math.floor(((BigDecimal) findMaxInList(balanceGroup)).doubleValue());
 
-        if (!isStatusExist(currentBab.getLineName()) || isPcsFilterCountRule()) {
-            if (isStatusExist(currentBab.getLineName()) && isGroupTheSame(currentBab.getLineName())) {
+        if (!isStatusExist(bab.getLineName()) || isPcsFilterCountRule()) {
+            if (isStatusExist(bab.getLineName()) && isGroupTheSame(bab.getLineName())) {
                 return;
             } else {
                 //計算人數，傳回給parent
-                caculateAndReportDataToParentJob(currentBab, babCT);
+                caculateAndReportDataToParentJob(bab, babCT);
             }
         }
 
@@ -140,7 +137,7 @@ public class LineBalancePeopleGenerator implements Job {
             jobSelfRemove();
         } else {
             //Update the current group status finally anyway.
-            updateCurrentGroup(currentBab.getLineName());
+            updateCurrentGroup(bab.getLineName());
 
         }
     }
@@ -372,4 +369,17 @@ public class LineBalancePeopleGenerator implements Job {
     private Double secToMin(Double second) {
         return second == null ? null : second / 60;
     }
+
+    public void setTestStandard(Integer testStandard) {
+        this.testStandard = testStandard;
+    }
+
+    public void setTotalQuantity(Integer totalQuantity) {
+        this.totalQuantity = totalQuantity;
+    }
+
+    public void setBab(BAB bab) {
+        this.bab = bab;
+    }
+
 }

@@ -17,12 +17,18 @@
         </style>
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
         <script>
-            $.getJSON("../../json/sitefloor.json", function (data) {
-                console.log("JSON Data: " + data);
-                $.each(data, function (key, val) {
-                    console.log(key + "value:: " + val);
-                });
-            });
+            function something(param1, param2, callback){
+                console.log(param1);
+                console.log(param2);
+                
+                callback && callback(param2 + "Z");
+            }
+            
+            function three(param){
+                console.log(param);
+            }
+            
+            something("one","two", three);
         </script>
     </head>
     <body>

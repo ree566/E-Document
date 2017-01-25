@@ -126,9 +126,33 @@
             var lineTypeOptions = ["ASSY", "Packing"];
 
             var lineObject = {
-                ASSY: ['L1', 'LA', 'LB', 'L3', 'L4'],
-                Packing: ['LF', 'LG', 'LH', 'L6', 'L7', 'L8', 'L9']
+                ASSY: [],
+                Packing: []
             };
+
+            function setLineObject() {
+                $.ajax({
+                    type: "Post",
+                    url: "../../GetLine",
+                    data: {
+                        sitefloor: $("#userSitefloorSelect").val()
+                    },
+                    dataType: "json",
+                    async: false,
+                    success: function (response) {
+                        var lines = response;
+                        for (var i = 0; i < lines.length; i++) {
+                            var line = lines[i];
+                            var lineName = line.name;
+                            var lineType = line.linetype;
+                            lineType == 'ASSY' ? lineObject.ASSY.push(lineName) : lineObject.Packing.push(lineName);
+                        }
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        showMsg(xhr.responseText);
+                    }
+                });
+            }
 
             function initSelectOption() {
                 $.getJSON("../../json/sitefloor.json", function (data) {
@@ -463,13 +487,8 @@
                 var endDate = $('#ffin').val();
                 var aboveStandard = $("#aboveStandard").is(":checked");
 
-                var alarmPercentStandard = 0.3;
-
                 var table = $("#babHistory").DataTable({
                     dom: 'lfrtip',
-//                    buttons: [
-//                        'copy', 'csv', 'excel', 'pdf', 'print'
-//                    ],
                     "serverSide": false,
                     "ajax": {
                         "url": "../../AllBAB",
@@ -504,7 +523,7 @@
                                     case 1:
                                         return "已經關閉";
                                         break;
-                                    case -1:
+                                    case - 1:
                                         return "沒有儲存紀錄";
                                         break;
                                     default:
@@ -533,16 +552,16 @@
                             "targets": 9,
                             'render': function (data, type, row) {
                                 var isCmReply = row.cm_id != null;
-                                var isAboveApStandard = row.alarmPercent > alarmPercentStandard;
+                                var isNeedToReply = (row.needToReply == 1);
                                 var isBabAvail = row.isused != -1;
 
                                 if (!isBabAvail) {
                                     return "無紀錄";
-                                } else if (!isAboveApStandard && row.alarmPercent != null) {
+                                } else if (!isNeedToReply && row.alarmPercent != null) {
                                     return "達到標準";
-                                } else if ((!isCmReply && isAboveApStandard)) {
+                                } else if ((!isCmReply && isNeedToReply)) {
                                     return "<input type='button' class='btn btn-danger btn-sm' data-toggle= 'modal' data-target='#myModal' value='檢視詳細' />";
-                                } else if (isCmReply && isAboveApStandard) {
+                                } else if (isCmReply && isNeedToReply) {
                                     return "<input type='button' class='btn btn-info btn-sm' data-toggle= 'modal' data-target='#myModal' value='檢視詳細' />";
                                 }
                             }
@@ -737,21 +756,21 @@
 
                 beginTimeObj.on("dp.change", function (e) {
                     endTimeObj.data("DateTimePicker").minDate(e.date);
-                    var beginDate = e.date;
-                    var endDate = endTimeObj.data("DateTimePicker").date();
-                    var dateDiff = endDate.diff(beginDate, 'days');
-                    if (dateDiff > 30) {
-                        endTimeObj.data("DateTimePicker").date(beginDate.add(lockDays, 'days'));
-                    }
+//                    var beginDate = e.date;
+//                    var endDate = endTimeObj.data("DateTimePicker").date();
+//                    var dateDiff = endDate.diff(beginDate, 'days');
+//                    if (dateDiff > 30) {
+//                        endTimeObj.data("DateTimePicker").date(beginDate.add(lockDays, 'days'));
+//                    }
                 });
 
                 endTimeObj.on("dp.change", function (e) {
-                    var beginDate = beginTimeObj.data("DateTimePicker").date();
-                    var endDate = e.date;
-                    var dateDiff = endDate.diff(beginDate, 'days');
-                    if (dateDiff > 30) {
-                        beginTimeObj.data("DateTimePicker").date(endDate.add(-lockDays, 'days'));
-                    }
+//                    var beginDate = beginTimeObj.data("DateTimePicker").date();
+//                    var endDate = e.date;
+//                    var dateDiff = endDate.diff(beginDate, 'days');
+//                    if (dateDiff > 30) {
+//                        beginTimeObj.data("DateTimePicker").date(endDate.add(-lockDays, 'days'));
+//                    }
                 });
             }
 
@@ -935,6 +954,8 @@
                 var interval = null;
                 var countdownnumber = 30 * 60;
                 var diff = 12;
+
+                setLineObject();
 
                 getBAB();
 

@@ -11,6 +11,8 @@ import com.advantech.entity.Test;
 import com.advantech.entity.TestLineTypeUser;
 import com.advantech.interfaces.AlarmActions;
 import com.advantech.service.TestLineTypeFacade;
+import com.advantech.test.TestClass2;
+import com.google.gson.Gson;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +22,7 @@ import java.util.Map;
  *
  * @author Wei.Cheng
  */
-public class TestDAO extends BasicDAO implements AlarmActions{
+public class TestDAO extends BasicDAO implements AlarmActions {
 
     public TestDAO() {
 
@@ -87,7 +89,7 @@ public class TestDAO extends BasicDAO implements AlarmActions{
     public boolean changeDeck(int tableNo, String jobnumber) {
         return updateTestTable("UPDATE LS_TEST SET id = ? WHERE userid = ?", tableNo, jobnumber);
     }
-    
+
     @Override
     public boolean insertAlarm(List<AlarmAction> l) {
         return updateAlarmTable("INSERT INTO Alm_TestAction(alarm, tableId) VALUES(?, ?)", l);
@@ -102,12 +104,12 @@ public class TestDAO extends BasicDAO implements AlarmActions{
     public boolean resetAlarm() {
         return update(getConn(), "UPDATE Alm_TestAction SET alarm = 0");
     }
-    
+
     @Override
     public boolean removeAlarmSign() {
         return update(getConn(), "TRUNCATE TABLE Alm_TestAction");
     }
-    
+
     public boolean setTestAlarmToTestingMode() {
         return update(getConn(), "UPDATE Alm_TestAction SET alarm = 1");
     }
@@ -135,5 +137,10 @@ public class TestDAO extends BasicDAO implements AlarmActions{
     }
 
     public static void main(String str[]) {
+        BasicDAO.dataSourceInit1();
+        TestDAO dao = new TestDAO();
+        List<TestClass2> l = BasicDAO.queryForBeanList(dao.getConn(), TestClass2.class, "SELECT * FROM LineTypeConfig");
+        System.out.println(new Gson().toJson(l));
     }
 }
+

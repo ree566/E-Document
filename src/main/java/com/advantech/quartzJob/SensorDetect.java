@@ -6,11 +6,14 @@
 package com.advantech.quartzJob;
 
 import com.advantech.entity.BAB;
+import com.advantech.entity.LineOwnerMapping;
 import com.advantech.helper.PropertiesReader;
 import com.advantech.service.BasicService;
+import com.advantech.service.LineOwnerMappingService;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
@@ -26,20 +29,40 @@ import org.quartz.PersistJobDataAfterExecution;
  */
 @PersistJobDataAfterExecution
 @DisallowConcurrentExecution
-public class SensorDetect extends ProcessingBabDetector implements Job{
-    
+public class SensorDetect extends ProcessingBabDetector implements Job {
+
     public static JobDataMap jobDataMap = null;
- 
+    private static final Integer SENSOR_EXPIRE_TIME;
+    private static final Integer SENSOR_DETECT_PERIOD;
+
+    static {
+        PropertiesReader p = PropertiesReader.getInstance();
+        SENSOR_EXPIRE_TIME = p.getSensorDetectExpireTime();
+        SENSOR_DETECT_PERIOD = p.getSensorDetectPeriod();
+    }
+
     public SensorDetect() {
-        super("_SensorCheck", "SensorCheck", "0 0/1 8-11,13-20 ? * MON-SAT *", CheckSensor.class);
+        super("_SensorCheck", "SensorCheck", "0 0/" + SENSOR_DETECT_PERIOD + " 8-11,13-20 ? * MON-SAT *", CheckSensor.class);
     }
 
     @Override
     public Map createJobDetails(BAB b) {
         Map m = new HashMap();
-        m.put("dataMap", b);
-        m.put("expireTime", PropertiesReader.getInstance().getSensorDetectExpireTime());
+        m.put("bab", b);
+        m.put("expireTime", SENSOR_EXPIRE_TIME);
+        m.put("detectPeriod", SENSOR_DETECT_PERIOD);
+        m.put("responsors", this.getResponsors(b));
         return m;
+    }
+
+    private JSONArray getResponsors(BAB b) {
+        JSONArray arr = new JSONArray();
+        LineOwnerMappingService ownerService = BasicService.getLineOwnerMappingService();
+        List<LineOwnerMapping> responsors = ownerService.getByLine(b.getLine());
+        for (LineOwnerMapping owner : responsors) {
+            arr.put(owner.getUser_name());
+        }
+        return arr;
     }
 
     @Override

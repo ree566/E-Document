@@ -47,6 +47,8 @@ public class ExcelGenerator {
 
     private int baseXIndex = 0, baseYIndex = 0;
     private final String emptyMessage = "Data is empty.";
+    
+    private CellStyle floatCell;
 
     public ExcelGenerator() {
         init();
@@ -56,6 +58,7 @@ public class ExcelGenerator {
         sheetNum = 1;
         indexInit();
         workbook = new HSSFWorkbook();
+        floatCell = this.createFloatCell();
         log.info("New one workbook");
     }
 
@@ -119,10 +122,10 @@ public class ExcelGenerator {
             cell.setCellValue((Integer) value);
         } else if (value instanceof Double) {
             cell.setCellValue((Double) value);
-            createFloatCell(cell);
+            cell.setCellStyle(floatCell);
         } else if (value instanceof BigDecimal) {
             cell.setCellValue(((Number) value).doubleValue());
-            createFloatCell(cell);
+            cell.setCellStyle(floatCell);
         } else if (value == null) {
             cell.setCellValue("");
         } else {
@@ -131,15 +134,14 @@ public class ExcelGenerator {
         return cell;
     }
 
-    private Cell createFloatCell(Cell cell) {
+    private CellStyle createFloatCell() {
         CellStyle style = workbook.createCellStyle();
         style.setDataFormat(workbook.createDataFormat().getFormat("0.00%"));
         style.setBorderBottom(BorderStyle.MEDIUM);
         style.setBorderTop(BorderStyle.MEDIUM);
         style.setBorderRight(BorderStyle.MEDIUM);
         style.setBorderLeft(BorderStyle.MEDIUM);
-        cell.setCellStyle(style);
-        return cell;
+        return style;
     }
 
     public void formatExcel() {
@@ -379,7 +381,7 @@ public class ExcelGenerator {
                 }
                 formulaString1 += ")";
                 cell.setCellFormula(formulaString1);
-                createFloatCell(cell);
+                cell.setCellStyle(floatCell);
             }
         } else {
             setCellValue(row.createCell(baseYIndex), emptyMessage);

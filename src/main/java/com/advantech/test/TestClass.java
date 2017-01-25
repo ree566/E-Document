@@ -30,27 +30,33 @@ public class TestClass {
 
     public static void main(String[] args) {
 
-        BasicDAO.dataSourceInit1();
-
-        List<TagNameComparison> tagSettings = BasicService.getTagNameComparisonService().getAll();
-
-        try {
-            JAXBContext jc = JAXBContext.newInstance(Wrapper.class, TagNameComparison.class);
-            Unmarshaller unmarshaller = jc.createUnmarshaller();
-            // Marshal
-            Marshaller marshaller = jc.createMarshaller();
-            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-//            marshal(marshaller, tagSettings, "tagSettings");
-//
-            List<TagNameComparison> l = unmarshal(unmarshaller, TagNameComparison.class, "D:\\tagSettings.xml");
-
-            for (Object o : l) {
-                out.println(new Gson().toJson(o));
-            }
-        } catch (JAXBException ex) {
-            Logger.getLogger(TestClass.class.getName()).log(Level.SEVERE, null, ex);
+        int x, n;
+        for (n = 0, x = -256; x < 0; x = x + x) {
+            n = n + 1;
+            out.println(x);
         }
+        out.printf("x=%d,n=%d", x, n);
 
+//        BasicDAO.dataSourceInit1();
+//
+//        List<TagNameComparison> tagSettings = BasicService.getTagNameComparisonService().getAll();
+//
+//        try {
+//            JAXBContext jc = JAXBContext.newInstance(Wrapper.class, TagNameComparison.class);
+//            Unmarshaller unmarshaller = jc.createUnmarshaller();
+//            // Marshal
+//            Marshaller marshaller = jc.createMarshaller();
+//            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+////            marshal(marshaller, tagSettings, "tagSettings");
+////
+//            List<TagNameComparison> l = unmarshal(unmarshaller, TagNameComparison.class, "D:\\tagSettings.xml");
+//
+//            for (Object o : l) {
+//                out.println(new Gson().toJson(o));
+//            }
+//        } catch (JAXBException ex) {
+//            Logger.getLogger(TestClass.class.getName()).log(Level.SEVERE, null, ex);
+//        }
     }
 
     private static void marshal(Marshaller marshaller, List<?> list, String name)

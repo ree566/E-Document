@@ -104,7 +104,7 @@
     </schedule>-->
     
     <!--每日把未回覆異常原因的回覆給幹部-->
-    <schedule>
+<!--    <schedule>
         <job>
             <name>CountermeasureAlarm</name>
             <job-class>com.advantech.quartzJob.CountermeasureAlarm</job-class>
@@ -116,7 +116,7 @@
                 <cron-expression>0 0 11,16 ? * MON-FRI *</cron-expression>
             </cron>
         </trigger>
-    </schedule>
+    </schedule>-->
     
     <!--線平衡測試排站人數估算-->
 <!--    <schedule>

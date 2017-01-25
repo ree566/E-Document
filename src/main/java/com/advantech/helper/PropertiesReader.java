@@ -41,7 +41,7 @@ public class PropertiesReader {
 
     private String endpointQuartzTrigger;
 
-    private Integer sensorDetectExpireTime;
+    private Integer sensorDetectExpireTime, sensorDetectPeriod;
 
     private PropertiesReader() throws Exception {
         dataInit();
@@ -107,6 +107,7 @@ public class PropertiesReader {
         systemAbnormalAlarmMailCC = new JSONObject(properties.getProperty("systemAbnormalAlarm.mailCC"));
 
         sensorDetectExpireTime = convertStringToInteger(properties.getProperty("sensorDetect.expireTime"));
+        sensorDetectPeriod = convertStringToInteger(properties.getProperty("sensorDetect.period"));
 
         logTheSystemSetting();
     }
@@ -260,6 +261,10 @@ public class PropertiesReader {
 
     public Integer getSensorDetectExpireTime() {
         return sensorDetectExpireTime;
+    }
+
+    public Integer getSensorDetectPeriod() {
+        return sensorDetectPeriod;
     }
 
 }

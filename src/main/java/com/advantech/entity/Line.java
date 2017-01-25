@@ -22,8 +22,6 @@ public class Line implements Serializable {
     private int people;
     private int lock;
 
-    private boolean isOpened;
-
     public Line() {
 
     }

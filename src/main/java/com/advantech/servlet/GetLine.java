@@ -8,6 +8,7 @@ package com.advantech.servlet;
 
 import com.advantech.entity.Line;
 import com.advantech.service.BasicService;
+import com.advantech.service.LineService;
 import com.google.gson.Gson;
 import java.io.*;
 import java.util.List;
@@ -45,10 +46,12 @@ public class GetLine extends HttpServlet {
 
         res.setContentType("application/json");
         PrintWriter out = res.getWriter();
-        
+
         String sitefloor = req.getParameter("sitefloor");
 
-        out.print(new Gson().toJson(BasicService.getLineService().getLine(sitefloor)));
+        LineService lineService = BasicService.getLineService();
+
+        out.print(new Gson().toJson(sitefloor == null ? lineService.getLine() : lineService.getLine(sitefloor)));
 
     }
 }

@@ -5,6 +5,7 @@
  */
 package com.advantech.service;
 
+import com.advantech.entity.LineOwnerMapping;
 import com.advantech.model.LineOwnerMappingDAO;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,6 +23,19 @@ public class LineOwnerMappingService {
 
     protected LineOwnerMappingService() {
         lineOwnerMappingDAO = new LineOwnerMappingDAO();
+    }
+
+    public List<LineOwnerMapping> getAll() {
+        return lineOwnerMappingDAO.getAll();
+    }
+
+    public LineOwnerMapping getOne(int id) {
+        List<LineOwnerMapping> l = lineOwnerMappingDAO.getOne(id);
+        return l.isEmpty() ? null : l.get(0);
+    }
+
+    public List<LineOwnerMapping> getByLine(int lineId) {
+        return lineOwnerMappingDAO.getByLine(lineId);
     }
 
     public List<Map> getLineOwnerMappingView() {

@@ -37,7 +37,7 @@ public class NumLamp extends ProcessingBabDetector implements Job {
         Double testStandardTime = BasicService.getWorkTimeService().getTestStandardTime(b.getModel_name());
         Integer totalQuantity = BasicService.getBabService().getPoTotalQuantity(b.getPO());
         Map m = new HashMap();
-        m.put("dataMap", b);
+        m.put("bab", b);
         m.put("testStandardTime", testStandardTime);
         m.put("totalQuantity", totalQuantity);
         return m;

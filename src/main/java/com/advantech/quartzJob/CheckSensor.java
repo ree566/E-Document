@@ -21,6 +21,7 @@ import org.joda.time.DateTime;
 import org.joda.time.Minutes;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.json.JSONArray;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
@@ -36,19 +37,17 @@ public class CheckSensor implements Job {
 
     private static final Logger log = LoggerFactory.getLogger(CheckSensor.class);
 
-    private BAB currentBab;
+    private BAB bab;
     private final DateTimeFormatter dtf = DateTimeFormat.forPattern("yy/MM/dd HH:mm:ss ");
     private final int excludeHour = 12;
     private int expireTime;
+    private int detectPeriod;
+    private JSONArray responsors;
 
     @Override
     public void execute(JobExecutionContext jec) throws JobExecutionException {
         try {
-            JobDataMap dataMap = jec.getJobDetail().getJobDataMap();
-            BAB bab = (BAB) dataMap.get("dataMap");
-            this.currentBab = bab;
-            this.expireTime = (int) dataMap.get("expireTime");
-            checkSensorAndSendMail(currentBab);
+            checkSensorAndSendMail(bab);
         } catch (MessagingException ex) {
             log.error(ex.toString());
         }
@@ -60,13 +59,14 @@ public class CheckSensor implements Job {
         List<FBN> sensorStatus = BasicService.getFbnService().getSensorStatus(b.getId());
         int period = periodToNow(DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.SSS").parseDateTime(b.getBtime()));
 
-        //開線後10分鐘開始看
+        //開線後N分鐘開始監聽
         if (period >= expireTime && new DateTime().getHourOfDay() != excludeHour) {
             if (b.getPeople() != sensorStatus.size()) {
                 //看是第幾站沒有資料，回報
                 Integer lostStation = sensorStatus.size() + 1;
 //                sendMail(b.getLineName(), "Lost the signal at station " + lostStation);
                 out.println(b.getLineName() + " lost the signal at station " + lostStation);
+                out.println("Sending mail to " + responsors);
             } else {
                 //看看時間距離現在多久了，超過N秒沒動作，回報
 
@@ -86,10 +86,13 @@ public class CheckSensor implements Job {
                 if (isExpire(periodTime)) {
 //                    sendMail(b.getLineName(), "Sensor is expired almost " + periodTime + " minutes on " + lastStatus.getTagName());
                     out.println(b.getLineName() + "'s sensor is expired almost " + periodTime + " minutes on " + lastStatus.getTagName());
+                    out.println("Sending mail to " + responsors);
                 } else {
                     out.println(b.getLineName() + " sensor is normal processing...");
                 }
             }
+        } else {
+            out.println(b.getLineName() + " checking pass, not reach listening min time...");
         }
 
     }
@@ -113,21 +116,41 @@ public class CheckSensor implements Job {
 
         String subject = "[藍燈系統]Sensor異常訊息";
         String mailBody = generateMailBody(tagName, message);
-        MailSend.getInstance().sendMail(targetMail, subject, mailBody);
+        MailSend.getInstance().sendMail(targetMail, responsors, subject, mailBody);
     }
 
     private String generateMailBody(String tagName, String message) {
         return new StringBuilder()
                 .append("<p>時間 <strong>")
                 .append(new Date())
-                .append("</strong> sensor異常訊息如下</p>")
-                .append("<p>")
+                .append(" Sensor異常訊息如下</strong></p>")
+                .append("<p style='color:red'>")
                 .append(tagName)
-                .append("</p>")
-                .append("<p>")
+                .append(" ")
                 .append(message)
                 .append("</p>")
                 .append("<p>請協助確認感應器是否正常，謝謝。</p>")
+                .append("<p>詳情請至系統目錄/CalculatorWSApplication/pages/admin/SysInfo後台頁面上方的感應器頁籤查看該線別狀態</p>")
+                .append("<p>本系統將再 ")
+                .append(detectPeriod)
+                .append(" 分鐘之後再次確認此線別感應器狀態。</p>")
                 .toString();
     }
+
+    public void setBab(BAB bab) {
+        this.bab = bab;
+    }
+
+    public void setExpireTime(int expireTime) {
+        this.expireTime = expireTime;
+    }
+
+    public void setDetectPeriod(int detectPeriod) {
+        this.detectPeriod = detectPeriod;
+    }
+
+    public void setResponsors(JSONArray responsors) {
+        this.responsors = responsors;
+    }
+
 }

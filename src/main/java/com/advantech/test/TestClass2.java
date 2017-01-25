@@ -6,6 +6,7 @@
 package com.advantech.test;
 
 import static java.lang.System.out;
+import java.util.Scanner;
 
 /**
  *
@@ -14,29 +15,28 @@ import static java.lang.System.out;
 public class TestClass2 {
 
     public static void main(String arg0[]) {
-        Child child = new Child();
-        Child2 child2 = new Child2();
-        
-        out.println(child.b);
-        out.println(child2.b);
-        
-        child.b = 40;
-        
-        out.println(child.b);
-        out.println(child2.b);
-        
-        child = new Child();
-        
-        out.println(child.b);
+        Scanner input = new Scanner(System.in);
+        out.print("請輸入數字:");
+        String str1 = input.nextLine();
+        int count = 0;
+        try {
+            do {
+                count++;
+                Integer a = Integer.parseInt(str1);
+                Integer b = Integer.parseInt(new StringBuffer(str1).reverse().toString());
+                Integer c = a + b;
+                out.println(a + "+" + b + "=" + c);
+
+                if (new StringBuffer(c.toString()).reverse().toString().equals(c.toString())) {
+                    out.println("迴文出現了 ! 共計算" + count + "次");
+                    break;
+                } else {
+                    str1 = c.toString();
+                }
+            } while (count <= 100);
+        } catch (Exception e) {
+            out.println("The value is out of range!");
+        }
     }
 
 }
-
-class Father{
-    static int a = 10;
-    int b = 20;
-}
-
-class Child extends Father{}
-
-class Child2 extends Father{}
