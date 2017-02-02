@@ -34,7 +34,7 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
         lineBalanceService = BasicService.getLineBalanceService();
         babService = BasicService.getBabService();
         PropertiesReader p = PropertiesReader.getInstance();
-        BAB_STANDARD = p.getBabStandard();
+        BAB_STANDARD = p.getAssyStandard();
         this.init();
     }
 

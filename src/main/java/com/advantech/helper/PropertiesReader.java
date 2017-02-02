@@ -8,7 +8,7 @@ package com.advantech.helper;
 import java.io.InputStream;
 import static java.lang.System.out;
 import java.util.Properties;
-import org.json.JSONObject;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,10 +23,13 @@ public class PropertiesReader {
 
     private String testMail, mailServerUsername, mailServerPassword, mailServerLocation, mailServerPort;
 
-    private Double testStandard, babStandard, balanceDiff;
+    private Double testStandardMin, testStandardMax;
+    private Double assyStandard, packingStandard;
+    private Double assyAlarmPercent, packingAlarmPercent;
+    private Double balanceDiff;
 
-    private JSONObject systemAbnormalAlarmMailCC;
-    private String systemAbnormalAlarmMailTo;
+    private String[] systemAbnormalAlarmMailTo;
+    private String[] systemAbnormalAlarmMailCC;
 
     private Integer numLampMaxTestRequiredPeople, numLampGroupStart, numLampGroupEnd, numLampSpecCuttingGroup;
     private Integer numLampMinStandardTime, numLampMinQuantity, numLampMinTotalStandardTime;
@@ -73,6 +76,8 @@ public class PropertiesReader {
 
     private void loadParams(Properties properties) {
         maxTestTable = convertStringToInteger(properties.getProperty("test.maxTable"));
+        testStandardMin = convertStringToDouble(properties.getProperty("test.productivity.standard.min"));
+        testStandardMax = convertStringToDouble(properties.getProperty("test.productivity.standard.max"));
 
         numLampMaxTestRequiredPeople = convertStringToInteger(properties.getProperty("numLamp.test.maxRequiredPeople"));
         numLampGroupStart = convertStringToInteger(properties.getProperty("numLamp.balanceDetect.groupStart"));
@@ -82,12 +87,13 @@ public class PropertiesReader {
         numLampMinQuantity = convertStringToInteger(properties.getProperty("numLamp.mininum.quantity"));
         numLampMinTotalStandardTime = convertStringToInteger(properties.getProperty("numLamp.mininum.totalStandardTime"));
 
+        assyStandard = convertStringToDouble(properties.getProperty("bab.assy.lineBalance.standard"));
+        packingStandard = convertStringToDouble(properties.getProperty("bab.packing.lineBalance.standard"));
+        assyAlarmPercent = convertStringToDouble(properties.getProperty("bab.assy.alarmPercent.standard"));
+        packingAlarmPercent = convertStringToDouble(properties.getProperty("bab.packing.alarmPercent.standard"));
         babSaveToRecordStandardQuantity = convertStringToInteger(properties.getProperty("bab.saveToRecord.quantity"));
-        babStandard = convertStringToDouble(properties.getProperty("bab.lineBalance.standard"));
         balanceRoundingDigit = convertStringToInteger(properties.getProperty("bab.lineBalance.roundingDigit"));
         balanceDiff = convertStringToDouble(properties.getProperty("bab.lineBalance.difference"));
-
-        testStandard = convertStringToDouble(properties.getProperty("test.productivity.standard"));
 
         cellStandardMin = convertStringToDouble(properties.getProperty("cell.standard.min"));
         cellStandardMax = convertStringToDouble(properties.getProperty("cell.standard.max"));
@@ -103,44 +109,12 @@ public class PropertiesReader {
         sendMailAlarmUser = convertStringToBoolean(properties.getProperty("send.mail.alarm.user"));
         endpointQuartzTrigger = properties.getProperty("endpoint.quartz.trigger");
 
-        systemAbnormalAlarmMailTo = properties.getProperty("systemAbnormalAlarm.mailTo");
-        systemAbnormalAlarmMailCC = new JSONObject(properties.getProperty("systemAbnormalAlarm.mailCC"));
+        systemAbnormalAlarmMailTo = separateMailLoop(properties.getProperty("systemAbnormalAlarm.mailTo"));
+        systemAbnormalAlarmMailCC = separateMailLoop(properties.getProperty("systemAbnormalAlarm.mailCC"));
 
         sensorDetectExpireTime = convertStringToInteger(properties.getProperty("sensorDetect.expireTime"));
         sensorDetectPeriod = convertStringToInteger(properties.getProperty("sensorDetect.period"));
 
-        logTheSystemSetting();
-    }
-
-    private void logTheSystemSetting() {
-        out.println("Set test lineType standard is : " + testStandard);
-        out.println("Set bab lineType standard is : " + babStandard);
-        out.println("Set balanceDiff(Need to send mail when balance is diff to prev input bab) is : " + balanceDiff);
-        out.println("The mail info setting -> : "
-                + new JSONObject()
-                        .put("mailServerUsername", mailServerUsername)
-                        .put("mailServerPassword", mailServerPassword)
-                        .put("mailServerLocation", mailServerLocation)
-                        .put("mailServerPort", mailServerPort)
-                        .toString()
-        );
-        out.println("Need to send mail when system abnormal? : " + sendMailAlarmUser);
-        out.println("Abnormal mail setting : "
-                + new JSONObject()
-                        .put("systemAbnormalAlarmMailTo", systemAbnormalAlarmMailTo)
-                        .put("systemAbnormalAlarmMailCC", systemAbnormalAlarmMailCC)
-        );
-        out.println("The max table setting in test lineType is : " + maxTestTable);
-        out.println("The max test required people in test lineType is  : " + numLampMaxTestRequiredPeople);
-        out.println("The minimum data collection need to save to database : " + babSaveToRecordStandardQuantity);
-        out.println("The balance rounding digit is : " + balanceRoundingDigit);
-        out.println("Other save result setting : "
-                + new JSONObject()
-                        .put("writeToDB", writeToDB)
-                        .put("saveToOldDB", saveToOldDB)
-        );
-
-        out.println("The endpoint quartz trigger : " + endpointQuartzTrigger);
     }
 
     private Integer convertStringToInteger(String number) {
@@ -155,23 +129,43 @@ public class PropertiesReader {
         return (str != null && !"".equals(str)) ? str.equals("true") : false;
     }
 
-    public Double getTestStandard() {
-        return testStandard;
+    private String[] separateMailLoop(String mailString) {
+        return mailString == null ? new String[0] : mailString.replace(" ", "").split(",");
     }
 
-    public Double getBabStandard() {
-        return babStandard;
+    public Double getTestStandardMin() {
+        return testStandardMin;
+    }
+
+    public Double getTestStandardMax() {
+        return testStandardMax;
+    }
+
+    public Double getAssyStandard() {
+        return assyStandard;
+    }
+
+    public Double getPackingStandard() {
+        return packingStandard;
+    }
+
+    public Double getAssyAlarmPercent() {
+        return assyAlarmPercent;
+    }
+
+    public Double getPackingAlarmPercent() {
+        return packingAlarmPercent;
     }
 
     public Double getBalanceDiff() {
         return balanceDiff;
     }
 
-    public String getSystemAbnormalAlarmMailTo() {
+    public String[] getSystemAbnormalAlarmMailTo() {
         return systemAbnormalAlarmMailTo;
     }
 
-    public JSONObject getSystemAbnormalAlarmMailCC() {
+    public String[] getSystemAbnormalAlarmMailCC() {
         return systemAbnormalAlarmMailCC;
     }
 
@@ -267,4 +261,10 @@ public class PropertiesReader {
         return sensorDetectPeriod;
     }
 
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
+    }
+
+    
 }

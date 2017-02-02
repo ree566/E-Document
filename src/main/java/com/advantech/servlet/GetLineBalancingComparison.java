@@ -9,7 +9,6 @@ package com.advantech.servlet;
 import com.advantech.helper.ParamChecker;
 import com.advantech.service.BABService;
 import com.advantech.service.BasicService;
-import com.advantech.service.LineBalanceService;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,14 +29,12 @@ public class GetLineBalancingComparison extends HttpServlet {
 
     private static final Logger log = LoggerFactory.getLogger(GetLineBalancingComparison.class);
     private BABService babService = null;
-    private LineBalanceService lineBalanceService = null;
     private ParamChecker pChecker = null;
 
     @Override
     public void init()
             throws ServletException {
         babService = BasicService.getBabService();
-        lineBalanceService = BasicService.getLineBalanceService();
         pChecker = new ParamChecker();
     }
 
@@ -87,13 +84,9 @@ public class GetLineBalancingComparison extends HttpServlet {
                         int exp_isused = parseToInt(m.get("exp_isused"));
                         int exp_id = parseToInt(m.get("exp_id"));
 
-//            JSONArray ctrlAvgs = babService.getAvg(ctrl_id, ctrl_isused);
-//            JSONArray expAvgs = babService.getAvg(exp_id, exp_isused);
                         Double ctrlBalance = ctrl_id == 0 ? 0 : babService.getAvgType2(ctrl_id, ctrl_isused);
                         Double expBalance = exp_id == 0 ? 0 : babService.getAvgType2(exp_id, exp_isused);
 
-//                Double ctrlBalance = lineBalanceService.caculateLineBalance(ctrlAvgs);
-//                Double expBalance = lineBalanceService.caculateLineBalance(expAvgs);
                         responseObject.put("ctrlAvgs", ctrlBalance).put("expAvgs", expBalance);
 
                     }

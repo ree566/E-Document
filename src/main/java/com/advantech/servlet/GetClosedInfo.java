@@ -5,7 +5,6 @@
  */
 package com.advantech.servlet;
 
-import com.advantech.service.BABService;
 import com.advantech.service.BasicService;
 import com.advantech.service.TestService;
 import java.io.*;
@@ -24,12 +23,10 @@ import org.json.JSONObject;
 public class GetClosedInfo extends HttpServlet {
 
     private TestService testService = null;
-    private BABService babService = null;
 
     @Override
     public void init() throws ServletException {
         testService = BasicService.getTestService();
-        babService = BasicService.getBabService();
     }
 
     @Override
@@ -53,9 +50,6 @@ public class GetClosedInfo extends HttpServlet {
         switch (action) {
             case "getTest":
                 l = testService.getRecordTestLineType(startDate, endDate);
-                break;
-            case "getBab":
-                l = babService.getClosedBABInfo(startDate, endDate);
                 break;
             default:
                 l = new ArrayList();

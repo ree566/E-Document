@@ -43,7 +43,7 @@ public class BABDAO extends BasicDAO implements AlarmActions{
     }
 
     private Connection getConn() {
-        return getDBUtilConn(SQL.Way_Chien_WebAccess);
+        return getDBUtilConn(SQL.WebAccess);
     }
 
     private List<BAB> queryBABTable(String sql, Object... params) {
@@ -162,10 +162,6 @@ public class BABDAO extends BasicDAO implements AlarmActions{
         return queryForMapList(getConn(), "SELECT * FROM LS_LineBalanceCompareById(?)", BAbid);
     }
 
-    public List<Map> getClosedBABInfoDetail(String startDate, String endDate) {
-        return queryProcForMapList(getConn(), "{CALL closedBABInfoDetail_1(?,?)}", startDate, endDate);
-    }
-
     public List<Array> getAvailableModelName() {
         return queryForArrayList(getConn(), "SELECT Model_name from LS_availModelName");
     }
@@ -253,7 +249,7 @@ public class BABDAO extends BasicDAO implements AlarmActions{
             conn1.setAutoCommit(false);
 
             if (saveToOldDB) {
-                conn2 = getDBUtilConn(SQL.Way_Chien_LineBalancing);
+                conn2 = getDBUtilConn(SQL.LineBalancing);
                 conn2.setAutoCommit(false);
 
                 String columnName = "";

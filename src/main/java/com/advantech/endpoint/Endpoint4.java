@@ -137,4 +137,5 @@ public class Endpoint4 {
             System.out.println("Receive endpoint param: " + map.get(it.next()));
         }
     }
+    
 }

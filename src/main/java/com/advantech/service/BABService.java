@@ -122,10 +122,6 @@ public class BABService implements AlarmActions {
         return babDAO.getLastGroupStatus(BABid);
     }
 
-    public List<Map> getClosedBABInfo(String startDate, String endDate) {
-        return babDAO.getClosedBABInfoDetail(startDate, endDate);
-    }
-
     @Override
     public boolean insertAlarm(List<AlarmAction> l) {
         return babDAO.insertAlarm(l);

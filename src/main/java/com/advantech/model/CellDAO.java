@@ -23,7 +23,7 @@ public class CellDAO extends BasicDAO implements AlarmActions {
     }
 
     private Connection getConn() {
-        return getDBUtilConn(SQL.Way_Chien_WebAccess);
+        return getDBUtilConn(SQL.WebAccess);
     }
 
     private List<Cell> queryCellTable(String sql, Object... params) {

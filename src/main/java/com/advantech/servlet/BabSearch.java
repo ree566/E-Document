@@ -6,11 +6,9 @@
  */
 package com.advantech.servlet;
 
-import com.advantech.entity.PrepareSchedule;
 import com.advantech.helper.ParamChecker;
 import com.advantech.service.BABService;
 import com.advantech.service.BasicService;
-import com.advantech.service.PrepareScheduleService;
 import com.advantech.webservice.WebServiceRV;
 import com.google.gson.Gson;
 import java.io.*;
@@ -28,14 +26,12 @@ import javax.servlet.http.*;
 public class BabSearch extends HttpServlet {
 
     private BABService babService = null;
-    private PrepareScheduleService prepareScheduleService = null;
     private ParamChecker pChecker = null;
 
     @Override
     public void init()
             throws ServletException {
         babService = BasicService.getBabService();
-        prepareScheduleService = BasicService.getPrepareScheduleService();
         pChecker = new ParamChecker();
     }
 
@@ -56,7 +52,6 @@ public class BabSearch extends HttpServlet {
         String poGetBAB = req.getParameter("po_getBAB");
         String poSaveLine = req.getParameter("po_saveline");
         if (pChecker.checkInputVal(po)) {
-//            PrepareSchedule schedule = prepareScheduleService.getPrepareSchedule(po);
             try {
                 String modelname = WebServiceRV.getInstance().getModelnameByPo(po);
                 out.print(modelname == null ? "data not found" : convertString(modelname));

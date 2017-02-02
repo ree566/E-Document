@@ -12,6 +12,7 @@ import java.util.List;
 /**
  *
  * @author Wei.Cheng
+ * 工單帶機種功能已經轉為向WebService下request, 後續可刪除此class
  */
 public class PrepareScheduleService {
 

@@ -16,7 +16,7 @@ import java.util.List;
 public class CellLineDAO extends BasicDAO {
 
     private Connection getConn() {
-        return getDBUtilConn(SQL.Way_Chien_WebAccess);
+        return getDBUtilConn(SQL.WebAccess);
     }
 
     public List<CellLine> findAll() {

@@ -21,7 +21,7 @@ public class ActionCodeMappingDAO extends BasicDAO {
     }
 
     private Connection getConn() {
-        return getDBUtilConn(SQL.Way_Chien_WebAccess);
+        return getDBUtilConn(SQL.WebAccess);
     }
 
     private List<ActionCodeMapping> queryActionCodeMappingTable(String sql, Object... params) {

@@ -10,6 +10,7 @@ import java.io.Serializable;
 /**
  *
  * @author Wei.Cheng
+ * 工單帶機種功能已經轉為向WebService下request, 後續可刪除此class
  */
 //@Entity
 public class PrepareSchedule implements Serializable {

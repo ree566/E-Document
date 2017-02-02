@@ -14,7 +14,10 @@ import com.advantech.helper.PropertiesReader;
 import com.advantech.quartzJob.PollingSensorStatus;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
@@ -38,7 +41,7 @@ import org.slf4j.LoggerFactory;
 public class Endpoint {
 
     private static final Logger log = LoggerFactory.getLogger(Endpoint.class);
-    private static final Queue<Session> queue = new ConcurrentLinkedQueue<>();
+    private static final Set<Session> sessions = Collections.synchronizedSet(new HashSet<Session>());
 
     private static final String POLLING_FREQUENCY;
     private static final String JOB_NAME = "JOB1";
@@ -58,11 +61,11 @@ public class Endpoint {
         
 //        HandshakeRequest req = (HandshakeRequest) conf.getUserProperties().get("handshakereq");
 //        Map<String,List<String>> headers = req.getHeaders();
-        queue.add(session);
+        sessions.add(session);
 //        System.out.println("New session opened: " + session.getId());
 
         //每次當client連接進來時，去看目前session的數量 當有1個session時把下方quartz job加入到schedule裏頭(只要執行一次，不要重複加入)
-        int a = queue.size();
+        int a = sessions.size();
         if (a == 1) {
             pollingDBAndBrocast();
         }
@@ -76,18 +79,18 @@ public class Endpoint {
 
     @OnClose
     public void onClose(Session session) {
-        queue.remove(session);
+        sessions.remove(session);
 //        System.out.println("session closed: " + session.getId());
 
         //當client端完全沒有連結中的使用者時，把job給關閉(持續執行浪費性能)
-        if (queue.isEmpty()) {
+        if (sessions.isEmpty()) {
             unPollingDB();
         }
     }
 
     @OnError
     public void error(Session session, Throwable t) {
-        queue.remove(session);
+        sessions.remove(session);
 //        System.err.println("Error on session " + session.getId());
     }
 
@@ -96,7 +99,7 @@ public class Endpoint {
         try {
             /* Send the new rate to all open WebSocket sessions */
             ArrayList<Session> closedSessions = new ArrayList<>();
-            for (Session session : queue) {
+            for (Session session : sessions) {
                 if (!session.isOpen()) {
 //                    System.err.println("Closed session: " + session.getId());
                     closedSessions.add(session);
@@ -104,7 +107,7 @@ public class Endpoint {
                     session.getBasicRemote().sendText(msg);
                 }
             }
-            queue.removeAll(closedSessions);
+            sessions.removeAll(closedSessions);
 //            System.out.println("Sending " + msg + " to " + queue.size() + " clients");
         } catch (Throwable ex) {
             log.error(ex.toString());
@@ -128,5 +131,9 @@ public class Endpoint {
         } catch (SchedulerException ex) {
             log.error(ex.toString());
         }
+    }
+    
+    public static void clearSessions(){
+        sessions.clear();
     }
 }

@@ -20,7 +20,7 @@ public class LineDAO extends BasicDAO {
     private final int LINE_CLOSE_SIGN = 0;
 
     private Connection getConn() {
-        return getDBUtilConn(SQL.Way_Chien_WebAccess);
+        return getDBUtilConn(SQL.WebAccess);
     }
 
     private boolean updateLine(String sql, Object... params) {

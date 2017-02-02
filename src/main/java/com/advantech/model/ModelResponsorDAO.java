@@ -21,7 +21,7 @@ public class ModelResponsorDAO extends BasicDAO {
     }
 
     private Connection getConn() {
-        return getDBUtilConn(SQL.Way_Chien_WebAccess);
+        return getDBUtilConn(SQL.WebAccess);
     }
 
     private List<ModelResponsor> queryModelResponsorTable(String sql, Object... params) {

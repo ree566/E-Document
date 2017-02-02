@@ -22,7 +22,7 @@ public class PassStationDAO extends BasicDAO {
     }
 
     private Connection getConn() {
-        return getDBUtilConn(BasicDAO.SQL.Way_Chien_WebAccess);
+        return getDBUtilConn(BasicDAO.SQL.WebAccess);
     }
 
     public List<PassStation> getPassStation() {

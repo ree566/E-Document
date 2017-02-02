@@ -11,7 +11,6 @@ import com.advantech.entity.FBN;
 import com.advantech.helper.MailSend;
 import com.advantech.helper.PropertiesReader;
 import com.advantech.service.BasicService;
-import static java.lang.System.out;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -23,7 +22,6 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.json.JSONArray;
 import org.quartz.Job;
-import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
@@ -64,9 +62,9 @@ public class CheckSensor implements Job {
             if (b.getPeople() != sensorStatus.size()) {
                 //看是第幾站沒有資料，回報
                 Integer lostStation = sensorStatus.size() + 1;
-//                sendMail(b.getLineName(), "Lost the signal at station " + lostStation);
-                out.println(b.getLineName() + " lost the signal at station " + lostStation);
-                out.println("Sending mail to " + responsors);
+                sendMail(b.getLineName(), "訊號遺失於站別 " + lostStation);
+//                out.println(b.getLineName() + " lost the signal at station " + lostStation);
+//                out.println("Sending mail to " + responsors);
             } else {
                 //看看時間距離現在多久了，超過N秒沒動作，回報
 
@@ -84,17 +82,12 @@ public class CheckSensor implements Job {
 
                 int periodTime = periodToNow(date + time);
                 if (isExpire(periodTime)) {
-//                    sendMail(b.getLineName(), "Sensor is expired almost " + periodTime + " minutes on " + lastStatus.getTagName());
-                    out.println(b.getLineName() + "'s sensor is expired almost " + periodTime + " minutes on " + lastStatus.getTagName());
-                    out.println("Sending mail to " + responsors);
-                } else {
-                    out.println(b.getLineName() + " sensor is normal processing...");
+                    sendMail(b.getLineName(), "Sensor已經超過 " + periodTime + " 分鐘沒有動作，最後一次感應在TagName " + lastStatus.getTagName());
+//                    out.println(b.getLineName() + "'s sensor is expired almost " + periodTime + " minutes on " + lastStatus.getTagName());
+//                    out.println("Sending mail to " + responsors);
                 }
             }
-        } else {
-            out.println(b.getLineName() + " checking pass, not reach listening min time...");
         }
-
     }
 
     private int periodToNow(DateTime time) {
@@ -112,11 +105,12 @@ public class CheckSensor implements Job {
     }
 
     private void sendMail(String tagName, String message) throws MessagingException {
-        String targetMail = PropertiesReader.getInstance().getTestMail();
-
-        String subject = "[藍燈系統]Sensor異常訊息";
-        String mailBody = generateMailBody(tagName, message);
-        MailSend.getInstance().sendMail(targetMail, responsors, subject, mailBody);
+        if (responsors != null && responsors.length() != 0) {
+            JSONArray ccLoop = new JSONArray(PropertiesReader.getInstance().getSystemAbnormalAlarmMailTo());
+            String subject = "[藍燈系統]Sensor異常訊息";
+            String mailBody = generateMailBody(tagName, message);
+            MailSend.getInstance().sendMail(responsors, ccLoop, subject, mailBody);
+        }
     }
 
     private String generateMailBody(String tagName, String message) {

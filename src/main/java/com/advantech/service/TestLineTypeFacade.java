@@ -43,7 +43,7 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
     private TestLineTypeFacade() {
         testService = BasicService.getTestService();
         PropertiesReader p = PropertiesReader.getInstance();
-        TEST_STANDARD = p.getTestStandard();
+        TEST_STANDARD = p.getTestStandardMin();
         maxTestTable = p.getMaxTestTable();
         rv = WebServiceRV.getInstance();
         this.init();

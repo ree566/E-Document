@@ -72,7 +72,7 @@ public class LineBalancePeopleGenerator implements Job {
         this.numLampGroupStart = p.getNumLampGroupStart();
         this.numLampGroupEnd = p.getNumLampGroupEnd();
         this.numLampSpecCuttingGroup = p.getNumLampSpecCuttingGroup() == 0 ? 1 : p.getNumLampSpecCuttingGroup(); //若未設定，每1組計算一次
-        this.babStandard = p.getBabStandard();
+        this.babStandard = p.getAssyStandard();
         this.startCountMininumQuantity = p.getNumLampMinQuantity();
         this.startCountMininumStandardTime = minToSec(p.getNumLampMinStandardTime());
         this.minTotalStandardTime = minToSec(p.getNumLampMinTotalStandardTime());

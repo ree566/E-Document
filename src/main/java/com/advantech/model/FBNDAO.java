@@ -21,7 +21,7 @@ public class FBNDAO extends BasicDAO {
     }
 
     private Connection getConn() {
-        return getDBUtilConn(SQL.Way_Chien_WebAccess);
+        return getDBUtilConn(SQL.WebAccess);
     }
 
     private List<FBN> queryFBNTable(String sql, Object... params) {

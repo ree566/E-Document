@@ -20,7 +20,7 @@ public class IdentitDAO extends BasicDAO {
     private static final Logger log = LoggerFactory.getLogger(BasicDAO.class);
 
     private Connection getConn() {
-        return getDBUtilConn(SQL.Way_Chien_WebAccess);
+        return getDBUtilConn(SQL.WebAccess);
     }
 
     public Identit getIdentit(String jobnumber) {

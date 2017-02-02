@@ -21,7 +21,7 @@ public class LineOwnerMappingDAO extends BasicDAO {
     }
 
     private Connection getConn() {
-        return getDBUtilConn(SQL.Way_Chien_WebAccess);
+        return getDBUtilConn(SQL.WebAccess);
     }
 
     private List<LineOwnerMapping> query(String sql, Object... params) {

@@ -16,7 +16,7 @@ import java.util.Map;
 public class WorkTimeDAO extends BasicDAO{
 
     private static Connection getConn() {
-        return getDBUtilConn(BasicDAO.SQL.Way_Chien_WebAccess);
+        return getDBUtilConn(BasicDAO.SQL.WebAccess);
     }
     
     //抓取測試工時

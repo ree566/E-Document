@@ -17,7 +17,7 @@ import java.util.List;
 public class LineBalancingDAO extends BasicDAO {
 
     private Connection getConn() {
-        return getDBUtilConn(SQL.Way_Chien_LineBalancing);
+        return getDBUtilConn(SQL.LineBalancing);
     }
 
     private List<LineBalancing> getLineBalanceTableWithQuery(String sql, Object... params) {

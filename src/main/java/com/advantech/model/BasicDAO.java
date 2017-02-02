@@ -56,9 +56,9 @@ public class BasicDAO implements Serializable {
 
     public static enum SQL {
 
-        Way_Chien_TWM3("jdbc/res2"),
-        Way_Chien_WebAccess("jdbc/res3"),
-        Way_Chien_LineBalancing("jdbc/res4");
+        TWM3("jdbc/res2"),
+        WebAccess("jdbc/res3"),
+        LineBalancing("jdbc/res4");
 
         SQL(String str) {
             this.str = str;
@@ -125,11 +125,11 @@ public class BasicDAO implements Serializable {
     }
 
     private static String getDbName(String dataSourcePath) {
-        if (dataSourcePath.equals(SQL.Way_Chien_TWM3.toString())) {
+        if (dataSourcePath.equals(SQL.TWM3.toString())) {
             return "TWM3";
-        } else if (dataSourcePath.equals(SQL.Way_Chien_WebAccess.toString())) {
+        } else if (dataSourcePath.equals(SQL.WebAccess.toString())) {
             return "WebAccess";
-        } else if (dataSourcePath.equals(SQL.Way_Chien_LineBalancing.toString())) {
+        } else if (dataSourcePath.equals(SQL.LineBalancing.toString())) {
             return "Line_Balancing";
         } else {
             return "";

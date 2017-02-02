@@ -12,11 +12,12 @@ import java.util.List;
 /**
  *
  * @author Wei.Cheng
+ * 工單帶機種功能已經轉為向WebService下request, 後續可刪除此class
  */
 public class PrepareScheduleDAO extends BasicDAO {
 
     private static Connection getConn() {
-        return getDBUtilConn(SQL.Way_Chien_TWM3);
+        return getDBUtilConn(SQL.TWM3);
     }
 
     private List<PrepareSchedule> queryPrepareScheduleTable(String sql, Object... params) {
