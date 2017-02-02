@@ -146,7 +146,7 @@ public class BABDAO extends BasicDAO implements AlarmActions{
         return queryForMapList(getConn(), "SELECT * FROM LS_BABTimeHistoryDetail WHERE BABid = ? ORDER BY TagName, groupid", BABid);
     }
 
-    public List<Map> getBalaceDetail(int BABid) {
+    public List<Map> getBalancePerGroup(int BABid) {
         return queryForMapList(getConn(), "SELECT * FROM LS_balanceDetailPerGroup(?)", BABid);
     }
 

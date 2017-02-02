@@ -218,7 +218,7 @@ public class BABService implements AlarmActions {
 
     //低於設定值的資料不作儲存
     private boolean isQuantityAboveMininum(BAB bab) {
-        int dataCount = BasicService.getFbnService().getBalancePerGroup(bab.getId()).size();
+        int dataCount = babDAO.getBalancePerGroup(bab.getId()).size();
         return dataCount > MININUM_SAVE_TO_DB_QUANTITY;
     }
 
@@ -272,7 +272,7 @@ public class BABService implements AlarmActions {
     }
 
     public List<Map> getLineBalanceDetail(int BABid, int isused) {
-        return isused == BAB_CLOSED_SIGN ? babDAO.getClosedBalanceDetail(BABid) : babDAO.getBalaceDetail(BABid);
+        return isused == BAB_CLOSED_SIGN ? babDAO.getClosedBalanceDetail(BABid) : babDAO.getBalancePerGroup(BABid);
     }
 
     public List<Map> getBABTimeDetail(int BABid, int isused) {

@@ -46,10 +46,6 @@ public class FBNDAO extends BasicDAO {
         return queryFBNTable("{CALL sp_sensorStatus(?)}", BABid);
     }
 
-    public List<Map> getBalancePerGroup(int BABid) {
-        return queryForMapList(getConn(), "SELECT * FROM LS_balanceDetailPerGroup(?)", BABid);
-    }
-
     public FBN getBABFinalStationSensorStatus(int BABid) {
         List l = queryProcForBeanList(getConn(), FBN.class, "{CALL LS_babFinalStationSensorStatus(?)}", BABid);
         return l.isEmpty() ? null : (FBN) l.get(0);

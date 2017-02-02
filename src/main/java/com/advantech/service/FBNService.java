@@ -43,10 +43,6 @@ public class FBNService {
         return fbnDAO.getSensorStatus(BABid);
     }
 
-    public List<Map> getBalancePerGroup(int BABid) {
-        return fbnDAO.getBalancePerGroup(BABid);
-    }
-
     public FBN getBABFinalStationSensorStatus(int BABid) {
         return fbnDAO.getBABFinalStationSensorStatus(BABid);
     }

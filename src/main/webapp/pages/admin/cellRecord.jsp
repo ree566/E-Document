@@ -256,14 +256,16 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                     "columns": [
                         {data: "barcode", visible: false},
                         {data: "PO"},
+                        {data: "Model_name"},
                         {data: "linename"},
-                        {data: "diffTime", visible: false},
                         {data: "diff"},
                         {data: "standard"},
                         {data: "PERCENT"},
                         {data: "pass"},
                         {data: "beginTime"},
-                        {data: "endtime"}
+                        {data: "endtime"},
+                        {data: "beginUser"},
+                        {data: "endUser"}
                     ],
                     "columnDefs": [
                         {
@@ -303,11 +305,11 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                     info: true,
                     paginate: true,
                     destroy: true,
-                    stateSave: true,
+//                    stateSave: true,
                     "initComplete": function (settings, json) {
                         $("#cellHistoryDetail").show();
                     },
-                    "order": [[1, "asc"], [9, "asc"]]
+                    "order": [[1, "asc"], [8, "asc"]]
                 });
             }
 
@@ -418,14 +420,16 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                             <tr>
                                 <th>barcode</th>
                                 <th>工單</th>
+                                <th>機種</th>
                                 <th>線別</th>
-                                <th>耗時(時間詳細)</th>
-                                <th>耗時(分鐘)</th>
-                                <th>標工(分鐘)</th>
+                                <th>耗時(Min)</th>
+                                <th>標工(Min)</th>
                                 <th>百分比</th>
-                                <th>是否合格</th>
+                                <th>合格</th>
                                 <th>開始時間</th>
                                 <th>結束時間</th>
+                                <th>開始人員</th>
+                                <th>結束人員</th>
                             </tr>
                         </thead>
                     </table>
