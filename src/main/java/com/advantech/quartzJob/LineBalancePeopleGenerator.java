@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 import org.json.JSONObject;
 import org.quartz.Job;
-import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.JobKey;
@@ -48,7 +47,7 @@ public class LineBalancePeopleGenerator implements Job {
     private int currentGroup;
 
     private final Double babStandard;
-    private Integer testStandard;
+    private Double testStandardTime; //分鐘
     private Integer totalQuantity;
 
     private List<String> message;
@@ -74,8 +73,8 @@ public class LineBalancePeopleGenerator implements Job {
         this.numLampSpecCuttingGroup = p.getNumLampSpecCuttingGroup() == 0 ? 1 : p.getNumLampSpecCuttingGroup(); //若未設定，每1組計算一次
         this.babStandard = p.getAssyStandard();
         this.startCountMininumQuantity = p.getNumLampMinQuantity();
-        this.startCountMininumStandardTime = minToSec(p.getNumLampMinStandardTime());
-        this.minTotalStandardTime = minToSec(p.getNumLampMinTotalStandardTime());
+        this.startCountMininumStandardTime = p.getNumLampMinStandardTime();
+        this.minTotalStandardTime = p.getNumLampMinTotalStandardTime();
 
         formatter = new DecimalFormat("#.##%");
         formatter2 = new DecimalFormat("#.##");
@@ -101,11 +100,9 @@ public class LineBalancePeopleGenerator implements Job {
 
     private void generateTestPeople() {
 
-        if (bab == null || testStandard == null) {
+        if (bab == null || testStandardTime == null) {
             return;
         }
-
-        testStandard = minToSec(testStandard);
 
         message = new ArrayList();
 
@@ -131,9 +128,9 @@ public class LineBalancePeopleGenerator implements Job {
                 //計算人數，傳回給parent
                 caculateAndReportDataToParentJob(bab, babCT);
             }
-        }
+        } 
 
-        if (testStandard != null && (testStandard < startCountMininumStandardTime || currentGroup >= numLampGroupEnd)) {
+        if (testStandardTime != null && (testStandardTime < startCountMininumStandardTime || currentGroup >= numLampGroupEnd)) {
             jobSelfRemove();
         } else {
             //Update the current group status finally anyway.
@@ -183,28 +180,28 @@ public class LineBalancePeopleGenerator implements Job {
     private void caculateAndReportDataToParentJob(BAB bab, Integer babCT) {
 
         JSONObject obj = new JSONObject(bab);
-
-        if (totalQuantity == null || testStandard == null) {
+ 
+        if (totalQuantity == null || testStandardTime == null) {
             if (totalQuantity == null) {
                 message.add("TotalQuantity is not setting");
             }
-            if (testStandard == null) {
+            if (testStandardTime == null) {
                 message.add("TestStandard time is not setting");
             }
         } else {
             Integer suggestPeople;
 
-            if ((isFilterCountRule2(totalQuantity, testStandard) && isPcsFilterCountRule()) || (!isStatusExist(bab.getLineName()) && isFilterCountRule2(totalQuantity, testStandard) && currentGroup >= numLampSpecCuttingGroup)) {
-                suggestPeople = generatePeople1(babCT, testStandard);
-                message.add("AssyCT: " + formatter2.format(secToMin(babCT)) + " min, T1 standard: " + formatter2.format(secToMin(testStandard)) + " min");
+            if ((isFilterCountRule2(totalQuantity, testStandardTime) && isPcsFilterCountRule()) || (!isStatusExist(bab.getLineName()) && isFilterCountRule2(totalQuantity, testStandardTime) && currentGroup >= numLampSpecCuttingGroup)) {
+                suggestPeople = generatePeople1(babCT, testStandardTime);
+                message.add("AssyCT: " + formatter2.format(secToMin(babCT)) + " min, T1 standard: " + formatter2.format(testStandardTime) + " min");
             } else {
                 message.add("Total quantity is: " + totalQuantity + " pcs");
-                message.add("T1 standard: " + formatter2.format(secToMin(testStandard)) + " min");
+                message.add("T1 standard: " + formatter2.format(testStandardTime) + " min");
                 suggestPeople = basicSuggestPeople;
             }
 
-            if (testStandard < startCountMininumStandardTime || currentGroup >= numLampGroupEnd) {
-                message.add("※Reach " + numLampGroupEnd + " pcs or T1 standard < " + formatter2.format(secToMin(startCountMininumStandardTime)) + " min");
+            if (testStandardTime < startCountMininumStandardTime || currentGroup >= numLampGroupEnd) {
+                message.add("※Reach " + numLampGroupEnd + " pcs or T1 standard < " + formatter2.format(startCountMininumStandardTime) + " min");
                 message.add("※Stop updates");
             }
             obj.put("suggestTestPeople", suggestPeople);
@@ -216,8 +213,8 @@ public class LineBalancePeopleGenerator implements Job {
     private boolean isFilterCountRule(Integer totalQuantity, Integer standardVal) {
         return totalQuantity > startCountMininumQuantity && standardVal >= startCountMininumStandardTime && standardVal * totalQuantity >= minTotalStandardTime;
     }
-
-    private boolean isFilterCountRule2(Integer totalQuantity, Integer standardVal) {
+ 
+    private boolean isFilterCountRule2(Integer totalQuantity, Double standardVal) {
         return standardVal >= startCountMininumStandardTime && standardVal * totalQuantity >= minTotalStandardTime;
     }
 
@@ -249,11 +246,12 @@ public class LineBalancePeopleGenerator implements Job {
         return min + 1;
     }
 
-    private int generatePeople1(Integer maxVal, Integer standardVal) {
+    private int generatePeople1(Integer maxVal, Double standardVal) {
+        Integer standard = minToSec(standardVal);
         Map<Integer, Double> balanceResults = new HashMap();
         Integer people = basicSuggestPeople;
         do {
-            balanceResults.put(people, calculateBalance(maxVal, standardVal, people));
+            balanceResults.put(people, calculateBalance(maxVal, standard, people));
             people++;
         } while (people <= numLampMaxTestRequiredPeople);
 
@@ -370,8 +368,8 @@ public class LineBalancePeopleGenerator implements Job {
         return second == null ? null : second / 60;
     }
 
-    public void setTestStandard(Integer testStandard) {
-        this.testStandard = testStandard;
+    public void setTestStandardTime(Double testStandardTime) {
+        this.testStandardTime = testStandardTime;
     }
 
     public void setTotalQuantity(Integer totalQuantity) {

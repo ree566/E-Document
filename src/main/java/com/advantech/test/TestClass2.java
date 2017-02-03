@@ -5,9 +5,6 @@
  */
 package com.advantech.test;
 
-import com.advantech.helper.PropertiesReader;
-import static java.lang.System.out;
-
 /**
  *
  * @author Wei.Cheng
@@ -15,12 +12,13 @@ import static java.lang.System.out;
 public class TestClass2 {
 
     public static void main(String arg0[]) {
-        PropertiesReader p = PropertiesReader.getInstance();
-        out.println(p.toString());
-        
+        Integer i = 240;
+        Double d = 80 * 4.0;
+        System.out.println(i < d);
+
     }
-    
-    private static String[] separateMailLoop(String mailString){
+
+    private static String[] separateMailLoop(String mailString) {
         return mailString == null ? new String[0] : mailString.replace(" ", "").split(",");
     }
 
