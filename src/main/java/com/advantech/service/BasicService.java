@@ -22,7 +22,6 @@ public class BasicService {
     private static LineBalanceService lineBalanceService = null;
     private static LineService lineService = null;
     private static TestService testService = null;
-    private static PrepareScheduleService prepareScheduleService = null;
     private static TestClassService testClassService = null;
     private static CountermeasureService countermeasureService = null;
     private static IdentitService identitService = null;
@@ -43,7 +42,6 @@ public class BasicService {
         lineBalanceService = new LineBalanceService();
         lineService = new LineService();
         testService = new TestService();
-        prepareScheduleService = new PrepareScheduleService();
         testClassService = new TestClassService();
         countermeasureService = new CountermeasureService();
         identitService = new IdentitService();
@@ -77,10 +75,6 @@ public class BasicService {
 
     public static TestService getTestService() {
         return testService;
-    }
-
-    public static PrepareScheduleService getPrepareScheduleService() {
-        return prepareScheduleService;
     }
 
     public static TestClassService getTestClassService() {

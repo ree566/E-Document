@@ -24,7 +24,7 @@ public class IdentitDAO extends BasicDAO {
     }
 
     public Identit getIdentit(String jobnumber) {
-        List l = queryIdentitTable("SELECT * FROM LeaveApplicationRecord.dbo.identit WHERE jobnumber = ?", jobnumber);
+        List l = queryIdentitTable("SELECT * FROM identitView WHERE jobnumber = ?", jobnumber);
         return !l.isEmpty() ? (Identit) l.get(0) : null;
     }
 
