@@ -76,6 +76,7 @@ public class CellScheduleJobServlet extends HttpServlet {
                 res.setContentType("text/plain");
                 try {
                     String PO = req.getParameter("PO");
+                    String modelname = req.getParameter("modelname");
                     String lineId = req.getParameter("lineId");
                     if (pc.checkInputVals(PO, lineId) == true) {
 
@@ -86,7 +87,7 @@ public class CellScheduleJobServlet extends HttpServlet {
                         if (cellLine.isOpened()) {
                             if (cellService.getCellProcessing(line).isEmpty()) {
                                 if (BasicService.getBabService().getPoTotalQuantity(PO) != null) {
-                                    if (cellService.insertCell(new Cell(line, PO))) {
+                                    if (cellService.insert(new Cell(line, PO, modelname))) {
                                         responseObject = this.schedNewJobs(line, PO) ? "success" : "fail";
                                     } else {
                                         responseObject = "fail";
@@ -134,7 +135,7 @@ public class CellScheduleJobServlet extends HttpServlet {
                             Cell cell = (Cell) cells.get(0);
                             CellLine cellLine = BasicService.getCellLineService().findOne(cell.getLineId());
                             CellStation.checkDifferenceAndInsert(PO, cellLine.getAps_lineId()); //Don't forget to check the xml data and insert at last.
-                            if (cellService.deleteCell(cell) == true) {
+                            if (cellService.delete(cell) == true) {
                                 responseObject = removeJob(line, PO) ? "success" : "fail";
                             } else {
                                 responseObject = "fail";

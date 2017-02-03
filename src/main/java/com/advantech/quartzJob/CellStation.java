@@ -86,7 +86,7 @@ public class CellStation implements Job {
             CellService cellService = BasicService.getCellService();
             List<Cell> list = cellService.getCellProcessing(lineId);
             if (!list.isEmpty()) {
-                cellService.deleteCell((Cell) list.get(0));
+                cellService.delete((Cell) list.get(0));
             }
         } catch (SchedulerException ex) {
             out.println(ex.toString());

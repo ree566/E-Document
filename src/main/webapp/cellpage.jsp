@@ -34,6 +34,7 @@
         <script>
             var userInfoCookieName = "userInfo", testLineTypeCookieName = "testLineTypeCookieName", cellCookieName = "cellCookieName";
             var serverMsgTimeout;
+            var hnd;//鍵盤輸入間隔
 
             $(function () {
                 //Add class to transform the button type to bootstrap.
@@ -118,12 +119,19 @@
                 $("#begin").click(function () {
                     var lineId = $("#lineId").val();
                     var PO = $("#PO").val();
-                    if (checkVal(lineId, PO) == false) {
-                        showMsg("Input field can not be empty.");
+                    var modelname = $("#modelname").val();
+
+                    if (checkVal(lineId, PO, modelname) == false || modelname == "data not found") {
+                        showMsg("輸入資料有誤，請重新再確認。");
                         return false;
                     }
+
                     if (confirm("Begin PO: " + PO + " on line " + $("#lineId option:selected").text().trim() + " ?")) {
-                        insertCellInfo();
+                        insertCellInfo({
+                            lineId: lineId,
+                            PO: PO,
+                            modelname: modelname
+                        });
                     }
                 });
 
@@ -136,6 +144,10 @@
                 $("#refresh").click(function () {
                     showProcessing();
                     poDetect();
+                });
+
+                $("#PO").on("keyup", function () {
+                    getModel($(this).val(), $("#modelname"));
                 });
 
                 function checkExistCookies() {
@@ -235,15 +247,38 @@
                     });
                 }
 
-                function insertCellInfo() {
+                function getModel(text, obj) {
+                    var reg = "^[0-9a-zA-Z]+$";
+                    if (text != "" && text.match(reg)) {
+                        window.clearTimeout(hnd);
+                        hnd = window.setTimeout(function () {
+                            $.ajax({
+                                type: "Post",
+                                url: "BabSearch",
+                                data: {
+                                    po: text.trim()
+                                },
+                                dataType: "html",
+                                success: function (response) {
+                                    obj.val(response);
+                                    $("#reSearch").show();
+                                },
+                                error: function () {
+                                    showMsg(serverErrorConnMessage);
+                                }
+                            });
+                        }, 1000);
+                    } else {
+                        obj.val("");
+                    }
+                }
+
+                function insertCellInfo(data) {
+                    data.action = "insert";
                     $.ajax({
                         type: "Post",
                         url: "CellScheduleJobServlet",
-                        data: {
-                            lineId: $("#lineId").val(),
-                            PO: $("#PO").val(),
-                            action: "insert"
-                        },
+                        data: data,
                         dataType: "html",
                         success: function (response) {
                             showMsg(response);
@@ -347,8 +382,8 @@
                 function lockAllUserInput() {
                     $(":input,select").not("#redirectBtn, #directlyClose").attr("disabled", "disabled");
                 }
-                
-                function getExpireDate(){
+
+                function getExpireDate() {
                     var date = moment().startOf('day');
                     date = date.add(2, 'days');
                     return date.toDate();
@@ -389,6 +424,7 @@
                 <div class="form-group form-inline">
                     <label>Processing</label>
                     <input type="text" id="PO" placeholder="Please insert your PO" />
+                    <input type="text" name="modelname" id="modelname" placeholder="機種" readonly style="background: #CCC; width: 180px" />
                     <input type="button" id="begin" value="Begin" />
                     <input type="button" id="end" value="End" />
                 </div>

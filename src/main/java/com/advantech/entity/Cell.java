@@ -17,15 +17,17 @@ public class Cell implements Serializable {
     private int id;
     private int lineId;
     private String PO;
+    private String Model_name;
     private Integer isused;
     private String btime;
 
     public Cell() {
     }
 
-    public Cell(int lineId, String PO) {
+    public Cell(int lineId, String PO, String Model_name) {
         this.lineId = lineId;
         this.PO = PO;
+        this.Model_name = Model_name;
     }
 
     public int getId() {
@@ -50,6 +52,14 @@ public class Cell implements Serializable {
 
     public void setPO(String PO) {
         this.PO = PO;
+    }
+
+    public String getModel_name() {
+        return Model_name;
+    }
+
+    public void setModel_name(String Model_name) {
+        this.Model_name = Model_name;
     }
 
     public Integer getIsused() {

@@ -205,7 +205,7 @@ public class BasicDAO implements Serializable {
             }
             DbUtils.commitAndClose(conn);
             flag = true;
-        } catch (SQLException e) {
+        } catch (Exception e) {
             DbUtils.rollbackAndCloseQuietly(conn);
             log.error(e.toString());
         }

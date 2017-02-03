@@ -34,19 +34,19 @@ public class CellDataSaver implements Job {
     private boolean saveCellData() {
         CellService cellService = BasicService.getCellService();
         List<Cell> processing = cellService.getCellProcessing();
-        return cellService.deleteCell(processing);
+        return cellService.delete(processing);
     }
 
     public static void main(String arg0[]) {
         BasicDAO.dataSourceInit1();
         CellService cellService = BasicService.getCellService();
-        List<Cell> l = cellService.getCell();
+        List<Cell> l = cellService.getAll();
         List del = new ArrayList();
         for (Cell cell : l) {
             if (cell.getId() % 3 == 0) {
                 del.add(cell);
             }
         }
-        cellService.deleteCell(del);
+        cellService.delete(del);
     }
 }

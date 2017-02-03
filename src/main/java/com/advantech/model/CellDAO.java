@@ -26,24 +26,29 @@ public class CellDAO extends BasicDAO implements AlarmActions {
         return getDBUtilConn(SQL.WebAccess);
     }
 
-    private List<Cell> queryCellTable(String sql, Object... params) {
+    private List<Cell> query(String sql, Object... params) {
         return queryForBeanList(getConn(), Cell.class, sql, params);
     }
 
-    public List<Cell> getCell() {
-        return queryCellTable("SELECT * FROM Cell");
+    public List<Cell> getAll() {
+        return query("SELECT * FROM Cell");
     }
 
-    public List<Cell> getCell(String PO) {
-        return queryCellTable("SELECT * FROM Cell WHERE PO = ?", PO);
+    public Cell getOne(int id) {
+        List l = query("SELECT * FROM Cell WHERE id = ?", id);
+        return l.isEmpty() ? null : (Cell) l.get(0);
+    }
+
+    public List<Cell> getByPo(String PO) {
+        return query("SELECT * FROM Cell WHERE PO = ?", PO);
     }
 
     public List<Cell> getCellProcessing() {
-        return queryCellTable("SELECT * FROM cellProcessing");
+        return query("SELECT * FROM cellProcessing");
     }
 
     public List<Cell> getCellProcessing(int lineId) {
-        return queryCellTable("SELECT * FROM cellProcessing WHERE lineId = ?", lineId);
+        return query("SELECT * FROM cellProcessing WHERE lineId = ?", lineId);
     }
 
     public List<Map> cellHistoryView() {
@@ -54,15 +59,16 @@ public class CellDAO extends BasicDAO implements AlarmActions {
         return queryForMapList(this.getConn(), "SELECT * FROM cellHistoryView WHERE CONVERT(VARCHAR(10), btime, 20) BETWEEN ? AND ?", startDate, endDate);
     }
 
-    public boolean insertCell(List<Cell> l) {
-        return update(getConn(), "INSERT INTO Cell(lineId, PO) VALUES(?,?)", l, "lineId", "PO");
+    //"Model_name" 在dbutil get property時會去取 "model_name"
+    public boolean insert(List<Cell> l) {
+        return update(getConn(), "INSERT INTO Cell(lineId, PO, Model_name) VALUES(?,?,?)", l, "lineId", "PO", "model_name");
     }
 
-    public boolean deleteCell(List<Cell> l) {
+    public boolean delete(List<Cell> l) {
         return update(getConn(), "UPDATE Cell SET isused = 2 WHERE id = ?", l, "id");
     }
 
-    public boolean deleteCell(Cell cell) {
+    public boolean delete(Cell cell) {
         return update(getConn(), "UPDATE Cell SET isused = 1 WHERE id = ?", cell.getId());
     }
 
