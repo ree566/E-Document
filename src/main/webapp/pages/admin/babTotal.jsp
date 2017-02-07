@@ -756,21 +756,21 @@
 
                 beginTimeObj.on("dp.change", function (e) {
                     endTimeObj.data("DateTimePicker").minDate(e.date);
-//                    var beginDate = e.date;
-//                    var endDate = endTimeObj.data("DateTimePicker").date();
-//                    var dateDiff = endDate.diff(beginDate, 'days');
-//                    if (dateDiff > 30) {
-//                        endTimeObj.data("DateTimePicker").date(beginDate.add(lockDays, 'days'));
-//                    }
+                    var beginDate = e.date;
+                    var endDate = endTimeObj.data("DateTimePicker").date();
+                    var dateDiff = endDate.diff(beginDate, 'days');
+                    if (dateDiff > 30) {
+                        endTimeObj.data("DateTimePicker").date(beginDate.add(lockDays, 'days'));
+                    }
                 });
 
                 endTimeObj.on("dp.change", function (e) {
-//                    var beginDate = beginTimeObj.data("DateTimePicker").date();
-//                    var endDate = e.date;
-//                    var dateDiff = endDate.diff(beginDate, 'days');
-//                    if (dateDiff > 30) {
-//                        beginTimeObj.data("DateTimePicker").date(endDate.add(-lockDays, 'days'));
-//                    }
+                    var beginDate = beginTimeObj.data("DateTimePicker").date();
+                    var endDate = e.date;
+                    var dateDiff = endDate.diff(beginDate, 'days');
+                    if (dateDiff > 30) {
+                        beginTimeObj.data("DateTimePicker").date(endDate.add(-lockDays, 'days'));
+                    }
                 });
             }
 
