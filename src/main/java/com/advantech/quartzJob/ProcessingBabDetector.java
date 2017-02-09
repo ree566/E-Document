@@ -120,6 +120,9 @@ public abstract class ProcessingBabDetector {
 
                     ctm.scheduleJob(jobDetail, triggerKey, quartzJobCronTrigger);
                     out.println(quartzJobGroupName + " sched...");
+                    
+                    ctm.triggerJob(jobKey);
+                    out.println(quartzJobGroupName + " trigger at first time...");
 
                     //put key in map when sche is success
                     Map keyMap = new HashMap();

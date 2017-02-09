@@ -10,20 +10,23 @@ package com.advantech.test;
  * @author Wei.Cheng
  */
 public class TestClass2 {
-    
-    static int i = 1, j = i;
+
+    protected class Nested {
+
+        public void method() {
+        }
+    }
 
     public static void main(String arg0[]) {
-        j = 5;
-        TestClass2 t = new TestClass2();
-        System.out.println(i);
-        System.out.println(j);
+
     }
 
-    public static void Foo(StringBuilder fooSB){
-        fooSB.append("test");
-        fooSB = null;
-    }
 }
 
+class SubTopLevel extends TestClass2 {
 
+    static void Foo() {
+
+        new TestClass2().new Nested().method();
+    }
+}

@@ -100,18 +100,19 @@ public class LineBalancePeopleGenerator implements Job {
 
     private void generateTestPeople() {
 
-        if (bab == null || testStandardTime == null) {
+        message = new ArrayList();
+
+        if (!isSettingVaild()) {
+            showAbnormalSettingMessage();
             return;
         }
-
-        message = new ArrayList();
 
         //查看目前分配到第幾組了
         List<Map> l = babService.getLastGroupStatus(bab.getId());
         currentGroup = l.isEmpty() ? 1 : (int) l.get(0).get("groupid");
 
         //依照目前組別取得lineBalance
-        List<Map> balanceGroup = getCurrentLineBalance(bab);
+        List<Map> balanceGroup = findCurrentLineBalance();
 
         //連第一組都沒有，返回
         if (balanceGroup.isEmpty()) {
@@ -121,38 +122,49 @@ public class LineBalancePeopleGenerator implements Job {
         //取得組裝CT
         Integer babCT = (int) Math.floor(((BigDecimal) findMaxInList(balanceGroup)).doubleValue());
 
-        if (!isStatusExist(bab.getLineName()) || isPcsFilterCountRule()) {
-            if (isStatusExist(bab.getLineName()) && isGroupTheSame(bab.getLineName())) {
+        if (!isStatusExist() || isPcsFilterCountRule()) {
+            if (isStatusExist() && isGroupTheSame()) {
                 return;
             } else {
                 //計算人數，傳回給parent
-                caculateAndReportDataToParentJob(bab, babCT);
+                caculateAndReportDataToParentJob(babCT);
             }
-        } 
+        }
 
         if (testStandardTime != null && (testStandardTime < startCountMininumStandardTime || currentGroup >= numLampGroupEnd)) {
             jobSelfRemove();
         } else {
             //Update the current group status finally anyway.
-            updateCurrentGroup(bab.getLineName());
+            updateCurrentGroup();
 
         }
     }
 
-    private boolean isStatusExist(String lineName) {
-        return numLamp.getProcessStatus().has(lineName);
+    private boolean isSettingVaild() {
+        return totalQuantity != null && testStandardTime != null;
     }
 
-    private boolean isGroupTheSame(String lineName) {
+    private void showAbnormalSettingMessage() {
+        JSONObject obj = new JSONObject(bab);
+        message.add((totalQuantity == null ? "TotalQuantity" : "TestStandard time") + " is not setting");
+        obj.put("message", message);
+        numLamp.getProcessStatus().put(bab.getLineName(), obj);
+    }
+
+    private boolean isStatusExist() {
+        return numLamp.getProcessStatus().has(bab.getLineName());
+    }
+
+    private boolean isGroupTheSame() {
         try {
-            return numLamp.getProcessStatus().getJSONObject(lineName).get("quantity").equals(currentGroup);
+            return numLamp.getProcessStatus().getJSONObject(bab.getLineName()).get("quantity").equals(currentGroup);
         } catch (Exception ex) {
             return true;
         }
     }
 
     //依照組別得知目前線平衡狀態
-    private List<Map> getCurrentLineBalance(BAB bab) {
+    private List<Map> findCurrentLineBalance() {
         if (currentGroup < numLampGroupStart || currentGroup < numLampSpecCuttingGroup) {
             return babService.getBABAvgsInSpecGroup(bab.getId(), 1, currentGroup);
         } else if (numLampGroupEnd < currentGroup) {
@@ -166,7 +178,8 @@ public class LineBalancePeopleGenerator implements Job {
         return (currentGroup / numLampSpecCuttingGroup) * numLampSpecCuttingGroup;
     }
 
-    private void updateCurrentGroup(String lineName) {
+    private void updateCurrentGroup() {
+        String lineName = bab.getLineName();
         try {
             JSONObject obj = numLamp.getProcessStatus().getJSONObject(lineName);
             if (obj != null) {
@@ -177,35 +190,26 @@ public class LineBalancePeopleGenerator implements Job {
         } //Do nothing when object is not found
     }
 
-    private void caculateAndReportDataToParentJob(BAB bab, Integer babCT) {
+    private void caculateAndReportDataToParentJob(Integer babCT) {
 
         JSONObject obj = new JSONObject(bab);
- 
-        if (totalQuantity == null || testStandardTime == null) {
-            if (totalQuantity == null) {
-                message.add("TotalQuantity is not setting");
-            }
-            if (testStandardTime == null) {
-                message.add("TestStandard time is not setting");
-            }
+
+        Integer suggestPeople;
+
+        if ((isFilterCountRule2(totalQuantity, testStandardTime) && isPcsFilterCountRule()) || (!isStatusExist() && isFilterCountRule2(totalQuantity, testStandardTime) && currentGroup >= numLampSpecCuttingGroup)) {
+            suggestPeople = generatePeople1(babCT, testStandardTime);
+            message.add("AssyCT: " + formatter2.format(secToMin(babCT)) + " min, T1 standard: " + formatter2.format(testStandardTime) + " min");
         } else {
-            Integer suggestPeople;
-
-            if ((isFilterCountRule2(totalQuantity, testStandardTime) && isPcsFilterCountRule()) || (!isStatusExist(bab.getLineName()) && isFilterCountRule2(totalQuantity, testStandardTime) && currentGroup >= numLampSpecCuttingGroup)) {
-                suggestPeople = generatePeople1(babCT, testStandardTime);
-                message.add("AssyCT: " + formatter2.format(secToMin(babCT)) + " min, T1 standard: " + formatter2.format(testStandardTime) + " min");
-            } else {
-                message.add("Total quantity is: " + totalQuantity + " pcs");
-                message.add("T1 standard: " + formatter2.format(testStandardTime) + " min");
-                suggestPeople = basicSuggestPeople;
-            }
-
-            if (testStandardTime < startCountMininumStandardTime || currentGroup >= numLampGroupEnd) {
-                message.add("※Reach " + numLampGroupEnd + " pcs or T1 standard < " + formatter2.format(startCountMininumStandardTime) + " min");
-                message.add("※Stop updates");
-            }
-            obj.put("suggestTestPeople", suggestPeople);
+            message.add("Total quantity is: " + totalQuantity + " pcs");
+            message.add("T1 standard: " + formatter2.format(testStandardTime) + " min");
+            suggestPeople = basicSuggestPeople;
         }
+
+        if (testStandardTime < startCountMininumStandardTime || currentGroup >= numLampGroupEnd) {
+            message.add("※Reach " + numLampGroupEnd + " pcs or T1 standard < " + formatter2.format(startCountMininumStandardTime) + " min");
+            message.add("※Stop updates");
+        }
+        obj.put("suggestTestPeople", suggestPeople);
         obj.put("message", message);
         numLamp.getProcessStatus().put(bab.getLineName(), obj);
     }
@@ -213,7 +217,7 @@ public class LineBalancePeopleGenerator implements Job {
     private boolean isFilterCountRule(Integer totalQuantity, Integer standardVal) {
         return totalQuantity > startCountMininumQuantity && standardVal >= startCountMininumStandardTime && standardVal * totalQuantity >= minTotalStandardTime;
     }
- 
+
     private boolean isFilterCountRule2(Integer totalQuantity, Double standardVal) {
         return standardVal >= startCountMininumStandardTime && standardVal * totalQuantity >= minTotalStandardTime;
     }
@@ -368,6 +372,7 @@ public class LineBalancePeopleGenerator implements Job {
         return second == null ? null : second / 60;
     }
 
+    //Quartz job auto inject paramaters.
     public void setTestStandardTime(Double testStandardTime) {
         this.testStandardTime = testStandardTime;
     }

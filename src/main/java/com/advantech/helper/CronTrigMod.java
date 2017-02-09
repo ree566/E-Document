@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.CronTrigger;
@@ -110,6 +111,14 @@ public class CronTrigMod {
         } catch (SchedulerException ex) {
             log.error(ex.toString());
             return null;
+        }
+    }
+    
+    public void triggerJob(JobKey jobKey){
+        try {
+            scheduler.triggerJob(jobKey);
+        } catch (SchedulerException ex) {
+            log.error(ex.toString());
         }
     }
 

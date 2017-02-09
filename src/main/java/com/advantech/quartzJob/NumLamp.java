@@ -29,7 +29,7 @@ public class NumLamp extends ProcessingBabDetector implements Job {
     public static JobDataMap jobDataMap = null;
 
     public NumLamp() {
-        super("_NumLamp", "NumLamp", "25,55 * 8-20 ? * MON-SAT *", LineBalancePeopleGenerator.class);
+        super("_NumLamp", "NumLamp", "25 0/5 8-20 ? * MON-SAT *", LineBalancePeopleGenerator.class);
     }
 
     @Override
