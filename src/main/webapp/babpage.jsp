@@ -403,7 +403,9 @@
             }
 
             function setLineOptions(line) {
-                $("#lineNo").append("<option value=" + line.id + " " + (line.lock == 1 ? "disabled style='opacity:0.2'" : "") + ">" + line.name + "</option>");
+                if (line.lock != 1) {
+                    $("#lineNo").append("<option value=" + line.id + " >" + line.name + "</option>");
+                }
             }
 
             function setStationOptions() {

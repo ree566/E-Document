@@ -2,9 +2,9 @@ var pXa = -0;
 var pYa = -0;
 
 var titleGroup = [
-    {lineName: "L1", x: 1070, y: 250},
-    {lineName: "LA", x: 1070, y: 160},
-    {lineName: "LB", x: 1070, y: 50},
+    {lineName: "LA", x: 1070, y: 250},
+    {lineName: "LB", x: 1070, y: 160},
+    {lineName: "LD", x: 1070, y: 50},
     {lineName: "LH", x: 40, y: 120},
     {lineName: "LG", x: 370, y: 80},
     {lineName: "LF", x: 370, y: 160}
@@ -20,9 +20,9 @@ var testGroup = [
 ];
 
 var babGroup = [
-    {people: 4, x: 930, y: 220, lineName: "L1"},
-    {people: 4, x: 930, y: 170, lineName: "LA"},
-    {people: 4, x: 930, y: 60, lineName: "LB"},
+    {people: 4, x: 930, y: 220, lineName: "LA"},
+    {people: 4, x: 930, y: 170, lineName: "LB"},
+    {people: 4, x: 930, y: 60, lineName: "LD"},
     {people: 3, x: 100, y: 160, lineName: "LH"},
     {people: 3, x: 260, y: 90, lineName: "LG"},
     {people: 3, x: 260, y: 160, lineName: "LF"}

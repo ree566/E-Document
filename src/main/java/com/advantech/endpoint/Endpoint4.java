@@ -110,7 +110,6 @@ public class Endpoint4 {
     // Generate when connect users are at least one.
     private void pollingDBAndBrocast() {
         try {
-            System.out.println("Polling");
             CronTrigMod.getInstance().scheduleJob(PollingCellResult.class, JOB_NAME, POLLING_FREQUENCY);
         } catch (SchedulerException ex) {
             log.error(ex.toString());

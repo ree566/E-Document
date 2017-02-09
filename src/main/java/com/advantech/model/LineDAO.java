@@ -52,7 +52,7 @@ public class LineDAO extends BasicDAO {
         if(sitefloor.length() > 3){
             return new ArrayList();
         }
-        return queryLineTable("SELECT * FROM LS_Line where sitefloor = ?", sitefloor);
+        return queryLineTable("SELECT * FROM LS_Line WHERE sitefloor = ? ORDER BY name", sitefloor);
     }
 
     public boolean openSingleLine(int lineNo) {

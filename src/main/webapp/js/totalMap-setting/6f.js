@@ -3,8 +3,8 @@ var pYa = -20;
 
 var titleGroup = [
     //assy
-    {lineName: "L3", x: 1080, y: 280},
-    {lineName: "L4", x: 1080, y: 180},
+    {lineName: "L1", x: 1080, y: 280},
+    {lineName: "L2", x: 1080, y: 180},
     //pkg
     {lineName: "L6", x: 190, y: 200},
     {lineName: "L7", x: 190, y: 105},
@@ -18,8 +18,8 @@ var testGroup = [
     {people: 5, x: 610, y: 290} // group 1-5
 ];
 var babGroup = [
-    {people: 8, x: 790, y: 280, lineName: "L3"}, // group 1-4
-    {people: 8, x: 790, y: 190, lineName: "L4"}, // group 21-24
+    {people: 8, x: 790, y: 280, lineName: "L1"}, // group 1-4
+    {people: 8, x: 790, y: 190, lineName: "L2"}, // group 21-24
     {people: 3, x: 255, y: 210, lineName: "L6"}, // group 16-20
     {people: 3, x: 255, y: 120, lineName: "L7"}, // group 9-15
     {people: 4, x: 400, y: 190, lineName: "L8"}, // group 5-8
