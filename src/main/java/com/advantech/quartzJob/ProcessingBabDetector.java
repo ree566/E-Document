@@ -49,7 +49,7 @@ public abstract class ProcessingBabDetector {
     private final String quartzJobCronTrigger;
     private final Class scheduleClass;
 
-    public ProcessingBabDetector(String quartzJobNameExt, String quartzJobGroupName, String quartzJobCronTrigger, Class scheduleClass) {
+    protected ProcessingBabDetector(String quartzJobNameExt, String quartzJobGroupName, String quartzJobCronTrigger, Class scheduleClass) {
         this.quartzJobNameExt = quartzJobNameExt;
         this.quartzJobGroupName = quartzJobGroupName;
         this.quartzJobCronTrigger = quartzJobCronTrigger;
