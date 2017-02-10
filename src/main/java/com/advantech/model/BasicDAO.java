@@ -153,7 +153,7 @@ public class BasicDAO implements Serializable {
                 triggerChangeStatus = changeCronTrig(connectFlag);
                 log.info("Database is connected, Update trgger to default: " + triggerChangeStatus);
             }
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
             log.error(ex.toString());
             if (connectFlag == false) {
                 //當連線異常時，進入這把排程調整成15分鐘看一下資料庫連線

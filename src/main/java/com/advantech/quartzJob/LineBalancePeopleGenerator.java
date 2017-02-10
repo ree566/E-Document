@@ -116,6 +116,7 @@ public class LineBalancePeopleGenerator implements Job {
 
         //連第一組都沒有，返回
         if (balanceGroup.isEmpty()) {
+            showProccessingMessage();
             return;
         }
 
@@ -150,6 +151,15 @@ public class LineBalancePeopleGenerator implements Job {
         obj.put("message", message);
         numLamp.getProcessStatus().put(bab.getLineName(), obj);
     }
+    
+    private void showProccessingMessage() {
+        JSONObject obj = new JSONObject(bab);
+         message.add("Waiting for first group...");
+        obj.put("suggestTestPeople", 0);
+        obj.put("message", message);
+        numLamp.getProcessStatus().put(bab.getLineName(), obj);
+    }
+
 
     private boolean isStatusExist() {
         return numLamp.getProcessStatus().has(bab.getLineName());
