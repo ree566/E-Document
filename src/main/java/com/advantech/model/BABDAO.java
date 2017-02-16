@@ -83,6 +83,10 @@ public class BABDAO extends BasicDAO implements AlarmActions{
     public List<BAB> getAllProcessing() {
         return queryBABTable("SELECT * FROM LS_BAB_Id_List");
     }
+    
+    public List<BAB> getProcessing(int id) {
+        return queryBABTable("SELECT * FROM LS_BAB_Id_List WHERE id = ?", id);
+    }
 
     public List<BAB> getAssyProcessing() {
         return queryBABTable("SELECT * FROM assyProcessing");

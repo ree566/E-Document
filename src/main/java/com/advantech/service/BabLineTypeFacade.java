@@ -9,6 +9,7 @@ import com.advantech.entity.AlarmAction;
 import com.advantech.entity.BAB;
 import com.advantech.entity.Line;
 import com.advantech.helper.PropertiesReader;
+import java.util.ArrayList;
 import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -39,7 +40,7 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
     }
 
     public static BabLineTypeFacade getInstance() {
-        if(instance == null){
+        if (instance == null) {
             instance = new BabLineTypeFacade();
         }
         return instance;
@@ -71,6 +72,7 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
     @Override
     public boolean generateData() {
         boolean isSomeBabUnderStandard = false;
+
         List<BAB> babGroups = babService.getAllProcessing();
         if (hasDataInCollection(babGroups)) {
             //把所有有在bab資料表的id集合起來，找到統計值之後依序寫入txt(各線別取當日最早輸入的工單id來亮燈)
@@ -79,37 +81,48 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
 
             for (BAB bab : babGroups) {
                 int BABid = bab.getId();
-
                 JSONArray sensorDatas = babService.getLastGroupStatusForJson(BABid);
-
-                int peoples = sensorDatas.length();
-                if (peoples == 0) {
-                    continue;
-                }
-
-                double maxTimeDiff = -1;
-                double sumTimeDiff = -1;
-                int dataindex = -1;
-                for (int i = 0, length = sensorDatas.length(); i < length; i++) {//for loop find the maxium number
-                    //jsonObject的getInt所用參數不一樣，假使是取單台要getInt(diff)，整套則是getInt(average)
-                    double timeDiff = sensorDatas.getJSONObject(i).getInt("diff");
-                    if (maxTimeDiff < timeDiff) {
-                        maxTimeDiff = timeDiff;
-                        dataindex = i;
+                int currentGroupSum = sensorDatas.length();//看目前組別人數是否有到達bab裏頭設定的人數
+                int peoples = bab.getPeople();
+                if (sensorDatas.length() == 0 || currentGroupSum != peoples) {
+                    
+                    //Insert an empty status 
+                    for (int i = bab.getStartPosition(), length = bab.getStartPosition() + bab.getPeople() - 1; i <= length; i++) {
+                        JSONObject obj = new JSONObject();
+                        obj.put("TagName", bab.getLineName());
+                        obj.put("lineName", bab.getLineName());
+                        obj.put("stationId", i - bab.getStartPosition() + 1);
+                        obj.put("linetype", bab.getLinetype());
+                        obj.put("T_Num", i);
+                        transBabData.put(obj);
                     }
-                    sumTimeDiff += timeDiff;
-                }
-
-                //Alarm by the last group lineBalance
-                double lineBalance = lineBalanceService.caculateLineBalance(maxTimeDiff, sumTimeDiff, peoples);
-
-                boolean isUnderBalance = (Double.compare(lineBalance, BAB_STANDARD) < 0);
-
-                if (isUnderBalance) {
                     isSomeBabUnderStandard = true;
-                }
-                for (int i = 0, length = sensorDatas.length(); i < length; i++) {
-                    transBabData.put(sensorDatas.getJSONObject(i).put("ismax", isUnderBalance ? (dataindex == i) : false));
+                    
+                } else {
+                    double maxTimeDiff = -1;
+                    double sumTimeDiff = -1;
+                    int dataindex = -1;
+                    for (int i = 0, length = sensorDatas.length(); i < length; i++) {//for loop find the maxium number
+                        //jsonObject的getInt所用參數不一樣，假使是取單台要getInt(diff)，整套則是getInt(average)
+                        double timeDiff = sensorDatas.getJSONObject(i).getInt("diff");
+                        if (maxTimeDiff < timeDiff) {
+                            maxTimeDiff = timeDiff;
+                            dataindex = i;
+                        }
+                        sumTimeDiff += timeDiff;
+                    }
+
+                    //Alarm by the last group lineBalance
+                    double lineBalance = lineBalanceService.caculateLineBalance(maxTimeDiff, sumTimeDiff, peoples);
+
+                    boolean isUnderBalance = (Double.compare(lineBalance, BAB_STANDARD) < 0);
+
+                    if (isUnderBalance) {
+                        isSomeBabUnderStandard = true;
+                    }
+                    for (int i = 0, length = sensorDatas.length(); i < length; i++) {
+                        transBabData.put(sensorDatas.getJSONObject(i).put("ismax", isUnderBalance ? (dataindex == i) : false));
+                    }
                 }
             }
             processingJsonObject.put("data", transBabData);
@@ -130,7 +143,7 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
                 initMap();
                 for (int i = 0, length = sensorDatas.length(); i < length; i++) {
                     JSONObject sensorData = sensorDatas.getJSONObject(i);
-                    if (sensorData.getBoolean("ismax")) {
+                    if (sensorData.has("ismax") && sensorData.getBoolean("ismax")) {
                         alarmSensor.append(sensorData.getString("TagName"));
                         alarmSensor.append("-L-");
                         alarmSensor.append(sensorData.getInt("T_Num"));

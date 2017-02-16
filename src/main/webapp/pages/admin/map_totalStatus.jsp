@@ -95,7 +95,7 @@
                 border-bottom: 5px red solid;
                 border-right: 5px red solid;
                 background-color: white;
-                width: 25%; 
+                display: inline-block;
                 overflow: hidden;
             }
             .titleWiget{
@@ -124,6 +124,9 @@
             .blub-abnormal{
                 background-image: url(../../images/blub-icon/Yellow_Light_Icon.png);
             }
+            .blub-prepared{
+                background-image: url(../../images/blub-icon/Brown_Light_Icon.png);
+            }
             .suggestMsg{
                 background-color: white;
                 color: red;
@@ -146,7 +149,6 @@
             var maxProductivity = 200;
 
             $(function () {
-                
                 initTitleGroup();
                 initTestGroup();
                 initBabGroup();
@@ -250,7 +252,7 @@
 
                 function initWiget(obj) {
                     obj.addClass("blub-empty")
-                            .removeClass("blub-alarm blub-normal blub-abnormal")
+                            .removeClass("blub-alarm blub-normal blub-abnormal blub-prepared")
                             .removeAttr("title");
                 }
 
@@ -359,16 +361,23 @@
                         if (babData != null) {
                             for (var k = 0, l = babData.length; k < l; k++) {
                                 var people = babData[k];
+
                                 var childElement = $("#babArea #" + people.TagName + " #" + people.TagName + "_" + people.T_Num);
                                 if (childElement.length) {
-                                    childElement.removeClass("blub-empty")
-                                            .addClass((people.ismax ? "blub-alarm" : "blub-normal"))
-                                            .html(people.stationId)
-                                            .tooltipster('content', "Time:" + people.diff + "秒");
+                                    childElement.removeClass("blub-empty blub-prepared");
+
+                                    if ("ismax" in people) {
+                                        childElement.addClass((people.ismax ? "blub-alarm" : "blub-normal"))
+                                                .html(people.stationId)
+                                                .tooltipster('content', "Time:" + people.diff + "秒");
+                                    } else {
+                                        childElement.addClass("blub-prepared")
+                                                .html(people.stationId);
+                                    }
                                     if (people.T_Num == 1) {
                                         $("#titleArea #" + people.TagName + "_title").attr("onClick", "window.open( 'BabTotal?babId=" + people.BABid + "','_blank' ); return false;");
                                     }
-                                }
+                                } 
                             }
                         }
                     }
@@ -562,6 +571,9 @@
 
                     <label for="normalSign" style="float:left">異常</label>
                     <div class="draggable blub-abnormal divCustomBg"></div>
+
+                    <label for="normalSign" style="float:left">prepared</label>
+                    <div class="draggable blub-prepared divCustomBg"></div>
                 </div>
                 <!--<div class="clearWiget" /></div>-->
 

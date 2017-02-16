@@ -5,28 +5,20 @@
  */
 package com.advantech.test;
 
+import static java.lang.System.out;
+import org.json.JSONObject;
+
 /**
  *
  * @author Wei.Cheng
  */
 public class TestClass2 {
 
-    protected class Nested {
-
-        public void method() {
-        }
-    }
-
     public static void main(String arg0[]) {
-
+        JSONObject obj = new JSONObject();
+        JSONObject innerObj = obj.getJSONObject("someKey");
+        out.println(innerObj == null ? "Empty" : innerObj);
     }
 
 }
 
-class SubTopLevel extends TestClass2 {
-
-    static void Foo() {
-
-        new TestClass2().new Nested().method();
-    }
-}

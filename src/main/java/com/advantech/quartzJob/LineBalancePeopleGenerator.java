@@ -100,27 +100,27 @@ public class LineBalancePeopleGenerator implements Job {
 
     private void generateTestPeople() {
 
+        //初始化要回應的訊息
         message = new ArrayList();
 
+        //檢查設定值
         if (!isSettingVaild()) {
             showAbnormalSettingMessage();
             return;
         }
 
-        //查看目前分配到第幾組了
+        //查看目前分配到第幾組了，依照目前組別取得lineBalance
         List<Map> l = babService.getLastGroupStatus(bab.getId());
         currentGroup = l.isEmpty() ? 1 : (int) l.get(0).get("groupid");
-
-        //依照目前組別取得lineBalance
         List<Map> balanceGroup = findCurrentLineBalance();
 
-        //連第一組都沒有，返回
+        //檢查組別
         if (balanceGroup.isEmpty()) {
             showProccessingMessage();
             return;
         }
 
-        //取得組裝CT
+        //計算組裝CT
         Integer babCT = (int) Math.floor(((BigDecimal) findMaxInList(balanceGroup)).doubleValue());
 
         if (!isStatusExist() || isPcsFilterCountRule()) {
@@ -132,7 +132,7 @@ public class LineBalancePeopleGenerator implements Job {
             }
         }
 
-        if (testStandardTime != null && (testStandardTime < startCountMininumStandardTime || currentGroup >= numLampGroupEnd)) {
+        if (testStandardTime != null && (testStandardTime < startCountMininumStandardTime || currentGroup >= numLampGroupEnd || currentGroup > totalQuantity)) {
             jobSelfRemove();
         } else {
             //Update the current group status finally anyway.
@@ -151,18 +151,23 @@ public class LineBalancePeopleGenerator implements Job {
         obj.put("message", message);
         numLamp.getProcessStatus().put(bab.getLineName(), obj);
     }
-    
+
     private void showProccessingMessage() {
         JSONObject obj = new JSONObject(bab);
-         message.add("Waiting for first group...");
+        message.add("Waiting for first group...");
         obj.put("suggestTestPeople", 0);
         obj.put("message", message);
         numLamp.getProcessStatus().put(bab.getLineName(), obj);
     }
 
-
     private boolean isStatusExist() {
-        return numLamp.getProcessStatus().has(bab.getLineName());
+        JSONObject obj = numLamp.getProcessStatus();
+        if (obj.has(bab.getLineName())) {
+            JSONObject lineObj = obj.getJSONObject(bab.getLineName());
+            return lineObj.has("suggestTestPeople") ? (lineObj.getInt("suggestTestPeople") != 0) : false;
+        } else {
+            return false;
+        }
     }
 
     private boolean isGroupTheSame() {

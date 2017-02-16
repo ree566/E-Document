@@ -22,6 +22,7 @@ import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -47,8 +48,8 @@ public class ExcelGenerator {
 
     private int baseXIndex = 0, baseYIndex = 0;
     private final String emptyMessage = "Data is empty.";
-    
-    private CellStyle floatCell;
+
+    private CellStyle floatCell, dateCell;
 
     public ExcelGenerator() {
         init();
@@ -59,6 +60,7 @@ public class ExcelGenerator {
         indexInit();
         workbook = new HSSFWorkbook();
         floatCell = this.createFloatCell();
+        dateCell = this.createDateCell();
         log.info("New one workbook");
     }
 
@@ -117,7 +119,8 @@ public class ExcelGenerator {
         if (value instanceof Clob) {
             cell.setCellValue(StringParser.clobToString((Clob) value));
         } else if (value instanceof java.util.Date) {
-            cell.setCellValue(dg.dateFormatToString(value));
+            cell.setCellValue((java.util.Date) value);
+            cell.setCellStyle(dateCell);
         } else if (value instanceof Integer) {
             cell.setCellValue((Integer) value);
         } else if (value instanceof Double) {
@@ -142,6 +145,14 @@ public class ExcelGenerator {
         style.setBorderRight(BorderStyle.MEDIUM);
         style.setBorderLeft(BorderStyle.MEDIUM);
         return style;
+    }
+
+    private CellStyle createDateCell() {
+        CellStyle dateCellStyle = workbook.createCellStyle();
+        CreationHelper createHelper = workbook.getCreationHelper();
+        short df = createHelper.createDataFormat().getFormat("yyyy-MM-dd HH:mm");
+        dateCellStyle.setDataFormat(df);
+        return dateCellStyle;
     }
 
     public void formatExcel() {

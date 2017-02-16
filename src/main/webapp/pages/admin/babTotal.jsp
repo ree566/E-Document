@@ -200,14 +200,18 @@
                             "type": "html",
                             "targets": 4,
                             'render': function (data, type, row) {
-                                return data + '秒';
+                                return data == null ? "N/A" : (data + '秒');
                             }
                         },
                         {
                             "type": "html",
                             "targets": 5,
                             'render': function (data, type, row) {
-                                return (data == true ? "<img src='../../images/red-light.jpg' width=20>" : "");
+                                if (data == null) {
+                                    return "N/A";
+                                } else {
+                                    return (data == true ? "<img src='../../images/red-light.jpg' width=20>" : "");
+                                }
                             }
                         }
                     ],

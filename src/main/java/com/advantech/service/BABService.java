@@ -97,6 +97,11 @@ public class BABService implements AlarmActions {
         return babDAO.getAllProcessing();
     }
 
+    public BAB getProcessing(int BABid) {
+        List l = babDAO.getProcessing(BABid);
+        return l.isEmpty() ? null : (BAB) l.get(0);
+    }
+
     public List<BAB> getAssyProcessing() {
         return babDAO.getAssyProcessing();
     }
