@@ -15,6 +15,7 @@ import com.advantech.quartzJob.CellStation;
 import com.advantech.service.BasicService;
 import com.advantech.service.CellLineService;
 import com.advantech.service.CellService;
+import com.advantech.service.WorkTimeService;
 import java.io.*;
 import static java.lang.System.out;
 import java.util.HashMap;
@@ -86,7 +87,8 @@ public class CellScheduleJobServlet extends HttpServlet {
 
                         if (cellLine.isOpened()) {
                             if (cellService.getCellProcessing(line).isEmpty()) {
-                                if (BasicService.getBabService().getPoTotalQuantity(PO) != null) {
+                                WorkTimeService workTimeService = BasicService.getWorkTimeService();
+                                if (workTimeService.getAssyStandardTime(modelname) != null) { //Check 標工
                                     if (cellService.insert(new Cell(line, PO, modelname))) {
                                         responseObject = this.schedNewJobs(line, PO) ? "success" : "fail";
                                     } else {

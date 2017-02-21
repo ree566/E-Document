@@ -22,15 +22,25 @@ public class WorkTimeService {
     }
 
     public Double getTestStandardTime(String modelName) {
-        List<Map> l = workTimeDAO.getTestStandardTime(modelName);
-        
-        if (l.isEmpty()) {
+        return this.getStandartTime(modelName, "T1_Time");
+    }
+
+    public Double getAssyStandardTime(String modelName) {
+        return this.getStandartTime(modelName, "ASSY_Time");
+    }
+
+    private Double getStandartTime(String modelName, String columnName) {
+        List<Map> l = this.getWorkTimePerModelView(modelName);
+        if (!l.isEmpty()) {
+            Map data = l.get(0);
+            Double standardTime = data.containsKey(columnName) ? (Double) data.get(columnName) : null;
+            return standardTime;
+        } else {
             return null;
         }
+    }
 
-        String columnName = "T1_Time";
-        Map data = l.get(0);
-        Double testStandard = (Double) data.get(columnName);
-        return testStandard;
+    public List<Map> getWorkTimePerModelView(String modelName) {
+        return workTimeDAO.getWorkTimePerModelView(modelName);
     }
 }

@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Wei.Cheng bab資料表就是生產工單資料表
  */
-public class BABDAO extends BasicDAO implements AlarmActions{
+public class BABDAO extends BasicDAO implements AlarmActions {
 
     private static final Logger log = LoggerFactory.getLogger(BABDAO.class);
 
@@ -83,7 +83,7 @@ public class BABDAO extends BasicDAO implements AlarmActions{
     public List<BAB> getAllProcessing() {
         return queryBABTable("SELECT * FROM LS_BAB_Id_List");
     }
-    
+
     public List<BAB> getProcessing(int id) {
         return queryBABTable("SELECT * FROM LS_BAB_Id_List WHERE id = ?", id);
     }
@@ -178,6 +178,10 @@ public class BABDAO extends BasicDAO implements AlarmActions{
     public Integer getPoTotalQuantity(String PO) {
         List<Map> l = queryForMapList(this.getConn(), "SELECT * FROM poQuantityView WHERE PO = ?", PO);
         return l.isEmpty() ? null : (Integer) l.get(0).get("qty");
+    }
+
+    public List<Map> getEmptyRecordDownExcel(String startDate, String endDate) {
+        return queryProcForMapList(this.getConn(), "{CALL babEmptyRecordDownExcel(?,?)}", startDate, endDate);
     }
 
     @Override

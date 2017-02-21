@@ -9,7 +9,6 @@ package com.advantech.servlet;
 import com.advantech.helper.DatetimeGenerator;
 import com.advantech.helper.ExcelGenerator;
 import com.advantech.helper.UserSelectFilter;
-import com.advantech.model.BasicDAO;
 import com.advantech.service.BasicService;
 import com.advantech.service.CountermeasureService;
 import java.io.*;
@@ -36,6 +35,8 @@ public class BABExcelGenerate extends HttpServlet {
     private final int minAllowAmount = 10;
 
     private final CountermeasureService cService = BasicService.getCountermeasureService();
+    
+    private String lineType, sitefloor;
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
@@ -45,39 +46,27 @@ public class BABExcelGenerate extends HttpServlet {
 
 //http://stackoverflow.com/questions/13853300/jquery-file-download-filedownload
 //personalAlm記得轉格式才能special Excel generate
-        String lineType = req.getParameter("lineType");
-        String sitefloor = req.getParameter("sitefloor");
+        lineType = req.getParameter("lineType");
+        sitefloor = req.getParameter("sitefloor");
         String startDate = req.getParameter("startDate");
         String endDate = req.getParameter("endDate");
         String aboveStandard = req.getParameter("aboveStandard");
 
-        List<Map> countermeasures = cService.getCountermeasureForExcel(startDate, endDate);
-        List<Map> personalAlarms = cService.getPersonalAlmForExcel(startDate, endDate);
-
-        UserSelectFilter usf1 = new UserSelectFilter().setList(countermeasures);
-        UserSelectFilter usf2 = new UserSelectFilter().setList(personalAlarms);
+        List<Map> countermeasures = fitData(cService.getCountermeasureForExcel(startDate, endDate));
+        List<Map> personalAlarms = fitData(cService.getPersonalAlmForExcel(startDate, endDate));
+        List<Map> emptyRecords = fitData(BasicService.getBabService().getEmptyRecordDownExcel(startDate, endDate));
 
         boolean isAbove = Boolean.parseBoolean(aboveStandard);
 
-        if (!"-1".equals(lineType)) {
-            usf1.filterData("lineType", lineType);
-            usf2.filterData("lineType", lineType);
-        }
-
-        if (!"-1".equals(sitefloor)) {
-            usf1.filterData("sitefloor", Integer.parseInt(sitefloor));
-            usf2.filterData("sitefloor", Integer.parseInt(sitefloor));
-        }
-
-        List list = usf1.getList();
-        out.println(sitefloor);
-        List list2 = cService.transformPersonalAlmDataPattern(usf2.getList());//把各站亮燈頻率合併為橫式(類似 sql 的 Group by格式)
+        List list = countermeasures;
+        List list2 = cService.transformPersonalAlmDataPattern(personalAlarms);//把各站亮燈頻率合併為橫式(類似 sql 的 Group by格式)
+        List list3 = emptyRecords;
 
         if (list.isEmpty() || (list.isEmpty() && list2.isEmpty())) {
             res.setContentType("text/html");
             res.getWriter().println("fail");
         } else {
-            Workbook w = this.generateBabDetailIntoExcel(list, list2, isAbove);
+            Workbook w = this.generateBabDetailIntoExcel(list, list2, list3, isAbove);
             String fileExt = ExcelGenerator.getFileExt(w);
 
             res.setContentType("application/vnd.ms-excel");
@@ -92,13 +81,29 @@ public class BABExcelGenerate extends HttpServlet {
         out.println("Total time processing: " + (Seconds.secondsBetween(startTime, endTime).getSeconds()) + " SEC.");
     }
 
-    private Workbook generateBabDetailIntoExcel(List<Map> countermeasures, List<Map> personalAlarms, boolean showAboveOnly) {
+    private List fitData(List data) {
+        UserSelectFilter usf = new UserSelectFilter().setList(data);
+
+        if (!"-1".equals(lineType)) {
+            usf.filterData("lineType", lineType);
+        }
+
+        if (!"-1".equals(sitefloor)) {
+            usf.filterData("sitefloor", sitefloor);
+        }
+
+        return usf.getList();
+    }
+
+    private Workbook generateBabDetailIntoExcel(List<Map> countermeasures, List<Map> personalAlarms, List<Map> emptyRecords, boolean showAboveOnly) {
 
         String filterColumnName = "測量數量";
         String countermeasureSheetName = "異常填寫";
         String personalAlmSheetName = "亮燈頻率";
+        String lastSheetName = "無儲存紀錄工單列表";
 
         List<Map> sheet1Data = new ArrayList(), sheet2Data = new ArrayList(), sheet3Data, sheet4Data = new ArrayList();
+        List<Map> lastSheetData = emptyRecords;
 
         for (Map m : countermeasures) {
             if (m.containsKey(filterColumnName)) {
@@ -122,7 +127,7 @@ public class BABExcelGenerate extends HttpServlet {
             }
         }
         sheet3Data = personalAlarms;
-        
+
         ExcelGenerator generator = new ExcelGenerator();
         generator.createExcelSheet(countermeasureSheetName + "(" + filterColumnName + "≧" + minAllowAmount + "台)");
         generator.generateWorkBooks(sheet1Data);
@@ -134,35 +139,11 @@ public class BABExcelGenerate extends HttpServlet {
             generator.createExcelSheet(personalAlmSheetName + "(" + filterColumnName + "<" + minAllowAmount + "台)");
             generator.appendSpecialPattern(sheet4Data);
         }
+
+        generator.createExcelSheet(lastSheetName);
+        generator.generateWorkBooks(lastSheetData);
+
         return generator.getWorkbook();
     }
 
-    public static void main(String arg0[]) {
-        BasicDAO.dataSourceInit1();
-        String lineType = "Packing", sitefloor = "-1";
-        String startDate = "16/10/28", endDate = "16/10/28";
-        CountermeasureService cs = BasicService.getCountermeasureService();
-        List<Map> countermeasures = cs.getCountermeasureForExcel(startDate, endDate);
-        List<Map> personalAlarms = cs.getPersonalAlmForExcel(startDate, endDate);
-
-        UserSelectFilter usf = new UserSelectFilter().setList(countermeasures);
-        UserSelectFilter usf2 = new UserSelectFilter().setList(cs.transformPersonalAlmDataPattern(personalAlarms));
-
-        if (!"-1".equals(lineType)) {
-            usf.filterData("lineType", lineType);
-            usf2.filterData("lineType", lineType);
-        }
-
-        if (!"-1".equals(sitefloor)) {
-            usf.filterData("sitefloor", sitefloor);
-            usf2.filterData("sitefloor", sitefloor);
-        }
-
-        ExcelGenerator generator = new ExcelGenerator();
-        generator.createExcelSheet("t1");
-        generator.generateWorkBooks(usf.getList());
-        generator.createExcelSheet("t2");
-        generator.appendSpecialPattern(usf2.getList());
-        generator.outputExcel("TT");
-    }
 }

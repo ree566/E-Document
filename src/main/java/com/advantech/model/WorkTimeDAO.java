@@ -20,7 +20,7 @@ public class WorkTimeDAO extends BasicDAO{
     }
     
     //抓取測試工時
-    public List<Map> getTestStandardTime(String modelName) {
+    public List<Map> getWorkTimePerModelView(String modelName) {
         return queryForMapList(getConn(), "SELECT * FROM workTimePerModelView WHERE Model_name = ?", modelName);
     }
 }
