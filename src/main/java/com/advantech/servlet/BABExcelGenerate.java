@@ -81,7 +81,7 @@ public class BABExcelGenerate extends HttpServlet {
         out.println("Total time processing: " + (Seconds.secondsBetween(startTime, endTime).getSeconds()) + " SEC.");
     }
 
-    private List fitData(List data) {
+    private List<Map> fitData(List data) {
         UserSelectFilter usf = new UserSelectFilter().setList(data);
 
         if (!"-1".equals(lineType)) {
@@ -89,7 +89,7 @@ public class BABExcelGenerate extends HttpServlet {
         }
 
         if (!"-1".equals(sitefloor)) {
-            usf.filterData("sitefloor", sitefloor);
+            usf.filterData("sitefloor", Integer.parseInt(sitefloor));
         }
 
         return usf.getList();

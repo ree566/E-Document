@@ -60,7 +60,7 @@ public class AllBAB extends HttpServlet {
         if (!"-1".equals(sitefloor)) {
             usf.filterData("sitefloor", Integer.parseInt(sitefloor));
         }if("true".equals(aboveStandard)){
-            usf.greaterThan("total", 10);
+            usf.greaterThan("total", 10 - 1);
         }
 
         out.print(new JSONObject().put("data", usf.getList()));
