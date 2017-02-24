@@ -126,7 +126,7 @@
                 ASSY: [],
                 Packing: []
             };
-            
+
             var beginTimeObj, endTimeObj;
 
             function setLineObject() {
@@ -475,7 +475,7 @@
                     function (settings, searchData, index, rowData, counter) {
                         var queryString = getQueryVariable("onlyFailRecord");
                         var onlyFailRecord = queryString == null ? false : (queryString.toUpperCase() == "TRUE");
-                        
+
                         var isPass = searchData[9]; // using the data from the 4th column
 
                         if (queryString == null || !onlyFailRecord || (queryString != null && onlyFailRecord && isPass != "達到標準"))
@@ -1138,6 +1138,11 @@
                     $("#lineType, #lineType2").val(lineType);
                 }
 
+                var readonly = getQueryVariable("readonly") == null ? false : (getQueryVariable("readonly").toUpperCase() == "TRUE");
+                if (readonly) {
+                    $("#editCountermeasure").attr("disabled", true).off("click");
+                }
+
                 $(window).on("blur", function () {
                     clearInterval(autoReloadInterval);
                 });
@@ -1221,13 +1226,13 @@
                 <div id="bab_HistoryList">
                     <h3>可查詢歷史紀錄</h3>
                     <p class="alarm">※雙擊表格內的內容可直接於下方帶出資料。</p>
-<!--                    <p class="alarm">※亮燈頻率標準為30%，工單結束時低於10台者，異常回覆不用做填寫。</p>
-                    <p class="alarm">
-                        ※產出Excel可以下載工單的
-                        <u data-toggle="tooltip" data-placement="bottom" title="包含10台以下的機子">異常回覆狀況</u>
-                        以及
-                        <u data-toggle="tooltip" data-placement="bottom" title="無正常關閉的工單不會顯示在此">各工單的個人亮燈頻率</u>。
-                    </p>-->
+                    <!--                    <p class="alarm">※亮燈頻率標準為30%，工單結束時低於10台者，異常回覆不用做填寫。</p>
+                                        <p class="alarm">
+                                            ※產出Excel可以下載工單的
+                                            <u data-toggle="tooltip" data-placement="bottom" title="包含10台以下的機子">異常回覆狀況</u>
+                                            以及
+                                            <u data-toggle="tooltip" data-placement="bottom" title="無正常關閉的工單不會顯示在此">各工單的個人亮燈頻率</u>。
+                                        </p>-->
                     <div class="search-container">
                         <div class="ui-widget">
                             <select id="lineType2"> 

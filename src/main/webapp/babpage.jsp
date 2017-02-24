@@ -449,7 +449,7 @@
                     return false;
                 }
 
-                checkLoginStatusAndSave({
+                saveUserInfoToCookie({
                     lineNo: lineNo,
                     jobnumber: jobnumber,
                     station: station

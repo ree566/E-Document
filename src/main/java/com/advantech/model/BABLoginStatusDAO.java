@@ -36,15 +36,23 @@ public class BABLoginStatusDAO extends BasicDAO {
         return queryBABLoginStatus("SELECT * FROM BABLoginStatus");
     }
 
-    public boolean babLogin(int lineId, int station, String jobnumber) {
+    public List<BABLoginStatus> getBABLoginStatus(String jobnumber) {
+        return queryBABLoginStatus("SELECT * FROM BABLoginStatus WHERE jobnumber = ? ", jobnumber);
+    }
+
+    public List<BABLoginStatus> getBABLoginStatus(int lineId, int station) {
+        return queryBABLoginStatus("SELECT * FROM BABLoginStatus WHERE lineId = ? AND station = ?", lineId, station);
+    }
+
+    public boolean insert(int lineId, int station, String jobnumber) {
         return update(getConn(), "INSERT INTO babLoginStatus(babid, station, jobnumber) VALUES(?,?,?)", lineId, station, jobnumber);
     }
 
-    public boolean changeUser(int lineId, int station, String jobnumber) {
+    public boolean update(int lineId, int station, String jobnumber) {
         return update(getConn(), "UPDATE babLoginStatus SET jobnumber = ? WHERE babid = ? AND station = ?", jobnumber, lineId, station);
     }
 
-    public boolean deleteUserFromStation(int lineId, int station) {
+    public boolean delete(int lineId, int station) {
         return update(getConn(), "DELETE FROM babLoginStatus WHERE babid = ? AND station = ?", lineId, station);
     }
 

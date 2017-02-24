@@ -27,16 +27,24 @@ public class BABLoginStatusService {
         return babLoginStatusDAO.getBABLoginStatus();
     }
 
-    public boolean babLogin(int BABid, int station, String jobnumber) {
-        return babLoginStatusDAO.babLogin(BABid, station, jobnumber);
+    public List<BABLoginStatus> getBABLoginStatus(String jobnumber) {
+        return babLoginStatusDAO.getBABLoginStatus(jobnumber);
     }
 
-    public boolean changeUser(int BABid, int station, String jobnumber) {
-        return babLoginStatusDAO.changeUser(BABid, station, jobnumber);
+    public List<BABLoginStatus> getBABLoginStatus(int lineId, int station) {
+        return babLoginStatusDAO.getBABLoginStatus(lineId, station);
     }
 
-    public boolean deleteUserFromStation(int BABid, int station) {
-        return babLoginStatusDAO.deleteUserFromStation(BABid, station);
+    public boolean insert(int BABid, int station, String jobnumber) {
+        return babLoginStatusDAO.insert(BABid, station, jobnumber);
+    }
+
+    public boolean update(int BABid, int station, String jobnumber) {
+        return babLoginStatusDAO.update(BABid, station, jobnumber);
+    }
+
+    public boolean delete(int BABid, int station) {
+        return babLoginStatusDAO.delete(BABid, station);
     }
 
     public boolean recordBABPeople(int BABid, int station, String jobnumber) {

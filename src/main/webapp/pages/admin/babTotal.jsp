@@ -34,6 +34,10 @@
                 margin: 5px auto;
 
             }
+            #balanceCount{
+                border:2px black solid;
+                width:50%;
+            }
         </style>
         <script src="../../js/charts.loader.js"></script>
         <script src="../../js/jquery-1.11.3.min.js"></script>
@@ -134,7 +138,9 @@
                             "targets": 0,
                             "data": "TagName",
                             'render': function (data, type, row) {
-                                return ((data == 'L1' || data == 'LA' || data == 'LB' || data == 'L3' || data == 'L4') ? "ASSY" : "Packing");
+                                var ASSY = lineObject.ASSY;
+                                var Packing = lineObject.Packing;
+                                return $.inArray(data, ASSY) !== -1 ? 'ASSY' : ($.inArray(data, Packing) !== -1 ? 'Packing' : 'N/A');
                             }
                         },
                         {
@@ -364,6 +370,7 @@
                 }, 500);
 
                 $("#frame1").attr("src", iframeUrl);
+                
             });
 
         </script>

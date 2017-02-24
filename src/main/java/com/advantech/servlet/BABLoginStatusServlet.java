@@ -8,7 +8,6 @@ package com.advantech.servlet;
 
 import com.advantech.helper.ParamChecker;
 import com.advantech.service.BABLoginStatusService;
-import com.advantech.service.BABService;
 import com.advantech.service.BasicService;
 import java.io.*;
 import javax.servlet.ServletException;
@@ -26,14 +25,14 @@ public class BABLoginStatusServlet extends HttpServlet {
 
     private static final Logger log = LoggerFactory.getLogger(BABLoginStatusServlet.class);
 
-    private BABLoginStatusService bService = null;
+    private BABLoginStatusService babLoginService = null;
     private ParamChecker pChecker = null;
     private final String successMsg = "success";
 
     @Override
     public void init()
             throws ServletException {
-        bService = BasicService.getBabLoginStatusService();
+        babLoginService = BasicService.getBabLoginStatusService();
         pChecker = new ParamChecker();
     }
 
@@ -56,9 +55,10 @@ public class BABLoginStatusServlet extends HttpServlet {
 
         String action = req.getParameter("action");
 
-        if (pChecker.checkInputVals(action)) {
+        if (pChecker.checkInputVals(action, lineNo, jobnumber, station)) {
             switch (action) {
                 case "LOGIN":
+                    babLoginService.getBABLoginStatus();
                     break;
                 case "LOGOUT":
                     break;
