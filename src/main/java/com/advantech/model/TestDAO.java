@@ -11,7 +11,6 @@ import com.advantech.entity.Test;
 import com.advantech.entity.TestLineTypeUser;
 import com.advantech.interfaces.AlarmActions;
 import com.advantech.service.TestLineTypeFacade;
-import com.advantech.test.TestClass2;
 import com.google.gson.Gson;
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -134,13 +133,6 @@ public class TestDAO extends BasicDAO implements AlarmActions {
 
     public boolean cleanTestTable() {
         return updateTestTable("TRUNCATE TABLE LS_TEST");
-    }
-
-    public static void main(String str[]) {
-        BasicDAO.dataSourceInit1();
-        TestDAO dao = new TestDAO();
-        List<TestClass2> l = BasicDAO.queryForBeanList(dao.getConn(), TestClass2.class, "SELECT * FROM LineTypeConfig");
-        System.out.println(new Gson().toJson(l));
     }
 }
 

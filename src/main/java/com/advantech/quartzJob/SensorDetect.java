@@ -13,6 +13,7 @@ import com.advantech.service.LineOwnerMappingService;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.joda.time.DateTime;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.quartz.DisallowConcurrentExecution;
@@ -42,7 +43,16 @@ public class SensorDetect extends ProcessingBabDetector implements Job {
     }
 
     public SensorDetect() {
-        super("_SensorCheck", "SensorCheck", "0 0/" + SENSOR_DETECT_PERIOD + " 8-11,13-20 ? * MON-SAT *", CheckSensor.class);
+        super(
+                "_SensorCheck",
+                "SensorCheck",
+                "0 " + getMinutePeriodTime() + "/" + SENSOR_DETECT_PERIOD + " 8-11,13-20 ? * MON-SAT *",
+                CheckSensor.class
+        );
+    }
+
+    private static Integer getMinutePeriodTime() {
+        return new DateTime().getMinuteOfHour() % SENSOR_DETECT_PERIOD;
     }
 
     @Override
