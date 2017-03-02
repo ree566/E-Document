@@ -6,6 +6,7 @@
 package com.advantech.service;
 
 import com.advantech.entity.LineOwnerMapping;
+import com.advantech.model.BasicDAO;
 import com.advantech.model.LineOwnerMappingDAO;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,6 +43,10 @@ public class LineOwnerMappingService {
         return lineOwnerMappingDAO.getLineOwnerMappingView();
     }
 
+    public List<Map> getLineNotSetting() {
+        return lineOwnerMappingDAO.getLineNotSetting();
+    }
+
     public JSONObject getSeparateLineOwnerMapping() {
         return separateData(this.getLineOwnerMappingView(), "lineName");
     }
@@ -68,6 +73,13 @@ public class LineOwnerMappingService {
             }
         }
         return new JSONObject(hashMap);
+    }
+
+    public static void main(String arg0[]) {
+        BasicDAO.dataSourceInit1();
+        JSONObject responsorPerLine = BasicService.getLineOwnerMappingService().getSeparateLineOwnerMapping();
+        
+        System.out.println(responsorPerLine);
     }
 
 }

@@ -21,6 +21,7 @@ public class Line implements Serializable {
     private String linetype;
     private int people;
     private int lock;
+    private int sitefloor;
 
     public Line() {
 
@@ -84,6 +85,14 @@ public class Line implements Serializable {
 
     public boolean isOpened() {
         return this.isused == 1;
+    }
+
+    public int getSitefloor() {
+        return sitefloor;
+    }
+
+    public void setSitefloor(int sitefloor) {
+        this.sitefloor = sitefloor;
     }
 
 }

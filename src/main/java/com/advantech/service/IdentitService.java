@@ -7,9 +7,8 @@ package com.advantech.service;
 
 import com.advantech.entity.Identit;
 import com.advantech.model.IdentitDAO;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -27,30 +26,16 @@ public class IdentitService {
         return identitDAO.getIdentit(jobnumber);
     }
 
-    public boolean getIdentit(String jobnumber, String password) {
-        return identitDAO.userLogin(jobnumber, password);
+    public List<Map> getIdentitView() {
+        return identitDAO.getIdentitView();
     }
 
-    public boolean newIdentit(Identit i) {
-        return identitDAO.newIdentit(packageObjectToList(i));
+    public List<Map> getIdentitViewByPermission() {
+        return identitDAO.getIdentitViewByPermission();
     }
 
-    public boolean updateIdentit(Identit i) {
-        return identitDAO.updateIdentit(packageObjectToList(i));
+    public List<Map> getIdentitViewByPermission(int sitefloor) {
+        return identitDAO.getIdentitViewByPermission(sitefloor);
     }
 
-    private List packageObjectToList(Object... o) {
-        List l = new ArrayList();
-        l.addAll(Arrays.asList(o));
-        return l;
-    }
-
-    public boolean updatePassword(int userNo, String password) {
-        return identitDAO.updateUsersPassword(userNo, password);
-    }
-
-    public boolean deleteIdentit(int userNo) {
-//        return identitDAO.updateIdentitServingStatus(leaveSign, userNo);
-        throw new UnsupportedOperationException();
-    }
 }
