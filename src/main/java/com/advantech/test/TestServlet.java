@@ -6,16 +6,17 @@
  */
 package com.advantech.test;
 
-import com.advantech.helper.CronTrigMod;
-import com.advantech.service.BasicLineTypeFacade;
-import com.advantech.service.BasicService;
-import com.advantech.service.CellLineTypeFacade;
+import com.advantech.helper.DatetimeGenerator;
+import com.advantech.helper.ExcelGenerator;
+import com.advantech.helper.JsonHelper;
 import java.io.*;
-import java.util.logging.Level;
+import java.util.List;
+import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
-import org.quartz.SchedulerException;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.json.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,23 +32,34 @@ public class TestServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
-//        res.setContentType("text/plain");
-//        PrintWriter out = res.getWriter();
-//        try {
-//            out.println(CronTrigMod.getInstance().getJobKeys());
-//        } catch (SchedulerException ex) {
-//            out.println(ex);
-//        }
-//        res.sendError(HttpServletResponse.SC_FORBIDDEN);
-        throw new ServletException("This servlet is busy now...");
+        doPost(req, res);
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
+
         res.setContentType("text/plain");
-        PrintWriter out = res.getWriter();
-        String id = req.getParameter("id");
-        out.println(BasicService.getBabService().getAvg(Integer.parseInt(id)));
+        String jsonObject = req.getParameter("columnData");
+
+        JSONArray arr = new JSONArray(jsonObject);
+
+        List<Map> l = JsonHelper.toList(arr);
+
+        ExcelGenerator generator = new ExcelGenerator();
+        generator.createExcelSheet();
+        generator.generateWorkBooks(l);
+
+        Workbook w = generator.getWorkbook();
+
+        String fileExt = ExcelGenerator.getFileExt(w);
+
+        res.setContentType("application/vnd.ms-excel");
+        res.setHeader("Set-Cookie", "fileDownload=true; path=/");
+        res.setHeader("Content-Disposition",
+                "attachment; filename=sampleData" + new DatetimeGenerator("yyyyMMdd").getToday() + fileExt);
+        w.write(res.getOutputStream());
+        w.close();
+
     }
 }

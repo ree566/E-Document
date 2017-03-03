@@ -48,6 +48,7 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
         <script src="../../js/moment.js"></script>
         <script src="../../js/bootstrap-datetimepicker.min.js"></script>
         <script src="../../js/urlParamGetter.js"></script>
+        <script src="../../js/jquery.fileDownload.js"></script>
         <script>
             var maxProductivity = 200;
             var availHistoryTable;
@@ -224,9 +225,37 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                             }
                         },
                         {
-                            extend: 'excelHtml5',
-                            exportOptions: {
-                                columns: ':visible'
+                            text: 'Excel',
+                            action: function (e, dt, node, config) {
+                                var arr = [];
+                                var data = dt.rows({filter: 'applied'}).data();
+
+                                data.each(function (value, index) {
+                                    arr[index] = value;
+                                });
+
+                                var headers = [];
+                                $("#cellHistoryDetail th").each(function () {
+                                    headers.push($(this).html());
+                                });
+
+                                $.fileDownload("../../CellRecordServlet", {
+                                    preparingMessageHtml: "We are preparing your report, please wait...",
+                                    failMessageHtml: "There was a problem generating your report, please try again.",
+                                    httpMethod: "Post",
+                                    data: {
+                                        PO: $("#PO").val(),
+                                        lineId: $("#lineId").val(),
+                                        minPcs: $("#minPcs").val(),
+                                        maxPcs: $("#maxPcs").val(),
+                                        startDate: $("#fini_1").val(),
+                                        endDate: $("#ffin_1").val(),
+                                        action: "FILE_DOWNLOAD",
+                                        columnHeader: headers
+                                    }
+                                });
+                                e.preventDefault();
+
                             }
                         },
                         {
@@ -243,18 +272,18 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                     },
                     "ajax": {
                         "url": "../../CellRecordServlet",
-                        "type": "Get",
+                        "type": "Post",
                         data: {
                             PO: $("#PO").val(),
                             lineId: $("#lineId").val(),
                             minPcs: $("#minPcs").val(),
                             maxPcs: $("#maxPcs").val(),
                             startDate: $("#fini_1").val(),
-                            endDate: $("#ffin_1").val()
+                            endDate: $("#ffin_1").val(),
+                            action: "SELECT"
                         }
                     },
                     "columns": [
-                        {data: "barcode", visible: false},
                         {data: "PO"},
                         {data: "Model_name"},
                         {data: "linename"},
@@ -269,26 +298,26 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                     ],
                     "columnDefs": [
                         {
-                            "targets": 4,
+                            "targets": 3,
                             'render': function (data, type, full, meta) {
                                 return roundDecimal(data, 2);
                             }
                         },
                         {
-                            "targets": 6,
+                            "targets": 5,
                             'render': function (data, type, full, meta) {
                                 var percent = (data * 100 < 1 ? getPercent(data, 2) : getPercent(data, 1));
                                 return percent + "%";
                             }
                         },
                         {
-                            "targets": 7,
+                            "targets": 6,
                             'render': function (data, type, full, meta) {
                                 return data == 1 ? "是" : "否";
                             }
                         },
                         {
-                            "targets": [8, 9],
+                            "targets": [7, 8],
                             'render': function (data, type, full, meta) {
                                 return formatDate(data);
                             }
@@ -418,7 +447,6 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                     <table id="cellHistoryDetail" class="display" cellspacing="0" width="100%" style="text-align: center" hidden>
                         <thead>
                             <tr>
-                                <th>barcode</th>
                                 <th>工單</th>
                                 <th>機種</th>
                                 <th>線別</th>

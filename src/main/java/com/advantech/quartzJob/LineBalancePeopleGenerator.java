@@ -90,9 +90,8 @@ public class LineBalancePeopleGenerator implements Job {
     }
 
     private void jobSelfRemove() {
-        CronTrigMod ctm = CronTrigMod.getInstance();
         try {
-            ctm.jobPause(currentJobKey);
+            CronTrigMod.getInstance().jobPause(currentJobKey);
         } catch (SchedulerException ex) {
             log.error(ex.toString());
         }

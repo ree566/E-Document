@@ -9,14 +9,11 @@ import com.advantech.service.BabLineTypeFacade;
 import com.advantech.service.TestLineTypeFacade;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.CronTrigger;
@@ -36,7 +33,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.quartz.impl.matchers.GroupMatcher;
 import static org.quartz.TriggerKey.triggerKey;
-import org.quartz.impl.calendar.DailyCalendar;
 
 /**
  *
@@ -48,21 +44,20 @@ public class CronTrigMod {
 
     public Map changedJobKey;
 
-    private Scheduler scheduler;
+    private final Scheduler scheduler;
     private static CronTrigMod instance;
 
-    private CronTrigMod() {
+    private CronTrigMod() throws SchedulerException {
         this.changedJobKey = new HashMap();
-        try {
-            scheduler = new StdSchedulerFactory().getScheduler();
-        } catch (SchedulerException ex) {
-            log.error(ex.toString());
+        scheduler = new StdSchedulerFactory().getScheduler();
+        if(scheduler == null || scheduler.isShutdown()){
+            throw new SchedulerException("Scheduler is not started");
         }
     }
 
 //    http://openhome.cc/Gossip/DesignPattern/SingletonPattern.htm
     @SuppressWarnings("DoubleCheckedLocking")
-    public static CronTrigMod getInstance() {
+    public static CronTrigMod getInstance() throws SchedulerException {
         if (instance == null) {
             instance = new CronTrigMod();
         }
@@ -113,8 +108,8 @@ public class CronTrigMod {
             return null;
         }
     }
-    
-    public void triggerJob(JobKey jobKey){
+
+    public void triggerJob(JobKey jobKey) {
         try {
             scheduler.triggerJob(jobKey);
         } catch (SchedulerException ex) {

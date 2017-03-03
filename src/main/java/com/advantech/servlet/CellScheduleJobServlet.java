@@ -40,7 +40,6 @@ public class CellScheduleJobServlet extends HttpServlet {
     private String jobName = null;
     private final String jobGroup = "Cell";
     private final String cronTrig = "0 0/1 8-20 ? * MON-SAT *";
-    private CronTrigMod ctm = null;
     private ParamChecker pc = null;
     private DatetimeGenerator dg = null;
     private Map<String, JobKey> schedJobs;
@@ -49,7 +48,6 @@ public class CellScheduleJobServlet extends HttpServlet {
 
     @Override
     public void init() throws ServletException {
-        ctm = CronTrigMod.getInstance();
         pc = new ParamChecker();
         dg = new DatetimeGenerator("yy-MM-dd");
         schedJobs = new HashMap();
@@ -172,10 +170,11 @@ public class CellScheduleJobServlet extends HttpServlet {
     }
 
     private List<JobKey> getSchedJobs() throws SchedulerException {
-        return ctm.getJobKeys("Cell");
+        return CronTrigMod.getInstance().getJobKeys("Cell");
     }
 
     private boolean schedNewJobs(int lineId, String PO) throws SchedulerException {
+        CronTrigMod ctm = CronTrigMod.getInstance();
         CellLine cellLine = BasicService.getCellLineService().findOne(lineId);
         jobName = cellLine.getName() + "_" + cellLine.getAps_lineId() + "_" + PO;
         Map data = new HashMap();
@@ -192,6 +191,7 @@ public class CellScheduleJobServlet extends HttpServlet {
     }
 
     private boolean removeJob(int lineId, String PO) throws SchedulerException {
+        CronTrigMod ctm = CronTrigMod.getInstance();
         CellLine cellLine = BasicService.getCellLineService().findOne(lineId);
         if (cellLine == null) {
             return false;

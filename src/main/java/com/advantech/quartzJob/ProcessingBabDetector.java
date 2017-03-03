@@ -42,7 +42,6 @@ public abstract class ProcessingBabDetector {
     private Map<String, Map<String, Key>> storeKeys = null;
 
     private final BABService babService;
-    private final CronTrigMod ctm;
 
     private final String quartzJobNameExt;
     private final String quartzJobGroupName;
@@ -55,7 +54,6 @@ public abstract class ProcessingBabDetector {
         this.quartzJobCronTrigger = quartzJobCronTrigger;
         this.scheduleClass = scheduleClass;
         this.babService = BasicService.getBabService();
-        this.ctm = CronTrigMod.getInstance();
     }
     
     public void setCurrentStatus(JobDataMap jobMap){
@@ -108,6 +106,7 @@ public abstract class ProcessingBabDetector {
     private void schedulePollingJob(List<BAB> l) {
         for (BAB b : l) {
             try {
+                CronTrigMod ctm = CronTrigMod.getInstance();
                 String jobName = b.getLineName() + quartzJobNameExt;
                 JobKey jobKey = ctm.createJobKey(jobName, quartzJobGroupName);
 
@@ -138,6 +137,7 @@ public abstract class ProcessingBabDetector {
 
     private void unschedulePollingJob(String lineName) {
         try {
+            CronTrigMod ctm = CronTrigMod.getInstance();
             Map keyMap = storeKeys.get(lineName);
             JobKey jobKey = (JobKey) keyMap.get("job");
             ctm.removeJob(jobKey);

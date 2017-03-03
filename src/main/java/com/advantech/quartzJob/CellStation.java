@@ -80,9 +80,8 @@ public class CellStation implements Job {
     }
 
     private void jobSelfRemove() {
-        CronTrigMod ctm = CronTrigMod.getInstance();
         try {
-            ctm.removeJob(currentJobKey);
+            CronTrigMod.getInstance().removeJob(currentJobKey);
             CellService cellService = BasicService.getCellService();
             List<Cell> list = cellService.getCellProcessing(lineId);
             if (!list.isEmpty()) {

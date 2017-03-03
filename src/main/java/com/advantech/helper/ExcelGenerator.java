@@ -52,6 +52,7 @@ public class ExcelGenerator {
     private int baseXIndex = 0, baseYIndex = 0;
 
     private List<Integer> skipSpecialFormatIndex;
+    private List<String> columnHeaderNames;
 
     private final String emptyMessage = "Data is empty.";
 
@@ -75,6 +76,7 @@ public class ExcelGenerator {
         xIndex = baseXIndex;
         yIndex = baseYIndex;
         this.skipSpecialFormatIndex = new ArrayList();
+        this.columnHeaderNames = new ArrayList();
     }
 
     public void createExcelSheet() {
@@ -86,8 +88,12 @@ public class ExcelGenerator {
         indexInit();
     }
 
-    private void addSkipDecimalFormatIndex(Integer... i) {
+    public void addSkipDecimalFormatIndex(Integer... i) {
         this.skipSpecialFormatIndex.addAll(Arrays.asList(i));
+    }
+
+    public void specifyColumnHeaders(String... name) {
+        this.columnHeaderNames.addAll(Arrays.asList(name));
     }
 
     public Workbook generateWorkBooks(List<Map>... data) {
@@ -105,17 +111,21 @@ public class ExcelGenerator {
         Row row = spreadsheet.createRow(baseXIndex);
         if (!data.isEmpty()) {
             Map firstData = data.get(baseXIndex);
-            //Set the header
-            Iterator it = firstData.keySet().iterator();
-            while (it.hasNext()) {
-                String columnName = (String) it.next();
-
-                if (columnName.contains("*")) {
-                    this.addSkipDecimalFormatIndex(yIndex);
+            Iterator it;
+            if (this.columnHeaderNames.isEmpty() || columnHeaderNames.size() != firstData.size()) {
+                //Set the header
+                it = firstData.keySet().iterator();
+                while (it.hasNext()) {
+                    String columnName = (String) it.next();
+                    if (columnName.contains("*")) {
+                        this.addSkipDecimalFormatIndex(yIndex);
+                    }
+                    setCellValue(row.createCell(yIndex++), columnName);
                 }
-
-                setCellValue(row.createCell(yIndex++), columnName);
-
+            } else {
+                for (String headerName : this.columnHeaderNames) {
+                    setCellValue(row.createCell(yIndex++), headerName);
+                }
             }
 
             xIndex++;

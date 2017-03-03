@@ -8,9 +8,11 @@ package com.advantech.servlet;
 
 import com.advantech.helper.CronTrigMod;
 import java.io.*;
+import java.util.logging.Level;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
+import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,9 +39,13 @@ public class QuartzTriggerControl extends HttpServlet {
         PrintWriter out = res.getWriter();
         String order = req.getParameter("order");
         if (order != null && !"".equals(order)) {
-            String remoteIp = req.getRemoteAddr();
-            out.print(CronTrigMod.getInstance().triggerPauseOrResume(order) ? "success" : "fail");
-            log.info("Someone change the flag to :" + order + " --- " + remoteIp);
+            try {
+                String remoteIp = req.getRemoteAddr();
+                out.print(CronTrigMod.getInstance().triggerPauseOrResume(order) ? "success" : "fail");
+                log.info("Someone change the flag to :" + order + " --- " + remoteIp);
+            } catch (SchedulerException ex) {
+                log.info(ex.toString());
+            }
         }
     }
 
