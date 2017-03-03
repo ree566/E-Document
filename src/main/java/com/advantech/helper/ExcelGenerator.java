@@ -13,9 +13,11 @@ import static java.lang.System.out;
 import java.math.BigDecimal;
 import java.sql.Clob;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.CellReference;
 import org.apache.poi.hssf.util.HSSFColor;
@@ -24,6 +26,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -47,9 +50,12 @@ public class ExcelGenerator {
     private int xIndex = 0, yIndex = 0;
 
     private int baseXIndex = 0, baseYIndex = 0;
+
+    private List<Integer> skipSpecialFormatIndex;
+
     private final String emptyMessage = "Data is empty.";
 
-    private CellStyle floatCell, dateCell;
+    private CellStyle floatCell, percentCell, dateCell;
 
     public ExcelGenerator() {
         init();
@@ -60,6 +66,7 @@ public class ExcelGenerator {
         indexInit();
         workbook = new HSSFWorkbook();
         floatCell = this.createFloatCell();
+        percentCell = this.createPercentCell();
         dateCell = this.createDateCell();
         log.info("New one workbook");
     }
@@ -67,6 +74,7 @@ public class ExcelGenerator {
     private void indexInit() {
         xIndex = baseXIndex;
         yIndex = baseYIndex;
+        this.skipSpecialFormatIndex = new ArrayList();
     }
 
     public void createExcelSheet() {
@@ -76,6 +84,10 @@ public class ExcelGenerator {
     public void createExcelSheet(String sheetName) {
         spreadsheet = workbook.createSheet(sheetName);
         indexInit();
+    }
+
+    private void addSkipDecimalFormatIndex(Integer... i) {
+        this.skipSpecialFormatIndex.addAll(Arrays.asList(i));
     }
 
     public Workbook generateWorkBooks(List<Map>... data) {
@@ -96,7 +108,14 @@ public class ExcelGenerator {
             //Set the header
             Iterator it = firstData.keySet().iterator();
             while (it.hasNext()) {
-                setCellValue(row.createCell(yIndex++), it.next());
+                String columnName = (String) it.next();
+
+                if (columnName.contains("*")) {
+                    this.addSkipDecimalFormatIndex(yIndex);
+                }
+
+                setCellValue(row.createCell(yIndex++), columnName);
+
             }
 
             xIndex++;
@@ -125,10 +144,18 @@ public class ExcelGenerator {
             cell.setCellValue((Integer) value);
         } else if (value instanceof Double) {
             cell.setCellValue((Double) value);
-            cell.setCellStyle(floatCell);
+            if (skipSpecialFormatIndex.contains(cell.getColumnIndex())) {
+                cell.setCellStyle(floatCell);
+            } else {
+                cell.setCellStyle(percentCell);
+            }
         } else if (value instanceof BigDecimal) {
             cell.setCellValue(((Number) value).doubleValue());
-            cell.setCellStyle(floatCell);
+            if (skipSpecialFormatIndex.contains(cell.getColumnIndex())) {
+                cell.setCellStyle(floatCell);
+            } else {
+                cell.setCellStyle(percentCell);
+            }
         } else if (value == null) {
             cell.setCellValue("");
         } else {
@@ -138,6 +165,12 @@ public class ExcelGenerator {
     }
 
     private CellStyle createFloatCell() {
+        CellStyle style = workbook.createCellStyle();
+        style.setDataFormat(workbook.createDataFormat().getFormat("0.0"));
+        return style;
+    }
+
+    private CellStyle createPercentCell() {
         CellStyle style = workbook.createCellStyle();
         style.setDataFormat(workbook.createDataFormat().getFormat("0.00%"));
         style.setBorderBottom(BorderStyle.MEDIUM);
@@ -153,6 +186,14 @@ public class ExcelGenerator {
         short df = createHelper.createDataFormat().getFormat("yyyy-MM-dd HH:mm");
         dateCellStyle.setDataFormat(df);
         return dateCellStyle;
+    }
+
+    private CellStyle createTestCell() {
+        CellStyle style = workbook.createCellStyle();
+        Font font = workbook.createFont();
+        font.setColor(HSSFColor.RED.index);
+        style.setFont(font);
+        return style;
     }
 
     public void formatExcel() {

@@ -35,7 +35,7 @@ public class BABExcelGenerate extends HttpServlet {
     private final int minAllowAmount = 10;
 
     private final CountermeasureService cService = BasicService.getCountermeasureService();
-    
+
     private String lineType, sitefloor;
 
     @Override
@@ -129,10 +129,13 @@ public class BABExcelGenerate extends HttpServlet {
         sheet3Data = personalAlarms;
 
         ExcelGenerator generator = new ExcelGenerator();
+        
         generator.createExcelSheet(countermeasureSheetName + "(" + filterColumnName + "≧" + minAllowAmount + "台)");
         generator.generateWorkBooks(sheet1Data);
+        
         generator.createExcelSheet(personalAlmSheetName + "(" + filterColumnName + "≧" + minAllowAmount + "台)");
         generator.appendSpecialPattern(sheet3Data);
+        
         if (!showAboveOnly && !sheet2Data.isEmpty() && !sheet4Data.isEmpty()) {
             generator.createExcelSheet(countermeasureSheetName + "(" + filterColumnName + "<" + minAllowAmount + "台)");
             generator.generateWorkBooks(sheet2Data);

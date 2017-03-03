@@ -314,7 +314,7 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
             }
 
             function formatDate(dateString) {
-                return dateString.substring(0, 19);
+                return dateString.substring(0, 16);
             }
 
             function getPercent(val, precision) {
