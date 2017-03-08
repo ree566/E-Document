@@ -1,2 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Context path="/E-Document"/>
+<Context path="/E-Document">
+  <Resource acquireIncrement="2" auth="Container" driverClass="net.sourceforge.jtds.jdbc.Driver" factory="org.apache.naming.factory.BeanFactory" idleConnectionTestPeriod="60" jdbcUrl="jdbc:jtds:sqlserver://M3-SERVER/E_Document" maxPoolSize="50" minPoolSize="2" name="jdbc/res" password="m3server" preferredTestQuery="SELECT 1" testConnectionOnCheckin="true" testConnectionOnCheckout="false" type="com.mchange.v2.c3p0.ComboPooledDataSource" user="waychien"/>
+</Context>
