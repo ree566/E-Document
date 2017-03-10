@@ -5,6 +5,10 @@
  */
 package com.advantech.test;
 
+import com.advantech.helper.MD5Encoder;
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
+
 /**
  *
  * @author Wei.Cheng
@@ -12,7 +16,11 @@ package com.advantech.test;
 public class Test1 {
 
     public static void main(String arg0[]) {
-//        Runnable runnbale = () -> System.out.println("run me!");
-//        runnbale.run();
+        try {
+            String str = MD5Encoder.toMD5("sysop");
+            System.out.println(str);
+        } catch (NoSuchAlgorithmException | UnsupportedEncodingException ex) {
+            System.out.println(ex);
+        }
     }
 }
