@@ -12,42 +12,63 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>${initParam.pageTitle}</title>
         <link rel="shortcut icon" href="../images/favicon.ico"/>
-        <link rel="stylesheet" type="text/css" media="screen" href="//cdnjs.cloudflare.com/ajax/libs/jqgrid/4.6.0/css/ui.jqgrid.css" />
         <link rel="stylesheet" type="text/css" media="screen" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" />
+        <!--<link rel="stylesheet" type="text/css" media="screen" href="//cdnjs.cloudflare.com/ajax/libs/jqgrid/4.6.0/css/ui.jqgrid.css" />-->
+        <link rel="stylesheet" type="text/css" media="screen" href="../css/ui.jqgrid.css" />
+        <link rel="stylesheet" type="text/css" media="screen" href="../css/ui.multiselect.css" />
 
         <!--<link rel="stylesheet" type="text/css" media="screen" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />-->
         <style>
-            /*            .ui-jqgrid tr.jqgrow td {
-                            font-size: 20px;
-                        }*/
+            .ui-jqdialog {
+                display: none;
+                width: 300px;
+                position: absolute;
+                padding: .2em;
+                font-size: 11px;
+                overflow: visible;
+                left: 30% !important;
+                top: 40% !important;
+            }
         </style>
         <script src="https://code.jquery.com/jquery-1.12.4.min.js" 
                 integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
                 crossorigin="anonymous"
         ></script>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/jqgrid/4.6.0/js/i18n/grid.locale-tw.js"></script>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/jqgrid/4.6.0/js/jquery.jqGrid.min.js"></script>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/jqgrid/4.6.0/js/jquery.jqGrid.src.js"></script>
         <script
             src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
             integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
             crossorigin="anonymous"
         ></script>
+        <!--                <script src="//cdnjs.cloudflare.com/ajax/libs/jqgrid/4.6.0/js/i18n/grid.locale-tw.js"></script>
+                        <script src="//cdnjs.cloudflare.com/ajax/libs/jqgrid/4.6.0/js/jquery.jqGrid.min.js"></script>
+                        <script src="//cdnjs.cloudflare.com/ajax/libs/jqgrid/4.6.0/js/jquery.jqGrid.src.js"></script>-->
+        <script src="../js/i18n/grid.locale-tw.js"></script>
+        <script src="../js/jquery.jqGrid.min.js"></script>
+        <script src="../js/ui.multiselect.js"></script>
         <script src="../js/urlParamGetter.js"></script>
 
         <script>
             $(function () {
                 var lastsel, scrollPosition;
-                var do_not_change_columns = ["Model", "Modified_Date"];
+                var do_not_change_columns = ["Modified_Date"];
 
-                $("#list").jqGrid({
+                var grid = $("#list");
+
+                var centerForm = function ($form) {
+                    $form.closest('div.ui-jqdialog').position({
+                        my: "center",
+                        of: grid.closest('div.ui-jqgrid')
+                    });
+                };
+
+                grid.jqGrid({
                     url: '../SheetViewServlet',
-                    cacheUrlData: true,
+//                    cacheUrlData: true,
                     datatype: "json",
                     mtype: 'POST',
-                    styleUI: 'Bootstrap',
+//                    styleUI: 'Bootstrap',
                     colModel: [
-                        {label: 'Model_id', name: 'Model_id', hidden: true, key: true, frozen: true},
+                        {label: 'Model_id', name: 'Model_id', hidden: true, key: true, frozen: true, editoptions: {defaultValue: "0"}},
                         {label: 'Model', name: 'Model', frozen: true},
                         {label: 'TYPE', name: 'Type', width: 100},
                         {label: 'ProductionWT', name: 'ProductionWT', width: 120},
@@ -68,7 +89,7 @@
                         {label: 'Cold Boot', name: 'Cold_Boot', width: 100},
                         {label: 'Warm Boot', name: 'Warm_Boot', width: 100},
                         {label: 'ASS_T1', name: 'ASSY_to_T1', width: 100},
-                        {label: 'T2_PACKING', name: 'T2_Packing', width: 100},
+                        {label: 'T2_PACKING', name: 'T2_to_Packing', width: 100},
                         {label: 'Floor', name: 'Floor', width: 100},
                         {label: 'Pending', name: 'Pending', width: 100},
                         {label: 'Pending TIME', name: 'Pending_Time', width: 100},
@@ -105,15 +126,6 @@
                         {label: 'CleanPanel+Assembly', name: 'CleanPanel_and_Assembly', width: 200},
                         {label: 'Modified_Date', width: 200, name: 'Modified_Date'}
                     ],
-                    afterSubmit: function (resp, postdata) {
-                        if (resp.responseText == "OK"){
-                            alert("Update is succefully");
-                            return [true, "", ""];
-                        } else {
-                            alert("Update failed");
-                            return [true, "", ""];
-                        }
-                    },
                     rowNum: 10,
                     rowList: [10, 20, 30],
                     pager: '#pager',
@@ -123,31 +135,43 @@
                     jsonReader: {
                         repeatitems: false
                     },
-                    onSelectRow: function (rowid, status, e) {
-                        if (lastsel)
-                            $("#list").jqGrid("restoreRow", lastsel);
-                        if (rowid !== lastsel) {
-                            scrollPosition = $("#list").closest(".ui-jqgrid-bdiv").scrollLeft();
-                            $("#list").jqGrid("editRow", rowid, true, function () {
-                                setTimeout(function () {
-                                    $("input, select", e.target).focus();
-                                }, 10);
-                            });
-                            setTimeout(function () {
-                                $("#list").closest(".ui-jqgrid-bdiv").scrollLeft(scrollPosition);
-                            }, 0);
-                            lastsel = rowid;
-                        } else {
-                            lastsel = null;
-                        }
-                    },
+//                    onSelectRow: function (rowid, status, e) {
+//                        if (lastsel)
+//                            $("#list").jqGrid("restoreRow", lastsel);
+//                        if (rowid !== lastsel) {
+//                            scrollPosition = $("#list").closest(".ui-jqgrid-bdiv").scrollLeft();
+//                            $("#list").jqGrid("editRow", rowid, true, function () {
+//                                setTimeout(function () {
+//                                    $("input, select", e.target).focus();
+//                                }, 10);
+//                            });
+//                            setTimeout(function () {
+//                                $("#list").closest(".ui-jqgrid-bdiv").scrollLeft(scrollPosition);
+//                            }, 0);
+//                            lastsel = rowid;
+//                        } else {
+//                            lastsel = null;
+//                        }
+//                    },
                     loadonce: true,
+                    afterSubmit: function () {
+                        $(this).setGridParam({datatype:'json', page:1}).trigger('reloadGrid');
+                        return [true];
+                    },
+                    navOptions: {reloadGridOptions: {fromServer: true}},
                     caption: "工時大表",
                     width: 1200,
                     height: 450,
+                    multiselect: true,
                     editurl: '../ReceiveSheetMoidfied'
                 })
-                        .jqGrid('navGrid', '#pager', {edit: false, add: false, del: false})
+                        .jqGrid('navGrid', '#pager',
+                                {edit: true, add: true, del: true, search: true},
+                                {closeAfterEdit: true, reloadAfterSubmit: true},
+                                {closeAfterAdd: true, reloadAfterSubmit: true},
+                                {reloadAfterSubmit: true},
+                                {closeAfterSearch: true, reloadAfterSubmit: true}
+                        )
                         .jqGrid('setGroupHeaders', {
                             useColSpanStyle: true,
                             groupHeaders: [
@@ -157,7 +181,7 @@
                             ]
                         });
 
-                var colModel = $("#list").jqGrid('getGridParam', 'colModel');
+                var colModel = grid.jqGrid('getGridParam', 'colModel');
                 var columnNames = [];
 
                 for (var i = 0; i < colModel.length; i++) {
@@ -169,12 +193,14 @@
 
                 if (modifyColumns.length != 0) {
 
-                    //IE did not support javascript ES7 yet.
-                    var difference = columnNames.concat(modifyColumns).filter(v => !columnNames.includes(v) || !modifyColumns.includes(v));
+                    modifyColumns.push("Model");
+//                    modifyColumns.push("Model_id");
+
+                    var difference = $(columnNames).not(modifyColumns).get();
 
                     for (var i = 0; i < modifyColumns.length; i++) {
                         if (do_not_change_columns.indexOf(modifyColumns[i]) == -1) {
-                            $("#list").setColProp(modifyColumns[i], {editable: true});
+                            grid.setColProp(modifyColumns[i], {editable: true});
                         }
                     }
 
@@ -183,13 +209,13 @@
                     }
 
                     $("#hideCol").on("click", function () {
-                        $("#list").hideCol(difference);
-                        resetFrozenColumn($("#list"));
+                        grid.hideCol(difference);
+                        resetFrozenColumn(grid);
                     });
 
                     $("#showCol").on("click", function () {
-                        $("#list").showCol(difference);
-                        resetFrozenColumn($("#list"));
+                        grid.showCol(difference);
+                        resetFrozenColumn(grid);
                     });
                 }
 

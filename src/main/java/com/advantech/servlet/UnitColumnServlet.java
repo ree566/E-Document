@@ -54,6 +54,7 @@ public class UnitColumnServlet extends HttpServlet {
         String unit = req.getParameter("unit");
 
         if (unit != null && !"".equals(unit)) {
+            unit = unit.toUpperCase();
             List<Map> l;
             switch (unit) {
                 case SPE:
@@ -77,12 +78,12 @@ public class UnitColumnServlet extends HttpServlet {
     }
 
     private List<String> getColumnNames(List<Map> l) {
-        Map<String, Object> m = l.get(0);
         List<String> list = new ArrayList();
-
-        for (Map.Entry<String, Object> entry : m.entrySet()) {
-            list.add((String)entry.getKey());
-
+        if (!l.isEmpty()) {
+            Map<String, Object> m = l.get(0);
+            for (Map.Entry<String, Object> entry : m.entrySet()) {
+                list.add((String) entry.getKey());
+            }
         }
         return list;
     }
