@@ -200,7 +200,7 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                     "initComplete": function (settings, json) {
                         $("#testDetail").show();
                     },
-                    "order": [[5, "asc"], [1, "asc"]]
+                    "order": [[5, "asc"]]
                 });
             }
 
