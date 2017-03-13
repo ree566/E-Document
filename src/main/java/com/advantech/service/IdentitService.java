@@ -6,43 +6,48 @@
 package com.advantech.service;
 
 import com.advantech.dao.*;
+import com.advantech.entity.Identit;
 import java.util.Collection;
 
 /**
  *
  * @author Wei.Cheng
  */
-public class SheetEEService implements BasicService {
+public class IdentitService implements BasicService {
 
-    private final SheetEEDAO sheetEEDAO;
+    private final IdentitDAO identitDAO;
 
-    public SheetEEService() {
-        sheetEEDAO = new SheetEEDAO();
+    public IdentitService() {
+        identitDAO = new IdentitDAO();
     }
 
     @Override
     public Collection findAll() {
-        return sheetEEDAO.findAll();
+        return identitDAO.findAll();
     }
 
     @Override
     public Object findByPrimaryKey(Object obj_id) {
-        return sheetEEDAO.findByPrimaryKey(obj_id);
+        return identitDAO.findByPrimaryKey(obj_id);
     }
 
     @Override
     public int insert(Object obj) {
-        return sheetEEDAO.insert(obj);
+        return identitDAO.insert(obj);
     }
 
     @Override
     public int update(Object obj) {
-        return sheetEEDAO.update(obj);
+        return identitDAO.update(obj);
     }
 
     @Override
     public int delete(Object pojo) {
-        return sheetEEDAO.delete(pojo);
+        return identitDAO.delete(pojo);
+    }
+
+    public Identit findByJobnumber(String jobnumber) {
+        return identitDAO.findByJobnumber(jobnumber);
     }
 
 }

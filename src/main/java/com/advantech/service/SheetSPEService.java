@@ -5,15 +5,14 @@
  */
 package com.advantech.service;
 
-import com.advantech.model.*;
-import java.util.List;
-import java.util.Map;
+import com.advantech.dao.*;
+import java.util.Collection;
 
 /**
  *
  * @author Wei.Cheng
  */
-public class SheetSPEService {
+public class SheetSPEService implements BasicService {
 
     private final SheetSPEDAO sheetSPEDAO;
 
@@ -21,12 +20,29 @@ public class SheetSPEService {
         sheetSPEDAO = new SheetSPEDAO();
     }
 
-    public List<Map> getAll() {
-        return sheetSPEDAO.getAll();
+    @Override
+    public Collection findAll() {
+        return sheetSPEDAO.findAll();
     }
 
-    public List<Map> getColumn() {
-        return sheetSPEDAO.getColumn();
+    @Override
+    public Object findByPrimaryKey(Object obj_id) {
+        return sheetSPEDAO.findByPrimaryKey(obj_id);
+    }
+
+    @Override
+    public int insert(Object obj) {
+        return sheetSPEDAO.insert(obj);
+    }
+
+    @Override
+    public int update(Object obj) {
+        return sheetSPEDAO.update(obj);
+    }
+
+    @Override
+    public int delete(Object pojo) {
+        return sheetSPEDAO.delete(pojo);
     }
 
 }

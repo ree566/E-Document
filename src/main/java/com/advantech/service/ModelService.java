@@ -5,16 +5,14 @@
  */
 package com.advantech.service;
 
-import com.advantech.entity.Model;
-import com.advantech.model.*;
-import java.util.List;
-import java.util.Map;
+import com.advantech.dao.*;
+import java.util.Collection;
 
 /**
  *
  * @author Wei.Cheng
  */
-public class ModelService {
+public class ModelService implements BasicService{
 
     private final ModelDAO modelDAO;
 
@@ -22,23 +20,30 @@ public class ModelService {
         modelDAO = new ModelDAO();
     }
 
-    public List<Map> getAll() {
-        return modelDAO.getAll();
+    @Override
+    public Collection findAll() {
+        return modelDAO.findAll();
     }
 
-    public List<Map> getOne(Model model) {
-        return modelDAO.getOne(model);
+    @Override
+    public Object findByPrimaryKey(Object obj_id) {
+        return modelDAO.findByPrimaryKey(obj_id);
     }
 
-    public boolean add(Model model) {
-        return modelDAO.add(model);
+    @Override
+    public int insert(Object obj) {
+        return modelDAO.insert(obj);
     }
 
-    public boolean update(Model model) {
-        return modelDAO.update(model);
+    @Override
+    public int update(Object obj) {
+        return modelDAO.update(obj);
     }
 
-    public boolean delete(Model model) {
-        return modelDAO.delete(model);
+    @Override
+    public int delete(Object pojo) {
+        return modelDAO.delete(pojo);
     }
+
+   
 }

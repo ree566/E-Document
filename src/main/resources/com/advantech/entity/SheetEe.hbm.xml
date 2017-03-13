@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 2017/3/13 ?????? 09:50:40 by Hibernate Tools 4.3.1 -->
+<hibernate-mapping>
+    <class name="com.advantech.entity.SheetEe" table="Sheet_EE" schema="dbo" catalog="E_Document" optimistic-lock="version">
+        <id name="id" type="int">
+            <column name="id" />
+            <generator class="assigned" />
+        </id>
+        <many-to-one name="model" class="com.advantech.entity.Model" fetch="select">
+            <column name="Model_id" />
+        </many-to-one>
+        <property name="t1" type="big_decimal">
+            <column name="T1" precision="10" scale="1" />
+        </property>
+        <property name="t2" type="big_decimal">
+            <column name="T2" precision="10" scale="1" />
+        </property>
+        <property name="t3" type="big_decimal">
+            <column name="T3" precision="10" scale="1" />
+        </property>
+        <property name="t4" type="big_decimal">
+            <column name="T4" precision="10" scale="1" />
+        </property>
+        <property name="upBiRi" type="big_decimal">
+            <column name="Up_BI_RI" precision="10" scale="1" />
+        </property>
+        <property name="downBiRi" type="big_decimal">
+            <column name="Down_BI_RI" precision="10" scale="1" />
+        </property>
+        <property name="testSop" type="string">
+            <column name="Test_SOP" length="500" />
+        </property>
+        <property name="modifiedDate" type="timestamp">
+            <column name="Modified_Date" length="23" />
+        </property>
+    </class>
+</hibernate-mapping>

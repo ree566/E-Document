@@ -68,13 +68,13 @@ public class ReceiveSheetMoidfied extends HttpServlet {
             boolean modifyFlag = false;
             switch (oper) {
                 case ADD:
-                    modifyFlag = service.add(new Model(modelName));
+//                    modifyFlag = service.add(new Model(modelName));
                     break;
                 case EDIT:
-                    modifyFlag = service.update(new Model(Integer.parseInt(model_id), modelName));
+//                    modifyFlag = service.update(new Model(Integer.parseInt(model_id), modelName));
                     break;
                 case DELETE:
-                    modifyFlag = service.delete(new Model(Integer.parseInt(model_id), modelName));
+//                    modifyFlag = service.delete(new Model(Integer.parseInt(model_id), modelName));
                     break;
                 default:
                     break;

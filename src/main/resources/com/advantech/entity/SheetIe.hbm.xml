@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 2017/3/13 ?????? 09:50:40 by Hibernate Tools 4.3.1 -->
+<hibernate-mapping>
+    <class name="com.advantech.entity.SheetIe" table="Sheet_IE" schema="dbo" catalog="E_Document" optimistic-lock="version">
+        <id name="id" type="int">
+            <column name="id" />
+            <generator class="assigned" />
+        </id>
+        <many-to-one name="model" class="com.advantech.entity.Model" fetch="select">
+            <column name="Model_id" />
+        </many-to-one>
+        <property name="totalModule" type="big_decimal">
+            <column name="Total_Module" precision="10" scale="1" />
+        </property>
+        <property name="assyStations" type="java.lang.Integer">
+            <column name="ASSY_stations" />
+        </property>
+        <property name="packingStations" type="java.lang.Integer">
+            <column name="Packing_stations" />
+        </property>
+        <property name="assyLeadTime" type="big_decimal">
+            <column name="ASSY_lead_time" precision="10" scale="1" />
+        </property>
+        <property name="assyKanbanTime" type="big_decimal">
+            <column name="ASSY_kanban_time" precision="10" scale="1" />
+        </property>
+        <property name="packingLeadTime" type="big_decimal">
+            <column name="Packing_lead_time" precision="10" scale="1" />
+        </property>
+        <property name="packingKanbanTime" type="big_decimal">
+            <column name="Packing_kanban_time" precision="10" scale="1" />
+        </property>
+        <property name="modifiedDate" type="timestamp">
+            <column name="Modified_Date" length="23" />
+        </property>
+    </class>
+</hibernate-mapping>

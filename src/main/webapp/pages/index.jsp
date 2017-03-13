@@ -153,7 +153,7 @@
 //                            lastsel = null;
 //                        }
 //                    },
-                    loadonce: true,
+//                    loadonce: true,
                     afterSubmit: function () {
                         $(this).setGridParam({datatype:'json', page:1}).trigger('reloadGrid');
                         return [true];

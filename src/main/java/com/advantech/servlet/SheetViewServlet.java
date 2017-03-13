@@ -51,6 +51,6 @@ public class SheetViewServlet extends HttpServlet {
         res.setContentType("application/json");
         PrintWriter out = res.getWriter();
         SheetViewService service = new SheetViewService();
-        out.println(JsonHelper.toJSON(service.getAll()));
+        out.println(JsonHelper.toJSON(service.findAll()));
     }
 }

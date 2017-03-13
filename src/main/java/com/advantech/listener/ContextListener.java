@@ -5,7 +5,6 @@
  */
 package com.advantech.listener;
 
-import com.advantech.model.BasicDAO;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import org.slf4j.Logger;
@@ -28,21 +27,14 @@ public class ContextListener implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent sce) {
 //        BasicConfigurator.configure();
-        BasicDAO.dataSourceInit();
+
 
     }
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
 
-        try {
-            BasicDAO.objectInit();
-
-            Thread.sleep(3000);
-
-        } catch (Exception e) {
-            log.error(e.toString());
-        }
+       
 
     }
 }

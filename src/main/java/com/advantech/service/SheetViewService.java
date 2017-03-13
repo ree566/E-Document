@@ -5,25 +5,44 @@
  */
 package com.advantech.service;
 
-import com.advantech.model.BasicDAO;
-import com.advantech.model.SheetViewDAO;
-import java.util.List;
-import java.util.Map;
+import com.advantech.dao.SheetViewDAO;
+import java.util.Collection;
 
 /**
  *
  * @author Wei.Cheng
  */
-public class SheetViewService {
+public class SheetViewService implements BasicService {
 
     private final SheetViewDAO sheetViewDAO;
 
     public SheetViewService() {
-        sheetViewDAO = new SheetViewDAO();
+        this.sheetViewDAO = new SheetViewDAO();
     }
 
-    public List<Map> getAll() {
-        return sheetViewDAO.getAll();
+    @Override
+    public Collection findAll() {
+        return sheetViewDAO.findAll();
     }
-   
+
+    @Override
+    public Object findByPrimaryKey(Object obj_id) {
+        return sheetViewDAO.findByPrimaryKey(obj_id);
+    }
+
+    @Override
+    public int insert(Object obj) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public int update(Object obj) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public int delete(Object pojo) {
+        throw new UnsupportedOperationException();
+    }
+
 }

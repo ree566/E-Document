@@ -11,6 +11,7 @@ import com.advantech.service.SheetIEService;
 import com.advantech.service.SheetSPEService;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -55,16 +56,16 @@ public class UnitColumnServlet extends HttpServlet {
 
         if (unit != null && !"".equals(unit)) {
             unit = unit.toUpperCase();
-            List<Map> l;
+            List l;
             switch (unit) {
                 case SPE:
-                    l = new SheetSPEService().getColumn();
+                    l = (List) new SheetSPEService().findAll();
                     break;
                 case EE:
-                    l = new SheetEEService().getColumn();
+                    l = (List) new SheetEEService().findAll();
                     break;
                 case IE:
-                    l = new SheetIEService().getColumn();
+                    l = (List) new SheetIEService().findAll();
                     break;
                 default:
                     l = new ArrayList();
@@ -77,12 +78,12 @@ public class UnitColumnServlet extends HttpServlet {
         }
     }
 
-    private List<String> getColumnNames(List<Map> l) {
+    private List<String> getColumnNames(List<Object> l) {
         List<String> list = new ArrayList();
         if (!l.isEmpty()) {
-            Map<String, Object> m = l.get(0);
-            for (Map.Entry<String, Object> entry : m.entrySet()) {
-                list.add((String) entry.getKey());
+            Object obj = l.get(0);
+            for (Field field : obj.getClass().getDeclaredFields()) {
+                l.add(field.getName());
             }
         }
         return list;

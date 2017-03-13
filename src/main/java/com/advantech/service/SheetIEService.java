@@ -5,15 +5,15 @@
  */
 package com.advantech.service;
 
-import com.advantech.model.*;
-import java.util.List;
-import java.util.Map;
+import com.advantech.dao.*;
+import java.util.Collection;
+import org.hibernate.SessionFactory;
 
 /**
  *
  * @author Wei.Cheng
  */
-public class SheetIEService {
+public class SheetIEService implements BasicService {
 
     private final SheetIEDAO sheetIEDAO;
 
@@ -21,12 +21,29 @@ public class SheetIEService {
         sheetIEDAO = new SheetIEDAO();
     }
 
-    public List<Map> getAll() {
-        return sheetIEDAO.getAll();
+    @Override
+    public Collection findAll() {
+        return sheetIEDAO.findAll();
     }
 
-    public List<Map> getColumn() {
-        return sheetIEDAO.getColumn();
+    @Override
+    public Object findByPrimaryKey(Object obj_id) {
+        return sheetIEDAO.findByPrimaryKey(obj_id);
+    }
+
+    @Override
+    public int insert(Object obj) {
+        return sheetIEDAO.insert(obj);
+    }
+
+    @Override
+    public int update(Object obj) {
+        return sheetIEDAO.update(obj);
+    }
+
+    @Override
+    public int delete(Object pojo) {
+        return sheetIEDAO.delete(pojo);
     }
 
 }

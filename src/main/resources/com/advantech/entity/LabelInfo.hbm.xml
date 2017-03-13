@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 2017/3/13 ?????? 09:50:40 by Hibernate Tools 4.3.1 -->
+<hibernate-mapping>
+    <class name="com.advantech.entity.LabelInfo" table="LabelInfo" schema="dbo" catalog="E_Document" optimistic-lock="version">
+        <id name="id" type="int">
+            <column name="id" />
+            <generator class="assigned" />
+        </id>
+        <many-to-one name="sheetSpe" class="com.advantech.entity.SheetSpe" fetch="select">
+            <column name="sheet_spe_id" />
+        </many-to-one>
+        <property name="ce" type="string">
+            <column name="CE" length="50" />
+        </property>
+        <property name="ul" type="string">
+            <column name="UL" length="50" />
+        </property>
+        <property name="rohs" type="string">
+            <column name="ROHS" length="50" />
+        </property>
+        <property name="weee" type="string">
+            <column name="WEEE" length="50" />
+        </property>
+        <property name="madeInTaiwan" type="string">
+            <column name="Made_in_Taiwan" length="50" />
+        </property>
+        <property name="fcc" type="string">
+            <column name="FCC" length="50" />
+        </property>
+        <property name="eac" type="string">
+            <column name="EAC" length="50" />
+        </property>
+    </class>
+</hibernate-mapping>

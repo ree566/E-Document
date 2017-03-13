@@ -5,6 +5,10 @@
  */
 package com.advantech.servlet;
 
+import com.advantech.entity.Identit;
+import com.advantech.service.IdentitService;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebInitParam;
@@ -22,7 +26,8 @@ import javax.servlet.http.HttpSession;
         initParams = {
             @WebInitParam(name = "SUCCESS", value = "pages/index.jsp")
             ,
-            @WebInitParam(name = "FAIL", value = "login.jsp")}
+            @WebInitParam(name = "FAIL", value = "login.jsp")
+        }
 )
 public class LoginServlet extends HttpServlet {
 
@@ -35,6 +40,15 @@ public class LoginServlet extends HttpServlet {
         FAIL = getServletConfig().getInitParameter("FAIL");
     }
 
+//    @Override
+//    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+//        HttpSession session = req.getSession(false);
+//        if (session != null && session.getAttribute("jobnumber") != null) {
+//            res.sendRedirect(SUCCESS);
+//        } else {
+//            req.getRequestDispatcher(FAIL).forward(req, res);
+//        }
+//    }
     /**
      * Handles the HTTP <code>POST</code> method.
      *
@@ -48,12 +62,26 @@ public class LoginServlet extends HttpServlet {
             throws ServletException, IOException {
 
         HttpSession session = req.getSession();
-
         String jobnumber = req.getParameter("jobnumber");
+        String password = req.getParameter("password");
+        IdentitService service = new IdentitService();
 
-        session.setAttribute("jobnumber", jobnumber);
-        res.sendRedirect(SUCCESS);
-//        req.setAttribute("errormsg", "錯誤的帳號或密碼");
-//        req.getRequestDispatcher(FAIL).forward(req, res);
+        Identit i = service.findByJobnumber(jobnumber);
+        if (i == null) {
+            req.setAttribute("errormsg", "查無此人");
+            req.getRequestDispatcher(FAIL).forward(req, res);
+        } else if (!i.getPassword().equals(password)) {
+            req.setAttribute("errormsg", "錯誤的帳號或密碼");
+            req.getRequestDispatcher(FAIL).forward(req, res);
+        } else {
+            Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+            session.setAttribute("jobnumber", i.getJobnumber());
+            session.setAttribute("name", i.getName());
+            session.setAttribute("permission", i.getPermission());
+            session.setAttribute("floor", gson.toJson(i.getFloor()));
+            session.setAttribute("userType", gson.toJson(i.getUserType()));
+            res.sendRedirect(SUCCESS);
+        }
     }
+
 }
