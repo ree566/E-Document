@@ -1,6 +1,8 @@
 package com.advantech.entity;
 // Generated 2017/3/13 上午 09:50:39 by Hibernate Tools 4.3.1
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.google.gson.annotations.Expose;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -14,67 +16,103 @@ public class SheetSpe implements java.io.Serializable {
 
     @Expose
     private int id;
+
     @Expose
+    @JsonBackReference
     private Floor floor;
+
     @Expose
+    @JsonBackReference
     private Model model;
+
     @Expose
+    @JsonBackReference
     private Type type;
+
     @Expose
     private BigDecimal cleanPanel;
+
     @Expose
     private BigDecimal assy;
+
     @Expose
     private BigDecimal packing;
+
     @Expose
     private BigDecimal biCost;
+
     @Expose
     private Integer vibration;
+
     @Expose
     private Integer hiPotLeakage;
+
     @Expose
     private BigDecimal coldBoot;
+
     @Expose
     private BigDecimal warmBoot;
+
     @Expose
     private BigDecimal assyToT1;
+
     @Expose
     private BigDecimal t2ToPacking;
+
     @Expose
     private String burnIn;
+
     @Expose
     private BigDecimal biTime;
+
     @Expose
     private BigDecimal biTemperature;
+
     @Expose
     private Integer speOwnerId;
+
     @Expose
     private Integer eeOwnerId;
     @Expose
     private Integer qcOwnerId;
+
     @Expose
     private String assyPackingSop;
+
     @Expose
     private Integer keypartA;
+
     @Expose
     private Integer keypartB;
+
     @Expose
     private String preAssy;
+
     @Expose
     private String babFlow;
+
     @Expose
     private String testFlow;
+
     @Expose
     private String packingFlow;
+
     @Expose
     private String partLink;
+
     @Expose
     private String NIn1CollectionBox;
+
     @Expose
     private String partNoAttrMaintain;
+
     @Expose
     private Date modifiedDate;
+
+    @JsonManagedReference
     private Set labelInfos = new HashSet(0);
+
+    @JsonManagedReference
     private Set pendings = new HashSet(0);
 
     public SheetSpe() {

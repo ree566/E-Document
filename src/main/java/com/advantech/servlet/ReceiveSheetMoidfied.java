@@ -5,7 +5,6 @@
  */
 package com.advantech.servlet;
 
-import com.advantech.entity.Model;
 import com.advantech.service.ModelService;
 import java.io.IOException;
 import java.util.Enumeration;

@@ -7,8 +7,6 @@ package com.advantech.servlet;
 
 import com.advantech.entity.Identit;
 import com.advantech.service.IdentitService;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebInitParam;
@@ -74,12 +72,12 @@ public class LoginServlet extends HttpServlet {
             req.setAttribute("errormsg", "錯誤的帳號或密碼");
             req.getRequestDispatcher(FAIL).forward(req, res);
         } else {
-            Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+//            Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
             session.setAttribute("jobnumber", i.getJobnumber());
             session.setAttribute("name", i.getName());
             session.setAttribute("permission", i.getPermission());
-            session.setAttribute("floor", gson.toJson(i.getFloor()));
-            session.setAttribute("userType", gson.toJson(i.getUserType()));
+//            session.setAttribute("floor", gson.toJson(i.getFloor()));
+//            session.setAttribute("userType", gson.toJson(i.getUserType()));
             res.sendRedirect(SUCCESS);
         }
     }
