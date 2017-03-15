@@ -133,6 +133,10 @@
                     shrinkToFit: false,
                     hidegrid: true,
                     jsonReader: {
+                        root: "rows",
+                        page: "page",
+                        total: "total",
+                        records: "records",
                         repeatitems: false
                     },
 //                    onSelectRow: function (rowid, status, e) {
@@ -155,7 +159,7 @@
 //                    },
 //                    loadonce: true,
                     afterSubmit: function () {
-                        $(this).setGridParam({datatype:'json', page:1}).trigger('reloadGrid');
+                        $(this).setGridParam({datatype: 'json', page: 1}).trigger('reloadGrid');
                         return [true];
                     },
                     navOptions: {reloadGridOptions: {fromServer: true}},

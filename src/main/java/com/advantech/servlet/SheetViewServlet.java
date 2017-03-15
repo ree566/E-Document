@@ -5,10 +5,15 @@
  */
 package com.advantech.servlet;
 
-import com.advantech.helper.JsonHelper;
+import com.advantech.helper.PageInfo;
+import com.advantech.helper.ParamChecker;
+import com.advantech.response.SheetViewResponse;
 import com.advantech.service.SheetViewService;
+import com.google.gson.Gson;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Enumeration;
+import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -48,9 +53,50 @@ public class SheetViewServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
+
+        Enumeration params = req.getParameterNames();
+        while (params.hasMoreElements()) {
+            String paramName = (String) params.nextElement();
+            System.out.println("Parameter Name - " + paramName + ", Value - " + req.getParameter(paramName));
+        }
+
         res.setContentType("application/json");
         PrintWriter out = res.getWriter();
+
+        PageInfo info = new PageInfo();
+        String rows = req.getParameter("rows");
+        String page = req.getParameter("page");
+        String sidx = req.getParameter("sidx");
+        String sord = req.getParameter("sord");
+
+        ParamChecker pChecker = new ParamChecker();
+
+        if (pChecker.checkInputVals(rows)) {
+            info.setRows(Integer.parseInt(rows));
+        }
+
+        if (pChecker.checkInputVals(page)) {
+            info.setPage(Integer.parseInt(page));
+        }
+
+        if (pChecker.checkInputVals(sidx)) {
+            info.setSidx(sidx);
+        }
+
+        if (pChecker.checkInputVals(sord)) {
+            info.setSord(sord);
+        }
+
+        SheetViewResponse viewResp = new SheetViewResponse();
         SheetViewService service = new SheetViewService();
-        out.println(JsonHelper.toJSON(service.findAll()));
+        List l = (List) service.findAll(info);
+        int count = info.getMaxNumOfRows();
+        int total = count % info.getRows() == 0 ? (int) Math.ceil(count / info.getRows()) : (int) Math.ceil(count / info.getRows()) + 1;
+        viewResp.setRows(l);
+        viewResp.setTotal(total);
+        viewResp.setRecords(count);
+        viewResp.setPage(info.getPage());
+
+        out.println(new Gson().toJson(viewResp));
     }
 }

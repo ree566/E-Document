@@ -5,49 +5,45 @@
  */
 package com.advantech.service;
 
-import com.advantech.dao.SheetViewDAO;
-import com.advantech.helper.PageInfo;
+import com.advantech.dao.*;
 import java.util.Collection;
 
 /**
  *
  * @author Wei.Cheng
  */
-public class SheetViewService implements BasicService {
+public class FloorService implements BasicService{
 
-    private final SheetViewDAO sheetViewDAO;
+    private final FloorDAO floorDAO;
 
-    public SheetViewService() {
-        this.sheetViewDAO = new SheetViewDAO();
+    public FloorService() {
+        floorDAO = new FloorDAO();
     }
 
     @Override
     public Collection findAll() {
-        return sheetViewDAO.findAll();
-    }
-
-    public Collection findAll(PageInfo info) {
-        return sheetViewDAO.findAll(info);
+        return floorDAO.findAll();
     }
 
     @Override
     public Object findByPrimaryKey(Object obj_id) {
-        return sheetViewDAO.findByPrimaryKey(obj_id);
+        return floorDAO.findByPrimaryKey(obj_id);
     }
 
     @Override
     public int insert(Object obj) {
-        throw new UnsupportedOperationException();
+        return floorDAO.insert(obj);
     }
 
     @Override
     public int update(Object obj) {
-        throw new UnsupportedOperationException();
+        return floorDAO.update(obj);
     }
 
     @Override
     public int delete(Object pojo) {
-        throw new UnsupportedOperationException();
+        return floorDAO.delete(pojo);
     }
 
+   
 }

@@ -6,6 +6,7 @@
 package com.advantech.dao;
 
 import com.advantech.helper.HibernateUtil;
+import com.advantech.helper.PageInfo;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
@@ -13,10 +14,9 @@ import java.util.Map;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
-import org.hibernate.ScrollMode;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Restrictions;
+import org.hibernate.criterion.Order;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,8 +36,34 @@ public class BasicDAOImpl {
 
     protected List<Map> findBySQL(String sql, Object... params) {
         SQLQuery query = session.createSQLQuery(sql);
+
+        for (int i = 0; i < params.length; i++) {
+            query.setParameter(i, params[i]);
+        }
+
         query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
-        query.scroll(ScrollMode.SCROLL_SENSITIVE);
+        query.setReadOnly(true);
+        List results = query.list();
+        return results;
+    }
+
+    protected List<Map> findBySQL(PageInfo info, String sql, Object... params) {
+        StringBuilder sb = new StringBuilder();
+        sql = sb.append(sql).append(" ORDER BY ").append(info.getSidx()).append(" ").append(info.getSord()).toString();
+
+        SQLQuery query = session.createSQLQuery(sql);
+
+        for (int i = 0; i < params.length; i++) {
+            query.setParameter(i, params[i]);
+        }
+
+        query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+
+        info.setMaxNumOfRows(query.list().size());
+
+        query.setFirstResult((info.getPage() - 1) * info.getRows());
+        query.setMaxResults(info.getRows());
+
         query.setReadOnly(true);
         List results = query.list();
         return results;
@@ -51,24 +77,46 @@ public class BasicDAOImpl {
         return session.load(cls, (Serializable) obj_id);
     }
 
-    protected List findMultipleRows(Class pojoClass, String params, Object[] values) {
-        return session.createCriteria(pojoClass).add(Restrictions.in(params, values)).list();
-    }
-
     protected List findByHQL(String HQL, Object[] params, Object[] values) {
         return findByHQL(HQL, params, values, null);
     }
 
-    protected List findByHQL(String HQL, Object[] params, Object[] values, Integer resultNum) {
-        if (params.length != values.length) {
-            log.error("Error, params length not equal values length.");
-            return null;
+    protected List findByHQL(String HQL, Object[] params, Object[] values, PageInfo info) {
+        Query query = session.createQuery(HQL);
+        if (params != null && values != null) {
+            if (params.length != values.length) {
+                log.error("Error, params length not equal values length.");
+                return null;
+            } else {
+                for (int i = 0, j = params.length; i < j; i++) {
+                    query.setParameter((String) params[i], values[i]);
+                }
+            }
         }
-        Query query = resultNum == null ? session.createQuery(HQL) : session.createQuery(HQL).setMaxResults(resultNum);
-        for (int i = 0, j = params.length; i < j; i++) {
-            query.setParameter((String) params[i], values[i]);
+
+        if (info != null) {
+            query.setFirstResult((info.getPage() - 1) * info.getRows());
+            query.setMaxResults(info.getRows());
         }
+
         return query.list();
+    }
+
+    protected List findByCriteria(Class clz, PageInfo searchInfo) {
+        Criteria criteria = session.createCriteria(clz);
+        String sortIdx = searchInfo.getSidx();
+        if (sortIdx.length() > 0) {
+            if ("asc".equalsIgnoreCase(searchInfo.getSord())) {
+                criteria.addOrder(Order.asc(sortIdx));
+            } else {
+                criteria.addOrder(Order.desc(sortIdx));
+            }
+        }
+
+        criteria.setFirstResult((searchInfo.getPage() - 1) * searchInfo.getRows());
+        criteria.setMaxResults(searchInfo.getRows());
+
+        return criteria.list();
     }
 
     public int insert(Object obj) {

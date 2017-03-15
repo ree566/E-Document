@@ -5,6 +5,7 @@
  */
 package com.advantech.dao;
 
+import com.advantech.helper.PageInfo;
 import java.util.Collection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +25,27 @@ public class SheetViewDAO extends BasicDAOImpl implements BasicDAO {
     @Override
     public Collection findAll() {
         return super.findBySQL("SELECT * FROM Sheet_Main_view");
+    }
+
+    public Collection findAll(PageInfo info) {
+//        return super.findBySQL(info, "SELECT * FROM Sheet_Main_view");
+        return super.findByHQL(
+                //                "select m, spe, ie, ee, floor, type, pending\n"
+                //                + "from Model m\n" 
+                //                + "left join m.sheetSpes spe\n"
+                //                + "left join m.sheetIes ie\n"
+                //                + "left join m.sheetEes ee\n"
+                //                + "left join spe.floor floor\n"
+                //                + "left join spe.type type\n"
+                //                + "left join spe.pendings pending\n"
+                //                + "left join spe.labelInfos labelInfo\n"
+                "from Model m\n"
+                + "left join m.sheetSpes spe\n"
+                + "WHERE spe.pendings is EMPTY",
+                null,
+                null,
+                info
+        );
     }
 
     @Override

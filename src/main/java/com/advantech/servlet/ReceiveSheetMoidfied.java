@@ -60,33 +60,32 @@ public class ReceiveSheetMoidfied extends HttpServlet {
         String unit = (String) session.getAttribute("unit");
 
 //        if (unit != null && !"".equals(unit)) {
-        if (true) {
-            ModelService service = new ModelService();
-            String model_id = req.getParameter("id");
-            String modelName = req.getParameter("Model");
-            boolean modifyFlag = false;
-            switch (oper) {
-                case ADD:
+        ModelService service = new ModelService();
+        String model_id = req.getParameter("id");
+        String modelName = req.getParameter("Model");
+        boolean modifyFlag = false;
+        switch (oper) {
+            case ADD:
 //                    modifyFlag = service.add(new Model(modelName));
-                    break;
-                case EDIT:
+                break;
+            case EDIT:
 //                    modifyFlag = service.update(new Model(Integer.parseInt(model_id), modelName));
-                    break;
-                case DELETE:
+                break;
+            case DELETE:
 //                    modifyFlag = service.delete(new Model(Integer.parseInt(model_id), modelName));
-                    break;
-                default:
-                    break;
-            }
-            res.setStatus(modifyFlag == true ? HttpServletResponse.SC_ACCEPTED : HttpServletResponse.SC_NOT_MODIFIED);
-            res.getWriter().print(new JSONObject().put("STATUS", "OK"));
-        } else {
-            Enumeration params = req.getParameterNames();
-            while (params.hasMoreElements()) {
-                String paramName = (String) params.nextElement();
-                System.out.println("Parameter Name - " + paramName + ", Value - " + req.getParameter(paramName));
-            }
-            res.getWriter().print(new JSONObject().put("status", "OK"));
+                break;
+            default:
+                break;
         }
+        res.setStatus(modifyFlag == true ? HttpServletResponse.SC_ACCEPTED : HttpServletResponse.SC_NOT_MODIFIED);
+        res.getWriter().print(new JSONObject().put("STATUS", "OK"));
+
+        Enumeration params = req.getParameterNames();
+        while (params.hasMoreElements()) {
+            String paramName = (String) params.nextElement();
+            System.out.println("Parameter Name - " + paramName + ", Value - " + req.getParameter(paramName));
+        }
+        res.getWriter().print(new JSONObject().put("status", "OK"));
+
     }
 }
