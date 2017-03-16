@@ -19,16 +19,16 @@
 
         <!--<link rel="stylesheet" type="text/css" media="screen" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />-->
         <style>
-            .ui-jqdialog {
-                display: none;
-                width: 300px;
-                position: absolute;
-                padding: .2em;
-                font-size: 11px;
-                overflow: visible;
-                left: 30% !important;
-                top: 40% !important;
-            }
+            /*            .ui-jqdialog {
+                            display: none;
+                            width: 300px;
+                            position: absolute;
+                            padding: .2em;
+                            font-size: 11px;
+                            overflow: visible;
+                            left: 30% !important;
+                            top: 40% !important;
+                        }*/
         </style>
         <script src="https://code.jquery.com/jquery-1.12.4.min.js" 
                 integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
@@ -50,7 +50,7 @@
         <script>
             $(function () {
                 var lastsel, scrollPosition;
-                var do_not_change_columns = ["Modified_Date"];
+                var do_not_change_columns = ["Modified_Date", "CleanPanel_and_Assembly", "ProductionWT", "SetupTime"];
 
                 var grid = $("#list");
 
@@ -59,6 +59,13 @@
                         my: "center",
                         of: grid.closest('div.ui-jqgrid')
                     });
+                };
+
+                var customErrorTextFormat = function (response) {
+                    return [false, response.responseText];
+//                    return '<span class="ui-icon ui-icon-alert" ' +
+//                            'style="float:left; margin-right:.3em;"></span>' +
+//                            response.responseText;
                 };
 
                 grid.jqGrid({
@@ -126,8 +133,8 @@
                         {label: 'CleanPanel+Assembly', name: 'CleanPanel_and_Assembly', width: 200},
                         {label: 'Modified_Date', width: 200, name: 'Modified_Date'}
                     ],
-                    rowNum: 10,
-                    rowList: [10, 20, 30],
+                    rowNum: 20,
+                    rowList: [20, 50, 100],
                     pager: '#pager',
                     viewrecords: true,
                     shrinkToFit: false,
@@ -167,14 +174,25 @@
                     width: 1200,
                     height: 450,
                     multiselect: true,
-                    editurl: '../ReceiveSheetMoidfied'
+                    editurl: '../ReceiveSheetMoidfied',
+                    sortname: 'Model_id', sortorder: 'desc'
                 })
                         .jqGrid('navGrid', '#pager',
                                 {edit: true, add: true, del: true, search: true},
-                                {closeAfterEdit: true, reloadAfterSubmit: true},
-                                {closeAfterAdd: true, reloadAfterSubmit: true},
+                                {
+                                    dataheight: 350,
+                                    closeAfterEdit: false,
+//                                    reloadAfterSubmit: true,
+                                    errorTextFormat: customErrorTextFormat
+                                },
+                                {
+                                    dataheight: 350,
+                                    closeAfterAdd: true,
+//                                    reloadAfterSubmit: true,
+                                    errorTextFormat: customErrorTextFormat
+                                },
                                 {reloadAfterSubmit: true},
-                                {closeAfterSearch: true, reloadAfterSubmit: true}
+                                {closeAfterSearch: false, reloadAfterSubmit: true}
                         )
                         .jqGrid('setGroupHeaders', {
                             useColSpanStyle: true,
@@ -192,15 +210,26 @@
                     columnNames.push(colModel[i].name);
                 }
 
-                var unitName = getQueryVariable("unit");
-                var modifyColumns = (unitName == null || unitName == "") ? [] : getColumn(unitName);
+//                var unitName = getQueryVariable("unit");
+                var unitName = JSON.parse('${sessionScope.unit}');
+                var modifyColumns = unitName == 'unlimited' ? columnNames : ((unitName == null || unitName == "") ? [] : getColumn(unitName));
 
                 if (modifyColumns.length != 0) {
 
-                    modifyColumns.push("Model");
-//                    modifyColumns.push("Model_id");
+//                    modifyColumns.push("Model");
 
-                    var difference = $(columnNames).not(modifyColumns).get();
+                    console.log(columnNames);
+                    console.log(modifyColumns);
+
+//                    var difference = $(columnNames).not(modifyColumns).get();
+                    var difference = [];
+
+                    $.grep(columnNames, function (el) {
+                        if ($.inArray(el, modifyColumns) == -1)
+                            difference.push(el);
+                    });
+
+                    console.log(difference);
 
                     for (var i = 0; i < modifyColumns.length; i++) {
                         if (do_not_change_columns.indexOf(modifyColumns[i]) == -1) {

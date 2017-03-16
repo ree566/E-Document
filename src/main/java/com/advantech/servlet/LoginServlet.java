@@ -7,6 +7,8 @@ package com.advantech.servlet;
 
 import com.advantech.entity.Identit;
 import com.advantech.service.IdentitService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebInitParam;
@@ -15,6 +17,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import org.json.JSONObject;
 
 /**
  *
@@ -73,11 +76,17 @@ public class LoginServlet extends HttpServlet {
             req.getRequestDispatcher(FAIL).forward(req, res);
         } else {
 //            Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+            ObjectMapper mapper = new ObjectMapper();
+            Hibernate4Module hbm = new Hibernate4Module();
+            hbm.enable(Hibernate4Module.Feature.FORCE_LAZY_LOADING);
+
+            mapper.registerModule(hbm);
+
             session.setAttribute("jobnumber", i.getJobnumber());
             session.setAttribute("name", i.getName());
             session.setAttribute("permission", i.getPermission());
-//            session.setAttribute("floor", gson.toJson(i.getFloor()));
-//            session.setAttribute("userType", gson.toJson(i.getUserType()));
+            session.setAttribute("floor", mapper.writeValueAsString(i.getFloor().getName()));
+            session.setAttribute("unit", mapper.writeValueAsString(i.getUserType().getName()));
             res.sendRedirect(SUCCESS);
         }
     }

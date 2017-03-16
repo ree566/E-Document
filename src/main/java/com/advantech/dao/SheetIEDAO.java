@@ -18,8 +18,10 @@ public class SheetIEDAO extends BasicDAOImpl implements BasicDAO {
 
     private static final Logger log = LoggerFactory.getLogger(SheetViewDAO.class);
 
-    public SheetIEDAO() {
+    private final Class pojo;
 
+    public SheetIEDAO() {
+        pojo = SheetIe.class;
     }
 
     @Override
@@ -29,7 +31,11 @@ public class SheetIEDAO extends BasicDAOImpl implements BasicDAO {
 
     @Override
     public Object findByPrimaryKey(Object obj_id) {
-        return super.findByPrimaryKey(SheetIe.class, integerToLong((Integer) obj_id));
+        return super.findByPrimaryKey(pojo, integerToLong((Integer) obj_id));
+    }
+
+    public String[] getColumnName() {
+        return super.getColumnName(pojo);
     }
 
 }

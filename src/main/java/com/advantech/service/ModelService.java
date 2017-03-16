@@ -6,13 +6,15 @@
 package com.advantech.service;
 
 import com.advantech.dao.*;
+import com.advantech.entity.Model;
 import java.util.Collection;
+import java.util.List;
 
 /**
  *
  * @author Wei.Cheng
  */
-public class ModelService implements BasicService{
+public class ModelService implements BasicService {
 
     private final ModelDAO modelDAO;
 
@@ -30,6 +32,14 @@ public class ModelService implements BasicService{
         return modelDAO.findByPrimaryKey(obj_id);
     }
 
+    public List<Model> findByPrimaryKeys(Integer... id) {
+        return modelDAO.findByPrimaryKeys(id);
+    }
+
+    public List findByName(String modelName) {
+        return modelDAO.findByName(modelName);
+    }
+
     @Override
     public int insert(Object obj) {
         return modelDAO.insert(obj);
@@ -45,5 +55,4 @@ public class ModelService implements BasicService{
         return modelDAO.delete(pojo);
     }
 
-   
 }

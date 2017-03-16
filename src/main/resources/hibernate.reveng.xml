@@ -51,4 +51,5 @@ Contributor(s):
   <table-filter match-name="Pending"/>
   <table-filter match-name="Sheet_EE"/>
   <table-filter match-name="Floor"/>
+  <table-filter match-name="Sheet_Main_view"/>
 </hibernate-reverse-engineering>

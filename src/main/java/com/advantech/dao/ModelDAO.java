@@ -6,7 +6,9 @@
 package com.advantech.dao;
 
 import com.advantech.entity.Model;
+import com.advantech.helper.PageInfo;
 import java.util.Collection;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +31,17 @@ public class ModelDAO extends BasicDAOImpl implements BasicDAO {
 
     @Override
     public Object findByPrimaryKey(Object obj_id) {
-        return super.findByPrimaryKey(Model.class, integerToLong((int) obj_id));
+        return super.findByPrimaryKey(Model.class, obj_id);
+    }
+
+    public List<Model> findByPrimaryKeys(Integer... id) {
+        return super.findByPrimaryKeys(Model.class, (Object[]) id);
+    }
+
+    public List findByName(String modelName) {
+        String[] param = {"name"};
+        String[] value = {modelName};
+        return super.findByHQL("from Model m where m.name = :name", param, value);
     }
 
 }

@@ -8,6 +8,8 @@ package com.advantech.dao;
 import com.advantech.helper.HibernateUtil;
 import com.advantech.helper.PageInfo;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +18,9 @@ import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,8 +77,18 @@ public class BasicDAOImpl {
         return session.createQuery(HQL).list();
     }
 
-    protected Object findByPrimaryKey(Class cls, Object obj_id) {
-        return session.load(cls, (Serializable) obj_id);
+    protected Object findByPrimaryKey(Class clz, Object obj_id) {
+        return session.load(clz, (Serializable) obj_id);
+    }
+
+    protected List findByPrimaryKeys(Class clz, Object... obj_id) {
+        Criteria criteria = session.createCriteria(clz);
+        criteria.add(Restrictions.in("id", obj_id));
+        return criteria.list();
+    }
+
+    protected String[] getColumnName(Class clz) {
+        return factory.getClassMetadata(clz).getPropertyNames();
     }
 
     protected List findByHQL(String HQL, Object[] params, Object[] values) {
@@ -104,6 +118,10 @@ public class BasicDAOImpl {
 
     protected List findByCriteria(Class clz, PageInfo searchInfo) {
         Criteria criteria = session.createCriteria(clz);
+        criteria.setReadOnly(true);
+//        criteria.setProjection(Projections.rowCount());
+//        Long count = (Long) criteria.uniqueResult();
+
         String sortIdx = searchInfo.getSidx();
         if (sortIdx.length() > 0) {
             if ("asc".equalsIgnoreCase(searchInfo.getSord())) {
@@ -113,10 +131,77 @@ public class BasicDAOImpl {
             }
         }
 
+        if (searchInfo.getSearchField() != null) {
+            String searchOper = searchInfo.getSearchOper();
+            String searchField = searchInfo.getSearchField();
+            String searchString = searchInfo.getSearchString();
+            addSearchCriteria(criteria, searchOper, searchField, searchString);
+        }
+
+        searchInfo.setMaxNumOfRows(criteria.list().size());
+
         criteria.setFirstResult((searchInfo.getPage() - 1) * searchInfo.getRows());
         criteria.setMaxResults(searchInfo.getRows());
 
         return criteria.list();
+    }
+
+    private Criteria addSearchCriteria(Criteria criteria, String searchOper, String searchField, String searchString) {
+        switch (searchOper) {
+            case "eq":
+                criteria.add(Restrictions.eq(searchField, searchString));
+                break;
+            case "ne":
+                criteria.add(Restrictions.ne(searchField, searchString));
+                break;
+            case "bw":
+                criteria.add(Restrictions.like(searchField, searchString, MatchMode.START));
+                break;
+            case "bn":
+                criteria.add(Restrictions.not(Restrictions.like(searchField, searchString, MatchMode.START)));
+                break;
+            case "ew":
+                criteria.add(Restrictions.like(searchField, searchString, MatchMode.END));
+                break;
+            case "en":
+                criteria.add(Restrictions.not(Restrictions.like(searchField, searchString, MatchMode.END)));
+                break;
+            case "cn":
+                criteria.add(Restrictions.like(searchField, searchString, MatchMode.ANYWHERE));
+                break;
+            case "nc":
+                criteria.add(Restrictions.not(Restrictions.like(searchField, searchString, MatchMode.ANYWHERE)));
+                break;
+            case "nu":
+                criteria.add(Restrictions.isNull(searchField));
+                break;
+            case "nn":
+                criteria.add(Restrictions.not(Restrictions.isNull(searchField)));
+                break;
+            case "in":
+                if (searchString.contains(",")) {
+                    String[] params = searchString.trim().split(",");
+                    System.out.println(Arrays.toString(params));
+//                    List l = new ArrayList();
+//                    l.add(15);
+//                    l.add(20);
+                    criteria.add(Restrictions.in(searchField, params));
+                } else {
+                    criteria.add(Restrictions.eq(searchField, searchString));
+                }
+                break;
+            case "ni":
+                if (searchString.contains(",")) {
+                    String[] params = searchString.trim().split(",");
+                    criteria.add(Restrictions.not(Restrictions.in(searchField, params)));
+                } else {
+                    criteria.add(Restrictions.not(Restrictions.eq(searchField, searchString)));
+                }
+                break;
+            default:
+                break;
+        }
+        return criteria;
     }
 
     public int insert(Object obj) {

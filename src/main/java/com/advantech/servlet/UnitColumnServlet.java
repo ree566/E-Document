@@ -5,22 +5,20 @@
  */
 package com.advantech.servlet;
 
-import com.advantech.helper.JsonHelper;
 import com.advantech.service.SheetEEService;
 import com.advantech.service.SheetIEService;
 import com.advantech.service.SheetSPEService;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.json.JSONArray;
 
 /**
  *
@@ -56,36 +54,24 @@ public class UnitColumnServlet extends HttpServlet {
 
         if (unit != null && !"".equals(unit)) {
             unit = unit.toUpperCase();
-            List l;
+            List<String> columnName;
             switch (unit) {
                 case SPE:
-                    l = (List) new SheetSPEService().findAll();
+                    columnName = new SheetSPEService().getColumnName();
                     break;
                 case EE:
-                    l = (List) new SheetEEService().findAll();
+                    columnName = Arrays.asList(new SheetEEService().getColumnName());
                     break;
                 case IE:
-                    l = (List) new SheetIEService().findAll();
+                    columnName = Arrays.asList(new SheetIEService().getColumnName());
                     break;
                 default:
-                    l = new ArrayList();
+                    columnName = new ArrayList();
                     break;
             }
-            List columns = this.getColumnNames(l);
-            out.print(JsonHelper.toJSON(columns));
+            out.print(new JSONArray(columnName));
         } else {
             out.print("Param not found");
         }
-    }
-
-    private List<String> getColumnNames(List<Object> l) {
-        List<String> list = new ArrayList();
-        if (!l.isEmpty()) {
-            Object obj = l.get(0);
-            for (Field field : obj.getClass().getDeclaredFields()) {
-                l.add(field.getName());
-            }
-        }
-        return list;
     }
 }

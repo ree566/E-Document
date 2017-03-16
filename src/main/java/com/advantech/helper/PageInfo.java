@@ -17,12 +17,19 @@ public class PageInfo {
     private int rows;
     private String sidx;
     private String sord;
+    
+    private String searchField;
+    private String searchString;
+    private String searchOper;
+//    private String filters;
 
     private int maxNumOfRows;
-    
-    public PageInfo(){
-        this.sidx = "1";
+
+    public PageInfo() {
+        this.sidx = "";
         this.sord = "asc";
+        this.page = 1;
+        this.rows = 10;
     }
 
     public String getSearch() {
@@ -86,6 +93,30 @@ public class PageInfo {
     public PageInfo setMaxNumOfRows(int maxNumOfRows) {
         this.maxNumOfRows = maxNumOfRows;
         return this;
+    }
+
+    public String getSearchField() {
+        return searchField;
+    }
+
+    public void setSearchField(String searchField) {
+        this.searchField = searchField;
+    }
+
+    public String getSearchString() {
+        return searchString;
+    }
+
+    public void setSearchString(String searchString) {
+        this.searchString = searchString;
+    }
+
+    public String getSearchOper() {
+        return searchOper;
+    }
+
+    public void setSearchOper(String searchOper) {
+        this.searchOper = searchOper;
     }
 
 }

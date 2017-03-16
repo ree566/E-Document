@@ -5,6 +5,7 @@
  */
 package com.advantech.dao;
 
+import com.advantech.entity.SheetView;
 import com.advantech.helper.PageInfo;
 import java.util.Collection;
 import org.slf4j.Logger;
@@ -29,23 +30,25 @@ public class SheetViewDAO extends BasicDAOImpl implements BasicDAO {
 
     public Collection findAll(PageInfo info) {
 //        return super.findBySQL(info, "SELECT * FROM Sheet_Main_view");
-        return super.findByHQL(
-                //                "select m, spe, ie, ee, floor, type, pending\n"
-                //                + "from Model m\n" 
-                //                + "left join m.sheetSpes spe\n"
-                //                + "left join m.sheetIes ie\n"
-                //                + "left join m.sheetEes ee\n"
-                //                + "left join spe.floor floor\n"
-                //                + "left join spe.type type\n"
-                //                + "left join spe.pendings pending\n"
-                //                + "left join spe.labelInfos labelInfo\n"
-                "from Model m\n"
-                + "left join m.sheetSpes spe\n"
-                + "WHERE spe.pendings is EMPTY",
-                null,
-                null,
-                info
-        );
+        return super.findByCriteria(SheetView.class, info);
+//        return super.findByHQL(
+//                "select new Map(m.id as Model_id, m.name as Model, "
+//                + "ie.totalModule + spe.cleanPanel + spe.assy + ee.t1 + ee.t2 + ee.t3 + ee.t4 + spe.packing + ee.upBiRi + \n"
+//                + "ee.downBiRi + spe.biCost + spe.vibration + spe.hiPotLeakage + spe.coldBoot + spe.warmBoot as ProductionWT)\n"
+//                + "from Model m\n"
+//                + "left join m.sheetSpes spe\n"
+//                + "left join m.sheetIes ie\n"
+//                + "left join m.sheetEes ee\n"
+//                + "left join spe.floor floor\n"
+//                + "left join spe.type type\n"
+//                + "left join spe.pendings pending\n"
+//                + "left join spe.labelInfos labelInfo\n"
+//                + "left join m.sheetSpes spe\n"
+//                + "WHERE spe.pendings is EMPTY",
+//                null,
+//                null,
+//                info
+//        );
     }
 
     @Override

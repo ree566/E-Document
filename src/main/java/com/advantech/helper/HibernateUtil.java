@@ -6,7 +6,7 @@
 package com.advantech.helper;
 
 import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
+import org.hibernate.cfg.AnnotationConfiguration;
 
 /**
  * Hibernate Utility class with a convenient method to get Session Factory
@@ -23,8 +23,8 @@ public class HibernateUtil {
             // Create the SessionFactory from standard (hibernate.cfg.xml) 
             // config file.
 
-            factory = new Configuration().configure().buildSessionFactory();
-//            sessionFactory = new AnnotationConfiguration().configure().buildSessionFactory();
+//            factory = new Configuration().configure().buildSessionFactory();
+            factory = new AnnotationConfiguration().configure().buildSessionFactory();
         } catch (Throwable ex) {
             // Log the exception. 
             System.err.println("Initial SessionFactory creation failed." + ex);

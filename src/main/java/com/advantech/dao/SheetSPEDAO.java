@@ -6,7 +6,12 @@
 package com.advantech.dao;
 
 import com.advantech.entity.SheetSpe;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,8 +23,10 @@ public class SheetSPEDAO extends BasicDAOImpl implements BasicDAO {
 
     private static final Logger log = LoggerFactory.getLogger(SheetViewDAO.class);
 
-    public SheetSPEDAO() {
+    private final Class pojo;
 
+    public SheetSPEDAO() {
+        pojo = SheetSpe.class;
     }
 
     @Override
@@ -29,8 +36,10 @@ public class SheetSPEDAO extends BasicDAOImpl implements BasicDAO {
 
     @Override
     public Object findByPrimaryKey(Object obj_id) {
-        return super.findByPrimaryKey(SheetSpe.class, integerToLong((Integer) obj_id));
+        return super.findByPrimaryKey(pojo, integerToLong((Integer) obj_id));
     }
 
-   
+    public List getView() {
+        return super.findBySQL("SELECT TOP 1 * FROM Sheet_SPE_view");
+    }
 }

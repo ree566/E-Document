@@ -31,6 +31,10 @@ public class SheetIEService implements BasicService {
         return sheetIEDAO.findByPrimaryKey(obj_id);
     }
 
+    public String[] getColumnName() {
+        return sheetIEDAO.getColumnName();
+    }
+
     @Override
     public int insert(Object obj) {
         return sheetIEDAO.insert(obj);

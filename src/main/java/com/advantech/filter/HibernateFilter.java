@@ -44,6 +44,8 @@ public class HibernateFilter implements Filter {
             if (tx != null) {
                 tx.rollback();
             }
+        } finally {
+            factory.getCurrentSession().close();
         }
     }
 

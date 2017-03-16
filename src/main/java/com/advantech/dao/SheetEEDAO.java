@@ -7,6 +7,7 @@ package com.advantech.dao;
 
 import com.advantech.entity.SheetEe;
 import java.util.Collection;
+import org.hibernate.Hibernate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,8 +19,10 @@ public class SheetEEDAO extends BasicDAOImpl implements BasicDAO {
 
     private static final Logger log = LoggerFactory.getLogger(SheetViewDAO.class);
 
-    public SheetEEDAO() {
+    private final Class pojo;
 
+    public SheetEEDAO() {
+        pojo = SheetEe.class;
     }
 
     @Override
@@ -29,7 +32,11 @@ public class SheetEEDAO extends BasicDAOImpl implements BasicDAO {
 
     @Override
     public Object findByPrimaryKey(Object obj_id) {
-        return super.findByPrimaryKey(SheetEe.class, integerToLong((Integer) obj_id));
+        return super.findByPrimaryKey(pojo, integerToLong((Integer) obj_id));
+    }
+
+    public String[] getColumnName() {
+        return super.getColumnName(pojo);
     }
 
 }

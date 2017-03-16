@@ -68,6 +68,9 @@ public class SheetViewServlet extends HttpServlet {
         String page = req.getParameter("page");
         String sidx = req.getParameter("sidx");
         String sord = req.getParameter("sord");
+        String searchField = req.getParameter("searchField");
+        String searchString = req.getParameter("searchString");
+        String searchOper = req.getParameter("searchOper");
 
         ParamChecker pChecker = new ParamChecker();
 
@@ -79,13 +82,11 @@ public class SheetViewServlet extends HttpServlet {
             info.setPage(Integer.parseInt(page));
         }
 
-        if (pChecker.checkInputVals(sidx)) {
-            info.setSidx(sidx);
-        }
-
-        if (pChecker.checkInputVals(sord)) {
-            info.setSord(sord);
-        }
+        info.setSidx(sidx);
+        info.setSord(sord);
+        info.setSearchField(searchField);
+        info.setSearchString(searchString);
+        info.setSearchOper(searchOper);
 
         SheetViewResponse viewResp = new SheetViewResponse();
         SheetViewService service = new SheetViewService();

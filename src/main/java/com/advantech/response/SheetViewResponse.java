@@ -6,24 +6,24 @@
 package com.advantech.response;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  *
  * @author Wei.Cheng
+ * @param <T>
  */
-public class SheetViewResponse {
+public class SheetViewResponse<T> {
 
-    private List<Map> rows;
+    private List<T> rows;
     private Integer total;
     private Integer records;
     private Integer page;
 
-    public List<Map> getRows() {
+    public List<T> getRows() {
         return rows;
     }
 
-    public void setRows(List<Map> rows) {
+    public void setRows(List<T> rows) {
         this.rows = rows;
     }
 
