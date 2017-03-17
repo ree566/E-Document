@@ -6,7 +6,7 @@
 package com.advantech.service;
 
 import com.advantech.dao.*;
-import com.advantech.entity.Model;
+import com.advantech.model.Model;
 import java.util.Collection;
 import java.util.List;
 

@@ -5,7 +5,7 @@
  */
 package com.advantech.servlet;
 
-import com.advantech.entity.Model;
+import com.advantech.model.Model;
 import com.advantech.service.ModelService;
 import com.advantech.service.SheetEEService;
 import java.io.IOException;

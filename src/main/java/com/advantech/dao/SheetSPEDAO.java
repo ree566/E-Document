@@ -5,7 +5,7 @@
  */
 package com.advantech.dao;
 
-import com.advantech.entity.SheetSpe;
+import com.advantech.model.SheetSpe;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;

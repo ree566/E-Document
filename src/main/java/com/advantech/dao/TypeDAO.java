@@ -5,7 +5,7 @@
  */
 package com.advantech.dao;
 
-import com.advantech.entity.Type;
+import com.advantech.model.Type;
 import java.util.Collection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

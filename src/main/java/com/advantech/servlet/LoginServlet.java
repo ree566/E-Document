@@ -5,7 +5,7 @@
  */
 package com.advantech.servlet;
 
-import com.advantech.entity.Identit;
+import com.advantech.model.Identit;
 import com.advantech.service.IdentitService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;

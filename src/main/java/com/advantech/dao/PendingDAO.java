@@ -5,7 +5,7 @@
  */
 package com.advantech.dao;
 
-import com.advantech.entity.Pending;
+import com.advantech.model.Pending;
 import java.util.Collection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

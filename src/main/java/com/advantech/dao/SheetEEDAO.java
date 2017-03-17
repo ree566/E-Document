@@ -5,7 +5,7 @@
  */
 package com.advantech.dao;
 
-import com.advantech.entity.SheetEe;
+import com.advantech.model.SheetEe;
 import java.util.Collection;
 import org.hibernate.Hibernate;
 import org.slf4j.Logger;

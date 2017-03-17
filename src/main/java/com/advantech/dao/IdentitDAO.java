@@ -5,7 +5,7 @@
  */
 package com.advantech.dao;
 
-import com.advantech.entity.Identit;
+import com.advantech.model.Identit;
 import java.util.Collection;
 import java.util.List;
 import org.slf4j.Logger;

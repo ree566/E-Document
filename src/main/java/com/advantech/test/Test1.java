@@ -5,22 +5,20 @@
  */
 package com.advantech.test;
 
-import com.advantech.helper.MD5Encoder;
-import java.io.UnsupportedEncodingException;
-import java.security.NoSuchAlgorithmException;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
  *
  * @author Wei.Cheng
  */
+@Controller
 public class Test1 {
 
-    public static void main(String arg0[]) {
-        try {
-            String str = MD5Encoder.toMD5("sysop");
-            System.out.println(str);
-        } catch (NoSuchAlgorithmException | UnsupportedEncodingException ex) {
-            System.out.println(ex);
-        }
+    @RequestMapping(value = "/getItem", method = RequestMethod.GET)
+    public String home() {
+        System.out.println("HomeController: Passing through...");
+        return "test.jsp";
     }
 }

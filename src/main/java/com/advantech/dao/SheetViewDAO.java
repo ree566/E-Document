@@ -5,7 +5,7 @@
  */
 package com.advantech.dao;
 
-import com.advantech.entity.SheetView;
+import com.advantech.model.SheetView;
 import com.advantech.helper.PageInfo;
 import java.util.Collection;
 import org.slf4j.Logger;

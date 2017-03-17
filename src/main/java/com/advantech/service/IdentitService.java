@@ -6,7 +6,7 @@
 package com.advantech.service;
 
 import com.advantech.dao.*;
-import com.advantech.entity.Identit;
+import com.advantech.model.Identit;
 import java.util.Collection;
 
 /**

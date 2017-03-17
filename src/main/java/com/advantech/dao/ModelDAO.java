@@ -5,7 +5,7 @@
  */
 package com.advantech.dao;
 
-import com.advantech.entity.Model;
+import com.advantech.model.Model;
 import com.advantech.helper.PageInfo;
 import java.util.Collection;
 import java.util.List;

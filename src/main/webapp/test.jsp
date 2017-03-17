@@ -16,15 +16,11 @@
                 crossorigin="anonymous"
         ></script>
         <script>
-            $.get("TestServlet", function (responseXml) {                // Execute Ajax GET request on URL of "someservlet" and execute the following function with Ajax response XML...
-                var responseData = $(responseXml).find("data").html();
-                console.log(responseXml);
-                $("#somediv").html(responseData); // Parse XML, find <data> element and append its HTML to HTML DOM element with ID "somediv".
-            });
+      
         </script>
     </head>
     <body>
         <h1>Hello World!</h1>
-        <div id="somediv"></div>
+      
     </body>
 </html>
