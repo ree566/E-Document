@@ -6,6 +6,7 @@
 package com.advantech.service;
 
 import com.advantech.dao.*;
+import com.advantech.helper.PageInfo;
 import java.util.Collection;
 
 /**
@@ -23,6 +24,10 @@ public class SheetEEService implements BasicService {
     @Override
     public Collection findAll() {
         return sheetEEDAO.findAll();
+    }
+
+    public Collection findAll(PageInfo info) {
+        return sheetEEDAO.findAll(info);
     }
 
     @Override

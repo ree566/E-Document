@@ -5,13 +5,17 @@
  */
 package com.advantech.model;
 
+import com.advantech.helper.JsonDateSerializer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.sql.Date;
+import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 /**
  *
@@ -25,213 +29,224 @@ import javax.persistence.Table;
 public class SheetView implements Serializable {
 
     @Id
-    @Column(name = "Model_id", unique = true, nullable = false)
-    private int Model_id;
+    @Column(name = "modelId", unique = true, nullable = false)
+    private int modelId;
 
-    @Column(name = "Model", nullable = false, length = 50)
-    private String Model;
+    @Column(name = "modelName", nullable = false, length = 50)
+    private String modelName;
 
-    @Column(name = "Type_id")
-    private Integer Type_id;
+    @Column(name = "typeId")
+    private Integer typeId;
 
-    @Column(name = "Type")
-    private String Type;
+    @Column(name = "typeName")
+    private String typeName;
 
     @Column(name = "ProductionWT", precision = 10, scale = 1)
     private BigDecimal ProductionWT;
 
-    @Column(name = "Total_Module", precision = 10, scale = 1)
-    private BigDecimal Total_Module;
+    @Column(name = "totalModule", precision = 10, scale = 1)
+    private BigDecimal totalModule;
 
     @Column(name = "SetupTime")
     private Integer SetupTime;
 
-    @Column(name = "CleanPanel", precision = 10, scale = 1)
-    private BigDecimal CleanPanel;
+    @Column(name = "cleanPanel", precision = 10, scale = 1)
+    private BigDecimal cleanPanel;
 
-    @Column(name = "ASSY", precision = 10, scale = 1)
-    private BigDecimal ASSY;
+    @Column(name = "assy", precision = 10, scale = 1)
+    private BigDecimal assy;
 
-    @Column(name = "T1", precision = 10, scale = 1)
-    private BigDecimal T1;
+    @Column(name = "t1", precision = 10, scale = 1)
+    private BigDecimal t1;
 
-    @Column(name = "T2", precision = 10, scale = 1)
-    private BigDecimal T2;
+    @Column(name = "t2", precision = 10, scale = 1)
+    private BigDecimal t2;
 
-    @Column(name = "T3", precision = 10, scale = 1)
-    private BigDecimal T3;
+    @Column(name = "t3", precision = 10, scale = 1)
+    private BigDecimal t3;
 
-    @Column(name = "T4", precision = 10, scale = 1)
-    private BigDecimal T4;
+    @Column(name = "t4", precision = 10, scale = 1)
+    private BigDecimal t4;
 
-    @Column(name = "Packing", precision = 10, scale = 1)
-    private BigDecimal Packing;
+    @Column(name = "packing", precision = 10, scale = 1)
+    private BigDecimal packing;
 
-    @Column(name = "Up_BI_RI", precision = 10, scale = 1)
-    private BigDecimal Up_BI_RI;
+    @Column(name = "upBiRi", precision = 10, scale = 1)
+    private BigDecimal upBiRi;
 
-    @Column(name = "Down_BI_RI", precision = 10, scale = 1)
-    private BigDecimal Down_BI_RI;
+    @Column(name = "downBiRi", precision = 10, scale = 1)
+    private BigDecimal downBiRi;
 
-    @Column(name = "BI_Cost", precision = 10, scale = 1)
-    private BigDecimal BI_Cost;
+    @Column(name = "biCost", precision = 10, scale = 1)
+    private BigDecimal biCost;
 
-    @Column(name = "Vibration")
-    private Integer Vibration;
+    @Column(name = "vibration")
+    private Integer vibration;
 
-    @Column(name = "Hi_Pot_Leakage")
-    private Integer Hi_Pot_Leakage;
+    @Column(name = "hiPotLeakage")
+    private Integer hiPotLeakage;
 
-    @Column(name = "Cold_Boot", precision = 10, scale = 1)
-    private BigDecimal Cold_Boot;
+    @Column(name = "coldBoot", precision = 10, scale = 1)
+    private BigDecimal coldBoot;
 
-    @Column(name = "Warm_Boot", precision = 10, scale = 1)
-    private BigDecimal Warm_Boot;
+    @Column(name = "warmBoot", precision = 10, scale = 1)
+    private BigDecimal warmBoot;
 
-    @Column(name = "ASSY_to_T1", precision = 10, scale = 1)
-    private BigDecimal ASSY_to_T1;
+    @Column(name = "assyToT1", precision = 10, scale = 1)
+    private BigDecimal assyToT1;
 
-    @Column(name = "T2_to_Packing", precision = 10, scale = 1)
-    private BigDecimal T2_to_Packing;
+    @Column(name = "t2ToPacking", precision = 10, scale = 1)
+    private BigDecimal t2ToPacking;
 
-    @Column(name = "Floor_id")
-    private Integer Floor_id;
+    @Column(name = "floorId")
+    private Integer floorId;
 
-    @Column(name = "Floor")
-    private String Floor;
+    @Column(name = "floorName")
+    private String floorName;
 
-    @Column(name = "Pending")
-    private String Pending;
+    @Column(name = "pendingType")
+    private String pendingType;
 
-    @Column(name = "Pending_Time", precision = 10, scale = 1)
-    private BigDecimal Pending_Time;
+    @Column(name = "pendingTime", precision = 10, scale = 1)
+    private BigDecimal pendingTime;
 
-    @Column(name = "BurnIn")
-    private String BurnIn;
+    @Column(name = "burnIn")
+    private String burnIn;
 
-    @Column(name = "BI_Time", precision = 10, scale = 1)
-    private BigDecimal BI_Time;
+    @Column(name = "biTime", precision = 10, scale = 1)
+    private BigDecimal biTime;
 
-    @Column(name = "BI_Temperature", precision = 10, scale = 1)
-    private BigDecimal BI_Temperature;
+    @Column(name = "biTemperature", precision = 10, scale = 1)
+    private BigDecimal biTemperature;
 
-    @Column(name = "SPE_Owner")
-    private String SPE_Owner;
+    @Column(name = "speOwnerId")
+    private String speOwnerId;
 
-    @Column(name = "EE_Owner")
-    private String EE_Owner;
+    @Column(name = "speOwnerName")
+    private String speOwnerName;
 
-    @Column(name = "QC_Owner")
-    private String QC_Owner;
+    @Column(name = "eeOwnerId")
+    private String eeOwnerId;
 
-    @Column(name = "ASSY_Packing_SOP")
-    private String ASSY_Packing_SOP;
+    @Column(name = "eeOwnerName")
+    private String eeOwnerName;
 
-    @Column(name = "Test_SOP")
-    private String Test_SOP;
+    @Column(name = "qcOwnerId")
+    private String qcOwnerId;
 
-    @Column(name = "Keypart_A")
-    private Integer Keypart_A;
+    @Column(name = "qcOwnerName")
+    private String qcOwnerName;
 
-    @Column(name = "Keypart_B")
-    private Integer Keypart_B;
+    @Column(name = "assyPackingSop")
+    private String assyPackingSop;
 
-    @Column(name = "Pre_ASSY")
-    private String Pre_ASSY;
+    @Column(name = "testSop")
+    private String testSop;
 
-    @Column(name = "BAB_Flow")
-    private String BAB_Flow;
+    @Column(name = "keypartA")
+    private Integer keypartA;
 
-    @Column(name = "Test_Flow")
-    private String Test_Flow;
+    @Column(name = "keypartB")
+    private Integer keypartB;
 
-    @Column(name = "Packing_Flow")
-    private String Packing_Flow;
+    @Column(name = "preAssy")
+    private String preAssy;
 
-    @Column(name = "Part_Link")
-    private String Part_Link;
+    @Column(name = "babFlow")
+    private String babFlow;
 
-    @Column(name = "CE")
-    private String CE;
+    @Column(name = "testFlow")
+    private String testFlow;
 
-    @Column(name = "UL")
-    private String UL;
+    @Column(name = "packingFlow")
+    private String packingFlow;
 
-    @Column(name = "ROHS")
-    private String ROHS;
+    @Column(name = "partLink")
+    private String partLink;
 
-    @Column(name = "WEEE")
-    private String WEEE;
+    @Column(name = "ce")
+    private String ce;
 
-    @Column(name = "Made_in_Taiwan")
-    private String Made_in_Taiwan;
+    @Column(name = "ul")
+    private String ul;
 
-    @Column(name = "FCC")
-    private String FCC;
+    @Column(name = "rohs")
+    private String rohs;
 
-    @Column(name = "EAC")
-    private String EAC;
+    @Column(name = "weee")
+    private String weee;
 
-    @Column(name = "N_in_1_collection_box")
-    private String N_in_1_collection_box;
+    @Column(name = "madeInTaiwan")
+    private String madeInTaiwan;
 
-    @Column(name = "PartNo_attr_maintain")
-    private String PartNo_attr_maintain;
+    @Column(name = "fcc")
+    private String fcc;
 
-    @Column(name = "ASSY_stations")
-    private Integer ASSY_stations;
+    @Column(name = "eac")
+    private String eac;
 
-    @Column(name = "Packing_stations")
-    private Integer Packing_stations;
+    @Column(name = "nIn1CollectionBox")
+    private String nIn1CollectionBox;
 
-    @Column(name = "ASSY_lead_time", precision = 10, scale = 1)
-    private BigDecimal ASSY_lead_time;
+    @Column(name = "partNoAttrMaintain")
+    private String partNoAttrMaintain;
 
-    @Column(name = "ASSY_kanban_time", precision = 10, scale = 1)
-    private BigDecimal ASSY_kanban_time;
+    @Column(name = "assyStations")
+    private Integer assyStations;
 
-    @Column(name = "Packing_lead_time", precision = 10, scale = 1)
-    private BigDecimal Packing_lead_time;
+    @Column(name = "packingStations")
+    private Integer packingStations;
 
-    @Column(name = "Packing_kanban_time", precision = 10, scale = 1)
-    private BigDecimal Packing_kanban_time;
+    @Column(name = "assyLeadTime", precision = 10, scale = 1)
+    private BigDecimal assyLeadTime;
+
+    @Column(name = "assyKanbanTime", precision = 10, scale = 1)
+    private BigDecimal assyKanbanTime;
+
+    @Column(name = "packingLeadTime", precision = 10, scale = 1)
+    private BigDecimal packingLeadTime;
+
+    @Column(name = "packingKanbanTime", precision = 10, scale = 1)
+    private BigDecimal packingKanbanTime;
 
     @Column(name = "CleanPanel_and_Assembly", precision = 10, scale = 1)
     private BigDecimal CleanPanel_and_Assembly;
 
-    @Column(name = "Modified_Date")
-    private Date Modified_Date;
+//    @JsonSerialize(using = JsonDateSerializer.class)
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "Modified_Date", length = 23, updatable = false)
+    private Date modified_Date;
 
-    public int getModel_id() {
-        return Model_id;
+    public int getModelId() {
+        return modelId;
     }
 
-    public void setModel_id(int Model_id) {
-        this.Model_id = Model_id;
+    public void setModelId(int modelId) {
+        this.modelId = modelId;
     }
 
-    public String getModel() {
-        return Model;
+    public String getModelName() {
+        return modelName;
     }
 
-    public void setModel(String Model) {
-        this.Model = Model;
+    public void setModelName(String modelName) {
+        this.modelName = modelName;
     }
 
-    public Integer getType_id() {
-        return Type_id;
+    public Integer getTypeId() {
+        return typeId;
     }
 
-    public void setType_id(Integer Type_id) {
-        this.Type_id = Type_id;
+    public void setTypeId(Integer typeId) {
+        this.typeId = typeId;
     }
 
-    public String getType() {
-        return Type;
+    public String getTypeName() {
+        return typeName;
     }
 
-    public void setType(String Type) {
-        this.Type = Type;
+    public void setTypeName(String typeName) {
+        this.typeName = typeName;
     }
 
     public BigDecimal getProductionWT() {
@@ -242,12 +257,12 @@ public class SheetView implements Serializable {
         this.ProductionWT = ProductionWT;
     }
 
-    public BigDecimal getTotal_Module() {
-        return Total_Module;
+    public BigDecimal getTotalModule() {
+        return totalModule;
     }
 
-    public void setTotal_Module(BigDecimal Total_Module) {
-        this.Total_Module = Total_Module;
+    public void setTotalModule(BigDecimal totalModule) {
+        this.totalModule = totalModule;
     }
 
     public Integer getSetupTime() {
@@ -259,403 +274,427 @@ public class SheetView implements Serializable {
     }
 
     public BigDecimal getCleanPanel() {
-        return CleanPanel;
+        return cleanPanel;
     }
 
-    public void setCleanPanel(BigDecimal CleanPanel) {
-        this.CleanPanel = CleanPanel;
+    public void setCleanPanel(BigDecimal cleanPanel) {
+        this.cleanPanel = cleanPanel;
     }
 
-    public BigDecimal getASSY() {
-        return ASSY;
+    public BigDecimal getAssy() {
+        return assy;
     }
 
-    public void setASSY(BigDecimal ASSY) {
-        this.ASSY = ASSY;
+    public void setAssy(BigDecimal assy) {
+        this.assy = assy;
     }
 
     public BigDecimal getT1() {
-        return T1;
+        return t1;
     }
 
-    public void setT1(BigDecimal T1) {
-        this.T1 = T1;
+    public void setT1(BigDecimal t1) {
+        this.t1 = t1;
     }
 
     public BigDecimal getT2() {
-        return T2;
+        return t2;
     }
 
-    public void setT2(BigDecimal T2) {
-        this.T2 = T2;
+    public void setT2(BigDecimal t2) {
+        this.t2 = t2;
     }
 
     public BigDecimal getT3() {
-        return T3;
+        return t3;
     }
 
-    public void setT3(BigDecimal T3) {
-        this.T3 = T3;
+    public void setT3(BigDecimal t3) {
+        this.t3 = t3;
     }
 
     public BigDecimal getT4() {
-        return T4;
+        return t4;
     }
 
-    public void setT4(BigDecimal T4) {
-        this.T4 = T4;
+    public void setT4(BigDecimal t4) {
+        this.t4 = t4;
     }
 
     public BigDecimal getPacking() {
-        return Packing;
+        return packing;
     }
 
-    public void setPacking(BigDecimal Packing) {
-        this.Packing = Packing;
+    public void setPacking(BigDecimal packing) {
+        this.packing = packing;
     }
 
-    public BigDecimal getUp_BI_RI() {
-        return Up_BI_RI;
+    public BigDecimal getUpBiRi() {
+        return upBiRi;
     }
 
-    public void setUp_BI_RI(BigDecimal Up_BI_RI) {
-        this.Up_BI_RI = Up_BI_RI;
+    public void setUpBiRi(BigDecimal upBiRi) {
+        this.upBiRi = upBiRi;
     }
 
-    public BigDecimal getDown_BI_RI() {
-        return Down_BI_RI;
+    public BigDecimal getDownBiRi() {
+        return downBiRi;
     }
 
-    public void setDown_BI_RI(BigDecimal Down_BI_RI) {
-        this.Down_BI_RI = Down_BI_RI;
+    public void setDownBiRi(BigDecimal downBiRi) {
+        this.downBiRi = downBiRi;
     }
 
-    public BigDecimal getBI_Cost() {
-        return BI_Cost;
+    public BigDecimal getBiCost() {
+        return biCost;
     }
 
-    public void setBI_Cost(BigDecimal BI_Cost) {
-        this.BI_Cost = BI_Cost;
+    public void setBiCost(BigDecimal biCost) {
+        this.biCost = biCost;
     }
 
     public Integer getVibration() {
-        return Vibration;
+        return vibration;
     }
 
-    public void setVibration(Integer Vibration) {
-        this.Vibration = Vibration;
+    public void setVibration(Integer vibration) {
+        this.vibration = vibration;
     }
 
-    public Integer getHi_Pot_Leakage() {
-        return Hi_Pot_Leakage;
+    public Integer getHiPotLeakage() {
+        return hiPotLeakage;
     }
 
-    public void setHi_Pot_Leakage(Integer Hi_Pot_Leakage) {
-        this.Hi_Pot_Leakage = Hi_Pot_Leakage;
+    public void setHiPotLeakage(Integer hiPotLeakage) {
+        this.hiPotLeakage = hiPotLeakage;
     }
 
-    public BigDecimal getCold_Boot() {
-        return Cold_Boot;
+    public BigDecimal getColdBoot() {
+        return coldBoot;
     }
 
-    public void setCold_Boot(BigDecimal Cold_Boot) {
-        this.Cold_Boot = Cold_Boot;
+    public void setColdBoot(BigDecimal coldBoot) {
+        this.coldBoot = coldBoot;
     }
 
-    public BigDecimal getWarm_Boot() {
-        return Warm_Boot;
+    public BigDecimal getWarmBoot() {
+        return warmBoot;
     }
 
-    public void setWarm_Boot(BigDecimal Warm_Boot) {
-        this.Warm_Boot = Warm_Boot;
+    public void setWarmBoot(BigDecimal warmBoot) {
+        this.warmBoot = warmBoot;
     }
 
-    public BigDecimal getASSY_to_T1() {
-        return ASSY_to_T1;
+    public BigDecimal getAssyToT1() {
+        return assyToT1;
     }
 
-    public void setASSY_to_T1(BigDecimal ASSY_to_T1) {
-        this.ASSY_to_T1 = ASSY_to_T1;
+    public void setAssyToT1(BigDecimal assyToT1) {
+        this.assyToT1 = assyToT1;
     }
 
-    public BigDecimal getT2_to_Packing() {
-        return T2_to_Packing;
+    public BigDecimal getT2ToPacking() {
+        return t2ToPacking;
     }
 
-    public void setT2_to_Packing(BigDecimal T2_to_Packing) {
-        this.T2_to_Packing = T2_to_Packing;
+    public void setT2ToPacking(BigDecimal t2ToPacking) {
+        this.t2ToPacking = t2ToPacking;
     }
 
-    public Integer getFloor_id() {
-        return Floor_id;
+    public Integer getFloorId() {
+        return floorId;
     }
 
-    public void setFloor_id(Integer Floor_id) {
-        this.Floor_id = Floor_id;
+    public void setFloorId(Integer floorId) {
+        this.floorId = floorId;
     }
 
-    public String getFloor() {
-        return Floor;
+    public String getFloorName() {
+        return floorName;
     }
 
-    public void setFloor(String Floor) {
-        this.Floor = Floor;
+    public void setFloorName(String floorName) {
+        this.floorName = floorName;
     }
 
-    public String getPending() {
-        return Pending;
+    public String getPendingType() {
+        return pendingType;
     }
 
-    public void setPending(String Pending) {
-        this.Pending = Pending;
+    public void setPendingType(String pendingType) {
+        this.pendingType = pendingType;
     }
 
-    public BigDecimal getPending_Time() {
-        return Pending_Time;
+    public BigDecimal getPendingTime() {
+        return pendingTime;
     }
 
-    public void setPending_Time(BigDecimal Pending_Time) {
-        this.Pending_Time = Pending_Time;
+    public void setPendingTime(BigDecimal pendingTime) {
+        this.pendingTime = pendingTime;
     }
 
     public String getBurnIn() {
-        return BurnIn;
+        return burnIn;
     }
 
-    public void setBurnIn(String BurnIn) {
-        this.BurnIn = BurnIn;
+    public void setBurnIn(String burnIn) {
+        this.burnIn = burnIn;
     }
 
-    public BigDecimal getBI_Time() {
-        return BI_Time;
+    public BigDecimal getBiTime() {
+        return biTime;
     }
 
-    public void setBI_Time(BigDecimal BI_Time) {
-        this.BI_Time = BI_Time;
+    public void setBiTime(BigDecimal biTime) {
+        this.biTime = biTime;
     }
 
-    public BigDecimal getBI_Temperature() {
-        return BI_Temperature;
+    public BigDecimal getBiTemperature() {
+        return biTemperature;
     }
 
-    public void setBI_Temperature(BigDecimal BI_Temperature) {
-        this.BI_Temperature = BI_Temperature;
+    public void setBiTemperature(BigDecimal biTemperature) {
+        this.biTemperature = biTemperature;
     }
 
-    public String getSPE_Owner() {
-        return SPE_Owner;
+    public String getSpeOwnerId() {
+        return speOwnerId;
     }
 
-    public void setSPE_Owner(String SPE_Owner) {
-        this.SPE_Owner = SPE_Owner;
+    public void setSpeOwnerId(String speOwnerId) {
+        this.speOwnerId = speOwnerId;
     }
 
-    public String getEE_Owner() {
-        return EE_Owner;
+    public String getSpeOwnerName() {
+        return speOwnerName;
     }
 
-    public void setEE_Owner(String EE_Owner) {
-        this.EE_Owner = EE_Owner;
+    public void setSpeOwnerName(String speOwnerName) {
+        this.speOwnerName = speOwnerName;
     }
 
-    public String getQC_Owner() {
-        return QC_Owner;
+    public String getEeOwnerId() {
+        return eeOwnerId;
     }
 
-    public void setQC_Owner(String QC_Owner) {
-        this.QC_Owner = QC_Owner;
+    public void setEeOwnerId(String eeOwnerId) {
+        this.eeOwnerId = eeOwnerId;
     }
 
-    public String getASSY_Packing_SOP() {
-        return ASSY_Packing_SOP;
+    public String getEeOwnerName() {
+        return eeOwnerName;
     }
 
-    public void setASSY_Packing_SOP(String ASSY_Packing_SOP) {
-        this.ASSY_Packing_SOP = ASSY_Packing_SOP;
+    public void setEeOwnerName(String eeOwnerName) {
+        this.eeOwnerName = eeOwnerName;
     }
 
-    public String getTest_SOP() {
-        return Test_SOP;
+    public String getQcOwnerId() {
+        return qcOwnerId;
     }
 
-    public void setTest_SOP(String Test_SOP) {
-        this.Test_SOP = Test_SOP;
+    public void setQcOwnerId(String qcOwnerId) {
+        this.qcOwnerId = qcOwnerId;
     }
 
-    public Integer getKeypart_A() {
-        return Keypart_A;
+    public String getQcOwnerName() {
+        return qcOwnerName;
     }
 
-    public void setKeypart_A(Integer Keypart_A) {
-        this.Keypart_A = Keypart_A;
+    public void setQcOwnerName(String qcOwnerName) {
+        this.qcOwnerName = qcOwnerName;
     }
 
-    public Integer getKeypart_B() {
-        return Keypart_B;
+    public String getAssyPackingSop() {
+        return assyPackingSop;
     }
 
-    public void setKeypart_B(Integer Keypart_B) {
-        this.Keypart_B = Keypart_B;
+    public void setAssyPackingSop(String assyPackingSop) {
+        this.assyPackingSop = assyPackingSop;
     }
 
-    public String getPre_ASSY() {
-        return Pre_ASSY;
+    public String getTestSop() {
+        return testSop;
     }
 
-    public void setPre_ASSY(String Pre_ASSY) {
-        this.Pre_ASSY = Pre_ASSY;
+    public void setTestSop(String testSop) {
+        this.testSop = testSop;
     }
 
-    public String getBAB_Flow() {
-        return BAB_Flow;
+    public Integer getKeypartA() {
+        return keypartA;
     }
 
-    public void setBAB_Flow(String BAB_Flow) {
-        this.BAB_Flow = BAB_Flow;
+    public void setKeypartA(Integer keypartA) {
+        this.keypartA = keypartA;
     }
 
-    public String getTest_Flow() {
-        return Test_Flow;
+    public Integer getKeypartB() {
+        return keypartB;
     }
 
-    public void setTest_Flow(String Test_Flow) {
-        this.Test_Flow = Test_Flow;
+    public void setKeypartB(Integer keypartB) {
+        this.keypartB = keypartB;
     }
 
-    public String getPacking_Flow() {
-        return Packing_Flow;
+    public String getPreAssy() {
+        return preAssy;
     }
 
-    public void setPacking_Flow(String Packing_Flow) {
-        this.Packing_Flow = Packing_Flow;
+    public void setPreAssy(String preAssy) {
+        this.preAssy = preAssy;
     }
 
-    public String getPart_Link() {
-        return Part_Link;
+    public String getBabFlow() {
+        return babFlow;
     }
 
-    public void setPart_Link(String Part_Link) {
-        this.Part_Link = Part_Link;
+    public void setBabFlow(String babFlow) {
+        this.babFlow = babFlow;
     }
 
-    public String getCE() {
-        return CE;
+    public String getTestFlow() {
+        return testFlow;
     }
 
-    public void setCE(String CE) {
-        this.CE = CE;
+    public void setTestFlow(String testFlow) {
+        this.testFlow = testFlow;
     }
 
-    public String getUL() {
-        return UL;
+    public String getPackingFlow() {
+        return packingFlow;
     }
 
-    public void setUL(String UL) {
-        this.UL = UL;
+    public void setPackingFlow(String packingFlow) {
+        this.packingFlow = packingFlow;
     }
 
-    public String getROHS() {
-        return ROHS;
+    public String getPartLink() {
+        return partLink;
     }
 
-    public void setROHS(String ROHS) {
-        this.ROHS = ROHS;
+    public void setPartLink(String partLink) {
+        this.partLink = partLink;
     }
 
-    public String getWEEE() {
-        return WEEE;
+    public String getCe() {
+        return ce;
     }
 
-    public void setWEEE(String WEEE) {
-        this.WEEE = WEEE;
+    public void setCe(String ce) {
+        this.ce = ce;
     }
 
-    public String getMade_in_Taiwan() {
-        return Made_in_Taiwan;
+    public String getUl() {
+        return ul;
     }
 
-    public void setMade_in_Taiwan(String Made_in_Taiwan) {
-        this.Made_in_Taiwan = Made_in_Taiwan;
+    public void setUl(String ul) {
+        this.ul = ul;
     }
 
-    public String getFCC() {
-        return FCC;
+    public String getRohs() {
+        return rohs;
     }
 
-    public void setFCC(String FCC) {
-        this.FCC = FCC;
+    public void setRohs(String rohs) {
+        this.rohs = rohs;
     }
 
-    public String getEAC() {
-        return EAC;
+    public String getWeee() {
+        return weee;
     }
 
-    public void setEAC(String EAC) {
-        this.EAC = EAC;
+    public void setWeee(String weee) {
+        this.weee = weee;
     }
 
-    public String getN_in_1_collection_box() {
-        return N_in_1_collection_box;
+    public String getFcc() {
+        return fcc;
     }
 
-    public void setN_in_1_collection_box(String N_in_1_collection_box) {
-        this.N_in_1_collection_box = N_in_1_collection_box;
+    public void setFcc(String fcc) {
+        this.fcc = fcc;
     }
 
-    public String getPartNo_attr_maintain() {
-        return PartNo_attr_maintain;
+    public String getEac() {
+        return eac;
     }
 
-    public void setPartNo_attr_maintain(String PartNo_attr_maintain) {
-        this.PartNo_attr_maintain = PartNo_attr_maintain;
+    public void setEac(String eac) {
+        this.eac = eac;
     }
 
-    public Integer getASSY_stations() {
-        return ASSY_stations;
+    public String getMadeInTaiwan() {
+        return madeInTaiwan;
     }
 
-    public void setASSY_stations(Integer ASSY_stations) {
-        this.ASSY_stations = ASSY_stations;
+    public void setMadeInTaiwan(String madeInTaiwan) {
+        this.madeInTaiwan = madeInTaiwan;
     }
 
-    public Integer getPacking_stations() {
-        return Packing_stations;
+    public String getnIn1CollectionBox() {
+        return nIn1CollectionBox;
     }
 
-    public void setPacking_stations(Integer Packing_stations) {
-        this.Packing_stations = Packing_stations;
+    public void setnIn1CollectionBox(String nIn1CollectionBox) {
+        this.nIn1CollectionBox = nIn1CollectionBox;
     }
 
-    public BigDecimal getASSY_lead_time() {
-        return ASSY_lead_time;
+    public String getPartNoAttrMaintain() {
+        return partNoAttrMaintain;
     }
 
-    public void setASSY_lead_time(BigDecimal ASSY_lead_time) {
-        this.ASSY_lead_time = ASSY_lead_time;
+    public void setPartNoAttrMaintain(String partNoAttrMaintain) {
+        this.partNoAttrMaintain = partNoAttrMaintain;
     }
 
-    public BigDecimal getASSY_kanban_time() {
-        return ASSY_kanban_time;
+    public Integer getAssyStations() {
+        return assyStations;
     }
 
-    public void setASSY_kanban_time(BigDecimal ASSY_kanban_time) {
-        this.ASSY_kanban_time = ASSY_kanban_time;
+    public void setAssyStations(Integer assyStations) {
+        this.assyStations = assyStations;
     }
 
-    public BigDecimal getPacking_lead_time() {
-        return Packing_lead_time;
+    public Integer getPackingStations() {
+        return packingStations;
     }
 
-    public void setPacking_lead_time(BigDecimal Packing_lead_time) {
-        this.Packing_lead_time = Packing_lead_time;
+    public void setPackingStations(Integer packingStations) {
+        this.packingStations = packingStations;
     }
 
-    public BigDecimal getPacking_kanban_time() {
-        return Packing_kanban_time;
+    public BigDecimal getAssyLeadTime() {
+        return assyLeadTime;
     }
 
-    public void setPacking_kanban_time(BigDecimal Packing_kanban_time) {
-        this.Packing_kanban_time = Packing_kanban_time;
+    public void setAssyLeadTime(BigDecimal assyLeadTime) {
+        this.assyLeadTime = assyLeadTime;
+    }
+
+    public BigDecimal getAssyKanbanTime() {
+        return assyKanbanTime;
+    }
+
+    public void setAssyKanbanTime(BigDecimal assyKanbanTime) {
+        this.assyKanbanTime = assyKanbanTime;
+    }
+
+    public BigDecimal getPackingLeadTime() {
+        return packingLeadTime;
+    }
+
+    public void setPackingLeadTime(BigDecimal packingLeadTime) {
+        this.packingLeadTime = packingLeadTime;
+    }
+
+    public BigDecimal getPackingKanbanTime() {
+        return packingKanbanTime;
+    }
+
+    public void setPackingKanbanTime(BigDecimal packingKanbanTime) {
+        this.packingKanbanTime = packingKanbanTime;
     }
 
     public BigDecimal getCleanPanel_and_Assembly() {
@@ -667,11 +706,11 @@ public class SheetView implements Serializable {
     }
 
     public Date getModified_Date() {
-        return Modified_Date;
+        return modified_Date;
     }
 
-    public void setModified_Date(Date Modified_Date) {
-        this.Modified_Date = Modified_Date;
+    public void setModified_Date(Date modified_Date) {
+        this.modified_Date = modified_Date;
     }
 
 }

@@ -6,6 +6,7 @@
 package com.advantech.service;
 
 import com.advantech.dao.*;
+import com.advantech.helper.PageInfo;
 import java.util.Collection;
 import org.hibernate.SessionFactory;
 
@@ -24,6 +25,10 @@ public class SheetIEService implements BasicService {
     @Override
     public Collection findAll() {
         return sheetIEDAO.findAll();
+    }
+
+    public Collection findAll(PageInfo info) {
+        return sheetIEDAO.findAll(info);
     }
 
     @Override

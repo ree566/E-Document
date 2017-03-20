@@ -57,16 +57,15 @@ Contributor(s):
         <property name="hibernate.show_sql">true</property>
         <property name="hibernate.current_session_context_class">thread</property>
         <property name="hibernate.transaction.factory_class">org.hibernate.transaction.JDBCTransactionFactory</property>
-        <mapping class="com.advantech.entity.Floor"/>
-        <mapping class="com.advantech.entity.Identit"/>
-        <mapping class="com.advantech.entity.LabelInfo"/>
-        <mapping class="com.advantech.entity.Model"/>
-        <mapping class="com.advantech.entity.Pending"/>
-        <mapping class="com.advantech.entity.SheetEe"/>
-        <mapping class="com.advantech.entity.SheetIe"/>
-        <mapping class="com.advantech.entity.SheetSpe"/>
-        <mapping class="com.advantech.entity.Type"/>
-        <mapping class="com.advantech.entity.UserType"/>
-        <mapping class="com.advantech.entity.SheetView"/>
+        <mapping class="com.advantech.model.Floor"/>
+        <mapping class="com.advantech.model.Identit"/>
+        <mapping class="com.advantech.model.LabelInfo"/>
+        <mapping class="com.advantech.model.Model"/>
+        <mapping class="com.advantech.model.SheetEe"/>
+        <mapping class="com.advantech.model.SheetIe"/>
+        <mapping class="com.advantech.model.SheetSpe"/>
+        <mapping class="com.advantech.model.Type"/>
+        <mapping class="com.advantech.model.UserType"/>
+        <mapping class="com.advantech.model.SheetView"/>
     </session-factory>
 </hibernate-configuration>

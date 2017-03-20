@@ -9,13 +9,14 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <c:set var="root" value="${pageContext.request.contextPath}/"/>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>${initParam.pageTitle}</title>
-        <link rel="shortcut icon" href="../images/favicon.ico"/>
+        <link rel="shortcut icon" href="${root}/images/favicon.ico"/>
         <link rel="stylesheet" type="text/css" media="screen" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" />
         <!--<link rel="stylesheet" type="text/css" media="screen" href="//cdnjs.cloudflare.com/ajax/libs/jqgrid/4.6.0/css/ui.jqgrid.css" />-->
-        <link rel="stylesheet" type="text/css" media="screen" href="../css/ui.jqgrid.css" />
-        <link rel="stylesheet" type="text/css" media="screen" href="../css/ui.multiselect.css" />
+        <link rel="stylesheet" type="text/css" media="screen" href="${root}/css/ui.jqgrid.css" />
+        <link rel="stylesheet" type="text/css" media="screen" href="${root}/css/ui.multiselect.css" />
 
         <!--<link rel="stylesheet" type="text/css" media="screen" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />-->
         <style>
@@ -42,15 +43,15 @@
         <!--                <script src="//cdnjs.cloudflare.com/ajax/libs/jqgrid/4.6.0/js/i18n/grid.locale-tw.js"></script>
                         <script src="//cdnjs.cloudflare.com/ajax/libs/jqgrid/4.6.0/js/jquery.jqGrid.min.js"></script>
                         <script src="//cdnjs.cloudflare.com/ajax/libs/jqgrid/4.6.0/js/jquery.jqGrid.src.js"></script>-->
-        <script src="../js/i18n/grid.locale-tw.js"></script>
-        <script src="../js/jquery.jqGrid.min.js"></script>
-        <script src="../js/ui.multiselect.js"></script>
-        <script src="../js/urlParamGetter.js"></script>
+        <script src="${root}/js/i18n/grid.locale-tw.js"></script>
+        <script src="${root}/js/jquery.jqGrid.min.js"></script>
+        <script src="${root}/js/ui.multiselect.js"></script>
+        <script src="${root}/js/urlParamGetter.js"></script>
 
         <script>
             $(function () {
                 var lastsel, scrollPosition;
-                var do_not_change_columns = ["Modified_Date", "CleanPanel_and_Assembly", "ProductionWT", "SetupTime"];
+                var do_not_change_columns = ["modified_Date", "CleanPanel_and_Assembly", "productionWT", "setupTime"];
 
                 var grid = $("#list");
 
@@ -69,69 +70,74 @@
                 };
 
                 grid.jqGrid({
-                    url: '../SheetViewServlet',
+                    url: '${root}/getSheetView.do',
 //                    cacheUrlData: true,
                     datatype: "json",
                     mtype: 'POST',
 //                    styleUI: 'Bootstrap',
                     colModel: [
-                        {label: 'Model_id', name: 'Model_id', hidden: true, key: true, frozen: true, editoptions: {defaultValue: "0"}},
-                        {label: 'Model', name: 'Model', frozen: true},
-                        {label: 'TYPE', name: 'Type', width: 100},
-                        {label: 'ProductionWT', name: 'ProductionWT', width: 120},
-                        {label: 'Total Module', name: 'Total_Module', width: 100},
-                        {label: 'Setup Time', name: 'SetupTime', width: 100},
-                        {label: 'CleanPanel', name: 'CleanPanel', width: 100},
-                        {label: 'Assembly', name: 'ASSY', width: 100},
-                        {label: 'T1', name: 'T1', width: 60},
-                        {label: 'T2', name: 'T2', width: 60},
-                        {label: 'T3', name: 'T3', width: 60},
-                        {label: 'T4', name: 'T4', width: 60},
-                        {label: 'Packing', name: 'Packing', width: 100},
-                        {label: 'Up_BI_RI', name: 'Up_BI_RI', width: 100},
-                        {label: 'Down_BI_RI', name: 'Down_BI_RI', width: 100},
-                        {label: 'BI Cost', name: 'BI_Cost', width: 100},
-                        {label: 'Vibration', name: 'Vibration', width: 100},
-                        {label: 'Hi-Pot/Leakage', name: 'Hi_Pot_Leakage', width: 100},
-                        {label: 'Cold Boot', name: 'Cold_Boot', width: 100},
-                        {label: 'Warm Boot', name: 'Warm_Boot', width: 100},
-                        {label: 'ASS_T1', name: 'ASSY_to_T1', width: 100},
-                        {label: 'T2_PACKING', name: 'T2_to_Packing', width: 100},
-                        {label: 'Floor', name: 'Floor', width: 100},
-                        {label: 'Pending', name: 'Pending', width: 100},
-                        {label: 'Pending TIME', name: 'Pending_Time', width: 100},
-                        {label: 'BurnIn', name: 'BurnIn', edittype: "select", editoptions: {value: "Y:Y;N:N"}, width: 100},
-                        {label: 'B/I Time', name: 'BI_Time', width: 100},
-                        {label: 'BI_Temperature', name: 'BI_Temperature', width: 100},
-                        {label: 'SPE Owner', name: 'SPE_Owner', width: 100},
-                        {label: 'EE Owner', name: 'EE_Owner', width: 100},
-                        {label: 'QC Owner', name: 'QC_Owner', width: 100},
-                        {label: '組包SOP', name: 'ASSY_Packing_SOP', width: 100},
-                        {label: '測試SOP', name: 'Test_SOP', width: 100},
-                        {label: 'KEYPART_A', name: 'Keypart_A', width: 100},
-                        {label: 'KEYPART_B', name: 'Keypart_B', width: 100},
-                        {label: 'PRE-ASSY', name: 'Pre_ASSY', width: 100},
-                        {label: 'BAB_FLOW', name: 'BAB_Flow', width: 100},
-                        {label: 'TEST_FLOW', name: 'Test_Flow', width: 100},
-                        {label: 'PACKING_FLOW', name: 'Packing_Flow', width: 100},
-                        {label: 'PART-LINK', name: 'Part_Link', width: 100},
-                        {label: 'CE', name: 'CE', width: 60},
-                        {label: 'UL', name: 'UL', width: 60},
-                        {label: 'ROHS', name: 'ROHS', width: 60},
-                        {label: 'WEEE', name: 'WEEE', width: 60},
-                        {label: 'Made in Taiwan', name: 'Made_in_Taiwan', width: 120},
-                        {label: 'FCC', name: 'FCC', width: 60},
-                        {label: 'EAC', name: 'EAC', width: 60},
-                        {label: 'N合1集合箱', name: 'N_in_1_collection_box', width: 100},
-                        {label: '料號屬性值維護', name: 'PartNo_attr_maintain', width: 100},
-                        {label: '組裝排站人數', name: 'ASSY_stations', width: 100},
-                        {label: '包裝排站人數', name: 'Packing_stations', width: 100},
-                        {label: '前置時間', name: 'ASSY_lead_time', width: 80},
-                        {label: '看板工時', name: 'ASSY_kanban_time', width: 80},
-                        {label: '前置時間', name: 'Packing_lead_time', width: 80},
-                        {label: '看板工時', name: 'Packing_kanban_time', width: 80},
-                        {label: 'CleanPanel+Assembly', name: 'CleanPanel_and_Assembly', width: 200},
-                        {label: 'Modified_Date', width: 200, name: 'Modified_Date'}
+                        {label: 'Model_id', name: 'modelId', hidden: true, key: true, frozen: true, editoptions: {defaultValue: "0"}},
+                        {label: 'Model', name: 'modelName', frozen: true},
+                        {label: 'TYPE', name: 'typeName', width: 100},
+                        {label: 'ProductionWT', name: 'productionWT', width: 120},
+                        {label: 'Total Module', name: 'totalModule', width: 100},
+                        {label: 'Setup Time', name: 'setupTime', width: 100},
+                        {label: 'CleanPanel', name: 'cleanPanel', width: 100},
+                        {label: 'Assembly', name: 'assy', width: 100},
+                        {label: 'T1', name: 't1', width: 60},
+                        {label: 'T2', name: 't2', width: 60},
+                        {label: 'T3', name: 't3', width: 60},
+                        {label: 'T4', name: 't4', width: 60},
+                        {label: 'Packing', name: 'packing', width: 100},
+                        {label: 'Up_BI_RI', name: 'upBiRi', width: 100},
+                        {label: 'Down_BI_RI', name: 'downBiRi', width: 100},
+                        {label: 'BI Cost', name: 'biCost', width: 100},
+                        {label: 'Vibration', name: 'vibration', width: 100},
+                        {label: 'Hi-Pot/Leakage', name: 'hiPotLeakage', width: 100},
+                        {label: 'Cold Boot', name: 'coldBoot', width: 100},
+                        {label: 'Warm Boot', name: 'warmBoot', width: 100},
+                        {label: 'ASS_T1', name: 'assyToT1', width: 100},
+                        {label: 'T2_PACKING', name: 't2ToPacking', width: 100},
+                        {label: 'Floor_id', name: 'floorId', hidden: true, editable: true},
+                        {label: 'Floor', name: 'floorName', width: 100},
+                        {label: 'Pending_id', name: 'pendingId', hidden: true, editable: true},
+                        {label: 'Pending', name: 'pendingType', width: 100},
+                        {label: 'Pending TIME', name: 'pendingTime', width: 100},
+                        {label: 'BurnIn', name: 'burnIn', edittype: "select", editoptions: {value: "Y:Y;N:N"}, width: 100},
+                        {label: 'B/I Time', name: 'biTime', width: 100},
+                        {label: 'BI_Temperature', name: 'biTemperature', width: 100},
+                        {label: 'SPEOwnerId', name: 'speOwnerId', hidden: true, editable: true},
+                        {label: 'SPE Owner', name: 'speOwnerName', width: 100},
+                        {label: 'EEOwnerId', name: 'eeOwnerId', hidden: true, editable: true},
+                        {label: 'EE Owner', name: 'eeOwnerName', width: 100},
+                        {label: 'QCOwnerId', name: 'qcOwnerId', hidden: true, editable: true},
+                        {label: 'QC Owner', name: 'qcOwnerName', width: 100},
+                        {label: '組包SOP', name: 'assyPackingSop', width: 100},
+                        {label: '測試SOP', name: 'testSop', width: 100},
+                        {label: 'KEYPART_A', name: 'keypartA', width: 100},
+                        {label: 'KEYPART_B', name: 'keypartB', width: 100},
+                        {label: 'PRE-ASSY', name: 'preAssy', width: 100},
+                        {label: 'BAB_FLOW', name: 'babFlow', width: 100},
+                        {label: 'TEST_FLOW', name: 'testFlow', width: 100},
+                        {label: 'PACKING_FLOW', name: 'packingFlow', width: 100},
+                        {label: 'PART-LINK', name: 'partLink', width: 100},
+                        {label: 'CE', name: 'ce', width: 60},
+                        {label: 'UL', name: 'ul', width: 60},
+                        {label: 'ROHS', name: 'rohs', width: 60},
+                        {label: 'WEEE', name: 'weee', width: 60},
+                        {label: 'Made in Taiwan', name: 'madeInTaiwan', width: 120},
+                        {label: 'FCC', name: 'fcc', width: 60},
+                        {label: 'EAC', name: 'eac', width: 60},
+                        {label: 'N合1集合箱', name: 'nIn1CollectionBox', width: 100},
+                        {label: '料號屬性值維護', name: 'partNoAttrMaintain', width: 100},
+                        {label: '組裝排站人數', name: 'assyStations', width: 100},
+                        {label: '包裝排站人數', name: 'packingStations', width: 100},
+                        {label: '前置時間', name: 'assyLeadTime', width: 80},
+                        {label: '看板工時', name: 'assyKanbanTime', width: 80},
+                        {label: '前置時間', name: 'packingLeadTime', width: 80},
+                        {label: '看板工時', name: 'packingKanbanTime', width: 80},
+                        {label: 'CleanPanel+Assembly', name: 'cleanPanel_and_Assembly', width: 200},
+                        {label: 'Modified_Date', width: 200, name: 'modified_Date', formatter: 'date', formatoptions: {srcformat: 'U/1000', newformat: 'Y-m-d h:i:s A'}}
                     ],
                     rowNum: 20,
                     rowList: [20, 50, 100],
@@ -174,8 +180,8 @@
                     width: 1200,
                     height: 450,
                     multiselect: true,
-                    editurl: '../ReceiveSheetMoidfied',
-                    sortname: 'Model_id', sortorder: 'desc'
+                    editurl: '${root}/updateSheet.do',
+                    sortname: 'modelId', sortorder: 'desc'
                 })
                         .jqGrid('navGrid', '#pager',
                                 {edit: true, add: true, del: true, search: true},
@@ -197,9 +203,9 @@
                         .jqGrid('setGroupHeaders', {
                             useColSpanStyle: true,
                             groupHeaders: [
-                                {startColumnName: 'CE', numberOfColumns: 7, titleText: '<em>外箱Label產品資訊 (1：要印   0：不印)</em>'},
-                                {startColumnName: 'ASSY_lead_time', numberOfColumns: 2, titleText: '<em>組裝看板工時</em>'},
-                                {startColumnName: 'Packing_lead_time', numberOfColumns: 2, titleText: '<em>包裝看板工時</em>'}
+                                {startColumnName: 'ce', numberOfColumns: 7, titleText: '<em>外箱Label產品資訊 (1：要印   0：不印)</em>'},
+                                {startColumnName: 'assyLeadTime', numberOfColumns: 2, titleText: '<em>組裝看板工時</em>'},
+                                {startColumnName: 'packingLeadTime', numberOfColumns: 2, titleText: '<em>包裝看板工時</em>'}
                             ]
                         });
 
@@ -211,12 +217,12 @@
                 }
 
 //                var unitName = getQueryVariable("unit");
-                var unitName = JSON.parse('${sessionScope.unit}');
+                var unitName = '${sessionScope.user.userType.name}';
                 var modifyColumns = unitName == 'unlimited' ? columnNames : ((unitName == null || unitName == "") ? [] : getColumn(unitName));
 
                 if (modifyColumns.length != 0) {
 
-//                    modifyColumns.push("Model");
+                    modifyColumns.push("modelName");
 
                     console.log(columnNames);
                     console.log(modifyColumns);
@@ -225,7 +231,7 @@
                     var difference = [];
 
                     $.grep(columnNames, function (el) {
-                        if ($.inArray(el, modifyColumns) == -1)
+                        if ($.inArray(el, modifyColumns) == -1 || el.indexOf("id") != -1)
                             difference.push(el);
                     });
 
@@ -264,7 +270,7 @@
                     var result;
                     $.ajax({
                         type: "Post",
-                        url: "../UnitColumnServlet",
+                        url: "${root}/unitColumnServlet.do",
                         data: {
                             unit: unit
                         },
@@ -285,25 +291,27 @@
     </head>
     <body>
         <div class="container">
-            <div>
-                <table>
-                    <tr>
-                        <td>
-                            jobnumber: <c:out value="${sessionScope.jobnumber}" /> / 
-                            name: <c:out value="${sessionScope.name}" /> / 
-                            unit: <c:out value="${sessionScope.unit}" />
-                        </td>
-                    </tr>
-                </table>
-            </div>
-            <div>
-                <input type="button" value="hideCol" id="hideCol" />
-                <input type="button" value="showCol" id="showCol" />
-            </div>
-            <div class="row">
-                <form action="../LogoutServlet" method="post">
-                    <input type="submit" value="Logout" />
-                </form>
+            <div class="form-inline">
+                <div>
+                    <table class="table table-hover">
+                        <tr>
+                            <td>
+                                jobnumber: <c:out value="${sessionScope.user.jobnumber}" /> / 
+                                name: <c:out value="${sessionScope.user.jobnumber}" /> / 
+                                unit: <c:out value="${sessionScope.user.userType.name}" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div>
+                    <input class="form-control" type="button" value="hideCol" id="hideCol" />
+                    <input class="form-control" type="button" value="showCol" id="showCol" />
+                </div>
+                <div class="row">
+                    <form action="${root}/LogoutServlet" method="post">
+                        <input class="form-control" type="submit" value="Logout" />
+                    </form>
+                </div>
             </div>
             <div class="row">
                 <table id="list"></table> 

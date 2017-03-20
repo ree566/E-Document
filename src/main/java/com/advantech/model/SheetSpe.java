@@ -47,6 +47,8 @@ public class SheetSpe implements java.io.Serializable {
     private BigDecimal warmBoot;
     private BigDecimal assyToT1;
     private BigDecimal t2ToPacking;
+    private String pending;
+    private BigDecimal pendingTime;
     private String burnIn;
     private BigDecimal biTime;
     private BigDecimal biTemperature;
@@ -61,15 +63,12 @@ public class SheetSpe implements java.io.Serializable {
     private String testFlow;
     private String packingFlow;
     private String partLink;
-    private String NIn1CollectionBox;
+    private String nIn1CollectionBox;
     private String partNoAttrMaintain;
     private Date modifiedDate;
 
     @JsonIgnore
     private Set<LabelInfo> labelInfos = new HashSet<LabelInfo>(0);
-
-    @JsonIgnore
-    private Set<Pending> pendings = new HashSet<Pending>(0);
 
     public SheetSpe() {
     }
@@ -78,7 +77,7 @@ public class SheetSpe implements java.io.Serializable {
         this.id = id;
     }
 
-    public SheetSpe(int id, Floor floor, Model model, Type type, BigDecimal cleanPanel, BigDecimal assy, BigDecimal packing, BigDecimal biCost, Integer vibration, Integer hiPotLeakage, BigDecimal coldBoot, BigDecimal warmBoot, BigDecimal assyToT1, BigDecimal t2ToPacking, String burnIn, BigDecimal biTime, BigDecimal biTemperature, Integer speOwnerId, Integer eeOwnerId, Integer qcOwnerId, String assyPackingSop, Integer keypartA, Integer keypartB, String preAssy, String babFlow, String testFlow, String packingFlow, String partLink, String NIn1CollectionBox, String partNoAttrMaintain, Date modifiedDate, Set<LabelInfo> labelInfos, Set<Pending> pendings) {
+    public SheetSpe(int id, Floor floor, Model model, Type type, BigDecimal cleanPanel, BigDecimal assy, BigDecimal packing, BigDecimal biCost, Integer vibration, Integer hiPotLeakage, BigDecimal coldBoot, BigDecimal warmBoot, BigDecimal assyToT1, BigDecimal t2ToPacking, String pending, BigDecimal pendingTime, String burnIn, BigDecimal biTime, BigDecimal biTemperature, Integer speOwnerId, Integer eeOwnerId, Integer qcOwnerId, String assyPackingSop, Integer keypartA, Integer keypartB, String preAssy, String babFlow, String testFlow, String packingFlow, String partLink, String nIn1CollectionBox, String partNoAttrMaintain, Date modifiedDate, Set<LabelInfo> labelInfos) {
         this.id = id;
         this.floor = floor;
         this.model = model;
@@ -93,6 +92,8 @@ public class SheetSpe implements java.io.Serializable {
         this.warmBoot = warmBoot;
         this.assyToT1 = assyToT1;
         this.t2ToPacking = t2ToPacking;
+        this.pending = pending;
+        this.pendingTime = pendingTime;
         this.burnIn = burnIn;
         this.biTime = biTime;
         this.biTemperature = biTemperature;
@@ -107,11 +108,10 @@ public class SheetSpe implements java.io.Serializable {
         this.testFlow = testFlow;
         this.packingFlow = packingFlow;
         this.partLink = partLink;
-        this.NIn1CollectionBox = NIn1CollectionBox;
+        this.nIn1CollectionBox = nIn1CollectionBox;
         this.partNoAttrMaintain = partNoAttrMaintain;
         this.modifiedDate = modifiedDate;
         this.labelInfos = labelInfos;
-        this.pendings = pendings;
     }
 
     @Id
@@ -245,6 +245,26 @@ public class SheetSpe implements java.io.Serializable {
         this.t2ToPacking = t2ToPacking;
     }
 
+    @Column(name = "Pending")
+    public String getPending() {
+        return pending;
+    }
+
+    public void setPending(String pending) {
+        this.pending = pending;
+    }
+
+    @Column(name = "Pending_Time", precision = 10, scale = 1)
+    public BigDecimal getPendingTime() {
+        return pendingTime;
+    }
+
+    public void setPendingTime(BigDecimal pendingTime) {
+        this.pendingTime = pendingTime;
+    }
+    
+    
+
     @Column(name = "BurnIn", length = 10)
     public String getBurnIn() {
         return this.burnIn;
@@ -371,13 +391,13 @@ public class SheetSpe implements java.io.Serializable {
         this.partLink = partLink;
     }
 
-    @Column(name = "N_in_1_collection_box", length = 50)
-    public String getNIn1CollectionBox() {
-        return this.NIn1CollectionBox;
+    @Column(name = "N_In_1_collection_box", length = 50)
+    public String getnIn1CollectionBox() {
+        return nIn1CollectionBox;
     }
 
-    public void setNIn1CollectionBox(String NIn1CollectionBox) {
-        this.NIn1CollectionBox = NIn1CollectionBox;
+    public void setnIn1CollectionBox(String nIn1CollectionBox) {
+        this.nIn1CollectionBox = nIn1CollectionBox;
     }
 
     @Column(name = "PartNo_attr_maintain", length = 50)
@@ -406,15 +426,6 @@ public class SheetSpe implements java.io.Serializable {
 
     public void setLabelInfos(Set<LabelInfo> labelInfos) {
         this.labelInfos = labelInfos;
-    }
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "sheetSpe")
-    public Set<Pending> getPendings() {
-        return this.pendings;
-    }
-
-    public void setPendings(Set<Pending> pendings) {
-        this.pendings = pendings;
     }
 
     @Override
@@ -447,11 +458,10 @@ public class SheetSpe implements java.io.Serializable {
         hash = 97 * hash + Objects.hashCode(this.testFlow);
         hash = 97 * hash + Objects.hashCode(this.packingFlow);
         hash = 97 * hash + Objects.hashCode(this.partLink);
-        hash = 97 * hash + Objects.hashCode(this.NIn1CollectionBox);
+        hash = 97 * hash + Objects.hashCode(this.nIn1CollectionBox);
         hash = 97 * hash + Objects.hashCode(this.partNoAttrMaintain);
         hash = 97 * hash + Objects.hashCode(this.modifiedDate);
         hash = 97 * hash + Objects.hashCode(this.labelInfos);
-        hash = 97 * hash + Objects.hashCode(this.pendings);
         return hash;
     }
 
@@ -488,7 +498,7 @@ public class SheetSpe implements java.io.Serializable {
         if (!Objects.equals(this.partLink, other.partLink)) {
             return false;
         }
-        if (!Objects.equals(this.NIn1CollectionBox, other.NIn1CollectionBox)) {
+        if (!Objects.equals(this.nIn1CollectionBox, other.nIn1CollectionBox)) {
             return false;
         }
         if (!Objects.equals(this.partNoAttrMaintain, other.partNoAttrMaintain)) {
@@ -560,10 +570,7 @@ public class SheetSpe implements java.io.Serializable {
         if (!Objects.equals(this.labelInfos, other.labelInfos)) {
             return false;
         }
-        if (!Objects.equals(this.pendings, other.pendings)) {
-            return false;
-        }
         return true;
     }
- 
+
 }

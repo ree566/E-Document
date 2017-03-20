@@ -19,9 +19,10 @@ import org.slf4j.LoggerFactory;
 public class ModelDAO extends BasicDAOImpl implements BasicDAO {
 
     private static final Logger log = LoggerFactory.getLogger(ModelDAO.class);
+    private final Class pojo;
 
     public ModelDAO() {
-
+        this.pojo = Model.class;
     }
 
     @Override
@@ -29,13 +30,17 @@ public class ModelDAO extends BasicDAOImpl implements BasicDAO {
         return super.findAll("from Model");
     }
 
+    public Collection findAll(PageInfo info) {
+        return super.findByCriteria(pojo, info);
+    }
+
     @Override
     public Object findByPrimaryKey(Object obj_id) {
-        return super.findByPrimaryKey(Model.class, obj_id);
+        return super.findByPrimaryKey(pojo, obj_id);
     }
 
     public List<Model> findByPrimaryKeys(Integer... id) {
-        return super.findByPrimaryKeys(Model.class, (Object[]) id);
+        return super.findByPrimaryKeys(pojo, (Object[]) id);
     }
 
     public List findByName(String modelName) {

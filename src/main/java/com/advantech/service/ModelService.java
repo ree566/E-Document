@@ -6,6 +6,7 @@
 package com.advantech.service;
 
 import com.advantech.dao.*;
+import com.advantech.helper.PageInfo;
 import com.advantech.model.Model;
 import java.util.Collection;
 import java.util.List;
@@ -25,6 +26,10 @@ public class ModelService implements BasicService {
     @Override
     public Collection findAll() {
         return modelDAO.findAll();
+    }
+
+    public Collection findAll(PageInfo info) {
+        return modelDAO.findAll(info);
     }
 
     @Override

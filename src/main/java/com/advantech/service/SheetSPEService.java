@@ -6,6 +6,7 @@
 package com.advantech.service;
 
 import com.advantech.dao.*;
+import com.advantech.helper.PageInfo;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -29,23 +30,27 @@ public class SheetSPEService implements BasicService {
         return sheetSPEDAO.findAll();
     }
 
+    public Collection findAll(PageInfo info) {
+        return sheetSPEDAO.findAll(info);
+    }
+
     @Override
     public Object findByPrimaryKey(Object obj_id) {
         return sheetSPEDAO.findByPrimaryKey(obj_id);
     }
 
     public List<String> getColumnName() {
-        List<Map> l = sheetSPEDAO.getView();
-        List<String> columnNames = new ArrayList();
-        if (!l.isEmpty()) {
-            Iterator entries = l.get(0).entrySet().iterator();
-            while (entries.hasNext()) {
-                Map.Entry thisEntry = (Map.Entry) entries.next();
-                Object key = thisEntry.getKey();
-                columnNames.add((String) key);
-            }
-        }
-        return columnNames;
+//        List<Map> l = sheetSPEDAO.getView();
+//        List<String> columnNames = new ArrayList();
+//        if (!l.isEmpty()) {
+//            Iterator entries = l.get(0).entrySet().iterator();
+//            while (entries.hasNext()) {
+//                Map.Entry thisEntry = (Map.Entry) entries.next();
+//                Object key = thisEntry.getKey();
+//                columnNames.add((String) key);
+//            }
+//        }
+        return sheetSPEDAO.getView();
     }
 
     @Override

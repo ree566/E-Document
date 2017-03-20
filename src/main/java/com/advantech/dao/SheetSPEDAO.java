@@ -5,13 +5,11 @@
  */
 package com.advantech.dao;
 
+import com.advantech.helper.PageInfo;
 import com.advantech.model.SheetSpe;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +31,10 @@ public class SheetSPEDAO extends BasicDAOImpl implements BasicDAO {
     public Collection findAll() {
         return super.findAll("from SheetSpe");
     }
+    
+    public Collection findAll(PageInfo info){
+        return super.findByCriteria(pojo, info);
+    }
 
     @Override
     public Object findByPrimaryKey(Object obj_id) {
@@ -40,6 +42,6 @@ public class SheetSPEDAO extends BasicDAOImpl implements BasicDAO {
     }
 
     public List getView() {
-        return super.findBySQL("SELECT TOP 1 * FROM Sheet_SPE_view");
+        return Arrays.asList(super.getColumnName(pojo));
     }
 }

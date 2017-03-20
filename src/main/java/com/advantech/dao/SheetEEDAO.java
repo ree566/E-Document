@@ -5,9 +5,9 @@
  */
 package com.advantech.dao;
 
+import com.advantech.helper.PageInfo;
 import com.advantech.model.SheetEe;
 import java.util.Collection;
-import org.hibernate.Hibernate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,6 +28,10 @@ public class SheetEEDAO extends BasicDAOImpl implements BasicDAO {
     @Override
     public Collection findAll() {
         return super.findAll("from SheetEe");
+    }
+
+    public Collection findAll(PageInfo info) {
+        return super.findByCriteria(pojo, info);
     }
 
     @Override

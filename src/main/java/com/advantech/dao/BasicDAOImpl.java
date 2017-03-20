@@ -90,6 +90,10 @@ public class BasicDAOImpl {
     protected String[] getColumnName(Class clz) {
         return factory.getClassMetadata(clz).getPropertyNames();
     }
+    
+    protected List findByHQL(String HQL, PageInfo info) {
+        return findByHQL(HQL, null, null, info);
+    }
 
     protected List findByHQL(String HQL, Object[] params, Object[] values) {
         return findByHQL(HQL, params, values, null);

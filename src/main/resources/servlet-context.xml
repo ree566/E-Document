@@ -30,8 +30,12 @@
 
     <!-- Scans within the base package of the application for @Components to configure as beans -->
     <!-- @Controller, @Service, @Configuration, etc. -->
-    <context:component-scan base-package="com.advantech.test" />
+    <context:component-scan base-package="com.advantech.controller" />
+    
+    <!--http://www.cnblogs.com/Irving/archive/2013/02/19/2917501.html-->
+    <mvc:default-servlet-handler/>
 
     <!-- Enables the Spring MVC @Controller programming model -->
     <mvc:annotation-driven />
+
 </beans>

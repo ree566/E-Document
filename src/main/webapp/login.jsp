@@ -4,7 +4,7 @@
 <html>
     <head>
         <title>${initParam.pageTitle}</title>
-        <link rel="shortcut icon" href="../images/favicon.ico"/>
+        <link rel="shortcut icon" href="images/favicon.ico"/>
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
         <style>
             fieldset {
@@ -134,7 +134,7 @@
                 <fieldset class="scheduler-border">
                     <legend class="scheduler-border">${initParam.pageTitle}系統:</legend>
                     <div>
-                        <form action="LoginServlet" method="post" onsubmit="dosubmit()" id="login">
+                        <form action="login.do" method="post" onsubmit="dosubmit()" id="login">
                             <table class="table borderless">
                                 <tr>
                                     <td><label for="jobnumber">Name:</label></td>

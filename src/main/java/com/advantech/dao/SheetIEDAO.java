@@ -5,6 +5,7 @@
  */
 package com.advantech.dao;
 
+import com.advantech.helper.PageInfo;
 import com.advantech.model.SheetIe;
 import java.util.Collection;
 import org.slf4j.Logger;
@@ -27,6 +28,10 @@ public class SheetIEDAO extends BasicDAOImpl implements BasicDAO {
     @Override
     public Collection findAll() {
         return super.findAll("from SheetIe");
+    }
+
+    public Collection findAll(PageInfo info) {
+        return super.findByCriteria(pojo, info);
     }
 
     @Override

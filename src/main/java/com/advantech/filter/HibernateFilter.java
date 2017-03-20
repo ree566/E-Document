@@ -13,6 +13,7 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
 import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -37,6 +38,10 @@ public class HibernateFilter implements Filter {
         Transaction tx = null;
         try {
             tx = factory.getCurrentSession().beginTransaction();
+            System.out.println("tx start");
+            String url = ((HttpServletRequest) request).getRequestURL().toString();
+            String queryString = ((HttpServletRequest) request).getQueryString();
+            System.out.println(url + "?" + queryString);
             chain.doFilter(request, response);
             tx.commit();
         } catch (HibernateException | IOException | ServletException ex) {
@@ -46,6 +51,7 @@ public class HibernateFilter implements Filter {
             }
         } finally {
             factory.getCurrentSession().close();
+            System.out.println("close");
         }
     }
 
