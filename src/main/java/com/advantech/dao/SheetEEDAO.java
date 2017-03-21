@@ -19,11 +19,7 @@ public class SheetEEDAO extends BasicDAOImpl implements BasicDAO {
 
     private static final Logger log = LoggerFactory.getLogger(SheetViewDAO.class);
 
-    private final Class pojo;
-
-    public SheetEEDAO() {
-        pojo = SheetEe.class;
-    }
+    private final Class pojo = SheetEe.class;
 
     @Override
     public Collection findAll() {

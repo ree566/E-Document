@@ -27,11 +27,7 @@
           http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
 ">
     <!--bean setting-->
-    
-    <bean id="sheetSPEService" class="com.advantech.SheetSPEService" >
-        <property name="name" value="Java" />
-    </bean>
-    
+
     <!-- DispatcherServlet Context: defines this servlet's request-processing infrastructure -->
 
     <!-- Scans within the base package of the application for @Components to configure as beans -->

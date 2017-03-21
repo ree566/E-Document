@@ -22,11 +22,7 @@ public class SheetSPEDAO extends BasicDAOImpl implements BasicDAO {
 
     private static final Logger log = LoggerFactory.getLogger(SheetViewDAO.class);
 
-    private final Class pojo;
-
-    public SheetSPEDAO() {
-        pojo = SheetSpe.class;
-    }
+    private final Class pojo = SheetSpe.class;
 
     @Override
     public Collection findAll() {
