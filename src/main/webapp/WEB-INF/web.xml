@@ -47,14 +47,14 @@
         <url-pattern>/pages/*</url-pattern>
     </filter-mapping>
     
-    <filter>
+<!--    <filter>
         <filter-name>HibernateFilter</filter-name>
         <filter-class>com.advantech.filter.HibernateFilter</filter-class>
     </filter>
     <filter-mapping>  
         <filter-name>HibernateFilter</filter-name>
         <url-pattern>*.do</url-pattern>
-    </filter-mapping>
+    </filter-mapping>-->
     
     <servlet>
         <servlet-name>Index</servlet-name>
