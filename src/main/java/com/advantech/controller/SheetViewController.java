@@ -23,11 +23,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -46,12 +46,27 @@ public class SheetViewController {
 
     private final String SPE = "SPE", EE = "EE", IE = "IE";
 
-    @ResponseBody
-    @RequestMapping(value = "/getSheetView.do", method = {RequestMethod.GET, RequestMethod.POST})
-    public SheetViewResponse getSheetView(@ModelAttribute PageInfo info) {
-        SheetViewService service = new SheetViewService();
-        List l = (List) service.findAll(info);
+    private final String ADD = "add", EDIT = "edit", DELETE = "del";
+    private String userOper;
 
+    private final SheetViewService sheetViewService;
+    private final ModelService modelService;
+    private final SheetEEService eeService;
+    private final SheetIEService ieService;
+    private final SheetSPEService speService;
+
+    public SheetViewController() {
+        this.sheetViewService = new SheetViewService();
+        this.modelService = new ModelService();
+        this.eeService = new SheetEEService();
+        this.ieService = new SheetIEService();
+        this.speService = new SheetSPEService();
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/getSheetView.do", method = {RequestMethod.POST})
+    public SheetViewResponse getSheetView(@ModelAttribute PageInfo info) {
+        List l = (List) sheetViewService.findAll(info);
         SheetViewResponse viewResp = new SheetViewResponse();
 
         int count = info.getMaxNumOfRows();
@@ -66,8 +81,10 @@ public class SheetViewController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/updateSheet.do", method = {RequestMethod.GET, RequestMethod.POST})
-    public String updateSheet(@ModelAttribute Model model,
+    @RequestMapping(value = "/updateSheet.do", method = {RequestMethod.POST})
+    public String updateSheet(
+            @RequestParam String oper,
+            @RequestParam int id, @RequestParam String modelName,
             @ModelAttribute SheetSpe spe,
             @ModelAttribute SheetEe ee,
             @ModelAttribute SheetIe ie,
@@ -75,70 +92,103 @@ public class SheetViewController {
             HttpServletRequest req) throws ServletException, IOException {
 
         this.showParams(req);
-        this.printModels(model, spe, ee, ie);
+        this.printModels(id, spe, ee, ie);
 
-//        String userType = user.getUserType().getName();
-//        ModelService modelService = new ModelService();
-//        Model existModel = (Model) modelService.findByPrimaryKey(model.getId());
-//        switch (userType) {
-//            case EE:
-//                if (existModel == null) {
-//                    Set set = new HashSet();
-//                    model.setSheetEes(set);
-//                    modelService.insert(model);
-//                } else {
-//                    Set set = existModel.getSheetEes() == null ? new HashSet() : existModel.getSheetEes();
-//                    set.add(ee);
-//                    modelService.update(existModel);
-//                }
-//                break;
-//            case IE:
-//                if (existModel == null) {
-//                    Set set = new HashSet();
-//                    model.setSheetIes(set);
-//                    modelService.insert(model);
-//                } else {
-//                    Set set = existModel.getSheetIes() == null ? new HashSet() : existModel.getSheetIes();
-//                    set.add(ie);
-//                    modelService.update(existModel);
-//                }
-//                break;
-//            case SPE:
-//                if (existModel == null) {
-//                    Set set = new HashSet();
-//                    model.setSheetSpes(set);
-//                    modelService.insert(model);
-//                } else {
-//                    Set set = existModel.getSheetSpes() == null ? new HashSet() : existModel.getSheetSpes();
-//                    set.add(spe);
-//                    modelService.update(existModel);
-//                }
-//                break;
-//            default:
-//                break;
-//        }
+        String userType = user.getUserType().getName();
+
+        Model model = id == 0 ? new Model(modelName) : (Model) modelService.findByPrimaryKey(id);
+        userOper = oper;
+
+        String modifyMessage;
+        switch (userType) {
+            case EE:
+                modifyMessage = this.eeModify(model, ee);
+                break;
+            case IE:
+                modifyMessage = this.ieModify(model, ie);
+                break;
+            case SPE:
+                modifyMessage = this.speModify(model, spe);
+                break;
+            default:
+                modifyMessage = "Unit not found";
+                break;
+        }
+        return modifyMessage;
+    }
+
+    private String ieModify(Model m, Object sheet) {
+        switch (userOper) {
+            case ADD:
+                break;
+            case EDIT:
+                break;
+            case DELETE:
+                break;
+            default:
+                break;
+        }
         return "";
     }
 
-    @ResponseBody
-    @RequestMapping(value = "/unitColumnServlet.do", method = {RequestMethod.GET, RequestMethod.POST})
-    public List<String> updateSheet(@RequestParam String unit) {
-        unit = unit.toUpperCase();
-        List<String> columnName;
-        switch (unit) {
-            case SPE:
-                columnName = new SheetSPEService().getColumnName();
+    private String eeModify(Model m, Object sheet) {
+        switch (userOper) {
+            case ADD:
                 break;
-            case EE:
-                columnName = Arrays.asList(new SheetEEService().getColumnName());
+            case EDIT:
                 break;
-            case IE:
-                columnName = Arrays.asList(new SheetIEService().getColumnName());
+            case DELETE:
                 break;
             default:
-                columnName = new ArrayList();
                 break;
         }
+        return "";
+    }
+
+    private String speModify(Model m, Object sheet) {
+        Set set = new HashSet();
+        switch (userOper) {
+            case ADD:
+                set.add(sheet);
+                m.setSheetSpes(set);
+                modelService.insert(m);
+                break;
+            case EDIT:
+                Set speSet = m.getSheetSpes();
+                Iterator iter = speSet.iterator();
+                SheetSpe existSheetSpe = (SheetSpe) iter.next();
+                SheetSpe newData = (SheetSpe) sheet;
+                newData.setId(existSheetSpe.getId());
+                speService.update(newData);
+                break;
+            case DELETE:
+                modelService.delete(m);
+            default:
+                throw new UnsupportedOperationException();
+        }
+        return "";
+
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/unitColumnServlet.do", method = {RequestMethod.POST})
+    public List<String> getUnitColumnName(@RequestParam String unit) {
+        unit = unit.toUpperCase();
+        List<String> columnName;
+//        switch (unit) {
+//            case SPE:
+//                columnName = new SheetSPEService().getColumnName();
+//                break;
+//            case EE:
+//                columnName = Arrays.asList(new SheetEEService().getColumnName());
+//                break;
+//            case IE:
+//                columnName = Arrays.asList(new SheetIEService().getColumnName());
+//                break;
+//            default:
+                columnName = new ArrayList();
+//                break;
+//        }
         return columnName;
     }
 

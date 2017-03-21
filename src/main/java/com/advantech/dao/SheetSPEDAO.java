@@ -6,6 +6,7 @@
 package com.advantech.dao;
 
 import com.advantech.helper.PageInfo;
+import com.advantech.model.Model;
 import com.advantech.model.SheetSpe;
 import java.util.Arrays;
 import java.util.Collection;
@@ -31,14 +32,20 @@ public class SheetSPEDAO extends BasicDAOImpl implements BasicDAO {
     public Collection findAll() {
         return super.findAll("from SheetSpe");
     }
-    
-    public Collection findAll(PageInfo info){
+
+    public Collection findAll(PageInfo info) {
         return super.findByCriteria(pojo, info);
     }
 
     @Override
     public Object findByPrimaryKey(Object obj_id) {
         return super.findByPrimaryKey(pojo, integerToLong((Integer) obj_id));
+    }
+
+    public List findByModel(Model m) {
+        String[] params = {"id"};
+        Integer[] values = {m.getId()};
+        return super.findByHQL("from SheetSpe spe where spe.model.id = :id", params, values);
     }
 
     public List getView() {

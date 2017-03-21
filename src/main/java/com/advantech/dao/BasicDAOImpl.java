@@ -90,7 +90,7 @@ public class BasicDAOImpl {
     protected String[] getColumnName(Class clz) {
         return factory.getClassMetadata(clz).getPropertyNames();
     }
-    
+
     protected List findByHQL(String HQL, PageInfo info) {
         return findByHQL(HQL, null, null, info);
     }
@@ -215,6 +215,11 @@ public class BasicDAOImpl {
 
     public int update(Object obj) {
         session.update(obj);
+        return 1;
+    }
+
+    public int merge(Object obj) {
+        session.merge(obj);
         return 1;
     }
 

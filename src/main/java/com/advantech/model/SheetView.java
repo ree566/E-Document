@@ -104,8 +104,8 @@ public class SheetView implements Serializable {
     @Column(name = "floorName")
     private String floorName;
 
-    @Column(name = "pendingType")
-    private String pendingType;
+    @Column(name = "pending")
+    private String pending;
 
     @Column(name = "pendingTime", precision = 10, scale = 1)
     private BigDecimal pendingTime;
@@ -417,12 +417,12 @@ public class SheetView implements Serializable {
         this.floorName = floorName;
     }
 
-    public String getPendingType() {
-        return pendingType;
+    public String getPending() {
+        return pending;
     }
 
-    public void setPendingType(String pendingType) {
-        this.pendingType = pendingType;
+    public void setPending(String pending) {
+        this.pending = pending;
     }
 
     public BigDecimal getPendingTime() {

@@ -42,6 +42,10 @@ public class Model implements java.io.Serializable {
     public Model() {
     }
 
+    public Model(String name) {
+        this.name = name;
+    }
+
     public Model(int id, String name) {
         this.id = id;
         this.name = name;

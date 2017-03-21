@@ -7,6 +7,7 @@ package com.advantech.service;
 
 import com.advantech.dao.*;
 import com.advantech.helper.PageInfo;
+import com.advantech.model.Model;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -39,6 +40,10 @@ public class SheetSPEService implements BasicService {
         return sheetSPEDAO.findByPrimaryKey(obj_id);
     }
 
+    public List findByModel(Model m) {
+        return sheetSPEDAO.findByModel(m);
+    }
+
     public List<String> getColumnName() {
 //        List<Map> l = sheetSPEDAO.getView();
 //        List<String> columnNames = new ArrayList();
@@ -60,7 +65,7 @@ public class SheetSPEService implements BasicService {
 
     @Override
     public int update(Object obj) {
-        return sheetSPEDAO.update(obj);
+        return sheetSPEDAO.merge(obj);
     }
 
     @Override

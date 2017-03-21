@@ -76,7 +76,7 @@
                     mtype: 'POST',
 //                    styleUI: 'Bootstrap',
                     colModel: [
-                        {label: 'Model_id', name: 'modelId', hidden: true, key: true, frozen: true, editoptions: {defaultValue: "0"}},
+                        {label: 'Model_id', name: 'modelId', hidden: true, key: true, editable: true, editoptions: {defaultValue: "0"}},
                         {label: 'Model', name: 'modelName', frozen: true},
                         {label: 'TYPE', name: 'typeName', width: 100},
                         {label: 'ProductionWT', name: 'productionWT', width: 120},
@@ -100,8 +100,7 @@
                         {label: 'T2_PACKING', name: 't2ToPacking', width: 100},
                         {label: 'Floor_id', name: 'floorId', hidden: true, editable: true},
                         {label: 'Floor', name: 'floorName', width: 100},
-                        {label: 'Pending_id', name: 'pendingId', hidden: true, editable: true},
-                        {label: 'Pending', name: 'pendingType', width: 100},
+                        {label: 'Pending', name: 'pending', width: 100},
                         {label: 'Pending TIME', name: 'pendingTime', width: 100},
                         {label: 'BurnIn', name: 'burnIn', edittype: "select", editoptions: {value: "Y:Y;N:N"}, width: 100},
                         {label: 'B/I Time', name: 'biTime', width: 100},
