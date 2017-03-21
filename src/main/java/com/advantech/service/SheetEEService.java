@@ -13,7 +13,7 @@ import java.util.Collection;
  *
  * @author Wei.Cheng
  */
-public class SheetEEService implements BasicService {
+public class SheetEEService {
 
     private final SheetEEDAO sheetEEDAO;
 
@@ -21,16 +21,10 @@ public class SheetEEService implements BasicService {
         sheetEEDAO = new SheetEEDAO();
     }
 
-    @Override
     public Collection findAll() {
         return sheetEEDAO.findAll();
     }
 
-    public Collection findAll(PageInfo info) {
-        return sheetEEDAO.findAll(info);
-    }
-
-    @Override
     public Object findByPrimaryKey(Object obj_id) {
         return sheetEEDAO.findByPrimaryKey(obj_id);
     }
@@ -39,17 +33,14 @@ public class SheetEEService implements BasicService {
         return sheetEEDAO.getColumnName();
     }
 
-    @Override
     public int insert(Object obj) {
         return sheetEEDAO.insert(obj);
     }
 
-    @Override
     public int update(Object obj) {
         return sheetEEDAO.update(obj);
     }
 
-    @Override
     public int delete(Object pojo) {
         return sheetEEDAO.delete(pojo);
     }

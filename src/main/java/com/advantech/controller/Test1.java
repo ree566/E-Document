@@ -56,16 +56,16 @@ public class Test1 {
     @ResponseBody
     @RequestMapping(value = "/getItem", method = {RequestMethod.GET, RequestMethod.POST})
     public String getItem(@ModelAttribute PageInfo info) throws IOException {
-        ModelService modelService = new ModelService();
-        SheetSPEService sheetSpeService = new SheetSPEService();
-        SheetEEService sheetEEService = new SheetEEService();
-        SheetIEService sheetIEService = new SheetIEService();
-        List l = new ArrayList();
-        l.add(modelService.findAll(info));
-        l.add(sheetSpeService.findAll(info));
-        l.add(sheetEEService.findAll(info));
-        l.add(sheetIEService.findAll(info));
-        return toJsonString(l);
+//        ModelService modelService = new ModelService();
+//        SheetSPEService sheetSpeService = new SheetSPEService();
+//        SheetEEService sheetEEService = new SheetEEService();
+//        SheetIEService sheetIEService = new SheetIEService();
+//        List l = new ArrayList();
+//        l.add(modelService.findAll(info));
+//        l.add(sheetSpeService.findAll(info));
+//        l.add(sheetEEService.findAll(info));
+//        l.add(sheetIEService.findAll(info));
+        return toJsonString(new ArrayList());
     }
 
     @ResponseBody

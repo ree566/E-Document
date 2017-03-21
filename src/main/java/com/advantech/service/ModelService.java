@@ -23,16 +23,10 @@ public class ModelService implements BasicService {
         modelDAO = new ModelDAO();
     }
 
-    @Override
     public Collection findAll() {
         return modelDAO.findAll();
     }
 
-    public Collection findAll(PageInfo info) {
-        return modelDAO.findAll(info);
-    }
-
-    @Override
     public Object findByPrimaryKey(Object obj_id) {
         return modelDAO.findByPrimaryKey(obj_id);
     }
@@ -41,21 +35,18 @@ public class ModelService implements BasicService {
         return modelDAO.findByPrimaryKeys(id);
     }
 
-    public List findByName(String modelName) {
+    public Model findByName(String modelName) {
         return modelDAO.findByName(modelName);
     }
 
-    @Override
     public int insert(Object obj) {
         return modelDAO.insert(obj);
     }
 
-    @Override
     public int update(Object obj) {
         return modelDAO.update(obj);
     }
 
-    @Override
     public int delete(Object pojo) {
         return modelDAO.delete(pojo);
     }

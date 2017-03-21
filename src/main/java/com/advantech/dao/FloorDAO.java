@@ -7,29 +7,52 @@ package com.advantech.dao;
 
 import com.advantech.model.Floor;
 import java.util.Collection;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 /**
  *
  * @author Wei.Cheng
  */
-public class FloorDAO extends BasicDAOImpl implements BasicDAO {
+@Repository
+public class FloorDAO implements BasicDAO {
 
     private static final Logger log = LoggerFactory.getLogger(FloorDAO.class);
-
-    public FloorDAO() {
-
+    
+    @Autowired
+    private SessionFactory sessionFactory;
+    
+    private Session currentSession() {
+        return sessionFactory.getCurrentSession();
     }
 
     @Override
     public Collection findAll() {
-        return super.findAll("from Floor");
+        return currentSession().createQuery("from Floor").list();
     }
 
     @Override
     public Object findByPrimaryKey(Object obj_id) {
-        return super.findByPrimaryKey(Floor.class, integerToLong((int) obj_id));
+        return currentSession().load(Floor.class, Long.valueOf((int) obj_id));
+    }
+
+    @Override
+    public int insert(Object obj) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public int update(Object obj) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public int delete(Object pojo) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

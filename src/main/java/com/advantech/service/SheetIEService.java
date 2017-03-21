@@ -14,7 +14,7 @@ import org.hibernate.SessionFactory;
  *
  * @author Wei.Cheng
  */
-public class SheetIEService implements BasicService {
+public class SheetIEService {
 
     private final SheetIEDAO sheetIEDAO;
 
@@ -22,16 +22,10 @@ public class SheetIEService implements BasicService {
         sheetIEDAO = new SheetIEDAO();
     }
 
-    @Override
     public Collection findAll() {
         return sheetIEDAO.findAll();
     }
 
-    public Collection findAll(PageInfo info) {
-        return sheetIEDAO.findAll(info);
-    }
-
-    @Override
     public Object findByPrimaryKey(Object obj_id) {
         return sheetIEDAO.findByPrimaryKey(obj_id);
     }
@@ -40,17 +34,14 @@ public class SheetIEService implements BasicService {
         return sheetIEDAO.getColumnName();
     }
 
-    @Override
     public int insert(Object obj) {
         return sheetIEDAO.insert(obj);
     }
 
-    @Override
     public int update(Object obj) {
         return sheetIEDAO.update(obj);
     }
 
-    @Override
     public int delete(Object pojo) {
         return sheetIEDAO.delete(pojo);
     }

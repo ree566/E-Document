@@ -13,7 +13,7 @@ import java.util.Collection;
  *
  * @author Wei.Cheng
  */
-public class IdentitService implements BasicService {
+public class IdentitService {
 
     private final IdentitDAO identitDAO;
 
@@ -21,33 +21,28 @@ public class IdentitService implements BasicService {
         identitDAO = new IdentitDAO();
     }
 
-    @Override
     public Collection findAll() {
         return identitDAO.findAll();
     }
 
-    @Override
     public Object findByPrimaryKey(Object obj_id) {
         return identitDAO.findByPrimaryKey(obj_id);
     }
 
-    @Override
+    public Identit findByJobnumber(String jobnumber) {
+        return identitDAO.findByJobnumber(jobnumber);
+    }
+
     public int insert(Object obj) {
         return identitDAO.insert(obj);
     }
 
-    @Override
     public int update(Object obj) {
         return identitDAO.update(obj);
     }
 
-    @Override
     public int delete(Object pojo) {
         return identitDAO.delete(pojo);
-    }
-
-    public Identit findByJobnumber(String jobnumber) {
-        return identitDAO.findByJobnumber(jobnumber);
     }
 
 }

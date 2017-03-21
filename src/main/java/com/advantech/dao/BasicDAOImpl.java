@@ -123,8 +123,6 @@ public class BasicDAOImpl {
     protected List findByCriteria(Class clz, PageInfo searchInfo) {
         Criteria criteria = session.createCriteria(clz);
         criteria.setReadOnly(true);
-//        criteria.setProjection(Projections.rowCount());
-//        Long count = (Long) criteria.uniqueResult();
 
         String sortIdx = searchInfo.getSidx();
         if (sortIdx.length() > 0) {

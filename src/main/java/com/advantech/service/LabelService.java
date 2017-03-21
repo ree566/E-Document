@@ -12,7 +12,7 @@ import java.util.Collection;
  *
  * @author Wei.Cheng
  */
-public class LabelService implements BasicService{
+public class LabelService {
 
     private final LabelInfoDAO labelInfoDAO;
 
@@ -20,30 +20,24 @@ public class LabelService implements BasicService{
         labelInfoDAO = new LabelInfoDAO();
     }
 
-    @Override
     public Collection findAll() {
         return labelInfoDAO.findAll();
     }
 
-    @Override
     public Object findByPrimaryKey(Object obj_id) {
         return labelInfoDAO.findByPrimaryKey(obj_id);
     }
 
-    @Override
     public int insert(Object obj) {
         return labelInfoDAO.insert(obj);
     }
 
-    @Override
     public int update(Object obj) {
         return labelInfoDAO.update(obj);
     }
 
-    @Override
     public int delete(Object pojo) {
         return labelInfoDAO.delete(pojo);
     }
 
-   
 }

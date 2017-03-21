@@ -13,7 +13,7 @@ import java.util.Collection;
  *
  * @author Wei.Cheng
  */
-public class SheetViewService implements BasicService {
+public class SheetViewService {
 
     private final SheetViewDAO sheetViewDAO;
 
@@ -21,7 +21,6 @@ public class SheetViewService implements BasicService {
         this.sheetViewDAO = new SheetViewDAO();
     }
 
-    @Override
     public Collection findAll() {
         return sheetViewDAO.findAll();
     }
@@ -30,24 +29,20 @@ public class SheetViewService implements BasicService {
         return sheetViewDAO.findAll(info);
     }
 
-    @Override
     public Object findByPrimaryKey(Object obj_id) {
         return sheetViewDAO.findByPrimaryKey(obj_id);
     }
 
-    @Override
     public int insert(Object obj) {
-        throw new UnsupportedOperationException();
+        return sheetViewDAO.insert(obj);
     }
 
-    @Override
     public int update(Object obj) {
-        throw new UnsupportedOperationException();
+        return sheetViewDAO.update(obj);
     }
 
-    @Override
     public int delete(Object pojo) {
-        throw new UnsupportedOperationException();
+        return sheetViewDAO.delete(pojo);
     }
 
 }

@@ -18,7 +18,7 @@ import java.util.Map;
  *
  * @author Wei.Cheng
  */
-public class SheetSPEService implements BasicService {
+public class SheetSPEService {
 
     private final SheetSPEDAO sheetSPEDAO;
 
@@ -26,49 +26,26 @@ public class SheetSPEService implements BasicService {
         sheetSPEDAO = new SheetSPEDAO();
     }
 
-    @Override
     public Collection findAll() {
         return sheetSPEDAO.findAll();
     }
 
-    public Collection findAll(PageInfo info) {
-        return sheetSPEDAO.findAll(info);
-    }
-
-    @Override
     public Object findByPrimaryKey(Object obj_id) {
         return sheetSPEDAO.findByPrimaryKey(obj_id);
     }
 
-    public List findByModel(Model m) {
-        return sheetSPEDAO.findByModel(m);
+    public String[] getColumnName() {
+        return sheetSPEDAO.getColumnName();
     }
 
-    public List<String> getColumnName() {
-//        List<Map> l = sheetSPEDAO.getView();
-//        List<String> columnNames = new ArrayList();
-//        if (!l.isEmpty()) {
-//            Iterator entries = l.get(0).entrySet().iterator();
-//            while (entries.hasNext()) {
-//                Map.Entry thisEntry = (Map.Entry) entries.next();
-//                Object key = thisEntry.getKey();
-//                columnNames.add((String) key);
-//            }
-//        }
-        return sheetSPEDAO.getView();
-    }
-
-    @Override
     public int insert(Object obj) {
         return sheetSPEDAO.insert(obj);
     }
 
-    @Override
     public int update(Object obj) {
-        return sheetSPEDAO.merge(obj);
+        return sheetSPEDAO.update(obj);
     }
 
-    @Override
     public int delete(Object pojo) {
         return sheetSPEDAO.delete(pojo);
     }

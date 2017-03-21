@@ -7,43 +7,39 @@ package com.advantech.service;
 
 import com.advantech.dao.*;
 import java.util.Collection;
+import javax.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  *
  * @author Wei.Cheng
  */
-public class FloorService implements BasicService{
+@Service
+@Transactional
+public class FloorService {
 
-    private final FloorDAO floorDAO;
+    @Autowired
+    private FloorDAO floorDAO;
 
-    public FloorService() {
-        floorDAO = new FloorDAO();
-    }
-
-    @Override
     public Collection findAll() {
         return floorDAO.findAll();
     }
 
-    @Override
     public Object findByPrimaryKey(Object obj_id) {
         return floorDAO.findByPrimaryKey(obj_id);
     }
 
-    @Override
     public int insert(Object obj) {
         return floorDAO.insert(obj);
     }
 
-    @Override
     public int update(Object obj) {
         return floorDAO.update(obj);
     }
 
-    @Override
     public int delete(Object pojo) {
         return floorDAO.delete(pojo);
     }
 
-   
 }
