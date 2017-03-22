@@ -70,7 +70,11 @@
             <pattern>%d{HH:mm:ss.SSS} %-5level %logger{35} - %msg%n</pattern>
         </encoder>
     </appender>
+    
+    <logger name="org.hibernate.type" level="INFO" />
+    <logger name="org.hibernate" level="INFO" />
     <logger name="org.hibernate.engine.query.HQLQueryPlan" level="DEBUG" additivity="false" />
+    
     <logger name="com.piedra.logback" level="INFO" additivity="false">
         <appender-ref ref="FILE" />
     </logger>

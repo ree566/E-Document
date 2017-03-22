@@ -51,7 +51,7 @@
         <script>
             $(function () {
                 var lastsel, scrollPosition;
-                var do_not_change_columns = ["modified_Date", "CleanPanel_and_Assembly", "productionWT", "setupTime"];
+                var do_not_change_columns = ["id", "modified_Date", "CleanPanel_and_Assembly", "productionWT", "setupTime"];
 
                 var grid = $("#list");
 
@@ -307,7 +307,7 @@
                     <input class="form-control" type="button" value="showCol" id="showCol" />
                 </div>
                 <div class="row">
-                    <form action="${root}/LogoutServlet" method="post">
+                    <form action="${root}/logout.do" method="post">
                         <input class="form-control" type="submit" value="Logout" />
                     </form>
                 </div>

@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Set;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -49,19 +50,20 @@ public class SheetViewController {
     private final String ADD = "add", EDIT = "edit", DELETE = "del";
     private String userOper;
 
-    private final SheetViewService sheetViewService;
-    private final ModelService modelService;
-    private final SheetEEService eeService;
-    private final SheetIEService ieService;
-    private final SheetSPEService speService;
+    @Autowired
+    private SheetViewService sheetViewService;
 
-    public SheetViewController() {
-        this.sheetViewService = new SheetViewService();
-        this.modelService = new ModelService();
-        this.eeService = new SheetEEService();
-        this.ieService = new SheetIEService();
-        this.speService = new SheetSPEService();
-    }
+    @Autowired
+    private ModelService modelService;
+
+    @Autowired
+    private SheetEEService eeService;
+
+    @Autowired
+    private SheetIEService ieService;
+
+    @Autowired
+    private SheetSPEService speService;
 
     @ResponseBody
     @RequestMapping(value = "/getSheetView.do", method = {RequestMethod.POST})
@@ -172,23 +174,23 @@ public class SheetViewController {
 
     @ResponseBody
     @RequestMapping(value = "/unitColumnServlet.do", method = {RequestMethod.POST})
-    public List<String> getUnitColumnName(@RequestParam String unit) {
+    public String[] getUnitColumnName(@RequestParam String unit) {
         unit = unit.toUpperCase();
-        List<String> columnName;
-//        switch (unit) {
-//            case SPE:
-//                columnName = new SheetSPEService().getColumnName();
-//                break;
-//            case EE:
-//                columnName = Arrays.asList(new SheetEEService().getColumnName());
-//                break;
-//            case IE:
-//                columnName = Arrays.asList(new SheetIEService().getColumnName());
-//                break;
-//            default:
-                columnName = new ArrayList();
-//                break;
-//        }
+        String[] columnName;
+        switch (unit) {
+            case SPE:
+                columnName = speService.getColumnName();
+                break;
+            case EE:
+                columnName = eeService.getColumnName();
+                break;
+            case IE:
+                columnName = ieService.getColumnName();
+                break;
+            default:
+                columnName = new String[0];
+                break;
+        }
         return columnName;
     }
 

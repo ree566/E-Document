@@ -10,18 +10,20 @@ import com.advantech.helper.PageInfo;
 import com.advantech.model.Model;
 import java.util.Collection;
 import java.util.List;
+import javax.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  *
  * @author Wei.Cheng
  */
-public class ModelService implements BasicService {
+@Service
+@Transactional
+public class ModelService {
 
-    private final ModelDAO modelDAO;
-
-    public ModelService() {
-        modelDAO = new ModelDAO();
-    }
+    @Autowired
+    private ModelDAO modelDAO;
 
     public Collection findAll() {
         return modelDAO.findAll();

@@ -8,18 +8,20 @@ package com.advantech.service;
 import com.advantech.dao.SheetViewDAO;
 import com.advantech.helper.PageInfo;
 import java.util.Collection;
+import javax.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  *
  * @author Wei.Cheng
  */
+@Service
+@Transactional
 public class SheetViewService {
 
-    private final SheetViewDAO sheetViewDAO;
-
-    public SheetViewService() {
-        this.sheetViewDAO = new SheetViewDAO();
-    }
+    @Autowired
+    private SheetViewDAO sheetViewDAO;
 
     public Collection findAll() {
         return sheetViewDAO.findAll();

@@ -122,7 +122,7 @@
         <script>
             $('body').removeClass('noscript');
         </script>
-        <c:if test="${sessionScope.jobnumber != null}">
+        <c:if test="${sessionScope.user.jobnumber != null}">
             <c:redirect url="pages/"/>
         </c:if>
         <div class="system-environment-checkMsg">

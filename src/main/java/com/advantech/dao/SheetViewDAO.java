@@ -5,7 +5,6 @@
  */
 package com.advantech.dao;
 
-import com.advantech.helper.HibernateUtil;
 import com.advantech.model.SheetView;
 import com.advantech.helper.PageInfo;
 import java.util.Arrays;
@@ -20,26 +19,28 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 /**
  *
  * @author Wei.Cheng
  */
+@Repository
 public class SheetViewDAO implements BasicDAO {
 
     private static final Logger log = LoggerFactory.getLogger(SheetViewDAO.class);
 
-    private final SessionFactory factory;
-    private final Session session;
+    @Autowired
+    private SessionFactory sessionFactory;
 
-    public SheetViewDAO() {
-        factory = HibernateUtil.getSessionFactory();
-        session = factory.getCurrentSession();
+    private Session currentSession() {
+        return sessionFactory.getCurrentSession();
     }
 
     @Override
     public Collection findAll() {
-        SQLQuery query = session.createSQLQuery("SELECT * FROM Sheet_Main_view");
+        SQLQuery query = currentSession().createSQLQuery("SELECT * FROM Sheet_Main_view");
         query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
         query.setReadOnly(true);
         List results = query.list();
@@ -47,7 +48,7 @@ public class SheetViewDAO implements BasicDAO {
     }
 
     public Collection findAll(PageInfo info) {
-        Criteria criteria = session.createCriteria(SheetView.class);
+        Criteria criteria = currentSession().createCriteria(SheetView.class);
         criteria.setReadOnly(true);
 
         String sortIdx = info.getSidx();

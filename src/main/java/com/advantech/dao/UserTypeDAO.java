@@ -5,38 +5,39 @@
  */
 package com.advantech.dao;
 
-import com.advantech.helper.HibernateUtil;
 import com.advantech.model.UserType;
 import java.util.Collection;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 /**
  *
  * @author Wei.Cheng
  */
+@Repository
 public class UserTypeDAO implements BasicDAO {
 
     private static final Logger log = LoggerFactory.getLogger(UserTypeDAO.class);
 
-    private final SessionFactory factory;
-    private final Session session;
+    @Autowired
+    private SessionFactory sessionFactory;
 
-    public UserTypeDAO() {
-        factory = HibernateUtil.getSessionFactory();
-        session = factory.getCurrentSession();
+    private Session currentSession() {
+        return sessionFactory.getCurrentSession();
     }
 
     @Override
     public Collection findAll() {
-        return session.createQuery("from UserType").list();
+        return currentSession().createQuery("from UserType").list();
     }
 
     @Override
     public Object findByPrimaryKey(Object obj_id) {
-        return session.load(UserType.class, Long.valueOf((int) obj_id));
+        return currentSession().load(UserType.class, Long.valueOf((int) obj_id));
     }
 
     @Override

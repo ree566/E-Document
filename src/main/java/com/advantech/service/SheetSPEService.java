@@ -6,25 +6,21 @@
 package com.advantech.service;
 
 import com.advantech.dao.*;
-import com.advantech.helper.PageInfo;
-import com.advantech.model.Model;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import javax.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  *
  * @author Wei.Cheng
  */
+@Service
+@Transactional
 public class SheetSPEService {
 
-    private final SheetSPEDAO sheetSPEDAO;
-
-    public SheetSPEService() {
-        sheetSPEDAO = new SheetSPEDAO();
-    }
+    @Autowired
+    private SheetSPEDAO sheetSPEDAO;
 
     public Collection findAll() {
         return sheetSPEDAO.findAll();

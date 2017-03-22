@@ -7,18 +7,20 @@ package com.advantech.service;
 
 import com.advantech.dao.*;
 import java.util.Collection;
+import javax.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  *
  * @author Wei.Cheng
  */
+@Service
+@Transactional
 public class UserTypeService {
 
-    private final UserTypeDAO userTypeDAO;
-
-    public UserTypeService() {
-        userTypeDAO = new UserTypeDAO();
-    }
+    @Autowired
+    private UserTypeDAO userTypeDAO;
 
     public Collection findAll() {
         return userTypeDAO.findAll();

@@ -7,18 +7,20 @@ package com.advantech.service;
 
 import com.advantech.dao.*;
 import java.util.Collection;
+import javax.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  *
  * @author Wei.Cheng
  */
+@Service
+@Transactional
 public class LabelService {
 
-    private final LabelInfoDAO labelInfoDAO;
-
-    public LabelService() {
-        labelInfoDAO = new LabelInfoDAO();
-    }
+    @Autowired
+    private LabelInfoDAO labelInfoDAO;
 
     public Collection findAll() {
         return labelInfoDAO.findAll();

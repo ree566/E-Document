@@ -6,21 +6,21 @@
 package com.advantech.service;
 
 import com.advantech.dao.*;
-import com.advantech.helper.PageInfo;
 import java.util.Collection;
-import org.hibernate.SessionFactory;
+import javax.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  *
  * @author Wei.Cheng
  */
+@Service
+@Transactional
 public class SheetIEService {
 
-    private final SheetIEDAO sheetIEDAO;
-
-    public SheetIEService() {
-        sheetIEDAO = new SheetIEDAO();
-    }
+    @Autowired
+    private SheetIEDAO sheetIEDAO;
 
     public Collection findAll() {
         return sheetIEDAO.findAll();

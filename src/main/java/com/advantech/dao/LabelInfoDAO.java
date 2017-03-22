@@ -12,30 +12,33 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 /**
  *
  * @author Wei.Cheng
  */
+@Repository
 public class LabelInfoDAO implements BasicDAO {
 
     private static final Logger log = LoggerFactory.getLogger(LabelInfoDAO.class);
-    private final SessionFactory factory;
-    private final Session session;
+    
+    @Autowired
+    private SessionFactory sessionFactory;
 
-    public LabelInfoDAO() {
-        factory = HibernateUtil.getSessionFactory();
-        session = factory.getCurrentSession();
+    private Session currentSession() {
+        return sessionFactory.getCurrentSession();
     }
 
     @Override
     public Collection findAll() {
-        return session.createQuery("from LabelInfo").list();
+        return currentSession().createQuery("from LabelInfo").list();
     }
 
     @Override
     public Object findByPrimaryKey(Object obj_id) {
-        return session.load(LabelInfo.class, Long.valueOf((int) obj_id));
+        return currentSession().load(LabelInfo.class, Long.valueOf((int) obj_id));
     }
 
     @Override

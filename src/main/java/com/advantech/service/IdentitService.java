@@ -8,18 +8,21 @@ package com.advantech.service;
 import com.advantech.dao.*;
 import com.advantech.model.Identit;
 import java.util.Collection;
+import javax.transaction.Transactional;
+import org.hibernate.Hibernate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  *
  * @author Wei.Cheng
  */
+@Service
+@Transactional
 public class IdentitService {
 
-    private final IdentitDAO identitDAO;
-
-    public IdentitService() {
-        identitDAO = new IdentitDAO();
-    }
+    @Autowired
+    private IdentitDAO identitDAO;
 
     public Collection findAll() {
         return identitDAO.findAll();
@@ -30,7 +33,11 @@ public class IdentitService {
     }
 
     public Identit findByJobnumber(String jobnumber) {
-        return identitDAO.findByJobnumber(jobnumber);
+        Identit i = identitDAO.findByJobnumber(jobnumber);
+        //Initialize the lazy loading relative object
+        Hibernate.initialize(i.getUserType());
+        Hibernate.initialize(i.getFloor());
+        return i;
     }
 
     public int insert(Object obj) {
