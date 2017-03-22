@@ -38,6 +38,7 @@
         <property name="minPoolSize" value="5" />
         <property name="maxStatements" value="50" />
         <property name="idleConnectionTestPeriod" value="300" />
+        <property name="testConnectionOnCheckout" value="true" />
     </bean> 
     
     <!-- 設定sessionFactory -->

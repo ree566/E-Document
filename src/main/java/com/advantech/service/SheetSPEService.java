@@ -6,7 +6,10 @@
 package com.advantech.service;
 
 import com.advantech.dao.*;
+import com.advantech.model.Model;
+import com.advantech.model.SheetSpe;
 import java.util.Collection;
+import java.util.Set;
 import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,6 +21,9 @@ import org.springframework.stereotype.Service;
 @Service
 @Transactional
 public class SheetSPEService {
+
+    @Autowired
+    private ModelService modelService;
 
     @Autowired
     private SheetSPEDAO sheetSPEDAO;
@@ -34,16 +40,45 @@ public class SheetSPEService {
         return sheetSPEDAO.getColumnName();
     }
 
-    public int insert(Object obj) {
-        return sheetSPEDAO.insert(obj);
+    public String insert(Model m) {
+        Set set = m.getSheetSpes();
+        SheetSpe spe = (SheetSpe) set.iterator();
+        System.out.println(spe.getModifiedDate());
+        return "";
     }
 
-    public int update(Object obj) {
-        return sheetSPEDAO.update(obj);
+    public String insert(String modelName, SheetSpe spe) {
+
+        Model model = modelService.findByName(modelName);
+        if (model != null) { //new model
+            modelService.insert(model);
+            Model insertModel = modelService.findByName(model.getName()); // get the inserted model
+            spe.setModel(insertModel);
+            sheetSPEDAO.insert(spe);
+            return "";
+        } else { //model exist
+            Set set = model.getSheetSpes();
+            if (set != null && !set.isEmpty()) {
+                SheetSpe existSpeSheet = (SheetSpe) set.iterator();
+                spe.setId(existSpeSheet.getId());
+                sheetSPEDAO.merge(spe);
+                return "SUCCESS";
+            }else{
+                spe.setModel(model);
+                sheetSPEDAO.insert(spe);
+                return "SUCCESS";
+            }
+        }
     }
 
-    public int delete(Object pojo) {
-        return sheetSPEDAO.delete(pojo);
+    public String update(String modelName, SheetSpe spe) {
+        sheetSPEDAO.update(spe);
+        return "";
+    }
+
+    public String delete(String modelName, SheetSpe spe) {
+        sheetSPEDAO.delete(spe);
+        return "";
     }
 
 }

@@ -19,7 +19,7 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class SheetSPEDAO extends BasicDAOImpl implements BasicDAO {
+public class SheetSPEDAO implements BasicDAO {
 
     private static final Logger log = LoggerFactory.getLogger(SheetSPEDAO.class);
 
@@ -47,6 +47,11 @@ public class SheetSPEDAO extends BasicDAOImpl implements BasicDAO {
     @Override
     public int insert(Object obj) {
         currentSession().save(obj);
+        return 1;
+    }
+
+    public int merge(Object obj) {
+        currentSession().merge(obj);
         return 1;
     }
 

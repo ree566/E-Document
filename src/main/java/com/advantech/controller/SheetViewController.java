@@ -85,32 +85,32 @@ public class SheetViewController {
     @ResponseBody
     @RequestMapping(value = "/updateSheet.do", method = {RequestMethod.POST})
     public String updateSheet(
-            @RequestParam String oper,
-            @RequestParam int id, @RequestParam String modelName,
-            @ModelAttribute SheetSpe spe,
-            @ModelAttribute SheetEe ee,
-            @ModelAttribute SheetIe ie,
+//            @RequestParam String oper,
+//            @RequestParam int modelId, @RequestParam String modelName,
+//            @ModelAttribute SheetSpe spe,
+//            @ModelAttribute SheetEe ee,
+//            @ModelAttribute SheetIe ie,
             @ModelAttribute("user") Identit user,
             HttpServletRequest req) throws ServletException, IOException {
-
+ 
         this.showParams(req);
-        this.printModels(id, spe, ee, ie);
+//        this.printModels(modelId, spe, ee, ie);
 
         String userType = user.getUserType().getName();
 
-        Model model = id == 0 ? new Model(modelName) : (Model) modelService.findByPrimaryKey(id);
-        userOper = oper;
+//        userOper = oper;
 
         String modifyMessage;
         switch (userType) {
             case EE:
-                modifyMessage = this.eeModify(model, ee);
+                modifyMessage = "";
                 break;
             case IE:
-                modifyMessage = this.ieModify(model, ie);
+                modifyMessage = "";
                 break;
             case SPE:
-                modifyMessage = this.speModify(model, spe);
+                modifyMessage = "";
+//                modifyMessage = this.speModify(modelName, spe);
                 break;
             default:
                 modifyMessage = "Unit not found";
@@ -147,27 +147,20 @@ public class SheetViewController {
         return "";
     }
 
-    private String speModify(Model m, Object sheet) {
-        Set set = new HashSet();
+    private String speModify(String modelName, SheetSpe sheet) {
         switch (userOper) {
             case ADD:
-                set.add(sheet);
-                m.setSheetSpes(set);
-                modelService.insert(m);
+                speService.insert(modelName, sheet);
                 break;
             case EDIT:
-                Set speSet = m.getSheetSpes();
-                Iterator iter = speSet.iterator();
-                SheetSpe existSheetSpe = (SheetSpe) iter.next();
-                SheetSpe newData = (SheetSpe) sheet;
-                newData.setId(existSheetSpe.getId());
-                speService.update(newData);
+                speService.update(modelName, sheet);
                 break;
             case DELETE:
-                modelService.delete(m);
+                speService.delete(modelName, sheet);
             default:
                 throw new UnsupportedOperationException();
         }
+
         return "";
 
     }

@@ -219,51 +219,16 @@
                 var unitName = '${sessionScope.user.userType.name}';
                 var modifyColumns = unitName == 'unlimited' ? columnNames : ((unitName == null || unitName == "") ? [] : getColumn(unitName));
 
-                if (modifyColumns.length != 0) {
-
+                if(modifyColumns.length != 0){
                     modifyColumns.push("modelName");
-
-                    console.log(columnNames);
-                    console.log(modifyColumns);
-
-//                    var difference = $(columnNames).not(modifyColumns).get();
-                    var difference = [];
-
-                    $.grep(columnNames, function (el) {
-                        if ($.inArray(el, modifyColumns) == -1 || el.indexOf("id") != -1)
-                            difference.push(el);
-                    });
-
-                    console.log(difference);
-
-                    for (var i = 0; i < modifyColumns.length; i++) {
-                        if (do_not_change_columns.indexOf(modifyColumns[i]) == -1) {
-                            grid.setColProp(modifyColumns[i], {editable: true});
-                        }
-                    }
-
-                    for (var i = 0; i < do_not_change_columns.length; i++) {
-                        difference.splice(difference.indexOf(do_not_change_columns[i]), 1);
-                    }
-
-                    $("#hideCol").on("click", function () {
-                        grid.hideCol(difference);
-                        resetFrozenColumn(grid);
-                    });
-
-                    $("#showCol").on("click", function () {
-                        grid.showCol(difference);
-                        resetFrozenColumn(grid);
-                    });
                 }
 
+                for (var i = 0; i < modifyColumns.length; i++) {
+                    var canModifyColumn = modifyColumns[i];
+                    grid.setColProp(canModifyColumn, {editable: true});
+                }
 
                 $("#list").jqGrid('setFrozenColumns');
-
-                function resetFrozenColumn(grid) {
-                    grid.jqGrid("destroyFrozenColumns");
-                    grid.jqGrid("setFrozenColumns");
-                }
 
                 function getColumn(unit) {
                     var result;
@@ -297,7 +262,8 @@
                             <td>
                                 jobnumber: <c:out value="${sessionScope.user.jobnumber}" /> / 
                                 name: <c:out value="${sessionScope.user.jobnumber}" /> / 
-                                unit: <c:out value="${sessionScope.user.userType.name}" />
+                                unit: <c:out value="${sessionScope.user.userType.name}" /> /
+                                floor: <c:out value="${sessionScope.user.floor.name}" />
                             </td>
                         </tr>
                     </table>

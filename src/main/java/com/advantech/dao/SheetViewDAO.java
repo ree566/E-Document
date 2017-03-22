@@ -12,10 +12,12 @@ import java.util.Collection;
 import java.util.List;
 import org.hibernate.Criteria;
 import org.hibernate.SQLQuery;
+import org.hibernate.ScrollableResults;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,6 +52,13 @@ public class SheetViewDAO implements BasicDAO {
     public Collection findAll(PageInfo info) {
         Criteria criteria = currentSession().createCriteria(SheetView.class);
         criteria.setReadOnly(true);
+        
+        //Get total row count and reset criteria
+        //https://forum.hibernate.org/viewtopic.php?t=951369
+        criteria.setProjection(Projections.rowCount());
+        info.setMaxNumOfRows(((Long) criteria.uniqueResult()).intValue());
+        criteria.setProjection(null);
+        criteria.setResultTransformer(Criteria.ROOT_ENTITY);
 
         String sortIdx = info.getSidx();
         if (sortIdx.length() > 0) {
@@ -66,8 +75,6 @@ public class SheetViewDAO implements BasicDAO {
             String searchString = info.getSearchString();
             addSearchCriteria(criteria, searchOper, searchField, searchString);
         }
-
-        info.setMaxNumOfRows(criteria.list().size());
 
         criteria.setFirstResult((info.getPage() - 1) * info.getRows());
         criteria.setMaxResults(info.getRows());
