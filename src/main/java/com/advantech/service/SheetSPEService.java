@@ -35,9 +35,7 @@ public class SheetSPEService {
 
     public Object findByPrimaryKey(Object obj_id) {
         SheetSpe spe = (SheetSpe) sheetSPEDAO.findByPrimaryKey(obj_id);
-        System.out.println(spe.getSpeOwner().getName());
-        System.out.println(spe.getQcOwner().getName());
-        System.out.println(spe.getEeOwner().getName());
+
         return spe;
     }
 

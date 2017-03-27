@@ -40,32 +40,33 @@ made subject to such option by the copyright holder.
 Contributor(s):
 -->
 <hibernate-configuration>
-    <session-factory>
-        <property name="hibernate.connection.driver_class">net.sourceforge.jtds.jdbc.Driver</property>
-        <property name="hibernate.connection.url">jdbc:jtds:sqlserver://M3-SERVER:1433/E_Document</property>
-        <property name="hibernate.connection.username">waychien</property>
-        <property name="hibernate.connection.password">m3server</property>
-        
-        <!--<property name="connection.provider_class">org.hibernate.connection.C3P0ConnectionProvider</property>-->
-<!--        <property name="hibernate.c3p0.min_size">5</property>
+  <session-factory>
+    <property name="hibernate.connection.driver_class">net.sourceforge.jtds.jdbc.Driver</property>
+    <property name="hibernate.connection.url">jdbc:jtds:sqlserver://M3-SERVER:1433/E_Document</property>
+    <property name="hibernate.connection.username">waychien</property>
+    <property name="hibernate.connection.password">m3server</property>
+    <!--<property name="connection.provider_class">org.hibernate.connection.C3P0ConnectionProvider</property>-->
+    <!--        <property name="hibernate.c3p0.min_size">5</property>
         <property name="hibernate.c3p0.max_size">20</property>
         <property name="hibernate.c3p0.timeout">300</property>
         <property name="hibernate.c3p0.max_statements">50</property>
         <property name="hibernate.c3p0.idle_test_period">3000</property>-->
-        
-        <property name="hibernate.dialect">org.hibernate.dialect.SQLServerDialect</property>
-        <property name="hibernate.show_sql">true</property>
-        <property name="hibernate.current_session_context_class">thread</property>
-        <property name="hibernate.transaction.factory_class">org.hibernate.transaction.JDBCTransactionFactory</property>
-        <mapping class="com.advantech.model.Floor"/>
-        <mapping class="com.advantech.model.Identit"/>
-        <mapping class="com.advantech.model.LabelInfo"/>
-        <mapping class="com.advantech.model.Model"/>
-        <mapping class="com.advantech.model.SheetEe"/>
-        <mapping class="com.advantech.model.SheetIe"/>
-        <mapping class="com.advantech.model.SheetSpe"/>
-        <mapping class="com.advantech.model.Type"/>
-        <mapping class="com.advantech.model.UserType"/>
-        <mapping class="com.advantech.model.SheetView"/>
-    </session-factory>
+    <property name="hibernate.dialect">org.hibernate.dialect.SQLServerDialect</property>
+    <property name="hibernate.show_sql">true</property>
+    <property name="hibernate.current_session_context_class">thread</property>
+    <property name="hibernate.transaction.factory_class">org.hibernate.transaction.JDBCTransactionFactory</property>
+    <mapping class="com.advantech.model.SheetView"/>
+    <mapping class="com.advantech.model.Type"/>
+    <mapping class="com.advantech.model.Floor"/>
+    <mapping class="com.advantech.model.SheetSpe"/>
+    <mapping class="com.advantech.model.UserType"/>
+    <mapping class="com.advantech.model.LabelInfo"/>
+    <mapping class="com.advantech.model.SheetIe"/>
+    <mapping class="com.advantech.model.SheetMainViewId"/>
+    <mapping class="com.advantech.model.Model"/>
+    <mapping class="com.advantech.model.SheetEe"/>
+    <mapping class="com.advantech.model.Identit"/>
+    <mapping class="com.advantech.model.SheetView"/>
+    <mapping class="com.advantech.model.SheetMainView"/>
+  </session-factory>
 </hibernate-configuration>

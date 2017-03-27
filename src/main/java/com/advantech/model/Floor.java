@@ -1,5 +1,5 @@
 package com.advantech.model;
-// Generated 2017/3/15 上午 09:14:05 by Hibernate Tools 4.3.1
+// Generated 2017/3/27 上午 08:57:09 by Hibernate Tools 4.3.1
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -20,8 +20,8 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "Floor",
-        schema = "dbo",
-        catalog = "E_Document"
+         schema = "dbo",
+         catalog = "E_Document"
 )
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Floor implements java.io.Serializable {

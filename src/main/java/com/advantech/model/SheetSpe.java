@@ -1,5 +1,5 @@
 package com.advantech.model;
-// Generated 2017/3/15 上午 09:14:05 by Hibernate Tools 4.3.1
+// Generated 2017/3/27 上午 08:57:09 by Hibernate Tools 4.3.1
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -27,14 +27,17 @@ import javax.persistence.TemporalType;
  */
 @Entity
 @Table(name = "Sheet_SPE",
-        schema = "dbo",
-        catalog = "E_Document"
+         schema = "dbo",
+         catalog = "E_Document"
 )
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class SheetSpe implements java.io.Serializable {
 
     private int id;
     private Floor floor;
+    private Identit identitByEeOwnerId;
+    private Identit identitBySpeOwnerId;
+    private Identit identitByQcOwnerId;
     private Model model;
     private Type type;
     private BigDecimal cleanPanel;
@@ -52,9 +55,6 @@ public class SheetSpe implements java.io.Serializable {
     private String burnIn;
     private BigDecimal biTime;
     private BigDecimal biTemperature;
-    private Identit speOwner;
-    private Identit eeOwner;
-    private Identit qcOwner;
     private String assyPackingSop;
     private Integer keypartA;
     private Integer keypartB;
@@ -63,7 +63,7 @@ public class SheetSpe implements java.io.Serializable {
     private String testFlow;
     private String packingFlow;
     private String partLink;
-    private String nIn1CollectionBox;
+    private String NIn1CollectionBox;
     private String partNoAttrMaintain;
     private Date modifiedDate;
 
@@ -77,9 +77,12 @@ public class SheetSpe implements java.io.Serializable {
         this.id = id;
     }
 
-    public SheetSpe(int id, Floor floor, Model model, Type type, BigDecimal cleanPanel, BigDecimal assy, BigDecimal packing, BigDecimal biCost, Integer vibration, Integer hiPotLeakage, BigDecimal coldBoot, BigDecimal warmBoot, BigDecimal assyToT1, BigDecimal t2ToPacking, String pending, BigDecimal pendingTime, String burnIn, BigDecimal biTime, BigDecimal biTemperature, Identit speOwner, Identit eeOwner, Identit qcOwner, String assyPackingSop, Integer keypartA, Integer keypartB, String preAssy, String babFlow, String testFlow, String packingFlow, String partLink, String nIn1CollectionBox, String partNoAttrMaintain, Date modifiedDate, Set<LabelInfo> labelInfos) {
+    public SheetSpe(int id, Floor floor, Identit identitByEeOwnerId, Identit identitBySpeOwnerId, Identit identitByQcOwnerId, Model model, Type type, BigDecimal cleanPanel, BigDecimal assy, BigDecimal packing, BigDecimal biCost, Integer vibration, Integer hiPotLeakage, BigDecimal coldBoot, BigDecimal warmBoot, BigDecimal assyToT1, BigDecimal t2ToPacking, String pending, BigDecimal pendingTime, String burnIn, BigDecimal biTime, BigDecimal biTemperature, String assyPackingSop, Integer keypartA, Integer keypartB, String preAssy, String babFlow, String testFlow, String packingFlow, String partLink, String NIn1CollectionBox, String partNoAttrMaintain, Date modifiedDate, Set<LabelInfo> labelInfos) {
         this.id = id;
         this.floor = floor;
+        this.identitByEeOwnerId = identitByEeOwnerId;
+        this.identitBySpeOwnerId = identitBySpeOwnerId;
+        this.identitByQcOwnerId = identitByQcOwnerId;
         this.model = model;
         this.type = type;
         this.cleanPanel = cleanPanel;
@@ -97,9 +100,6 @@ public class SheetSpe implements java.io.Serializable {
         this.burnIn = burnIn;
         this.biTime = biTime;
         this.biTemperature = biTemperature;
-        this.speOwner = speOwner;
-        this.eeOwner = eeOwner;
-        this.qcOwner = qcOwner;
         this.assyPackingSop = assyPackingSop;
         this.keypartA = keypartA;
         this.keypartB = keypartB;
@@ -108,7 +108,7 @@ public class SheetSpe implements java.io.Serializable {
         this.testFlow = testFlow;
         this.packingFlow = packingFlow;
         this.partLink = partLink;
-        this.nIn1CollectionBox = nIn1CollectionBox;
+        this.NIn1CollectionBox = NIn1CollectionBox;
         this.partNoAttrMaintain = partNoAttrMaintain;
         this.modifiedDate = modifiedDate;
         this.labelInfos = labelInfos;
@@ -133,6 +133,36 @@ public class SheetSpe implements java.io.Serializable {
 
     public void setFloor(Floor floor) {
         this.floor = floor;
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "EE_owner_id")
+    public Identit getIdentitByEeOwnerId() {
+        return this.identitByEeOwnerId;
+    }
+
+    public void setIdentitByEeOwnerId(Identit identitByEeOwnerId) {
+        this.identitByEeOwnerId = identitByEeOwnerId;
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "SPE_owner_id")
+    public Identit getIdentitBySpeOwnerId() {
+        return this.identitBySpeOwnerId;
+    }
+
+    public void setIdentitBySpeOwnerId(Identit identitBySpeOwnerId) {
+        this.identitBySpeOwnerId = identitBySpeOwnerId;
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "QC_owner_id")
+    public Identit getIdentitByQcOwnerId() {
+        return this.identitByQcOwnerId;
+    }
+
+    public void setIdentitByQcOwnerId(Identit identitByQcOwnerId) {
+        this.identitByQcOwnerId = identitByQcOwnerId;
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -245,9 +275,9 @@ public class SheetSpe implements java.io.Serializable {
         this.t2ToPacking = t2ToPacking;
     }
 
-    @Column(name = "Pending")
+    @Column(name = "Pending", length = 50)
     public String getPending() {
-        return pending;
+        return this.pending;
     }
 
     public void setPending(String pending) {
@@ -256,7 +286,7 @@ public class SheetSpe implements java.io.Serializable {
 
     @Column(name = "Pending_Time", precision = 10, scale = 1)
     public BigDecimal getPendingTime() {
-        return pendingTime;
+        return this.pendingTime;
     }
 
     public void setPendingTime(BigDecimal pendingTime) {
@@ -288,36 +318,6 @@ public class SheetSpe implements java.io.Serializable {
 
     public void setBiTemperature(BigDecimal biTemperature) {
         this.biTemperature = biTemperature;
-    }
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "Identit_id")
-    public Identit getSpeOwner() {
-        return this.speOwner;
-    }
-
-    public void setSpeOwner(Identit speOwner) {
-        this.speOwner = speOwner;
-    }
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "Identit_id")
-    public Identit getEeOwner() {
-        return this.eeOwner;
-    }
-
-    public void setEeOwner(Identit eeOwner) {
-        this.eeOwner = eeOwner;
-    }
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "Identit_id")
-    public Identit getQcOwner() {
-        return this.qcOwner;
-    }
-
-    public void setQcOwner(Identit qcOwner) {
-        this.qcOwner = qcOwner;
     }
 
     @Column(name = "ASSY_Packing_SOP", length = 500)
@@ -393,12 +393,12 @@ public class SheetSpe implements java.io.Serializable {
     }
 
     @Column(name = "N_In_1_collection_box", length = 50)
-    public String getnIn1CollectionBox() {
-        return nIn1CollectionBox;
+    public String getNIn1CollectionBox() {
+        return this.NIn1CollectionBox;
     }
 
-    public void setnIn1CollectionBox(String nIn1CollectionBox) {
-        this.nIn1CollectionBox = nIn1CollectionBox;
+    public void setNIn1CollectionBox(String NIn1CollectionBox) {
+        this.NIn1CollectionBox = NIn1CollectionBox;
     }
 
     @Column(name = "PartNo_attr_maintain", length = 50)
@@ -431,38 +431,40 @@ public class SheetSpe implements java.io.Serializable {
 
     @Override
     public int hashCode() {
-        int hash = 3;
-        hash = 97 * hash + Objects.hashCode(this.floor);
-        hash = 97 * hash + Objects.hashCode(this.model);
-        hash = 97 * hash + Objects.hashCode(this.type);
-        hash = 97 * hash + Objects.hashCode(this.cleanPanel);
-        hash = 97 * hash + Objects.hashCode(this.assy);
-        hash = 97 * hash + Objects.hashCode(this.packing);
-        hash = 97 * hash + Objects.hashCode(this.biCost);
-        hash = 97 * hash + Objects.hashCode(this.vibration);
-        hash = 97 * hash + Objects.hashCode(this.hiPotLeakage);
-        hash = 97 * hash + Objects.hashCode(this.coldBoot);
-        hash = 97 * hash + Objects.hashCode(this.warmBoot);
-        hash = 97 * hash + Objects.hashCode(this.assyToT1);
-        hash = 97 * hash + Objects.hashCode(this.t2ToPacking);
-        hash = 97 * hash + Objects.hashCode(this.burnIn);
-        hash = 97 * hash + Objects.hashCode(this.biTime);
-        hash = 97 * hash + Objects.hashCode(this.biTemperature);
-        hash = 97 * hash + Objects.hashCode(this.speOwner);
-        hash = 97 * hash + Objects.hashCode(this.eeOwner);
-        hash = 97 * hash + Objects.hashCode(this.qcOwner);
-        hash = 97 * hash + Objects.hashCode(this.assyPackingSop);
-        hash = 97 * hash + Objects.hashCode(this.keypartA);
-        hash = 97 * hash + Objects.hashCode(this.keypartB);
-        hash = 97 * hash + Objects.hashCode(this.preAssy);
-        hash = 97 * hash + Objects.hashCode(this.babFlow);
-        hash = 97 * hash + Objects.hashCode(this.testFlow);
-        hash = 97 * hash + Objects.hashCode(this.packingFlow);
-        hash = 97 * hash + Objects.hashCode(this.partLink);
-        hash = 97 * hash + Objects.hashCode(this.nIn1CollectionBox);
-        hash = 97 * hash + Objects.hashCode(this.partNoAttrMaintain);
-        hash = 97 * hash + Objects.hashCode(this.modifiedDate);
-        hash = 97 * hash + Objects.hashCode(this.labelInfos);
+        int hash = 7;
+        hash = 59 * hash + Objects.hashCode(this.floor);
+        hash = 59 * hash + Objects.hashCode(this.identitByEeOwnerId);
+        hash = 59 * hash + Objects.hashCode(this.identitBySpeOwnerId);
+        hash = 59 * hash + Objects.hashCode(this.identitByQcOwnerId);
+        hash = 59 * hash + Objects.hashCode(this.model);
+        hash = 59 * hash + Objects.hashCode(this.type);
+        hash = 59 * hash + Objects.hashCode(this.cleanPanel);
+        hash = 59 * hash + Objects.hashCode(this.assy);
+        hash = 59 * hash + Objects.hashCode(this.packing);
+        hash = 59 * hash + Objects.hashCode(this.biCost);
+        hash = 59 * hash + Objects.hashCode(this.vibration);
+        hash = 59 * hash + Objects.hashCode(this.hiPotLeakage);
+        hash = 59 * hash + Objects.hashCode(this.coldBoot);
+        hash = 59 * hash + Objects.hashCode(this.warmBoot);
+        hash = 59 * hash + Objects.hashCode(this.assyToT1);
+        hash = 59 * hash + Objects.hashCode(this.t2ToPacking);
+        hash = 59 * hash + Objects.hashCode(this.pending);
+        hash = 59 * hash + Objects.hashCode(this.pendingTime);
+        hash = 59 * hash + Objects.hashCode(this.burnIn);
+        hash = 59 * hash + Objects.hashCode(this.biTime);
+        hash = 59 * hash + Objects.hashCode(this.biTemperature);
+        hash = 59 * hash + Objects.hashCode(this.assyPackingSop);
+        hash = 59 * hash + Objects.hashCode(this.keypartA);
+        hash = 59 * hash + Objects.hashCode(this.keypartB);
+        hash = 59 * hash + Objects.hashCode(this.preAssy);
+        hash = 59 * hash + Objects.hashCode(this.babFlow);
+        hash = 59 * hash + Objects.hashCode(this.testFlow);
+        hash = 59 * hash + Objects.hashCode(this.packingFlow);
+        hash = 59 * hash + Objects.hashCode(this.partLink);
+        hash = 59 * hash + Objects.hashCode(this.NIn1CollectionBox);
+        hash = 59 * hash + Objects.hashCode(this.partNoAttrMaintain);
+        hash = 59 * hash + Objects.hashCode(this.modifiedDate);
+        hash = 59 * hash + Objects.hashCode(this.labelInfos);
         return hash;
     }
 
@@ -478,6 +480,9 @@ public class SheetSpe implements java.io.Serializable {
             return false;
         }
         final SheetSpe other = (SheetSpe) obj;
+        if (!Objects.equals(this.pending, other.pending)) {
+            return false;
+        }
         if (!Objects.equals(this.burnIn, other.burnIn)) {
             return false;
         }
@@ -499,13 +504,22 @@ public class SheetSpe implements java.io.Serializable {
         if (!Objects.equals(this.partLink, other.partLink)) {
             return false;
         }
-        if (!Objects.equals(this.nIn1CollectionBox, other.nIn1CollectionBox)) {
+        if (!Objects.equals(this.NIn1CollectionBox, other.NIn1CollectionBox)) {
             return false;
         }
         if (!Objects.equals(this.partNoAttrMaintain, other.partNoAttrMaintain)) {
             return false;
         }
         if (!Objects.equals(this.floor, other.floor)) {
+            return false;
+        }
+        if (!Objects.equals(this.identitByEeOwnerId, other.identitByEeOwnerId)) {
+            return false;
+        }
+        if (!Objects.equals(this.identitBySpeOwnerId, other.identitBySpeOwnerId)) {
+            return false;
+        }
+        if (!Objects.equals(this.identitByQcOwnerId, other.identitByQcOwnerId)) {
             return false;
         }
         if (!Objects.equals(this.model, other.model)) {
@@ -544,19 +558,13 @@ public class SheetSpe implements java.io.Serializable {
         if (!Objects.equals(this.t2ToPacking, other.t2ToPacking)) {
             return false;
         }
+        if (!Objects.equals(this.pendingTime, other.pendingTime)) {
+            return false;
+        }
         if (!Objects.equals(this.biTime, other.biTime)) {
             return false;
         }
         if (!Objects.equals(this.biTemperature, other.biTemperature)) {
-            return false;
-        }
-        if (!Objects.equals(this.speOwner, other.speOwner)) {
-            return false;
-        }
-        if (!Objects.equals(this.eeOwner, other.eeOwner)) {
-            return false;
-        }
-        if (!Objects.equals(this.qcOwner, other.qcOwner)) {
             return false;
         }
         if (!Objects.equals(this.keypartA, other.keypartA)) {
@@ -574,4 +582,5 @@ public class SheetSpe implements java.io.Serializable {
         return true;
     }
 
+    
 }

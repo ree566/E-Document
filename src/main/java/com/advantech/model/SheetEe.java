@@ -1,5 +1,5 @@
 package com.advantech.model;
-// Generated 2017/3/15 上午 09:14:05 by Hibernate Tools 4.3.1
+// Generated 2017/3/27 上午 08:57:09 by Hibernate Tools 4.3.1
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
@@ -156,16 +156,16 @@ public class SheetEe implements java.io.Serializable {
 
     @Override
     public int hashCode() {
-        int hash = 5;
-        hash = 17 * hash + Objects.hashCode(this.model);
-        hash = 17 * hash + Objects.hashCode(this.t1);
-        hash = 17 * hash + Objects.hashCode(this.t2);
-        hash = 17 * hash + Objects.hashCode(this.t3);
-        hash = 17 * hash + Objects.hashCode(this.t4);
-        hash = 17 * hash + Objects.hashCode(this.upBiRi);
-        hash = 17 * hash + Objects.hashCode(this.downBiRi);
-        hash = 17 * hash + Objects.hashCode(this.testSop);
-        hash = 17 * hash + Objects.hashCode(this.modifiedDate);
+        int hash = 3;
+        hash = 97 * hash + Objects.hashCode(this.model);
+        hash = 97 * hash + Objects.hashCode(this.t1);
+        hash = 97 * hash + Objects.hashCode(this.t2);
+        hash = 97 * hash + Objects.hashCode(this.t3);
+        hash = 97 * hash + Objects.hashCode(this.t4);
+        hash = 97 * hash + Objects.hashCode(this.upBiRi);
+        hash = 97 * hash + Objects.hashCode(this.downBiRi);
+        hash = 97 * hash + Objects.hashCode(this.testSop);
+        hash = 97 * hash + Objects.hashCode(this.modifiedDate);
         return hash;
     }
 

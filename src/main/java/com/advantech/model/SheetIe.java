@@ -1,5 +1,5 @@
 package com.advantech.model;
-// Generated 2017/3/15 上午 09:14:05 by Hibernate Tools 4.3.1
+// Generated 2017/3/27 上午 08:57:09 by Hibernate Tools 4.3.1
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
@@ -156,16 +156,16 @@ public class SheetIe implements java.io.Serializable {
 
     @Override
     public int hashCode() {
-        int hash = 7;
-        hash = 11 * hash + Objects.hashCode(this.model);
-        hash = 11 * hash + Objects.hashCode(this.totalModule);
-        hash = 11 * hash + Objects.hashCode(this.assyStations);
-        hash = 11 * hash + Objects.hashCode(this.packingStations);
-        hash = 11 * hash + Objects.hashCode(this.assyLeadTime);
-        hash = 11 * hash + Objects.hashCode(this.assyKanbanTime);
-        hash = 11 * hash + Objects.hashCode(this.packingLeadTime);
-        hash = 11 * hash + Objects.hashCode(this.packingKanbanTime);
-        hash = 11 * hash + Objects.hashCode(this.modifiedDate);
+        int hash = 3;
+        hash = 43 * hash + Objects.hashCode(this.model);
+        hash = 43 * hash + Objects.hashCode(this.totalModule);
+        hash = 43 * hash + Objects.hashCode(this.assyStations);
+        hash = 43 * hash + Objects.hashCode(this.packingStations);
+        hash = 43 * hash + Objects.hashCode(this.assyLeadTime);
+        hash = 43 * hash + Objects.hashCode(this.assyKanbanTime);
+        hash = 43 * hash + Objects.hashCode(this.packingLeadTime);
+        hash = 43 * hash + Objects.hashCode(this.packingKanbanTime);
+        hash = 43 * hash + Objects.hashCode(this.modifiedDate);
         return hash;
     }
 

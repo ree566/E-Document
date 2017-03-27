@@ -1,10 +1,11 @@
 package com.advantech.model;
-// Generated 2017/3/15 上午 09:14:05 by Hibernate Tools 4.3.1
+// Generated 2017/3/27 上午 08:57:09 by Hibernate Tools 4.3.1
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -38,7 +39,13 @@ public class Identit implements java.io.Serializable {
     private String email;
 
     @JsonIgnore
-    private Set<SheetSpe> sheetSpes = new HashSet<SheetSpe>(0);
+    private Set<SheetSpe> sheetSpesForEeOwnerId = new HashSet<SheetSpe>(0);
+
+    @JsonIgnore
+    private Set<SheetSpe> sheetSpesForSpeOwnerId = new HashSet<SheetSpe>(0);
+
+    @JsonIgnore
+    private Set<SheetSpe> sheetSpesForQcOwnerId = new HashSet<SheetSpe>(0);
 
     public Identit() {
     }
@@ -47,7 +54,7 @@ public class Identit implements java.io.Serializable {
         this.id = id;
     }
 
-    public Identit(int id, Floor floor, UserType userType, String jobnumber, String password, String name, Integer permission, String email, Set<SheetSpe> sheetSpes) {
+    public Identit(int id, Floor floor, UserType userType, String jobnumber, String password, String name, Integer permission, String email, Set<SheetSpe> sheetSpesForEeOwnerId, Set<SheetSpe> sheetSpesForSpeOwnerId, Set<SheetSpe> sheetSpesForQcOwnerId) {
         this.id = id;
         this.floor = floor;
         this.userType = userType;
@@ -56,7 +63,9 @@ public class Identit implements java.io.Serializable {
         this.name = name;
         this.permission = permission;
         this.email = email;
-        this.sheetSpes = sheetSpes;
+        this.sheetSpesForEeOwnerId = sheetSpesForEeOwnerId;
+        this.sheetSpesForSpeOwnerId = sheetSpesForSpeOwnerId;
+        this.sheetSpesForQcOwnerId = sheetSpesForQcOwnerId;
     }
 
     @Id
@@ -135,14 +144,60 @@ public class Identit implements java.io.Serializable {
         this.email = email;
     }
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "identit")
-    public Set<SheetSpe> getSheetSpes() {
-        return sheetSpes;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "identitByEeOwnerId")
+    public Set<SheetSpe> getSheetSpesForEeOwnerId() {
+        return this.sheetSpesForEeOwnerId;
     }
 
-    public void setSheetSpes(Set<SheetSpe> sheetSpes) {
-        this.sheetSpes = sheetSpes;
+    public void setSheetSpesForEeOwnerId(Set<SheetSpe> sheetSpesForEeOwnerId) {
+        this.sheetSpesForEeOwnerId = sheetSpesForEeOwnerId;
     }
- 
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "identitBySpeOwnerId")
+    public Set<SheetSpe> getSheetSpesForSpeOwnerId() {
+        return this.sheetSpesForSpeOwnerId;
+    }
+
+    public void setSheetSpesForSpeOwnerId(Set<SheetSpe> sheetSpesForSpeOwnerId) {
+        this.sheetSpesForSpeOwnerId = sheetSpesForSpeOwnerId;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "identitByQcOwnerId")
+    public Set<SheetSpe> getSheetSpesForQcOwnerId() {
+        return this.sheetSpesForQcOwnerId;
+    }
+
+    public void setSheetSpesForQcOwnerId(Set<SheetSpe> sheetSpesForQcOwnerId) {
+        this.sheetSpesForQcOwnerId = sheetSpesForQcOwnerId;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 37 * hash + this.id;
+        hash = 37 * hash + Objects.hashCode(this.jobnumber);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Identit other = (Identit) obj;
+        if (this.id != other.id) {
+            return false;
+        }
+        if (!Objects.equals(this.jobnumber, other.jobnumber)) {
+            return false;
+        }
+        return true;
+    }
 
 }
