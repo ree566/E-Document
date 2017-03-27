@@ -42,7 +42,7 @@ public class ModelDAO implements BasicDAO {
 
     @Override
     public Object findByPrimaryKey(Object obj_id) {
-        return currentSession().load(Model.class, Long.valueOf((int) obj_id));
+        return currentSession().load(Model.class, (int) obj_id);
     }
 
     public List<Model> findByPrimaryKeys(Integer... id) {

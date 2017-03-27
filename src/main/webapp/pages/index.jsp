@@ -54,6 +54,8 @@
                 var do_not_change_columns = ["id", "modified_Date", "CleanPanel_and_Assembly", "productionWT", "setupTime"];
 
                 var grid = $("#list");
+                var floorOption = getSelectOption("floor");
+                var identitOption = getSelectOption("identit");
 
                 var centerForm = function ($form) {
                     $form.closest('div.ui-jqdialog').position({
@@ -63,21 +65,18 @@
                 };
 
                 var customErrorTextFormat = function (response) {
-                    return [false, response.responseText];
-//                    return '<span class="ui-icon ui-icon-alert" ' +
-//                            'style="float:left; margin-right:.3em;"></span>' +
-//                            response.responseText;
+                    return '<span class="ui-icon ui-icon-alert" ' +
+                            'style="float:left; margin-right:.3em;"></span>' +
+                            response.responseText;
                 };
 
                 grid.jqGrid({
                     url: '${root}/getSheetView.do',
-//                    cacheUrlData: true,
                     datatype: "json",
                     mtype: 'POST',
-//                    styleUI: 'Bootstrap',
                     colModel: [
                         {label: 'Model_id', name: 'modelId', hidden: true, key: true, editable: true, editoptions: {defaultValue: "0"}},
-                        {label: 'Model', name: 'modelName', frozen: true},
+                        {label: 'Model', name: 'modelName', frozen: true, editable: true},
                         {label: 'TYPE', name: 'typeName', width: 100},
                         {label: 'ProductionWT', name: 'productionWT', width: 120},
                         {label: 'Total Module', name: 'totalModule', width: 100},
@@ -98,19 +97,19 @@
                         {label: 'Warm Boot', name: 'warmBoot', width: 100},
                         {label: 'ASS_T1', name: 'assyToT1', width: 100},
                         {label: 'T2_PACKING', name: 't2ToPacking', width: 100},
-                        {label: 'Floor_id', name: 'floorId', hidden: true, editable: true},
-                        {label: 'Floor', name: 'floorName', width: 100},
+                        {label: 'Floor_id', name: 'floorId', editable: true},
+                        {label: 'Floor', name: 'floorName', edittype: "select", editoptions: {value: floorOption}, width: 100, editable: true},
                         {label: 'Pending', name: 'pending', width: 100},
                         {label: 'Pending TIME', name: 'pendingTime', width: 100},
                         {label: 'BurnIn', name: 'burnIn', edittype: "select", editoptions: {value: "Y:Y;N:N"}, width: 100},
                         {label: 'B/I Time', name: 'biTime', width: 100},
                         {label: 'BI_Temperature', name: 'biTemperature', width: 100},
-                        {label: 'SPEOwnerId', name: 'speOwnerId', hidden: true, editable: true},
-                        {label: 'SPE Owner', name: 'speOwnerName', width: 100},
-                        {label: 'EEOwnerId', name: 'eeOwnerId', hidden: true, editable: true},
-                        {label: 'EE Owner', name: 'eeOwnerName', width: 100},
-                        {label: 'QCOwnerId', name: 'qcOwnerId', hidden: true, editable: true},
-                        {label: 'QC Owner', name: 'qcOwnerName', width: 100},
+                        {label: 'SPEOwnerId', name: 'speOwnerId', hidden: true},
+                        {label: 'SPE Owner', name: 'speOwnerName', edittype: "select", editoptions: {value: identitOption}, editable: true, width: 100},
+                        {label: 'EEOwnerId', name: 'eeOwnerId', hidden: true},
+                        {label: 'EE Owner', name: 'eeOwnerName', edittype: "select", editoptions: {value: identitOption}, editable: true, width: 100},
+                        {label: 'QCOwnerId', name: 'qcOwnerId', hidden: true},
+                        {label: 'QC Owner', name: 'qcOwnerName', edittype: "select", editoptions: {value: identitOption}, editable: true, width: 100},
                         {label: '組包SOP', name: 'assyPackingSop', width: 100},
                         {label: '測試SOP', name: 'testSop', width: 100},
                         {label: 'KEYPART_A', name: 'keypartA', width: 100},
@@ -136,7 +135,7 @@
                         {label: '前置時間', name: 'packingLeadTime', width: 80},
                         {label: '看板工時', name: 'packingKanbanTime', width: 80},
                         {label: 'CleanPanel+Assembly', name: 'cleanPanel_and_Assembly', width: 200},
-                        {label: 'Modified_Date', width: 200, name: 'modified_Date', formatter: 'date', formatoptions: {srcformat: 'U/1000', newformat: 'Y-m-d h:i:s A'}}
+                        {label: 'Modified_Date', width: 200, name: 'modified_Date', formatter: 'date', formatoptions: {srcformat: 'Y-m-d H:i:s A', newformat: 'Y-m-d H:i:s A'}}
                     ],
                     rowNum: 20,
                     rowList: [20, 50, 100],
@@ -144,6 +143,7 @@
                     viewrecords: true,
                     shrinkToFit: false,
                     hidegrid: true,
+                    prmNames: {id: "modelId"},
                     jsonReader: {
                         root: "rows",
                         page: "page",
@@ -151,25 +151,24 @@
                         records: "records",
                         repeatitems: false
                     },
-//                    onSelectRow: function (rowid, status, e) {
-//                        if (lastsel)
-//                            $("#list").jqGrid("restoreRow", lastsel);
-//                        if (rowid !== lastsel) {
-//                            scrollPosition = $("#list").closest(".ui-jqgrid-bdiv").scrollLeft();
-//                            $("#list").jqGrid("editRow", rowid, true, function () {
-//                                setTimeout(function () {
-//                                    $("input, select", e.target).focus();
-//                                }, 10);
-//                            });
-//                            setTimeout(function () {
-//                                $("#list").closest(".ui-jqgrid-bdiv").scrollLeft(scrollPosition);
-//                            }, 0);
-//                            lastsel = rowid;
-//                        } else {
-//                            lastsel = null;
-//                        }
-//                    },
-//                    loadonce: true,
+                    onSelectRow: function (rowid, status, e) {
+                        if (lastsel)
+                            $("#list").jqGrid("restoreRow", lastsel);
+                        if (rowid !== lastsel) {
+                            scrollPosition = $("#list").closest(".ui-jqgrid-bdiv").scrollLeft();
+                            $("#list").jqGrid("editRow", rowid, true, function () {
+                                setTimeout(function () {
+                                    $("input, select", e.target).focus();
+                                }, 10);
+                            });
+                            setTimeout(function () {
+                                $("#list").closest(".ui-jqgrid-bdiv").scrollLeft(scrollPosition);
+                            }, 0);
+                            lastsel = rowid;
+                        } else {
+                            lastsel = null;
+                        }
+                    },
                     afterSubmit: function () {
                         $(this).setGridParam({datatype: 'json', page: 1}).trigger('reloadGrid');
                         return [true];
@@ -178,12 +177,12 @@
                     caption: "工時大表",
                     width: 1200,
                     height: 450,
-                    multiselect: true,
+//                    multiselect: true,
                     editurl: '${root}/updateSheet.do',
                     sortname: 'modelId', sortorder: 'desc'
                 })
                         .jqGrid('navGrid', '#pager',
-                                {edit: true, add: true, del: true, search: true},
+                                {edit: false, add: true, del: true, search: true},
                                 {
                                     dataheight: 350,
                                     closeAfterEdit: false,
@@ -196,7 +195,9 @@
 //                                    reloadAfterSubmit: true,
                                     errorTextFormat: customErrorTextFormat
                                 },
-                                {reloadAfterSubmit: true},
+                                {
+                                    reloadAfterSubmit: true
+                                },
                                 {closeAfterSearch: false, reloadAfterSubmit: true}
                         )
                         .jqGrid('setGroupHeaders', {
@@ -219,10 +220,6 @@
                 var unitName = '${sessionScope.user.userType.name}';
                 var modifyColumns = unitName == 'unlimited' ? columnNames : ((unitName == null || unitName == "") ? [] : getColumn(unitName));
 
-                if(modifyColumns.length != 0){
-                    modifyColumns.push("modelName");
-                }
-
                 for (var i = 0; i < modifyColumns.length; i++) {
                     var canModifyColumn = modifyColumns[i];
                     grid.setColProp(canModifyColumn, {editable: true});
@@ -239,6 +236,23 @@
                             unit: unit
                         },
                         dataType: "json",
+                        async: false,
+                        success: function (response) {
+                            result = response;
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            console.log(xhr.responseText);
+                        }
+                    });
+                    return result;
+                }
+
+                function getSelectOption(columnName) {
+                    var result;
+                    $.ajax({
+                        type: "GET",
+                        url: "${root}/" + columnName + "Option.do",
+//                        dataType: "text/plain",
                         async: false,
                         success: function (response) {
                             result = response;

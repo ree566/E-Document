@@ -9,10 +9,11 @@ import com.advantech.dao.*;
 import com.advantech.model.Model;
 import com.advantech.model.SheetSpe;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
-import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
@@ -23,7 +24,7 @@ import org.springframework.stereotype.Service;
 public class SheetSPEService {
 
     @Autowired
-    private ModelService modelService;
+    private ModelDAO modelDAO;
 
     @Autowired
     private SheetSPEDAO sheetSPEDAO;
@@ -33,52 +34,49 @@ public class SheetSPEService {
     }
 
     public Object findByPrimaryKey(Object obj_id) {
-        return sheetSPEDAO.findByPrimaryKey(obj_id);
+        SheetSpe spe = (SheetSpe) sheetSPEDAO.findByPrimaryKey(obj_id);
+        System.out.println(spe.getSpeOwner().getName());
+        System.out.println(spe.getQcOwner().getName());
+        System.out.println(spe.getEeOwner().getName());
+        return spe;
     }
 
     public String[] getColumnName() {
         return sheetSPEDAO.getColumnName();
     }
 
-    public String insert(Model m) {
-        Set set = m.getSheetSpes();
-        SheetSpe spe = (SheetSpe) set.iterator();
-        System.out.println(spe.getModifiedDate());
-        return "";
+    public int insert(SheetSpe spe) {
+        return sheetSPEDAO.insert(spe);
     }
 
-    public String insert(String modelName, SheetSpe spe) {
+    public int update(Model model, SheetSpe spe) {
+        Model sameNameModel = modelDAO.findByName(model.getName());
 
-        Model model = modelService.findByName(modelName);
-        if (model != null) { //new model
-            modelService.insert(model);
-            Model insertModel = modelService.findByName(model.getName()); // get the inserted model
-            spe.setModel(insertModel);
-            sheetSPEDAO.insert(spe);
-            return "";
-        } else { //model exist
-            Set set = model.getSheetSpes();
-            if (set != null && !set.isEmpty()) {
-                SheetSpe existSpeSheet = (SheetSpe) set.iterator();
-                spe.setId(existSpeSheet.getId());
-                sheetSPEDAO.merge(spe);
-                return "SUCCESS";
-            }else{
-                spe.setModel(model);
-                sheetSPEDAO.insert(spe);
-                return "SUCCESS";
-            }
+        if (sameNameModel != null && model.getId() != sameNameModel.getId()) {
+            return 0;
+        }
+
+        Model existModel = (Model) modelDAO.findByPrimaryKey(model.getId());
+        if (!model.getName().equals(existModel.getName())) {
+            existModel.setName(model.getName());
+            modelDAO.update(existModel);
+        }
+        Set set = existModel.getSheetSpes();
+        if (set == null || set.isEmpty()) {
+            set = new HashSet();
+            spe.setModel(existModel);
+            set.add(spe);
+            return sheetSPEDAO.insert(spe);
+        } else {
+            SheetSpe existSPESheet = (SheetSpe) set.iterator().next();
+            spe.setId(existSPESheet.getId());
+            spe.setModel(existModel);
+            return sheetSPEDAO.merge(spe);
         }
     }
 
-    public String update(String modelName, SheetSpe spe) {
-        sheetSPEDAO.update(spe);
-        return "";
-    }
-
-    public String delete(String modelName, SheetSpe spe) {
-        sheetSPEDAO.delete(spe);
-        return "";
+    public int delete(String modelName, SheetSpe spe) {
+        return sheetSPEDAO.delete(spe);
     }
 
 }

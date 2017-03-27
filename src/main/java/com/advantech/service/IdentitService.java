@@ -6,12 +6,16 @@
 package com.advantech.service;
 
 import com.advantech.dao.*;
+import com.advantech.helper.MD5Encoder;
 import com.advantech.model.Identit;
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
-import javax.transaction.Transactional;
+import java.util.List;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
@@ -50,6 +54,18 @@ public class IdentitService {
 
     public int delete(Object pojo) {
         return identitDAO.delete(pojo);
+    }
+
+    public void encryptPassord() throws NoSuchAlgorithmException, UnsupportedEncodingException {
+        List<Identit> l = (List<Identit>) this.findAll();
+        for (Identit i : l) {
+            String password = i.getPassword();
+            if (password == null) {
+                continue;
+            }
+            i.setPassword(MD5Encoder.toMD5("Hello world!" + password));
+            this.update(i);
+        }
     }
 
 }

@@ -38,7 +38,8 @@
         <property name="minPoolSize" value="5" />
         <property name="maxStatements" value="50" />
         <property name="idleConnectionTestPeriod" value="300" />
-        <property name="testConnectionOnCheckout" value="true" />
+        <property name="privilegeSpawnedThreads" value="true" />
+        <property name="contextClassLoaderSource" value="library" />
     </bean> 
     
     <!-- 設定sessionFactory -->
@@ -68,7 +69,7 @@
     </bean>
  
     <!-- 對base-package下及其子資料夾偵測並自動裝配Bean -->
-    <context:component-scan base-package="com.advantech.dao, com.advantech.service, com.advantech.controller" />
+    <context:component-scan base-package="com.advantech.dao, com.advantech.service, com.advantech.controller, com.advantech.customException" />
     <!-- 要使用 @Transactional 時需要 -->
     <tx:annotation-driven proxy-target-class="true" transaction-manager="transactionManager"/>
     

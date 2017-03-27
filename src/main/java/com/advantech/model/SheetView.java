@@ -6,6 +6,7 @@
 package com.advantech.model;
 
 import com.advantech.helper.JsonDateSerializer;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -212,7 +213,7 @@ public class SheetView implements Serializable {
     @Column(name = "CleanPanel_and_Assembly", precision = 10, scale = 1)
     private BigDecimal CleanPanel_and_Assembly;
 
-//    @JsonSerialize(using = JsonDateSerializer.class)
+    @JsonFormat(pattern = "yyyy-MM-dd'T'kk:mm:ss.SSS'Z'", timezone="GMT+8")
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "Modified_Date", length = 23, updatable = false)
     private Date modified_Date;

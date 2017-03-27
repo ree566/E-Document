@@ -6,13 +6,12 @@
 package com.advantech.service;
 
 import com.advantech.dao.*;
-import com.advantech.helper.PageInfo;
 import com.advantech.model.Model;
 import java.util.Collection;
 import java.util.List;
-import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
@@ -51,6 +50,13 @@ public class ModelService {
 
     public int delete(Object pojo) {
         return modelDAO.delete(pojo);
+    }
+
+    public int delete(List<Model> l) {
+        for (Model m : l) {
+            this.delete(m);
+        }
+        return 1;
     }
 
 }

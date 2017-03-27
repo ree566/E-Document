@@ -55,6 +55,11 @@ public class SheetEEDAO implements BasicDAO {
         currentSession().update(obj);
         return 1;
     }
+    
+    public int merge(Object obj) {
+        currentSession().merge(obj);
+        return 1;
+    }
 
     @Override
     public int delete(Object pojo) {

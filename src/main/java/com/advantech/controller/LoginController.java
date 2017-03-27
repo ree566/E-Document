@@ -5,11 +5,12 @@
  */
 package com.advantech.controller;
 
+import com.advantech.helper.MD5Encoder;
 import com.advantech.model.Identit;
 import com.advantech.service.IdentitService;
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
 import javax.servlet.http.HttpSession;
-import javax.transaction.Transactional;
-import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -29,11 +30,13 @@ public class LoginController {
     @Autowired
     private IdentitService service;
 
+    private final String salt = "Hello world!";
+
     @RequestMapping(value = "/login.do", method = {RequestMethod.POST})
-    public String login(@RequestParam String jobnumber, @RequestParam String password, Model model, HttpSession session) {
+    public String login(@RequestParam String jobnumber, @RequestParam String password, Model model, HttpSession session) throws NoSuchAlgorithmException, UnsupportedEncodingException {
         System.out.println("user login");
         Identit i = service.findByJobnumber(jobnumber);
-        if (i == null || !i.getPassword().equals(password)) {
+        if (i == null || !isPasswordMatch(password, i.getPassword())) {
             System.out.println("user not found");
             model.addAttribute("errormsg", "錯誤的帳號或密碼");
             return "forward:login.jsp";
@@ -41,6 +44,17 @@ public class LoginController {
             model.addAttribute("user", i);
             return "redirect:pages/index.jsp";
         }
+    }
+
+    private boolean isPasswordMatch(String password, String encryptPassord) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+        String encrypt = MD5Encoder.toMD5(salt + password);
+        return encryptPassord.equals(encrypt);
+    }
+
+    @RequestMapping(value = "/encryptPassord.do", method = {RequestMethod.GET})
+    public String encryptPassord() throws NoSuchAlgorithmException, UnsupportedEncodingException {
+        service.encryptPassord();
+        return "redirect:/";
     }
 
 }

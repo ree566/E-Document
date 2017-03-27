@@ -35,7 +35,7 @@ public class IdentitDAO implements BasicDAO {
 
     @Override
     public Collection findAll() {
-        return currentSession().createQuery("from Identit").list();
+        return currentSession().createQuery("from Identit i order by i.name").list();
     }
 
     @Override

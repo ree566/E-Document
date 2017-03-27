@@ -52,9 +52,9 @@ public class SheetSpe implements java.io.Serializable {
     private String burnIn;
     private BigDecimal biTime;
     private BigDecimal biTemperature;
-    private Integer speOwnerId;
-    private Integer eeOwnerId;
-    private Integer qcOwnerId;
+    private Identit speOwner;
+    private Identit eeOwner;
+    private Identit qcOwner;
     private String assyPackingSop;
     private Integer keypartA;
     private Integer keypartB;
@@ -77,7 +77,7 @@ public class SheetSpe implements java.io.Serializable {
         this.id = id;
     }
 
-    public SheetSpe(int id, Floor floor, Model model, Type type, BigDecimal cleanPanel, BigDecimal assy, BigDecimal packing, BigDecimal biCost, Integer vibration, Integer hiPotLeakage, BigDecimal coldBoot, BigDecimal warmBoot, BigDecimal assyToT1, BigDecimal t2ToPacking, String pending, BigDecimal pendingTime, String burnIn, BigDecimal biTime, BigDecimal biTemperature, Integer speOwnerId, Integer eeOwnerId, Integer qcOwnerId, String assyPackingSop, Integer keypartA, Integer keypartB, String preAssy, String babFlow, String testFlow, String packingFlow, String partLink, String nIn1CollectionBox, String partNoAttrMaintain, Date modifiedDate, Set<LabelInfo> labelInfos) {
+    public SheetSpe(int id, Floor floor, Model model, Type type, BigDecimal cleanPanel, BigDecimal assy, BigDecimal packing, BigDecimal biCost, Integer vibration, Integer hiPotLeakage, BigDecimal coldBoot, BigDecimal warmBoot, BigDecimal assyToT1, BigDecimal t2ToPacking, String pending, BigDecimal pendingTime, String burnIn, BigDecimal biTime, BigDecimal biTemperature, Identit speOwner, Identit eeOwner, Identit qcOwner, String assyPackingSop, Integer keypartA, Integer keypartB, String preAssy, String babFlow, String testFlow, String packingFlow, String partLink, String nIn1CollectionBox, String partNoAttrMaintain, Date modifiedDate, Set<LabelInfo> labelInfos) {
         this.id = id;
         this.floor = floor;
         this.model = model;
@@ -97,9 +97,9 @@ public class SheetSpe implements java.io.Serializable {
         this.burnIn = burnIn;
         this.biTime = biTime;
         this.biTemperature = biTemperature;
-        this.speOwnerId = speOwnerId;
-        this.eeOwnerId = eeOwnerId;
-        this.qcOwnerId = qcOwnerId;
+        this.speOwner = speOwner;
+        this.eeOwner = eeOwner;
+        this.qcOwner = qcOwner;
         this.assyPackingSop = assyPackingSop;
         this.keypartA = keypartA;
         this.keypartB = keypartB;
@@ -262,8 +262,6 @@ public class SheetSpe implements java.io.Serializable {
     public void setPendingTime(BigDecimal pendingTime) {
         this.pendingTime = pendingTime;
     }
-    
-    
 
     @Column(name = "BurnIn", length = 10)
     public String getBurnIn() {
@@ -292,31 +290,34 @@ public class SheetSpe implements java.io.Serializable {
         this.biTemperature = biTemperature;
     }
 
-    @Column(name = "SPE_owner_id")
-    public Integer getSpeOwnerId() {
-        return this.speOwnerId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "Identit_id")
+    public Identit getSpeOwner() {
+        return this.speOwner;
     }
 
-    public void setSpeOwnerId(Integer speOwnerId) {
-        this.speOwnerId = speOwnerId;
+    public void setSpeOwner(Identit speOwner) {
+        this.speOwner = speOwner;
     }
 
-    @Column(name = "EE_owner_id")
-    public Integer getEeOwnerId() {
-        return this.eeOwnerId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "Identit_id")
+    public Identit getEeOwner() {
+        return this.eeOwner;
     }
 
-    public void setEeOwnerId(Integer eeOwnerId) {
-        this.eeOwnerId = eeOwnerId;
+    public void setEeOwner(Identit eeOwner) {
+        this.eeOwner = eeOwner;
     }
 
-    @Column(name = "QC_owner_id")
-    public Integer getQcOwnerId() {
-        return this.qcOwnerId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "Identit_id")
+    public Identit getQcOwner() {
+        return this.qcOwner;
     }
 
-    public void setQcOwnerId(Integer qcOwnerId) {
-        this.qcOwnerId = qcOwnerId;
+    public void setQcOwner(Identit qcOwner) {
+        this.qcOwner = qcOwner;
     }
 
     @Column(name = "ASSY_Packing_SOP", length = 500)
@@ -447,9 +448,9 @@ public class SheetSpe implements java.io.Serializable {
         hash = 97 * hash + Objects.hashCode(this.burnIn);
         hash = 97 * hash + Objects.hashCode(this.biTime);
         hash = 97 * hash + Objects.hashCode(this.biTemperature);
-        hash = 97 * hash + Objects.hashCode(this.speOwnerId);
-        hash = 97 * hash + Objects.hashCode(this.eeOwnerId);
-        hash = 97 * hash + Objects.hashCode(this.qcOwnerId);
+        hash = 97 * hash + Objects.hashCode(this.speOwner);
+        hash = 97 * hash + Objects.hashCode(this.eeOwner);
+        hash = 97 * hash + Objects.hashCode(this.qcOwner);
         hash = 97 * hash + Objects.hashCode(this.assyPackingSop);
         hash = 97 * hash + Objects.hashCode(this.keypartA);
         hash = 97 * hash + Objects.hashCode(this.keypartB);
@@ -549,13 +550,13 @@ public class SheetSpe implements java.io.Serializable {
         if (!Objects.equals(this.biTemperature, other.biTemperature)) {
             return false;
         }
-        if (!Objects.equals(this.speOwnerId, other.speOwnerId)) {
+        if (!Objects.equals(this.speOwner, other.speOwner)) {
             return false;
         }
-        if (!Objects.equals(this.eeOwnerId, other.eeOwnerId)) {
+        if (!Objects.equals(this.eeOwner, other.eeOwner)) {
             return false;
         }
-        if (!Objects.equals(this.qcOwnerId, other.qcOwnerId)) {
+        if (!Objects.equals(this.qcOwner, other.qcOwner)) {
             return false;
         }
         if (!Objects.equals(this.keypartA, other.keypartA)) {
