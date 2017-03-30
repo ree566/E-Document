@@ -6,6 +6,7 @@
  */
 package com.advantech.servlet;
 
+import com.advantech.endpoint.Endpoint6;
 import com.advantech.entity.BAB;
 import com.advantech.helper.MailSend;
 import com.advantech.helper.ParamChecker;
@@ -13,6 +14,7 @@ import com.advantech.helper.PropertiesReader;
 import com.advantech.service.BABService;
 import com.advantech.service.BasicService;
 import java.io.*;
+import java.util.List;
 import javax.mail.MessagingException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -68,10 +70,11 @@ public class BABFirstStationServlet extends HttpServlet {
                 BAB bab = new BAB(po, modelName, lineNo, Integer.parseInt(people), Integer.parseInt(startPosition));
                 String result = babService.checkAndStartBAB(bab, jobnumber);
                 if (successMessage.equals(result)) {
-                    sendMailAfterBABRunIn(bab);
+//                    sendMailAfterBABRunIn(bab);
+                    Endpoint6.syncAndEcho();
                 }
                 out.print(result);
-            } catch (MessagingException e) {
+            } catch (Exception e) {
                 log.error(e.toString());
                 out.print(successMessage);//Send succcess no matter send mail success or fail.
             }

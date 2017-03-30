@@ -10,9 +10,9 @@
         <overwrite-existing-data>false</overwrite-existing-data>
         <ignore-duplicates>true</ignore-duplicates> 
     </processing-directives>
-    
+
     <!--主要工作job，把資料轉換到TXT控制燈號-->
-    <schedule> 
+<!--    <schedule> 
         <job>
             <name>DailyJobWorker</name>
             <job-class>com.advantech.quartzJob.DailyJobWorker</job-class>
@@ -27,7 +27,7 @@
         </trigger>
     </schedule>
     
-    <!--清理資料庫job-->
+    清理資料庫job
     <schedule>
         <job>
             <name>DataBaseInit</name>
@@ -42,7 +42,7 @@
         </trigger>
     </schedule>
     
-    <!--把未完結工單做儲存的job-->
+    把未完結工單做儲存的job
     <schedule>
         <job>
             <name>SaveBABDataToDB</name>
@@ -58,7 +58,7 @@
     </schedule>
     
     
-    <!--定時查看sensor是否異常，回報-->
+    定時查看sensor是否異常，回報
     <schedule>
         <job>
             <name>SensorDetect</name>
@@ -73,7 +73,7 @@
         </trigger>
     </schedule>
     
-    <!--禮拜三零點固定將Database的sensor unused的資料clean一次-->
+    禮拜三零點固定將Database的sensor unused的資料clean一次
     <schedule>
         <job>
             <name>CleanSensorData</name>
@@ -88,7 +88,7 @@
         </trigger>
     </schedule>
     
-    <!--把測試線別狀態記錄到資料庫-->
+    把測試線別狀態記錄到資料庫
     <schedule>
         <job>
             <name>TestLineTypeRecord</name>
@@ -103,7 +103,7 @@
         </trigger>
     </schedule>
     
-    <!--每日把未回覆異常原因的回覆給幹部-->
+    每日把未回覆異常原因的回覆給幹部
     <schedule>
         <job>
             <name>CountermeasureAlarm</name>
@@ -118,7 +118,7 @@
         </trigger>
     </schedule>
     
-    <!--線平衡測試排站人數估算-->
+    線平衡測試排站人數估算
     <schedule>
         <job>
             <name>NumLamp</name>
@@ -133,7 +133,7 @@
         </trigger>
     </schedule>
     
-    <!--Clear all subPolling job separate by system-->
+    Clear all subPolling job separate by system
     <schedule>
         <job>
             <name>ClearPollingJob</name>
@@ -148,7 +148,7 @@
         </trigger>
     </schedule>
     
-    <!--把Cell是否合格資訊轉換到資料庫-->
+    把Cell是否合格資訊轉換到資料庫
     <schedule> 
         <job>
             <name>CellJobWorker</name>
@@ -164,7 +164,7 @@
         </trigger>
     </schedule>
     
-    <!--Cell auto close-->
+    Cell auto close
     <schedule> 
         <job>
             <name>CellDataSaver</name>
@@ -177,5 +177,5 @@
                 <cron-expression>0 10 22 ? * MON-SAT *</cron-expression>
             </cron>
         </trigger>
-    </schedule>
+    </schedule>-->
 </job-scheduling-data>

@@ -7,6 +7,7 @@
  */
 package com.advantech.servlet;
 
+import com.advantech.endpoint.Endpoint6;
 import com.advantech.entity.BAB;
 import com.advantech.helper.ParamChecker;
 import com.advantech.service.BABLoginStatusService;
@@ -80,6 +81,7 @@ public class BABOtherStationServlet extends HttpServlet {
                                 String message = babService.closeBAB(babid);
                                 if (message.equals(successMsg)) {
                                     bService.recordBABPeople(babid, stationid, jobnumber);
+                                    Endpoint6.syncAndEcho();
                                 }
                                 out.print(message);
                             } else {

@@ -62,6 +62,10 @@ public class BABDAO extends BasicDAO implements AlarmActions {
         List l = queryBABTable("SELECT * FROM LS_BAB WHERE id = ?", BABid);
         return !l.isEmpty() ? (BAB) l.get(0) : null;
     }
+    
+    public List<BAB> getTodayBAB(){
+        return queryBABTable("SELECT * FROM babWithLineView WHERE btime > DATEADD(DAY, DATEDIFF(DAY, 0, GETDATE()), 0) ORDER BY id");
+    }
 
     public List<Map> getBABForMap() {
         return queryForMapList(getConn(), "SELECT * FROM closedBABView");

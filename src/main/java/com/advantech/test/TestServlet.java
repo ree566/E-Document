@@ -6,6 +6,8 @@
  */
 package com.advantech.test;
 
+import com.advantech.endpoint.Endpoint6;
+import com.advantech.entity.BAB;
 import com.advantech.helper.DatetimeGenerator;
 import com.advantech.helper.ExcelGenerator;
 import com.advantech.helper.JsonHelper;
@@ -32,7 +34,10 @@ public class TestServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
-        doPost(req, res);
+        String PO = req.getParameter("PO");
+        String line = req.getParameter("line");
+        BAB b = new BAB(PO, "test", Integer.parseInt(line), 2, 1);
+        Endpoint6.addNewBab(b);
     }
 
     @Override

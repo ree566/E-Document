@@ -28,6 +28,7 @@ public class BAB implements Serializable {
     private String lineName;
     private String linetype;
     private String btime;
+    private String lastUpdateTime;
     private Integer cm_id; // check countermeasure is exist or not
 
     //for saving line balance data, not exist in the database
@@ -131,6 +132,14 @@ public class BAB implements Serializable {
 
     public void setBtime(String btime) {
         this.btime = btime;
+    }
+
+    public String getLastUpdateTime() {
+        return lastUpdateTime;
+    }
+
+    public void setLastUpdateTime(String lastUpdateTime) {
+        this.lastUpdateTime = lastUpdateTime;
     }
 
     public JSONArray getBabavgs() {

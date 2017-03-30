@@ -53,6 +53,10 @@ public class BABService implements AlarmActions {
         return babDAO.getBAB(modelName, dateFrom, dateTo);
     }
 
+    public List<BAB> getTodayBAB() {
+        return babDAO.getTodayBAB();
+    }
+
     public List<Map> getBABForMap() {
         return babDAO.getBABForMap();
     }
