@@ -37,7 +37,7 @@ public class TypeDAO implements BasicDAO {
 
     @Override
     public Object findByPrimaryKey(Object obj_id) {
-        return currentSession().load(Type.class, Long.valueOf((int) obj_id));
+        return currentSession().load(Type.class, (int) obj_id);
     }
 
     @Override

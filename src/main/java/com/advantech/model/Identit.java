@@ -1,11 +1,10 @@
 package com.advantech.model;
-// Generated 2017/3/27 上午 08:57:09 by Hibernate Tools 4.3.1
+// Generated 2017/3/30 下午 01:07:49 by Hibernate Tools 4.3.1
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -23,8 +22,8 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "Identit",
-        schema = "dbo",
-        catalog = "E_Document"
+         schema = "dbo",
+         catalog = "E_Document"
 )
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Identit implements java.io.Serializable {
@@ -169,35 +168,6 @@ public class Identit implements java.io.Serializable {
 
     public void setSheetSpesForQcOwnerId(Set<SheetSpe> sheetSpesForQcOwnerId) {
         this.sheetSpesForQcOwnerId = sheetSpesForQcOwnerId;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 5;
-        hash = 37 * hash + this.id;
-        hash = 37 * hash + Objects.hashCode(this.jobnumber);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final Identit other = (Identit) obj;
-        if (this.id != other.id) {
-            return false;
-        }
-        if (!Objects.equals(this.jobnumber, other.jobnumber)) {
-            return false;
-        }
-        return true;
     }
 
 }

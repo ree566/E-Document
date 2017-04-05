@@ -22,10 +22,10 @@ import org.springframework.stereotype.Repository;
 public class FloorDAO implements BasicDAO {
 
     private static final Logger log = LoggerFactory.getLogger(FloorDAO.class);
-    
+
     @Autowired
     private SessionFactory sessionFactory;
-    
+
     private Session currentSession() {
         return sessionFactory.getCurrentSession();
     }
@@ -37,7 +37,7 @@ public class FloorDAO implements BasicDAO {
 
     @Override
     public Object findByPrimaryKey(Object obj_id) {
-        return currentSession().load(Floor.class, Long.valueOf((int) obj_id));
+        return currentSession().load(Floor.class, (int) obj_id);
     }
 
     @Override

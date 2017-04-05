@@ -1,5 +1,5 @@
 package com.advantech.model;
-// Generated 2017/3/27 上午 08:57:09 by Hibernate Tools 4.3.1
+// Generated 2017/3/30 下午 01:07:49 by Hibernate Tools 4.3.1
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -7,7 +7,6 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -65,6 +64,13 @@ public class SheetSpe implements java.io.Serializable {
     private String partLink;
     private String NIn1CollectionBox;
     private String partNoAttrMaintain;
+    private BigDecimal t1;
+    private BigDecimal t2;
+    private BigDecimal t3;
+    private BigDecimal t4;
+    private BigDecimal upBiRi;
+    private BigDecimal downBiRi;
+    private String testSop;
     private Date modifiedDate;
 
     @JsonIgnore
@@ -77,7 +83,7 @@ public class SheetSpe implements java.io.Serializable {
         this.id = id;
     }
 
-    public SheetSpe(int id, Floor floor, Identit identitByEeOwnerId, Identit identitBySpeOwnerId, Identit identitByQcOwnerId, Model model, Type type, BigDecimal cleanPanel, BigDecimal assy, BigDecimal packing, BigDecimal biCost, Integer vibration, Integer hiPotLeakage, BigDecimal coldBoot, BigDecimal warmBoot, BigDecimal assyToT1, BigDecimal t2ToPacking, String pending, BigDecimal pendingTime, String burnIn, BigDecimal biTime, BigDecimal biTemperature, String assyPackingSop, Integer keypartA, Integer keypartB, String preAssy, String babFlow, String testFlow, String packingFlow, String partLink, String NIn1CollectionBox, String partNoAttrMaintain, Date modifiedDate, Set<LabelInfo> labelInfos) {
+    public SheetSpe(int id, Floor floor, Identit identitByEeOwnerId, Identit identitBySpeOwnerId, Identit identitByQcOwnerId, Model model, Type type, BigDecimal cleanPanel, BigDecimal assy, BigDecimal packing, BigDecimal biCost, Integer vibration, Integer hiPotLeakage, BigDecimal coldBoot, BigDecimal warmBoot, BigDecimal assyToT1, BigDecimal t2ToPacking, String pending, BigDecimal pendingTime, String burnIn, BigDecimal biTime, BigDecimal biTemperature, String assyPackingSop, Integer keypartA, Integer keypartB, String preAssy, String babFlow, String testFlow, String packingFlow, String partLink, String NIn1CollectionBox, String partNoAttrMaintain, BigDecimal t1, BigDecimal t2, BigDecimal t3, BigDecimal t4, BigDecimal upBiRi, BigDecimal downBiRi, String testSop, Date modifiedDate, Set<LabelInfo> labelInfos) {
         this.id = id;
         this.floor = floor;
         this.identitByEeOwnerId = identitByEeOwnerId;
@@ -110,6 +116,13 @@ public class SheetSpe implements java.io.Serializable {
         this.partLink = partLink;
         this.NIn1CollectionBox = NIn1CollectionBox;
         this.partNoAttrMaintain = partNoAttrMaintain;
+        this.t1 = t1;
+        this.t2 = t2;
+        this.t3 = t3;
+        this.t4 = t4;
+        this.upBiRi = upBiRi;
+        this.downBiRi = downBiRi;
+        this.testSop = testSop;
         this.modifiedDate = modifiedDate;
         this.labelInfos = labelInfos;
     }
@@ -410,6 +423,69 @@ public class SheetSpe implements java.io.Serializable {
         this.partNoAttrMaintain = partNoAttrMaintain;
     }
 
+    @Column(name = "T1", precision = 10, scale = 1)
+    public BigDecimal getT1() {
+        return this.t1;
+    }
+
+    public void setT1(BigDecimal t1) {
+        this.t1 = t1;
+    }
+
+    @Column(name = "T2", precision = 10, scale = 1)
+    public BigDecimal getT2() {
+        return this.t2;
+    }
+
+    public void setT2(BigDecimal t2) {
+        this.t2 = t2;
+    }
+
+    @Column(name = "T3", precision = 10, scale = 1)
+    public BigDecimal getT3() {
+        return this.t3;
+    }
+
+    public void setT3(BigDecimal t3) {
+        this.t3 = t3;
+    }
+
+    @Column(name = "T4", precision = 10, scale = 1)
+    public BigDecimal getT4() {
+        return this.t4;
+    }
+
+    public void setT4(BigDecimal t4) {
+        this.t4 = t4;
+    }
+
+    @Column(name = "Up_BI_RI", precision = 10, scale = 1)
+    public BigDecimal getUpBiRi() {
+        return this.upBiRi;
+    }
+
+    public void setUpBiRi(BigDecimal upBiRi) {
+        this.upBiRi = upBiRi;
+    }
+
+    @Column(name = "Down_BI_RI", precision = 10, scale = 1)
+    public BigDecimal getDownBiRi() {
+        return this.downBiRi;
+    }
+
+    public void setDownBiRi(BigDecimal downBiRi) {
+        this.downBiRi = downBiRi;
+    }
+
+    @Column(name = "Test_SOP", length = 500)
+    public String getTestSop() {
+        return this.testSop;
+    }
+
+    public void setTestSop(String testSop) {
+        this.testSop = testSop;
+    }
+
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "Modified_Date", length = 23, updatable = false)
     public Date getModifiedDate() {
@@ -429,158 +505,4 @@ public class SheetSpe implements java.io.Serializable {
         this.labelInfos = labelInfos;
     }
 
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 59 * hash + Objects.hashCode(this.floor);
-        hash = 59 * hash + Objects.hashCode(this.identitByEeOwnerId);
-        hash = 59 * hash + Objects.hashCode(this.identitBySpeOwnerId);
-        hash = 59 * hash + Objects.hashCode(this.identitByQcOwnerId);
-        hash = 59 * hash + Objects.hashCode(this.model);
-        hash = 59 * hash + Objects.hashCode(this.type);
-        hash = 59 * hash + Objects.hashCode(this.cleanPanel);
-        hash = 59 * hash + Objects.hashCode(this.assy);
-        hash = 59 * hash + Objects.hashCode(this.packing);
-        hash = 59 * hash + Objects.hashCode(this.biCost);
-        hash = 59 * hash + Objects.hashCode(this.vibration);
-        hash = 59 * hash + Objects.hashCode(this.hiPotLeakage);
-        hash = 59 * hash + Objects.hashCode(this.coldBoot);
-        hash = 59 * hash + Objects.hashCode(this.warmBoot);
-        hash = 59 * hash + Objects.hashCode(this.assyToT1);
-        hash = 59 * hash + Objects.hashCode(this.t2ToPacking);
-        hash = 59 * hash + Objects.hashCode(this.pending);
-        hash = 59 * hash + Objects.hashCode(this.pendingTime);
-        hash = 59 * hash + Objects.hashCode(this.burnIn);
-        hash = 59 * hash + Objects.hashCode(this.biTime);
-        hash = 59 * hash + Objects.hashCode(this.biTemperature);
-        hash = 59 * hash + Objects.hashCode(this.assyPackingSop);
-        hash = 59 * hash + Objects.hashCode(this.keypartA);
-        hash = 59 * hash + Objects.hashCode(this.keypartB);
-        hash = 59 * hash + Objects.hashCode(this.preAssy);
-        hash = 59 * hash + Objects.hashCode(this.babFlow);
-        hash = 59 * hash + Objects.hashCode(this.testFlow);
-        hash = 59 * hash + Objects.hashCode(this.packingFlow);
-        hash = 59 * hash + Objects.hashCode(this.partLink);
-        hash = 59 * hash + Objects.hashCode(this.NIn1CollectionBox);
-        hash = 59 * hash + Objects.hashCode(this.partNoAttrMaintain);
-        hash = 59 * hash + Objects.hashCode(this.modifiedDate);
-        hash = 59 * hash + Objects.hashCode(this.labelInfos);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final SheetSpe other = (SheetSpe) obj;
-        if (!Objects.equals(this.pending, other.pending)) {
-            return false;
-        }
-        if (!Objects.equals(this.burnIn, other.burnIn)) {
-            return false;
-        }
-        if (!Objects.equals(this.assyPackingSop, other.assyPackingSop)) {
-            return false;
-        }
-        if (!Objects.equals(this.preAssy, other.preAssy)) {
-            return false;
-        }
-        if (!Objects.equals(this.babFlow, other.babFlow)) {
-            return false;
-        }
-        if (!Objects.equals(this.testFlow, other.testFlow)) {
-            return false;
-        }
-        if (!Objects.equals(this.packingFlow, other.packingFlow)) {
-            return false;
-        }
-        if (!Objects.equals(this.partLink, other.partLink)) {
-            return false;
-        }
-        if (!Objects.equals(this.NIn1CollectionBox, other.NIn1CollectionBox)) {
-            return false;
-        }
-        if (!Objects.equals(this.partNoAttrMaintain, other.partNoAttrMaintain)) {
-            return false;
-        }
-        if (!Objects.equals(this.floor, other.floor)) {
-            return false;
-        }
-        if (!Objects.equals(this.identitByEeOwnerId, other.identitByEeOwnerId)) {
-            return false;
-        }
-        if (!Objects.equals(this.identitBySpeOwnerId, other.identitBySpeOwnerId)) {
-            return false;
-        }
-        if (!Objects.equals(this.identitByQcOwnerId, other.identitByQcOwnerId)) {
-            return false;
-        }
-        if (!Objects.equals(this.model, other.model)) {
-            return false;
-        }
-        if (!Objects.equals(this.type, other.type)) {
-            return false;
-        }
-        if (!Objects.equals(this.cleanPanel, other.cleanPanel)) {
-            return false;
-        }
-        if (!Objects.equals(this.assy, other.assy)) {
-            return false;
-        }
-        if (!Objects.equals(this.packing, other.packing)) {
-            return false;
-        }
-        if (!Objects.equals(this.biCost, other.biCost)) {
-            return false;
-        }
-        if (!Objects.equals(this.vibration, other.vibration)) {
-            return false;
-        }
-        if (!Objects.equals(this.hiPotLeakage, other.hiPotLeakage)) {
-            return false;
-        }
-        if (!Objects.equals(this.coldBoot, other.coldBoot)) {
-            return false;
-        }
-        if (!Objects.equals(this.warmBoot, other.warmBoot)) {
-            return false;
-        }
-        if (!Objects.equals(this.assyToT1, other.assyToT1)) {
-            return false;
-        }
-        if (!Objects.equals(this.t2ToPacking, other.t2ToPacking)) {
-            return false;
-        }
-        if (!Objects.equals(this.pendingTime, other.pendingTime)) {
-            return false;
-        }
-        if (!Objects.equals(this.biTime, other.biTime)) {
-            return false;
-        }
-        if (!Objects.equals(this.biTemperature, other.biTemperature)) {
-            return false;
-        }
-        if (!Objects.equals(this.keypartA, other.keypartA)) {
-            return false;
-        }
-        if (!Objects.equals(this.keypartB, other.keypartB)) {
-            return false;
-        }
-        if (!Objects.equals(this.modifiedDate, other.modifiedDate)) {
-            return false;
-        }
-        if (!Objects.equals(this.labelInfos, other.labelInfos)) {
-            return false;
-        }
-        return true;
-    }
-
-    
 }

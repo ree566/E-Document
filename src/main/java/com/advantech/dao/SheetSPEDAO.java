@@ -37,7 +37,7 @@ public class SheetSPEDAO implements BasicDAO {
 
     @Override
     public Object findByPrimaryKey(Object obj_id) {
-        return currentSession().load(SheetSpe.class, Long.valueOf((int) obj_id));
+        return currentSession().load(SheetSpe.class, (int) obj_id);
     }
 
     public String[] getColumnName() {

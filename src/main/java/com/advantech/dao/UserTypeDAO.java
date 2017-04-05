@@ -37,7 +37,7 @@ public class UserTypeDAO implements BasicDAO {
 
     @Override
     public Object findByPrimaryKey(Object obj_id) {
-        return currentSession().load(UserType.class, Long.valueOf((int) obj_id));
+        return currentSession().load(UserType.class, (int) obj_id);
     }
 
     @Override

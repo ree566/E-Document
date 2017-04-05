@@ -5,6 +5,14 @@
  */
 package com.advantech.helper;
 
+import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.apache.commons.lang3.math.NumberUtils;
+
 /**
  *
  * @author Wei.Cheng
@@ -17,9 +25,9 @@ public class PageInfo {
     private int rows;
     private String sidx;
     private String sord;
-    
+
     private String searchField;
-    private String searchString;
+    private Object searchString;
     private String searchOper;
 //    private String filters;
 
@@ -103,11 +111,11 @@ public class PageInfo {
         this.searchField = searchField;
     }
 
-    public String getSearchString() {
+    public Object getSearchString() {
         return searchString;
     }
 
-    public void setSearchString(String searchString) {
+    public void setSearchString(Integer searchString) {
         this.searchString = searchString;
     }
 

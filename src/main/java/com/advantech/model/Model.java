@@ -1,5 +1,5 @@
 package com.advantech.model;
-// Generated 2017/3/27 上午 08:57:09 by Hibernate Tools 4.3.1
+// Generated 2017/3/30 下午 01:07:49 by Hibernate Tools 4.3.1
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -33,9 +33,6 @@ public class Model implements java.io.Serializable {
     private Set<SheetSpe> sheetSpes = new HashSet<SheetSpe>(0);
 
     @JsonIgnore
-    private Set<SheetEe> sheetEes = new HashSet<SheetEe>(0);
-
-    @JsonIgnore
     private Set<SheetIe> sheetIes = new HashSet<SheetIe>(0);
 
     public Model() {
@@ -46,11 +43,10 @@ public class Model implements java.io.Serializable {
         this.name = name;
     }
 
-    public Model(int id, String name, Set<SheetSpe> sheetSpes, Set<SheetEe> sheetEes, Set<SheetIe> sheetIes) {
+    public Model(int id, String name, Set<SheetSpe> sheetSpes, Set<SheetIe> sheetIes) {
         this.id = id;
         this.name = name;
         this.sheetSpes = sheetSpes;
-        this.sheetEes = sheetEes;
         this.sheetIes = sheetIes;
     }
 
@@ -81,15 +77,6 @@ public class Model implements java.io.Serializable {
 
     public void setSheetSpes(Set<SheetSpe> sheetSpes) {
         this.sheetSpes = sheetSpes;
-    }
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "model")
-    public Set<SheetEe> getSheetEes() {
-        return this.sheetEes;
-    }
-
-    public void setSheetEes(Set<SheetEe> sheetEes) {
-        this.sheetEes = sheetEes;
     }
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "model")

@@ -48,7 +48,6 @@ Contributor(s):
   <table-filter match-name="Sheet_SPE"/>
   <table-filter match-name="LabelInfo"/>
   <table-filter match-name="Type"/>
-  <table-filter match-name="Sheet_EE"/>
   <table-filter match-name="Floor"/>
   <table-filter match-name="Sheet_Main_view"/>
 </hibernate-reverse-engineering>

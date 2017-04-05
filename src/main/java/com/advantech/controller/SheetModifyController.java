@@ -8,15 +8,16 @@ package com.advantech.controller;
 import com.advantech.model.Floor;
 import com.advantech.model.Identit;
 import com.advantech.model.Model;
-import com.advantech.model.SheetEe;
 import com.advantech.model.SheetIe;
 import com.advantech.model.SheetSpe;
+import com.advantech.model.Type;
 import com.advantech.service.FloorService;
 import com.advantech.service.IdentitService;
 import com.advantech.service.ModelService;
-import com.advantech.service.SheetEEService;
 import com.advantech.service.SheetIEService;
 import com.advantech.service.SheetSPEService;
+import com.advantech.service.TypeService;
+import com.google.common.base.Splitter;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.Enumeration;
@@ -52,35 +53,35 @@ public class SheetModifyController {
     private ModelService modelService;
 
     @Autowired
-    private SheetEEService eeService;
-
-    @Autowired
     private SheetIEService ieService;
 
     @Autowired
     private SheetSPEService speService;
-    
+
     @Autowired
     private IdentitService identitService;
-    
+
     @Autowired
     private FloorService floorService;
+
+    @Autowired
+    private TypeService typeService;
 
     @RequestMapping(value = "/updateSheet.do", method = {RequestMethod.POST})
     public ResponseEntity updateSheet(
             @RequestParam String oper,
             @RequestParam String modelId, @RequestParam(required = false) String modelName,
             @ModelAttribute SheetIe ie,
-            @ModelAttribute SheetEe ee,
             @ModelAttribute SheetSpe spe,
             @ModelAttribute("user") Identit user,
-            @RequestParam(required = false) int floorName, // Get the selected drop down list option from client
-            @RequestParam(required = false) int speOwnerName,
-            @RequestParam(required = false) int eeOwnerName,
-            @RequestParam(required = false) int qcOwnerName,
+            @RequestParam(required = false, defaultValue = "0") int floorName, // Get the selected drop down list option from client
+            @RequestParam(required = false, defaultValue = "0") int typeName, // Get the selected drop down list option from client
+            @RequestParam(required = false, defaultValue = "0") int speOwnerName,
+            @RequestParam(required = false, defaultValue = "0") int eeOwnerName,
+            @RequestParam(required = false, defaultValue = "0") int qcOwnerName,
             HttpServletRequest req) throws ServletException, IOException {
 
-        this.printModels(modelId, spe, ie, ee);
+        this.printModels(modelId, spe, ie);
         this.showParams(req);
 
         String modifyMessage;
@@ -95,14 +96,12 @@ public class SheetModifyController {
                 case IE:
                     modifyMessage = this.ieModify(new Model(Integer.parseInt(modelId), modelName), ie);
                     break;
-                case EE:
-                    modifyMessage = this.eeModify(new Model(Integer.parseInt(modelId), modelName), ee);
-                    break;
                 case SPE:
                     spe.setFloor((Floor) floorService.findByPrimaryKey(floorName));
-                    if(speOwnerName != 0){
-
-                    }
+                    spe.setType(typeName == 0 ? null : (Type) typeService.findByPrimaryKey(typeName));
+                    spe.setIdentitBySpeOwnerId(speOwnerName == 0 ? null : (Identit) identitService.findByPrimaryKey(speOwnerName));
+                    spe.setIdentitByEeOwnerId(eeOwnerName == 0 ? null : (Identit) identitService.findByPrimaryKey(eeOwnerName));
+                    spe.setIdentitByQcOwnerId(qcOwnerName == 0 ? null : (Identit) identitService.findByPrimaryKey(qcOwnerName));
                     modifyMessage = this.speModify(new Model(Integer.parseInt(modelId), modelName), spe);
                     break;
                 default:
@@ -127,40 +126,15 @@ public class SheetModifyController {
     }
 
     private String deleteModel(String modelId) {
-        if (modelId.contains(",")) {
-            List<Model> l = modelService.findByPrimaryKeys(separateIds(modelId));
-            modelService.delete(l);
-        } else {
-            Model existModel = (Model) modelService.findByPrimaryKey(Integer.parseInt(modelId));
-            modelService.delete(existModel);
+        Splitter splitter = Splitter.on(",").omitEmptyStrings().trimResults();
+        List<String> ids = splitter.splitToList(modelId);
+        Integer[] id = new Integer[ids.size()];
+        for (int i = 0; i < ids.size(); i++) {
+            id[i] = Integer.valueOf(ids.get(i));
         }
+        List<Model> l = modelService.findByPrimaryKeys(id);
+        modelService.delete(l);
         return this.SUCCESS_MESSAGE;
-    }
-
-    private Integer[] separateIds(String str) {
-        String[] strArray = str.split(",");
-        Integer[] idArray = new Integer[strArray.length];
-        for (int i = 0; i < strArray.length; i++) {
-            idArray[i] = Integer.parseInt(strArray[i]);
-        }
-        return idArray;
-    }
-
-    private String eeModify(Model model, SheetEe sheet) {
-        switch (userOper) {
-            case ADD:
-                String checkMessage = checkAndInsertModel(model);
-                if (checkMessage.equals(this.SUCCESS_MESSAGE)) {
-                    sheet.setModel(model);
-                    return eeService.insert(sheet) == 1 ? this.SUCCESS_MESSAGE : FAIL_MESSAGE;
-                } else {
-                    return checkMessage;
-                }
-            case EDIT:
-                return eeService.update(model, sheet) == 1 ? this.SUCCESS_MESSAGE : FAIL_MESSAGE;
-            default:
-                return "Unsupport action";
-        }
     }
 
     private String ieModify(Model model, SheetIe sheet) {
@@ -195,7 +169,7 @@ public class SheetModifyController {
             default:
                 return "Unsupport action";
         }
-    }
+    } 
 
     @ResponseBody
     @RequestMapping(value = "/unitColumnServlet.do", method = {RequestMethod.POST})
@@ -205,9 +179,6 @@ public class SheetModifyController {
         switch (unit) {
             case SPE:
                 columnName = speService.getColumnName();
-                break;
-            case EE:
-                columnName = eeService.getColumnName();
                 break;
             case IE:
                 columnName = ieService.getColumnName();
@@ -230,7 +201,7 @@ public class SheetModifyController {
             System.out.println("Parameter Name - " + paramName + ", Value - " + req.getParameter(paramName));
         }
     }
-    
+
     @ResponseBody
     @RequestMapping(value = "/test.do", method = {RequestMethod.GET})
     public String test() {

@@ -23,7 +23,7 @@ import org.springframework.stereotype.Repository;
 public class LabelInfoDAO implements BasicDAO {
 
     private static final Logger log = LoggerFactory.getLogger(LabelInfoDAO.class);
-    
+
     @Autowired
     private SessionFactory sessionFactory;
 
@@ -38,7 +38,7 @@ public class LabelInfoDAO implements BasicDAO {
 
     @Override
     public Object findByPrimaryKey(Object obj_id) {
-        return currentSession().load(LabelInfo.class, Long.valueOf((int) obj_id));
+        return currentSession().load(LabelInfo.class, (int) obj_id);
     }
 
     @Override

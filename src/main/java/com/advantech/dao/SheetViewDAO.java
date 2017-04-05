@@ -52,7 +52,7 @@ public class SheetViewDAO implements BasicDAO {
     public Collection findAll(PageInfo info) {
         Criteria criteria = currentSession().createCriteria(SheetView.class);
         criteria.setReadOnly(true);
-        
+
         //Get total row count and reset criteria
         //https://forum.hibernate.org/viewtopic.php?t=951369
         criteria.setProjection(Projections.rowCount());
@@ -72,7 +72,7 @@ public class SheetViewDAO implements BasicDAO {
         if (info.getSearchField() != null) {
             String searchOper = info.getSearchOper();
             String searchField = info.getSearchField();
-            String searchString = info.getSearchString();
+            Object searchString = info.getSearchString();
             addSearchCriteria(criteria, searchOper, searchField, searchString);
         }
 
@@ -82,7 +82,7 @@ public class SheetViewDAO implements BasicDAO {
         return criteria.list();
     }
 
-    private Criteria addSearchCriteria(Criteria criteria, String searchOper, String searchField, String searchString) {
+    private Criteria addSearchCriteria(Criteria criteria, String searchOper, String searchField, Object searchString) {
         switch (searchOper) {
             case "eq":
                 criteria.add(Restrictions.eq(searchField, searchString));
@@ -91,45 +91,19 @@ public class SheetViewDAO implements BasicDAO {
                 criteria.add(Restrictions.ne(searchField, searchString));
                 break;
             case "bw":
-                criteria.add(Restrictions.like(searchField, searchString, MatchMode.START));
-                break;
-            case "bn":
-                criteria.add(Restrictions.not(Restrictions.like(searchField, searchString, MatchMode.START)));
+                criteria.add(Restrictions.like(searchField, (String) searchString, MatchMode.START));
                 break;
             case "ew":
-                criteria.add(Restrictions.like(searchField, searchString, MatchMode.END));
-                break;
-            case "en":
-                criteria.add(Restrictions.not(Restrictions.like(searchField, searchString, MatchMode.END)));
+                criteria.add(Restrictions.like(searchField, (String) searchString, MatchMode.END));
                 break;
             case "cn":
-                criteria.add(Restrictions.like(searchField, searchString, MatchMode.ANYWHERE));
+                criteria.add(Restrictions.like(searchField, (String) searchString, MatchMode.ANYWHERE));
                 break;
-            case "nc":
-                criteria.add(Restrictions.not(Restrictions.like(searchField, searchString, MatchMode.ANYWHERE)));
+            case "lt":
+                criteria.add(Restrictions.lt(searchField, searchString));
                 break;
-            case "nu":
-                criteria.add(Restrictions.isNull(searchField));
-                break;
-            case "nn":
-                criteria.add(Restrictions.not(Restrictions.isNull(searchField)));
-                break;
-            case "in":
-                if (searchString.contains(",")) {
-                    String[] params = searchString.trim().split(",");
-                    System.out.println(Arrays.toString(params));
-                    criteria.add(Restrictions.in(searchField, params));
-                } else {
-                    criteria.add(Restrictions.eq(searchField, searchString));
-                }
-                break;
-            case "ni":
-                if (searchString.contains(",")) {
-                    String[] params = searchString.trim().split(",");
-                    criteria.add(Restrictions.not(Restrictions.in(searchField, params)));
-                } else {
-                    criteria.add(Restrictions.not(Restrictions.eq(searchField, searchString)));
-                }
+            case "gt":
+                criteria.add(Restrictions.gt(searchField, searchString));
                 break;
             default:
                 break;

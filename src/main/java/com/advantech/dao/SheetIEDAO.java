@@ -37,7 +37,7 @@ public class SheetIEDAO implements BasicDAO {
 
     @Override
     public Object findByPrimaryKey(Object obj_id) {
-        return currentSession().load(SheetIe.class, Long.valueOf((int) obj_id));
+        return currentSession().load(SheetIe.class, (int) obj_id);
     }
 
     public String[] getColumnName() {
@@ -55,7 +55,7 @@ public class SheetIEDAO implements BasicDAO {
         currentSession().update(obj);
         return 1;
     }
-    
+
     public int merge(Object obj) {
         currentSession().merge(obj);
         return 1;

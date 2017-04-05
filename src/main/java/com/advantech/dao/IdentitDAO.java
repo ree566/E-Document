@@ -24,11 +24,10 @@ import org.springframework.stereotype.Repository;
 public class IdentitDAO implements BasicDAO {
 
     private static final Logger log = LoggerFactory.getLogger(IdentitDAO.class);
-    
+
     @Autowired
     private SessionFactory sessionFactory;
 
-    
     private Session currentSession() {
         return sessionFactory.getCurrentSession();
     }
@@ -40,7 +39,7 @@ public class IdentitDAO implements BasicDAO {
 
     @Override
     public Object findByPrimaryKey(Object obj_id) {
-        return currentSession().load(Identit.class, Long.valueOf((int) obj_id));
+        return currentSession().load(Identit.class, (int) obj_id);
     }
 
     public Identit findByJobnumber(String jobnumber) {

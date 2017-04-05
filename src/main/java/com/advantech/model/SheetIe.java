@@ -1,11 +1,10 @@
 package com.advantech.model;
-// Generated 2017/3/27 上午 08:57:09 by Hibernate Tools 4.3.1
+// Generated 2017/3/30 下午 01:07:49 by Hibernate Tools 4.3.1
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -23,8 +22,8 @@ import javax.persistence.TemporalType;
  */
 @Entity
 @Table(name = "Sheet_IE",
-        schema = "dbo",
-        catalog = "E_Document"
+         schema = "dbo",
+         catalog = "E_Document"
 )
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class SheetIe implements java.io.Serializable {
@@ -152,63 +151,6 @@ public class SheetIe implements java.io.Serializable {
 
     public void setModifiedDate(Date modifiedDate) {
         this.modifiedDate = modifiedDate;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 3;
-        hash = 43 * hash + Objects.hashCode(this.model);
-        hash = 43 * hash + Objects.hashCode(this.totalModule);
-        hash = 43 * hash + Objects.hashCode(this.assyStations);
-        hash = 43 * hash + Objects.hashCode(this.packingStations);
-        hash = 43 * hash + Objects.hashCode(this.assyLeadTime);
-        hash = 43 * hash + Objects.hashCode(this.assyKanbanTime);
-        hash = 43 * hash + Objects.hashCode(this.packingLeadTime);
-        hash = 43 * hash + Objects.hashCode(this.packingKanbanTime);
-        hash = 43 * hash + Objects.hashCode(this.modifiedDate);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final SheetIe other = (SheetIe) obj;
-        if (!Objects.equals(this.model, other.model)) {
-            return false;
-        }
-        if (!Objects.equals(this.totalModule, other.totalModule)) {
-            return false;
-        }
-        if (!Objects.equals(this.assyStations, other.assyStations)) {
-            return false;
-        }
-        if (!Objects.equals(this.packingStations, other.packingStations)) {
-            return false;
-        }
-        if (!Objects.equals(this.assyLeadTime, other.assyLeadTime)) {
-            return false;
-        }
-        if (!Objects.equals(this.assyKanbanTime, other.assyKanbanTime)) {
-            return false;
-        }
-        if (!Objects.equals(this.packingLeadTime, other.packingLeadTime)) {
-            return false;
-        }
-        if (!Objects.equals(this.packingKanbanTime, other.packingKanbanTime)) {
-            return false;
-        }
-        if (!Objects.equals(this.modifiedDate, other.modifiedDate)) {
-            return false;
-        }
-        return true;
     }
 
 }

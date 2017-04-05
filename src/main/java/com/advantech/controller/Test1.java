@@ -7,13 +7,8 @@ package com.advantech.controller;
 
 import com.advantech.helper.PageInfo;
 import com.advantech.model.Model;
-import com.advantech.model.SheetEe;
 import com.advantech.model.SheetIe;
 import com.advantech.model.SheetSpe;
-import com.advantech.service.ModelService;
-import com.advantech.service.SheetEEService;
-import com.advantech.service.SheetIEService;
-import com.advantech.service.SheetSPEService;
 import com.advantech.service.SheetViewService;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -41,13 +36,11 @@ public class Test1 {
     @RequestMapping(value = "/testInput", method = {RequestMethod.GET, RequestMethod.POST})
     public String testInput(@ModelAttribute Model model,
             @ModelAttribute SheetSpe spe,
-            @ModelAttribute SheetEe ee,
             @ModelAttribute SheetIe ie,
             HttpServletResponse res) {
         List l = new ArrayList();
         l.add(model);
         l.add(spe);
-        l.add(ee);
         l.add(ie);
 //        res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         return new Gson().toJson(l);

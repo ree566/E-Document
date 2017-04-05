@@ -38,6 +38,11 @@ public class IdentitService {
 
     public Identit findByJobnumber(String jobnumber) {
         Identit i = identitDAO.findByJobnumber(jobnumber);
+
+        if (i == null) {
+            return null;
+        }
+        
         //Initialize the lazy loading relative object
         Hibernate.initialize(i.getUserType());
         Hibernate.initialize(i.getFloor());
