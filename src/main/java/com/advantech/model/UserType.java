@@ -1,5 +1,5 @@
 package com.advantech.model;
-// Generated 2017/3/30 下午 01:07:49 by Hibernate Tools 4.3.1
+// Generated 2017/4/6 下午 02:45:49 by Hibernate Tools 4.3.1
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -28,9 +28,10 @@ public class UserType implements java.io.Serializable {
 
     private int id;
     private String name;
-
     @JsonIgnore
     private Set<Identit> identits = new HashSet<Identit>(0);
+    @JsonIgnore
+    private Set<WorktimeColumnGroup> worktimeColumnGroups = new HashSet<WorktimeColumnGroup>(0);
 
     public UserType() {
     }
@@ -40,10 +41,11 @@ public class UserType implements java.io.Serializable {
         this.name = name;
     }
 
-    public UserType(int id, String name, Set<Identit> identits) {
+    public UserType(int id, String name, Set<Identit> identits, Set<WorktimeColumnGroup> worktimeColumnGroups) {
         this.id = id;
         this.name = name;
         this.identits = identits;
+        this.worktimeColumnGroups = worktimeColumnGroups;
     }
 
     @Id
@@ -73,6 +75,15 @@ public class UserType implements java.io.Serializable {
 
     public void setIdentits(Set<Identit> identits) {
         this.identits = identits;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "userType")
+    public Set<WorktimeColumnGroup> getWorktimeColumnGroups() {
+        return this.worktimeColumnGroups;
+    }
+
+    public void setWorktimeColumnGroups(Set<WorktimeColumnGroup> worktimeColumnGroups) {
+        this.worktimeColumnGroups = worktimeColumnGroups;
     }
 
 }

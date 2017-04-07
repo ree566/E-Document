@@ -31,7 +31,7 @@ public class SheetViewController {
     @ResponseBody
     @RequestMapping(value = "/getSheetView.do", method = {RequestMethod.POST})
     public SheetViewResponse getSheetView(@ModelAttribute PageInfo info) {
-        List l = (List) sheetViewService.findAll(info);
+        List l = sheetViewService.findAll(info);
         SheetViewResponse viewResp = new SheetViewResponse();
 
         int count = info.getMaxNumOfRows();

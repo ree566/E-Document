@@ -5,13 +5,13 @@
  */
 package com.advantech.dao;
 
-import com.advantech.helper.HibernateUtil;
-import com.advantech.model.LabelInfo;
+import com.advantech.model.WorktimeColumnGroup;
 import java.util.Collection;
+import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.hibernate.criterion.CriteriaSpecification;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -20,9 +20,7 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class LabelInfoDAO implements BasicDAO {
-
-    private static final Logger log = LoggerFactory.getLogger(LabelInfoDAO.class);
+public class WorktimeColumnGroupDAO implements BasicDAO {
 
     @Autowired
     private SessionFactory sessionFactory;
@@ -33,12 +31,20 @@ public class LabelInfoDAO implements BasicDAO {
 
     @Override
     public Collection findAll() {
-        return currentSession().createQuery("from LabelInfo").list();
+        return currentSession().createQuery("from WorktimeColumnGroup").list();
     }
 
     @Override
     public Object findByPrimaryKey(Object obj_id) {
-        return currentSession().load(LabelInfo.class, (int) obj_id);
+        return currentSession().load(WorktimeColumnGroup.class, (int) obj_id);
+    }
+
+    public Object findByUserType(Object obj_id) {
+        Criteria criteria = currentSession().createCriteria(WorktimeColumnGroup.class, "w");
+        criteria.createAlias("w.userType", "u");
+        criteria.add(Restrictions.eq("u.id", obj_id));
+        criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
+        return criteria.uniqueResult();
     }
 
     @Override

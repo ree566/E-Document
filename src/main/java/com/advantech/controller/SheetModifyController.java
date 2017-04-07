@@ -5,23 +5,25 @@
  */
 package com.advantech.controller;
 
-import com.advantech.model.Floor;
 import com.advantech.model.Identit;
-import com.advantech.model.Model;
-import com.advantech.model.SheetIe;
-import com.advantech.model.SheetSpe;
-import com.advantech.model.Type;
+import com.advantech.model.Worktime;
+import com.advantech.model.WorktimeColumnGroup;
 import com.advantech.service.FloorService;
+import com.advantech.service.FlowService;
 import com.advantech.service.IdentitService;
-import com.advantech.service.ModelService;
-import com.advantech.service.SheetIEService;
-import com.advantech.service.SheetSPEService;
 import com.advantech.service.TypeService;
+import com.advantech.service.WorktimeColumnGroupService;
+import com.advantech.service.WorktimeService;
 import com.google.common.base.Splitter;
 import com.google.gson.Gson;
 import java.io.IOException;
+import java.sql.Clob;
+import java.sql.SQLException;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,13 +52,7 @@ public class SheetModifyController {
     private final String FAIL_MESSAGE = "FAIL";
 
     @Autowired
-    private ModelService modelService;
-
-    @Autowired
-    private SheetIEService ieService;
-
-    @Autowired
-    private SheetSPEService speService;
+    private WorktimeService worktimeService;
 
     @Autowired
     private IdentitService identitService;
@@ -67,42 +63,60 @@ public class SheetModifyController {
     @Autowired
     private TypeService typeService;
 
+    @Autowired
+    private FlowService flowService;
+
+    @Autowired
+    private WorktimeColumnGroupService worktimeColumnGroupService;
+
     @RequestMapping(value = "/updateSheet.do", method = {RequestMethod.POST})
     public ResponseEntity updateSheet(
             @RequestParam String oper,
-            @RequestParam String modelId, @RequestParam(required = false) String modelName,
-            @ModelAttribute SheetIe ie,
-            @ModelAttribute SheetSpe spe,
+            @RequestParam String rowId,
+            @ModelAttribute Worktime worktime,
             @ModelAttribute("user") Identit user,
             @RequestParam(required = false, defaultValue = "0") int floorName, // Get the selected drop down list option from client
             @RequestParam(required = false, defaultValue = "0") int typeName, // Get the selected drop down list option from client
-            @RequestParam(required = false, defaultValue = "0") int speOwnerName,
-            @RequestParam(required = false, defaultValue = "0") int eeOwnerName,
-            @RequestParam(required = false, defaultValue = "0") int qcOwnerName,
+            @RequestParam(required = false, defaultValue = "0") int speOwnerName, // Get the selected drop down list option from client
+            @RequestParam(required = false, defaultValue = "0") int eeOwnerName, // Get the selected drop down list option from client
+            @RequestParam(required = false, defaultValue = "0") int qcOwnerName, // Get the selected drop down list option from client
+            @RequestParam(required = false, defaultValue = "0") int babFlow, // Get the selected drop down list option from client
+            @RequestParam(required = false, defaultValue = "0") int testFlow, // Get the selected drop down list option from client
+            @RequestParam(required = false, defaultValue = "0") int packingFlow, // Get the selected drop down list option from client
             HttpServletRequest req) throws ServletException, IOException {
 
-        this.printModels(modelId, spe, ie);
+        this.printModels(worktime);
         this.showParams(req);
 
         String modifyMessage;
 
         userOper = oper;
 
-        if (this.DELETE.equals(oper)) {
-            modifyMessage = this.deleteModel(modelId);
+        if (oper.equals(DELETE)) {
+            modifyMessage = this.deleteRows(rowId);
         } else {
             String userType = user.getUserType().getName();
             switch (userType) {
                 case IE:
-                    modifyMessage = this.ieModify(new Model(Integer.parseInt(modelId), modelName), ie);
+                    modifyMessage = "unsupported unit";
+//                            this.updateRows(worktime);
                     break;
                 case SPE:
-                    spe.setFloor((Floor) floorService.findByPrimaryKey(floorName));
-                    spe.setType(typeName == 0 ? null : (Type) typeService.findByPrimaryKey(typeName));
-                    spe.setIdentitBySpeOwnerId(speOwnerName == 0 ? null : (Identit) identitService.findByPrimaryKey(speOwnerName));
-                    spe.setIdentitByEeOwnerId(eeOwnerName == 0 ? null : (Identit) identitService.findByPrimaryKey(eeOwnerName));
-                    spe.setIdentitByQcOwnerId(qcOwnerName == 0 ? null : (Identit) identitService.findByPrimaryKey(qcOwnerName));
-                    modifyMessage = this.speModify(new Model(Integer.parseInt(modelId), modelName), spe);
+                    worktime.setId(Integer.parseInt(rowId));
+                    if (isModelExists(worktime)) {
+                        modifyMessage = "This model name is already exists";
+                    } else {
+                        worktime.setFloor(floorName == 0 ? null : floorService.findByPrimaryKey(floorName));
+                        worktime.setType(typeName == 0 ? null : typeService.findByPrimaryKey(typeName));
+                        worktime.setIdentitBySpeOwnerId(speOwnerName == 0 ? null : identitService.findByPrimaryKey(speOwnerName));
+                        worktime.setIdentitByEeOwnerId(eeOwnerName == 0 ? null : identitService.findByPrimaryKey(eeOwnerName));
+                        worktime.setIdentitByQcOwnerId(qcOwnerName == 0 ? null : identitService.findByPrimaryKey(qcOwnerName));
+                        worktime.setFlowByBabFlowId(babFlow == 0 ? null : flowService.findByPrimaryKey(babFlow));
+                        worktime.setFlowByTestFlowId(testFlow == 0 ? null : flowService.findByPrimaryKey(testFlow));
+                        worktime.setFlowByPackingFlowId(packingFlow == 0 ? null : flowService.findByPrimaryKey(packingFlow));
+                        worktime.setModifiedDate(new Date());
+                        modifyMessage = this.updateRows(worktime);
+                    }
                     break;
                 default:
                     modifyMessage = "Unsupport unit";
@@ -114,80 +128,55 @@ public class SheetModifyController {
                 .body(modifyMessage);
     }
 
-    private String checkAndInsertModel(Model model) {
-        Model existModel = modelService.findByName(model.getName());
-        if (existModel == null) {
-            modelService.insert(model);
-            model = modelService.findByName(model.getName());
-            return model != null ? this.SUCCESS_MESSAGE : "insert fail";
-        } else {
-            return "Model is already exist.";
-        }
-    }
-
-    private String deleteModel(String modelId) {
+    private String deleteRows(String rowId) {
         Splitter splitter = Splitter.on(",").omitEmptyStrings().trimResults();
-        List<String> ids = splitter.splitToList(modelId);
+        List<String> ids = splitter.splitToList(rowId);
         Integer[] id = new Integer[ids.size()];
         for (int i = 0; i < ids.size(); i++) {
             id[i] = Integer.valueOf(ids.get(i));
         }
-        List<Model> l = modelService.findByPrimaryKeys(id);
-        modelService.delete(l);
+        List<Worktime> l = worktimeService.findByPrimaryKeys(id);
+        worktimeService.delete(l);
         return this.SUCCESS_MESSAGE;
     }
 
-    private String ieModify(Model model, SheetIe sheet) {
+    private String updateRows(Worktime worktime) {
         switch (userOper) {
             case ADD:
-                String checkMessage = checkAndInsertModel(model);
-                if (checkMessage.equals(this.SUCCESS_MESSAGE)) {
-                    sheet.setModel(model);
-                    return ieService.insert(sheet) == 1 ? this.SUCCESS_MESSAGE : FAIL_MESSAGE;
-                } else {
-                    return checkMessage;
-                }
+                return worktimeService.insert(worktime) == 1 ? this.SUCCESS_MESSAGE : FAIL_MESSAGE;
             case EDIT:
-                return ieService.update(model, sheet) == 1 ? this.SUCCESS_MESSAGE : FAIL_MESSAGE;
+                return worktimeService.update(worktime) == 1 ? this.SUCCESS_MESSAGE : FAIL_MESSAGE;
             default:
                 return "Unsupport action";
         }
     }
 
-    private String speModify(Model model, SheetSpe sheet) {
-        switch (userOper) {
-            case ADD:
-                String checkMessage = checkAndInsertModel(model);
-                if (checkMessage.equals(this.SUCCESS_MESSAGE)) {
-                    sheet.setModel(model);
-                    return speService.insert(sheet) == 1 ? this.SUCCESS_MESSAGE : FAIL_MESSAGE;
-                } else {
-                    return checkMessage;
-                }
-            case EDIT:
-                return speService.update(model, sheet) == 1 ? this.SUCCESS_MESSAGE : FAIL_MESSAGE;
-            default:
-                return "Unsupport action";
+    private boolean isModelExists(Worktime worktime) {
+        Worktime existWorktime = worktimeService.findByModel(worktime.getModelName());
+        if (worktime.getId() == 0) {
+            return existWorktime != null;
+        } else {
+            return existWorktime != null && existWorktime.getId() != worktime.getId();
         }
-    } 
+    }
 
     @ResponseBody
     @RequestMapping(value = "/unitColumnServlet.do", method = {RequestMethod.POST})
-    public String[] getUnitColumnName(@RequestParam String unit) {
-        unit = unit.toUpperCase();
+    public String[] getUnitColumnName(@ModelAttribute("user") Identit user) {
+        int unit = user.getUserType().getId();
+
         String[] columnName;
-        switch (unit) {
-            case SPE:
-                columnName = speService.getColumnName();
-                break;
-            case IE:
-                columnName = ieService.getColumnName();
-                break;
-            default:
-                columnName = new String[0];
-                break;
+
+        WorktimeColumnGroup w = worktimeColumnGroupService.findByUserType(unit);
+
+        Clob columns = w.getColumnName();
+        try {
+            String clobString = columns.getSubString(1, (int) columns.length());
+            columnName = clobString.split(",");
+            return columnName;
+        } catch (SQLException ex) {
+            return new String[0];
         }
-        return columnName;
     }
 
     private void printModels(Object... model) {
@@ -202,12 +191,4 @@ public class SheetModifyController {
         }
     }
 
-    @ResponseBody
-    @RequestMapping(value = "/test.do", method = {RequestMethod.GET})
-    public String test() {
-
-        speService.findByPrimaryKey(2);
-
-        return "";
-    }
 }

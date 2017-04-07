@@ -59,7 +59,7 @@
                 var search_date_options = {sopt: ['eq', 'ne']};
 
                 var unitName = '${sessionScope.user.userType.name}';
-                var modifyColumns = unitName == 'unlimited' ? columnNames : ((unitName == null || unitName == "") ? [] : getColumn(unitName));
+                var modifyColumns = unitName == 'unlimited' ? columnNames : ((unitName == null || unitName == "") ? [] : getColumn());
 
                 var grid = $("#list");
 
@@ -67,6 +67,7 @@
                     var floorOption = getSelectOption("floor");
                     var identitOption = getSelectOption("identit");
                     var typeOption = getSelectOption("type");
+                    var flowOption = getSelectOption("flow");
                 }
 
                 var centerForm = function ($form) {
@@ -87,9 +88,8 @@
                     datatype: "json",
                     mtype: 'POST',
                     colModel: [
-                        {label: 'Model_id', name: 'modelId', frozen: true, hidden: true, key: true, editable: true, editoptions: {defaultValue: "0"}},
+                        {label: 'rowId', name: 'rowId', frozen: true, hidden: true, key: true, editable: true, editoptions: {defaultValue: "0"}},
                         {label: 'Model', name: 'modelName', frozen: true, editable: true, searchrules: {required: true}, searchoptions: search_string_options},
-                        {label: 'TYPE_id', name: 'typeId', hidden: true, width: 100},
                         {label: 'TYPE', name: 'typeName', edittype: "select", editoptions: {value: typeOption}, width: 100, searchrules: {required: true}, searchoptions: search_string_options},
                         {label: 'ProductionWT', name: 'productionWT', width: 120, searchrules: {required: true}, searchoptions: search_decimal_options},
                         {label: 'Total Module', name: 'totalModule', width: 100, searchrules: {required: true}, searchoptions: search_decimal_options},
@@ -110,27 +110,23 @@
                         {label: 'Warm Boot', name: 'warmBoot', width: 100, searchrules: {required: true}, searchoptions: search_decimal_options},
                         {label: 'ASS_T1', name: 'assyToT1', width: 100, searchrules: {required: true}, searchoptions: search_decimal_options},
                         {label: 'T2_PACKING', name: 't2ToPacking', width: 100, searchrules: {required: true}, searchoptions: search_decimal_options},
-                        {label: 'Floor_id', name: 'floorId', hidden: true},
-                        {label: 'Floor', name: 'floorName', edittype: "select", editoptions: {value: floorOption}, width: 100, editable: true, searchrules: {required: true}, searchoptions: search_string_options},
+                        {label: 'Floor', name: 'floorName', edittype: "select", editoptions: {value: floorOption}, width: 100, searchrules: {required: true}, searchoptions: search_string_options},
                         {label: 'Pending', name: 'pending', width: 100, searchrules: {required: true}, searchoptions: search_decimal_options},
                         {label: 'Pending TIME', name: 'pendingTime', width: 100, searchrules: {required: true}, searchoptions: search_decimal_options},
                         {label: 'BurnIn', name: 'burnIn', edittype: "select", editoptions: {value: "Y:Y;N:N"}, width: 100, searchrules: {required: true}, searchoptions: search_string_options},
                         {label: 'B/I Time', name: 'biTime', width: 100, searchrules: {required: true}, searchoptions: search_decimal_options},
                         {label: 'BI_Temperature', name: 'biTemperature', width: 100, searchrules: {required: true}, searchoptions: search_decimal_options},
-                        {label: 'SPEOwnerId', name: 'speOwnerId', hidden: true},
                         {label: 'SPE Owner', name: 'speOwnerName', edittype: "select", editoptions: {value: identitOption}, width: 100, searchrules: {required: true}, searchoptions: search_string_options},
-                        {label: 'EEOwnerId', name: 'eeOwnerId', hidden: true},
                         {label: 'EE Owner', name: 'eeOwnerName', edittype: "select", editoptions: {value: identitOption}, width: 100, searchrules: {required: true}, searchoptions: search_string_options},
-                        {label: 'QCOwnerId', name: 'qcOwnerId', hidden: true},
                         {label: 'QC Owner', name: 'qcOwnerName', edittype: "select", editoptions: {value: identitOption}, width: 100, searchrules: {required: true}, searchoptions: search_string_options},
                         {label: '組包SOP', name: 'assyPackingSop', width: 100, searchrules: {required: true}, searchoptions: search_string_options},
                         {label: '測試SOP', name: 'testSop', width: 100, searchrules: {required: true}, searchoptions: search_string_options},
                         {label: 'KEYPART_A', name: 'keypartA', width: 100, searchrules: {required: true}, searchoptions: search_decimal_options},
                         {label: 'KEYPART_B', name: 'keypartB', width: 100, searchrules: {required: true}, searchoptions: search_decimal_options},
                         {label: 'PRE-ASSY', name: 'preAssy', width: 100, searchrules: {required: true}, searchoptions: search_string_options},
-                        {label: 'BAB_FLOW', name: 'babFlow', edittype: "textarea", width: 100, searchrules: {required: true}, searchoptions: search_string_options},
-                        {label: 'TEST_FLOW', name: 'testFlow', edittype: "textarea", width: 100, searchrules: {required: true}, searchoptions: search_string_options},
-                        {label: 'PACKING_FLOW', name: 'packingFlow', edittype: "textarea", width: 100, searchrules: {required: true}, searchoptions: search_string_options},
+                        {label: 'BAB_FLOW', name: 'babFlow', edittype: "select", editoptions: {value: flowOption}, width: 100, searchrules: {required: true}, searchoptions: search_string_options},
+                        {label: 'TEST_FLOW', name: 'testFlow', edittype: "select", editoptions: {value: flowOption}, width: 100, searchrules: {required: true}, searchoptions: search_string_options},
+                        {label: 'PACKING_FLOW', name: 'packingFlow', edittype: "select", editoptions: {value: flowOption}, width: 100, searchrules: {required: true}, searchoptions: search_string_options},
                         {label: 'PART-LINK', name: 'partLink', width: 100, searchrules: {required: true}, searchoptions: search_string_options},
                         {label: 'CE', name: 'ce', width: 60, searchrules: {required: true}, searchoptions: search_decimal_options},
                         {label: 'UL', name: 'ul', width: 60, searchrules: {required: true}, searchoptions: search_decimal_options},
@@ -139,10 +135,10 @@
                         {label: 'Made in Taiwan', name: 'madeInTaiwan', width: 120, searchrules: {required: true}, searchoptions: search_decimal_options},
                         {label: 'FCC', name: 'fcc', width: 60, searchrules: {required: true}, searchoptions: search_decimal_options},
                         {label: 'EAC', name: 'eac', width: 60, searchrules: {required: true}, searchoptions: search_decimal_options},
-                        {label: 'N合1集合箱', name: 'nIn1CollectionBox', width: 100, searchrules: {required: true}, searchoptions: search_string_options},
-                        {label: '料號屬性值維護', name: 'partNoAttrMaintain', width: 100, searchrules: {required: true}, searchoptions: search_string_options},
-                        {label: '組裝排站人數', name: 'assyStations', width: 100, searchrules: {required: true}, searchoptions: search_decimal_options},
-                        {label: '包裝排站人數', name: 'packingStations', width: 100, searchrules: {required: true}, searchoptions: search_decimal_options},
+                        {label: 'N合1集合箱', name: 'nInOneCollectionBox', width: 100, searchrules: {required: true}, searchoptions: search_string_options},
+                        {label: '料號屬性值維護', name: 'partNoAttributeMaintain', width: 100, searchrules: {required: true}, searchoptions: search_string_options},
+                        {label: '組裝排站人數', name: 'assyStation', width: 100, searchrules: {required: true}, searchoptions: search_decimal_options},
+                        {label: '包裝排站人數', name: 'packingStation', width: 100, searchrules: {required: true}, searchoptions: search_decimal_options},
                         {label: '前置時間', name: 'assyLeadTime', width: 80, searchrules: {required: true}, searchoptions: search_decimal_options},
                         {label: '看板工時', name: 'assyKanbanTime', width: 80, searchrules: {required: true}, searchoptions: search_decimal_options},
                         {label: '前置時間', name: 'packingLeadTime', width: 80, searchrules: {required: true}, searchoptions: search_decimal_options},
@@ -156,7 +152,7 @@
                     viewrecords: true,
                     shrinkToFit: false,
                     hidegrid: true,
-                    prmNames: {id: "modelId"},
+                    prmNames: {id: "rowId"},
                     stringResult: true,
                     jsonReader: {
                         root: "rows",
@@ -194,18 +190,20 @@
                     multiselect: true,
                     multiboxonly: true,
                     editurl: '${root}/updateSheet.do',
-                    sortname: 'modelId', sortorder: 'desc'
+                    sortname: 'modified_Date', sortorder: 'desc'
                 })
                         .jqGrid('navGrid', '#pager',
                                 {edit: true, add: true, del: true, search: true},
                                 {
                                     dataheight: 350,
+                                    width: 350,
                                     closeAfterEdit: false,
                                     reloadAfterSubmit: true,
                                     errorTextFormat: customErrorTextFormat
                                 },
                                 {
                                     dataheight: 350,
+                                    width: 350,
                                     closeAfterAdd: true,
                                     reloadAfterSubmit: true,
                                     errorTextFormat: customErrorTextFormat
@@ -226,38 +224,45 @@
                                 {startColumnName: 'assyLeadTime', numberOfColumns: 2, titleText: '<em>組裝看板工時</em>'},
                                 {startColumnName: 'packingLeadTime', numberOfColumns: 2, titleText: '<em>包裝看板工時</em>'}
                             ]
+                        })
+                        .navButtonAdd('#pager', {
+                            caption: "Export to Excel",
+                            buttonicon: "ui-icon-disk",
+                            onClickButton: function () {
+                                exportDataToExcel();
+                            },
+                            position: "last"
                         });
 
                 var colModel = grid.jqGrid('getGridParam', 'colModel');
                 var columnNames = [];
 
+                console.log(modifyColumns);
+
                 for (var i = 0; i < colModel.length; i++) {
+//                    grid.setColProp(colModel[i].name, {editable: "hidden"});
                     columnNames.push(colModel[i].name);
                 }
 
                 for (var i = 0; i < modifyColumns.length; i++) {
                     var canModifyColumn = modifyColumns[i];
-                    grid.setColProp(canModifyColumn, {editable: true});
+                    grid.setColProp(canModifyColumn, {editable: true, editoptions: {disabled: "disabled"}});
                 }
 
                 var specialColumns = specialRelativeColumn[unitName];
 
                 for (var i = 0; i < specialColumns.length; i++) {
                     var columnName = specialColumns[i];
-                    grid.setColProp(columnName + "Id", {editable: true});
                     grid.setColProp(columnName + "Name", {editable: true});
                 }
 
                 grid.jqGrid('setFrozenColumns');
 
-                function getColumn(unit) {
+                function getColumn() {
                     var result;
                     $.ajax({
                         type: "Post",
                         url: "${root}/unitColumnServlet.do",
-                        data: {
-                            unit: unit
-                        },
                         dataType: "json",
                         async: false,
                         success: function (response) {
@@ -285,6 +290,10 @@
                         }
                     });
                     return result;
+                }
+                
+                function exportDataToExcel(){
+                    alert("begin download...");
                 }
 
             });

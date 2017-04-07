@@ -7,7 +7,8 @@ package com.advantech.service;
 
 import com.advantech.dao.SheetViewDAO;
 import com.advantech.helper.PageInfo;
-import java.util.Collection;
+import com.advantech.model.SheetView;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,28 +24,28 @@ public class SheetViewService {
     @Autowired
     private SheetViewDAO sheetViewDAO;
 
-    public Collection findAll() {
-        return sheetViewDAO.findAll();
+    public List<SheetView> findAll() {
+        return (List<SheetView>) sheetViewDAO.findAll();
     }
 
-    public Collection findAll(PageInfo info) {
-        return sheetViewDAO.findAll(info);
+    public List<SheetView> findAll(PageInfo info) {
+        return (List<SheetView>) sheetViewDAO.findAll(info);
     }
 
-    public Object findByPrimaryKey(Object obj_id) {
-        return sheetViewDAO.findByPrimaryKey(obj_id);
+    public SheetView findByPrimaryKey(Object obj_id) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public int insert(Object obj) {
-        return sheetViewDAO.insert(obj);
+    public int insert(SheetView sheetView) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public int update(Object obj) {
-        return sheetViewDAO.update(obj);
+    public int update(SheetView sheetView) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public int delete(Object pojo) {
-        return sheetViewDAO.delete(pojo);
+    public int delete(SheetView sheetView) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

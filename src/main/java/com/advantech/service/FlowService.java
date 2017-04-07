@@ -6,7 +6,9 @@
 package com.advantech.service;
 
 import com.advantech.dao.*;
-import java.util.Collection;
+import com.advantech.model.Flow;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,29 +19,29 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @Transactional
-public class LabelService {
+public class FlowService {
 
     @Autowired
-    private LabelInfoDAO labelInfoDAO;
+    private FlowDAO flowDAO;
 
-    public Collection findAll() {
-        return labelInfoDAO.findAll();
+    public List<Flow> findAll() {
+        return (List<Flow>) flowDAO.findAll();
     }
 
-    public Object findByPrimaryKey(Object obj_id) {
-        return labelInfoDAO.findByPrimaryKey(obj_id);
+    public Flow findByPrimaryKey(Object obj_id) {
+        return (Flow) flowDAO.findByPrimaryKey(obj_id);
     }
 
-    public int insert(Object obj) {
-        return labelInfoDAO.insert(obj);
+    public int insert(Flow flow) {
+        return flowDAO.insert(flow);
     }
 
-    public int update(Object obj) {
-        return labelInfoDAO.update(obj);
+    public int update(Flow flow) {
+        return flowDAO.update(flow);
     }
 
-    public int delete(Object pojo) {
-        return labelInfoDAO.delete(pojo);
+    public int delete(Flow flow) {
+        return flowDAO.delete(flow);
     }
 
 }

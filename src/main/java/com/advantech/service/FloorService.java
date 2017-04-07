@@ -6,7 +6,8 @@
 package com.advantech.service;
 
 import com.advantech.dao.*;
-import java.util.Collection;
+import com.advantech.model.Floor;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,24 +24,24 @@ public class FloorService {
     @Autowired
     private FloorDAO floorDAO;
 
-    public Collection findAll() {
-        return floorDAO.findAll();
+    public List<Floor> findAll() {
+        return (List<Floor>) floorDAO.findAll();
     }
 
-    public Object findByPrimaryKey(Object obj_id) {
-        return floorDAO.findByPrimaryKey(obj_id);
+    public Floor findByPrimaryKey(Object obj_id) {
+        return (Floor) floorDAO.findByPrimaryKey(obj_id);
     }
 
-    public int insert(Object obj) {
-        return floorDAO.insert(obj);
+    public int insert(Floor floor) {
+        return floorDAO.insert(floor);
     }
 
-    public int update(Object obj) {
-        return floorDAO.update(obj);
+    public int update(Floor floor) {
+        return floorDAO.update(floor);
     }
 
-    public int delete(Object pojo) {
-        return floorDAO.delete(pojo);
+    public int delete(Floor floor) {
+        return floorDAO.delete(floor);
     }
 
 }

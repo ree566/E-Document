@@ -7,20 +7,16 @@ package com.advantech.dao;
 
 import com.advantech.model.SheetView;
 import com.advantech.helper.PageInfo;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import org.hibernate.Criteria;
 import org.hibernate.SQLQuery;
-import org.hibernate.ScrollableResults;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -30,8 +26,6 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public class SheetViewDAO implements BasicDAO {
-
-    private static final Logger log = LoggerFactory.getLogger(SheetViewDAO.class);
 
     @Autowired
     private SessionFactory sessionFactory;

@@ -1,5 +1,5 @@
 package com.advantech.model;
-// Generated 2017/3/30 下午 01:07:49 by Hibernate Tools 4.3.1
+// Generated 2017/4/6 下午 02:45:49 by Hibernate Tools 4.3.1
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -28,12 +28,10 @@ public class Floor implements java.io.Serializable {
 
     private int id;
     private String name;
-
+    @JsonIgnore
+    private Set<Worktime> worktimes = new HashSet<Worktime>(0);
     @JsonIgnore
     private Set<Identit> identits = new HashSet<Identit>(0);
-
-    @JsonIgnore
-    private Set<SheetSpe> sheetSpes = new HashSet<SheetSpe>(0);
 
     public Floor() {
     }
@@ -43,11 +41,11 @@ public class Floor implements java.io.Serializable {
         this.name = name;
     }
 
-    public Floor(int id, String name, Set<Identit> identits, Set<SheetSpe> sheetSpes) {
+    public Floor(int id, String name, Set<Worktime> worktimes, Set<Identit> identits) {
         this.id = id;
         this.name = name;
+        this.worktimes = worktimes;
         this.identits = identits;
-        this.sheetSpes = sheetSpes;
     }
 
     @Id
@@ -71,21 +69,21 @@ public class Floor implements java.io.Serializable {
     }
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "floor")
+    public Set<Worktime> getWorktimes() {
+        return this.worktimes;
+    }
+
+    public void setWorktimes(Set<Worktime> worktimes) {
+        this.worktimes = worktimes;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "floor")
     public Set<Identit> getIdentits() {
         return this.identits;
     }
 
     public void setIdentits(Set<Identit> identits) {
         this.identits = identits;
-    }
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "floor")
-    public Set<SheetSpe> getSheetSpes() {
-        return this.sheetSpes;
-    }
-
-    public void setSheetSpes(Set<SheetSpe> sheetSpes) {
-        this.sheetSpes = sheetSpes;
     }
 
 }

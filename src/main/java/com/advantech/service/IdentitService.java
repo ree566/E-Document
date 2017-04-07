@@ -10,7 +10,6 @@ import com.advantech.helper.MD5Encoder;
 import com.advantech.model.Identit;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Collection;
 import java.util.List;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,12 +27,12 @@ public class IdentitService {
     @Autowired
     private IdentitDAO identitDAO;
 
-    public Collection findAll() {
-        return identitDAO.findAll();
+    public List<Identit> findAll() {
+        return (List<Identit>) identitDAO.findAll();
     }
 
-    public Object findByPrimaryKey(Object obj_id) {
-        return identitDAO.findByPrimaryKey(obj_id);
+    public Identit findByPrimaryKey(Object obj_id) {
+        return (Identit) identitDAO.findByPrimaryKey(obj_id);
     }
 
     public Identit findByJobnumber(String jobnumber) {
@@ -42,23 +41,23 @@ public class IdentitService {
         if (i == null) {
             return null;
         }
-        
+
         //Initialize the lazy loading relative object
         Hibernate.initialize(i.getUserType());
         Hibernate.initialize(i.getFloor());
         return i;
     }
 
-    public int insert(Object obj) {
-        return identitDAO.insert(obj);
+    public int insert(Identit identit) {
+        return identitDAO.insert(identit);
     }
 
-    public int update(Object obj) {
-        return identitDAO.update(obj);
+    public int update(Identit identit) {
+        return identitDAO.update(identit);
     }
 
-    public int delete(Object pojo) {
-        return identitDAO.delete(pojo);
+    public int delete(Identit identit) {
+        return identitDAO.delete(identit);
     }
 
     public void encryptPassord() throws NoSuchAlgorithmException, UnsupportedEncodingException {

@@ -6,9 +6,11 @@
 package com.advantech.controller;
 
 import com.advantech.model.Floor;
+import com.advantech.model.Flow;
 import com.advantech.model.Identit;
 import com.advantech.model.Type;
 import com.advantech.service.FloorService;
+import com.advantech.service.FlowService;
 import com.advantech.service.IdentitService;
 import com.advantech.service.TypeService;
 import com.google.gson.Gson;
@@ -37,11 +39,14 @@ public class EditOptionController {
     @Autowired
     private TypeService typeService;
 
+    @Autowired
+    private FlowService flowService;
+
     @ResponseBody
     @RequestMapping(value = "/floorOption.do", method = {RequestMethod.GET})
     public String getFloorOption() {
 
-        List<Floor> l = (List<Floor>) floorService.findAll();
+        List<Floor> l = floorService.findAll();
         Map m = new HashMap();
 
         for (Floor f : l) {
@@ -57,7 +62,7 @@ public class EditOptionController {
     @RequestMapping(value = "/identitOption.do", method = {RequestMethod.GET})
     public String getIdentitOption() {
 
-        List<Identit> l = (List<Identit>) identitService.findAll();
+        List<Identit> l = identitService.findAll();
         Map m = new HashMap();
         m.put(0, "empty");
         for (Identit i : l) {
@@ -73,11 +78,27 @@ public class EditOptionController {
     @RequestMapping(value = "/typeOption.do", method = {RequestMethod.GET})
     public String getTypeOption() {
 
-        List<Type> l = (List<Type>) typeService.findAll();
+        List<Type> l = typeService.findAll();
         Map m = new HashMap();
         m.put(0, "empty");
         for (Type t : l) {
             m.put(t.getId(), t.getName());
+        }
+
+        String optionString = convertToOptions(m);
+
+        return optionString;
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/flowOption.do", method = {RequestMethod.GET})
+    public String getFlowOption() {
+
+        List<Flow> l = flowService.findAll();
+        Map m = new HashMap();
+        m.put(0, "empty");
+        for (Flow f : l) {
+            m.put(f.getId(), f.getName());
         }
 
         String optionString = convertToOptions(m);

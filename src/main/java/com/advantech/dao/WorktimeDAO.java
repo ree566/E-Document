@@ -5,12 +5,13 @@
  */
 package com.advantech.dao;
 
-import com.advantech.model.SheetIe;
+import com.advantech.model.Worktime;
 import java.util.Collection;
+import java.util.List;
+import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -19,9 +20,7 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class SheetIEDAO implements BasicDAO {
-
-    private static final Logger log = LoggerFactory.getLogger(SheetIEDAO.class);
+public class WorktimeDAO implements BasicDAO {
 
     @Autowired
     private SessionFactory sessionFactory;
@@ -32,27 +31,33 @@ public class SheetIEDAO implements BasicDAO {
 
     @Override
     public Collection findAll() {
-        return currentSession().createQuery("from SheetIe").list();
+        return currentSession().createQuery("from Worktime").list();
     }
 
     @Override
     public Object findByPrimaryKey(Object obj_id) {
-        return currentSession().load(SheetIe.class, (int) obj_id);
+        return currentSession().load(Worktime.class, (int) obj_id);
+    }
+
+    public List<Worktime> findByPrimaryKeys(Integer... id) {
+        Criteria criteria = currentSession().createCriteria(Worktime.class);
+        criteria.add(Restrictions.in("id", id));
+        return criteria.list();
+    }
+
+    public Worktime findByModel(String modelName) {
+        Criteria criteria = currentSession().createCriteria(Worktime.class);
+        criteria.add(Restrictions.eq("modelName", modelName));
+        return (Worktime) criteria.uniqueResult();
     }
 
     public String[] getColumnName() {
-        return sessionFactory.getClassMetadata(SheetIe.class).getPropertyNames();
+        return sessionFactory.getClassMetadata(Worktime.class).getPropertyNames();
     }
 
     @Override
     public int insert(Object obj) {
         currentSession().save(obj);
-        return 1;
-    }
-
-    @Override
-    public int update(Object obj) {
-        currentSession().update(obj);
         return 1;
     }
 
@@ -62,9 +67,14 @@ public class SheetIEDAO implements BasicDAO {
     }
 
     @Override
+    public int update(Object obj) {
+        currentSession().update(obj);
+        return 1;
+    }
+
+    @Override
     public int delete(Object pojo) {
         currentSession().delete(pojo);
         return 1;
     }
-
 }

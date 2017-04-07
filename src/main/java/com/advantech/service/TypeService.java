@@ -6,7 +6,8 @@
 package com.advantech.service;
 
 import com.advantech.dao.*;
-import java.util.Collection;
+import com.advantech.model.Type;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,24 +23,24 @@ public class TypeService {
     @Autowired
     private TypeDAO typeDAO;
 
-    public Collection findAll() {
-        return typeDAO.findAll();
+    public List<Type> findAll() {
+        return (List<Type>) typeDAO.findAll();
     }
 
-    public Object findByPrimaryKey(Object obj_id) {
-        return typeDAO.findByPrimaryKey(obj_id);
+    public Type findByPrimaryKey(Object obj_id) {
+        return (Type) typeDAO.findByPrimaryKey(obj_id);
     }
 
-    public int insert(Object obj) {
-        return typeDAO.insert(obj);
+    public int insert(Type type) {
+        return typeDAO.insert(type);
     }
 
-    public int update(Object obj) {
-        return typeDAO.update(obj);
+    public int update(Type type) {
+        return typeDAO.update(type);
     }
 
-    public int delete(Object pojo) {
-        return typeDAO.delete(pojo);
+    public int delete(Type type) {
+        return typeDAO.delete(type);
     }
 
 }

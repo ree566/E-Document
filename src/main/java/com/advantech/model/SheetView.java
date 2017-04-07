@@ -2,14 +2,10 @@ package com.advantech.model;
 // Generated 2017/3/30 上午 11:57:12 by Hibernate Tools 4.3.1
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.math.BigDecimal;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -25,12 +21,12 @@ import javax.persistence.TemporalType;
 )
 public class SheetView implements java.io.Serializable {
 
-    private int modelId;
+    private int rowId;
     private BigDecimal assy;
     private BigDecimal assyKanbanTime;
     private BigDecimal assyLeadTime;
     private String assyPackingSop;
-    private Integer assyStations;
+    private Integer assyStation;
     private BigDecimal assyToT1;
     private String babFlow;
     private BigDecimal biCost;
@@ -54,14 +50,14 @@ public class SheetView implements java.io.Serializable {
     private String madeInTaiwan;
     private String modelName;
     private Date modified_Date;
-    private String nIn1CollectionBox;
+    private String nInOneCollectionBox;
     private BigDecimal packing;
     private String packingFlow;
     private BigDecimal packingKanbanTime;
     private BigDecimal packingLeadTime;
-    private Integer packingStations;
+    private Integer packingStation;
     private String partLink;
-    private String partNoAttrMaintain;
+    private String partNoAttributeMaintain;
     private String pending;
     private BigDecimal pendingTime;
     private String preAssy;
@@ -91,18 +87,18 @@ public class SheetView implements java.io.Serializable {
     public SheetView() {
     }
 
-    public SheetView(int modelId, String modelName) {
-        this.modelId = modelId;
+    public SheetView(int rowId, String modelName) {
+        this.rowId = rowId;
         this.modelName = modelName;
     }
 
-    public SheetView(int modelId, BigDecimal assy, BigDecimal assyKanbanTime, BigDecimal assyLeadTime, String assyPackingSop, Integer assyStations, BigDecimal assyToT1, String babFlow, BigDecimal biCost, BigDecimal biTemperature, BigDecimal biTime, String burnIn, String ce, BigDecimal cleanPanel, BigDecimal cleanPanel_and_Assembly, BigDecimal coldBoot, BigDecimal downBiRi, String eac, String eeOwnerId, String eeOwnerName, String fcc, Integer floorId, String floorName, Integer hiPotLeakage, Integer keypartA, Integer keypartB, String madeInTaiwan, String modelName, Date modified_Date, String nIn1CollectionBox, BigDecimal packing, String packingFlow, BigDecimal packingKanbanTime, BigDecimal packingLeadTime, Integer packingStations, String partLink, String partNoAttrMaintain, String pending, BigDecimal pendingTime, String preAssy, BigDecimal productionWT, String qcOwnerId, String qcOwnerName, String rohs, Integer setupTime, String speOwnerId, String speOwnerName, BigDecimal t1, BigDecimal t2, BigDecimal t2ToPacking, BigDecimal t3, BigDecimal t4, String testFlow, String testSop, BigDecimal totalModule, Integer typeId, String typeName, String ul, BigDecimal upBiRi, Integer vibration, BigDecimal warmBoot, String weee) {
-        this.modelId = modelId;
+    public SheetView(int rowId, BigDecimal assy, BigDecimal assyKanbanTime, BigDecimal assyLeadTime, String assyPackingSop, Integer assyStation, BigDecimal assyToT1, String babFlow, BigDecimal biCost, BigDecimal biTemperature, BigDecimal biTime, String burnIn, String ce, BigDecimal cleanPanel, BigDecimal cleanPanel_and_Assembly, BigDecimal coldBoot, BigDecimal downBiRi, String eac, String eeOwnerId, String eeOwnerName, String fcc, Integer floorId, String floorName, Integer hiPotLeakage, Integer keypartA, Integer keypartB, String madeInTaiwan, String modelName, Date modified_Date, String nInOneCollectionBox, BigDecimal packing, String packingFlow, BigDecimal packingKanbanTime, BigDecimal packingLeadTime, Integer packingStation, String partLink, String partNoAttributeMaintain, String pending, BigDecimal pendingTime, String preAssy, BigDecimal productionWT, String qcOwnerId, String qcOwnerName, String rohs, Integer setupTime, String speOwnerId, String speOwnerName, BigDecimal t1, BigDecimal t2, BigDecimal t2ToPacking, BigDecimal t3, BigDecimal t4, String testFlow, String testSop, BigDecimal totalModule, Integer typeId, String typeName, String ul, BigDecimal upBiRi, Integer vibration, BigDecimal warmBoot, String weee) {
+        this.rowId = rowId;
         this.assy = assy;
         this.assyKanbanTime = assyKanbanTime;
         this.assyLeadTime = assyLeadTime;
         this.assyPackingSop = assyPackingSop;
-        this.assyStations = assyStations;
+        this.assyStation = assyStation;
         this.assyToT1 = assyToT1;
         this.babFlow = babFlow;
         this.biCost = biCost;
@@ -126,14 +122,14 @@ public class SheetView implements java.io.Serializable {
         this.madeInTaiwan = madeInTaiwan;
         this.modelName = modelName;
         this.modified_Date = modified_Date;
-        this.nIn1CollectionBox = nIn1CollectionBox;
+        this.nInOneCollectionBox = nInOneCollectionBox;
         this.packing = packing;
         this.packingFlow = packingFlow;
         this.packingKanbanTime = packingKanbanTime;
         this.packingLeadTime = packingLeadTime;
-        this.packingStations = packingStations;
+        this.packingStation = packingStation;
         this.partLink = partLink;
-        this.partNoAttrMaintain = partNoAttrMaintain;
+        this.partNoAttributeMaintain = partNoAttributeMaintain;
         this.pending = pending;
         this.pendingTime = pendingTime;
         this.preAssy = preAssy;
@@ -162,13 +158,13 @@ public class SheetView implements java.io.Serializable {
     }
 
     @Id
-    @Column(name = "modelId", unique = true, nullable = false)
-    public int getModelId() {
-        return this.modelId;
+    @Column(name = "rowId", unique = true, nullable = false)
+    public int getRowId() {
+        return this.rowId;
     }
 
-    public void setModelId(int modelId) {
-        this.modelId = modelId;
+    public void setRowId(int rowId) {
+        this.rowId = rowId;
     }
 
     @Column(name = "assy", precision = 10, scale = 1)
@@ -207,13 +203,13 @@ public class SheetView implements java.io.Serializable {
         this.assyPackingSop = assyPackingSop;
     }
 
-    @Column(name = "assyStations")
-    public Integer getAssyStations() {
-        return this.assyStations;
+    @Column(name = "assyStation")
+    public Integer getAssyStation() {
+        return this.assyStation;
     }
 
-    public void setAssyStations(Integer assyStations) {
-        this.assyStations = assyStations;
+    public void setAssyStation(Integer assyStation) {
+        this.assyStation = assyStation;
     }
 
     @Column(name = "assyToT1", precision = 10, scale = 1)
@@ -425,13 +421,13 @@ public class SheetView implements java.io.Serializable {
         this.modified_Date = modified_Date;
     }
 
-    @Column(name = "nIn1CollectionBox")
-    public String getnIn1CollectionBox() {
-        return this.nIn1CollectionBox;
+    @Column(name = "n_in_one_collection_box")
+    public String getnInOneCollectionBox() {
+        return this.nInOneCollectionBox;
     }
 
-    public void setnIn1CollectionBox(String nIn1CollectionBox) {
-        this.nIn1CollectionBox = nIn1CollectionBox;
+    public void setnInOneCollectionBox(String nInOneCollectionBox) {
+        this.nInOneCollectionBox = nInOneCollectionBox;
     }
 
     @Column(name = "packing", precision = 10, scale = 1)
@@ -470,13 +466,13 @@ public class SheetView implements java.io.Serializable {
         this.packingLeadTime = packingLeadTime;
     }
 
-    @Column(name = "packingStations")
-    public Integer getPackingStations() {
-        return this.packingStations;
+    @Column(name = "packingStation")
+    public Integer getPackingStation() {
+        return this.packingStation;
     }
 
-    public void setPackingStations(Integer packingStations) {
-        this.packingStations = packingStations;
+    public void setPackingStation(Integer packingStation) {
+        this.packingStation = packingStation;
     }
 
     @Column(name = "partLink")
@@ -488,13 +484,13 @@ public class SheetView implements java.io.Serializable {
         this.partLink = partLink;
     }
 
-    @Column(name = "partNoAttrMaintain")
-    public String getPartNoAttrMaintain() {
-        return this.partNoAttrMaintain;
+    @Column(name = "partNoAttributeMaintain")
+    public String getPartNoAttributeMaintain() {
+        return this.partNoAttributeMaintain;
     }
 
-    public void setPartNoAttrMaintain(String partNoAttrMaintain) {
-        this.partNoAttrMaintain = partNoAttrMaintain;
+    public void setPartNoAttributeMaintain(String partNoAttributeMaintain) {
+        this.partNoAttributeMaintain = partNoAttributeMaintain;
     }
 
     @Column(name = "pending")

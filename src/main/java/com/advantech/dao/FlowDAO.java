@@ -5,12 +5,10 @@
  */
 package com.advantech.dao;
 
-import com.advantech.model.SheetSpe;
+import com.advantech.model.Flow;
 import java.util.Collection;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -19,9 +17,7 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class SheetSPEDAO implements BasicDAO {
-
-    private static final Logger log = LoggerFactory.getLogger(SheetSPEDAO.class);
+public class FlowDAO implements BasicDAO {
 
     @Autowired
     private SessionFactory sessionFactory;
@@ -32,38 +28,27 @@ public class SheetSPEDAO implements BasicDAO {
 
     @Override
     public Collection findAll() {
-        return currentSession().createQuery("from SheetIe").list();
+        return currentSession().createQuery("from Flow").list();
     }
 
     @Override
     public Object findByPrimaryKey(Object obj_id) {
-        return currentSession().load(SheetSpe.class, (int) obj_id);
-    }
-
-    public String[] getColumnName() {
-        return sessionFactory.getClassMetadata(SheetSpe.class).getPropertyNames();
+        return currentSession().load(Flow.class, (int) obj_id);
     }
 
     @Override
     public int insert(Object obj) {
-        currentSession().save(obj);
-        return 1;
-    }
-
-    public int merge(Object obj) {
-        currentSession().merge(obj);
-        return 1;
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public int update(Object obj) {
-        currentSession().update(obj);
-        return 1;
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public int delete(Object pojo) {
-        currentSession().delete(pojo);
-        return 1;
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
 }

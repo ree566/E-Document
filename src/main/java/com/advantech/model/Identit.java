@@ -1,5 +1,5 @@
 package com.advantech.model;
-// Generated 2017/3/30 下午 01:07:49 by Hibernate Tools 4.3.1
+// Generated 2017/4/6 下午 02:45:49 by Hibernate Tools 4.3.1
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -36,15 +36,12 @@ public class Identit implements java.io.Serializable {
     private String name;
     private Integer permission;
     private String email;
-
     @JsonIgnore
-    private Set<SheetSpe> sheetSpesForEeOwnerId = new HashSet<SheetSpe>(0);
-
+    private Set<Worktime> worktimesForEeOwnerId = new HashSet<Worktime>(0);
     @JsonIgnore
-    private Set<SheetSpe> sheetSpesForSpeOwnerId = new HashSet<SheetSpe>(0);
-
+    private Set<Worktime> worktimesForQcOwnerId = new HashSet<Worktime>(0);
     @JsonIgnore
-    private Set<SheetSpe> sheetSpesForQcOwnerId = new HashSet<SheetSpe>(0);
+    private Set<Worktime> worktimesForSpeOwnerId = new HashSet<Worktime>(0);
 
     public Identit() {
     }
@@ -53,7 +50,7 @@ public class Identit implements java.io.Serializable {
         this.id = id;
     }
 
-    public Identit(int id, Floor floor, UserType userType, String jobnumber, String password, String name, Integer permission, String email, Set<SheetSpe> sheetSpesForEeOwnerId, Set<SheetSpe> sheetSpesForSpeOwnerId, Set<SheetSpe> sheetSpesForQcOwnerId) {
+    public Identit(int id, Floor floor, UserType userType, String jobnumber, String password, String name, Integer permission, String email, Set<Worktime> worktimesForEeOwnerId, Set<Worktime> worktimesForQcOwnerId, Set<Worktime> worktimesForSpeOwnerId) {
         this.id = id;
         this.floor = floor;
         this.userType = userType;
@@ -62,9 +59,9 @@ public class Identit implements java.io.Serializable {
         this.name = name;
         this.permission = permission;
         this.email = email;
-        this.sheetSpesForEeOwnerId = sheetSpesForEeOwnerId;
-        this.sheetSpesForSpeOwnerId = sheetSpesForSpeOwnerId;
-        this.sheetSpesForQcOwnerId = sheetSpesForQcOwnerId;
+        this.worktimesForEeOwnerId = worktimesForEeOwnerId;
+        this.worktimesForQcOwnerId = worktimesForQcOwnerId;
+        this.worktimesForSpeOwnerId = worktimesForSpeOwnerId;
     }
 
     @Id
@@ -144,30 +141,30 @@ public class Identit implements java.io.Serializable {
     }
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "identitByEeOwnerId")
-    public Set<SheetSpe> getSheetSpesForEeOwnerId() {
-        return this.sheetSpesForEeOwnerId;
+    public Set<Worktime> getWorktimesForEeOwnerId() {
+        return this.worktimesForEeOwnerId;
     }
 
-    public void setSheetSpesForEeOwnerId(Set<SheetSpe> sheetSpesForEeOwnerId) {
-        this.sheetSpesForEeOwnerId = sheetSpesForEeOwnerId;
-    }
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "identitBySpeOwnerId")
-    public Set<SheetSpe> getSheetSpesForSpeOwnerId() {
-        return this.sheetSpesForSpeOwnerId;
-    }
-
-    public void setSheetSpesForSpeOwnerId(Set<SheetSpe> sheetSpesForSpeOwnerId) {
-        this.sheetSpesForSpeOwnerId = sheetSpesForSpeOwnerId;
+    public void setWorktimesForEeOwnerId(Set<Worktime> worktimesForEeOwnerId) {
+        this.worktimesForEeOwnerId = worktimesForEeOwnerId;
     }
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "identitByQcOwnerId")
-    public Set<SheetSpe> getSheetSpesForQcOwnerId() {
-        return this.sheetSpesForQcOwnerId;
+    public Set<Worktime> getWorktimesForQcOwnerId() {
+        return this.worktimesForQcOwnerId;
     }
 
-    public void setSheetSpesForQcOwnerId(Set<SheetSpe> sheetSpesForQcOwnerId) {
-        this.sheetSpesForQcOwnerId = sheetSpesForQcOwnerId;
+    public void setWorktimesForQcOwnerId(Set<Worktime> worktimesForQcOwnerId) {
+        this.worktimesForQcOwnerId = worktimesForQcOwnerId;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "identitBySpeOwnerId")
+    public Set<Worktime> getWorktimesForSpeOwnerId() {
+        return this.worktimesForSpeOwnerId;
+    }
+
+    public void setWorktimesForSpeOwnerId(Set<Worktime> worktimesForSpeOwnerId) {
+        this.worktimesForSpeOwnerId = worktimesForSpeOwnerId;
     }
 
 }
