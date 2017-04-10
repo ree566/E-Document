@@ -1,5 +1,5 @@
 package com.advantech.model;
-// Generated 2017/4/6 下午 02:45:49 by Hibernate Tools 4.3.1
+// Generated 2017/4/7 下午 02:26:06 by Hibernate Tools 4.3.1
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
@@ -42,6 +42,8 @@ public class Worktime implements java.io.Serializable {
     private Identit identitByEeOwnerId;
     private Identit identitByQcOwnerId;
     private Identit identitBySpeOwnerId;
+    private Pending pending;
+    private PreAssy preAssy;
     private Type type;
     private String modelName;
     private BigDecimal totalModule;
@@ -59,9 +61,6 @@ public class Worktime implements java.io.Serializable {
     private Integer hiPotLeakage;
     private BigDecimal coldBoot;
     private BigDecimal warmBoot;
-    private BigDecimal assyToT1;
-    private BigDecimal t2ToPacking;
-    private String pending;
     private BigDecimal pendingTime;
     private String burnIn;
     private BigDecimal biTime;
@@ -70,34 +69,47 @@ public class Worktime implements java.io.Serializable {
     private String testSop;
     private Integer keypartA;
     private Integer keypartB;
-    private String preAssy;
-    private String partLink;
-    private String ce;
-    private String ul;
-    private String rohs;
-    private String weee;
-    private String madeInTaiwan;
-    private String fcc;
-    private String eac;
-    private String NInOneCollectionBox;
-    private String partNoAttributeMaintain;
-    private Integer assyStation;
-    private Integer packingStation;
+    private Character partLink;
+    private int ce;
+    private int ul;
+    private int rohs;
+    private int weee;
+    private int madeInTaiwan;
+    private int fcc;
+    private int eac;
+    private BigDecimal NInOneCollectionBox;
+    private char partNoAttributeMaintain;
     private BigDecimal assyLeadTime;
-    private BigDecimal assyKanbanTime;
     private BigDecimal packingLeadTime;
-    private BigDecimal packingKanbanTime;
     private Date modifiedDate;
 
     public Worktime() {
     }
 
-    public Worktime(int id, String modelName) {
+    public Worktime(int id, Floor floor, Identit identitByEeOwnerId, Identit identitByQcOwnerId, Identit identitBySpeOwnerId, Pending pending, Type type, String modelName, BigDecimal pendingTime, String burnIn, BigDecimal biTime, BigDecimal biTemperature, int ce, int ul, int rohs, int weee, int madeInTaiwan, int fcc, int eac, char partNoAttributeMaintain) {
         this.id = id;
+        this.floor = floor;
+        this.identitByEeOwnerId = identitByEeOwnerId;
+        this.identitByQcOwnerId = identitByQcOwnerId;
+        this.identitBySpeOwnerId = identitBySpeOwnerId;
+        this.pending = pending;
+        this.type = type;
         this.modelName = modelName;
+        this.pendingTime = pendingTime;
+        this.burnIn = burnIn;
+        this.biTime = biTime;
+        this.biTemperature = biTemperature;
+        this.ce = ce;
+        this.ul = ul;
+        this.rohs = rohs;
+        this.weee = weee;
+        this.madeInTaiwan = madeInTaiwan;
+        this.fcc = fcc;
+        this.eac = eac;
+        this.partNoAttributeMaintain = partNoAttributeMaintain;
     }
 
-    public Worktime(int id, Floor floor, Flow flowByTestFlowId, Flow flowByPackingFlowId, Flow flowByBabFlowId, Identit identitByEeOwnerId, Identit identitByQcOwnerId, Identit identitBySpeOwnerId, Type type, String modelName, BigDecimal totalModule, BigDecimal cleanPanel, BigDecimal assy, BigDecimal t1, BigDecimal t2, BigDecimal t3, BigDecimal t4, BigDecimal packing, BigDecimal upBiRi, BigDecimal downBiRi, BigDecimal biCost, Integer vibration, Integer hiPotLeakage, BigDecimal coldBoot, BigDecimal warmBoot, BigDecimal assyToT1, BigDecimal t2ToPacking, String pending, BigDecimal pendingTime, String burnIn, BigDecimal biTime, BigDecimal biTemperature, String assyPackingSop, String testSop, Integer keypartA, Integer keypartB, String preAssy, String partLink, String ce, String ul, String rohs, String weee, String madeInTaiwan, String fcc, String eac, String NInOneCollectionBox, String partNoAttributeMaintain, Integer assyStation, Integer packingStation, BigDecimal assyLeadTime, BigDecimal assyKanbanTime, BigDecimal packingLeadTime, BigDecimal packingKanbanTime, Date modifiedDate) {
+    public Worktime(int id, Floor floor, Flow flowByTestFlowId, Flow flowByPackingFlowId, Flow flowByBabFlowId, Identit identitByEeOwnerId, Identit identitByQcOwnerId, Identit identitBySpeOwnerId, Pending pending, PreAssy preAssy, Type type, String modelName, BigDecimal totalModule, BigDecimal cleanPanel, BigDecimal assy, BigDecimal t1, BigDecimal t2, BigDecimal t3, BigDecimal t4, BigDecimal packing, BigDecimal upBiRi, BigDecimal downBiRi, BigDecimal biCost, Integer vibration, Integer hiPotLeakage, BigDecimal coldBoot, BigDecimal warmBoot, BigDecimal pendingTime, String burnIn, BigDecimal biTime, BigDecimal biTemperature, String assyPackingSop, String testSop, Integer keypartA, Integer keypartB, Character partLink, int ce, int ul, int rohs, int weee, int madeInTaiwan, int fcc, int eac, BigDecimal NInOneCollectionBox, char partNoAttributeMaintain, BigDecimal assyLeadTime, BigDecimal packingLeadTime, Date modifiedDate) {
         this.id = id;
         this.floor = floor;
         this.flowByTestFlowId = flowByTestFlowId;
@@ -106,6 +118,8 @@ public class Worktime implements java.io.Serializable {
         this.identitByEeOwnerId = identitByEeOwnerId;
         this.identitByQcOwnerId = identitByQcOwnerId;
         this.identitBySpeOwnerId = identitBySpeOwnerId;
+        this.pending = pending;
+        this.preAssy = preAssy;
         this.type = type;
         this.modelName = modelName;
         this.totalModule = totalModule;
@@ -123,9 +137,6 @@ public class Worktime implements java.io.Serializable {
         this.hiPotLeakage = hiPotLeakage;
         this.coldBoot = coldBoot;
         this.warmBoot = warmBoot;
-        this.assyToT1 = assyToT1;
-        this.t2ToPacking = t2ToPacking;
-        this.pending = pending;
         this.pendingTime = pendingTime;
         this.burnIn = burnIn;
         this.biTime = biTime;
@@ -134,7 +145,6 @@ public class Worktime implements java.io.Serializable {
         this.testSop = testSop;
         this.keypartA = keypartA;
         this.keypartB = keypartB;
-        this.preAssy = preAssy;
         this.partLink = partLink;
         this.ce = ce;
         this.ul = ul;
@@ -145,12 +155,8 @@ public class Worktime implements java.io.Serializable {
         this.eac = eac;
         this.NInOneCollectionBox = NInOneCollectionBox;
         this.partNoAttributeMaintain = partNoAttributeMaintain;
-        this.assyStation = assyStation;
-        this.packingStation = packingStation;
         this.assyLeadTime = assyLeadTime;
-        this.assyKanbanTime = assyKanbanTime;
         this.packingLeadTime = packingLeadTime;
-        this.packingKanbanTime = packingKanbanTime;
         this.modifiedDate = modifiedDate;
     }
 
@@ -166,7 +172,7 @@ public class Worktime implements java.io.Serializable {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "floor_id")
+    @JoinColumn(name = "floor_id", nullable = false)
     public Floor getFloor() {
         return this.floor;
     }
@@ -206,7 +212,7 @@ public class Worktime implements java.io.Serializable {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ee_owner_id")
+    @JoinColumn(name = "ee_owner_id", nullable = false)
     public Identit getIdentitByEeOwnerId() {
         return this.identitByEeOwnerId;
     }
@@ -216,7 +222,7 @@ public class Worktime implements java.io.Serializable {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "qc_owner_id")
+    @JoinColumn(name = "qc_owner_id", nullable = false)
     public Identit getIdentitByQcOwnerId() {
         return this.identitByQcOwnerId;
     }
@@ -226,7 +232,7 @@ public class Worktime implements java.io.Serializable {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "spe_owner_id")
+    @JoinColumn(name = "spe_owner_id", nullable = false)
     public Identit getIdentitBySpeOwnerId() {
         return this.identitBySpeOwnerId;
     }
@@ -236,7 +242,27 @@ public class Worktime implements java.io.Serializable {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "type_id")
+    @JoinColumn(name = "pending_id", nullable = false)
+    public Pending getPending() {
+        return this.pending;
+    }
+
+    public void setPending(Pending pending) {
+        this.pending = pending;
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "pre_assy_id")
+    public PreAssy getPreAssy() {
+        return this.preAssy;
+    }
+
+    public void setPreAssy(PreAssy preAssy) {
+        this.preAssy = preAssy;
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "type_id", nullable = false)
     public Type getType() {
         return this.type;
     }
@@ -389,34 +415,7 @@ public class Worktime implements java.io.Serializable {
         this.warmBoot = warmBoot;
     }
 
-    @Column(name = "assy_to_t1", precision = 10, scale = 1)
-    public BigDecimal getAssyToT1() {
-        return this.assyToT1;
-    }
-
-    public void setAssyToT1(BigDecimal assyToT1) {
-        this.assyToT1 = assyToT1;
-    }
-
-    @Column(name = "t2_to_packing", precision = 10, scale = 1)
-    public BigDecimal getT2ToPacking() {
-        return this.t2ToPacking;
-    }
-
-    public void setT2ToPacking(BigDecimal t2ToPacking) {
-        this.t2ToPacking = t2ToPacking;
-    }
-
-    @Column(name = "pending", length = 50)
-    public String getPending() {
-        return this.pending;
-    }
-
-    public void setPending(String pending) {
-        this.pending = pending;
-    }
-
-    @Column(name = "pending_time", precision = 10, scale = 1)
+    @Column(name = "pending_time", nullable = false, precision = 10, scale = 1)
     public BigDecimal getPendingTime() {
         return this.pendingTime;
     }
@@ -425,7 +424,7 @@ public class Worktime implements java.io.Serializable {
         this.pendingTime = pendingTime;
     }
 
-    @Column(name = "burn_in", length = 10)
+    @Column(name = "burn_in", nullable = false, length = 10)
     public String getBurnIn() {
         return this.burnIn;
     }
@@ -434,7 +433,7 @@ public class Worktime implements java.io.Serializable {
         this.burnIn = burnIn;
     }
 
-    @Column(name = "bi_time", precision = 10, scale = 1)
+    @Column(name = "bi_time", nullable = false, precision = 10, scale = 1)
     public BigDecimal getBiTime() {
         return this.biTime;
     }
@@ -443,7 +442,7 @@ public class Worktime implements java.io.Serializable {
         this.biTime = biTime;
     }
 
-    @Column(name = "bi_temperature", precision = 10, scale = 1)
+    @Column(name = "bi_temperature", nullable = false, precision = 10, scale = 1)
     public BigDecimal getBiTemperature() {
         return this.biTemperature;
     }
@@ -488,121 +487,94 @@ public class Worktime implements java.io.Serializable {
         this.keypartB = keypartB;
     }
 
-    @Column(name = "pre_assy", length = 50)
-    public String getPreAssy() {
-        return this.preAssy;
-    }
-
-    public void setPreAssy(String preAssy) {
-        this.preAssy = preAssy;
-    }
-
-    @Column(name = "part_link", length = 50)
-    public String getPartLink() {
+    @Column(name = "part_link", length = 1)
+    public Character getPartLink() {
         return this.partLink;
     }
 
-    public void setPartLink(String partLink) {
+    public void setPartLink(Character partLink) {
         this.partLink = partLink;
     }
 
-    @Column(name = "ce", length = 50)
-    public String getCe() {
+    @Column(name = "ce", nullable = false)
+    public int getCe() {
         return this.ce;
     }
 
-    public void setCe(String ce) {
+    public void setCe(int ce) {
         this.ce = ce;
     }
 
-    @Column(name = "ul", length = 50)
-    public String getUl() {
+    @Column(name = "ul", nullable = false)
+    public int getUl() {
         return this.ul;
     }
 
-    public void setUl(String ul) {
+    public void setUl(int ul) {
         this.ul = ul;
     }
 
-    @Column(name = "rohs", length = 50)
-    public String getRohs() {
+    @Column(name = "rohs", nullable = false)
+    public int getRohs() {
         return this.rohs;
     }
 
-    public void setRohs(String rohs) {
+    public void setRohs(int rohs) {
         this.rohs = rohs;
     }
 
-    @Column(name = "weee", length = 50)
-    public String getWeee() {
+    @Column(name = "weee", nullable = false)
+    public int getWeee() {
         return this.weee;
     }
 
-    public void setWeee(String weee) {
+    public void setWeee(int weee) {
         this.weee = weee;
     }
 
-    @Column(name = "made_in_taiwan", length = 50)
-    public String getMadeInTaiwan() {
+    @Column(name = "made_in_taiwan", nullable = false)
+    public int getMadeInTaiwan() {
         return this.madeInTaiwan;
     }
 
-    public void setMadeInTaiwan(String madeInTaiwan) {
+    public void setMadeInTaiwan(int madeInTaiwan) {
         this.madeInTaiwan = madeInTaiwan;
     }
 
-    @Column(name = "fcc", length = 50)
-    public String getFcc() {
+    @Column(name = "fcc", nullable = false)
+    public int getFcc() {
         return this.fcc;
     }
 
-    public void setFcc(String fcc) {
+    public void setFcc(int fcc) {
         this.fcc = fcc;
     }
 
-    @Column(name = "eac", length = 50)
-    public String getEac() {
+    @Column(name = "eac", nullable = false)
+    public int getEac() {
         return this.eac;
     }
 
-    public void setEac(String eac) {
+    public void setEac(int eac) {
         this.eac = eac;
     }
 
-    @Column(name = "n_in_one_collection_box", length = 50)
-    public String getNInOneCollectionBox() {
+    @Column(name = "n_in_one_collection_box", precision = 10, scale = 1)
+    public BigDecimal getNInOneCollectionBox() {
         return this.NInOneCollectionBox;
     }
 
-    public void setNInOneCollectionBox(String NInOneCollectionBox) {
+    public void setNInOneCollectionBox(BigDecimal NInOneCollectionBox) {
         this.NInOneCollectionBox = NInOneCollectionBox;
     }
 
-    @Column(name = "part_no_attribute_maintain", length = 50)
-    public String getPartNoAttributeMaintain() {
+    @Column(name = "part_no_attribute_maintain", nullable = false, length = 1)
+    public char getPartNoAttributeMaintain() {
         return this.partNoAttributeMaintain;
     }
 
-    public void setPartNoAttributeMaintain(String partNoAttributeMaintain) {
+    public void setPartNoAttributeMaintain(char partNoAttributeMaintain) {
         this.partNoAttributeMaintain = partNoAttributeMaintain;
-    }
-
-    @Column(name = "assy_station")
-    public Integer getAssyStation() {
-        return this.assyStation;
-    }
-
-    public void setAssyStation(Integer assyStation) {
-        this.assyStation = assyStation;
-    }
-
-    @Column(name = "packing_station")
-    public Integer getPackingStation() {
-        return this.packingStation;
-    }
-
-    public void setPackingStation(Integer packingStation) {
-        this.packingStation = packingStation;
     }
 
     @Column(name = "assy_lead_time", precision = 10, scale = 1)
@@ -614,15 +586,6 @@ public class Worktime implements java.io.Serializable {
         this.assyLeadTime = assyLeadTime;
     }
 
-    @Column(name = "assy_kanban_time", precision = 10, scale = 1)
-    public BigDecimal getAssyKanbanTime() {
-        return this.assyKanbanTime;
-    }
-
-    public void setAssyKanbanTime(BigDecimal assyKanbanTime) {
-        this.assyKanbanTime = assyKanbanTime;
-    }
-
     @Column(name = "packing_lead_time", precision = 10, scale = 1)
     public BigDecimal getPackingLeadTime() {
         return this.packingLeadTime;
@@ -630,15 +593,6 @@ public class Worktime implements java.io.Serializable {
 
     public void setPackingLeadTime(BigDecimal packingLeadTime) {
         this.packingLeadTime = packingLeadTime;
-    }
-
-    @Column(name = "packing_kanban_time", precision = 10, scale = 1)
-    public BigDecimal getPackingKanbanTime() {
-        return this.packingKanbanTime;
-    }
-
-    public void setPackingKanbanTime(BigDecimal packingKanbanTime) {
-        this.packingKanbanTime = packingKanbanTime;
     }
 
     @Temporal(TemporalType.TIMESTAMP)

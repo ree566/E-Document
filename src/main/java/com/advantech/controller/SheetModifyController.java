@@ -11,6 +11,8 @@ import com.advantech.model.WorktimeColumnGroup;
 import com.advantech.service.FloorService;
 import com.advantech.service.FlowService;
 import com.advantech.service.IdentitService;
+import com.advantech.service.PendingService;
+import com.advantech.service.PreAssyService;
 import com.advantech.service.TypeService;
 import com.advantech.service.WorktimeColumnGroupService;
 import com.advantech.service.WorktimeService;
@@ -22,19 +24,21 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.HttpSessionRequiredException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
 /**
@@ -67,6 +71,12 @@ public class SheetModifyController {
     private FlowService flowService;
 
     @Autowired
+    private PendingService pendingService;
+
+    @Autowired
+    private PreAssyService preAssyService;
+
+    @Autowired
     private WorktimeColumnGroupService worktimeColumnGroupService;
 
     @RequestMapping(value = "/updateSheet.do", method = {RequestMethod.POST})
@@ -75,15 +85,25 @@ public class SheetModifyController {
             @RequestParam String rowId,
             @ModelAttribute Worktime worktime,
             @ModelAttribute("user") Identit user,
-            @RequestParam(required = false, defaultValue = "0") int floorName, // Get the selected drop down list option from client
-            @RequestParam(required = false, defaultValue = "0") int typeName, // Get the selected drop down list option from client
-            @RequestParam(required = false, defaultValue = "0") int speOwnerName, // Get the selected drop down list option from client
-            @RequestParam(required = false, defaultValue = "0") int eeOwnerName, // Get the selected drop down list option from client
-            @RequestParam(required = false, defaultValue = "0") int qcOwnerName, // Get the selected drop down list option from client
+            @RequestParam int typeName, // Get the selected drop down list option from client
+            @RequestParam int floorName, // Get the selected drop down list option from client
+            @RequestParam int speOwnerName, // Get the selected drop down list option from client
+            @RequestParam int eeOwnerName, // Get the selected drop down list option from client
+            @RequestParam int qcOwnerName, // Get the selected drop down list option from client
+            @RequestParam int pendingName, // Get the selected drop down list option from client
+            @RequestParam(required = false, defaultValue = "0") int preAssyName, // Get the selected drop down list option from client
             @RequestParam(required = false, defaultValue = "0") int babFlow, // Get the selected drop down list option from client
             @RequestParam(required = false, defaultValue = "0") int testFlow, // Get the selected drop down list option from client
             @RequestParam(required = false, defaultValue = "0") int packingFlow, // Get the selected drop down list option from client
-            HttpServletRequest req) throws ServletException, IOException {
+            HttpServletRequest req,
+            BindingResult errors) throws ServletException, IOException {
+        
+        if (errors.hasErrors()) {
+            // error handling code goes here.
+            return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body(errors.getFieldErrors());
+        }
 
         this.printModels(worktime);
         this.showParams(req);
@@ -98,19 +118,18 @@ public class SheetModifyController {
             String userType = user.getUserType().getName();
             switch (userType) {
                 case IE:
-                    modifyMessage = "unsupported unit";
-//                            this.updateRows(worktime);
-                    break;
                 case SPE:
                     worktime.setId(Integer.parseInt(rowId));
                     if (isModelExists(worktime)) {
                         modifyMessage = "This model name is already exists";
                     } else {
-                        worktime.setFloor(floorName == 0 ? null : floorService.findByPrimaryKey(floorName));
-                        worktime.setType(typeName == 0 ? null : typeService.findByPrimaryKey(typeName));
-                        worktime.setIdentitBySpeOwnerId(speOwnerName == 0 ? null : identitService.findByPrimaryKey(speOwnerName));
-                        worktime.setIdentitByEeOwnerId(eeOwnerName == 0 ? null : identitService.findByPrimaryKey(eeOwnerName));
-                        worktime.setIdentitByQcOwnerId(qcOwnerName == 0 ? null : identitService.findByPrimaryKey(qcOwnerName));
+                        worktime.setFloor(floorService.findByPrimaryKey(floorName));
+                        worktime.setType(typeService.findByPrimaryKey(typeName));
+                        worktime.setIdentitBySpeOwnerId(identitService.findByPrimaryKey(speOwnerName));
+                        worktime.setIdentitByEeOwnerId(identitService.findByPrimaryKey(eeOwnerName));
+                        worktime.setIdentitByQcOwnerId(identitService.findByPrimaryKey(qcOwnerName));
+                        worktime.setPending(pendingService.findByPrimaryKey(pendingName));
+                        worktime.setPreAssy(preAssyName == 0 ? null : preAssyService.findByPrimaryKey(preAssyName));
                         worktime.setFlowByBabFlowId(babFlow == 0 ? null : flowService.findByPrimaryKey(babFlow));
                         worktime.setFlowByTestFlowId(testFlow == 0 ? null : flowService.findByPrimaryKey(testFlow));
                         worktime.setFlowByPackingFlowId(packingFlow == 0 ? null : flowService.findByPrimaryKey(packingFlow));
@@ -126,6 +145,7 @@ public class SheetModifyController {
         return ResponseEntity
                 .status(SUCCESS_MESSAGE.equals(modifyMessage) ? HttpStatus.CREATED : HttpStatus.FORBIDDEN)
                 .body(modifyMessage);
+
     }
 
     private String deleteRows(String rowId) {
@@ -169,8 +189,8 @@ public class SheetModifyController {
 
         WorktimeColumnGroup w = worktimeColumnGroupService.findByUserType(unit);
 
-        Clob columns = w.getColumnName();
         try {
+            Clob columns = w.getColumnName();
             String clobString = columns.getSubString(1, (int) columns.length());
             columnName = clobString.split(",");
             return columnName;

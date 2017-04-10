@@ -41,13 +41,15 @@ Contributor(s):
 -->
 <hibernate-reverse-engineering>
   <schema-selection match-catalog="E_Document" match-schema="dbo"/>
-  <table-filter match-name="UserType"/>
-  <table-filter match-name="Identit"/>
-  <table-filter match-name="Worktime"/>
-  <table-filter match-name="Type"/>
   <table-filter match-name="Floor"/>
+  <table-filter match-name="Identit"/>
+  <table-filter match-name="Type"/>
+  <table-filter match-name="UserType"/>
+  <table-filter match-name="Worktime"/>
+  <table-filter match-name="Worktime_ColumnGroup"/>
   <table-filter match-name="Flow"/>
   <table-filter match-name="FlowGroup"/>
-  <table-filter match-name="Worktime_ColumnGroup"/>
+  <table-filter match-name="Pending"/>
+  <table-filter match-name="PreAssy"/>
   <table-filter match-name="Sheet_Main_view"/>
 </hibernate-reverse-engineering>

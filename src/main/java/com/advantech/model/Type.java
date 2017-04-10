@@ -1,5 +1,5 @@
 package com.advantech.model;
-// Generated 2017/4/6 下午 02:45:49 by Hibernate Tools 4.3.1
+// Generated 2017/4/7 下午 02:26:06 by Hibernate Tools 4.3.1
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;

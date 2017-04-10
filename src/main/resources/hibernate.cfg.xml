@@ -67,15 +67,16 @@ Contributor(s):
         <listener class="org.hibernate.envers.event.AuditEventListener" type="pre-collection-remove"/>
         <listener class="org.hibernate.envers.event.AuditEventListener" type="post-collection-recreate"/>-->
     <!--mapping pojos-->
-
     <mapping class="com.advantech.model.Type"/>
     <mapping class="com.advantech.model.WorktimeColumnGroup"/>
     <mapping class="com.advantech.model.FlowGroup"/>
     <mapping class="com.advantech.model.Floor"/>
+    <mapping class="com.advantech.model.Pending"/>
     <mapping class="com.advantech.model.Identit"/>
     <mapping class="com.advantech.model.UserType"/>
     <mapping class="com.advantech.model.Flow"/>
     <mapping class="com.advantech.model.SheetView"/>
+    <mapping class="com.advantech.model.PreAssy"/>
     <mapping class="com.advantech.model.Worktime"/>
   </session-factory>
 </hibernate-configuration>

@@ -85,13 +85,13 @@ public class SheetViewDAO implements BasicDAO {
                 criteria.add(Restrictions.ne(searchField, searchString));
                 break;
             case "bw":
-                criteria.add(Restrictions.like(searchField, (String) searchString, MatchMode.START));
+                criteria.add(Restrictions.like(searchField, searchString.toString(), MatchMode.START));
                 break;
             case "ew":
-                criteria.add(Restrictions.like(searchField, (String) searchString, MatchMode.END));
+                criteria.add(Restrictions.like(searchField, searchString.toString(), MatchMode.END));
                 break;
             case "cn":
-                criteria.add(Restrictions.like(searchField, (String) searchString, MatchMode.ANYWHERE));
+                criteria.add(Restrictions.like(searchField, searchString.toString(), MatchMode.ANYWHERE));
                 break;
             case "lt":
                 criteria.add(Restrictions.lt(searchField, searchString));

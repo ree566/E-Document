@@ -5,14 +5,6 @@
  */
 package com.advantech.helper;
 
-import java.math.BigDecimal;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.apache.commons.lang3.math.NumberUtils;
-
 /**
  *
  * @author Wei.Cheng
@@ -29,15 +21,16 @@ public class PageInfo {
     private String searchField;
     private Object searchString;
     private String searchOper;
-//    private String filters;
+    private String filters;
 
-    private int maxNumOfRows;
+    private Integer maxNumOfRows;
 
     public PageInfo() {
         this.sidx = "";
         this.sord = "asc";
         this.page = 1;
         this.rows = 10;
+        this.maxNumOfRows = 0;
     }
 
     public String getSearch() {
@@ -94,11 +87,11 @@ public class PageInfo {
         return this;
     }
 
-    public int getMaxNumOfRows() {
+    public Integer getMaxNumOfRows() {
         return maxNumOfRows;
     }
 
-    public PageInfo setMaxNumOfRows(int maxNumOfRows) {
+    public PageInfo setMaxNumOfRows(Integer maxNumOfRows) {
         this.maxNumOfRows = maxNumOfRows;
         return this;
     }
@@ -115,7 +108,7 @@ public class PageInfo {
         return searchString;
     }
 
-    public void setSearchString(Integer searchString) {
+    public void setSearchString(Object searchString) {
         this.searchString = searchString;
     }
 
@@ -125,6 +118,14 @@ public class PageInfo {
 
     public void setSearchOper(String searchOper) {
         this.searchOper = searchOper;
+    }
+
+    public String getFilters() {
+        return filters;
+    }
+
+    public void setFilters(String filters) {
+        this.filters = filters;
     }
 
 }
