@@ -84,7 +84,10 @@
         <script src="js/jquery.blockUI.js"></script>
         <script src="js/jquery.cookie.js"></script>
         <script src="js/param.check.js"></script>
+        <script src="js/moment.js"></script>
         <script>
+            var cookie_expired_time = moment().set({hour: 23, minute: 0, second: 0});
+            
             var totalLineStatus = new Map();
 
             var hnd;//鍵盤輸入間隔
@@ -725,10 +728,7 @@
 
             //generate all cookies exist 12 hours
             function generateCookie(name, value) {
-                var date = new Date();
-                var minutes = 12 * 60;
-                date.setTime(date.getTime() + (minutes * 60 * 1000));
-                $.cookie(name, value, {expires: date});
+                $.cookie(name, value, {expires: cookie_expired_time.toDate()});
             }
 
             function removeAllStepCookie() {

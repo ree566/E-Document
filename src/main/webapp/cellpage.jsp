@@ -32,6 +32,8 @@
         <script src="js/param.check.js"></script>
         <script src="js/moment.js"></script>
         <script>
+            var cookie_expired_time = moment().set({hour: 23, minute: 0, second: 0});
+
             var userInfoCookieName = "userInfo", testLineTypeCookieName = "testLineTypeCookieName", cellCookieName = "cellCookieName";
             var serverMsgTimeout;
             var hnd;//鍵盤輸入間隔
@@ -384,9 +386,7 @@
                 }
 
                 function getExpireDate() {
-                    var date = moment().startOf('day');
-                    date = date.add(2, 'days');
-                    return date.toDate();
+                    return cookie_expired_time.toDate();
                 }
 
             });
