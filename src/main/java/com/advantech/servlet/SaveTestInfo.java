@@ -14,6 +14,8 @@ import java.io.*;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -25,6 +27,8 @@ public class SaveTestInfo extends HttpServlet {
     private TestService testService = null;
     private ParamChecker pChecker = null;
     private final String login = "LOGIN", logout = "LOGOUT", success = "success", changeDeck = "CHANGE_DECK", fail = "fail";
+    private final String webservice_not_connected_message = "WebService connection  timeout, please try again.";
+    private static final Logger log = LoggerFactory.getLogger(SaveTestInfo.class);
 
     @Override
     public void init()
@@ -56,20 +60,26 @@ public class SaveTestInfo extends HttpServlet {
                 int tableNum = Integer.parseInt(tableNo);
                 switch (action) {
                     case login:
-                        String i = testService.checkDeskIsAvailable(tableNum, jobnumber);
-                        if (i == null) {
-                            result = testService.addTestPeople(tableNum, jobnumber) ? success : fail;
-                            if (result.equals(success)) {
+                        try {
+                            String i = testService.checkDeskIsAvailable(tableNum, jobnumber);
+                            if (i == null) {
                                 WebServiceTX.getInstance().kanbanUserLogin(jobnumber);
+                                result = testService.addTestPeople(tableNum, jobnumber) ? success : fail;
+                            } else {
+                                result = i;
                             }
-                        } else {
-                            result = i;
+                        } catch (Exception ex) {
+                            log.error(ex.toString());
+                            result = webservice_not_connected_message;
                         }
                         break;
                     case logout:
-                        result = (testService.getTableInfo(tableNum, jobnumber) != null) ? (testService.removeTestPeople(tableNum, jobnumber) ? success : fail) : fail;
-                        if (result.equals(success)) {
+                        try {
                             WebServiceTX.getInstance().kanbanUserLogout(jobnumber);
+                            result = (testService.getTableInfo(tableNum, jobnumber) != null) ? (testService.removeTestPeople(tableNum, jobnumber) ? success : fail) : fail;
+                        } catch (Exception ex) {
+                            log.error(ex.toString());
+                            result = webservice_not_connected_message;
                         }
                         break;
                     case changeDeck:
