@@ -22,124 +22,124 @@ import javax.persistence.TemporalType;
 public class SheetView implements java.io.Serializable {
 
     private int rowId;
-    private BigDecimal assy;
-    private BigDecimal assyKanbanTime;
-    private BigDecimal assyLeadTime;
-    private String assyPackingSop;
-    private Integer assyStation;
-    private BigDecimal assyToT1;
-    private String babFlowName;
-    private BigDecimal biCost;
-    private BigDecimal biTemperature;
-    private BigDecimal biTime;
-    private String burnIn;
-    private Integer ce;
-    private BigDecimal cleanPanel;
-    private BigDecimal cleanPanelAndAssembly;
-    private BigDecimal coldBoot;
-    private BigDecimal downBiRi;
-    private Integer eac;
-    private String eeOwnerName;
-    private Integer fcc;
-    private String floorName;
-    private Integer hiPotLeakage;
-    private Integer keypartA;
-    private Integer keypartB;
-    private String madeInTaiwan;
     private String modelName;
-    private Date modifiedDate;
-    private BigDecimal nInOneCollectionBox;
-    private BigDecimal packing;
-    private String packingFlowName;
-    private BigDecimal packingKanbanTime;
-    private BigDecimal packingLeadTime;
-    private Integer packingStation;
-    private Character partLink;
-    private Character partNoAttributeMaintain;
-    private String pendingName;
-    private BigDecimal pendingTime;
-    private String preAssyName;
+    private String typeName;
     private BigDecimal productionWt;
-    private String qcOwnerName;
-    private Integer rohs;
+    private BigDecimal totalModule;
     private Integer setupTime;
-    private String speOwnerName;
+    private BigDecimal cleanPanel;
+    private BigDecimal assy;
     private BigDecimal t1;
     private BigDecimal t2;
-    private BigDecimal t2ToPacking;
     private BigDecimal t3;
     private BigDecimal t4;
-    private String testFlowName;
-    private String testSop;
-    private BigDecimal totalModule;
-    private String typeName;
-    private Integer ul;
+    private BigDecimal packing;
+    private BigDecimal downBiRi;
     private BigDecimal upBiRi;
+    private BigDecimal biCost;
     private Integer vibration;
+    private Integer hiPotLeakage;
+    private BigDecimal coldBoot;
     private BigDecimal warmBoot;
+    private BigDecimal assyToT1;
+    private BigDecimal t2ToPacking;
+    private String floorName;
+    private String pendingName;
+    private BigDecimal pendingTime;
+    private String burnIn;
+    private BigDecimal biTime;
+    private BigDecimal biTemperature;
+    private String speOwnerName;
+    private String eeOwnerName;
+    private String qcOwnerName;
+    private String assyPackingSop;
+    private String testSop;
+    private Integer keypartA;
+    private Integer keypartB;
+    private String preAssyName;
+    private String babFlowName;
+    private String testFlowName;
+    private String packingFlowName;
+    private Character partLink;
+    private Integer ce;
+    private Integer ul;
+    private Integer rohs;
     private Integer weee;
+    private Integer madeInTaiwan;
+    private Integer fcc;
+    private Integer eac;
+    private BigDecimal nInOneCollectionBox;
+    private Character partNoAttributeMaintain;
+    private Integer assyStation;
+    private Integer packingStation;
+    private BigDecimal assyLeadTime;
+    private BigDecimal assyKanbanTime;
+    private BigDecimal packingLeadTime;
+    private BigDecimal packingKanbanTime;
+    private BigDecimal cleanPanelAndAssembly;
+    private Date modifiedDate;
 
     public SheetView() {
     }
 
-    public SheetView(int rowId, BigDecimal assy, BigDecimal assyKanbanTime, BigDecimal assyLeadTime, String assyPackingSop, Integer assyStation, BigDecimal assyToT1, String babFlowName, BigDecimal biCost, BigDecimal biTemperature, BigDecimal biTime, String burnIn, Integer ce, BigDecimal cleanPanel, BigDecimal cleanPanelAndAssembly, BigDecimal coldBoot, BigDecimal downBiRi, Integer eac, String eeOwnerName, Integer fcc, String floorName, Integer hiPotLeakage, Integer keypartA, Integer keypartB, String madeInTaiwan, String modelName, Date modifiedDate, BigDecimal nInOneCollectionBox, BigDecimal packing, String packingFlowName, BigDecimal packingKanbanTime, BigDecimal packingLeadTime, Integer packingStation, Character partLink, Character partNoAttributeMaintain, String pendingName, BigDecimal pendingTime, String preAssyName, BigDecimal productionWt, String qcOwnerName, Integer rohs, Integer setupTime, String speOwnerName, BigDecimal t1, BigDecimal t2, BigDecimal t2ToPacking, BigDecimal t3, BigDecimal t4, String testFlowName, String testSop, BigDecimal totalModule, String typeName, Integer ul, BigDecimal upBiRi, Integer vibration, BigDecimal warmBoot, Integer weee) {
+    public SheetView(int rowId, String modelName, String typeName, BigDecimal productionWt, BigDecimal totalModule, Integer setupTime, BigDecimal cleanPanel, BigDecimal assy, BigDecimal t1, BigDecimal t2, BigDecimal t3, BigDecimal t4, BigDecimal packing, BigDecimal downBiRi, BigDecimal upBiRi, BigDecimal biCost, Integer vibration, Integer hiPotLeakage, BigDecimal coldBoot, BigDecimal warmBoot, BigDecimal assyToT1, BigDecimal t2ToPacking, String floorName, String pendingName, BigDecimal pendingTime, String burnIn, BigDecimal biTime, BigDecimal biTemperature, String speOwnerName, String eeOwnerName, String qcOwnerName, String assyPackingSop, String testSop, Integer keypartA, Integer keypartB, String preAssyName, String babFlowName, String testFlowName, String packingFlowName, Character partLink, Integer ce, Integer ul, Integer rohs, Integer weee, Integer madeInTaiwan, Integer fcc, Integer eac, BigDecimal nInOneCollectionBox, Character partNoAttributeMaintain, Integer assyStation, Integer packingStation, BigDecimal assyLeadTime, BigDecimal assyKanbanTime, BigDecimal packingLeadTime, BigDecimal packingKanbanTime, BigDecimal cleanPanelAndAssembly, Date modifiedDate) {
         this.rowId = rowId;
-        this.assy = assy;
-        this.assyKanbanTime = assyKanbanTime;
-        this.assyLeadTime = assyLeadTime;
-        this.assyPackingSop = assyPackingSop;
-        this.assyStation = assyStation;
-        this.assyToT1 = assyToT1;
-        this.babFlowName = babFlowName;
-        this.biCost = biCost;
-        this.biTemperature = biTemperature;
-        this.biTime = biTime;
-        this.burnIn = burnIn;
-        this.ce = ce;
-        this.cleanPanel = cleanPanel;
-        this.cleanPanelAndAssembly = cleanPanelAndAssembly;
-        this.coldBoot = coldBoot;
-        this.downBiRi = downBiRi;
-        this.eac = eac;
-        this.eeOwnerName = eeOwnerName;
-        this.fcc = fcc;
-        this.floorName = floorName;
-        this.hiPotLeakage = hiPotLeakage;
-        this.keypartA = keypartA;
-        this.keypartB = keypartB;
-        this.madeInTaiwan = madeInTaiwan;
         this.modelName = modelName;
-        this.modifiedDate = modifiedDate;
-        this.nInOneCollectionBox = nInOneCollectionBox;
-        this.packing = packing;
-        this.packingFlowName = packingFlowName;
-        this.packingKanbanTime = packingKanbanTime;
-        this.packingLeadTime = packingLeadTime;
-        this.packingStation = packingStation;
-        this.partLink = partLink;
-        this.partNoAttributeMaintain = partNoAttributeMaintain;
-        this.pendingName = pendingName;
-        this.pendingTime = pendingTime;
-        this.preAssyName = preAssyName;
+        this.typeName = typeName;
         this.productionWt = productionWt;
-        this.qcOwnerName = qcOwnerName;
-        this.rohs = rohs;
+        this.totalModule = totalModule;
         this.setupTime = setupTime;
-        this.speOwnerName = speOwnerName;
+        this.cleanPanel = cleanPanel;
+        this.assy = assy;
         this.t1 = t1;
         this.t2 = t2;
-        this.t2ToPacking = t2ToPacking;
         this.t3 = t3;
         this.t4 = t4;
-        this.testFlowName = testFlowName;
-        this.testSop = testSop;
-        this.totalModule = totalModule;
-        this.typeName = typeName;
-        this.ul = ul;
+        this.packing = packing;
+        this.downBiRi = downBiRi;
         this.upBiRi = upBiRi;
+        this.biCost = biCost;
         this.vibration = vibration;
+        this.hiPotLeakage = hiPotLeakage;
+        this.coldBoot = coldBoot;
         this.warmBoot = warmBoot;
+        this.assyToT1 = assyToT1;
+        this.t2ToPacking = t2ToPacking;
+        this.floorName = floorName;
+        this.pendingName = pendingName;
+        this.pendingTime = pendingTime;
+        this.burnIn = burnIn;
+        this.biTime = biTime;
+        this.biTemperature = biTemperature;
+        this.speOwnerName = speOwnerName;
+        this.eeOwnerName = eeOwnerName;
+        this.qcOwnerName = qcOwnerName;
+        this.assyPackingSop = assyPackingSop;
+        this.testSop = testSop;
+        this.keypartA = keypartA;
+        this.keypartB = keypartB;
+        this.preAssyName = preAssyName;
+        this.babFlowName = babFlowName;
+        this.testFlowName = testFlowName;
+        this.packingFlowName = packingFlowName;
+        this.partLink = partLink;
+        this.ce = ce;
+        this.ul = ul;
+        this.rohs = rohs;
         this.weee = weee;
+        this.madeInTaiwan = madeInTaiwan;
+        this.fcc = fcc;
+        this.eac = eac;
+        this.nInOneCollectionBox = nInOneCollectionBox;
+        this.partNoAttributeMaintain = partNoAttributeMaintain;
+        this.assyStation = assyStation;
+        this.packingStation = packingStation;
+        this.assyLeadTime = assyLeadTime;
+        this.assyKanbanTime = assyKanbanTime;
+        this.packingLeadTime = packingLeadTime;
+        this.packingKanbanTime = packingKanbanTime;
+        this.cleanPanelAndAssembly = cleanPanelAndAssembly;
+        this.modifiedDate = modifiedDate;
     }
 
     @Id
@@ -360,11 +360,11 @@ public class SheetView implements java.io.Serializable {
     }
 
     @Column(name = "madeInTaiwan")
-    public String getMadeInTaiwan() {
+    public Integer getMadeInTaiwan() {
         return this.madeInTaiwan;
     }
 
-    public void setMadeInTaiwan(String madeInTaiwan) {
+    public void setMadeInTaiwan(Integer madeInTaiwan) {
         this.madeInTaiwan = madeInTaiwan;
     }
 

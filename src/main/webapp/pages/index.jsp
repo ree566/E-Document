@@ -45,13 +45,14 @@
         <script src="//cdnjs.cloudflare.com/ajax/libs/jqgrid/4.6.0/js/jquery.jqGrid.src.js"></script>
         <script src="${root}/js/ui.multiselect.js"></script>
         <script src="${root}/js/urlParamGetter.js"></script>
+        <script src="${root}/js/sessionExpiredDetect.js"></script>
+        <script src="${root}/js/column-name-setting.js"></script>
 
         <script>
             $(function () {
                 $(".widget input[type=submit], .widget a, .widget button").button();
                 var lastsel, scrollPosition;
-                var do_not_change_columns = ["id", "modifiedDate", "cleanPanelAndAssembly", "productionWt", "setupTime", "assyToT1", "t2ToPacking", "assyStation", "packingStation", "assyKanbanTime", "packingKanbanTime"];
-                var specialRelativeColumn = {SPE: ["type", "floor", "eeOwner", "speOwner", "qcOwner", "babFlow", "testFlow", "packingFlow", "pending", "preAssy"], EE: [], IE: []};
+
                 var search_string_options = {sopt: ['eq', 'ne', 'cn', 'bw', 'ew']};
                 var search_decimal_options = {sopt: ['eq', 'lt', 'gt']};
                 var search_date_options = {sopt: ['eq', 'ne']};
@@ -61,7 +62,9 @@
                 var grid = $("#list");
 
                 var floorOption = getSelectOption("floor");
-                var identitOption = getSelectOption("identit");
+                var spe_identitOption = getSelectOption("identit", {unitName: "SPE"});
+                var ee_identitOption = getSelectOption("identit", {unitName: "EE"});
+                var qc_identitOption = getSelectOption("identit", {unitName: "QC"});
                 var typeOption = getSelectOption("type");
                 var flowOption = getSelectOption("flow");
                 var preAssyOption = getSelectOption("preAssy");
@@ -90,68 +93,70 @@
                             .addClass("ui-state-disabled");
                 };
 
+                var loopCount = 0;
+
                 grid.jqGrid({
                     url: '${root}/getSheetView.do',
                     datatype: "json",
                     mtype: 'POST',
                     colModel: [
-                        {label: 'rowId', name: 'rowId', frozen: true, hidden: true, key: true, editable: true, editoptions: {defaultValue: "0"}},
-                        {label: 'Model', name: 'modelName', frozen: true, editable: true, searchrules: {required: true}, searchoptions: search_string_options, editrules: {required: true}, formoptions: required_form_options},
-                        {label: 'TYPE', name: 'typeName', edittype: "select", editoptions: {value: typeOption}, width: 100, searchrules: {required: true}, searchoptions: search_string_options},
-                        {label: 'ProductionWT', name: 'productionWt', width: 120, searchrules: {required: true}, searchoptions: search_decimal_options},
-                        {label: 'Total Module', name: 'totalModule', width: 100, searchrules: {required: true}, searchoptions: search_decimal_options, editrules: {number: true}},
-                        {label: 'Setup Time', name: 'setupTime', width: 100, searchrules: {required: true}, searchoptions: search_decimal_options},
-                        {label: 'CleanPanel', name: 'cleanPanel', width: 100, searchrules: {required: true}, searchoptions: search_decimal_options, editrules: {number: true}},
-                        {label: 'Assembly', name: 'assy', width: 100, searchrules: {required: true}, searchoptions: search_decimal_options, editrules: {number: true}},
-                        {label: 'T1', name: 't1', width: 60, searchrules: {required: true}, searchoptions: search_decimal_options, editrules: {number: true}},
-                        {label: 'T2', name: 't2', width: 60, searchrules: {required: true}, searchoptions: search_decimal_options, editrules: {number: true}},
-                        {label: 'T3', name: 't3', width: 60, searchrules: {required: true}, searchoptions: search_decimal_options, editrules: {number: true}},
-                        {label: 'T4', name: 't4', width: 60, searchrules: {required: true}, searchoptions: search_decimal_options, editrules: {number: true}},
-                        {label: 'Packing', name: 'packing', width: 100, searchrules: {required: true}, searchoptions: search_decimal_options, editrules: {number: true}},
-                        {label: 'Up_BI_RI', name: 'upBiRi', width: 100, searchrules: {required: true}, searchoptions: search_decimal_options, editrules: {number: true}},
-                        {label: 'Down_BI_RI', name: 'downBiRi', width: 100, searchrules: {required: true}, searchoptions: search_decimal_options, editrules: {number: true}},
-                        {label: 'BI Cost', name: 'biCost', width: 100, searchrules: {required: true}, searchoptions: search_decimal_options, editrules: {number: true}},
-                        {label: 'Vibration', name: 'vibration', width: 100, searchrules: {required: true}, searchoptions: search_decimal_options, editrules: {number: true}},
-                        {label: 'Hi-Pot/Leakage', name: 'hiPotLeakage', width: 100, searchrules: {required: true}, searchoptions: search_decimal_options, editrules: {number: true}},
-                        {label: 'Cold Boot', name: 'coldBoot', width: 100, searchrules: {required: true}, searchoptions: search_decimal_options, editrules: {number: true}},
-                        {label: 'Warm Boot', name: 'warmBoot', width: 100, searchrules: {required: true}, searchoptions: search_decimal_options, editrules: {number: true}},
-                        {label: 'ASS_T1', name: 'assyToT1', width: 100, searchrules: {required: true}, searchoptions: search_decimal_options},
-                        {label: 'T2_PACKING', name: 't2ToPacking', width: 100, searchrules: {required: true}, searchoptions: search_decimal_options},
-                        {label: 'Floor', name: 'floorName', edittype: "select", editoptions: {value: floorOption}, width: 100, searchrules: {required: true}, searchoptions: search_string_options},
-                        {label: 'Pending', name: 'pendingName', edittype: "select", editoptions: {value: pendingOption}, width: 100, searchrules: {required: true}, searchoptions: search_decimal_options},
-                        {label: 'Pending TIME', name: 'pendingTime', width: 100, searchrules: {required: true}, searchoptions: search_decimal_options, editrules: {required: true, number: true}, formoptions: required_form_options},
-                        {label: 'BurnIn', name: 'burnIn', edittype: "select", editoptions: {value: "Y:Y;N:N"}, width: 100, searchrules: {required: true}, searchoptions: search_string_options},
-                        {label: 'B/I Time', name: 'biTime', width: 100, searchrules: {required: true}, searchoptions: search_decimal_options, editrules: {required: true, number: true}, formoptions: required_form_options},
-                        {label: 'BI_Temperature', name: 'biTemperature', width: 100, searchrules: {required: true}, searchoptions: search_decimal_options, editrules: {required: true, number: true}, formoptions: required_form_options},
-                        {label: 'SPE Owner', name: 'speOwnerName', edittype: "select", editoptions: {value: identitOption}, width: 100, searchrules: {required: true}, searchoptions: search_string_options},
-                        {label: 'EE Owner', name: 'eeOwnerName', edittype: "select", editoptions: {value: identitOption}, width: 100, searchrules: {required: true}, searchoptions: search_string_options},
-                        {label: 'QC Owner', name: 'qcOwnerName', edittype: "select", editoptions: {value: identitOption}, width: 100, searchrules: {required: true}, searchoptions: search_string_options},
-                        {label: '組包SOP', name: 'assyPackingSop', width: 100, searchrules: {required: true}, searchoptions: search_string_options},
-                        {label: '測試SOP', name: 'testSop', width: 100, searchrules: {required: true}, searchoptions: search_string_options},
-                        {label: 'KEYPART_A', name: 'keypartA', width: 100, searchrules: {required: true}, searchoptions: search_decimal_options, editrules: {number: true}},
-                        {label: 'KEYPART_B', name: 'keypartB', width: 100, searchrules: {required: true}, searchoptions: search_decimal_options, editrules: {number: true}},
-                        {label: 'PRE-ASSY', name: 'preAssyName', edittype: "select", editoptions: {value: preAssyOption}, width: 100, searchrules: {required: true}, searchoptions: search_string_options},
-                        {label: 'BAB_FLOW', name: 'babFlowName', edittype: "select", editoptions: {value: flowOption}, width: 100, searchrules: {required: true}, searchoptions: search_string_options},
-                        {label: 'TEST_FLOW', name: 'testFlowName', edittype: "select", editoptions: {value: flowOption}, width: 100, searchrules: {required: true}, searchoptions: search_string_options},
-                        {label: 'PACKING_FLOW', name: 'packingFlowName', edittype: "select", editoptions: {value: flowOption}, width: 100, searchrules: {required: true}, searchoptions: search_string_options},
-                        {label: 'PART-LINK', name: 'partLink', edittype: "select", editoptions: {value: ":empty;Y:Y;N:N"}, width: 100, searchrules: {required: true}, searchoptions: search_string_options},
-                        {label: 'CE', name: 'ce', width: 60, searchrules: {required: true}, searchoptions: search_string_options, edittype: "select", editoptions: {value: "0:0;1:1"}},
-                        {label: 'UL', name: 'ul', width: 60, searchrules: {required: true}, searchoptions: search_string_options, edittype: "select", editoptions: {value: "0:0;1:1"}},
-                        {label: 'ROHS', name: 'rohs', width: 60, searchrules: {required: true}, searchoptions: search_string_options, edittype: "select", editoptions: {value: "0:0;1:1"}},
-                        {label: 'WEEE', name: 'weee', width: 60, searchrules: {required: true}, searchoptions: search_string_options, edittype: "select", editoptions: {value: "0:0;1:1"}},
-                        {label: 'Made in Taiwan', name: 'madeInTaiwan', width: 120, searchrules: {required: true}, searchoptions: search_string_options, edittype: "select", editoptions: {value: "0:0;1:1"}},
-                        {label: 'FCC', name: 'fcc', width: 60, searchrules: {required: true}, searchoptions: search_string_options, edittype: "select", editoptions: {value: "0:0;1:1"}},
-                        {label: 'EAC', name: 'eac', width: 60, searchrules: {required: true}, searchoptions: search_string_options, edittype: "select", editoptions: {value: "0:0;1:1"}},
-                        {label: 'N合1集合箱', name: 'nInOneCollectionBox', width: 100, searchrules: {required: true}, searchoptions: search_decimal_options, editrules: {number: true}},
-                        {label: '料號屬性值維護', name: 'partNoAttributeMaintain', edittype: "select", editoptions: {value: "Y:Y;N:N"}, width: 100, searchrules: {required: true}, searchoptions: search_string_options},
-                        {label: '組裝排站人數', name: 'assyStation', width: 100, searchrules: {required: true}, searchoptions: search_decimal_options},
-                        {label: '包裝排站人數', name: 'packingStation', width: 100, searchrules: {required: true}, searchoptions: search_decimal_options},
-                        {label: '前置時間', name: 'assyLeadTime', width: 80, searchrules: {required: true}, searchoptions: search_decimal_options, editrules: {number: true}, formoptions: {elmsuffix: '(組裝)'}},
-                        {label: '看板工時', name: 'assyKanbanTime', width: 80, searchrules: {required: true}, searchoptions: search_decimal_options},
-                        {label: '前置時間', name: 'packingLeadTime', width: 80, searchrules: {required: true}, searchoptions: search_decimal_options, editrules: {number: true}, formoptions: {elmsuffix: '(包裝)'}},
-                        {label: '看板工時', name: 'packingKanbanTime', width: 80, searchrules: {required: true}, searchoptions: search_decimal_options},
-                        {label: 'CleanPanel+Assembly', name: 'cleanPanelAndAssembly', width: 200, searchrules: {required: true}, searchoptions: search_decimal_options},
-                        {label: 'Modified_Date', width: 200, name: 'modifiedDate', formatter: 'date', formatoptions: {srcformat: 'Y-m-d H:i:s A', newformat: 'Y-m-d H:i:s A'}, searchrules: {required: true}, searchoptions: search_date_options}
+                        {label: 'rowId', name: grid_column_name[loopCount++], frozen: true, hidden: true, key: true, editable: true, editoptions: {defaultValue: "0"}},
+                        {label: 'Model', name: grid_column_name[loopCount++], frozen: true, editable: true, searchrules: {required: true}, searchoptions: search_string_options, editrules: {required: true}, formoptions: required_form_options},
+                        {label: 'TYPE', name: grid_column_name[loopCount++], edittype: "select", editoptions: {value: typeOption}, width: 100, searchrules: {required: true}, searchoptions: search_string_options},
+                        {label: 'ProductionWT', name: grid_column_name[loopCount++], width: 120, searchrules: {required: true}, searchoptions: search_decimal_options},
+                        {label: 'Total Module', name: grid_column_name[loopCount++], width: 100, searchrules: {required: true}, searchoptions: search_decimal_options, editrules: {number: true}},
+                        {label: 'Setup Time', name: grid_column_name[loopCount++], width: 100, searchrules: {required: true}, searchoptions: search_decimal_options},
+                        {label: 'CleanPanel', name: grid_column_name[loopCount++], width: 100, searchrules: {required: true}, searchoptions: search_decimal_options, editrules: {number: true}},
+                        {label: 'Assembly', name: grid_column_name[loopCount++], width: 100, searchrules: {required: true}, searchoptions: search_decimal_options, editrules: {number: true}},
+                        {label: 'T1', name: grid_column_name[loopCount++], width: 60, searchrules: {required: true}, searchoptions: search_decimal_options, editrules: {number: true}},
+                        {label: 'T2', name: grid_column_name[loopCount++], width: 60, searchrules: {required: true}, searchoptions: search_decimal_options, editrules: {number: true}},
+                        {label: 'T3', name: grid_column_name[loopCount++], width: 60, searchrules: {required: true}, searchoptions: search_decimal_options, editrules: {number: true}},
+                        {label: 'T4', name: grid_column_name[loopCount++], width: 60, searchrules: {required: true}, searchoptions: search_decimal_options, editrules: {number: true}},
+                        {label: 'Packing', name: grid_column_name[loopCount++], width: 100, searchrules: {required: true}, searchoptions: search_decimal_options, editrules: {number: true}},
+                        {label: 'Up_BI_RI', name: grid_column_name[loopCount++], width: 100, searchrules: {required: true}, searchoptions: search_decimal_options, editrules: {number: true}},
+                        {label: 'Down_BI_RI', name: grid_column_name[loopCount++], width: 100, searchrules: {required: true}, searchoptions: search_decimal_options, editrules: {number: true}},
+                        {label: 'BI Cost', name: grid_column_name[loopCount++], width: 100, searchrules: {required: true}, searchoptions: search_decimal_options, editrules: {number: true}},
+                        {label: 'Vibration', name: grid_column_name[loopCount++], width: 100, searchrules: {required: true}, searchoptions: search_decimal_options, editrules: {number: true}},
+                        {label: 'Hi-Pot/Leakage', name: grid_column_name[loopCount++], width: 100, searchrules: {required: true}, searchoptions: search_decimal_options, editrules: {number: true}},
+                        {label: 'Cold Boot', name: grid_column_name[loopCount++], width: 100, searchrules: {required: true}, searchoptions: search_decimal_options, editrules: {number: true}},
+                        {label: 'Warm Boot', name: grid_column_name[loopCount++], width: 100, searchrules: {required: true}, searchoptions: search_decimal_options, editrules: {number: true}},
+                        {label: 'ASS_T1', name: grid_column_name[loopCount++], width: 100, searchrules: {required: true}, searchoptions: search_decimal_options},
+                        {label: 'T2_PACKING', name: grid_column_name[loopCount++], width: 100, searchrules: {required: true}, searchoptions: search_decimal_options},
+                        {label: 'Floor', name: grid_column_name[loopCount++], edittype: "select", editoptions: {value: floorOption}, width: 100, searchrules: {required: true}, searchoptions: search_string_options},
+                        {label: 'Pending', name: grid_column_name[loopCount++], edittype: "select", editoptions: {value: pendingOption}, width: 100, searchrules: {required: true}, searchoptions: search_decimal_options},
+                        {label: 'Pending TIME', name: grid_column_name[loopCount++], width: 100, searchrules: {required: true}, searchoptions: search_decimal_options, editrules: {required: true, number: true}, editoptions: {defaultValue: '0'}, formoptions: required_form_options},
+                        {label: 'BurnIn', name: grid_column_name[loopCount++], edittype: "select", editoptions: {value: "Y:Y;N:N"}, width: 100, searchrules: {required: true}, searchoptions: search_string_options},
+                        {label: 'B/I Time', name: grid_column_name[loopCount++], width: 100, searchrules: {required: true}, searchoptions: search_decimal_options, editrules: {required: true, number: true}, editoptions: {defaultValue: '0'}, formoptions: required_form_options},
+                        {label: 'BI_Temperature', name: grid_column_name[loopCount++], width: 100, searchrules: {required: true}, searchoptions: search_decimal_options, editrules: {required: true, number: true}, editoptions: {defaultValue: '0'}, formoptions: required_form_options},
+                        {label: 'SPE Owner', name: grid_column_name[loopCount++], edittype: "select", editoptions: {value: spe_identitOption}, width: 100, searchrules: {required: true}, searchoptions: search_string_options},
+                        {label: 'EE Owner', name: grid_column_name[loopCount++], edittype: "select", editoptions: {value: ee_identitOption}, width: 100, searchrules: {required: true}, searchoptions: search_string_options},
+                        {label: 'QC Owner', name: grid_column_name[loopCount++], edittype: "select", editoptions: {value: qc_identitOption}, width: 100, searchrules: {required: true}, searchoptions: search_string_options},
+                        {label: '組包SOP', name: grid_column_name[loopCount++], width: 100, searchrules: {required: true}, searchoptions: search_string_options},
+                        {label: '測試SOP', name: grid_column_name[loopCount++], width: 100, searchrules: {required: true}, searchoptions: search_string_options},
+                        {label: 'KEYPART_A', name: grid_column_name[loopCount++], width: 100, searchrules: {required: true}, searchoptions: search_decimal_options, editrules: {number: true}},
+                        {label: 'KEYPART_B', name: grid_column_name[loopCount++], width: 100, searchrules: {required: true}, searchoptions: search_decimal_options, editrules: {number: true}},
+                        {label: 'PRE-ASSY', name: grid_column_name[loopCount++], edittype: "select", editoptions: {value: preAssyOption}, width: 100, searchrules: {required: true}, searchoptions: search_string_options},
+                        {label: 'BAB_FLOW', name: grid_column_name[loopCount++], edittype: "select", editoptions: {value: flowOption}, width: 100, searchrules: {required: true}, searchoptions: search_string_options},
+                        {label: 'TEST_FLOW', name: grid_column_name[loopCount++], edittype: "select", editoptions: {value: flowOption}, width: 100, searchrules: {required: true}, searchoptions: search_string_options},
+                        {label: 'PACKING_FLOW', name: grid_column_name[loopCount++], edittype: "select", editoptions: {value: flowOption}, width: 100, searchrules: {required: true}, searchoptions: search_string_options},
+                        {label: 'PART-LINK', name: grid_column_name[loopCount++], edittype: "select", editoptions: {value: ":empty;Y:Y;N:N"}, width: 100, searchrules: {required: true}, searchoptions: search_string_options},
+                        {label: 'CE', name: grid_column_name[loopCount++], width: 60, searchrules: {required: true}, searchoptions: search_string_options, edittype: "select", editoptions: {value: "0:0;1:1"}},
+                        {label: 'UL', name: grid_column_name[loopCount++], width: 60, searchrules: {required: true}, searchoptions: search_string_options, edittype: "select", editoptions: {value: "0:0;1:1"}},
+                        {label: 'ROHS', name: grid_column_name[loopCount++], width: 60, searchrules: {required: true}, searchoptions: search_string_options, edittype: "select", editoptions: {value: "0:0;1:1"}},
+                        {label: 'WEEE', name: grid_column_name[loopCount++], width: 60, searchrules: {required: true}, searchoptions: search_string_options, edittype: "select", editoptions: {value: "0:0;1:1"}},
+                        {label: 'Made in Taiwan', name: grid_column_name[loopCount++], width: 120, searchrules: {required: true}, searchoptions: search_string_options, edittype: "select", editoptions: {value: "0:0;1:1"}},
+                        {label: 'FCC', name: grid_column_name[loopCount++], width: 60, searchrules: {required: true}, searchoptions: search_string_options, edittype: "select", editoptions: {value: "0:0;1:1"}},
+                        {label: 'EAC', name: grid_column_name[loopCount++], width: 60, searchrules: {required: true}, searchoptions: search_string_options, edittype: "select", editoptions: {value: "0:0;1:1"}},
+                        {label: 'N合1集合箱', name: grid_column_name[loopCount++], width: 100, searchrules: {required: true}, searchoptions: search_decimal_options, editrules: {number: true}},
+                        {label: '料號屬性值維護', name: grid_column_name[loopCount++], edittype: "select", editoptions: {value: "Y:Y;N:N"}, width: 100, searchrules: {required: true}, searchoptions: search_string_options},
+                        {label: '組裝排站人數', name: grid_column_name[loopCount++], width: 100, searchrules: {required: true}, searchoptions: search_decimal_options},
+                        {label: '包裝排站人數', name: grid_column_name[loopCount++], width: 100, searchrules: {required: true}, searchoptions: search_decimal_options},
+                        {label: '前置時間', name: grid_column_name[loopCount++], width: 80, searchrules: {required: true}, searchoptions: search_decimal_options, editrules: {number: true}, formoptions: {elmsuffix: '(組裝)'}},
+                        {label: '看板工時', name: grid_column_name[loopCount++], width: 80, searchrules: {required: true}, searchoptions: search_decimal_options},
+                        {label: '前置時間', name: grid_column_name[loopCount++], width: 80, searchrules: {required: true}, searchoptions: search_decimal_options, editrules: {number: true}, formoptions: {elmsuffix: '(包裝)'}},
+                        {label: '看板工時', name: grid_column_name[loopCount++], width: 80, searchrules: {required: true}, searchoptions: search_decimal_options},
+                        {label: 'CleanPanel+Assembly', name: grid_column_name[loopCount++], width: 200, searchrules: {required: true}, searchoptions: search_decimal_options},
+                        {label: 'Modified_Date', width: 200, name: grid_column_name[loopCount++], formatter: 'date', formatoptions: {srcformat: 'Y-m-d H:i:s A', newformat: 'Y-m-d H:i:s A'}, searchrules: {required: true}, searchoptions: search_date_options}
                     ],
                     rowNum: 20,
                     rowList: [20, 50, 100],
@@ -168,24 +173,33 @@
                         records: "records",
                         repeatitems: false
                     },
-//                    onSelectRow: function (rowid, status, e) {
-//                        if (lastsel)
-//                            $("#list").jqGrid("restoreRow", lastsel);
-//                        if (rowid !== lastsel) {
-//                            scrollPosition = $("#list").closest(".ui-jqgrid-bdiv").scrollLeft();
-//                            $("#list").jqGrid("editRow", rowid, true, function () {
-//                                setTimeout(function () {
-//                                    $("input, select", e.target).focus();
-//                                }, 10);
-//                            });
-//                            setTimeout(function () {
-//                                $("#list").closest(".ui-jqgrid-bdiv").scrollLeft(scrollPosition);
-//                            }, 0);
-//                            lastsel = rowid;
+//                    onSelectRow: function (id) {
+//                        var ret = grid.jqGrid('getRowData', id);
+//                        if (ret.Arrived == 'Yes')
+//                        {
+//                            grid.setColProp('Arrived', {editable: false});
 //                        } else {
-//                            lastsel = null;
+//                            grid.setColProp('Arrived', {editable: true});
 //                        }
 //                    },
+                    onSelectRow: function (rowid, status, e) {
+                        if (lastsel)
+                            grid.jqGrid("restoreRow", lastsel);
+                        if (rowid !== lastsel) {
+                            scrollPosition = grid.closest(".ui-jqgrid-bdiv").scrollLeft();
+                            grid.jqGrid("editRow", rowid, true, function () {
+                                setTimeout(function () {
+                                    $("input, select", e.target).focus();
+                                }, 10);
+                            });
+                            setTimeout(function () {
+                                grid.closest(".ui-jqgrid-bdiv").scrollLeft(scrollPosition);
+                            }, 0);
+                            lastsel = rowid;
+                        } else {
+                            lastsel = null;
+                        }
+                    },
                     afterSubmit: function () {
                         $(this).jqGrid("setGridParam", {datatype: 'json'});
                         return [true];
@@ -197,7 +211,14 @@
                     multiselect: true,
                     multiboxonly: true,
                     editurl: '${root}/updateSheet.do',
-                    sortname: 'modifiedDate', sortorder: 'desc'
+                    sortname: 'modifiedDate', sortorder: 'desc',
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        alert("Ajax Error occurred\n"
+                                + "\nstatus is: " + xhr.status
+                                + "\nthrownError is: " + thrownError
+                                + "\najaxOptions is: " + ajaxOptions
+                                );
+                    }
                 })
                         .jqGrid('navGrid', '#pager',
                                 {edit: true, add: true, del: true, search: true},
@@ -240,22 +261,19 @@
                             caption: "Export to Excel",
                             buttonicon: "ui-icon-disk",
                             onClickButton: function () {
-                                exportDataToExcel();
+                                grid.jqGrid('excelExport', {"url": "${root}generateExcel.do"});
                             },
                             position: "last"
                         });
-                var colModel = grid.jqGrid('getGridParam', 'colModel');
-                var columnNames = [];
-                //Set all column names into array.
-                for (var i = 0; i < colModel.length; i++) {
-                    var columnName = colModel[i].name;
-                    if ($.inArray(columnName, do_not_change_columns) == -1) {
-                        columnNames.push(columnName);
-                    }
-                }
+
+                var columnNames = grid_column_name;
+
+                //Remove not change column
+                columnNames = $.grep(columnNames, function (value) {
+                    return $.inArray(value, do_not_change_columns) == -1;
+                });
 
                 //Separate readyonly column and editable column
-
                 var editableColumns = modifyColumns;
                 var readonlyColumns = $(columnNames).not(editableColumns).get();
 
@@ -272,12 +290,11 @@
 
                 for (var i = 0; i < readonlyColumns.length; i++) {
                     var readonlyColumn = readonlyColumns[i];
-                    if (specialColumns.indexOf(readonlyColumn) == -1) {
-                        grid.setColProp(readonlyColumn, {editable: true, hidedlg: true, editoptions: {readonly: true}});
-                    }
+                    grid.setColProp(readonlyColumn, {editable: true, editoptions: {readonly: 'readonly', disabled: true}});
                 }
 
                 grid.jqGrid('setFrozenColumns');
+
                 function getColumn() {
                     var result;
                     $.ajax({
@@ -295,11 +312,12 @@
                     return result;
                 }
 
-                function getSelectOption(columnName) {
+                function getSelectOption(columnName, data) {
                     var result;
                     $.ajax({
                         type: "GET",
                         url: "${root}/" + columnName + "Option.do",
+                        data: data,
 //                        dataType: "text/plain",
                         async: false,
                         success: function (response) {

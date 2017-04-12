@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
@@ -70,9 +71,9 @@ public class EditOptionController {
 
     @ResponseBody
     @RequestMapping(value = "/identitOption.do", method = {RequestMethod.GET})
-    public String getIdentitOption() {
+    public String getIdentitOption(@RequestParam String unitName) {
 
-        List<Identit> l = identitService.findAll();
+        List<Identit> l = identitService.findByUserTypeName(unitName);
         Map m = new HashMap();
         for (Identit i : l) {
             m.put(i.getId(), i.getName());

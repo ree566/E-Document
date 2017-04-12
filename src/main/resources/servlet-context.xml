@@ -27,20 +27,19 @@
           http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
 ">
     <!--bean setting-->
+
+    <bean class="org.springframework.web.servlet.view.XmlViewResolver">
+        <property name="order" value="1"/>
+        <property name="location" value="classpath:spring-views.xml"/>
+    </bean>
     
-    <!-- 設定dataSource連接池 -->
-<!--    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close"> 
-        <property name="driverClass" value="net.sourceforge.jtds.jdbc.Driver" />
-        <property name="jdbcUrl" value="jdbc:jtds:sqlserver://M3-SERVER:1433/E_Document" />
-        <property name="user" value="waychien" />
-        <property name="password" value="m3server" />
-        <property name="maxPoolSize" value="20" />
-        <property name="minPoolSize" value="5" />
-        <property name="maxStatements" value="50" />
-        <property name="idleConnectionTestPeriod" value="300" />
-        <property name="privilegeSpawnedThreads" value="true" />
-        <property name="contextClassLoaderSource" value="library" />
-    </bean> -->
+    <bean id="viewResolver2"
+          class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="order" value="2"/>
+        <property name="prefix" value="/WEB-INF/jsp/" />
+        <property name="suffix" value=".jsp" />
+    </bean>
+
     
     <!-- 設定sessionFactory -->
     <bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean" destroy-method="destroy"> 

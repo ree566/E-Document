@@ -48,6 +48,10 @@ public class IdentitService {
         return i;
     }
 
+    public List<Identit> findByUserTypeName(String userTypeName) {
+        return identitDAO.findByUserTypeName(userTypeName);
+    }
+
     public int insert(Identit identit) {
         return identitDAO.insert(identit);
     }

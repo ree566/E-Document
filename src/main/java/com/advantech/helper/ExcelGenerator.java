@@ -5,12 +5,18 @@
  */
 package com.advantech.helper;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import static java.lang.System.out;
 import java.math.BigDecimal;
 import java.sql.Clob;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -52,8 +58,25 @@ public class ExcelGenerator {
 
     private CellStyle floatCell, percentCell, dateCell;
 
+    private ObjectMapper m;
+
+    private final String dateFormat = "yyyy-MM-dd HH:mm";
+    private SimpleDateFormat sdf;
+
     public ExcelGenerator() {
         init();
+    }
+
+    public ExcelGenerator(Workbook workbook) {
+        sheetNum = 1;
+        this.workbook = workbook;
+        indexInit();
+        floatCell = this.createFloatCell();
+        percentCell = this.createPercentCell();
+        dateCell = this.createDateCell();
+        m = new ObjectMapper();
+        sdf = new SimpleDateFormat(dateFormat);
+        log.info("New one workbook");
     }
 
     private void init() {
@@ -90,21 +113,23 @@ public class ExcelGenerator {
         this.columnHeaderNames.addAll(Arrays.asList(name));
     }
 
-    public Workbook generateWorkBooks(List<Map>... data) {
-        for (List<Map> l : data) {
+    public Workbook generateWorkBooks(List<Object>... data) throws JsonProcessingException, IOException {
+        for (List<Object> l : data) {
             generateWorkBook(l);
         }
         return workbook;
     }
 
-    private Workbook generateWorkBook(List<Map> data) {
+    private Workbook generateWorkBook(List<Object> data) throws JsonProcessingException, IOException {
+
         if (spreadsheet == null) {
             createExcelSheet();
         }
 
         Row row = spreadsheet.createRow(baseXIndex);
         if (!data.isEmpty()) {
-            Map firstData = data.get(baseXIndex);
+
+            Map firstData = m.convertValue(data.get(baseXIndex), Map.class);
             Iterator it;
             if (this.columnHeaderNames.isEmpty() || columnHeaderNames.size() != firstData.size()) {
                 //Set the header
@@ -124,11 +149,12 @@ public class ExcelGenerator {
 
             xIndex++;
             yIndex = baseYIndex;
-            for (Map m : data) {
-                it = m.keySet().iterator();
+            for (Object obj : data) {
+                Map map = m.convertValue(obj, Map.class);
+                it = map.keySet().iterator();
                 row = spreadsheet.createRow(xIndex++);
                 while (it.hasNext()) {
-                    setCellValue(row.createCell(yIndex++), m.get(it.next()));
+                    setCellValue(row.createCell(yIndex++), map.get(it.next()));
                 }
                 yIndex = baseYIndex;//Reset the cell index and begin next data line insert.
             }
@@ -142,24 +168,16 @@ public class ExcelGenerator {
         if (value instanceof Clob) {
             cell.setCellValue(StringParser.clobToString((Clob) value));
         } else if (value instanceof java.util.Date) {
-            cell.setCellValue((java.util.Date) value);
+            cell.setCellValue(sdf.format((java.util.Date) value));
             cell.setCellStyle(dateCell);
         } else if (value instanceof Integer) {
             cell.setCellValue((Integer) value);
         } else if (value instanceof Double) {
             cell.setCellValue((Double) value);
-            if (skipSpecialFormatIndex.contains(cell.getColumnIndex())) {
-                cell.setCellStyle(floatCell);
-            } else {
-                cell.setCellStyle(percentCell);
-            }
+            cell.setCellStyle(floatCell);
         } else if (value instanceof BigDecimal) {
             cell.setCellValue(((Number) value).doubleValue());
-            if (skipSpecialFormatIndex.contains(cell.getColumnIndex())) {
-                cell.setCellStyle(floatCell);
-            } else {
-                cell.setCellStyle(percentCell);
-            }
+            cell.setCellStyle(floatCell);
         } else if (value == null) {
             cell.setCellValue("");
         } else {
@@ -187,7 +205,7 @@ public class ExcelGenerator {
     private CellStyle createDateCell() {
         CellStyle dateCellStyle = workbook.createCellStyle();
         CreationHelper createHelper = workbook.getCreationHelper();
-        short df = createHelper.createDataFormat().getFormat("yyyy-MM-dd HH:mm");
+        short df = createHelper.createDataFormat().getFormat(dateFormat);
         dateCellStyle.setDataFormat(df);
         return dateCellStyle;
     }

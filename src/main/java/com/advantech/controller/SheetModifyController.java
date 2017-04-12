@@ -79,30 +79,31 @@ public class SheetModifyController {
     @Autowired
     private WorktimeColumnGroupService worktimeColumnGroupService;
 
+    //The request param name indexOf('name') == 1 is selected box which has one to many relationship.
     @RequestMapping(value = "/updateSheet.do", method = {RequestMethod.POST})
     public ResponseEntity updateSheet(
             @RequestParam String oper,
             @RequestParam String rowId,
             @ModelAttribute Worktime worktime,
             @ModelAttribute("user") Identit user,
-            @RequestParam int typeName, // Get the selected drop down list option from client
-            @RequestParam int floorName, // Get the selected drop down list option from client
-            @RequestParam int speOwnerName, // Get the selected drop down list option from client
-            @RequestParam int eeOwnerName, // Get the selected drop down list option from client
-            @RequestParam int qcOwnerName, // Get the selected drop down list option from client
-            @RequestParam int pendingName, // Get the selected drop down list option from client
-            @RequestParam(required = false, defaultValue = "0") int preAssyName, // Get the selected drop down list option from client
-            @RequestParam(required = false, defaultValue = "0") int babFlow, // Get the selected drop down list option from client
-            @RequestParam(required = false, defaultValue = "0") int testFlow, // Get the selected drop down list option from client
-            @RequestParam(required = false, defaultValue = "0") int packingFlow, // Get the selected drop down list option from client
+            @RequestParam(required = false, defaultValue = "0") int typeName, 
+            @RequestParam(required = false, defaultValue = "0") int floorName, 
+            @RequestParam(required = false, defaultValue = "0") int speOwnerName, 
+            @RequestParam(required = false, defaultValue = "0") int eeOwnerName, 
+            @RequestParam(required = false, defaultValue = "0") int qcOwnerName, 
+            @RequestParam(required = false, defaultValue = "0") int pendingName, 
+            @RequestParam(required = false, defaultValue = "0") int preAssyName, 
+            @RequestParam(required = false, defaultValue = "0") int babFlowName, 
+            @RequestParam(required = false, defaultValue = "0") int testFlowName, 
+            @RequestParam(required = false, defaultValue = "0") int packingFlowName, 
             HttpServletRequest req,
             BindingResult errors) throws ServletException, IOException {
-        
+
         if (errors.hasErrors()) {
             // error handling code goes here.
             return ResponseEntity
-                .status(HttpStatus.FORBIDDEN)
-                .body(errors.getFieldErrors());
+                    .status(HttpStatus.FORBIDDEN)
+                    .body(errors.getFieldErrors());
         }
 
         this.printModels(worktime);
@@ -130,9 +131,9 @@ public class SheetModifyController {
                         worktime.setIdentitByQcOwnerId(identitService.findByPrimaryKey(qcOwnerName));
                         worktime.setPending(pendingService.findByPrimaryKey(pendingName));
                         worktime.setPreAssy(preAssyName == 0 ? null : preAssyService.findByPrimaryKey(preAssyName));
-                        worktime.setFlowByBabFlowId(babFlow == 0 ? null : flowService.findByPrimaryKey(babFlow));
-                        worktime.setFlowByTestFlowId(testFlow == 0 ? null : flowService.findByPrimaryKey(testFlow));
-                        worktime.setFlowByPackingFlowId(packingFlow == 0 ? null : flowService.findByPrimaryKey(packingFlow));
+                        worktime.setFlowByBabFlowId(babFlowName == 0 ? null : flowService.findByPrimaryKey(babFlowName));
+                        worktime.setFlowByTestFlowId(testFlowName == 0 ? null : flowService.findByPrimaryKey(testFlowName));
+                        worktime.setFlowByPackingFlowId(packingFlowName == 0 ? null : flowService.findByPrimaryKey(packingFlowName));
                         worktime.setModifiedDate(new Date());
                         modifyMessage = this.updateRows(worktime);
                     }
@@ -211,4 +212,11 @@ public class SheetModifyController {
         }
     }
 
+    @ExceptionHandler(HttpSessionRequiredException.class)
+//    @ResponseStatus(value = HttpStatus.UNAUTHORIZED, reason = "The session has expired")
+    public ResponseEntity handleSessionExpired() {
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body("The session has expired.");
+    }
 }

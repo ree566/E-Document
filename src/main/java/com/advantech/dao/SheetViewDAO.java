@@ -36,11 +36,14 @@ public class SheetViewDAO implements BasicDAO {
 
     @Override
     public Collection findAll() {
-        SQLQuery query = currentSession().createSQLQuery("SELECT * FROM Sheet_Main_view");
-        query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
-        query.setReadOnly(true);
-        List results = query.list();
-        return results;
+//        SQLQuery query = currentSession().createSQLQuery("SELECT * FROM Sheet_Main_view");
+//        query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+//        query.setReadOnly(true);
+//        List results = query.list();
+
+        Criteria criteria = currentSession().createCriteria(SheetView.class);
+        criteria.setReadOnly(true);
+        return criteria.list();
     }
 
     public Collection findAll(PageInfo info) {

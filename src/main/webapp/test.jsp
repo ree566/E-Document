@@ -15,12 +15,19 @@
                 integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
                 crossorigin="anonymous"
         ></script>
+        <script src="js/moment.js"></script>
         <script>
-      
+            $(function () {
+                var i = 0;
+
+                var obj = {field1: i++, field2: i++, field3: i++};
+
+                $("#test").html(JSON.stringify(obj));
+            });
         </script>
     </head>
     <body>
         <h1>Hello World!</h1>
-      
+        <div id="test"></div>
     </body>
 </html>

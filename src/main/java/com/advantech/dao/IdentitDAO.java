@@ -6,10 +6,15 @@
 package com.advantech.dao;
 
 import com.advantech.model.Identit;
+import com.advantech.model.WorktimeColumnGroup;
 import java.util.Collection;
+import java.util.List;
+import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.CriteriaSpecification;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -43,6 +48,14 @@ public class IdentitDAO implements BasicDAO {
         query.setParameter("jobnumber", jobnumber);
         Identit i = (Identit) query.uniqueResult();
         return i;
+    }
+
+    public List<Identit> findByUserTypeName(String userTypeName) {
+        Criteria criteria = currentSession().createCriteria(Identit.class, "i");
+        criteria.createAlias("i.userType", "u");
+        criteria.add(Restrictions.eq("u.name", userTypeName));
+        criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
+        return criteria.list();
     }
 
     @Override
