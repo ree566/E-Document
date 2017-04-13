@@ -59,6 +59,7 @@ Contributor(s):
     <property name="hibernate.transaction.factory_class">org.hibernate.transaction.JDBCTransactionFactory</property>
     <property name="hibernate.c3p0.privilegeSpawnedThreads">true</property>
     <property name="hibernate.c3p0.contextClassLoaderSource">library</property>
+    <property name="hibernate.hbm2ddl.auto">update</property> 
     <!--hibernate object change listener plugin-->
     <!--        <listener class="org.hibernate.envers.event.AuditEventListener" type="post-insert"/>
         <listener class="org.hibernate.envers.event.AuditEventListener" type="post-update"/>
