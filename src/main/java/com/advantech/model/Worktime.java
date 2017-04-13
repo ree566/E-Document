@@ -85,6 +85,15 @@ public class Worktime implements java.io.Serializable {
     private BigDecimal assyLeadTime;
     private BigDecimal packingLeadTime;
     private Date modifiedDate;
+    private BigDecimal productionWt;
+    private BigDecimal setupTime;
+    private BigDecimal assyToT1;
+    private BigDecimal t2ToPacking;
+    private Integer assyStation;
+    private Integer packingStation;
+    private BigDecimal assyKanbanTime;
+    private BigDecimal packingKanbanTime;
+    private BigDecimal cleanPanelAndAssembly;
 
     public Worktime() {
     }
@@ -596,6 +605,87 @@ public class Worktime implements java.io.Serializable {
 
     public void setPackingLeadTime(BigDecimal packingLeadTime) {
         this.packingLeadTime = packingLeadTime;
+    }
+
+    @Column(name = "productionWt", precision = 10, scale = 1)
+    public BigDecimal getProductionWt() {
+        return productionWt;
+    }
+
+    public void setProductionWt(BigDecimal productionWt) {
+        this.productionWt = productionWt;
+    }
+
+    @Column(name = "setup_time", precision = 10, scale = 1)
+    public BigDecimal getSetupTime() {
+        return setupTime;
+    }
+
+    public void setSetupTime(BigDecimal setupTime) {
+        this.setupTime = setupTime;
+    }
+
+    @Column(name = "assy_to_t1", precision = 10, scale = 1)
+    public BigDecimal getAssyToT1() {
+        return assyToT1;
+    }
+
+    public void setAssyToT1(BigDecimal assyToT1) {
+        this.assyToT1 = assyToT1;
+    }
+
+    @Column(name = "t2_to_packing", precision = 10, scale = 1)
+    public BigDecimal getT2ToPacking() {
+        return t2ToPacking;
+    }
+
+    public void setT2ToPacking(BigDecimal t2ToPacking) {
+        this.t2ToPacking = t2ToPacking;
+    }
+
+    @Column(name = "assy_station")
+    public Integer getAssyStation() {
+        return assyStation;
+    }
+
+    public void setAssyStation(Integer assyStation) {
+        this.assyStation = assyStation;
+    }
+
+    @Column(name = "packing_station")
+    public Integer getPackingStation() {
+        return packingStation;
+    }
+
+    public void setPackingStation(Integer packingStation) {
+        this.packingStation = packingStation;
+    }
+
+    @Column(name = "assy_kanban_time", precision = 10, scale = 1)
+    public BigDecimal getAssyKanbanTime() {
+        return assyKanbanTime;
+    }
+
+    public void setAssyKanbanTime(BigDecimal assyKanbanTime) {
+        this.assyKanbanTime = assyKanbanTime;
+    }
+
+    @Column(name = "packing_kanban_time", precision = 10, scale = 1)
+    public BigDecimal getPackingKanbanTime() {
+        return packingKanbanTime;
+    }
+
+    public void setPackingKanbanTime(BigDecimal packingKanbanTime) {
+        this.packingKanbanTime = packingKanbanTime;
+    }
+
+    @Column(name = "clean_panel_and_assembly", precision = 10, scale = 1)
+    public BigDecimal getCleanPanelAndAssembly() {
+        return cleanPanelAndAssembly;
+    }
+
+    public void setCleanPanelAndAssembly(BigDecimal cleanPanelAndAssembly) {
+        this.cleanPanelAndAssembly = cleanPanelAndAssembly;
     }
 
     @Temporal(TemporalType.TIMESTAMP)

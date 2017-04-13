@@ -14,9 +14,7 @@ var grid_column_name = [
 ];
 
 var do_not_change_columns = [
-    "id", "modifiedDate", "cleanPanelAndAssembly", "productionWt", "setupTime", 
-    "assyToT1", "t2ToPacking", "assyStation", "packingStation", "assyKanbanTime", 
-    "packingKanbanTime"
+    "id", "modifiedDate"
 ];
 
 var specialRelativeColumn = {

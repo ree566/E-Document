@@ -6,6 +6,7 @@
 package com.advantech.controller;
 
 import com.advantech.model.Identit;
+import com.advantech.model.UserType;
 import com.advantech.model.Worktime;
 import com.advantech.model.WorktimeColumnGroup;
 import com.advantech.service.FloorService;
@@ -38,7 +39,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
 /**
@@ -49,7 +49,6 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 @SessionAttributes({"user"})
 public class SheetModifyController {
 
-    private final String SPE = "SPE", EE = "EE", IE = "IE";
     private final String ADD = "add", EDIT = "edit", DELETE = "del";
     private String userOper;
     private final String SUCCESS_MESSAGE = "SUCCESS";
@@ -86,16 +85,16 @@ public class SheetModifyController {
             @RequestParam String rowId,
             @ModelAttribute Worktime worktime,
             @ModelAttribute("user") Identit user,
-            @RequestParam(required = false, defaultValue = "0") int typeName, 
-            @RequestParam(required = false, defaultValue = "0") int floorName, 
-            @RequestParam(required = false, defaultValue = "0") int speOwnerName, 
-            @RequestParam(required = false, defaultValue = "0") int eeOwnerName, 
-            @RequestParam(required = false, defaultValue = "0") int qcOwnerName, 
-            @RequestParam(required = false, defaultValue = "0") int pendingName, 
-            @RequestParam(required = false, defaultValue = "0") int preAssyName, 
-            @RequestParam(required = false, defaultValue = "0") int babFlowName, 
-            @RequestParam(required = false, defaultValue = "0") int testFlowName, 
-            @RequestParam(required = false, defaultValue = "0") int packingFlowName, 
+            @RequestParam(required = false, defaultValue = "0") int typeName,
+            @RequestParam(required = false, defaultValue = "0") int floorName,
+            @RequestParam(required = false, defaultValue = "0") int speOwnerName,
+            @RequestParam(required = false, defaultValue = "0") int eeOwnerName,
+            @RequestParam(required = false, defaultValue = "0") int qcOwnerName,
+            @RequestParam(required = false, defaultValue = "0") int pendingName,
+            @RequestParam(required = false, defaultValue = "0") int preAssyName,
+            @RequestParam(required = false, defaultValue = "0") int babFlowName,
+            @RequestParam(required = false, defaultValue = "0") int testFlowName,
+            @RequestParam(required = false, defaultValue = "0") int packingFlowName,
             HttpServletRequest req,
             BindingResult errors) throws ServletException, IOException {
 
@@ -116,31 +115,27 @@ public class SheetModifyController {
         if (oper.equals(DELETE)) {
             modifyMessage = this.deleteRows(rowId);
         } else {
-            String userType = user.getUserType().getName();
-            switch (userType) {
-                case IE:
-                case SPE:
-                    worktime.setId(Integer.parseInt(rowId));
-                    if (isModelExists(worktime)) {
-                        modifyMessage = "This model name is already exists";
-                    } else {
-                        worktime.setFloor(floorService.findByPrimaryKey(floorName));
-                        worktime.setType(typeService.findByPrimaryKey(typeName));
-                        worktime.setIdentitBySpeOwnerId(identitService.findByPrimaryKey(speOwnerName));
-                        worktime.setIdentitByEeOwnerId(identitService.findByPrimaryKey(eeOwnerName));
-                        worktime.setIdentitByQcOwnerId(identitService.findByPrimaryKey(qcOwnerName));
-                        worktime.setPending(pendingService.findByPrimaryKey(pendingName));
-                        worktime.setPreAssy(preAssyName == 0 ? null : preAssyService.findByPrimaryKey(preAssyName));
-                        worktime.setFlowByBabFlowId(babFlowName == 0 ? null : flowService.findByPrimaryKey(babFlowName));
-                        worktime.setFlowByTestFlowId(testFlowName == 0 ? null : flowService.findByPrimaryKey(testFlowName));
-                        worktime.setFlowByPackingFlowId(packingFlowName == 0 ? null : flowService.findByPrimaryKey(packingFlowName));
-                        worktime.setModifiedDate(new Date());
-                        modifyMessage = this.updateRows(worktime);
-                    }
-                    break;
-                default:
-                    modifyMessage = "Unsupport unit";
-                    break;
+            UserType userType = user.getUserType();
+            if (userType != null) {
+                worktime.setId(Integer.parseInt(rowId));
+                if (isModelExists(worktime)) {
+                    modifyMessage = "This model name is already exists";
+                } else {
+                    worktime.setFloor(floorService.findByPrimaryKey(floorName));
+                    worktime.setType(typeService.findByPrimaryKey(typeName));
+                    worktime.setIdentitBySpeOwnerId(identitService.findByPrimaryKey(speOwnerName));
+                    worktime.setIdentitByEeOwnerId(identitService.findByPrimaryKey(eeOwnerName));
+                    worktime.setIdentitByQcOwnerId(identitService.findByPrimaryKey(qcOwnerName));
+                    worktime.setPending(pendingService.findByPrimaryKey(pendingName));
+                    worktime.setPreAssy(preAssyName == 0 ? null : preAssyService.findByPrimaryKey(preAssyName));
+                    worktime.setFlowByBabFlowId(babFlowName == 0 ? null : flowService.findByPrimaryKey(babFlowName));
+                    worktime.setFlowByTestFlowId(testFlowName == 0 ? null : flowService.findByPrimaryKey(testFlowName));
+                    worktime.setFlowByPackingFlowId(packingFlowName == 0 ? null : flowService.findByPrimaryKey(packingFlowName));
+                    worktime.setModifiedDate(new Date());
+                    modifyMessage = this.updateRows(worktime);
+                }
+            } else {
+                modifyMessage = "Unsupport unit";
             }
         }
         return ResponseEntity
@@ -182,7 +177,7 @@ public class SheetModifyController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/unitColumnServlet.do", method = {RequestMethod.POST})
+    @RequestMapping(value = "/unitColumn.do", method = {RequestMethod.POST})
     public String[] getUnitColumnName(@ModelAttribute("user") Identit user) {
         int unit = user.getUserType().getId();
 
@@ -192,9 +187,13 @@ public class SheetModifyController {
 
         try {
             Clob columns = w.getColumnName();
-            String clobString = columns.getSubString(1, (int) columns.length());
-            columnName = clobString.split(",");
-            return columnName;
+            if (columns == null) {
+                return new String[0];
+            } else {
+                String clobString = columns.getSubString(1, (int) columns.length());
+                columnName = clobString.split(",");
+                return columnName;
+            }
         } catch (SQLException ex) {
             return new String[0];
         }

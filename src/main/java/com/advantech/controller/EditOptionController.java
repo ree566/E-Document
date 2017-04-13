@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  *
- * @author Wei.Cheng
+ * @author Wei.Cheng 
  */
 @Controller
 public class EditOptionController {
@@ -76,7 +76,7 @@ public class EditOptionController {
         List<Identit> l = identitService.findByUserTypeName(unitName);
         Map m = new HashMap();
         for (Identit i : l) {
-            m.put(i.getId(), i.getName());
+            m.put(i.getId(), i.getUsername());
         }
 
         String optionString = convertToOptions(m);

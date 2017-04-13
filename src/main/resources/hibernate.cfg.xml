@@ -48,7 +48,7 @@ Contributor(s):
     <property name="hibernate.connection.password">m3server</property>
     <!--        <property name="connection.provider_class">org.hibernate.connection.C3P0ConnectionProvider</property>
         <property name="hibernate.c3p0.min_size">5</property>
-        <property name="hibernate.c3p0.max_size">20</property>
+        <property name="hibernate.c3p0.max_size">20</property> 
         <property name="hibernate.c3p0.timeout">300</property>
         <property name="hibernate.c3p0.max_statements">50</property>
         <property name="hibernate.c3p0.idle_test_period">3000</property>-->
@@ -59,7 +59,7 @@ Contributor(s):
     <property name="hibernate.transaction.factory_class">org.hibernate.transaction.JDBCTransactionFactory</property>
     <property name="hibernate.c3p0.privilegeSpawnedThreads">true</property>
     <property name="hibernate.c3p0.contextClassLoaderSource">library</property>
-    <property name="hibernate.hbm2ddl.auto">update</property> 
+<!--    <property name="hibernate.hbm2ddl.auto">update</property> -->
     <!--hibernate object change listener plugin-->
     <!--        <listener class="org.hibernate.envers.event.AuditEventListener" type="post-insert"/>
         <listener class="org.hibernate.envers.event.AuditEventListener" type="post-update"/>

@@ -11,7 +11,7 @@ package com.advantech.helper;
  */
 public class PageInfo {
 
-    private String _search;
+    private boolean _search;
     private String nd;
     private int page;
     private int rows;
@@ -33,11 +33,11 @@ public class PageInfo {
         this.maxNumOfRows = 0;
     }
 
-    public String getSearch() {
+    public boolean get_Search() {
         return _search;
     }
 
-    public PageInfo setSearch(String _search) {
+    public PageInfo set_Search(boolean _search) {
         this._search = _search;
         return this;
     }

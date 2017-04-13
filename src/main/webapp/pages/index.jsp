@@ -14,7 +14,8 @@
         <title>${initParam.pageTitle}</title>
         <link rel="shortcut icon" href="${root}/images/favicon.ico"/>
         <link rel="stylesheet" type="text/css" media="screen" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" />
-        <link rel="stylesheet" type="text/css" media="screen" href="//cdnjs.cloudflare.com/ajax/libs/jqgrid/4.6.0/css/ui.jqgrid.css" />
+        <!--<link rel="stylesheet" type="text/css" media="screen" href="//cdnjs.cloudflare.com/ajax/libs/jqgrid/4.6.0/css/ui.jqgrid.css" />-->
+        <link rel="stylesheet" type="text/css" media="screen" href="${root}/css/ui.jqgrid.css" />
         <link rel="stylesheet" type="text/css" media="screen" href="${root}/css/ui.multiselect.css" />
 
         <style>
@@ -30,6 +31,9 @@
             .ui-button-text {
                 font-size: inherit !important;
             } 
+            th.ui-th-column div {
+                height:auto !important;
+            }
         </style>
         <script src="//code.jquery.com/jquery-1.12.4.min.js" 
                 integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
@@ -40,9 +44,11 @@
             integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
             crossorigin="anonymous"
         ></script>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/jqgrid/4.6.0/js/i18n/grid.locale-tw.js"></script>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/jqgrid/4.6.0/js/jquery.jqGrid.min.js"></script>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/jqgrid/4.6.0/js/jquery.jqGrid.src.js"></script>
+        <!--        <script src="//cdnjs.cloudflare.com/ajax/libs/jqgrid/4.6.0/js/i18n/grid.locale-tw.js"></script>
+                <script src="//cdnjs.cloudflare.com/ajax/libs/jqgrid/4.6.0/js/jquery.jqGrid.min.js"></script>
+                <script src="//cdnjs.cloudflare.com/ajax/libs/jqgrid/4.6.0/js/jquery.jqGrid.src.js"></script>-->
+        <script src="${root}/js/i18n/grid.locale-tw.js"></script>
+        <script src="../js/jquery.jqGrid.min.js"></script>
         <script src="${root}/js/ui.multiselect.js"></script>
         <script src="${root}/js/urlParamGetter.js"></script>
         <script src="${root}/js/sessionExpiredDetect.js"></script>
@@ -58,7 +64,7 @@
                 var search_date_options = {sopt: ['eq', 'ne']};
                 var required_form_options = {elmsuffix: '(*必填)'};
                 var unitName = '${sessionScope.user.userType.name}';
-                var modifyColumns = unitName == 'unlimited' ? columnNames : ((unitName == null || unitName == "") ? [] : getColumn());
+                var modifyColumns = (unitName == null || unitName == "") ? [] : getColumn();
                 var grid = $("#list");
 
                 var floorOption = getSelectOption("floor");
@@ -93,6 +99,18 @@
                             .addClass("ui-state-disabled");
                 };
 
+                var fixPositionsOfFrozenDivs = function () {
+                    if (typeof this.grid.fbDiv !== "undefined") {
+                        $(this.grid.fbDiv).css($(this.grid.bDiv).position());
+                    }
+                    if (typeof this.grid.fhDiv !== "undefined") {
+                        $(this.grid.fhDiv).css($(this.grid.hDiv).position());
+                    }
+                };
+
+                var arOps = ["eq", "ne", "lt", "le", "gt", "ge", "bw", "bn", "in", "ni", "ew", "en",
+                    "cn", "nc"];
+
                 var loopCount = 0;
 
                 grid.jqGrid({
@@ -100,8 +118,8 @@
                     datatype: "json",
                     mtype: 'POST',
                     colModel: [
-                        {label: 'rowId', name: grid_column_name[loopCount++], frozen: true, hidden: true, key: true, editable: true, editoptions: {defaultValue: "0"}},
-                        {label: 'Model', name: grid_column_name[loopCount++], frozen: true, editable: true, searchrules: {required: true}, searchoptions: search_string_options, editrules: {required: true}, formoptions: required_form_options},
+                        {label: 'rowId', name: grid_column_name[loopCount++], frozen: false, hidden: true, key: true, editable: true, editoptions: {defaultValue: "0"}},
+                        {label: 'Model', name: grid_column_name[loopCount++], frozen: false, editable: true, searchrules: {required: true}, searchoptions: search_string_options, editrules: {required: true}, formoptions: required_form_options},
                         {label: 'TYPE', name: grid_column_name[loopCount++], edittype: "select", editoptions: {value: typeOption}, width: 100, searchrules: {required: true}, searchoptions: search_string_options},
                         {label: 'ProductionWT', name: grid_column_name[loopCount++], width: 120, searchrules: {required: true}, searchoptions: search_decimal_options},
                         {label: 'Total Module', name: grid_column_name[loopCount++], width: 100, searchrules: {required: true}, searchoptions: search_decimal_options, editrules: {number: true}},
@@ -152,9 +170,9 @@
                         {label: '組裝排站人數', name: grid_column_name[loopCount++], width: 100, searchrules: {required: true}, searchoptions: search_decimal_options},
                         {label: '包裝排站人數', name: grid_column_name[loopCount++], width: 100, searchrules: {required: true}, searchoptions: search_decimal_options},
                         {label: '前置時間', name: grid_column_name[loopCount++], width: 80, searchrules: {required: true}, searchoptions: search_decimal_options, editrules: {number: true}, formoptions: {elmsuffix: '(組裝)'}},
-                        {label: '看板工時', name: grid_column_name[loopCount++], width: 80, searchrules: {required: true}, searchoptions: search_decimal_options},
+                        {label: '看板工時', name: grid_column_name[loopCount++], width: 80, searchrules: {required: true}, searchoptions: search_decimal_options, editrules: {number: true}, formoptions: {elmsuffix: '(組裝)'}},
                         {label: '前置時間', name: grid_column_name[loopCount++], width: 80, searchrules: {required: true}, searchoptions: search_decimal_options, editrules: {number: true}, formoptions: {elmsuffix: '(包裝)'}},
-                        {label: '看板工時', name: grid_column_name[loopCount++], width: 80, searchrules: {required: true}, searchoptions: search_decimal_options},
+                        {label: '看板工時', name: grid_column_name[loopCount++], width: 80, searchrules: {required: true}, searchoptions: search_decimal_options, editrules: {number: true}, formoptions: {elmsuffix: '(包裝)'}},
                         {label: 'CleanPanel+Assembly', name: grid_column_name[loopCount++], width: 200, searchrules: {required: true}, searchoptions: search_decimal_options},
                         {label: 'Modified_Date', width: 200, name: grid_column_name[loopCount++], formatter: 'date', formatoptions: {srcformat: 'Y-m-d H:i:s A', newformat: 'Y-m-d H:i:s A'}, searchrules: {required: true}, searchoptions: search_date_options}
                     ],
@@ -173,15 +191,6 @@
                         records: "records",
                         repeatitems: false
                     },
-//                    onSelectRow: function (id) {
-//                        var ret = grid.jqGrid('getRowData', id);
-//                        if (ret.Arrived == 'Yes')
-//                        {
-//                            grid.setColProp('Arrived', {editable: false});
-//                        } else {
-//                            grid.setColProp('Arrived', {editable: true});
-//                        }
-//                    },
                     onSelectRow: function (rowid, status, e) {
                         if (lastsel)
                             grid.jqGrid("restoreRow", lastsel);
@@ -277,29 +286,26 @@
                 var editableColumns = modifyColumns;
                 var readonlyColumns = $(columnNames).not(editableColumns).get();
 
-                readonlyColumns = $.grep(readonlyColumns, function (value) {
-                    return unitName != "SPE" || (value.indexOf("Name") == -1 && $.inArray(value, do_not_change_columns) == -1);
-                });
+                if (editableColumns.length != 0) {
+                    for (var i = 0; i < editableColumns.length; i++) {
+                        var editableColumn = editableColumns[i];
+                        grid.setColProp(editableColumn, {editable: true});
+                    }
 
-                var specialColumns = specialRelativeColumn[unitName];
-
-                for (var i = 0; i < columnNames.length; i++) {
-                    var editableColumn = columnNames[i];
-                    grid.setColProp(editableColumn, {editable: true});
-                }
-
-                for (var i = 0; i < readonlyColumns.length; i++) {
-                    var readonlyColumn = readonlyColumns[i];
-                    grid.setColProp(readonlyColumn, {editable: true, editoptions: {readonly: 'readonly', disabled: true}});
+                    for (var i = 0; i < readonlyColumns.length; i++) {
+                        var readonlyColumn = readonlyColumns[i];
+                        grid.setColProp(readonlyColumn, {editable: true, editoptions: {readonly: 'readonly', disabled: true}});
+                    }
                 }
 
                 grid.jqGrid('setFrozenColumns');
+//                grid[0].p._complete.call(grid[0]);
 
                 function getColumn() {
                     var result;
                     $.ajax({
                         type: "Post",
-                        url: "${root}/unitColumnServlet.do",
+                        url: "${root}/unitColumn.do",
                         dataType: "json",
                         async: false,
                         success: function (response) {

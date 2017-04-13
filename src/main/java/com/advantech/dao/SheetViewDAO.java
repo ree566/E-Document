@@ -7,10 +7,10 @@ package com.advantech.dao;
 
 import com.advantech.model.SheetView;
 import com.advantech.helper.PageInfo;
+import com.google.gson.Gson;
 import java.util.Collection;
 import java.util.List;
 import org.hibernate.Criteria;
-import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.MatchMode;
@@ -50,13 +50,19 @@ public class SheetViewDAO implements BasicDAO {
         Criteria criteria = currentSession().createCriteria(SheetView.class);
         criteria.setReadOnly(true);
 
+        if (info.getSearchField() != null) {
+            String searchOper = info.getSearchOper();
+            String searchField = info.getSearchField();
+            Object searchString = info.getSearchString();
+            addSearchCriteria(criteria, searchOper, searchField, searchString);
+        }
+
         //Get total row count and reset criteria
         //https://forum.hibernate.org/viewtopic.php?t=951369
-        criteria.setProjection(Projections.rowCount());
-        info.setMaxNumOfRows(((Long) criteria.uniqueResult()).intValue());
-        criteria.setProjection(null);
-        criteria.setResultTransformer(Criteria.ROOT_ENTITY);
-
+        //Set max rows info after "Where" cause(This also create an groupby statement)
+        setMaxRowsToInfo(info, criteria);
+        
+        //Order after groupby
         String sortIdx = info.getSidx();
         if (sortIdx.length() > 0) {
             if ("asc".equalsIgnoreCase(info.getSord())) {
@@ -66,17 +72,18 @@ public class SheetViewDAO implements BasicDAO {
             }
         }
 
-        if (info.getSearchField() != null) {
-            String searchOper = info.getSearchOper();
-            String searchField = info.getSearchField();
-            Object searchString = info.getSearchString();
-            addSearchCriteria(criteria, searchOper, searchField, searchString);
-        }
-
         criteria.setFirstResult((info.getPage() - 1) * info.getRows());
         criteria.setMaxResults(info.getRows());
-
+        
         return criteria.list();
+    }
+
+    private void setMaxRowsToInfo(PageInfo info, Criteria c) {
+        c.setProjection(Projections.rowCount());
+        info.setMaxNumOfRows(((Long) c.uniqueResult()).intValue());
+        //Remove group by statement after get the maxium row count
+        c.setProjection(null);
+        c.setResultTransformer(Criteria.ROOT_ENTITY);
     }
 
     private Criteria addSearchCriteria(Criteria criteria, String searchOper, String searchField, Object searchString) {
