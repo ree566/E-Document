@@ -17,8 +17,11 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
+import javax.persistence.Version;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.envers.Audited;
 import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
 
@@ -27,14 +30,14 @@ import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
  */
 @Entity
 @Table(name = "Worktime",
-         schema = "dbo",
-         catalog = "E_Document",
-         uniqueConstraints = @UniqueConstraint(columnNames = "model_name")
+        schema = "dbo",
+        catalog = "E_Document",
+        uniqueConstraints = @UniqueConstraint(columnNames = "model_name")
 )
 @DynamicInsert(true)
 @DynamicUpdate(true)
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-@Audited(targetAuditMode = NOT_AUDITED) 
+@Audited(targetAuditMode = NOT_AUDITED)
 public class Worktime implements java.io.Serializable {
 
     private int id;
@@ -84,7 +87,6 @@ public class Worktime implements java.io.Serializable {
     private char partNoAttributeMaintain;
     private BigDecimal assyLeadTime;
     private BigDecimal packingLeadTime;
-    private Date modifiedDate;
     private BigDecimal productionWt;
     private BigDecimal setupTime;
     private BigDecimal assyToT1;
@@ -94,6 +96,8 @@ public class Worktime implements java.io.Serializable {
     private BigDecimal assyKanbanTime;
     private BigDecimal packingKanbanTime;
     private BigDecimal cleanPanelAndAssembly;
+    private Date createDate;
+    private Date modifiedDate;
 
     public Worktime() {
     }
@@ -121,7 +125,7 @@ public class Worktime implements java.io.Serializable {
         this.partNoAttributeMaintain = partNoAttributeMaintain;
     }
 
-    public Worktime(int id, Floor floor, Flow flowByTestFlowId, Flow flowByPackingFlowId, Flow flowByBabFlowId, Identit identitByEeOwnerId, Identit identitByQcOwnerId, Identit identitBySpeOwnerId, Pending pending, PreAssy preAssy, Type type, String modelName, BigDecimal totalModule, BigDecimal cleanPanel, BigDecimal assy, BigDecimal t1, BigDecimal t2, BigDecimal t3, BigDecimal t4, BigDecimal packing, BigDecimal upBiRi, BigDecimal downBiRi, BigDecimal biCost, Integer vibration, Integer hiPotLeakage, BigDecimal coldBoot, BigDecimal warmBoot, BigDecimal pendingTime, String burnIn, BigDecimal biTime, BigDecimal biTemperature, String assyPackingSop, String testSop, Integer keypartA, Integer keypartB, Character partLink, int ce, int ul, int rohs, int weee, int madeInTaiwan, int fcc, int eac, BigDecimal NInOneCollectionBox, char partNoAttributeMaintain, BigDecimal assyLeadTime, BigDecimal packingLeadTime, Date modifiedDate) {
+    public Worktime(int id, Floor floor, Flow flowByTestFlowId, Flow flowByPackingFlowId, Flow flowByBabFlowId, Identit identitByEeOwnerId, Identit identitByQcOwnerId, Identit identitBySpeOwnerId, Pending pending, PreAssy preAssy, Type type, String modelName, BigDecimal totalModule, BigDecimal cleanPanel, BigDecimal assy, BigDecimal t1, BigDecimal t2, BigDecimal t3, BigDecimal t4, BigDecimal packing, BigDecimal upBiRi, BigDecimal downBiRi, BigDecimal biCost, Integer vibration, Integer hiPotLeakage, BigDecimal coldBoot, BigDecimal warmBoot, BigDecimal pendingTime, String burnIn, BigDecimal biTime, BigDecimal biTemperature, String assyPackingSop, String testSop, Integer keypartA, Integer keypartB, Character partLink, int ce, int ul, int rohs, int weee, int madeInTaiwan, int fcc, int eac, BigDecimal NInOneCollectionBox, char partNoAttributeMaintain, BigDecimal assyLeadTime, BigDecimal packingLeadTime, Date modifiedDate, Date createDate) {
         this.id = id;
         this.floor = floor;
         this.flowByTestFlowId = flowByTestFlowId;
@@ -170,6 +174,7 @@ public class Worktime implements java.io.Serializable {
         this.assyLeadTime = assyLeadTime;
         this.packingLeadTime = packingLeadTime;
         this.modifiedDate = modifiedDate;
+        this.createDate = createDate;
     }
 
     @Id
@@ -689,7 +694,19 @@ public class Worktime implements java.io.Serializable {
     }
 
     @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "create_date", length = 23)
+    @CreationTimestamp
+    public Date getCreateDate() {
+        return this.modifiedDate;
+    }
+
+    public void setCreateDate(Date createDate) {
+        this.createDate = createDate;
+    }
+
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "modified_date", length = 23)
+    @UpdateTimestamp
     public Date getModifiedDate() {
         return this.modifiedDate;
     }

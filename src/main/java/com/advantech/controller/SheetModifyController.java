@@ -131,7 +131,6 @@ public class SheetModifyController {
                     worktime.setFlowByBabFlowId(babFlowName == 0 ? null : flowService.findByPrimaryKey(babFlowName));
                     worktime.setFlowByTestFlowId(testFlowName == 0 ? null : flowService.findByPrimaryKey(testFlowName));
                     worktime.setFlowByPackingFlowId(packingFlowName == 0 ? null : flowService.findByPrimaryKey(packingFlowName));
-                    worktime.setModifiedDate(new Date());
                     modifyMessage = this.updateRows(worktime);
                 }
             } else {

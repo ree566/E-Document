@@ -48,7 +48,7 @@ public class Identit implements java.io.Serializable {
     private Set<Worktime> worktimesForQcOwnerId = new HashSet<Worktime>(0);
     @JsonIgnore
     private Set<Worktime> worktimesForSpeOwnerId = new HashSet<Worktime>(0);
-
+ 
     public Identit() {
     }
 
