@@ -3,8 +3,8 @@ package com.advantech.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import java.math.BigDecimal;
 import java.util.Date;
+import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -17,7 +17,6 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
-import javax.persistence.Version;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
@@ -52,25 +51,25 @@ public class Worktime implements java.io.Serializable {
     private PreAssy preAssy;
     private Type type;
     private String modelName;
-    private BigDecimal totalModule;
-    private BigDecimal cleanPanel;
-    private BigDecimal assy;
-    private BigDecimal t1;
-    private BigDecimal t2;
-    private BigDecimal t3;
-    private BigDecimal t4;
-    private BigDecimal packing;
-    private BigDecimal upBiRi;
-    private BigDecimal downBiRi;
-    private BigDecimal biCost;
-    private Integer vibration;
-    private Integer hiPotLeakage;
-    private BigDecimal coldBoot;
-    private BigDecimal warmBoot;
-    private BigDecimal pendingTime;
+    private Double totalModule;
+    private Double cleanPanel;
+    private Double assy;
+    private Double t1;
+    private Double t2;
+    private Double t3;
+    private Double t4;
+    private Double packing;
+    private Double upBiRi;
+    private Double downBiRi;
+    private Double biCost;
+    private Double vibration;
+    private Double hiPotLeakage;
+    private Double coldBoot;
+    private Double warmBoot;
+    private Double pendingTime;
     private String burnIn;
-    private BigDecimal biTime;
-    private BigDecimal biTemperature;
+    private double biTime;
+    private double biTemperature;
     private String assyPackingSop;
     private String testSop;
     private Integer keypartA;
@@ -83,26 +82,26 @@ public class Worktime implements java.io.Serializable {
     private int madeInTaiwan;
     private int fcc;
     private int eac;
-    private BigDecimal NInOneCollectionBox;
+    private Double NInOneCollectionBox;
     private char partNoAttributeMaintain;
-    private BigDecimal assyLeadTime;
-    private BigDecimal packingLeadTime;
-    private BigDecimal productionWt;
-    private BigDecimal setupTime;
-    private BigDecimal assyToT1;
-    private BigDecimal t2ToPacking;
+    private Double assyLeadTime;
+    private Double packingLeadTime;
+    private Double productionWt;
+    private Double setupTime;
+    private Double assyToT1;
+    private Double t2ToPacking;
     private Integer assyStation;
     private Integer packingStation;
-    private BigDecimal assyKanbanTime;
-    private BigDecimal packingKanbanTime;
-    private BigDecimal cleanPanelAndAssembly;
+    private Double assyKanbanTime;
+    private Double packingKanbanTime;
+    private Double cleanPanelAndAssembly;
     private Date createDate;
     private Date modifiedDate;
 
     public Worktime() {
     }
 
-    public Worktime(int id, Floor floor, Identit identitByEeOwnerId, Identit identitByQcOwnerId, Identit identitBySpeOwnerId, Pending pending, Type type, String modelName, BigDecimal pendingTime, String burnIn, BigDecimal biTime, BigDecimal biTemperature, int ce, int ul, int rohs, int weee, int madeInTaiwan, int fcc, int eac, char partNoAttributeMaintain) {
+    public Worktime(int id, Floor floor, Identit identitByEeOwnerId, Identit identitByQcOwnerId, Identit identitBySpeOwnerId, Pending pending, Type type, String modelName, Double pendingTime, String burnIn, Double biTime, Double biTemperature, int ce, int ul, int rohs, int weee, int madeInTaiwan, int fcc, int eac, char partNoAttributeMaintain) {
         this.id = id;
         this.floor = floor;
         this.identitByEeOwnerId = identitByEeOwnerId;
@@ -125,7 +124,7 @@ public class Worktime implements java.io.Serializable {
         this.partNoAttributeMaintain = partNoAttributeMaintain;
     }
 
-    public Worktime(int id, Floor floor, Flow flowByTestFlowId, Flow flowByPackingFlowId, Flow flowByBabFlowId, Identit identitByEeOwnerId, Identit identitByQcOwnerId, Identit identitBySpeOwnerId, Pending pending, PreAssy preAssy, Type type, String modelName, BigDecimal totalModule, BigDecimal cleanPanel, BigDecimal assy, BigDecimal t1, BigDecimal t2, BigDecimal t3, BigDecimal t4, BigDecimal packing, BigDecimal upBiRi, BigDecimal downBiRi, BigDecimal biCost, Integer vibration, Integer hiPotLeakage, BigDecimal coldBoot, BigDecimal warmBoot, BigDecimal pendingTime, String burnIn, BigDecimal biTime, BigDecimal biTemperature, String assyPackingSop, String testSop, Integer keypartA, Integer keypartB, Character partLink, int ce, int ul, int rohs, int weee, int madeInTaiwan, int fcc, int eac, BigDecimal NInOneCollectionBox, char partNoAttributeMaintain, BigDecimal assyLeadTime, BigDecimal packingLeadTime, Date modifiedDate, Date createDate) {
+    public Worktime(int id, Floor floor, Flow flowByTestFlowId, Flow flowByPackingFlowId, Flow flowByBabFlowId, Identit identitByEeOwnerId, Identit identitByQcOwnerId, Identit identitBySpeOwnerId, Pending pending, PreAssy preAssy, Type type, String modelName, Double totalModule, Double cleanPanel, Double assy, Double t1, Double t2, Double t3, Double t4, Double packing, Double upBiRi, Double downBiRi, Double biCost, Double vibration, Double hiPotLeakage, Double coldBoot, Double warmBoot, Double pendingTime, String burnIn, Double biTime, Double biTemperature, String assyPackingSop, String testSop, Integer keypartA, Integer keypartB, Character partLink, int ce, int ul, int rohs, int weee, int madeInTaiwan, int fcc, int eac, Double NInOneCollectionBox, char partNoAttributeMaintain, Double assyLeadTime, Double packingLeadTime, Date modifiedDate, Date createDate) {
         this.id = id;
         this.floor = floor;
         this.flowByTestFlowId = flowByTestFlowId;
@@ -297,147 +296,147 @@ public class Worktime implements java.io.Serializable {
         this.modelName = modelName;
     }
 
-    @Column(name = "total_module", precision = 10, scale = 1)
-    public BigDecimal getTotalModule() {
+    @Column(name = "total_module")
+    public Double getTotalModule() {
         return this.totalModule;
     }
 
-    public void setTotalModule(BigDecimal totalModule) {
+    public void setTotalModule(Double totalModule) {
         this.totalModule = totalModule;
     }
 
-    @Column(name = "clean_panel", precision = 10, scale = 1)
-    public BigDecimal getCleanPanel() {
+    @Column(name = "clean_panel")
+    public Double getCleanPanel() {
         return this.cleanPanel;
     }
 
-    public void setCleanPanel(BigDecimal cleanPanel) {
+    public void setCleanPanel(Double cleanPanel) {
         this.cleanPanel = cleanPanel;
     }
 
-    @Column(name = "assy", precision = 10, scale = 1)
-    public BigDecimal getAssy() {
+    @Column(name = "assy")
+    public Double getAssy() {
         return this.assy;
     }
 
-    public void setAssy(BigDecimal assy) {
+    public void setAssy(Double assy) {
         this.assy = assy;
     }
 
-    @Column(name = "t1", precision = 10, scale = 1)
-    public BigDecimal getT1() {
+    @Column(name = "t1")
+    public Double getT1() {
         return this.t1;
     }
 
-    public void setT1(BigDecimal t1) {
+    public void setT1(Double t1) {
         this.t1 = t1;
     }
 
-    @Column(name = "t2", precision = 10, scale = 1)
-    public BigDecimal getT2() {
+    @Column(name = "t2")
+    public Double getT2() {
         return this.t2;
     }
 
-    public void setT2(BigDecimal t2) {
+    public void setT2(Double t2) {
         this.t2 = t2;
     }
 
-    @Column(name = "t3", precision = 10, scale = 1)
-    public BigDecimal getT3() {
+    @Column(name = "t3")
+    public Double getT3() {
         return this.t3;
     }
 
-    public void setT3(BigDecimal t3) {
+    public void setT3(Double t3) {
         this.t3 = t3;
     }
 
-    @Column(name = "t4", precision = 10, scale = 1)
-    public BigDecimal getT4() {
+    @Column(name = "t4")
+    public Double getT4() {
         return this.t4;
     }
 
-    public void setT4(BigDecimal t4) {
+    public void setT4(Double t4) {
         this.t4 = t4;
     }
 
-    @Column(name = "packing", precision = 10, scale = 1)
-    public BigDecimal getPacking() {
+    @Column(name = "packing")
+    public Double getPacking() {
         return this.packing;
     }
 
-    public void setPacking(BigDecimal packing) {
+    public void setPacking(Double packing) {
         this.packing = packing;
     }
 
-    @Column(name = "up_bi_ri", precision = 10, scale = 1)
-    public BigDecimal getUpBiRi() {
+    @Column(name = "up_bi_ri")
+    public Double getUpBiRi() {
         return this.upBiRi;
     }
 
-    public void setUpBiRi(BigDecimal upBiRi) {
+    public void setUpBiRi(Double upBiRi) {
         this.upBiRi = upBiRi;
     }
 
-    @Column(name = "down_bi_ri", precision = 10, scale = 1)
-    public BigDecimal getDownBiRi() {
+    @Column(name = "down_bi_ri")
+    public Double getDownBiRi() {
         return this.downBiRi;
     }
 
-    public void setDownBiRi(BigDecimal downBiRi) {
+    public void setDownBiRi(Double downBiRi) {
         this.downBiRi = downBiRi;
     }
 
-    @Column(name = "bi_cost", precision = 10, scale = 1)
-    public BigDecimal getBiCost() {
+    @Column(name = "bi_cost")
+    public Double getBiCost() {
         return this.biCost;
     }
 
-    public void setBiCost(BigDecimal biCost) {
+    public void setBiCost(Double biCost) {
         this.biCost = biCost;
     }
 
     @Column(name = "vibration")
-    public Integer getVibration() {
+    public Double getVibration() {
         return this.vibration;
     }
 
-    public void setVibration(Integer vibration) {
+    public void setVibration(Double vibration) {
         this.vibration = vibration;
     }
 
     @Column(name = "hi_pot_leakage")
-    public Integer getHiPotLeakage() {
+    public Double getHiPotLeakage() {
         return this.hiPotLeakage;
     }
 
-    public void setHiPotLeakage(Integer hiPotLeakage) {
+    public void setHiPotLeakage(Double hiPotLeakage) {
         this.hiPotLeakage = hiPotLeakage;
     }
 
-    @Column(name = "cold_boot", precision = 10, scale = 1)
-    public BigDecimal getColdBoot() {
+    @Column(name = "cold_boot")
+    public Double getColdBoot() {
         return this.coldBoot;
     }
 
-    public void setColdBoot(BigDecimal coldBoot) {
+    public void setColdBoot(Double coldBoot) {
         this.coldBoot = coldBoot;
     }
 
-    @Column(name = "warm_boot", precision = 10, scale = 1)
-    public BigDecimal getWarmBoot() {
+    @Column(name = "warm_boot")
+    public Double getWarmBoot() {
         return this.warmBoot;
     }
 
-    public void setWarmBoot(BigDecimal warmBoot) {
+    public void setWarmBoot(Double warmBoot) {
         this.warmBoot = warmBoot;
     }
 
-    @Column(name = "pending_time", nullable = false, precision = 10, scale = 1)
-    public BigDecimal getPendingTime() {
+    @Column(name = "pending_time", nullable = false)
+    public Double getPendingTime() {
         return this.pendingTime;
     }
 
-    public void setPendingTime(BigDecimal pendingTime) {
+    public void setPendingTime(Double pendingTime) {
         this.pendingTime = pendingTime;
     }
 
@@ -450,21 +449,21 @@ public class Worktime implements java.io.Serializable {
         this.burnIn = burnIn;
     }
 
-    @Column(name = "bi_time", nullable = false, precision = 10, scale = 1)
-    public BigDecimal getBiTime() {
+    @Column(name = "bi_time", nullable = false)
+    public double getBiTime() {
         return this.biTime;
     }
 
-    public void setBiTime(BigDecimal biTime) {
+    public void setBiTime(double biTime) {
         this.biTime = biTime;
     }
 
-    @Column(name = "bi_temperature", nullable = false, precision = 10, scale = 1)
-    public BigDecimal getBiTemperature() {
+    @Column(name = "bi_temperature", nullable = false)
+    public double getBiTemperature() {
         return this.biTemperature;
     }
 
-    public void setBiTemperature(BigDecimal biTemperature) {
+    public void setBiTemperature(double biTemperature) {
         this.biTemperature = biTemperature;
     }
 
@@ -576,12 +575,12 @@ public class Worktime implements java.io.Serializable {
         this.eac = eac;
     }
 
-    @Column(name = "n_in_one_collection_box", precision = 10, scale = 1)
-    public BigDecimal getNInOneCollectionBox() {
+    @Column(name = "n_in_one_collection_box")
+    public Double getNInOneCollectionBox() {
         return this.NInOneCollectionBox;
     }
 
-    public void setNInOneCollectionBox(BigDecimal NInOneCollectionBox) {
+    public void setNInOneCollectionBox(Double NInOneCollectionBox) {
         this.NInOneCollectionBox = NInOneCollectionBox;
     }
 
@@ -594,57 +593,57 @@ public class Worktime implements java.io.Serializable {
         this.partNoAttributeMaintain = partNoAttributeMaintain;
     }
 
-    @Column(name = "assy_lead_time", precision = 10, scale = 1)
-    public BigDecimal getAssyLeadTime() {
+    @Column(name = "assy_lead_time")
+    public Double getAssyLeadTime() {
         return this.assyLeadTime;
     }
 
-    public void setAssyLeadTime(BigDecimal assyLeadTime) {
+    public void setAssyLeadTime(Double assyLeadTime) {
         this.assyLeadTime = assyLeadTime;
     }
 
-    @Column(name = "packing_lead_time", precision = 10, scale = 1)
-    public BigDecimal getPackingLeadTime() {
+    @Column(name = "packing_lead_time")
+    public Double getPackingLeadTime() {
         return this.packingLeadTime;
     }
 
-    public void setPackingLeadTime(BigDecimal packingLeadTime) {
+    public void setPackingLeadTime(Double packingLeadTime) {
         this.packingLeadTime = packingLeadTime;
     }
 
-    @Column(name = "productionWt", precision = 10, scale = 1)
-    public BigDecimal getProductionWt() {
+    @Column(name = "productionWt")
+    public Double getProductionWt() {
         return productionWt;
     }
 
-    public void setProductionWt(BigDecimal productionWt) {
+    public void setProductionWt(Double productionWt) {
         this.productionWt = productionWt;
     }
 
-    @Column(name = "setup_time", precision = 10, scale = 1)
-    public BigDecimal getSetupTime() {
+    @Column(name = "setup_time")
+    public Double getSetupTime() {
         return setupTime;
     }
 
-    public void setSetupTime(BigDecimal setupTime) {
+    public void setSetupTime(Double setupTime) {
         this.setupTime = setupTime;
     }
 
-    @Column(name = "assy_to_t1", precision = 10, scale = 1)
-    public BigDecimal getAssyToT1() {
+    @Column(name = "assy_to_t1")
+    public Double getAssyToT1() {
         return assyToT1;
     }
 
-    public void setAssyToT1(BigDecimal assyToT1) {
+    public void setAssyToT1(Double assyToT1) {
         this.assyToT1 = assyToT1;
     }
 
-    @Column(name = "t2_to_packing", precision = 10, scale = 1)
-    public BigDecimal getT2ToPacking() {
+    @Column(name = "t2_to_packing")
+    public Double getT2ToPacking() {
         return t2ToPacking;
     }
 
-    public void setT2ToPacking(BigDecimal t2ToPacking) {
+    public void setT2ToPacking(Double t2ToPacking) {
         this.t2ToPacking = t2ToPacking;
     }
 
@@ -666,30 +665,30 @@ public class Worktime implements java.io.Serializable {
         this.packingStation = packingStation;
     }
 
-    @Column(name = "assy_kanban_time", precision = 10, scale = 1)
-    public BigDecimal getAssyKanbanTime() {
+    @Column(name = "assy_kanban_time")
+    public Double getAssyKanbanTime() {
         return assyKanbanTime;
     }
 
-    public void setAssyKanbanTime(BigDecimal assyKanbanTime) {
+    public void setAssyKanbanTime(Double assyKanbanTime) {
         this.assyKanbanTime = assyKanbanTime;
     }
 
-    @Column(name = "packing_kanban_time", precision = 10, scale = 1)
-    public BigDecimal getPackingKanbanTime() {
+    @Column(name = "packing_kanban_time")
+    public Double getPackingKanbanTime() {
         return packingKanbanTime;
     }
 
-    public void setPackingKanbanTime(BigDecimal packingKanbanTime) {
+    public void setPackingKanbanTime(Double packingKanbanTime) {
         this.packingKanbanTime = packingKanbanTime;
     }
 
-    @Column(name = "clean_panel_and_assembly", precision = 10, scale = 1)
-    public BigDecimal getCleanPanelAndAssembly() {
+    @Column(name = "clean_panel_and_assembly")
+    public Double getCleanPanelAndAssembly() {
         return cleanPanelAndAssembly;
     }
 
-    public void setCleanPanelAndAssembly(BigDecimal cleanPanelAndAssembly) {
+    public void setCleanPanelAndAssembly(Double cleanPanelAndAssembly) {
         this.cleanPanelAndAssembly = cleanPanelAndAssembly;
     }
 
@@ -697,7 +696,7 @@ public class Worktime implements java.io.Serializable {
     @Column(name = "create_date", length = 23)
     @CreationTimestamp
     public Date getCreateDate() {
-        return this.modifiedDate;
+        return this.createDate;
     }
 
     public void setCreateDate(Date createDate) {
@@ -714,5 +713,5 @@ public class Worktime implements java.io.Serializable {
     public void setModifiedDate(Date modifiedDate) {
         this.modifiedDate = modifiedDate;
     }
-
+    
 }

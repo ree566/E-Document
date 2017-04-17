@@ -44,7 +44,7 @@
     </filter>
     <filter-mapping>
         <filter-name>UserNameRecordFilter</filter-name>
-        <url-pattern>/pages/*</url-pattern>
+        <url-pattern>/updateSheet.do</url-pattern>
     </filter-mapping>
     
     <filter>

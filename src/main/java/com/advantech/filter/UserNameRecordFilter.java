@@ -17,38 +17,29 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import org.slf4j.MDC;
+import org.springframework.web.filter.AbstractRequestLoggingFilter;
 
 /**
  *
  * @author Wei.Cheng
  */
-public class UserNameRecordFilter implements Filter {
+public class UserNameRecordFilter extends AbstractRequestLoggingFilter {
 
+    @Override
     protected void beforeRequest(final HttpServletRequest request, final String message) {
         final HttpSession session = request.getSession();
         final Identit user = session != null ? (Identit) session.getAttribute("user") : null;
         if (user != null) {
+            System.out.println("user is not null");
             MDC.put("username", user.getUsername());
+        }else{
+            System.out.println("user is null");
         }
     }
 
+    @Override
     protected void afterRequest(final HttpServletRequest request, final String message) {
         MDC.remove("username");
-    }
-
-    @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
-
-    }
-
-    @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        chain.doFilter(request, response);
-    }
-
-    @Override
-    public void destroy() {
-
     }
 
 }

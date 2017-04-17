@@ -20,9 +20,10 @@ import com.advantech.service.WorktimeService;
 import com.google.common.base.Splitter;
 import com.google.gson.Gson;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.sql.Clob;
 import java.sql.SQLException;
-import java.util.Date;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import javax.servlet.ServletException;
@@ -131,6 +132,9 @@ public class SheetModifyController {
                     worktime.setFlowByBabFlowId(babFlowName == 0 ? null : flowService.findByPrimaryKey(babFlowName));
                     worktime.setFlowByTestFlowId(testFlowName == 0 ? null : flowService.findByPrimaryKey(testFlowName));
                     worktime.setFlowByPackingFlowId(packingFlowName == 0 ? null : flowService.findByPrimaryKey(packingFlowName));
+                    if (worktime.getProductionWt() == null) {
+                        worktime.setProductionWt(this.setProductWt(worktime));
+                    }
                     modifyMessage = this.updateRows(worktime);
                 }
             } else {
@@ -140,7 +144,16 @@ public class SheetModifyController {
         return ResponseEntity
                 .status(SUCCESS_MESSAGE.equals(modifyMessage) ? HttpStatus.CREATED : HttpStatus.FORBIDDEN)
                 .body(modifyMessage);
+    }
 
+    private Double setProductWt(Worktime w) {
+        try {
+            return w.getTotalModule() + w.getCleanPanel() + w.getAssy() + w.getT1() + w.getT2() + w.getT3() + w.getT4()
+                    + w.getPacking() + w.getUpBiRi() + w.getDownBiRi() + w.getBiCost() + w.getVibration() + w.getHiPotLeakage()
+                    + w.getColdBoot() + w.getWarmBoot();
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     private String deleteRows(String rowId) {
