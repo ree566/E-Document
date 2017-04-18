@@ -124,6 +124,64 @@ public class Worktime implements java.io.Serializable {
         this.partNoAttributeMaintain = partNoAttributeMaintain;
     }
 
+    public Worktime(Floor floor, Flow flowByTestFlowId, Flow flowByPackingFlowId, Flow flowByBabFlowId, Identit identitByEeOwnerId, Identit identitByQcOwnerId, Identit identitBySpeOwnerId, Pending pending, PreAssy preAssy, Type type, String modelName, Double totalModule, Double cleanPanel, Double assy, Double t1, Double t2, Double t3, Double t4, Double packing, Double upBiRi, Double downBiRi, Double biCost, Double vibration, Double hiPotLeakage, Double coldBoot, Double warmBoot, Double pendingTime, String burnIn, double biTime, double biTemperature, String assyPackingSop, String testSop, Integer keypartA, Integer keypartB, Character partLink, int ce, int ul, int rohs, int weee, int madeInTaiwan, int fcc, int eac, Double NInOneCollectionBox, char partNoAttributeMaintain, Double assyLeadTime, Double packingLeadTime, Double productionWt, Double setupTime, Double assyToT1, Double t2ToPacking, Integer assyStation, Integer packingStation, Double assyKanbanTime, Double packingKanbanTime, Double cleanPanelAndAssembly) {
+        this.floor = floor;
+        this.flowByTestFlowId = flowByTestFlowId;
+        this.flowByPackingFlowId = flowByPackingFlowId;
+        this.flowByBabFlowId = flowByBabFlowId;
+        this.identitByEeOwnerId = identitByEeOwnerId;
+        this.identitByQcOwnerId = identitByQcOwnerId;
+        this.identitBySpeOwnerId = identitBySpeOwnerId;
+        this.pending = pending;
+        this.preAssy = preAssy;
+        this.type = type;
+        this.modelName = modelName;
+        this.totalModule = totalModule;
+        this.cleanPanel = cleanPanel;
+        this.assy = assy;
+        this.t1 = t1;
+        this.t2 = t2;
+        this.t3 = t3;
+        this.t4 = t4;
+        this.packing = packing;
+        this.upBiRi = upBiRi;
+        this.downBiRi = downBiRi;
+        this.biCost = biCost;
+        this.vibration = vibration;
+        this.hiPotLeakage = hiPotLeakage;
+        this.coldBoot = coldBoot;
+        this.warmBoot = warmBoot;
+        this.pendingTime = pendingTime;
+        this.burnIn = burnIn;
+        this.biTime = biTime;
+        this.biTemperature = biTemperature;
+        this.assyPackingSop = assyPackingSop;
+        this.testSop = testSop;
+        this.keypartA = keypartA;
+        this.keypartB = keypartB;
+        this.partLink = partLink;
+        this.ce = ce;
+        this.ul = ul;
+        this.rohs = rohs;
+        this.weee = weee;
+        this.madeInTaiwan = madeInTaiwan;
+        this.fcc = fcc;
+        this.eac = eac;
+        this.NInOneCollectionBox = NInOneCollectionBox;
+        this.partNoAttributeMaintain = partNoAttributeMaintain;
+        this.assyLeadTime = assyLeadTime;
+        this.packingLeadTime = packingLeadTime;
+        this.productionWt = productionWt;
+        this.setupTime = setupTime;
+        this.assyToT1 = assyToT1;
+        this.t2ToPacking = t2ToPacking;
+        this.assyStation = assyStation;
+        this.packingStation = packingStation;
+        this.assyKanbanTime = assyKanbanTime;
+        this.packingKanbanTime = packingKanbanTime;
+        this.cleanPanelAndAssembly = cleanPanelAndAssembly;
+    }
+
     public Worktime(int id, Floor floor, Flow flowByTestFlowId, Flow flowByPackingFlowId, Flow flowByBabFlowId, Identit identitByEeOwnerId, Identit identitByQcOwnerId, Identit identitBySpeOwnerId, Pending pending, PreAssy preAssy, Type type, String modelName, Double totalModule, Double cleanPanel, Double assy, Double t1, Double t2, Double t3, Double t4, Double packing, Double upBiRi, Double downBiRi, Double biCost, Double vibration, Double hiPotLeakage, Double coldBoot, Double warmBoot, Double pendingTime, String burnIn, Double biTime, Double biTemperature, String assyPackingSop, String testSop, Integer keypartA, Integer keypartB, Character partLink, int ce, int ul, int rohs, int weee, int madeInTaiwan, int fcc, int eac, Double NInOneCollectionBox, char partNoAttributeMaintain, Double assyLeadTime, Double packingLeadTime, Date modifiedDate, Date createDate) {
         this.id = id;
         this.floor = floor;
@@ -713,5 +771,5 @@ public class Worktime implements java.io.Serializable {
     public void setModifiedDate(Date modifiedDate) {
         this.modifiedDate = modifiedDate;
     }
-    
+
 }

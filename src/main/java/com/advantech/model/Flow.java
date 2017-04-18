@@ -3,6 +3,7 @@ package com.advantech.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.util.HashSet;
 import java.util.Set;
@@ -31,12 +32,9 @@ public class Flow implements java.io.Serializable {
     private int id;
     private FlowGroup flowGroup;
     private String name;
-    @JsonIgnore
-    private Set<Worktime> worktimesForTestFlowId = new HashSet<Worktime>(0);
-    @JsonIgnore
-    private Set<Worktime> worktimesForPackingFlowId = new HashSet<Worktime>(0);
-    @JsonIgnore
-    private Set<Worktime> worktimesForBabFlowId = new HashSet<Worktime>(0);
+    private Set<Worktime> worktimesForTestFlowId = new HashSet<>(0);
+    private Set<Worktime> worktimesForPackingFlowId = new HashSet<>(0);
+    private Set<Worktime> worktimesForBabFlowId = new HashSet<>(0);
 
     public Flow() {
     }
@@ -84,6 +82,8 @@ public class Flow implements java.io.Serializable {
         this.name = name;
     }
 
+    @JsonIgnore
+    @JsonIgnoreProperties
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "flowByTestFlowId")
     public Set<Worktime> getWorktimesForTestFlowId() {
         return this.worktimesForTestFlowId;
@@ -93,6 +93,8 @@ public class Flow implements java.io.Serializable {
         this.worktimesForTestFlowId = worktimesForTestFlowId;
     }
 
+    @JsonIgnore
+    @JsonIgnoreProperties
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "flowByPackingFlowId")
     public Set<Worktime> getWorktimesForPackingFlowId() {
         return this.worktimesForPackingFlowId;
@@ -102,6 +104,8 @@ public class Flow implements java.io.Serializable {
         this.worktimesForPackingFlowId = worktimesForPackingFlowId;
     }
 
+    @JsonIgnore
+    @JsonIgnoreProperties
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "flowByBabFlowId")
     public Set<Worktime> getWorktimesForBabFlowId() {
         return this.worktimesForBabFlowId;

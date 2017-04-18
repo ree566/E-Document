@@ -11,6 +11,7 @@ import com.advantech.model.SheetView;
 import com.advantech.response.SheetViewResponse;
 import com.advantech.service.SheetViewService;
 import com.google.gson.Gson;
+import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,7 +63,7 @@ public class SheetViewController {
 
         return viewResp;
     }
-    
+
     @ResponseBody
     @RequestMapping(value = "/generateExcel.do", method = {RequestMethod.GET})
     public ModelAndView generateExcel() {
@@ -77,5 +78,23 @@ public class SheetViewController {
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
                 .body("The session has expired.");
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/sheetViewTestMode.do", method = {RequestMethod.POST})
+    public SheetViewResponse getSheetViewTestMode(@ModelAttribute PageInfo info, @ModelAttribute("user") Identit user) {
+        
+        List l = new ArrayList();
+        SheetViewResponse viewResp = new SheetViewResponse();
+
+        int count = info.getMaxNumOfRows();
+        int total = count % info.getRows() == 0 ? (int) Math.ceil(count / info.getRows()) : (int) Math.ceil(count / info.getRows()) + 1;
+
+        viewResp.setRows(l);
+        viewResp.setTotal(total);
+        viewResp.setRecords(count);
+        viewResp.setPage(info.getPage());
+
+        return viewResp;
     }
 }

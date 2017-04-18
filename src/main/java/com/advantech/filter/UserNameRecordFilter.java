@@ -31,7 +31,7 @@ public class UserNameRecordFilter extends AbstractRequestLoggingFilter {
         final Identit user = session != null ? (Identit) session.getAttribute("user") : null;
         if (user != null) {
             System.out.println("user is not null");
-            MDC.put("username", user.getUsername());
+            MDC.put("username", user.getName());
         }else{
             System.out.println("user is null");
         }

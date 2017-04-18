@@ -114,7 +114,7 @@
                 var loopCount = 0;
 
                 grid.jqGrid({
-                    url: '${root}/getSheetView.do',
+                    url: '${root}/sheetViewTestMode.do',
                     datatype: "json",
                     mtype: 'POST',
                     colModel: [
@@ -221,7 +221,7 @@
                     multiselect: true,
                     multiboxonly: true,
                     editurl: '${root}/updateSheet.do',
-                    sortname: 'modifiedDate', sortorder: 'desc',
+                    sortname: 'id', sortorder: 'desc',
                     error: function (xhr, ajaxOptions, thrownError) {
                         alert("Ajax Error occurred\n"
                                 + "\nstatus is: " + xhr.status
@@ -284,7 +284,7 @@
                 });
 
                 //Separate readyonly column and editable column
-                var editableColumns = modifyColumns;
+                var editableColumns = modifyColumns.length == 1 && modifyColumns[0] == -1 ? columnNames : modifyColumns;
                 var readonlyColumns = $(columnNames).not(editableColumns).get();
 
                 if (editableColumns.length != 0) {
@@ -300,7 +300,6 @@
                 }
 
                 grid.jqGrid('setFrozenColumns');
-//                grid[0].p._complete.call(grid[0]);
 
                 function getColumn() {
                     var result;
@@ -346,7 +345,7 @@
     </head>
     <body>
         <div class="container">
-            <div class="form-inline">
+            <div class="row">
                 <div>
                     <table class="table table-hover">
                         <tr>
@@ -356,15 +355,7 @@
                                 unit: <c:out value="${sessionScope.user.userType.name}" /> /
                                 floor: <c:out value="${sessionScope.user.floor.name}" />
                             </td>
-                        </tr>
-                    </table>
-                </div>
-                <div class="widget">
-                    <table>
-                        <tr>
-                            <td><button class="small-button" id="hideCol">hideCol</button></td>
-                            <td><button class="small-button" id="showCol" >showCol</button></td>
-                            <td>
+                            <td class="widget">
                                 <form action="${root}/logout.do" method="post">
                                     <input class="small-button" type="submit" value="Logout" />
                                 </form>

@@ -3,6 +3,7 @@ package com.advantech.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.util.HashSet;
 import java.util.Set;
@@ -33,15 +34,12 @@ public class Identit implements java.io.Serializable {
     private UserType userType;
     private String jobnumber;
     private String password;
-    private String username;
+    private String name;
     private Integer permission;
     private String email;
-    @JsonIgnore
-    private Set<Worktime> worktimesForEeOwnerId = new HashSet<Worktime>(0);
-    @JsonIgnore
-    private Set<Worktime> worktimesForQcOwnerId = new HashSet<Worktime>(0);
-    @JsonIgnore
-    private Set<Worktime> worktimesForSpeOwnerId = new HashSet<Worktime>(0);
+    private Set<Worktime> worktimesForEeOwnerId = new HashSet<>(0);
+    private Set<Worktime> worktimesForQcOwnerId = new HashSet<>(0);
+    private Set<Worktime> worktimesForSpeOwnerId = new HashSet<>(0);
  
     public Identit() {
     }
@@ -50,13 +48,13 @@ public class Identit implements java.io.Serializable {
         this.id = id;
     }
 
-    public Identit(int id, Floor floor, UserType userType, String jobnumber, String password, String username, Integer permission, String email, Set<Worktime> worktimesForEeOwnerId, Set<Worktime> worktimesForQcOwnerId, Set<Worktime> worktimesForSpeOwnerId) {
+    public Identit(int id, Floor floor, UserType userType, String jobnumber, String password, String name, Integer permission, String email, Set<Worktime> worktimesForEeOwnerId, Set<Worktime> worktimesForQcOwnerId, Set<Worktime> worktimesForSpeOwnerId) {
         this.id = id;
         this.floor = floor;
         this.userType = userType;
         this.jobnumber = jobnumber;
         this.password = password;
-        this.username = username;
+        this.name = name;
         this.permission = permission;
         this.email = email;
         this.worktimesForEeOwnerId = worktimesForEeOwnerId;
@@ -114,12 +112,12 @@ public class Identit implements java.io.Serializable {
     }
 
     @Column(name = "name", length = 50)
-    public String getUsername() {
-        return this.username;
+    public String getName() {
+        return this.name;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Column(name = "permission")
@@ -140,6 +138,8 @@ public class Identit implements java.io.Serializable {
         this.email = email;
     }
 
+    @JsonIgnore
+    @JsonIgnoreProperties
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "identitByEeOwnerId")
     public Set<Worktime> getWorktimesForEeOwnerId() {
         return this.worktimesForEeOwnerId;
@@ -149,6 +149,8 @@ public class Identit implements java.io.Serializable {
         this.worktimesForEeOwnerId = worktimesForEeOwnerId;
     }
 
+    @JsonIgnore
+    @JsonIgnoreProperties
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "identitByQcOwnerId")
     public Set<Worktime> getWorktimesForQcOwnerId() {
         return this.worktimesForQcOwnerId;
@@ -158,6 +160,8 @@ public class Identit implements java.io.Serializable {
         this.worktimesForQcOwnerId = worktimesForQcOwnerId;
     }
 
+    @JsonIgnore
+    @JsonIgnoreProperties
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "identitBySpeOwnerId")
     public Set<Worktime> getWorktimesForSpeOwnerId() {
         return this.worktimesForSpeOwnerId;

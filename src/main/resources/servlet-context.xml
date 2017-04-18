@@ -36,10 +36,17 @@
     <bean id="viewResolver2"
           class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <property name="order" value="2"/>
-        <property name="prefix" value="/WEB-INF/jsp/" />
+        <property name="prefix" value="/" />
         <property name="suffix" value=".jsp" />
     </bean>
 
+    <bean id="multipartResolver"
+          class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+
+        <!-- setting maximum upload size -->
+        <property name="maxUploadSize" value="10000000" />
+
+    </bean>
     
     <!-- 設定sessionFactory -->
     <bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean" destroy-method="destroy"> 

@@ -76,7 +76,7 @@ public class EditOptionController {
         List<Identit> l = identitService.findByUserTypeName(unitName);
         Map m = new HashMap();
         for (Identit i : l) {
-            m.put(i.getId(), i.getUsername());
+            m.put(i.getId(), i.getName());
         }
 
         String optionString = convertToOptions(m);

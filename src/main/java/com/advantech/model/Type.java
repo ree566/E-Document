@@ -3,6 +3,7 @@ package com.advantech.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.util.HashSet;
 import java.util.Set;
@@ -28,8 +29,7 @@ public class Type implements java.io.Serializable {
 
     private int id;
     private String name;
-    @JsonIgnore
-    private Set<Worktime> worktimes = new HashSet<Worktime>(0);
+    private Set<Worktime> worktimes = new HashSet<>(0);
 
     public Type() {
     }
@@ -65,6 +65,8 @@ public class Type implements java.io.Serializable {
         this.name = name;
     }
 
+    @JsonIgnore
+    @JsonIgnoreProperties
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "type")
     public Set<Worktime> getWorktimes() {
         return this.worktimes;

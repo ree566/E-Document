@@ -5,6 +5,9 @@
  */
 package com.advantech.helper;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -19,6 +22,7 @@ import org.json.JSONObject;
  * @author Wei.Cheng
  */
 public class JsonHelper {
+
     public static Object toJSON(Object object) throws JSONException {
         if (object instanceof Map) {
             JSONObject json = new JSONObject();
@@ -74,5 +78,14 @@ public class JsonHelper {
         } else {
             return json;
         }
+    }
+
+    public static String toStringWithLazyLoading(Object obj) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        Hibernate4Module hbm = new Hibernate4Module();
+        hbm.enable(Hibernate4Module.Feature.SERIALIZE_IDENTIFIER_FOR_LAZY_NOT_LOADED_OBJECTS);
+        mapper.registerModule(hbm);
+
+        return mapper.writeValueAsString(obj);
     }
 }
