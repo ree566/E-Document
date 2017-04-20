@@ -19,10 +19,13 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class TypeDAO extends PaginateDAO implements BasicDAO {
+public class TypeDAO implements BasicDAO {
 
     @Autowired
     private SessionFactory sessionFactory;
+
+    @Autowired
+    private PaginateDAO paginateDAO;
 
     private Session currentSession() {
         return sessionFactory.getCurrentSession();
@@ -34,7 +37,7 @@ public class TypeDAO extends PaginateDAO implements BasicDAO {
     }
 
     public List<Type> findAll(PageInfo info) {
-        return super.findAll(this.currentSession(), Type.class, info);
+        return paginateDAO.findAll(this.currentSession(), Type.class, info);
     }
 
     @Override

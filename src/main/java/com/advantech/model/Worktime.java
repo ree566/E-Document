@@ -1,6 +1,7 @@
 package com.advantech.model;
 // Generated 2017/4/7 下午 02:26:06 by Hibernate Tools 4.3.1
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.util.Date;
@@ -750,6 +751,7 @@ public class Worktime implements java.io.Serializable {
         this.cleanPanelAndAssembly = cleanPanelAndAssembly;
     }
 
+    @JsonFormat(pattern = "yyyy-MM-dd'T'kk:mm:ss.SSS'Z'", timezone = "GMT+8")
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "create_date", length = 23)
     @CreationTimestamp
@@ -761,6 +763,7 @@ public class Worktime implements java.io.Serializable {
         this.createDate = createDate;
     }
 
+    @JsonFormat(pattern = "yyyy-MM-dd'T'kk:mm:ss.SSS'Z'", timezone = "GMT+8")
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "modified_date", length = 23)
     @UpdateTimestamp

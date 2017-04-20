@@ -5,6 +5,7 @@
  */
 package com.advantech.dao;
 
+import com.advantech.helper.PageInfo;
 import com.advantech.model.Worktime;
 import java.util.Collection;
 import java.util.List;
@@ -20,10 +21,13 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class WorktimeDAO implements BasicDAO {
+public class WorktimeDAO extends PaginateDAO implements BasicDAO {
 
     @Autowired
     private SessionFactory sessionFactory;
+
+    @Autowired
+    private PaginateDAO paginateDAO;
 
     private Session currentSession() {
         return sessionFactory.getCurrentSession();
@@ -32,6 +36,10 @@ public class WorktimeDAO implements BasicDAO {
     @Override
     public Collection findAll() {
         return currentSession().createQuery("from Worktime").list();
+    }
+
+    public List<Worktime> findAll(PageInfo info) {
+        return paginateDAO.findAll(this.currentSession(), Worktime.class, info);
     }
 
     @Override

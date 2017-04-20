@@ -5,12 +5,18 @@
  */
 package com.advantech.controller;
 
+import com.advantech.helper.JsonHelper;
 import com.advantech.helper.PageInfo;
 import com.advantech.model.Identit;
 import com.advantech.model.SheetView;
+import com.advantech.model.Worktime;
 import com.advantech.response.JqGridResponse;
 import com.advantech.service.SheetViewService;
+import com.advantech.service.WorktimeService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
@@ -41,26 +47,32 @@ public class SheetViewController {
 
     @Autowired
     private SheetViewService sheetViewService;
+    
+    @Autowired
+    private WorktimeService worktimeService;
 
     @ResponseBody
     @RequestMapping(value = "/getSheetView.do", method = {RequestMethod.POST})
-    public JqGridResponse getSheetView(@ModelAttribute PageInfo info, @ModelAttribute("user") Identit user, BindingResult errors) {
+    public JqGridResponse getSheetView(@ModelAttribute PageInfo info, @ModelAttribute("user") Identit user, BindingResult errors) throws JsonProcessingException, JsonProcessingException, IOException {
         if (errors.hasErrors()) {
             // error handling code goes here.
             log.error(new Gson().toJson(errors.getFieldErrors()));
         }
 
-        List<SheetView> l = sheetViewService.findAll(info);
-        JqGridResponse<SheetView> viewResp = new JqGridResponse();
-
+        List l = sheetViewService.findAll(info);
+        
+        JqGridResponse viewResp = getResponseObject(l, info);
+        return viewResp;
+    }
+    
+    private JqGridResponse getResponseObject(List l, PageInfo info) {
+        JqGridResponse viewResp = new JqGridResponse();
         int count = info.getMaxNumOfRows();
         int total = count % info.getRows() == 0 ? (int) Math.ceil(count / info.getRows()) : (int) Math.ceil(count / info.getRows()) + 1;
-
         viewResp.setRows(l);
         viewResp.setTotal(total);
         viewResp.setRecords(count);
         viewResp.setPage(info.getPage());
-
         return viewResp;
     }
 

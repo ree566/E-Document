@@ -6,6 +6,7 @@
 package com.advantech.service;
 
 import com.advantech.dao.*;
+import com.advantech.helper.PageInfo;
 import com.advantech.model.Worktime;
 import java.util.List;
 import org.hibernate.Hibernate;
@@ -26,6 +27,12 @@ public class WorktimeService {
 
     public List<Worktime> findAll() {
         return (List<Worktime>) worktimeDAO.findAll();
+    }
+
+    public List<Worktime> findAll(PageInfo info) {
+        List l = worktimeDAO.findAll(info);
+        Hibernate.initialize(l);
+        return l;
     }
 
     public Worktime findByPrimaryKey(Object obj_id) {

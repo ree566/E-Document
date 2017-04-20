@@ -7,6 +7,7 @@ package com.advantech.dao;
 
 import com.advantech.helper.PageInfo;
 import com.advantech.model.Identit;
+import com.advantech.model.SheetView;
 import java.util.Collection;
 import java.util.List;
 import org.hibernate.Criteria;
@@ -23,10 +24,13 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class IdentitDAO extends PaginateDAO implements BasicDAO {
+public class IdentitDAO implements BasicDAO {
 
     @Autowired
     private SessionFactory sessionFactory;
+    
+    @Autowired
+    private PaginateDAO paginateDAO;
 
     private Session currentSession() {
         return sessionFactory.getCurrentSession();
@@ -38,7 +42,7 @@ public class IdentitDAO extends PaginateDAO implements BasicDAO {
     }
 
     public List<Identit> findAll(PageInfo info) {
-        return super.findAll(this.currentSession(), Identit.class, info);
+        return paginateDAO.findAll(this.currentSession(), SheetView.class, info);
     }
 
     @Override
