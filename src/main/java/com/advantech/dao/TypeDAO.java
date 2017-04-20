@@ -5,8 +5,10 @@
  */
 package com.advantech.dao;
 
+import com.advantech.helper.PageInfo;
 import com.advantech.model.Type;
 import java.util.Collection;
+import java.util.List;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +19,7 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class TypeDAO implements BasicDAO {
+public class TypeDAO extends PaginateDAO implements BasicDAO {
 
     @Autowired
     private SessionFactory sessionFactory;
@@ -29,6 +31,10 @@ public class TypeDAO implements BasicDAO {
     @Override
     public Collection findAll() {
         return currentSession().createQuery("from Type").list();
+    }
+
+    public List<Type> findAll(PageInfo info) {
+        return super.findAll(this.currentSession(), Type.class, info);
     }
 
     @Override

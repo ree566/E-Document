@@ -6,8 +6,10 @@
 package com.advantech.service;
 
 import com.advantech.dao.*;
+import com.advantech.helper.PageInfo;
 import com.advantech.model.Flow;
 import java.util.List;
+import org.hibernate.Hibernate;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,6 +28,11 @@ public class FlowService {
 
     public List<Flow> findAll() {
         return (List<Flow>) flowDAO.findAll();
+    }
+
+    public List<Flow> findAll(PageInfo info) {
+        List<Flow> l = flowDAO.findAll(info);
+        return l;
     }
 
     public Flow findByPrimaryKey(Object obj_id) {

@@ -6,6 +6,7 @@
 package com.advantech.service;
 
 import com.advantech.dao.*;
+import com.advantech.helper.PageInfo;
 import com.advantech.model.PreAssy;
 import java.util.List;
 
@@ -26,6 +27,10 @@ public class PreAssyService {
 
     public List<PreAssy> findAll() {
         return (List<PreAssy>) preAssyDAO.findAll();
+    }
+
+    public List<PreAssy> findAll(PageInfo info) {
+        return preAssyDAO.findAll(info);
     }
 
     public PreAssy findByPrimaryKey(Object obj_id) {

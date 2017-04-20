@@ -7,6 +7,7 @@ package com.advantech.service;
 
 import com.advantech.dao.*;
 import com.advantech.helper.MD5Encoder;
+import com.advantech.helper.PageInfo;
 import com.advantech.model.Identit;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
@@ -29,6 +30,10 @@ public class IdentitService {
 
     public List<Identit> findAll() {
         return (List<Identit>) identitDAO.findAll();
+    }
+
+    public List<Identit> findAll(PageInfo info) {
+        return identitDAO.findAll(info);
     }
 
     public Identit findByPrimaryKey(Object obj_id) {

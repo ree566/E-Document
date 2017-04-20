@@ -12,7 +12,7 @@ import java.util.List;
  * @author Wei.Cheng
  * @param <T>
  */
-public class SheetViewResponse<T> {
+public class JqGridResponse<T> {
 
     private List<T> rows;
     private Integer total;

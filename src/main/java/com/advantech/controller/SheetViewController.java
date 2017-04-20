@@ -8,7 +8,7 @@ package com.advantech.controller;
 import com.advantech.helper.PageInfo;
 import com.advantech.model.Identit;
 import com.advantech.model.SheetView;
-import com.advantech.response.SheetViewResponse;
+import com.advantech.response.JqGridResponse;
 import com.advantech.service.SheetViewService;
 import com.google.gson.Gson;
 import java.util.ArrayList;
@@ -44,14 +44,14 @@ public class SheetViewController {
 
     @ResponseBody
     @RequestMapping(value = "/getSheetView.do", method = {RequestMethod.POST})
-    public SheetViewResponse getSheetView(@ModelAttribute PageInfo info, @ModelAttribute("user") Identit user, BindingResult errors) {
+    public JqGridResponse getSheetView(@ModelAttribute PageInfo info, @ModelAttribute("user") Identit user, BindingResult errors) {
         if (errors.hasErrors()) {
             // error handling code goes here.
             log.error(new Gson().toJson(errors.getFieldErrors()));
         }
 
-        List l = sheetViewService.findAll(info);
-        SheetViewResponse viewResp = new SheetViewResponse();
+        List<SheetView> l = sheetViewService.findAll(info);
+        JqGridResponse<SheetView> viewResp = new JqGridResponse();
 
         int count = info.getMaxNumOfRows();
         int total = count % info.getRows() == 0 ? (int) Math.ceil(count / info.getRows()) : (int) Math.ceil(count / info.getRows()) + 1;
@@ -82,10 +82,10 @@ public class SheetViewController {
 
     @ResponseBody
     @RequestMapping(value = "/sheetViewTestMode.do", method = {RequestMethod.POST})
-    public SheetViewResponse getSheetViewTestMode(@ModelAttribute PageInfo info, @ModelAttribute("user") Identit user) {
+    public JqGridResponse getSheetViewTestMode(@ModelAttribute PageInfo info, @ModelAttribute("user") Identit user) {
         
         List l = new ArrayList();
-        SheetViewResponse viewResp = new SheetViewResponse();
+        JqGridResponse viewResp = new JqGridResponse();
 
         int count = info.getMaxNumOfRows();
         int total = count % info.getRows() == 0 ? (int) Math.ceil(count / info.getRows()) : (int) Math.ceil(count / info.getRows()) + 1;

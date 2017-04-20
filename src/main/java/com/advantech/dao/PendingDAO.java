@@ -5,8 +5,10 @@
  */
 package com.advantech.dao;
 
+import com.advantech.helper.PageInfo;
 import com.advantech.model.Pending;
 import java.util.Collection;
+import java.util.List;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +19,7 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class PendingDAO implements BasicDAO {
+public class PendingDAO extends PaginateDAO implements BasicDAO {
 
     @Autowired
     private SessionFactory sessionFactory;
@@ -29,6 +31,10 @@ public class PendingDAO implements BasicDAO {
     @Override
     public Collection findAll() {
         return currentSession().createQuery("from Pending").list();
+    }
+
+    public List<Pending> findAll(PageInfo info) {
+        return super.findAll(this.currentSession(), Pending.class, info);
     }
 
     @Override

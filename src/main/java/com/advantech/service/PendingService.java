@@ -6,6 +6,7 @@
 package com.advantech.service;
 
 import com.advantech.dao.*;
+import com.advantech.helper.PageInfo;
 import com.advantech.model.Pending;
 import java.util.List;
 
@@ -26,6 +27,10 @@ public class PendingService {
 
     public List<Pending> findAll() {
         return (List<Pending>) pendingDAO.findAll();
+    }
+
+    public List<Pending> findAll(PageInfo info) {
+        return pendingDAO.findAll(info);
     }
 
     public Pending findByPrimaryKey(Object obj_id) {

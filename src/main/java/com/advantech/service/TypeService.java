@@ -6,6 +6,7 @@
 package com.advantech.service;
 
 import com.advantech.dao.*;
+import com.advantech.helper.PageInfo;
 import com.advantech.model.Type;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,10 @@ public class TypeService {
 
     public List<Type> findAll() {
         return (List<Type>) typeDAO.findAll();
+    }
+
+    public List<Type> findAll(PageInfo info) {
+        return typeDAO.findAll(info);
     }
 
     public Type findByPrimaryKey(Object obj_id) {

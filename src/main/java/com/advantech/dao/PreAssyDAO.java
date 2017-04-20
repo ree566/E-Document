@@ -5,8 +5,10 @@
  */
 package com.advantech.dao;
 
+import com.advantech.helper.PageInfo;
 import com.advantech.model.PreAssy;
 import java.util.Collection;
+import java.util.List;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +19,7 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class PreAssyDAO implements BasicDAO {
+public class PreAssyDAO extends PaginateDAO implements BasicDAO {
 
     @Autowired
     private SessionFactory sessionFactory;
@@ -31,6 +33,10 @@ public class PreAssyDAO implements BasicDAO {
         return currentSession().createQuery("from PreAssy").list();
     }
 
+    public List<PreAssy> findAll(PageInfo info) {
+        return super.findAll(this.currentSession(), PreAssy.class, info);
+    }
+ 
     @Override
     public Object findByPrimaryKey(Object obj_id) {
         return currentSession().load(PreAssy.class, (int) obj_id);
