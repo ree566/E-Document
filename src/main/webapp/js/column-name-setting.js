@@ -14,14 +14,14 @@ var grid_column_name = [
 ];
 
 var do_not_change_columns = [
-    "id", "modifiedDate"
+    "id", "rowId", "modifiedDate"
 ];
 
 var specialRelativeColumn = {
     SPE: [
-        "type", "floor", "eeOwner", "speOwner", "qcOwner", 
+        "type", "floor", "eeOwner", "speOwner", "qcOwner",
         "babFlow", "testFlow", "packingFlow", "pending", "preAssy"
-    ], 
+    ],
     EE: [],
     IE: []
 };

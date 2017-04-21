@@ -101,6 +101,7 @@ public class SheetModifyController {
 
         if (errors.hasErrors()) {
             // error handling code goes here.
+            System.out.println(errors.getFieldErrors());
             return ResponseEntity
                     .status(HttpStatus.FORBIDDEN)
                     .body(errors.getFieldErrors());

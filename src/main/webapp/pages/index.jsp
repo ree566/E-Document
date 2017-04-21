@@ -32,15 +32,9 @@
         <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
         <script src="//cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.14.0/jquery.jqgrid.min.js"></script>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/jqgrid/4.6.0/js/i18n/grid.locale-tw.js"></script>
-        
+        <script src="//cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.14.0/js/i18n/grid.locale-tw.js"></script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.14.0/jquery.jqgrid.src.js"></script>
-
-<!--        <script type="text/javascript">
-            // Change JQueryUI plugin names to fix name collision with Bootstrap.
-            $.widget.bridge('uitooltip', $.ui.tooltip);
-            $.widget.bridge('uibutton', $.ui.button);
-        </script>-->
+        <script src="//cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.14.0/modules/jqmodal.js"></script>
 
         <script>
             var current_include_page_name = "";

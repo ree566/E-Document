@@ -21,15 +21,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -51,16 +47,13 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.HandlerExceptionResolver;
-import org.springframework.web.servlet.ModelAndView;
 
 /**
  * Handles requests for the application file upload requests
  */
 @Controller
-public class FileUploadController implements HandlerExceptionResolver {
+public class FileUploadController{
 
     private static final Logger logger = LoggerFactory.getLogger(FileUploadController.class);
     private static Integer store_line_id = 6133;
@@ -308,18 +301,5 @@ public class FileUploadController implements HandlerExceptionResolver {
             }
         }
         return message.toArray(new String[message.size()]);
-    }
-
-    @Override
-    public ModelAndView resolveException(HttpServletRequest request,
-            HttpServletResponse response, Object handler, Exception exception) {
-        Map<String, Object> model = new HashMap<>();
-        if (exception instanceof MaxUploadSizeExceededException) {
-            model.put("message", exception.getMessage());
-        } else {
-            model.put("message", "Unexpected error: " + Arrays.toString(exception.getStackTrace()));
-        }
-
-        return new ModelAndView("/fileupload", model);
     }
 }

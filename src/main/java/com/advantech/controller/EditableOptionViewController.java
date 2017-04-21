@@ -5,17 +5,21 @@
  */
 package com.advantech.controller;
 
-import com.advantech.helper.JsonHelper;
 import com.advantech.helper.PageInfo;
+import com.advantech.model.Flow;
+import com.advantech.model.FlowGroup;
 import com.advantech.model.Identit;
+import com.advantech.model.Pending;
+import com.advantech.model.PreAssy;
+import com.advantech.model.Type;
 import com.advantech.response.JqGridResponse;
+import com.advantech.service.FlowGroupService;
 import com.advantech.service.FlowService;
 import com.advantech.service.IdentitService;
 import com.advantech.service.PendingService;
 import com.advantech.service.PreAssyService;
 import com.advantech.service.TypeService;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -34,6 +38,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
@@ -47,8 +52,15 @@ public class EditableOptionViewController {
 
     private static final Logger log = LoggerFactory.getLogger(EditableOptionViewController.class);
 
+    private final String ADD = "add", EDIT = "edit", DELETE = "del";
+    private final String SUCCESS_MESSAGE = "SUCCESS";
+    private final String FAIL_MESSAGE = "FAIL";
+
     @Autowired
     private FlowService flowService;
+
+    @Autowired
+    private FlowGroupService flowGroupService;
 
     @Autowired
     private IdentitService identitService;
@@ -64,7 +76,7 @@ public class EditableOptionViewController {
 
     @ResponseBody
     @RequestMapping(value = "/getBla.do/{tableName}", method = {RequestMethod.GET})
-    public JqGridResponse getSheetView(@PathVariable(value = "tableName") final String tableName, @ModelAttribute PageInfo info, @ModelAttribute("user") Identit user) throws JsonProcessingException, IOException {
+    public JqGridResponse findAll(@PathVariable(value = "tableName") final String tableName, @ModelAttribute PageInfo info, @ModelAttribute("user") Identit user) throws JsonProcessingException, IOException {
 
         JqGridResponse viewResp;
         List l;
@@ -72,6 +84,9 @@ public class EditableOptionViewController {
         switch (tableName) {
             case "Flow":
                 l = flowService.findAll(info);
+                break;
+            case "FlowGroup":
+                l = flowGroupService.findAll(info);
                 break;
             case "Identit":
                 l = identitService.findAll(info);
@@ -88,9 +103,6 @@ public class EditableOptionViewController {
             default:
                 l = new ArrayList();
         }
-        String jsonString = JsonHelper.toStringWithLazyLoading(l);
-        ObjectMapper mapper = new ObjectMapper();
-        l = mapper.readValue(jsonString, ArrayList.class);
 
         viewResp = getResponseObject(l, info);
         return viewResp;
@@ -107,6 +119,74 @@ public class EditableOptionViewController {
         return viewResp;
     }
 
+    @ResponseBody
+    @RequestMapping(value = "/updateBla.do/{tableName}", method = {RequestMethod.POST})
+    public ResponseEntity update(
+            @PathVariable(value = "tableName") final String tableName,
+            @RequestParam final String oper,
+            @ModelAttribute PageInfo info,
+            @ModelAttribute("user") Identit user,
+            @ModelAttribute Flow flow,
+            @ModelAttribute Identit identit,
+            @ModelAttribute Pending pending,
+            @ModelAttribute PreAssy preAssy,
+            @ModelAttribute Type type,
+            HttpServletRequest req) throws ServletException, IOException {
+
+        this.showParams(req);
+
+        String modifyMessage;
+        int responseFlag = 0;
+
+        switch (tableName) {
+            case "Flow":
+                FlowGroup flowGroup = flow.getFlowGroup();
+                flow.setFlowGroup(flowGroup == null ? null : flowGroupService.findByPrimaryKey(flowGroup.getId()));
+                switch (oper) {
+                    case ADD:
+                        responseFlag = flowService.insert(flow);
+                        break;
+                    case EDIT:
+                        responseFlag = flowService.update(flow);
+                        break;
+                    case DELETE:
+                        responseFlag = flowService.delete(flowService.findByPrimaryKey(flow.getId()));
+                        break;
+                }
+                modifyMessage = responseFlag == 1 ? this.SUCCESS_MESSAGE : this.FAIL_MESSAGE;
+                break;
+            case "Identit":
+                modifyMessage = this.FAIL_MESSAGE;
+                break;
+            case "Pending":
+                switch (oper) {
+                    case ADD:
+                        responseFlag = pendingService.insert(pending);
+                        break;
+                    case EDIT:
+                        responseFlag = pendingService.update(pending);
+                        break;
+                    case DELETE:
+                        responseFlag = pendingService.delete(pendingService.findByPrimaryKey(pending.getId()));
+                        break;
+                }
+                modifyMessage = responseFlag == 1 ? this.SUCCESS_MESSAGE : this.FAIL_MESSAGE;
+                break;
+            case "PreAssy":
+                modifyMessage = this.FAIL_MESSAGE;
+                break;
+            case "Type":
+                modifyMessage = this.FAIL_MESSAGE;
+                break;
+            default:
+                modifyMessage = this.FAIL_MESSAGE;
+        }
+
+        return ResponseEntity
+                .status(SUCCESS_MESSAGE.equals(modifyMessage) ? HttpStatus.CREATED : HttpStatus.FORBIDDEN)
+                .body(modifyMessage);
+    }
+
     @ExceptionHandler(HttpSessionRequiredException.class)
 //    @ResponseStatus(value = HttpStatus.UNAUTHORIZED, reason = "The session has expired")
     public ResponseEntity handleSessionExpired() {
@@ -115,4 +195,11 @@ public class EditableOptionViewController {
                 .body("The session has expired.");
     }
 
+    private void showParams(HttpServletRequest req) throws ServletException, IOException {
+        Enumeration params = req.getParameterNames();
+        while (params.hasMoreElements()) {
+            String paramName = (String) params.nextElement();
+            System.out.println("Parameter Name - " + paramName + ", Value - " + req.getParameter(paramName));
+        }
+    }
 }

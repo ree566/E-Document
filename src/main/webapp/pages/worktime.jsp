@@ -32,16 +32,12 @@
 <script src="${root}/js/urlParamGetter.js"></script>
 <script src="${root}/js/sessionExpiredDetect.js"></script>
 <script src="${root}/js/column-name-setting.js"></script>
+<script src="${root}/js/jqgrid-custom-param.js"></script>
 
 <script>
     $(function () {
-//        $(".widget input[type=submit], .widget a, .widget button").button();
         var lastsel, scrollPosition;
 
-        var search_string_options = {sopt: ['eq', 'ne', 'cn', 'bw', 'ew']};
-        var search_decimal_options = {sopt: ['eq', 'lt', 'gt']};
-        var search_date_options = {sopt: ['eq', 'ne']};
-        var required_form_options = {elmsuffix: '(*必填)'};
         var unitName = '${sessionScope.user.userType.name}';
         var modifyColumns = (unitName == null || unitName == "") ? [] : getColumn();
         var grid = $("#list");
@@ -54,22 +50,6 @@
         var flowOption = getSelectOption("flow");
         var preAssyOption = getSelectOption("preAssy");
         var pendingOption = getSelectOption("pending");
-
-        var customErrorTextFormat = function (response) {
-            return '<span class="ui-icon ui-icon-alert" ' +
-                    'style="float:left; margin-right:.3em;"></span>' +
-                    response.responseText;
-        };
-
-        var greyout = function ($form) {
-            $form.find(".FormElement[readonly]")
-                    .prop("disabled", true)
-                    .addClass("ui-state-disabled")
-                    .closest(".DataTD")
-                    .prev(".CaptionTD")
-                    .prop("disabled", true)
-                    .addClass("ui-state-disabled");
-        };
 
         var loopCount = 0;
 
@@ -198,7 +178,8 @@
                             reloadAfterSubmit: true,
                             errorTextFormat: customErrorTextFormat,
                             recreateForm: true,
-                            beforeShowForm: greyout
+                            beforeShowForm: greyout,
+                            bottominfo: "Fields marked with (*) are required"
                         },
                         {
                             dataheight: 350,
@@ -207,7 +188,8 @@
                             reloadAfterSubmit: true,
                             errorTextFormat: customErrorTextFormat,
                             recreateForm: true,
-                            beforeShowForm: greyout
+                            beforeShowForm: greyout,
+                            bottominfo: "Fields marked with (*) are required"
                         },
                         {
                             reloadAfterSubmit: true
@@ -245,6 +227,10 @@
         //Separate readyonly column and editable column
         var editableColumns = modifyColumns.length == 1 && modifyColumns[0] == -1 ? columnNames : modifyColumns;
         var readonlyColumns = $(columnNames).not(editableColumns).get();
+        
+        console.log(columnNames);
+        console.log(editableColumns);
+        console.log(readonlyColumns);
 
         if (editableColumns.length != 0) {
             for (var i = 0; i < editableColumns.length; i++) {
@@ -261,11 +247,11 @@
         grid.jqGrid('setFrozenColumns');
 
         $(window).bind('resize', function () {
-            
-            setTimeout(function(){ 
+
+            setTimeout(function () {
                 grid.jqGrid("setGridWidth", $('#worktime-content').width());
             }, 1000);
-            
+
         }).trigger('resize');
 
         function getColumn() {
