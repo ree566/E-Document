@@ -173,10 +173,32 @@ public class EditableOptionViewController {
                 modifyMessage = responseFlag == 1 ? this.SUCCESS_MESSAGE : this.FAIL_MESSAGE;
                 break;
             case "PreAssy":
-                modifyMessage = this.FAIL_MESSAGE;
+                switch (oper) {
+                    case ADD:
+                        responseFlag = preAssyService.insert(preAssy);
+                        break;
+                    case EDIT:
+                        responseFlag = preAssyService.update(preAssy);
+                        break;
+                    case DELETE:
+                        responseFlag = preAssyService.delete(preAssyService.findByPrimaryKey(preAssy.getId()));
+                        break;
+                }
+                modifyMessage = responseFlag == 1 ? this.SUCCESS_MESSAGE : this.FAIL_MESSAGE;
                 break;
             case "Type":
-                modifyMessage = this.FAIL_MESSAGE;
+                switch (oper) {
+                    case ADD:
+                        responseFlag = typeService.insert(type);
+                        break;
+                    case EDIT:
+                        responseFlag = typeService.update(type);
+                        break;
+                    case DELETE:
+                        responseFlag = typeService.delete(typeService.findByPrimaryKey(type.getId()));
+                        break;
+                }
+                modifyMessage = responseFlag == 1 ? this.SUCCESS_MESSAGE : this.FAIL_MESSAGE;
                 break;
             default:
                 modifyMessage = this.FAIL_MESSAGE;

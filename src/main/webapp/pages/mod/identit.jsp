@@ -33,7 +33,7 @@
         <script src="//cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.14.0/js/i18n/grid.locale-tw.js"></script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.14.0/jquery.jqgrid.src.js"></script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.14.0/modules/jqmodal.js"></script>
-        <script src="${root}/js/jqgrid-custom-param.js"></script>
+        <script src="${root}js/jqgrid-custom-param.js"></script>
         <script>
 //            $(function () {
 //                var grid = $("#list");
@@ -46,7 +46,7 @@
 //                };
 //
 //                grid.jqGrid({
-//                    url: '${root}/getBla.do/' + "Identit",
+//                    url: '${root}getBla.do/' + "Identit",
 //                    datatype: 'json',
 //                    mtype: 'GET',
 //                    colModel: [
@@ -77,7 +77,7 @@
 //                    navOptions: {reloadGridOptions: {fromServer: true}},
 //                    caption: "Flow modify",
 //                    height: 450,
-//                    editurl: '${root}/updateBla.do/' + "Identit",
+//                    editurl: '${root}updateBla.do/' + "Identit",
 //                    sortname: 'id', sortorder: 'asc',
 //                    error: function (xhr, ajaxOptions, thrownError) {
 //                        alert("Ajax Error occurred\n"

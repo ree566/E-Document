@@ -59,7 +59,7 @@ public class SheetViewController {
             log.error(new Gson().toJson(errors.getFieldErrors()));
         }
 
-        List l = sheetViewService.findAll(info);
+        List l = worktimeService.findAll(info);
         
         JqGridResponse viewResp = getResponseObject(l, info);
         return viewResp;

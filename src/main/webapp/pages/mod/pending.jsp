@@ -12,7 +12,7 @@
         var grid = $("#list");
 
         grid.jqGrid({
-            url: '${root}/getBla.do/' + "Pending",
+            url: '${root}getBla.do/' + "Pending",
             datatype: 'json',
             mtype: 'GET',
             colModel: [
@@ -42,7 +42,7 @@
             navOptions: {reloadGridOptions: {fromServer: true}},
             caption: "Flow modify",
             height: 450,
-            editurl: '${root}/updateBla.do/' + "Pending",
+            editurl: '${root}updateBla.do/' + "Pending",
             sortname: 'id', sortorder: 'asc',
             error: function (xhr, ajaxOptions, thrownError) {
                 alert("Ajax Error occurred\n"

@@ -18,6 +18,7 @@
         <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap-theme.min.css" rel="stylesheet">
         <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
         <link href="//cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.14.0/css/ui.jqgrid.min.css" rel="stylesheet"/>
+        <!--<link href="//cdnjs.cloudflare.com/ajax/libs/jqgrid/4.6.0/css/ui.jqgrid.css" rel="stylesheet"/>-->
 
         <link href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" rel="stylesheet">
         <link href="../css/sb-admin-2.min.css" rel="stylesheet">
@@ -44,6 +45,10 @@
         <script src="//cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.14.0/js/i18n/grid.locale-tw.js"></script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.14.0/jquery.jqgrid.src.js"></script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.14.0/modules/jqmodal.js"></script>
+
+        <!--<script src="//cdnjs.cloudflare.com/ajax/libs/jqgrid/4.6.0/js/i18n/grid.locale-tw.js"></script>-->
+        <!--<script src="//cdnjs.cloudflare.com/ajax/libs/jqgrid/4.6.0/js/jquery.jqGrid.min.js"></script>-->
+
         <script src="${root}/js/jqgrid-custom-param.js"></script> 
 
         <script>

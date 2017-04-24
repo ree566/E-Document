@@ -47,17 +47,20 @@ public class PreAssyDAO implements BasicDAO {
 
     @Override
     public int insert(Object obj) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        this.currentSession().save(obj);
+        return 1;
     }
 
     @Override
     public int update(Object obj) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        this.currentSession().update(obj);
+        return 1;
     }
 
     @Override
     public int delete(Object pojo) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        this.currentSession().delete(pojo);
+        return 1;
     }
 
 }

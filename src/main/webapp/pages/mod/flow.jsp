@@ -19,7 +19,7 @@
         };
 
         grid.jqGrid({
-            url: '${root}/getBla.do/' + "Flow",
+            url: '${root}getBla.do/' + "Flow",
             datatype: 'json',
             mtype: 'GET',
             colModel: [
@@ -50,7 +50,7 @@
             navOptions: {reloadGridOptions: {fromServer: true}},
             caption: "Flow modify",
             height: 450,
-            editurl: '${root}/updateBla.do/' + "Flow",
+            editurl: '${root}updateBla.do/' + "Flow",
             sortname: 'id', sortorder: 'asc',
             error: function (xhr, ajaxOptions, thrownError) {
                 alert("Ajax Error occurred\n"

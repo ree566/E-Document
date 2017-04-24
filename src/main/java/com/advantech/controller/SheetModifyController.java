@@ -83,19 +83,8 @@ public class SheetModifyController {
     @RequestMapping(value = "/updateSheet.do", method = {RequestMethod.POST})
     public ResponseEntity updateSheet(
             @RequestParam String oper,
-            @RequestParam String rowId,
             @ModelAttribute Worktime worktime,
             @ModelAttribute("user") Identit user,
-            @RequestParam(required = false, defaultValue = "0") int typeName,
-            @RequestParam(required = false, defaultValue = "0") int floorName,
-            @RequestParam(required = false, defaultValue = "0") int speOwnerName,
-            @RequestParam(required = false, defaultValue = "0") int eeOwnerName,
-            @RequestParam(required = false, defaultValue = "0") int qcOwnerName,
-            @RequestParam(required = false, defaultValue = "0") int pendingName,
-            @RequestParam(required = false, defaultValue = "0") int preAssyName,
-            @RequestParam(required = false, defaultValue = "0") int babFlowName,
-            @RequestParam(required = false, defaultValue = "0") int testFlowName,
-            @RequestParam(required = false, defaultValue = "0") int packingFlowName,
             HttpServletRequest req,
             BindingResult errors) throws ServletException, IOException {
 
@@ -115,27 +104,24 @@ public class SheetModifyController {
         userOper = oper;
 
         if (oper.equals(DELETE)) {
-            modifyMessage = this.deleteRows(rowId);
+            Worktime existWorktime = worktimeService.findByPrimaryKey(worktime.getId());
+            modifyMessage = worktimeService.delete(existWorktime) == 1 ? this.SUCCESS_MESSAGE : this.FAIL_MESSAGE;
         } else {
             UserType userType = user.getUserType();
             if (userType != null) {
-                worktime.setId(Integer.parseInt(rowId));
                 if (isModelExists(worktime)) {
                     modifyMessage = "This model name is already exists";
                 } else {
-                    worktime.setFloor(floorService.findByPrimaryKey(floorName));
-                    worktime.setType(typeService.findByPrimaryKey(typeName));
-                    worktime.setIdentitBySpeOwnerId(identitService.findByPrimaryKey(speOwnerName));
-                    worktime.setIdentitByEeOwnerId(identitService.findByPrimaryKey(eeOwnerName));
-                    worktime.setIdentitByQcOwnerId(identitService.findByPrimaryKey(qcOwnerName));
-                    worktime.setPending(pendingService.findByPrimaryKey(pendingName));
-                    worktime.setPreAssy(preAssyName == 0 ? null : preAssyService.findByPrimaryKey(preAssyName));
-                    worktime.setFlowByBabFlowId(babFlowName == 0 ? null : flowService.findByPrimaryKey(babFlowName));
-                    worktime.setFlowByTestFlowId(testFlowName == 0 ? null : flowService.findByPrimaryKey(testFlowName));
-                    worktime.setFlowByPackingFlowId(packingFlowName == 0 ? null : flowService.findByPrimaryKey(packingFlowName));
-                    if (worktime.getProductionWt() == null) {
-                        worktime.setProductionWt(this.setProductWt(worktime));
-                    }
+                    worktime.setFloor(floorService.findByPrimaryKey(worktime.getFloor().getId()));
+                    worktime.setType(typeService.findByPrimaryKey(worktime.getType().getId()));
+                    worktime.setIdentitBySpeOwnerId(identitService.findByPrimaryKey(worktime.getIdentitBySpeOwnerId().getId()));
+                    worktime.setIdentitByEeOwnerId(identitService.findByPrimaryKey(worktime.getIdentitByEeOwnerId().getId()));
+                    worktime.setIdentitByQcOwnerId(identitService.findByPrimaryKey(worktime.getIdentitByQcOwnerId().getId()));
+                    worktime.setPending(pendingService.findByPrimaryKey(worktime.getPending().getId()));
+                    worktime.setPreAssy(worktime.getPreAssy() == null || worktime.getPreAssy().getId() == 0 ? null : preAssyService.findByPrimaryKey(worktime.getPreAssy().getName()));
+                    worktime.setFlowByBabFlowId(worktime.getFlowByBabFlowId() == null || worktime.getFlowByBabFlowId().getId() == 0 ? null : flowService.findByPrimaryKey(worktime.getFlowByBabFlowId().getId()));
+                    worktime.setFlowByTestFlowId(worktime.getFlowByTestFlowId() == null || worktime.getFlowByTestFlowId().getId() == 0 ? null : flowService.findByPrimaryKey(worktime.getFlowByTestFlowId().getId()));
+                    worktime.setFlowByPackingFlowId(worktime.getFlowByPackingFlowId() == null || worktime.getFlowByPackingFlowId().getId() == 0 ? null : flowService.findByPrimaryKey(worktime.getFlowByPackingFlowId().getId()));
                     modifyMessage = this.updateRows(worktime);
                 }
             } else {
