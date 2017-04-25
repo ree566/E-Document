@@ -5,6 +5,8 @@
  */
 package com.advantech.listener;
 
+import static com.advantech.model.Permission.initPermission;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import org.slf4j.Logger;
@@ -16,25 +18,30 @@ import org.slf4j.LoggerFactory;
  */
 public class ContextListener implements ServletContextListener {
 
-    //this listener is unused http://stackoverflow.com/questions/19573457/simple-example-for-quartz-2-2-and-tomcat-7
-    //quartz only need to modify at web.xml & the quartz properties/xml to start, stop, wait
-    private static final Logger log = LoggerFactory.getLogger(ContextListener.class);
+    private static final Logger log = LoggerFactory.getLogger(ServletContextListener.class);
 
     public ContextListener() {
-//        getLoggerExtender();
+
     }
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-//        BasicConfigurator.configure();
-
-
+        try {
+            ServletContext context = sce.getServletContext();
+            initPermission(
+                    Integer.parseInt(context.getInitParameter("VISITOR_PERMISSION")),
+                    Integer.parseInt(context.getInitParameter("UNIT_OPERATOR_PERMISSION")),
+                    Integer.parseInt(context.getInitParameter("UNIT_LEADER_PERMISSION")),
+                    Integer.parseInt(context.getInitParameter("SYSOP_PERMISSION")),
+                    Integer.parseInt(context.getInitParameter("TEST_FIELD_ACCESS_LIMIT_PERMISSION"))
+            );
+        } catch (Exception ex) {
+            log.error("Permission init fail");
+        }
     }
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
-
-       
 
     }
 }

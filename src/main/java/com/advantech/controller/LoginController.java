@@ -5,7 +5,7 @@
  */
 package com.advantech.controller;
 
-import com.advantech.helper.MD5Encoder;
+import static com.advantech.helper.PasswordEncoder.isPasswordHashMatches;
 import com.advantech.model.Identit;
 import com.advantech.service.IdentitService;
 import java.io.UnsupportedEncodingException;
@@ -30,13 +30,11 @@ public class LoginController {
     @Autowired
     private IdentitService service;
 
-    private final String salt = "Hello world!";
-
     @RequestMapping(value = "/login.do", method = {RequestMethod.POST})
     public String login(@RequestParam String jobnumber, @RequestParam String password, Model model, HttpSession session) throws NoSuchAlgorithmException, UnsupportedEncodingException {
         System.out.println("user login");
         Identit i = service.findByJobnumber(jobnumber);
-        if (i == null || !isPasswordMatch(password, i.getPassword())) {
+        if (i == null || !isPasswordHashMatches(password, i.getPassword())) {
             System.out.println("user not found");
             model.addAttribute("errormsg", "錯誤的帳號或密碼");
             return "forward:login.jsp";
@@ -45,16 +43,5 @@ public class LoginController {
             return "redirect:pages/index.jsp";
         }
     }
-
-    private boolean isPasswordMatch(String password, String encryptPassord) throws NoSuchAlgorithmException, UnsupportedEncodingException {
-        String encrypt = MD5Encoder.toMD5(salt + password);
-        return encryptPassord.equals(encrypt);
-    }
-
-    @RequestMapping(value = "/encryptPassord.do", method = {RequestMethod.GET})
-    public String encryptPassord() throws NoSuchAlgorithmException, UnsupportedEncodingException {
-        service.encryptPassord();
-        return "redirect:/";
-    }
-
+    
 }

@@ -1,7 +1,10 @@
 var search_string_options = {sopt: ['eq', 'ne', 'cn', 'bw', 'ew']};
 var search_decimal_options = {sopt: ['eq', 'lt', 'gt']};
-var search_date_options = {sopt: ['eq', 'ne']};
+var search_date_options = {sopt: ['eq', 'lt', 'gt'], dataInit: getDate};
 var required_form_options = {elmprefix: "SSAA", elmsuffix: '(*必填)'};
+
+var number_search_rule = {number: true, required: true};
+var date_search_rule = {date: true, required: true};
 
 var customErrorTextFormat = function (response) {
     return '<span class="ui-icon ui-icon-alert" ' +
@@ -18,3 +21,7 @@ var greyout = function ($form) {
             .prop("disabled", true)
             .addClass("ui-state-disabled");
 };
+
+function getDate(el) {
+    $(el).datepicker({dateFormat: "yy-mm-dd"});
+}

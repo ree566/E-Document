@@ -15,6 +15,12 @@
         </listener-class>
     </listener>
     
+    <listener>
+        <listener-class>
+            com.advantech.listener.ContextListener
+        </listener-class>
+    </listener>
+    
     <!--    <filter>
         <filter-name>hibernateFilterChain</filter-name>
         <filter-class>org.springframework.orm.hibernate4.support.OpenSessionInViewFilter</filter-class>
@@ -24,10 +30,39 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>-->
     
+    <!--global context setting--> 
+    
     <context-param>
         <param-name>pageTitle</param-name>
         <param-value>E-Document</param-value>
     </context-param>
+    
+    <context-param>
+        <param-name>VISITOR_PERMISSION</param-name>
+        <param-value>0</param-value>
+    </context-param>
+    
+    <context-param>
+        <param-name>UNIT_OPERATOR_PERMISSION</param-name>
+        <param-value>1</param-value>
+    </context-param>
+    
+    <context-param>
+        <param-name>UNIT_LEADER_PERMISSION</param-name>
+        <param-value>2</param-value>
+    </context-param>
+    
+    <context-param>
+        <param-name>SYSOP_PERMISSION</param-name>
+        <param-value>3</param-value>
+    </context-param>
+    
+    <context-param>
+        <param-name>TEST_FIELD_ACCESS_LIMIT_PERMISSION</param-name>
+        <param-value>3</param-value>
+    </context-param>
+    
+    <!--filter mapping--> 
     
     <filter>
         <filter-name>EncodingFilter</filter-name>
@@ -39,21 +74,30 @@
     </filter-mapping>
     
     <filter>
-        <filter-name>UserNameRecordFilter</filter-name>
-        <filter-class>com.advantech.filter.UserNameRecordFilter</filter-class>
-    </filter>
-    <filter-mapping>
-        <filter-name>UserNameRecordFilter</filter-name>
-        <url-pattern>/updateSheet.do</url-pattern>
-    </filter-mapping>
-    
-    <filter>
         <filter-name>LoginFilter</filter-name>
         <filter-class>com.advantech.filter.LoginFilter</filter-class>
     </filter>
     <filter-mapping>
         <filter-name>LoginFilter</filter-name>
         <url-pattern>/pages/*</url-pattern>
+    </filter-mapping>
+    
+    <filter>
+        <filter-name>PermissionFilter</filter-name>
+        <filter-class>com.advantech.filter.PermissionFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>PermissionFilter</filter-name>
+        <url-pattern>/pages/mod/*</url-pattern>
+    </filter-mapping>
+    
+    <filter>
+        <filter-name>UserNameRecordFilter</filter-name>
+        <filter-class>com.advantech.filter.UserNameRecordFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>UserNameRecordFilter</filter-name>
+        <url-pattern>/updateSheet.do</url-pattern>
     </filter-mapping>
     
     <servlet>
@@ -65,6 +109,17 @@
         <url-pattern>/pages/</url-pattern>
         <url-pattern>/pages/index.jsp</url-pattern>
     </servlet-mapping> 
+
+    <!--url mapping-->
+    
+    <servlet>
+        <servlet-name>Error</servlet-name>
+        <jsp-file>/pages/error.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Error</servlet-name>
+        <url-pattern>/pages/Error</url-pattern>
+    </servlet-mapping>
 
     <!-- Processes application requests -->
     <servlet>

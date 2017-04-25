@@ -9,10 +9,11 @@ import com.advantech.helper.PageInfo;
 import com.advantech.model.Flow;
 import com.advantech.model.Identit;
 import com.advantech.response.JqGridResponse;
+import com.advantech.service.IdentitService;
 import com.advantech.service.WorktimeService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.gson.Gson;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import javax.servlet.ServletException;
@@ -21,8 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -39,10 +40,15 @@ public class TestRequestController {
     @Autowired
     private WorktimeService worktimeService;
 
+    @Autowired
+    private IdentitService identitService;
+
     @ResponseBody
-    @RequestMapping(value = "/getSomeTable.do", method = {RequestMethod.GET, RequestMethod.POST})
-    public JqGridResponse getSheetView(@ModelAttribute PageInfo info, @ModelAttribute("user") Identit user) {
-        return getResponseObject(worktimeService.findAll(info), info);
+    @RequestMapping(value = "/getSomeTable.do/{id}", method = {RequestMethod.GET, RequestMethod.POST})
+    public JqGridResponse getSheetView(@PathVariable(value = "id") final int id, @ModelAttribute PageInfo info, @ModelAttribute("user") Identit user) {
+        List l = new ArrayList();
+        l.add(identitService.findByPrimaryKey(id));
+        return getResponseObject(l, info);
     }
 
     private JqGridResponse getResponseObject(List l, PageInfo info) {

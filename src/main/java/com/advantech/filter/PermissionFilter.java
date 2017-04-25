@@ -5,7 +5,9 @@
  */
 package com.advantech.filter;
 
-import com.advantech.helper.StringParser;
+import com.advantech.model.Identit;
+import com.advantech.model.Permission;
+import static com.advantech.model.Permission.SYSOP_PERMISSION;
 import java.io.IOException;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -23,12 +25,8 @@ import javax.servlet.http.HttpSession;
  */
 public class PermissionFilter implements Filter {
 
-    private int SYTEM_MANAGER_PERMISSION;
-
     @Override
     public void init(FilterConfig filterConfig) {
-        String contextParam = filterConfig.getServletContext().getInitParameter("SYTEM_MANAGER_PERMISSION");
-        SYTEM_MANAGER_PERMISSION = StringParser.strToInt(contextParam);
     }
 
     @Override
@@ -38,14 +36,15 @@ public class PermissionFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest) req;
         HttpServletResponse response = (HttpServletResponse) res;
         HttpSession session = request.getSession(false);
-        //String loginURI = request.getContextPath() + "/";
 
-        int userPermission = (int) session.getAttribute("permission");
+        Identit i = (Identit) session.getAttribute("user");
+        int userPermission = i.getPermission();
 
-        if (userPermission >= SYTEM_MANAGER_PERMISSION) {
+        if (userPermission >= SYSOP_PERMISSION) {
             chain.doFilter(request, response);
         } else {
-            response.sendRedirect("../error/ErrorPermission");
+            request.setAttribute("errorMessage", "Error permission");
+            request.getRequestDispatcher("/pages/Error").forward(req, res);
         }
 
     }

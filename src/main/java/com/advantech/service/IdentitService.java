@@ -68,17 +68,4 @@ public class IdentitService {
     public int delete(Identit identit) {
         return identitDAO.delete(identit);
     }
-
-    public void encryptPassord() throws NoSuchAlgorithmException, UnsupportedEncodingException {
-        List<Identit> l = (List<Identit>) this.findAll();
-        for (Identit i : l) {
-            String password = i.getPassword();
-            if (password == null) {
-                continue;
-            }
-            i.setPassword(MD5Encoder.toMD5("Hello world!" + password));
-            this.update(i);
-        }
-    }
-
 }

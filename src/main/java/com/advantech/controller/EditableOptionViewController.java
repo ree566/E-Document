@@ -5,7 +5,9 @@
  */
 package com.advantech.controller;
 
+import com.advantech.helper.MD5Encoder;
 import com.advantech.helper.PageInfo;
+import static com.advantech.helper.PasswordEncoder.encryptPassord;
 import com.advantech.model.Flow;
 import com.advantech.model.FlowGroup;
 import com.advantech.model.Identit;
@@ -21,9 +23,12 @@ import com.advantech.service.PreAssyService;
 import com.advantech.service.TypeService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.logging.Level;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
@@ -156,7 +161,23 @@ public class EditableOptionViewController {
                 modifyMessage = responseFlag == 1 ? this.SUCCESS_MESSAGE : this.FAIL_MESSAGE;
                 break;
             case "Identit":
-                modifyMessage = this.FAIL_MESSAGE;
+                switch (oper) {
+                    case ADD:
+                        encryptPassword(identit);
+                        responseFlag = identitService.insert(identit);
+                        break;
+                    case EDIT:
+                        Identit i = identitService.findByPrimaryKey(identit.getId());
+                        if (!identit.getPassword().equals(i.getPassword())) {
+                            encryptPassword(identit);
+                        }
+                        responseFlag = identitService.update(identit);
+                        break;
+                    case DELETE:
+                        responseFlag = identitService.delete(identitService.findByPrimaryKey(identit.getId()));
+                        break;
+                }
+                modifyMessage = responseFlag == 1 ? this.SUCCESS_MESSAGE : this.FAIL_MESSAGE;
                 break;
             case "Pending":
                 switch (oper) {
@@ -207,6 +228,14 @@ public class EditableOptionViewController {
         return ResponseEntity
                 .status(SUCCESS_MESSAGE.equals(modifyMessage) ? HttpStatus.CREATED : HttpStatus.FORBIDDEN)
                 .body(modifyMessage);
+    }
+
+    private void encryptPassword(Identit identit) {
+        try {
+            identit.setPassword(encryptPassord(identit.getPassword()));
+        } catch (NoSuchAlgorithmException | UnsupportedEncodingException ex) {
+            log.error("The password user provided is invalid!( " + identit.getPassword() + " )");
+        }
     }
 
     @ExceptionHandler(HttpSessionRequiredException.class)

@@ -5,7 +5,7 @@
  */
 package com.advantech.test;
 
-import com.advantech.model.Worktime;
+import org.joda.time.DateTime;
 
 /**
  *
@@ -14,12 +14,9 @@ import com.advantech.model.Worktime;
 public class Test1 {
 
     public static void main(String arg0[]) {
-        Double d1 = null;
-        Double d2 = 0.5;
-        
-        System.out.println(d1 + d2);
+        String date = "17/06/01";
+        DateTime d = new DateTime(date);
+        System.out.println(d.toString());
     }
-
- 
 
 }

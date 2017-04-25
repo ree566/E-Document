@@ -10,9 +10,10 @@
 <script>
     $(function () {
         var grid = $("#list");
+        var tableName = "Type";
 
         grid.jqGrid({
-            url: '${root}getBla.do/' + "Type",
+            url: '${root}getBla.do/' + tableName,
             datatype: 'json',
             mtype: 'GET',
             colModel: [
@@ -40,9 +41,9 @@
                 return [true];
             },
             navOptions: {reloadGridOptions: {fromServer: true}},
-            caption: "Flow modify",
+            caption: tableName + " modify",
             height: 450,
-            editurl: '${root}updateBla.do/' + "Type",
+            editurl: '${root}updateBla.do/' + tableName,
             sortname: 'id', sortorder: 'asc',
             error: function (xhr, ajaxOptions, thrownError) {
                 alert("Ajax Error occurred\n"

@@ -7,7 +7,6 @@ package com.advantech.dao;
 
 import com.advantech.helper.PageInfo;
 import com.advantech.model.Identit;
-import com.advantech.model.SheetView;
 import java.util.Collection;
 import java.util.List;
 import org.hibernate.Criteria;
@@ -42,12 +41,13 @@ public class IdentitDAO implements BasicDAO {
     }
 
     public List<Identit> findAll(PageInfo info) {
-        return paginateDAO.findAll(this.currentSession(), SheetView.class, info);
+        return paginateDAO.findAll(this.currentSession(), Identit.class, info);
     }
 
     @Override
     public Object findByPrimaryKey(Object obj_id) {
-        return currentSession().load(Identit.class, (int) obj_id);
+        //Use get for not lazy loading, load for lazy loading.
+        return currentSession().get(Identit.class, (int) obj_id);
     }
 
     public Identit findByJobnumber(String jobnumber) {
