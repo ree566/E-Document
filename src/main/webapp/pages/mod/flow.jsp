@@ -20,9 +20,11 @@
         };
 
         grid.jqGrid({
-            url: '${root}getBla.do/' + tableName,
+            url: '${root}getSelectOption.do/' + tableName,
             datatype: 'json',
             mtype: 'GET',
+            modal: true,
+            jqModal: true,
             colModel: [
                 {label: 'id', name: "id", width: 60, key: true, editable: true, editoptions: {readonly: 'readonly', disabled: true, defaultValue: "0"}},
                 {label: 'name', name: "name", width: 60, editable: true},
@@ -51,7 +53,7 @@
             navOptions: {reloadGridOptions: {fromServer: true}},
             caption: tableName + " modify",
             height: 450,
-            editurl: '${root}updateBla.do/' + tableName,
+            editurl: '${root}updateSelectOption.do/' + tableName,
             sortname: 'id', sortorder: 'asc',
             error: function (xhr, ajaxOptions, thrownError) {
                 alert("Ajax Error occurred\n"
@@ -95,7 +97,7 @@
             var result = {};
             $.ajax({
                 type: "GET",
-                url: "${root}getBla.do/" + columnName,
+                url: "${root}getSelectOption.do/" + columnName,
                 data: data,
                 async: false,
                 success: function (response) {

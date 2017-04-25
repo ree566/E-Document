@@ -33,6 +33,7 @@
 <script src="${root}js/sessionExpiredDetect.js"></script>
 <script src="${root}js/column-name-setting.js"></script>
 <script src="${root}js/jqgrid-custom-param.js"></script>
+<script src="${root}js/jqgrid-custom-select-option-reader.js"></script>
 
 <script>
     $(function () {
@@ -42,40 +43,28 @@
         var modifyColumns = (unitName == null || unitName == "") ? [] : getColumn();
         var grid = $("#list");
 
-        var selectableColumns = [
-            {name: "floor", isNullable: false},
-            {name: "identit", nameprefix: "spe_", isNullable: false, dataToServer: "SPE"},
-            {name: "identit", nameprefix: "ee_", isNullable: false, dataToServer: "EE"},
-            {name: "identit", nameprefix: "qc_", isNullable: false, dataToServer: "QC"},
-            {name: "type", isNullable: false},
-            {name: "flow", isNullable: true},
-            {name: "preAssy", isNullable: true},
-            {name: "pending", isNullable: false}
-        ];
-
-        var selectOptions = {};
-
-        for (var i = 0; i < selectableColumns.length; i++) {
-            var column = selectableColumns[i];
-            var columnName = column.name;
-            var col_options = getSelectOption(columnName, column.isNullable, column.dataToServer);
-
-            if (column.nameprefix != null) {
-                columnName = column.nameprefix + columnName;
-            }
-
-            selectOptions[columnName] = col_options;
-            selectOptions[columnName + "_func"] = getFunc(columnName);
-        }
-
-        selectOptions.qc_identit_func();
-
-        var loopCount = 0;
+        //Set param into jqgrid-custom-select-option-reader.js and get option by param selectOptions
+        //You can get the floor select options and it's formatter function
+        //ex: floor selector -> floor and floor_func
+        setSelectOptions({
+            rootUrl: "${root}",
+            columnInfo: [
+                {name: "floor", isNullable: false},
+                {name: "identit", nameprefix: "spe_", isNullable: false, dataToServer: "SPE"},
+                {name: "identit", nameprefix: "ee_", isNullable: false, dataToServer: "EE"},
+                {name: "identit", nameprefix: "qc_", isNullable: false, dataToServer: "QC"},
+                {name: "type", isNullable: false},
+                {name: "flow", isNullable: true},
+                {name: "preAssy", isNullable: true},
+                {name: "pending", isNullable: false}
+            ]
+        });
 
         grid.jqGrid({
             url: '${root}getSheetView.do',
             datatype: 'json',
             mtype: 'POST',
+            guiStyle: "bootstrap",
             colModel: [
                 {label: 'id', name: "id", width: 60, frozen: true, hidden: false, key: true, search: false, editable: true, editoptions: {readonly: 'readonly', disabled: true, defaultValue: "0"}},
                 {label: 'Model', name: "modelName", frozen: true, editable: true, searchrules: {required: true}, searchoptions: search_string_options, editrules: {required: true}, formoptions: required_form_options},
@@ -190,7 +179,7 @@
                         {edit: true, add: true, del: true, search: true},
                         {
                             dataheight: 350,
-//                            width: 450,
+                            width: 450,
                             closeAfterEdit: false,
                             reloadAfterSubmit: true,
                             errorTextFormat: customErrorTextFormat,
@@ -200,7 +189,7 @@
                         },
                         {
                             dataheight: 350,
-//                            width: 450,
+                            width: 450,
                             closeAfterAdd: false,
                             reloadAfterSubmit: true,
                             errorTextFormat: customErrorTextFormat,
@@ -291,69 +280,9 @@
             });
             return result;
         }
-
-        function getSelectOption(columnName, isNullable, data) {
-            var result = {};
-            var url = data == null ? "${root}" + columnName + "Option.do" : ("${root}" + columnName + "Option.do/" + data);
-            $.ajax({
-                type: "GET",
-                url: url,
-                async: false,
-                success: function (response) {
-                    var arr = response;
-                    if (isNullable) {
-                        result[0] = "empty";
-                    }
-                    for (var i = 0; i < arr.length; i++) {
-                        var obj = arr[i];
-                        result[obj.id] = obj.name;
-                    }
-                },
-                error: function (xhr, ajaxOptions, thrownError) {
-                    console.log(xhr.responseText);
-                }
-            });
-            return result;
-        }
-
-        function exportDataToExcel() {
-            alert("begin download...");
-        }
-
-        //http://stackoverflow.com/questions/19696015/javascript-creating-functions-in-a-for-loop
-        //use closure 
-        function getFunc(columnName) {
-            return function (cellvalue, options, rowObject) {
-                var arr = selectOptions[columnName];
-                var obj = arr[cellvalue];
-                return obj == null ? "" : obj;
-            };
-        }
-
     });
 </script>
 <div id="worktime-content">
-    <%--<div class="row">
-        <div>
-            <table class="table table-hover">
-                <tr>
-                    <td>
-                        jobnumber: <c:out value="${sessionScope.user.jobnumber}" /> / 
-                        name: <c:out value="${sessionScope.user.jobnumber}" /> / 
-                        unit: <c:out value="${sessionScope.user.userType.name}" /> /
-                        floor: <c:out value="${sessionScope.user.floor.name}" />
-                    </td>
-                    <td class="widget">
-                        <form action="${root}logout.do" method="post">
-                            <input class="btn btn-default" type="submit" value="Logout" />
-                        </form>
-                    </td>
-                </tr>
-            </table>
-        </div>
-    </div>
-    <div class="row">--%>
     <table id="list"></table> 
     <div id="pager"></div>
-    <!--</div>-->
 </div>

@@ -7,13 +7,22 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <c:set var="root" value="${pageContext.request.contextPath}/"/>
+<script src="${root}js/jqgrid-custom-select-option-reader.js"></script>
 <script>
     $(function () {
         var grid = $("#list");
         var tableName = "Identit";
 
+        setSelectOptions({
+            rootUrl: "${root}",
+            columnInfo: [
+                {name: "floor", isNullable: false},
+                {name: "userType", isNullable: false}
+            ]
+        });
+
         grid.jqGrid({
-            url: '${root}getBla.do/' + tableName,
+            url: '${root}getSelectOption.do/' + tableName,
             datatype: 'json',
             mtype: 'GET',
             colModel: [
@@ -22,8 +31,8 @@
                 {label: 'password', name: "password", width: 60, editable: true, edittype: "password"},
                 {label: 'name', name: "name", width: 60, editable: true},
                 {label: 'permission', name: "permission", width: 60, editable: true},
-                {label: 'floor', name: "floor.id", width: 60, editable: true},
-                {label: 'userType', name: "userType.id", width: 60, editable: true},
+                {label: 'floor', name: "floor.id", width: 60, editable: true, edittype: "select", editoptions: {value: selectOptions["floor"]}, formatter: selectOptions["floor_func"]},
+                {label: 'userType', name: "userType.id", width: 60, editable: true, edittype: "select", editoptions: {value: selectOptions["userType"]}, formatter: selectOptions["userType_func"]},
                 {label: 'email', name: "email", width: 60, editable: true}
             ],
             rowNum: 20,
@@ -49,7 +58,7 @@
             navOptions: {reloadGridOptions: {fromServer: true}},
             caption: tableName + " modify",
             height: 450,
-            editurl: '${root}updateBla.do/' + tableName,
+            editurl: '${root}updateSelectOption.do/' + tableName,
             sortname: 'id', sortorder: 'asc',
             error: function (xhr, ajaxOptions, thrownError) {
                 alert("Ajax Error occurred\n"
@@ -93,7 +102,7 @@
             var result = {};
             $.ajax({
                 type: "GET",
-                url: "${root}getBla.do/" + columnName,
+                url: "${root}getSelectOption.do/" + columnName,
                 data: data,
                 async: false,
                 success: function (response) {

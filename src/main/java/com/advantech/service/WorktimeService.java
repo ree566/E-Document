@@ -52,7 +52,7 @@ public class WorktimeService {
     }
 
     public int update(Worktime worktime) {
-        return worktimeDAO.merge(worktime);
+        return worktimeDAO.update(worktime);
     }
 
     public int delete(List<Worktime> l) {

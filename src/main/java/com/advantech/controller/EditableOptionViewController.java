@@ -5,7 +5,6 @@
  */
 package com.advantech.controller;
 
-import com.advantech.helper.MD5Encoder;
 import com.advantech.helper.PageInfo;
 import static com.advantech.helper.PasswordEncoder.encryptPassord;
 import com.advantech.model.Flow;
@@ -28,7 +27,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.logging.Level;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
@@ -80,7 +78,7 @@ public class EditableOptionViewController {
     private TypeService typeService;
 
     @ResponseBody
-    @RequestMapping(value = "/getBla.do/{tableName}", method = {RequestMethod.GET})
+    @RequestMapping(value = "/getSelectOption.do/{tableName}", method = {RequestMethod.GET})
     public JqGridResponse findAll(@PathVariable(value = "tableName") final String tableName, @ModelAttribute PageInfo info, @ModelAttribute("user") Identit user) throws JsonProcessingException, IOException {
 
         JqGridResponse viewResp;
@@ -125,12 +123,12 @@ public class EditableOptionViewController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/updateBla.do/{tableName}", method = {RequestMethod.POST})
+    @RequestMapping(value = "/updateSelectOption.do/{tableName}", method = {RequestMethod.POST})
     public ResponseEntity update(
             @PathVariable(value = "tableName") final String tableName,
             @RequestParam final String oper,
             @ModelAttribute PageInfo info,
-            @ModelAttribute("user") Identit user,
+            @ModelAttribute Identit user,
             @ModelAttribute Flow flow,
             @ModelAttribute Identit identit,
             @ModelAttribute Pending pending,

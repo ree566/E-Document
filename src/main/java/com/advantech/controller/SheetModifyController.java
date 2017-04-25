@@ -59,24 +59,6 @@ public class SheetModifyController {
     private WorktimeService worktimeService;
 
     @Autowired
-    private IdentitService identitService;
-
-    @Autowired
-    private FloorService floorService;
-
-    @Autowired
-    private TypeService typeService;
-
-    @Autowired
-    private FlowService flowService;
-
-    @Autowired
-    private PendingService pendingService;
-
-    @Autowired
-    private PreAssyService preAssyService;
-
-    @Autowired
     private WorktimeColumnGroupService worktimeColumnGroupService;
 
     //The request param name indexOf('name') == 1 is selected box which has one to many relationship.
@@ -112,16 +94,23 @@ public class SheetModifyController {
                 if (isModelExists(worktime)) {
                     modifyMessage = "This model name is already exists";
                 } else {
-                    worktime.setFloor(floorService.findByPrimaryKey(worktime.getFloor().getId()));
-                    worktime.setType(typeService.findByPrimaryKey(worktime.getType().getId()));
-                    worktime.setIdentitBySpeOwnerId(identitService.findByPrimaryKey(worktime.getIdentitBySpeOwnerId().getId()));
-                    worktime.setIdentitByEeOwnerId(identitService.findByPrimaryKey(worktime.getIdentitByEeOwnerId().getId()));
-                    worktime.setIdentitByQcOwnerId(identitService.findByPrimaryKey(worktime.getIdentitByQcOwnerId().getId()));
-                    worktime.setPending(pendingService.findByPrimaryKey(worktime.getPending().getId()));
-                    worktime.setPreAssy(worktime.getPreAssy() == null || worktime.getPreAssy().getId() == 0 ? null : preAssyService.findByPrimaryKey(worktime.getPreAssy().getName()));
-                    worktime.setFlowByBabFlowId(worktime.getFlowByBabFlowId() == null || worktime.getFlowByBabFlowId().getId() == 0 ? null : flowService.findByPrimaryKey(worktime.getFlowByBabFlowId().getId()));
-                    worktime.setFlowByTestFlowId(worktime.getFlowByTestFlowId() == null || worktime.getFlowByTestFlowId().getId() == 0 ? null : flowService.findByPrimaryKey(worktime.getFlowByTestFlowId().getId()));
-                    worktime.setFlowByPackingFlowId(worktime.getFlowByPackingFlowId() == null || worktime.getFlowByPackingFlowId().getId() == 0 ? null : flowService.findByPrimaryKey(worktime.getFlowByPackingFlowId().getId()));
+                    //Nullable select columns.
+                    if (worktime.getPreAssy().getId() == 0) {
+                        worktime.setPreAssy(null);
+                    }
+                    
+                    if (worktime.getFlowByBabFlowId().getId() == 0) {
+                        worktime.setFlowByBabFlowId(null);
+                    }
+
+                    if (worktime.getFlowByTestFlowId().getId() == 0) {
+                        worktime.setFlowByTestFlowId(null);
+                    }
+
+                    if (worktime.getFlowByPackingFlowId().getId() == 0) {
+                        worktime.setFlowByPackingFlowId(null);
+                    }
+
                     modifyMessage = this.updateRows(worktime);
                 }
             } else {

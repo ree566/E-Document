@@ -17,6 +17,7 @@ import com.advantech.service.IdentitService;
 import com.advantech.service.PendingService;
 import com.advantech.service.PreAssyService;
 import com.advantech.service.TypeService;
+import com.advantech.service.UserTypeService;
 import com.google.gson.Gson;
 import java.util.HashMap;
 import java.util.List;
@@ -53,6 +54,9 @@ public class EditOptionController {
 
     @Autowired
     private PendingService pendingService;
+    
+    @Autowired
+    private UserTypeService userTypeService;
 
     @ResponseBody
     @RequestMapping(value = "/floorOption.do", method = {RequestMethod.GET})
@@ -88,5 +92,11 @@ public class EditOptionController {
     @RequestMapping(value = "/pendingOption.do", method = {RequestMethod.GET})
     public List getPendingOption() {
         return pendingService.findAll();
+    }
+    
+    @ResponseBody
+    @RequestMapping(value = "/userTypeOption.do", method = {RequestMethod.GET})
+    public List getUserTypeOption() {
+        return userTypeService.findAll();
     }
 }
