@@ -55,14 +55,13 @@
                 color: blue;
             }
             .lineTitle{
-                padding: 0 auto; 
-                width: 40px; 
-                height: 40px; 
+                padding: 3px; 
                 background-color: white;
                 font-size: 32px;
                 float: left;
                 border:5px green solid;
                 cursor: default;
+                overflow: auto;
             }
             .clearWiget{
                 clear: both;
@@ -168,11 +167,11 @@
                 var dragableWiget = $("#mapGroup > div:not(#wigetInfo) > div");
 
                 dragableWiget.addClass("adjustPosition");
-//                dragableWiget.not(".clearWiget").addClass("ui-helper").draggable({
-//                    drag: function (e) {
-////                        return false;
-//                    }
-//                });
+                dragableWiget.not(".clearWiget").addClass("ui-helper").draggable({
+                    drag: function (e) {
+//                        return false;
+                    }
+                });
 
                 $("#fullBtn").click(function () {
                     $("#wigetCtrl").fullScreen(true);

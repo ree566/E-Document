@@ -50,7 +50,7 @@ public class CronTrigMod {
     private CronTrigMod() throws SchedulerException {
         this.changedJobKey = new HashMap();
         scheduler = new StdSchedulerFactory().getScheduler();
-        if(scheduler == null || scheduler.isShutdown()){
+        if(scheduler == null || !scheduler.isStarted()){
             throw new SchedulerException("Scheduler is not started");
         }
     }

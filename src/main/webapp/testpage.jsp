@@ -39,6 +39,7 @@
 
         </style>
         <script src="js/jquery-1.11.3.min.js"></script>
+        <script src="js/moment.js"></script>
         <script src="js/jquery.cookie.js"></script>
         <script src="js/jquery.blockUI.js"></script>
         <script src="js/jquery.blockUI.Default.js"></script>

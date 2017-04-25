@@ -58,8 +58,8 @@ public class Endpoint3 {
         //每次當client連接進來時，去看目前session的數量 當有1個session時把下方quartz job加入到schedule裏頭(只要執行一次，不要重複加入)
         int a = sessions.size();
         if (a == 1) {
-            pollingDBAndBrocast();
             System.out.println("Some session exist, begin polling.");
+            pollingDBAndBrocast();
         }
     }
 

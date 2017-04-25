@@ -12,7 +12,6 @@ package com.advantech.endpoint;
 import com.advantech.entity.BAB;
 import com.advantech.service.BasicService;
 import com.google.gson.Gson;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
