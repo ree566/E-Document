@@ -5,7 +5,20 @@
  */
 package com.advantech.test;
 
-import org.joda.time.DateTime;
+import com.advantech.dao.AuditDAO;
+import com.advantech.helper.HibernateUtil;
+import com.advantech.model.Worktime;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
+import java.util.List;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.envers.AuditReader;
+import org.hibernate.envers.AuditReaderFactory;
+import org.hibernate.envers.query.AuditEntity;
+import org.hibernate.envers.query.AuditQuery;
 
 /**
  *
@@ -14,9 +27,15 @@ import org.joda.time.DateTime;
 public class Test1 {
 
     public static void main(String arg0[]) {
-        String date = "17/06/01";
-        DateTime d = new DateTime(date);
-        System.out.println(d.toString());
+      
+    }
+
+    private static void print(Object obj) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        Hibernate4Module hbm = new Hibernate4Module();
+        hbm.enable(Hibernate4Module.Feature.SERIALIZE_IDENTIFIER_FOR_LAZY_NOT_LOADED_OBJECTS);
+        mapper.registerModule(hbm);
+        System.out.println(mapper.writeValueAsString(obj));
     }
 
 }

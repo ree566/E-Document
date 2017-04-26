@@ -77,6 +77,7 @@
                             reloadAfterSubmit: true,
                             errorTextFormat: customErrorTextFormat,
                             beforeShowForm: greyout,
+                            zIndex: 9999,
                             recreateForm: true
                         },
                         {
@@ -86,14 +87,17 @@
                             reloadAfterSubmit: true,
                             errorTextFormat: customErrorTextFormat,
                             beforeShowForm: greyout,
+                            zIndex: 9999,
                             recreateForm: true
                         },
                         {
+                            zIndex: 9999,
                             reloadAfterSubmit: true
                         },
                         {
                             sopt: ['eq', 'ne', 'lt', 'gt', 'cn', 'bw', 'ew'],
                             closeAfterSearch: false,
+                            zIndex: 9999,
                             reloadAfterSubmit: true
                         }
                 );

@@ -23,11 +23,10 @@
             url: '${root}getSelectOption.do/' + tableName,
             datatype: 'json',
             mtype: 'GET',
-            modal: true,
-            jqModal: true,
+            guiStyle: "bootstrap",
             colModel: [
                 {label: 'id', name: "id", width: 60, key: true, editable: true, editoptions: {readonly: 'readonly', disabled: true, defaultValue: "0"}},
-                {label: 'name', name: "name", width: 60, editable: true},
+                {label: 'name', name: "name", width: 60, editable: true, editrules: {required: true}, formoptions: {elmprefix: "(*)"}},
                 {label: 'flow_group', name: "flowGroup.id", editable: true, formatter: flowGroupFormater, edittype: 'select', editoptions: {value: flowGroup}}
             ],
             rowNum: 20,
@@ -72,6 +71,7 @@
                             reloadAfterSubmit: true,
                             errorTextFormat: customErrorTextFormat,
                             beforeShowForm: greyout,
+                            zIndex: 9999,
                             recreateForm: true
                         },
                         {
@@ -81,14 +81,17 @@
                             reloadAfterSubmit: true,
                             errorTextFormat: customErrorTextFormat,
                             beforeShowForm: greyout,
+                            zIndex: 9999,
                             recreateForm: true
                         },
                         {
+                            zIndex: 9999,
                             reloadAfterSubmit: true
                         },
                         {
                             sopt: ['eq', 'ne', 'lt', 'gt', 'cn', 'bw', 'ew'],
                             closeAfterSearch: false,
+                            zIndex: 9999,
                             reloadAfterSubmit: true
                         }
                 );

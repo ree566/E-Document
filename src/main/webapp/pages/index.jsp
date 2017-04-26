@@ -18,17 +18,14 @@
         <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap-theme.min.css" rel="stylesheet">
         <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
         <link href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" rel="stylesheet">
-        
-        <link href="//cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.14.0/css/ui.jqgrid.min.css" rel="stylesheet"/>
-        <!--<link href="//cdnjs.cloudflare.com/ajax/libs/jqgrid/4.6.0/css/ui.jqgrid.css" rel="stylesheet"/>-->
+
+        <!--<link href="//cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.14.0/css/ui.jqgrid.min.css" rel="stylesheet"/>-->
+        <link href="//cdnjs.cloudflare.com/ajax/libs/jqgrid/4.6.0/css/ui.jqgrid.css" rel="stylesheet"/>
 
         <link href="../css/sb-admin-2.min.css" rel="stylesheet">
         <link href="../css/metisMenu.min.css" rel="stylesheet">
 
         <style>
-            #userinfo{
-
-            }
         </style>
 
         <script src="//code.jquery.com/jquery-1.12.4.min.js" 
@@ -36,26 +33,27 @@
         crossorigin="anonymous"></script>
 
         <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
-        
+
         <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
                 integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
         crossorigin="anonymous"></script>
 
-        
+
         <script src="//cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.14.0/jquery.jqgrid.min.js"></script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.14.0/modules/min/grid.jqueryui.js"></script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.14.0/modules/min/jqmodal.js"></script>
-        
-        <!--<script src="//cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.14.0/js/i18n/grid.locale-tw.js"></script>-->
-        <script src="//cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.14.0/jquery.jqgrid.src.js"></script>
 
-        <!--<script src="//cdnjs.cloudflare.com/ajax/libs/jqgrid/4.6.0/js/i18n/grid.locale-tw.js"></script>-->
-        <!--<script src="//cdnjs.cloudflare.com/ajax/libs/jqgrid/4.6.0/js/jquery.jqGrid.min.js"></script>-->
-        
+        <!--<script src="//cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.14.0/js/i18n/grid.locale-tw.js"></script>-->
+        <!--<script src="//cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.14.0/jquery.jqgrid.src.js"></script>-->
+
+        <script src="//cdnjs.cloudflare.com/ajax/libs/jqgrid/4.6.0/js/i18n/grid.locale-tw.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/jqgrid/4.6.0/js/jquery.jqGrid.min.js"></script>
+
         <script src="../js/sb-admin-2.min.js"></script>
         <script src="../js/metisMenu.min.js"></script>
 
         <script src="${root}/js/jqgrid-custom-param.js"></script> 
+        <script src="${root}js/sessionExpiredDetect.js"></script>
 
         <script>
             var current_include_page_name = "";
@@ -68,7 +66,7 @@
                     }
                     return false;
                 });
-                $("#preload_page").trigger("click");
+//                $("#preload_page").trigger("click");
             });
         </script>
 
@@ -129,10 +127,10 @@
                                 <a href="#"><i class="fa fa-bar-chart-o fa-fw"></i> Charts<span class="fa arrow"></span></a>
                                 <ul class="nav nav-second-level">
                                     <li>
-                                        <a href="#">Flot Charts</a>
+                                        <a href="chart">Flot Charts</a>
                                     </li>
                                     <li>
-                                        <a href="#">Morris.js Charts</a>
+                                        <a href="chart">Morris.js Charts</a>
                                     </li>
                                 </ul>
                                 <!-- /.nav-second-level -->
@@ -166,22 +164,13 @@
                                 <a href="#"><i class="fa fa-wrench fa-fw"></i> UI Elements<span class="fa arrow"></span></a>
                                 <ul class="nav nav-second-level">
                                     <li>
-                                        <a href="#">Panels and Wells</a>
+                                        <a href="fileupload">Excel文件上傳</a>
                                     </li>
                                     <li>
-                                        <a href="#">Buttons</a>
+                                        <a href="audit">資料版本查詢</a>
                                     </li>
                                     <li>
-                                        <a href="#">Notifications</a>
-                                    </li>
-                                    <li>
-                                        <a href="#">Typography</a>
-                                    </li>
-                                    <li>
-                                        <a href="#"> Icons</a>
-                                    </li>
-                                    <li>
-                                        <a href="#">Grid</a>
+                                        <a href="worktime-permission">欄位權限設定</a>
                                     </li>
                                 </ul>
                                 <!-- /.nav-second-level -->

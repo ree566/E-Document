@@ -8,7 +8,9 @@ package com.advantech.controller;
 import com.advantech.helper.PageInfo;
 import com.advantech.model.Flow;
 import com.advantech.model.Identit;
+import com.advantech.model.Worktime;
 import com.advantech.response.JqGridResponse;
+import com.advantech.service.AuditService;
 import com.advantech.service.IdentitService;
 import com.advantech.service.WorktimeService;
 import com.google.gson.Gson;
@@ -43,11 +45,31 @@ public class TestRequestController {
     @Autowired
     private IdentitService identitService;
 
+    @Autowired
+    private AuditService auditService;
+
     @ResponseBody
-    @RequestMapping(value = "/getSomeTable.do/{id}", method = {RequestMethod.GET, RequestMethod.POST})
-    public JqGridResponse getSheetView(@PathVariable(value = "id") final int id, @ModelAttribute PageInfo info, @ModelAttribute("user") Identit user) {
-        List l = new ArrayList();
-        l.add(identitService.findByPrimaryKey(id));
+    @RequestMapping(value = "/getSomeTable.do/{id}/{version}", method = {RequestMethod.GET, RequestMethod.POST})
+    public JqGridResponse getSheetView(
+            @PathVariable(value = "id") final int id,
+            @PathVariable(value = "version") final int version,
+            @ModelAttribute PageInfo info,
+            @ModelAttribute("user") Identit user) {
+
+        List l;
+        if (id == -1 && version == -1) {
+            l = auditService.findAll(Worktime.class);
+        } else if (version == -1) {
+            l = auditService.findByPrimaryKey(Worktime.class, id);
+        } else if (id != -1 && version == 999) {
+            l = auditService.findReversions(Worktime.class, id);
+        } else if (id == 999 && version != -1) {
+            l = auditService.forEntityAtReversion(Worktime.class, version);
+        } else {
+            l = new ArrayList();
+            l.add(auditService.findByPrimaryKeyAndVersion(Worktime.class, id, version));
+        }
+
         return getResponseObject(l, info);
     }
 
@@ -82,5 +104,25 @@ public class TestRequestController {
             String paramName = (String) params.nextElement();
             System.out.println("Parameter Name - " + paramName + ", Value - " + req.getParameter(paramName));
         }
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/testUpdate", method = {RequestMethod.GET, RequestMethod.POST})
+    public ResponseEntity testUpdate(
+            @ModelAttribute("user") Identit user) {
+
+        List<Worktime> l = worktimeService.findByPrimaryKeys(5932, 5933, 5937);
+
+        for (Worktime w : l) {
+            int i = (int) Math.round(Math.random() * 10) + 1;
+            String modelName = w.getModelName();
+            w.setModelName(modelName.substring(0, modelName.length() - 1) + i);
+        }
+
+        int flag = worktimeService.update(l);
+
+        return ResponseEntity
+                .status(flag == 1 ? HttpStatus.CREATED : HttpStatus.FORBIDDEN)
+                .body(flag == 1 ? "SUCCESS" : "FAIL");
     }
 }

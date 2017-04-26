@@ -84,14 +84,6 @@ public class SheetViewController {
         return new ModelAndView("ExcelRevenueSummary", "revenueData", l);
     }
 
-    @ExceptionHandler(HttpSessionRequiredException.class)
-//    @ResponseStatus(value = HttpStatus.UNAUTHORIZED, reason = "The session has expired")
-    public ResponseEntity handleSessionExpired() {
-        return ResponseEntity
-                .status(HttpStatus.UNAUTHORIZED)
-                .body("The session has expired.");
-    }
-
     @ResponseBody
     @RequestMapping(value = "/sheetViewTestMode.do", method = {RequestMethod.POST})
     public JqGridResponse getSheetViewTestMode(@ModelAttribute PageInfo info, @ModelAttribute("user") Identit user) {

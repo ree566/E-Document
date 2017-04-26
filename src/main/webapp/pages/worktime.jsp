@@ -2,37 +2,35 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <c:set var="root" value="${pageContext.request.contextPath}/"/>
 <style>
-    .ui-jqgrid,
-    .ui-jqgrid .ui-jqgrid-view,
-    .ui-jqgrid .ui-jqgrid-pager,
-    .ui-jqgrid .ui-pg-input {
-        font-size: 15px;
-    }
-    .small-button {
-        font-size: .8em !important;
-    }
-    .ui-button-text {
-        font-size: inherit !important;
-    } 
-    th.ui-th-column div {
-        height:auto !important;
-    }
-    .ui-th-column>div,
-    .ui-jqgrid-btable .jqgrow>td {
-        word-wrap: break-word; /* IE 5.5+ and CSS3 */
-        white-space: pre-wrap; /* CSS3 */
-        white-space: -moz-pre-wrap; /* Mozilla, since 1999 */
-        white-space: -pre-wrap; /* Opera 4-6 */
-        white-space: -o-pre-wrap; /* Opera 7 */
-        overflow: hidden;
-        vertical-align: middle;
-    }
+    /*    .ui-jqgrid,
+        .ui-jqgrid .ui-jqgrid-view,
+        .ui-jqgrid .ui-jqgrid-pager,
+        .ui-jqgrid .ui-pg-input {
+            font-size: 15px;
+        }
+        .small-button {
+            font-size: .8em !important;
+        }
+        .ui-button-text {
+            font-size: inherit !important;
+        } 
+        th.ui-th-column div {
+            height:auto !important;
+        }
+        .ui-th-column>div,
+        .ui-jqgrid-btable .jqgrow>td {
+            word-wrap: break-word;  IE 5.5+ and CSS3 
+            white-space: pre-wrap;  CSS3 
+            white-space: -moz-pre-wrap;  Mozilla, since 1999 
+            white-space: -pre-wrap;  Opera 4-6 
+            white-space: -o-pre-wrap;  Opera 7 
+            overflow: hidden;
+            vertical-align: middle;
+        }*/
 </style>
 
 <script src="${root}js/urlParamGetter.js"></script>
-<script src="${root}js/sessionExpiredDetect.js"></script>
 <script src="${root}js/column-name-setting.js"></script>
-<script src="${root}js/jqgrid-custom-param.js"></script>
 <script src="${root}js/jqgrid-custom-select-option-reader.js"></script>
 
 <script>
@@ -64,7 +62,7 @@
             url: '${root}getSheetView.do',
             datatype: 'json',
             mtype: 'POST',
-            guiStyle: "bootstrap",
+//            guiStyle: "bootstrap",
             colModel: [
                 {label: 'id', name: "id", width: 60, frozen: true, hidden: false, key: true, search: false, editable: true, editoptions: {readonly: 'readonly', disabled: true, defaultValue: "0"}},
                 {label: 'Model', name: "modelName", frozen: true, editable: true, searchrules: {required: true}, searchoptions: search_string_options, editrules: {required: true}, formoptions: required_form_options},
@@ -178,6 +176,7 @@
                 .jqGrid('navGrid', '#pager',
                         {edit: true, add: true, del: true, search: true},
                         {
+                            jqModal: true,
                             dataheight: 350,
                             width: 450,
                             closeAfterEdit: false,
@@ -185,9 +184,12 @@
                             errorTextFormat: customErrorTextFormat,
                             recreateForm: true,
                             beforeShowForm: greyout,
+                            closeOnEscape: true,
+                            zIndex: 9999,
                             bottominfo: "Fields marked with (*) are required"
                         },
                         {
+                            jqModal: true,
                             dataheight: 350,
                             width: 450,
                             closeAfterAdd: false,
@@ -195,12 +197,16 @@
                             errorTextFormat: customErrorTextFormat,
                             recreateForm: true,
                             beforeShowForm: greyout,
+                            closeOnEscape: true,
+                            zIndex: 9999,
                             bottominfo: "Fields marked with (*) are required"
                         },
                         {
+                            zIndex: 9999,
                             reloadAfterSubmit: true
                         },
                         {
+                            zIndex: 9999,
                             closeAfterSearch: false,
                             reloadAfterSubmit: true
                         }

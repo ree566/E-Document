@@ -236,14 +236,6 @@ public class EditableOptionViewController {
         }
     }
 
-    @ExceptionHandler(HttpSessionRequiredException.class)
-//    @ResponseStatus(value = HttpStatus.UNAUTHORIZED, reason = "The session has expired")
-    public ResponseEntity handleSessionExpired() {
-        return ResponseEntity
-                .status(HttpStatus.UNAUTHORIZED)
-                .body("The session has expired.");
-    }
-
     private void showParams(HttpServletRequest req) throws ServletException, IOException {
         Enumeration params = req.getParameterNames();
         while (params.hasMoreElements()) {

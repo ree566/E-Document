@@ -199,11 +199,4 @@ public class SheetModifyController {
         }
     }
 
-    @ExceptionHandler(HttpSessionRequiredException.class)
-//    @ResponseStatus(value = HttpStatus.UNAUTHORIZED, reason = "The session has expired")
-    public ResponseEntity handleSessionExpired() {
-        return ResponseEntity
-                .status(HttpStatus.UNAUTHORIZED)
-                .body("The session has expired.");
-    }
 }

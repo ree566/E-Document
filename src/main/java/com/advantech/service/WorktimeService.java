@@ -55,6 +55,13 @@ public class WorktimeService {
         return worktimeDAO.update(worktime);
     }
 
+    public int update(List<Worktime> l) {
+        for (Worktime w : l) {
+            worktimeDAO.update(w);
+        }
+        return 1;
+    }
+
     public int delete(List<Worktime> l) {
         for (Worktime m : l) {
             this.delete(m);
