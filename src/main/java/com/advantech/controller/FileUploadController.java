@@ -13,6 +13,7 @@ import com.advantech.model.Worktime;
 import com.advantech.service.FloorService;
 import com.advantech.service.FlowService;
 import com.advantech.service.IdentitService;
+import com.advantech.service.PendingService;
 import com.advantech.service.TypeService;
 import com.advantech.service.WorktimeService;
 import java.io.BufferedOutputStream;
@@ -53,11 +54,9 @@ import org.springframework.web.multipart.MultipartFile;
  * Handles requests for the application file upload requests
  */
 @Controller
-public class FileUploadController{
+public class FileUploadController {
 
     private static final Logger logger = LoggerFactory.getLogger(FileUploadController.class);
-    private static Integer store_line_id = 6133;
-//    private static Integer store_line_id = 4228;
 
     @Autowired
     private WorktimeService worktimeService;
@@ -69,10 +68,15 @@ public class FileUploadController{
     private FloorService floorService;
 
     @Autowired
+    private PendingService pendingService;
+
+    @Autowired
     private TypeService typeService;
 
     @Autowired
     private FlowService flowService;
+
+    private static List<Worktime> l;
 
     /**
      * Upload single file using Spring Controller
@@ -81,101 +85,109 @@ public class FileUploadController{
      * @param file
      * @return
      */
-    @RequestMapping(value = "/uploadFile", method = RequestMethod.POST)
+    @RequestMapping(value = "/uploadFile.do", method = RequestMethod.POST)
     public String uploadFileHandler(Model model, @RequestParam("file") MultipartFile file) {
 
         Workbook workbook = null;
         int i = 0;
+        if (l == null) {
+            l = new ArrayList();
+        }
 
         try {
-            Map floorOptions = this.tranToIdNameCompare(floorService.findAll());
-            Map identitOptions = this.tranToIdNameCompare(identitService.findAll());
-            Map typeOptions = this.tranToIdNameCompare(typeService.findAll());
-            Map flowOptions = this.tranToIdNameCompare(flowService.findAll());
+            if (l.isEmpty()) {
+                Map floorOptions = this.tranToIdNameCompare(floorService.findAll());
+                Map identitOptions = this.tranToIdNameCompare(identitService.findAll());
+                Map typeOptions = this.tranToIdNameCompare(typeService.findAll());
+                Map flowOptions = this.tranToIdNameCompare(flowService.findAll());
 
-            workbook = WorkbookFactory.create(file.getInputStream());
-            String fileExt = workbook instanceof HSSFWorkbook ? "xls" : (workbook instanceof XSSFWorkbook ? "xlsx" : "unknown excel type");
-            String[] message = {"get excel success", "Retrive file type is: " + fileExt};
-            model.addAttribute("message", message);
+                workbook = WorkbookFactory.create(file.getInputStream());
+                String fileExt = workbook instanceof HSSFWorkbook ? "xls" : (workbook instanceof XSSFWorkbook ? "xlsx" : "unknown excel type");
+                String[] message = {"get excel success", "Retrive file type is: " + fileExt};
+                model.addAttribute("message", message);
 
-            Sheet sheet = workbook.getSheetAt(0);
+                Sheet sheet = workbook.getSheetAt(0);
 
-            i = store_line_id == -1 ? 2 : store_line_id;
+                System.out.println("Max sheet rows: " + sheet.getPhysicalNumberOfRows());
 
-            for (; i < sheet.getPhysicalNumberOfRows(); i++) {
-                // 由於第 0 Row 為 title, 故 i 從 1 開始
+                Identit sysop = identitService.findByJobnumber("sysop");
+                Type type_ok = typeService.findByPrimaryKey(8);
+                Floor floor_all = floorService.findByPrimaryKey(3);
 
-                if (i == 4229) {
-                    continue;
-                }
+                for (i = 2; i < sheet.getPhysicalNumberOfRows(); i++) {
+                    // 由於第 0 Row 為 title, 故 i 從 1 開始
 
-                Row row = sheet.getRow(i); // 取得第 i Row
-                if (row != null) {
-                    Cell cell_A = CellUtil.getCell(row, CellReference.convertColStringToIndex("A"));
-                    cell_A.setCellType(CellType.STRING);
+                    Row row = sheet.getRow(i); // 取得第 i Row
+                    if (row != null) {
+                        Cell cell_A = CellUtil.getCell(row, CellReference.convertColStringToIndex("A"));
+                        cell_A.setCellType(CellType.STRING);
 
-                    Worktime w = new Worktime();
-                    w.setFloor((Floor) floorOptions.get(getCellValue(row, "V")));
-                    w.setFlowByTestFlowId((Flow) flowOptions.get(getCellValue(row, "AG")));
-                    w.setFlowByPackingFlowId((Flow) flowOptions.get(getCellValue(row, "AH")));
-                    w.setFlowByBabFlowId((Flow) flowOptions.get(getCellValue(row, "AF")));
-                    w.setIdentitByEeOwnerId((Identit) identitOptions.get(getCellValue(row, "AA")));
-                    w.setIdentitByQcOwnerId((Identit) identitOptions.get(getCellValue(row, "AB")));
-                    w.setIdentitBySpeOwnerId((Identit) identitOptions.get(getCellValue(row, "Z")));
-                    w.setType((Type) typeOptions.get(getCellValue(row, "B")));
-                    w.setModelName((String) getCellValue(row, "A"));
-                    w.setTotalModule((Double) getCellValue(row, "D"));
-                    w.setCleanPanel((Double) getCellValue(row, "F"));
-                    w.setAssy((Double) getCellValue(row, "G"));
-                    w.setT1((Double) getCellValue(row, "H"));
-                    w.setT2((Double) getCellValue(row, "I"));
-                    w.setT3((Double) getCellValue(row, "J"));
-                    w.setT4((Double) getCellValue(row, "K"));
-                    w.setPacking((Double) getCellValue(row, "L"));
-                    w.setUpBiRi((Double) getCellValue(row, "M"));
-                    w.setDownBiRi((Double) getCellValue(row, "N"));
-                    w.setBiCost((Double) getCellValue(row, "O"));
-                    w.setVibration((Double) getCellValue(row, "P"));
-                    w.setHiPotLeakage((Double) getCellValue(row, "Q"));
-                    w.setColdBoot((Double) getCellValue(row, "R"));
-                    w.setWarmBoot((Double) getCellValue(row, "S"));
-                    w.setBurnIn((String) getCellValue(row, "W"));
-                    w.setBiTime(getCellValue(row, "X") == null || getCellValue(row, "X") instanceof String ? 0.0 : (Double) checkAndConvertReturn(getCellValue(row, "X")));
-                    w.setBiTemperature(getCellValue(row, "Y") == null || getCellValue(row, "Y") instanceof String ? 0.0 : (Double) checkAndConvertReturn(getCellValue(row, "Y")));
-                    w.setKeypartA(getCellValue(row, "AD") == null ? null : ((Double) checkAndConvertReturn(getCellValue(row, "AD"))).intValue());
-                    w.setKeypartB(getCellValue(row, "AE") == null ? null : ((Double) checkAndConvertReturn(getCellValue(row, "AE"))).intValue());
-                    w.setPartLink(getCellValue(row, "AI") == null ? null : ((String) getCellValue(row, "AI")).charAt(0));
-                    w.setCe(getCellValue(row, "AJ") == null ? 0 : 1);
-                    w.setUl(getCellValue(row, "AK") == null ? 0 : 1);
-                    w.setRohs(getCellValue(row, "AL") == null ? 0 : 1);
-                    w.setWeee(getCellValue(row, "AM") == null ? 0 : 1);
-                    w.setMadeInTaiwan(getCellValue(row, "AN") == null ? 0 : 1);
-                    w.setFcc(getCellValue(row, "AO") == null ? 0 : 1);
-                    w.setEac(getCellValue(row, "AP") == null ? 0 : 1);
-                    w.setNInOneCollectionBox(getCellValue(row, "AQ") == null || getCellValue(row, "AQ") instanceof String ? null : (Double) checkAndConvertReturn(getCellValue(row, "AQ")));
-                    w.setPartNoAttributeMaintain(getCellValue(row, "AR") == null ? 'N' : (getCellValue(row, "AR")).toString().charAt(0));
-                    w.setAssyLeadTime((Double) getCellValue(row, "AU"));
-                    w.setPackingLeadTime((Double) getCellValue(row, "AW"));
-                    w.setProductionWt((Double) getCellValue(row, "C"));
-                    w.setSetupTime((Double) getCellValue(row, "E"));
-                    w.setAssyToT1((Double) getCellValue(row, "T"));
-                    w.setT2ToPacking((Double) getCellValue(row, "U"));
-                    w.setAssyStation(getCellValue(row, "AS") == null ? null : ((Double) getCellValue(row, "AS")).intValue());
-                    w.setPackingStation(((Double) getCellValue(row, "AT")).intValue());
-                    w.setAssyKanbanTime((Double) getCellValue(row, "AV"));
-                    w.setPackingKanbanTime((Double) getCellValue(row, "AX"));
-                    w.setCleanPanelAndAssembly((Double) getCellValue(row, "BB"));
+                        Worktime w = new Worktime();
+                        w.setFloor((Floor) isNull((Floor) floorOptions.get(getCellValue(row, "V")), floor_all));
+                        w.setFlowByTestFlowId((Flow) flowOptions.get(getCellValue(row, "AG")));
+                        w.setFlowByPackingFlowId((Flow) flowOptions.get(getCellValue(row, "AH")));
+                        w.setFlowByBabFlowId((Flow) flowOptions.get(getCellValue(row, "AF")));
+                        w.setIdentitByEeOwnerId((Identit) isNull((Identit) identitOptions.get(getCellValue(row, "AA")), sysop));
+                        w.setIdentitByQcOwnerId((Identit) isNull((Identit) identitOptions.get(getCellValue(row, "AB")), sysop));
+                        w.setIdentitBySpeOwnerId((Identit) isNull((Identit) identitOptions.get(getCellValue(row, "Z")), sysop));
+                        w.setType((Type) isNull((Type) typeOptions.get(getCellValue(row, "B")), type_ok));
+                        w.setModelName((String) getCellValue(row, "A"));
+                        w.setTotalModule((Double) getCellValue(row, "D"));
+                        w.setCleanPanel((Double) getCellValue(row, "F"));
+                        w.setAssy((Double) getCellValue(row, "G"));
+                        w.setT1((Double) getCellValue(row, "H"));
+                        w.setT2((Double) getCellValue(row, "I"));
+                        w.setT3((Double) getCellValue(row, "J"));
+                        w.setT4((Double) getCellValue(row, "K"));
+                        w.setPacking((Double) getCellValue(row, "L"));
+                        w.setUpBiRi((Double) getCellValue(row, "M"));
+                        w.setDownBiRi((Double) getCellValue(row, "N"));
+                        w.setBiCost((Double) getCellValue(row, "O"));
+                        w.setVibration((Double) getCellValue(row, "P"));
+                        w.setHiPotLeakage((Double) getCellValue(row, "Q"));
+                        w.setColdBoot((Double) getCellValue(row, "R"));
+                        w.setWarmBoot((Double) getCellValue(row, "S"));
+                        w.setBurnIn(getCellValue(row, "W") == null ? "N" : "Y");
+                        w.setBiTime(getCellValue(row, "X") == null || getCellValue(row, "X") instanceof String ? 0.0 : (Double) checkAndConvertReturn(getCellValue(row, "X")));
+                        w.setBiTemperature(getCellValue(row, "Y") == null || getCellValue(row, "Y") instanceof String ? 0.0 : (Double) checkAndConvertReturn(getCellValue(row, "Y")));
+                        w.setKeypartA(getCellValue(row, "AD") == null ? null : ((Double) checkAndConvertReturn(getCellValue(row, "AD"))).intValue());
+                        w.setKeypartB(getCellValue(row, "AE") == null ? null : ((Double) checkAndConvertReturn(getCellValue(row, "AE"))).intValue());
+                        w.setPartLink(getCellValue(row, "AI") == null ? null : ((String) getCellValue(row, "AI")).charAt(0));
+                        w.setCe(getCellValue(row, "AJ") == null ? 0 : 1);
+                        w.setUl(getCellValue(row, "AK") == null ? 0 : 1);
+                        w.setRohs(getCellValue(row, "AL") == null ? 0 : 1);
+                        w.setWeee(getCellValue(row, "AM") == null ? 0 : 1);
+                        w.setMadeInTaiwan(getCellValue(row, "AN") == null ? 0 : 1);
+                        w.setFcc(getCellValue(row, "AO") == null ? 0 : 1);
+                        w.setEac(getCellValue(row, "AP") == null ? 0 : 1);
+                        w.setNsInOneCollectionBox(getCellValue(row, "AQ") == null || getCellValue(row, "AQ") instanceof String ? null : (Double) checkAndConvertReturn(getCellValue(row, "AQ")));
+                        w.setPartNoAttributeMaintain(getCellValue(row, "AR") == null ? 'N' : (getCellValue(row, "AR")).toString().charAt(0));
+                        w.setAssyLeadTime((Double) getCellValue(row, "AU"));
+                        w.setPackingLeadTime((Double) getCellValue(row, "AW"));
+                        w.setProductionWt((Double) getCellValue(row, "C"));
+                        w.setSetupTime((Double) getCellValue(row, "E"));
+                        w.setAssyToT1((Double) getCellValue(row, "T"));
+                        w.setT2ToPacking((Double) getCellValue(row, "U"));
+                        w.setAssyStation(getCellValue(row, "AS") == null ? null : ((Double) getCellValue(row, "AS")).intValue());
+                        w.setPackingStation(((Double) getCellValue(row, "AT")).intValue());
+                        w.setAssyKanbanTime((Double) getCellValue(row, "AV"));
+                        w.setPackingKanbanTime((Double) getCellValue(row, "AX"));
+                        w.setCleanPanelAndAssembly((Double) getCellValue(row, "BB"));
+                        w.setPending(pendingService.findByPrimaryKey(1));
+                        w.setPendingTime(0.0);
+
+                        l.add(w);
+                    }
                 }
             }
+            worktimeService.saveOrUpdate(l);
             model.addAttribute("message", "Data init done.");
-            store_line_id = 0;
-
         } catch (IOException | IllegalAccessException | NoSuchMethodException | InvocationTargetException | EncryptedDocumentException | InvalidFormatException ex) {
-            store_line_id = i;
-            model.addAttribute("message", ex.getStackTrace()[0]);
+            System.out.println(ex);
+            model.addAttribute("message", ex);
         } catch (Exception ex) {
-            store_line_id = i;
-            Object[] message = {"Error initialize object at row number " + (i + 1), ex.getStackTrace()[0]};
+            System.out.println(ex);
+            Object[] message = {"Error initialize object at row number " + (i + 1), ex};
             model.addAttribute("message", message);
         } finally {
             try {
@@ -186,7 +198,11 @@ public class FileUploadController{
                 System.out.println(ex);
             }
         }
-        return "forward:fileupload.jsp";
+        return "forward:pages/fileupload.jsp";
+    }
+
+    private Object isNull(Object i, Object replaceTarget) {
+        return i == null ? replaceTarget : i;
     }
 
     private Object checkAndConvertReturn(Object obj) {
@@ -207,36 +223,23 @@ public class FileUploadController{
             switch (cellType) {
                 case STRING:
                     String value = cell.getStringCellValue();
-                    System.out.println(letter + ": " + " string");
-                    System.out.println("-->" + (value == null || "".equals(value.trim()) ? "Empty string" : value));
                     return value == null || "".equals(value.trim()) ? null : value;
                 case FORMULA:
                     switch (cell.getCachedFormulaResultType()) {
                         case Cell.CELL_TYPE_NUMERIC:
-                            System.out.println(letter + ": " + " formula-numberic");
-                            System.out.println("-->" + cell.getNumericCellValue());
                             return cell.getNumericCellValue();
                         case Cell.CELL_TYPE_STRING:
-                            System.out.println(letter + ": " + " formula-string");
-                            System.out.println("-->" + cell.getRichStringCellValue());
                             return null;
                     }
                 case NUMERIC:
                     if (DateUtil.isCellDateFormatted(cell)) {
-                        System.out.println(letter + ": " + " numberic");
-                        System.out.println("-->" + cell.getDateCellValue());
                         return cell.getDateCellValue().toString();
                     } else {
-                        System.out.println(letter + ": " + " double");
-                        System.out.println("-->" + cell.getNumericCellValue());
                         return cell.getNumericCellValue();
                     }
                 case BLANK:
-                    System.out.println(letter + ": " + " empty");
                     return null;
                 case BOOLEAN:
-                    System.out.println(letter + ": " + " boolean");
-                    System.out.println("-->" + cell.getBooleanCellValue());
                     return Boolean.toString(cell.getBooleanCellValue());
                 default:
                     return null;
@@ -260,7 +263,7 @@ public class FileUploadController{
      * @param files
      * @return
      */
-    @RequestMapping(value = "/uploadMultipleFile", method = RequestMethod.POST)
+    @RequestMapping(value = "/uploadMultipleFile.do", method = RequestMethod.POST)
     public String uploadMultipleFileHandler(Model model, @RequestParam("file") MultipartFile[] files) {
 
         String[] message = this.copyFileToServer(files);

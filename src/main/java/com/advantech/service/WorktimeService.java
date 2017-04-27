@@ -62,6 +62,15 @@ public class WorktimeService {
         return 1;
     }
 
+    public int saveOrUpdate(List<Worktime> l) {
+        for (int i = 0; i < l.size(); i++) {
+            Worktime w = l.get(i);
+            System.out.println("insert row: " + i + " \\Model: " + w.getModelName());
+            worktimeDAO.saveOrUpdate(w);
+        }
+        return 1;
+    }
+
     public int delete(List<Worktime> l) {
         for (Worktime m : l) {
             this.delete(m);

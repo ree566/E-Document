@@ -7,6 +7,7 @@ package com.advantech.service;
 
 import com.advantech.dao.AuditAction;
 import com.advantech.dao.AuditDAO;
+import com.advantech.helper.PageInfo;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,10 @@ public class AuditService implements AuditAction {
     @Override
     public List findAll(Class clz) {
         return auditDAO.findAll(clz);
+    }
+
+    public List findAll(Class clz, PageInfo info) {
+        return auditDAO.findAll(clz, info);
     }
 
     @Override

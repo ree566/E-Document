@@ -6,9 +6,10 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<c:set var="root" value="${pageContext.request.contextPath}/"/>
 <div>
     <h3>Upload single files example.</h3>
-    <form method="POST" action="uploadFile" enctype="multipart/form-data">
+    <form method="POST" action="${root}uploadFile.do" enctype="multipart/form-data">
         <div>
             File to upload: <input type="file" name="file">
         </div>
@@ -18,7 +19,7 @@
 <hr />
 <div style="display: none">
     <h3>Upload multiple files example.</h3>
-    <form method="POST" action="uploadMultipleFile" enctype="multipart/form-data">
+    <form method="POST" action="${root}uploadMultipleFile" enctype="multipart/form-data">
         <div>
             File1 to upload: <input type="file" name="file">
         </div>

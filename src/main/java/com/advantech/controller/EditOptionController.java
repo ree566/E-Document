@@ -5,12 +5,6 @@
  */
 package com.advantech.controller;
 
-import com.advantech.model.Floor;
-import com.advantech.model.Flow;
-import com.advantech.model.Identit;
-import com.advantech.model.Pending;
-import com.advantech.model.PreAssy;
-import com.advantech.model.Type;
 import com.advantech.service.FloorService;
 import com.advantech.service.FlowService;
 import com.advantech.service.IdentitService;
@@ -18,16 +12,12 @@ import com.advantech.service.PendingService;
 import com.advantech.service.PreAssyService;
 import com.advantech.service.TypeService;
 import com.advantech.service.UserTypeService;
-import com.google.gson.Gson;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**

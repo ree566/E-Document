@@ -98,6 +98,7 @@
     <filter-mapping>
         <filter-name>UserNameRecordFilter</filter-name>
         <url-pattern>/updateSheet.do</url-pattern>
+        <url-pattern>/uploadFile.do</url-pattern>
     </filter-mapping>
     
     <servlet>

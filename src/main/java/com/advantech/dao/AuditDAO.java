@@ -5,14 +5,18 @@
  */
 package com.advantech.dao;
 
-import com.advantech.model.Worktime;
+import com.advantech.helper.PageInfo;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
 import org.hibernate.envers.query.AuditEntity;
 import org.hibernate.envers.query.AuditQuery;
+import org.hibernate.envers.query.criteria.AuditProperty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -22,6 +26,12 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public class AuditDAO implements AuditAction {
+
+    private final boolean selectedEntitiesOnly = false;
+    private final boolean selectDeletedEntities = true;
+    private final Set<String> auditColumnNames = new HashSet<>(Arrays.asList(
+            new String[]{"REV", "username"}
+    ));
 
     @Autowired
     private SessionFactory sessionFactory;
@@ -36,18 +46,32 @@ public class AuditDAO implements AuditAction {
 
     @Override
     public List findAll(Class clz) {
-        AuditQuery q = getReader().createQuery().forRevisionsOfEntity(clz, true, true);
+        AuditQuery q = getReader().createQuery().forRevisionsOfEntity(clz, selectedEntitiesOnly, selectDeletedEntities);
+        return q.getResultList();
+    }
+
+    public List findAll(Class clz, PageInfo info) {
+        AuditQuery q = getReader().createQuery().forRevisionsOfEntity(clz, selectedEntitiesOnly, selectDeletedEntities);
+        info.setMaxNumOfRows(((Long) q.addProjection(AuditEntity.id().count()).getSingleResult()).intValue());
+
+        q = getReader().createQuery().forRevisionsOfEntity(clz, selectedEntitiesOnly, selectDeletedEntities)
+                .setMaxResults(info.getRows())
+                .setFirstResult((info.getPage() - 1) * info.getRows());
+        String sortIndex = info.getSidx();
+        AuditProperty property = auditColumnNames.contains(sortIndex) ? AuditEntity.revisionProperty(sortIndex) : AuditEntity.property(sortIndex);
+
+        q.addOrder(info.getSord().equals("asc") ? property.asc() : property.desc());
         return q.getResultList();
     }
 
     @Override
     public Object findByPrimaryKeyAndVersion(Class clz, Object id, int version) {
-        return getReader().find(clz, id, 1);
+        return getReader().find(clz, id, version);
     }
 
     @Override
     public List findByPrimaryKey(Class clz, Object id) {
-        AuditQuery q = getReader().createQuery().forRevisionsOfEntity(clz, true, true);
+        AuditQuery q = getReader().createQuery().forRevisionsOfEntity(clz, selectedEntitiesOnly, selectDeletedEntities);
         q.add(AuditEntity.id().eq(id));
         return q.getResultList();
     }

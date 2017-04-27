@@ -5,6 +5,7 @@
  */
 package com.advantech.controller;
 
+import static com.advantech.helper.JqGridResponseUtils.toJqGridResponse;
 import com.advantech.helper.PageInfo;
 import static com.advantech.helper.PasswordEncoder.encryptPassord;
 import com.advantech.model.Flow;
@@ -35,8 +36,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.HttpSessionRequiredException;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -107,18 +106,7 @@ public class EditableOptionViewController {
                 l = new ArrayList();
         }
 
-        viewResp = getResponseObject(l, info);
-        return viewResp;
-    }
-
-    private JqGridResponse getResponseObject(List l, PageInfo info) {
-        JqGridResponse viewResp = new JqGridResponse();
-        int count = info.getMaxNumOfRows();
-        int total = count % info.getRows() == 0 ? (int) Math.ceil(count / info.getRows()) : (int) Math.ceil(count / info.getRows()) + 1;
-        viewResp.setRows(l);
-        viewResp.setTotal(total);
-        viewResp.setRecords(count);
-        viewResp.setPage(info.getPage());
+        viewResp = toJqGridResponse(l, info);
         return viewResp;
     }
 

@@ -21,7 +21,7 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class WorktimeDAO extends PaginateDAO implements BasicDAO {
+public class WorktimeDAO implements BasicDAO {
 
     @Autowired
     private SessionFactory sessionFactory;
@@ -69,7 +69,7 @@ public class WorktimeDAO extends PaginateDAO implements BasicDAO {
         return 1;
     }
 
-    public int merge(Object obj) {
+    public int saveOrUpdate(Object obj) {
         currentSession().merge(obj);
         return 1;
     }
