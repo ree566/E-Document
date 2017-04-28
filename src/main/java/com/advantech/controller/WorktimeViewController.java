@@ -35,9 +35,9 @@ import org.springframework.web.servlet.ModelAndView;
  */
 @Controller
 @SessionAttributes({"user"})
-public class SheetViewController {
+public class WorktimeViewController {
 
-    private static final Logger log = LoggerFactory.getLogger(SheetViewController.class);
+    private static final Logger log = LoggerFactory.getLogger(WorktimeViewController.class);
 
     @Autowired
     private SheetViewService sheetViewService;

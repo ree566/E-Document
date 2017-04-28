@@ -50,9 +50,9 @@ import org.springframework.web.bind.annotation.SessionAttributes;
  */
 @Controller
 @SessionAttributes({"user"})
-public class EditableOptionViewController {
+public class EditOptionModController {
 
-    private static final Logger log = LoggerFactory.getLogger(EditableOptionViewController.class);
+    private static final Logger log = LoggerFactory.getLogger(EditOptionModController.class);
 
     private final String ADD = "add", EDIT = "edit", DELETE = "del";
     private final String SUCCESS_MESSAGE = "SUCCESS";

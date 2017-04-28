@@ -38,7 +38,7 @@ import org.springframework.web.bind.annotation.SessionAttributes;
  */
 @Controller
 @SessionAttributes({"user"})
-public class SheetModifyController {
+public class WorktimeModController {
 
     private final String ADD = "add", EDIT = "edit", DELETE = "del";
     private String userOper;
@@ -110,16 +110,6 @@ public class SheetModifyController {
         return ResponseEntity
                 .status(SUCCESS_MESSAGE.equals(modifyMessage) ? HttpStatus.CREATED : HttpStatus.FORBIDDEN)
                 .body(modifyMessage);
-    }
-
-    private Double setProductWt(Worktime w) {
-        try {
-            return w.getTotalModule() + w.getCleanPanel() + w.getAssy() + w.getT1() + w.getT2() + w.getT3() + w.getT4()
-                    + w.getPacking() + w.getUpBiRi() + w.getDownBiRi() + w.getBiCost() + w.getVibration() + w.getHiPotLeakage()
-                    + w.getColdBoot() + w.getWarmBoot();
-        } catch (Exception e) {
-            return null;
-        }
     }
 
     private String deleteRows(String rowId) {

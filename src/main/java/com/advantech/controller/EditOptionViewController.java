@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @author Wei.Cheng
  */
 @Controller
-public class EditOptionController {
+public class EditOptionViewController {
 
     @Autowired
     private FloorService floorService;

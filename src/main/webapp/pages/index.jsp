@@ -12,7 +12,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>${initParam.pageTitle}</title>
-        <link rel="shortcut icon" href="../images/favicon.ico"/>
+        <link rel="shortcut icon" href="images/favicon.ico"/>
 
         <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
         <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap-theme.min.css" rel="stylesheet">
@@ -26,6 +26,23 @@
         <link href="../css/metisMenu.min.css" rel="stylesheet">
 
         <style>
+            #loading {
+                width: 100%;
+                height: 100%;
+                position: fixed;
+                display: block;
+                opacity: 0.7;
+                background-color: #fff;
+                z-index: 99;
+                text-align: center;
+            }
+
+            #loading-image {
+                position: absolute;
+                top: 100px;
+                left: 240px;
+                z-index: 100;
+            }
         </style>
 
         <script src="//code.jquery.com/jquery-1.12.4.min.js" 
@@ -58,15 +75,25 @@
         <script>
             var current_include_page_name = "";
             $(function () {
-                $(".sidebar a").on("click", function () {
+                $('#loading').hide();
+
+                $(".redirect-link").on("click", function () {
                     var target_page_name = $(this).attr("href");
                     if (target_page_name != current_include_page_name && target_page_name != "#") {
                         current_include_page_name = target_page_name;
-                        $("#exchange_page").load(target_page_name + ".jsp");
+                        $('#loading').show();
+                        $("#exchange_page").load(target_page_name + ".jsp", function (response, status, xhr) {
+                            if (status == "error") {
+                                var msg = "Sorry but there was an error: ";
+                                $("#exchange_page").html(msg + xhr.status + " " + xhr.statusText);
+                            }
+                            $('#loading').hide();
+                        });
                     }
                     return false;
                 });
-//                $("#preload_page").trigger("click");
+
+                $("#preload_page").trigger("click");
             });
         </script>
 
@@ -127,10 +154,10 @@
                                 <a href="#"><i class="fa fa-bar-chart-o fa-fw"></i> Charts<span class="fa arrow"></span></a>
                                 <ul class="nav nav-second-level">
                                     <li>
-                                        <a href="chart">Flot Charts</a>
+                                        <a class="redirect-link" href="chart">Flot Charts</a>
                                     </li>
                                     <li>
-                                        <a href="chart">Morris.js Charts</a>
+                                        <a class="redirect-link" href="chart">Morris.js Charts</a>
                                     </li>
                                 </ul>
                                 <!-- /.nav-second-level -->
@@ -139,42 +166,47 @@
                                 <a href="#"><i class="fa fa-table fa-fw"></i> Tables<span class="fa arrow"></span></a>
                                 <ul class="nav nav-second-level">
                                     <li>
-                                        <a id="preload_page" href="worktime">工時大表</a>
+                                        <a class="redirect-link" href="worktime">工時大表</a>
                                     </li>
                                     <c:if test="${sessionScope.user.permission >= initParam.UNIT_LEADER_PERMISSION}">
                                         <li>
-                                            <a href="mod/flow">Flow</a>
+                                            <a class="redirect-link" href="mod/flow">Flow</a>
                                         </li>
                                         <li>
-                                            <a href="mod/identit">Identit</a>
+                                            <a class="redirect-link" href="mod/identit">Identit</a>
                                         </li>
                                         <li>
-                                            <a href="mod/pending">Pending</a>
+                                            <a class="redirect-link" href="mod/pending">Pending</a>
                                         </li>
                                         <li>
-                                            <a href="mod/preAssy">PreAssy</a>
+                                            <a class="redirect-link" href="mod/preAssy">PreAssy</a>
                                         </li>
                                         <li>
-                                            <a href="mod/type">Type</a>
+                                            <a class="redirect-link" href="mod/type">Type</a>
                                         </li>
                                     </c:if>
                                 </ul>
                             </li>
-                            <li>
-                                <a href="#"><i class="fa fa-wrench fa-fw"></i> UI Elements<span class="fa arrow"></span></a>
-                                <ul class="nav nav-second-level">
-                                    <li>
-                                        <a href="fileupload">Excel文件上傳</a>
-                                    </li>
-                                    <li>
-                                        <a href="audit">資料版本查詢</a>
-                                    </li>
-                                    <li>
-                                        <a href="worktime-permission">欄位權限設定</a>
-                                    </li>
-                                </ul>
-                                <!-- /.nav-second-level -->
-                            </li>
+                            <c:if test="${sessionScope.user.permission >= initParam.UNIT_LEADER_PERMISSION}">
+                                <li>
+                                    <a href="#"><i class="fa fa-wrench fa-fw"></i> UI Elements<span class="fa arrow"></span></a>
+                                    <ul class="nav nav-second-level">
+                                        <li>
+                                            <a class="redirect-link" href="fileupload">Excel文件上傳</a>
+                                        </li>
+                                        <li>
+                                            <a class="redirect-link" id="preload_page" href="audit">資料版本查詢</a>
+                                        </li>
+                                        <li>
+                                            <a class="redirect-link" href="worktime-permission">欄位權限設定</a>
+                                        </li>
+                                        <li>
+                                            <a class="redirect-link" href="wowface">Not exist page</a>
+                                        </li>
+                                    </ul>
+                                    <!-- /.nav-second-level -->
+                                </li>
+                            </c:if>
                         </ul>
                     </div>
                     <!-- /.sidebar-collapse -->
@@ -190,8 +222,10 @@
                         <!-- /.panel -->
                         <div class="panel panel-default">
                             <div class="panel-body">
+                                <div id="loading">
+                                    <img id="loading-image" src="../images/loading.gif" alt="Loading..." />
+                                </div>
                                 <div id="exchange_page" class="row">
-                                    this is main table
                                 </div>
                                 <!-- /.row -->
                             </div>

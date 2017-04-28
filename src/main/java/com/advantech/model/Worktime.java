@@ -4,6 +4,8 @@ package com.advantech.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -644,4 +646,65 @@ public class Worktime implements java.io.Serializable {
         this.modifiedDate = modifiedDate;
     }
 
+    public void setDefaultProductWt() {
+        Double defaultValue = this.totalModule + this.cleanPanel + this.assy
+                + this.t1 + this.t2 + this.t3 + this.t4 + this.packing + this.upBiRi
+                + this.downBiRi + this.biCost + this.vibration + this.hiPotLeakage
+                + this.coldBoot + this.warmBoot;
+        this.setProductionWt(defaultValue);
+    }
+
+    public void setDefaultSetupTime() {
+        Double defaultValue = (this.totalModule == 0 ? 0 : 10 + this.assy == 0 ? 0 : 30 + this.t1 == 0 ? 0 : 15
+                + this.t2 == 0 ? 0 : 15 + this.t3 == 0 ? 0 : 5 + this.t4 == 0 ? 0 : 5
+                                        + this.packing == 0 ? 0 : 20 + this.cleanPanel == 0 ? 0 : 10) + 0.0;
+        this.setSetupTime(defaultValue);
+    }
+
+    public void setDefaultAssyToT1() {
+        Double defaultValue = this.cleanPanelAndAssembly + this.t1 + this.upBiRi + this.vibration
+                + this.hiPotLeakage + this.coldBoot + this.warmBoot;
+        this.setSetupTime(defaultValue);
+    }
+
+    public void setDefaultT2ToPacking() {
+        Double defaultValue = this.t2 + this.t3 + this.t4 + this.packing
+                + this.downBiRi;
+        this.setT2ToPacking(defaultValue);
+    }
+
+    public void setDefaultAssyStation() {
+        Long defaultValue = this.assy <= 45 ? 3 : (Math.round(this.assy / 15) >= 6 ? 6 : Math.round(this.assy / 15));
+        this.setAssyStation(defaultValue.intValue());
+    }
+
+    public void setDefaultPackingStation() {
+        Double defaultValue = this.packing <= 10 ? 2 : (round(this.packing / 5, 0) >= 6 ? 6 : round(this.packing / 5, 0));
+        this.setPackingStation(defaultValue.intValue());
+    }
+
+    public void setDefaultAssyKanbanTime() {
+        Double defaultValue = round((this.assy - this.assyLeadTime) / this.assyStation, 2);
+        this.setPackingStation(defaultValue.intValue());
+    }
+
+    public void setDefaultPackingKanbanTime() {
+        Double defaultValue = round((this.packing - this.packingLeadTime) / this.packingStation, 2);
+        this.setPackingStation(defaultValue.intValue());
+    }
+
+    public void setDefaultCleanPanelAndAssembly() {
+        Double defaultValue = this.cleanPanel + this.assy;
+        this.setCleanPanelAndAssembly(defaultValue);
+    }
+
+    private double round(double value, int places) {
+        if (places < 0) {
+            throw new IllegalArgumentException();
+        }
+
+        BigDecimal bd = new BigDecimal(value);
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
+    }
 }

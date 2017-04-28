@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.envers.AuditReader;
@@ -28,10 +29,13 @@ import org.springframework.stereotype.Repository;
 public class AuditDAO implements AuditAction {
 
     private final boolean selectedEntitiesOnly = false;
-    private final boolean selectDeletedEntities = true;
+    private final boolean selectDeletedEntities = false;
     private final Set<String> auditColumnNames = new HashSet<>(Arrays.asList(
             new String[]{"REV", "username"}
     ));
+
+    private final Pattern LTRIM = Pattern.compile("^\\s+");
+    private final Pattern RTRIM = Pattern.compile("\\s+$");
 
     @Autowired
     private SessionFactory sessionFactory;
@@ -58,10 +62,22 @@ public class AuditDAO implements AuditAction {
                 .setMaxResults(info.getRows())
                 .setFirstResult((info.getPage() - 1) * info.getRows());
         String sortIndex = info.getSidx();
-        AuditProperty property = auditColumnNames.contains(sortIndex) ? AuditEntity.revisionProperty(sortIndex) : AuditEntity.property(sortIndex);
+        String[] orderColumns = sortIndex.split(",");
+        for (String orderString : orderColumns) {
+            orderString = lrTrim(orderString);
+            String[] orderInfo = orderString.split(" ");
+            if (orderInfo.length != 2) {
+                continue;
+            }
+            AuditProperty property = auditColumnNames.contains(orderInfo[0]) ? AuditEntity.revisionProperty(orderInfo[0]) : AuditEntity.property(orderInfo[0]);
+            q.addOrder(orderInfo[1].equals("asc") || orderInfo[1].equals("") ? property.asc() : property.desc());
+        }
 
-        q.addOrder(info.getSord().equals("asc") ? property.asc() : property.desc());
         return q.getResultList();
+    }
+
+    public String lrTrim(String s) {
+        return LTRIM.matcher(RTRIM.matcher(s).replaceFirst("")).replaceFirst("");
     }
 
     @Override

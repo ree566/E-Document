@@ -8,10 +8,10 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <c:set var="root" value="${pageContext.request.contextPath}/"/>
 <script src="${root}js/jqgrid-custom-select-option-reader.js"></script>
+<script src="${root}js/moment.js"></script>
 <script>
     $(function () {
         var grid = $("#list");
-        var tableName = "Identit";
 
         setSelectOptions({
             rootUrl: "${root}",
@@ -32,12 +32,41 @@
             var version = $("#version").val();
 
             grid.jqGrid('clearGridData');
-            grid.jqGrid('setGridParam', {url: '${root}getSomeTable.do/' + rowId + '/' + version});
+            grid.jqGrid('setGridParam', {url: '${root}getAudit.do/' + rowId + '/' + version});
             grid.trigger('reloadGrid');
 
         });
 
         getEditRecord(-1, -1);
+
+        var groupObj = {
+            1: [
+                ['id', 'REV'],
+                ['asc', 'desc'],
+                ['<b>Id {0} - {1} Record(s)</b>', '<b>Version {0}</b>']
+            ],
+            2: [
+                ['REV', 'id'],
+                ['desc', 'asc'],
+                ['<b>Version {0} - {1} Record(s)</b>', '<b>Id {0}</b>']
+            ]
+        };
+
+        $("#group-change").on("change", function () {
+            var groupingType = $(this).val();
+            if (groupingType) {
+                var obj = groupObj[groupingType];
+                grid.jqGrid('groupingGroupBy', obj[0], {
+                    groupOrder: obj[1],
+                    groupColumnShow: false,
+                    groupCollapse: true,
+                    groupText: obj[2]
+                });
+
+            } else {
+                grid.jqGrid('groupingRemove');
+            }
+        });
 
         function getEditRecord(rowId, version) {
             grid.jqGrid({
@@ -45,10 +74,10 @@
                 datatype: 'json',
                 mtype: 'GET',
                 colModel: [
-                    {label: 'REV', name: "REV", jsonmap: "1.rev", width: 60, frozen: true, hidden: true, search: false},
+                    {label: 'REV', name: "REV", jsonmap: "1.rev", key: true, width: 60, frozen: true, hidden: true, search: false},
                     {label: 'username', name: "username", jsonmap: "1.username", width: 60, frozen: true, hidden: false, search: false},
                     {label: 'REVTYPE', name: "REVTYPE", jsonmap: "2", width: 60, frozen: true, hidden: false, search: false},
-                    {label: 'id', name: "id", jsonmap: "0.id", width: 60, frozen: true, hidden: false, search: false},
+                    {label: 'id', name: "id", jsonmap: "0.id", key: true, width: 60, frozen: true, hidden: false, search: false},
                     {label: 'Model', name: "modelName", jsonmap: "0.modelName", frozen: true, searchrules: {required: true}, searchoptions: search_string_options, formoptions: required_form_options},
                     {label: 'TYPE', name: "type_id", jsonmap: "0.type.id", formatter: selectOptions["type_func"], width: 100, searchrules: {required: true}, searchoptions: search_string_options},
                     {label: 'ProductionWT', name: "productionWt", jsonmap: "0.productionWt", width: 120, searchrules: number_search_rule, searchoptions: search_decimal_options},
@@ -104,7 +133,7 @@
                     {label: '前置時間', name: "packingLeadTime", jsonmap: "0.packingLeadTime", width: 80, searchrules: number_search_rule, searchoptions: search_decimal_options},
                     {label: '看板工時', name: "packingKanbanTime", jsonmap: "0.packingKanbanTime", width: 80, searchrules: number_search_rule, searchoptions: search_decimal_options},
                     {label: 'CleanPanel+Assembly', name: "cleanPanelAndAssembly", jsonmap: "0.cleanPanelAndAssembly", width: 200, searchrules: number_search_rule, searchoptions: search_decimal_options},
-                    {label: 'Modified_Date', key: true, width: 200, name: "modifiedDate", jsonmap: "0.modifiedDate", index: "modifiedDate", formatter: 'date', formatoptions: {srcformat: 'Y-m-d H:i:s A', newformat: 'Y-m-d H:i:s A'}, stype: 'text', searchrules: date_search_rule, searchoptions: search_date_options, align: 'center'}
+                    {label: 'Modified_Date', width: 200, name: "modifiedDate", jsonmap: "0.modifiedDate", index: "modifiedDate", formatter: 'date', formatoptions: {srcformat: 'Y-m-d H:i:s A', newformat: 'Y-m-d H:i:s A'}, stype: 'text', searchrules: date_search_rule, searchoptions: search_date_options, align: 'center'}
                 ],
                 rowNum: 20,
                 rowList: [20, 50, 100],
@@ -116,6 +145,24 @@
                 stringResult: true,
                 gridview: true,
                 prmNames: {id: "modifiedDate"},
+                grouping: true,
+                groupingView: {
+                    groupField: ['modifiedDate', 'id'],
+                    groupOrder: ['desc', 'asc'],
+                    groupColumnShow: [true, false],
+                    groupCollapse: true,
+                    groupText: ['<b>Date {0} - {1} Record(s)</b>', '<b>Id {0}</b>'],
+                    formatDisplayField: [
+                        function (displayValue) {
+                            return moment(displayValue).format("YYYY-MM-DD");
+                        }
+                    ],
+                    isInTheSameGroup: [
+                        function (x, y) {
+                            return moment(x, "DD-MM-YYYY").isSame(moment(y, "DD-MM-YYYY"));
+                        }
+                    ]
+                },
                 jsonReader: {
                     root: "rows",
                     page: "page",
@@ -128,9 +175,9 @@
                     return [true];
                 },
                 navOptions: {reloadGridOptions: {fromServer: true}},
-                caption: tableName + " modify",
+                caption: "Worktime_AUD",
                 height: 450,
-                sortname: 'REV', sortorder: 'desc',
+//                sortname: 'REV', sortorder: 'desc',
                 error: function (xhr, ajaxOptions, thrownError) {
                     alert("Ajax Error occurred\n"
                             + "\nstatus is: " + xhr.status
@@ -157,10 +204,14 @@
 </script>
 
 <div id="flow-content">
-    <div>
-        <input type="text" id="rowId" placeholder="table row id" />
-        <input type="text" id="version" placeholder="version" />
-        <input type="button" id="send" value="send" />
+    <div class="form-inline">
+        <input type="text" id="rowId" class="form-control" placeholder="table row id" />
+        <input type="text" id="version" class="form-control" placeholder="version" />
+        <input type="button" id="send" class="form-control" value="send" />
+        <select id="group-change" class="form-control">
+            <option value="1">ID & REV</option>
+            <option value="2">REV & ID</option>
+        </select>
     </div>
     <table id="list"></table> 
     <div id="pager"></div>

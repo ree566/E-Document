@@ -2,31 +2,9 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <c:set var="root" value="${pageContext.request.contextPath}/"/>
 <style>
-    /*    .ui-jqgrid,
-        .ui-jqgrid .ui-jqgrid-view,
-        .ui-jqgrid .ui-jqgrid-pager,
-        .ui-jqgrid .ui-pg-input {
-            font-size: 15px;
-        }
-        .small-button {
-            font-size: .8em !important;
-        }
-        .ui-button-text {
-            font-size: inherit !important;
-        } 
-        th.ui-th-column div {
-            height:auto !important;
-        }
-        .ui-th-column>div,
-        .ui-jqgrid-btable .jqgrow>td {
-            word-wrap: break-word;  IE 5.5+ and CSS3 
-            white-space: pre-wrap;  CSS3 
-            white-space: -moz-pre-wrap;  Mozilla, since 1999 
-            white-space: -pre-wrap;  Opera 4-6 
-            white-space: -o-pre-wrap;  Opera 7 
-            overflow: hidden;
-            vertical-align: middle;
-        }*/
+    .permission-hint{
+        color: red;
+    }
 </style>
 
 <script src="${root}js/urlParamGetter.js"></script>
@@ -40,6 +18,7 @@
         var unitName = '${sessionScope.user.userType.name}';
         var modifyColumns = (unitName == null || unitName == "") ? [] : getColumn();
         var grid = $("#list");
+        var isEditable = ${sessionScope.user.permission > 0};
 
         //Set param into jqgrid-custom-select-option-reader.js and get option by param selectOptions
         //You can get the floor select options and it's formatter function
@@ -174,7 +153,7 @@
             }
         })
                 .jqGrid('navGrid', '#pager',
-                        {edit: true, add: true, del: true, search: true},
+                        {edit: isEditable, add: isEditable, del: isEditable, search: true},
                         {
                             jqModal: true,
                             dataheight: 350,
@@ -289,6 +268,7 @@
     });
 </script>
 <div id="worktime-content">
+    <h5>Your permission is: <b class="permission-hint"><c:out value="${sessionScope.user.permission <= 0 ? 'R' : 'RW'}" /></b></h5>
     <table id="list"></table> 
     <div id="pager"></div>
 </div>
