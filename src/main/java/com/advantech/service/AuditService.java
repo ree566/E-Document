@@ -8,6 +8,7 @@ package com.advantech.service;
 import com.advantech.dao.AuditAction;
 import com.advantech.dao.AuditDAO;
 import com.advantech.helper.PageInfo;
+import java.util.Date;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -53,4 +54,7 @@ public class AuditService implements AuditAction {
         return auditDAO.forEntityAtReversion(clz, version);
     }
 
+    public List findByDate(Class clz, PageInfo info, Date startDate, Date endDate) {
+        return auditDAO.findByDate(clz, info, startDate, endDate);
+    }
 }

@@ -3,7 +3,6 @@ package com.advantech.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.util.HashSet;
 import java.util.Set;
@@ -23,19 +22,26 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "Flow",
-         schema = "dbo",
-         catalog = "E_Document"
+        schema = "dbo",
+        catalog = "E_Document"
 )
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Flow implements java.io.Serializable {
 
     private int id;
+    private Flow flow;
     private FlowGroup flowGroup;
     private String name;
+
+    @JsonIgnore
+    private Set<Flow> flows = new HashSet<Flow>(0);
+
     @JsonIgnore
     private Set<Worktime> worktimesForTestFlowId = new HashSet<>(0);
+
     @JsonIgnore
     private Set<Worktime> worktimesForPackingFlowId = new HashSet<>(0);
+
     @JsonIgnore
     private Set<Worktime> worktimesForBabFlowId = new HashSet<>(0);
 
@@ -46,8 +52,10 @@ public class Flow implements java.io.Serializable {
         this.id = id;
     }
 
-    public Flow(int id, FlowGroup flowGroup, String name, Set<Worktime> worktimesForTestFlowId, Set<Worktime> worktimesForPackingFlowId, Set<Worktime> worktimesForBabFlowId) {
+    public Flow(int id, Flow flow, Set<Flow> flows, FlowGroup flowGroup, String name, Set<Worktime> worktimesForTestFlowId, Set<Worktime> worktimesForPackingFlowId, Set<Worktime> worktimesForBabFlowId) {
         this.id = id;
+        this.flow = flow;
+        this.flows = flows;
         this.flowGroup = flowGroup;
         this.name = name;
         this.worktimesForTestFlowId = worktimesForTestFlowId;
@@ -64,6 +72,16 @@ public class Flow implements java.io.Serializable {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "p_flow_id")
+    public Flow getFlow() {
+        return this.flow;
+    }
+
+    public void setFlow(Flow flow) {
+        this.flow = flow;
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -112,4 +130,12 @@ public class Flow implements java.io.Serializable {
         this.worktimesForBabFlowId = worktimesForBabFlowId;
     }
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "flow")
+    public Set<Flow> getFlows() {
+        return this.flows;
+    }
+
+    public void setFlows(Set<Flow> flows) {
+        this.flows = flows;
+    }
 }

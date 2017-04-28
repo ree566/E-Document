@@ -7,6 +7,7 @@ package com.advantech.dao;
 
 import com.advantech.helper.PageInfo;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -103,4 +104,28 @@ public class AuditDAO implements AuditAction {
         return q.getResultList();
     }
 
+    public List findByDate(Class clz, PageInfo info, Date startDate, Date endDate) {
+        AuditQuery q = getReader().createQuery().forRevisionsOfEntity(clz, selectedEntitiesOnly, selectDeletedEntities);
+        q.add(AuditEntity.property("modifiedDate").between(startDate, endDate));
+
+        info.setMaxNumOfRows(((Long) q.addProjection(AuditEntity.id().count()).getSingleResult()).intValue());
+
+        q = getReader().createQuery().forRevisionsOfEntity(clz, selectedEntitiesOnly, selectDeletedEntities)
+                .setMaxResults(info.getRows())
+                .setFirstResult((info.getPage() - 1) * info.getRows())
+                .add(AuditEntity.property("modifiedDate").between(startDate, endDate));
+        String sortIndex = info.getSidx();
+        String[] orderColumns = sortIndex.split(",");
+        for (String orderString : orderColumns) {
+            orderString = lrTrim(orderString);
+            String[] orderInfo = orderString.split(" ");
+            if (orderInfo.length != 2) {
+                continue;
+            }
+            AuditProperty property = auditColumnNames.contains(orderInfo[0]) ? AuditEntity.revisionProperty(orderInfo[0]) : AuditEntity.property(orderInfo[0]);
+            q.addOrder(orderInfo[1].equals("asc") || orderInfo[1].equals("") ? property.asc() : property.desc());
+        }
+
+        return q.getResultList();
+    }
 }

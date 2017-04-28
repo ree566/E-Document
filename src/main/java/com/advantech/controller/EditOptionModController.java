@@ -133,18 +133,33 @@ public class EditOptionModController {
             case "Flow":
                 FlowGroup flowGroup = flow.getFlowGroup();
                 flow.setFlowGroup(flowGroup == null ? null : flowGroupService.findByPrimaryKey(flowGroup.getId()));
+                List<Flow> l;
                 switch (oper) {
                     case ADD:
-                        responseFlag = flowService.insert(flow);
+                        l = (List<Flow>) flowService.findAll();
+                        if (l.contains(flow)) {
+                            modifyMessage = "This flow is already exist";
+                        } else {
+                            responseFlag = flowService.insert(flow);
+                            modifyMessage = responseFlag == 1 ? this.SUCCESS_MESSAGE : this.FAIL_MESSAGE;
+                        }
                         break;
                     case EDIT:
-                        responseFlag = flowService.update(flow);
+                        l = (List<Flow>) flowService.findAll();
+                        if (l.contains(flow)) {
+                            modifyMessage = "This flow is already exist";
+                        } else {
+                            responseFlag = flowService.update(flow);
+                            modifyMessage = responseFlag == 1 ? this.SUCCESS_MESSAGE : this.FAIL_MESSAGE;
+                        }
                         break;
                     case DELETE:
                         responseFlag = flowService.delete(flowService.findByPrimaryKey(flow.getId()));
+                        modifyMessage = responseFlag == 1 ? this.SUCCESS_MESSAGE : this.FAIL_MESSAGE;
                         break;
+                    default:
+                        modifyMessage = "unsupport action";
                 }
-                modifyMessage = responseFlag == 1 ? this.SUCCESS_MESSAGE : this.FAIL_MESSAGE;
                 break;
             case "Identit":
                 switch (oper) {

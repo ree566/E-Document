@@ -12,6 +12,11 @@
 <script>
     $(function () {
         var grid = $("#list");
+        var today = moment().toDate();
+        var yesterday = moment().add(-1, 'days').toDate();
+
+        $("#sD").datepicker({dateFormat: 'yy-mm-dd', defaultDate: yesterday}).datepicker("setDate", yesterday);
+        $("#eD").datepicker({dateFormat: 'yy-mm-dd', defaultDate: today}).datepicker("setDate", today);
 
         setSelectOptions({
             rootUrl: "${root}",
@@ -30,14 +35,24 @@
         $("#send").click(function () {
             var rowId = $("#rowId").val();
             var version = $("#version").val();
+            var startDate = $("#sD").val();
+            var endDate = $("#eD").val();
+
+            if (rowId == null || rowId == '') {
+                rowId = -1;
+            }
+
+            if (version == null || version == '') {
+                version = -1;
+            }
 
             grid.jqGrid('clearGridData');
-            grid.jqGrid('setGridParam', {url: '${root}getAudit.do/' + rowId + '/' + version});
+            grid.jqGrid('setGridParam', {url: '${root}getAudit.do/' + rowId + '/' + version, postData: {startDate: startDate, endDate: endDate}});
             grid.trigger('reloadGrid');
 
         });
 
-        getEditRecord(-1, -1);
+        getEditRecord(-1, -1, $("#sD").val(), $("#eD").val());
 
         var groupObj = {
             1: [
@@ -68,9 +83,13 @@
             }
         });
 
-        function getEditRecord(rowId, version) {
+        function getEditRecord(rowId, version, startDate, endDate) {
             grid.jqGrid({
                 url: '${root}getAudit.do/' + rowId + '/' + version,
+                postData: {
+                    startDate: startDate,
+                    endDate: endDate
+                },
                 datatype: 'json',
                 mtype: 'GET',
                 colModel: [
@@ -102,7 +121,7 @@
                     {label: 'Floor', name: "floor_id", jsonmap: "0.floor.id", width: 100, searchrules: {required: true}, searchoptions: search_string_options, formatter: selectOptions["floor_func"]},
                     {label: 'Pending', name: "pending_id", jsonmap: "0.pending.id", formatter: selectOptions["pending_func"], width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options},
                     {label: 'Pending TIME', name: "pendingTime", jsonmap: "0.pendingTime", width: 100, searchrules: {required: true}, searchoptions: search_decimal_options, formoptions: required_form_options},
-                    {label: 'BurnIn', name: "burnIn", jsonmap: "0.pendingTime", width: 100, searchrules: {required: true}, searchoptions: search_string_options},
+                    {label: 'BurnIn', name: "burnIn", jsonmap: "0.pendingTime", width: 100, searchrules: {required: true}, searchoptions: search_string_options, editoptions: changeOptions},
                     {label: 'B/I Time', name: "biTime", jsonmap: "0.biTime", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: required_form_options},
                     {label: 'BI_Temperature', name: "biTemperature", jsonmap: "0.biTemperature", width: 120, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: required_form_options},
                     {label: 'SPE Owner', name: "identitBySpeOwnerId_id", jsonmap: "0.identitBySpeOwnerId.id", formatter: selectOptions["spe_identit_func"], width: 100, searchrules: {required: true}, searchoptions: search_string_options},
@@ -135,8 +154,8 @@
                     {label: 'CleanPanel+Assembly', name: "cleanPanelAndAssembly", jsonmap: "0.cleanPanelAndAssembly", width: 200, searchrules: number_search_rule, searchoptions: search_decimal_options},
                     {label: 'Modified_Date', width: 200, name: "modifiedDate", jsonmap: "0.modifiedDate", index: "modifiedDate", formatter: 'date', formatoptions: {srcformat: 'Y-m-d H:i:s A', newformat: 'Y-m-d H:i:s A'}, stype: 'text', searchrules: date_search_rule, searchoptions: search_date_options, align: 'center'}
                 ],
-                rowNum: 20,
-                rowList: [20, 50, 100],
+                rowNum: 100,
+                rowList: [100, 200, 500, 1000],
                 pager: '#pager',
                 viewrecords: true,
                 autowidth: true,
@@ -154,7 +173,7 @@
                     groupText: ['<b>Date {0} - {1} Record(s)</b>', '<b>Id {0}</b>'],
                     formatDisplayField: [
                         function (displayValue) {
-                            return moment(displayValue).format("YYYY-MM-DD");
+                            return moment(displayValue, "YYYY-MM-DD").format("YYYY-MM-DD");
                         }
                     ],
                     isInTheSameGroup: [
@@ -207,6 +226,8 @@
     <div class="form-inline">
         <input type="text" id="rowId" class="form-control" placeholder="table row id" />
         <input type="text" id="version" class="form-control" placeholder="version" />
+        <input type="text" id="sD" name="startDate" placeholder="startDate" class="form-control" />
+        <input type="text" id="eD" name="endDate" placeholder="endDate" class="form-control" />
         <input type="button" id="send" class="form-control" value="send" />
         <select id="group-change" class="form-control">
             <option value="1">ID & REV</option>

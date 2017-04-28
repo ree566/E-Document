@@ -37,6 +37,32 @@
             ]
         });
 
+        var burnIn_select_event = [
+            {
+                type: 'change',
+                fn: function (e) {
+                    var selectOption = $('option:selected', this).text();
+                    var defaultValue = {
+                        BI: 40,
+                        RI: 0,
+                        N: 0
+                    };
+                    $('input#biTemperature, input#biTime').val(defaultValue[selectOption]);
+                }
+            }
+        ];
+
+        var pending_select_event = [
+            {
+                type: 'change',
+                fn: function (e) {
+                    var selectOption = $('option:selected', this).text();
+                    $('input#pendingTime').val(selectOption == 'N' ? 0 : '');
+                }
+            }
+        ];
+
+
         grid.jqGrid({
             url: '${root}getSheetView.do',
             datatype: 'json',
@@ -66,9 +92,9 @@
                 {label: 'ASS_T1', name: "assyToT1", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options},
                 {label: 'T2_PACKING', name: "t2ToPacking", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options},
                 {label: 'Floor', name: "floor.id", edittype: "select", editoptions: {value: selectOptions["floor"]}, width: 100, searchrules: {required: true}, searchoptions: search_string_options, formatter: selectOptions["floor_func"]},
-                {label: 'Pending', name: "pending.id", edittype: "select", editoptions: {value: selectOptions["pending"]}, formatter: selectOptions["pending_func"], width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options},
-                {label: 'Pending TIME', name: "pendingTime", width: 100, searchrules: {required: true}, searchoptions: search_decimal_options, editrules: {required: true, number: true}, editoptions: {defaultValue: '0'}, formoptions: required_form_options},
-                {label: 'BurnIn', name: "burnIn", edittype: "select", editoptions: {value: "Y:Y;N:N"}, width: 100, searchrules: {required: true}, searchoptions: search_string_options},
+                {label: 'Pending', name: "pending.id", edittype: "select", editoptions: {value: selectOptions["pending"], dataEvents: pending_select_event}, formatter: selectOptions["pending_func"], width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options},
+                {label: 'Pending TIME', name: "pendingTime", width: 100, searchrules: {required: true}, searchoptions: search_decimal_options, editrules: {required: true, number: true}, formoptions: required_form_options},
+                {label: 'BurnIn', name: "burnIn", edittype: "select", editoptions: {value: "N:N;BI:BI;RI:RI", dataEvents: burnIn_select_event}, width: 100, searchrules: {required: true}, searchoptions: search_string_options},
                 {label: 'B/I Time', name: "biTime", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {required: true, number: true}, editoptions: {defaultValue: '0'}, formoptions: required_form_options},
                 {label: 'BI_Temperature', name: "biTemperature", width: 120, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {required: true, number: true}, editoptions: {defaultValue: '0'}, formoptions: required_form_options},
                 {label: 'SPE Owner', name: "identitBySpeOwnerId.id", edittype: "select", editoptions: {value: selectOptions["spe_identit"]}, formatter: selectOptions["spe_identit_func"], width: 100, searchrules: {required: true}, searchoptions: search_string_options},
