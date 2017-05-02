@@ -8,11 +8,19 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <c:set var="root" value="${pageContext.request.contextPath}/"/>
 <script>
+    var scrollPosition = 0;
+
     $(function () {
         var grid = $("#list");
         var tableName = "Flow";
 
+        var flow = getSelectOption("Flow", {rows: 1000});
         var flowGroup = getSelectOption("FlowGroup");
+
+        var flowFormater = function (cellvalue, options, rowObject) {
+            var obj = flow[cellvalue];
+            return obj == null ? "" : obj;
+        };
 
         var flowGroupFormater = function (cellvalue, options, rowObject) {
             var obj = flowGroup[cellvalue];
@@ -26,11 +34,12 @@
             guiStyle: "bootstrap",
             colModel: [
                 {label: 'id', name: "id", width: 60, key: true, editable: true, editoptions: {readonly: 'readonly', disabled: true, defaultValue: "0"}},
-                {label: 'name', name: "name", width: 60, editable: true, editrules: {required: true}, formoptions: {elmprefix: "(*)"}},
-                {label: 'flow_group', name: "flowGroup.id", editable: true, formatter: flowGroupFormater, edittype: 'select', editoptions: {value: flowGroup}}
+                {label: 'name', name: "name", width: 60, editable: true, editrules: {required: true}, formoptions: {elmsuffix: "(*必填)"}},
+                {label: 'flow_group', name: "flowGroup.id", editable: true, formatter: flowGroupFormater, edittype: 'select', editoptions: {value: flowGroup}},
+                {label: 'flow_parent', name: "p_flow_id", editable: true, formatter: flowFormater, edittype: 'select', editoptions: {value: flow}}
             ],
             rowNum: 20,
-            rowList: [20, 50, 100],
+            rowList: [20, 50, 100, 1000],
             pager: '#pager',
             viewrecords: true,
             autowidth: true,
@@ -54,6 +63,12 @@
             height: 450,
             editurl: '${root}updateSelectOption.do/' + tableName,
             sortname: 'id', sortorder: 'asc',
+            onSelectRow: function () {
+                scrollPosition = grid.closest(".ui-jqgrid-bdiv").scrollTop();
+            },
+            gridComplete: function () {
+                grid.closest(".ui-jqgrid-bdiv").scrollTop(scrollPosition);
+            },
             error: function (xhr, ajaxOptions, thrownError) {
                 alert("Ajax Error occurred\n"
                         + "\nstatus is: " + xhr.status

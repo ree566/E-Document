@@ -29,21 +29,19 @@ import javax.persistence.Table;
 public class Flow implements java.io.Serializable {
 
     private int id;
-    private Flow flow;
+//    private Flow flow;
     private FlowGroup flowGroup;
     private String name;
-
     @JsonIgnore
-    private Set<Flow> flows = new HashSet<Flow>(0);
-
+    private Set<Worktime> worktimesForTestFlowId = new HashSet<Worktime>(0);
     @JsonIgnore
-    private Set<Worktime> worktimesForTestFlowId = new HashSet<>(0);
-
+    private Set<Worktime> worktimesForPackingFlowId = new HashSet<Worktime>(0);
+//    @JsonIgnore
+//    private Set<Flow> flows = new HashSet<Flow>(0);
     @JsonIgnore
-    private Set<Worktime> worktimesForPackingFlowId = new HashSet<>(0);
+    private Set<Worktime> worktimesForBabFlowId = new HashSet<Worktime>(0);
 
-    @JsonIgnore
-    private Set<Worktime> worktimesForBabFlowId = new HashSet<>(0);
+    private Integer p_flow_id;
 
     public Flow() {
     }
@@ -52,14 +50,14 @@ public class Flow implements java.io.Serializable {
         this.id = id;
     }
 
-    public Flow(int id, Flow flow, Set<Flow> flows, FlowGroup flowGroup, String name, Set<Worktime> worktimesForTestFlowId, Set<Worktime> worktimesForPackingFlowId, Set<Worktime> worktimesForBabFlowId) {
+    public Flow(int id, Flow flow, FlowGroup flowGroup, String name, Set<Worktime> worktimesForTestFlowId, Set<Worktime> worktimesForPackingFlowId, Set<Flow> flows, Set<Worktime> worktimesForBabFlowId) {
         this.id = id;
-        this.flow = flow;
-        this.flows = flows;
+//        this.flow = flow;
         this.flowGroup = flowGroup;
         this.name = name;
         this.worktimesForTestFlowId = worktimesForTestFlowId;
         this.worktimesForPackingFlowId = worktimesForPackingFlowId;
+//        this.flows = flows;
         this.worktimesForBabFlowId = worktimesForBabFlowId;
     }
 
@@ -74,16 +72,15 @@ public class Flow implements java.io.Serializable {
         this.id = id;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "p_flow_id")
-    public Flow getFlow() {
-        return this.flow;
-    }
-
-    public void setFlow(Flow flow) {
-        this.flow = flow;
-    }
-
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "p_flow_id")
+//    public Flow getFlow() {
+//        return this.flow;
+//    }
+//
+//    public void setFlow(Flow flow) {
+//        this.flow = flow;
+//    }
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "flow_group_id")
     public FlowGroup getFlowGroup() {
@@ -121,6 +118,14 @@ public class Flow implements java.io.Serializable {
         this.worktimesForPackingFlowId = worktimesForPackingFlowId;
     }
 
+//    @OneToMany(fetch = FetchType.LAZY, mappedBy = "flow")
+//    public Set<Flow> getFlows() {
+//        return this.flows;
+//    }
+//
+//    public void setFlows(Set<Flow> flows) {
+//        this.flows = flows;
+//    }
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "flowByBabFlowId")
     public Set<Worktime> getWorktimesForBabFlowId() {
         return this.worktimesForBabFlowId;
@@ -130,12 +135,13 @@ public class Flow implements java.io.Serializable {
         this.worktimesForBabFlowId = worktimesForBabFlowId;
     }
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "flow")
-    public Set<Flow> getFlows() {
-        return this.flows;
+    @Column(name = "p_flow_id")
+    public Integer getP_flow_id() {
+        return p_flow_id;
     }
 
-    public void setFlows(Set<Flow> flows) {
-        this.flows = flows;
+    public void setP_flow_id(Integer p_flow_id) {
+        this.p_flow_id = p_flow_id;
     }
+
 }

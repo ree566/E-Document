@@ -42,7 +42,7 @@ public class FlowDAO implements BasicDAO {
  
     @Override
     public Object findByPrimaryKey(Object obj_id) {
-        return currentSession().load(Flow.class, (int) obj_id);
+        return currentSession().get(Flow.class, (int) obj_id);
     }
 
     @Override

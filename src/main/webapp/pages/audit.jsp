@@ -64,6 +64,11 @@
                 ['REV', 'id'],
                 ['desc', 'asc'],
                 ['<b>Version {0} - {1} Record(s)</b>', '<b>Id {0}</b>']
+            ],
+            3: [
+                ['id'],
+                ['asc'],
+                ['<b>Id {0}</b>']
             ]
         };
 
@@ -79,7 +84,7 @@
                 });
 
             } else {
-                grid.jqGrid('groupingRemove');
+                grid.jqGrid('groupingRemove', true);
             }
         });
 
@@ -121,7 +126,7 @@
                     {label: 'Floor', name: "floor_id", jsonmap: "0.floor.id", width: 100, searchrules: {required: true}, searchoptions: search_string_options, formatter: selectOptions["floor_func"]},
                     {label: 'Pending', name: "pending_id", jsonmap: "0.pending.id", formatter: selectOptions["pending_func"], width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options},
                     {label: 'Pending TIME', name: "pendingTime", jsonmap: "0.pendingTime", width: 100, searchrules: {required: true}, searchoptions: search_decimal_options, formoptions: required_form_options},
-                    {label: 'BurnIn', name: "burnIn", jsonmap: "0.pendingTime", width: 100, searchrules: {required: true}, searchoptions: search_string_options, editoptions: changeOptions},
+                    {label: 'BurnIn', name: "burnIn", jsonmap: "0.pendingTime", width: 100, searchrules: {required: true}, searchoptions: search_string_options},
                     {label: 'B/I Time', name: "biTime", jsonmap: "0.biTime", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: required_form_options},
                     {label: 'BI_Temperature', name: "biTemperature", jsonmap: "0.biTemperature", width: 120, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: required_form_options},
                     {label: 'SPE Owner', name: "identitBySpeOwnerId_id", jsonmap: "0.identitBySpeOwnerId.id", formatter: selectOptions["spe_identit_func"], width: 100, searchrules: {required: true}, searchoptions: search_string_options},
@@ -232,6 +237,7 @@
         <select id="group-change" class="form-control">
             <option value="1">ID & REV</option>
             <option value="2">REV & ID</option>
+            <option value="3">ID</option>
         </select>
     </div>
     <table id="list"></table> 

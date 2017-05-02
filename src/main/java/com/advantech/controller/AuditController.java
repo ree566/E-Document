@@ -50,13 +50,10 @@ public class AuditController {
         if (id == -1 && version == -1 && startDate != null && endDate != null) {
             DateTime d1 = startDate.withTimeAtStartOfDay();
             DateTime d2 = endDate.withHourOfDay(23).withMinuteOfHour(59);
-            
-            System.out.println(d1);
-            System.out.println(d2);
-            
+
             l = auditService.findByDate(Worktime.class, info, d1.toDate(), d2.toDate());
         } else if (id != -1) {
-            l = auditService.findReversions(Worktime.class, id);
+            l = auditService.findByPrimaryKey(Worktime.class, id);
         } else {
             l = new ArrayList();
             l.add(auditService.findByPrimaryKeyAndVersion(Worktime.class, id, version));
