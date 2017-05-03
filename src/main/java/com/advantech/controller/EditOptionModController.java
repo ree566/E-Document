@@ -28,6 +28,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Set;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
@@ -118,6 +119,7 @@ public class EditOptionModController {
             @ModelAttribute PageInfo info,
             @ModelAttribute Identit user,
             @ModelAttribute Flow flow,
+            @RequestParam(required = false, defaultValue = "0") int parentFlowId,
             @ModelAttribute Identit identit,
             @ModelAttribute Pending pending,
             @ModelAttribute PreAssy preAssy,
@@ -159,6 +161,27 @@ public class EditOptionModController {
                         break;
                     default:
                         modifyMessage = "unsupport action";
+                }
+                break;
+            case "Flow_sub":
+                switch (oper) {
+                    case ADD:
+                        List<Integer> addSubIds = new ArrayList();
+                        addSubIds.add(flow.getId());
+                        responseFlag = flowService.addSub(parentFlowId, addSubIds);
+                        modifyMessage = responseFlag == 1 ? this.SUCCESS_MESSAGE : this.FAIL_MESSAGE;
+                        break;
+                    case EDIT:
+                        modifyMessage = this.FAIL_MESSAGE;
+                        break;
+                    case DELETE:
+                        List deleteSubIds = new ArrayList();
+                        deleteSubIds.add(flow.getId());
+                        responseFlag = flowService.deleteSub(parentFlowId, deleteSubIds);
+                        modifyMessage = responseFlag == 1 ? this.SUCCESS_MESSAGE : this.FAIL_MESSAGE;
+                        break;
+                    default:
+                        modifyMessage = this.FAIL_MESSAGE;
                 }
                 break;
             case "Identit":

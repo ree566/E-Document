@@ -1,8 +1,10 @@
 package com.advantech.model;
 // Generated 2017/4/7 下午 02:26:06 by Hibernate Tools 4.3.1
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.util.HashSet;
 import java.util.Set;
@@ -13,6 +15,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -25,23 +29,27 @@ import javax.persistence.Table;
         schema = "dbo",
         catalog = "E_Document"
 )
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = Flow.class)
 public class Flow implements java.io.Serializable {
 
     private int id;
-//    private Flow flow;
     private FlowGroup flowGroup;
     private String name;
+    
     @JsonIgnore
     private Set<Worktime> worktimesForTestFlowId = new HashSet<Worktime>(0);
+    
     @JsonIgnore
     private Set<Worktime> worktimesForPackingFlowId = new HashSet<Worktime>(0);
-//    @JsonIgnore
-//    private Set<Flow> flows = new HashSet<Flow>(0);
+    
+//    @JsonManagedReference
+    private Set<Flow> flowsForTestFlowId = new HashSet<Flow>(0);
+    
+//    @JsonBackReference
+    private Set<Flow> flowsForBabFlowId = new HashSet<Flow>(0);
+    
     @JsonIgnore
     private Set<Worktime> worktimesForBabFlowId = new HashSet<Worktime>(0);
-
-    private Integer p_flow_id;
 
     public Flow() {
     }
@@ -50,14 +58,14 @@ public class Flow implements java.io.Serializable {
         this.id = id;
     }
 
-    public Flow(int id, Flow flow, FlowGroup flowGroup, String name, Set<Worktime> worktimesForTestFlowId, Set<Worktime> worktimesForPackingFlowId, Set<Flow> flows, Set<Worktime> worktimesForBabFlowId) {
+    public Flow(int id, FlowGroup flowGroup, String name, Set<Worktime> worktimesForTestFlowId, Set<Worktime> worktimesForPackingFlowId, Set<Flow> flowsForTestFlowId, Set<Flow> flowsForBabFlowId, Set<Worktime> worktimesForBabFlowId) {
         this.id = id;
-//        this.flow = flow;
         this.flowGroup = flowGroup;
         this.name = name;
         this.worktimesForTestFlowId = worktimesForTestFlowId;
         this.worktimesForPackingFlowId = worktimesForPackingFlowId;
-//        this.flows = flows;
+        this.flowsForTestFlowId = flowsForTestFlowId;
+        this.flowsForBabFlowId = flowsForBabFlowId;
         this.worktimesForBabFlowId = worktimesForBabFlowId;
     }
 
@@ -72,15 +80,6 @@ public class Flow implements java.io.Serializable {
         this.id = id;
     }
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "p_flow_id")
-//    public Flow getFlow() {
-//        return this.flow;
-//    }
-//
-//    public void setFlow(Flow flow) {
-//        this.flow = flow;
-//    }
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "flow_group_id")
     public FlowGroup getFlowGroup() {
@@ -118,14 +117,30 @@ public class Flow implements java.io.Serializable {
         this.worktimesForPackingFlowId = worktimesForPackingFlowId;
     }
 
-//    @OneToMany(fetch = FetchType.LAZY, mappedBy = "flow")
-//    public Set<Flow> getFlows() {
-//        return this.flows;
-//    }
-//
-//    public void setFlows(Set<Flow> flows) {
-//        this.flows = flows;
-//    }
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "Flow_REF", schema = "dbo", catalog = "E_Document", joinColumns = {
+        @JoinColumn(name = "bab_flow_id", nullable = false, updatable = false)}, inverseJoinColumns = {
+        @JoinColumn(name = "test_flow_id", nullable = false, updatable = false)})
+    public Set<Flow> getFlowsForTestFlowId() {
+        return this.flowsForTestFlowId;
+    }
+
+    public void setFlowsForTestFlowId(Set<Flow> flowsForTestFlowId) {
+        this.flowsForTestFlowId = flowsForTestFlowId;
+    }
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "Flow_REF", schema = "dbo", catalog = "E_Document", joinColumns = {
+        @JoinColumn(name = "test_flow_id", nullable = false, updatable = false)}, inverseJoinColumns = {
+        @JoinColumn(name = "bab_flow_id", nullable = false, updatable = false)})
+    public Set<Flow> getFlowsForBabFlowId() {
+        return this.flowsForBabFlowId;
+    }
+
+    public void setFlowsForBabFlowId(Set<Flow> flowsForBabFlowId) {
+        this.flowsForBabFlowId = flowsForBabFlowId;
+    }
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "flowByBabFlowId")
     public Set<Worktime> getWorktimesForBabFlowId() {
         return this.worktimesForBabFlowId;
@@ -133,15 +148,6 @@ public class Flow implements java.io.Serializable {
 
     public void setWorktimesForBabFlowId(Set<Worktime> worktimesForBabFlowId) {
         this.worktimesForBabFlowId = worktimesForBabFlowId;
-    }
-
-    @Column(name = "p_flow_id")
-    public Integer getP_flow_id() {
-        return p_flow_id;
-    }
-
-    public void setP_flow_id(Integer p_flow_id) {
-        this.p_flow_id = p_flow_id;
     }
 
 }

@@ -5,16 +5,17 @@
  */
 package com.advantech.controller;
 
+import static com.advantech.helper.JqGridResponseUtils.toJqGridResponse;
 import com.advantech.helper.PageInfo;
-import com.advantech.model.Flow;
 import com.advantech.model.Identit;
+import com.advantech.response.JqGridResponse;
 import com.advantech.service.FlowService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
@@ -30,11 +31,13 @@ public class TestController {
     private FlowService flowService;
 
     @ResponseBody
-    @RequestMapping(value = "/test.do/{id}", method = {RequestMethod.GET, RequestMethod.POST})
-    public Flow test(
-            @PathVariable int id,
+    @RequestMapping(value = "/test.do", method = {RequestMethod.GET, RequestMethod.POST})
+    public JqGridResponse test(
+            @RequestParam int id,
+            @ModelAttribute PageInfo info,
             @ModelAttribute("user") Identit user) {
 
-        return flowService.findByPrimaryKey(1);
+        JqGridResponse viewResp = toJqGridResponse(flowService.findByParent(id), info);
+        return viewResp;
     }
 }

@@ -24,6 +24,7 @@ public class HibernateAwareObjectMapper extends ObjectMapper {
 
     @PostConstruct
     public void afterPropertiesSet() {
+        configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 //        configure(SerializationFeature.EAGER_SERIALIZER_FETCH, true);
     }
 
