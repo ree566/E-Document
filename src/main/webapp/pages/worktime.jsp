@@ -31,7 +31,9 @@
                 {name: "identit", nameprefix: "ee_", isNullable: false, dataToServer: "EE"},
                 {name: "identit", nameprefix: "qc_", isNullable: false, dataToServer: "QC"},
                 {name: "type", isNullable: false},
-                {name: "flow", isNullable: true},
+                {name: "flow", nameprefix: "bab_", isNullable: false, dataToServer: "1"},
+                {name: "flow", nameprefix: "test_", isNullable: true, dataToServer: "3"},
+                {name: "flow", nameprefix: "pkg_", isNullable: true, dataToServer: "2"},
                 {name: "preAssy", isNullable: true},
                 {name: "pending", isNullable: false}
             ]
@@ -62,15 +64,15 @@
             }
         ];
 
-
         grid.jqGrid({
             url: '${root}getSheetView.do',
             datatype: 'json',
             mtype: 'POST',
 //            guiStyle: "bootstrap",
+//            autoencode: true,
             colModel: [
-                {label: 'id', name: "id", width: 60, frozen: true, hidden: false, key: true, search: false, editable: true, editoptions: {readonly: 'readonly', disabled: true, defaultValue: "0"}},
-                {label: 'Model', name: "modelName", frozen: true, editable: true, searchrules: {required: true}, searchoptions: search_string_options, editrules: {required: true}, formoptions: required_form_options},
+                {label: 'id', name: "id", width: 60, frozen: false, hidden: false, key: true, search: false, editable: true, editoptions: {readonly: 'readonly', disabled: true, defaultValue: "0"}},
+                {label: 'Model', name: "modelName", frozen: false, editable: true, searchrules: {required: true}, searchoptions: search_string_options, editrules: {required: true}, formoptions: required_form_options},
                 {label: 'TYPE', name: "type.id", edittype: "select", editoptions: {value: selectOptions["type"]}, formatter: selectOptions["type_func"], width: 100, searchrules: {required: true}, searchoptions: search_string_options},
                 {label: 'ProductionWT', name: "productionWt", width: 120, searchrules: number_search_rule, searchoptions: search_decimal_options},
                 {label: 'Total Module', name: "totalModule", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}},
@@ -105,9 +107,9 @@
                 {label: 'KEYPART_A', name: "keypartA", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, editoptions: {defaultValue: '0'}},
                 {label: 'KEYPART_B', name: "keypartB", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, editoptions: {defaultValue: '0'}},
                 {label: 'PRE-ASSY', name: "preAssy.id", edittype: "select", editoptions: {value: selectOptions["preAssy"]}, formatter: selectOptions["preAssy_func"], width: 100, searchrules: {required: true}, searchoptions: search_string_options},
-                {label: 'BAB_FLOW', name: "flowByBabFlowId.id", edittype: "select", editoptions: {value: selectOptions["flow"]}, formatter: selectOptions["flow_func"], width: 100, searchrules: {required: true}, searchoptions: search_string_options},
-                {label: 'TEST_FLOW', name: "flowByTestFlowId.id", edittype: "select", editoptions: {value: selectOptions["flow"]}, formatter: selectOptions["flow_func"], width: 100, searchrules: {required: true}, searchoptions: search_string_options},
-                {label: 'PACKING_FLOW', name: "flowByPackingFlowId.id", edittype: "select", editoptions: {value: selectOptions["flow"]}, formatter: selectOptions["flow_func"], width: 140, searchrules: {required: true}, searchoptions: search_string_options},
+                {label: 'BAB_FLOW', name: "flowByBabFlowId.id", edittype: "select", editoptions: {value: selectOptions["bab_flow"]}, formatter: selectOptions["bab_flow_func"], width: 100, searchrules: {required: true}, searchoptions: search_string_options},
+                {label: 'TEST_FLOW', name: "flowByTestFlowId.id", edittype: "select", editoptions: {value: selectOptions["test_flow"]}, formatter: selectOptions["test_flow_func"], width: 100, searchrules: {required: true}, searchoptions: search_string_options},
+                {label: 'PACKING_FLOW', name: "flowByPackingFlowId.id", edittype: "select", editoptions: {value: selectOptions["pkg_flow"]}, formatter: selectOptions["pkg_flow_func"], width: 140, searchrules: {required: true}, searchoptions: search_string_options},
                 {label: 'PART-LINK', name: "partLink", edittype: "select", editoptions: {value: ":empty;Y:Y;N:N"}, width: 100, searchrules: number_search_rule, searchoptions: search_string_options},
                 {label: 'CE', name: "ce", width: 60, searchrules: number_search_rule, searchoptions: search_string_options, edittype: "select", editoptions: {value: "0:0;1:1"}},
                 {label: 'UL', name: "ul", width: 60, searchrules: number_search_rule, searchoptions: search_string_options, edittype: "select", editoptions: {value: "0:0;1:1"}},
@@ -191,6 +193,7 @@
                             beforeShowForm: greyout,
                             closeOnEscape: true,
                             zIndex: 9999,
+                            cols: 20,
                             bottominfo: "Fields marked with (*) are required"
                         },
                         {
@@ -264,7 +267,6 @@
                 grid.setColProp(readonlyColumn, {editable: true, editoptions: {readonly: 'readonly', disabled: true}});
             }
         }
-
         grid.jqGrid('setFrozenColumns');
 
         $(window).bind('resize', function () {

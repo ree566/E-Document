@@ -8,6 +8,7 @@ package com.advantech.service;
 import com.advantech.dao.*;
 import com.advantech.helper.PageInfo;
 import com.advantech.model.Flow;
+import com.advantech.model.FlowGroup;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -27,6 +28,9 @@ public class FlowService {
 
     @Autowired
     private FlowDAO flowDAO;
+    
+    @Autowired
+    private FlowGroupDAO flowGroupDAO;
 
     public List<Flow> findAll() {
         return (List<Flow>) flowDAO.findAll();
@@ -39,6 +43,11 @@ public class FlowService {
 
     public Flow findByPrimaryKey(Object obj_id) {
         return (Flow) flowDAO.findByPrimaryKey(obj_id);
+    }
+
+    public List<Flow> findByFlowGroup(int flowGroupId) {
+        FlowGroup fg = (FlowGroup) flowGroupDAO.findByPrimaryKey(flowGroupId);
+        return flowDAO.findByFlowGroup(fg);
     }
 
     public List<Flow> findByParent(Object parent_id) {

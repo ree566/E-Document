@@ -67,9 +67,9 @@ public class EditOptionViewController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/flowOption.do", method = {RequestMethod.GET})
-    public List getFlowOption() {
-        return flowService.findAll();
+    @RequestMapping(value = "/flowOption.do/{flowGroupId}", method = {RequestMethod.GET})
+    public List getFlowOption(@PathVariable(value = "flowGroupId") final int flowGroupId) {
+        return flowService.findByFlowGroup(flowGroupId);
     }
 
     @ResponseBody

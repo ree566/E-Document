@@ -48,6 +48,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -81,12 +82,14 @@ public class FileUploadController {
     /**
      * Upload single file using Spring Controller
      *
-     * @param model
+     * @param action
      * @param file
      * @return
      */
+    @ResponseBody
     @RequestMapping(value = "/uploadFile.do", method = RequestMethod.POST)
-    public String uploadFileHandler(Model model, @RequestParam("file") MultipartFile file) {
+    public String uploadFileHandler(@RequestParam String action, @RequestParam("file") MultipartFile file) {
+        String message = "";
 
         Workbook workbook = null;
         int i = 0;
@@ -102,9 +105,6 @@ public class FileUploadController {
                 Map flowOptions = this.tranToIdNameCompare(flowService.findAll());
 
                 workbook = WorkbookFactory.create(file.getInputStream());
-                String fileExt = workbook instanceof HSSFWorkbook ? "xls" : (workbook instanceof XSSFWorkbook ? "xlsx" : "unknown excel type");
-                String[] message = {"get excel success", "Retrive file type is: " + fileExt};
-                model.addAttribute("message", message);
 
                 Sheet sheet = workbook.getSheetAt(0);
 
@@ -175,20 +175,20 @@ public class FileUploadController {
                         w.setCleanPanelAndAssembly((Double) getCellValue(row, "BB"));
                         w.setPending(pendingService.findByPrimaryKey(1));
                         w.setPendingTime(0.0);
+                        w.setAssyPackingSop(getCellValue(row, "AC") == null ? null : (String) getCellValue(row, "AC"));
 
                         l.add(w);
                     }
                 }
             }
             worktimeService.saveOrUpdate(l);
-            model.addAttribute("message", "Data init done.");
+            message = "Data init done.";
         } catch (IOException | IllegalAccessException | NoSuchMethodException | InvocationTargetException | EncryptedDocumentException | InvalidFormatException ex) {
             System.out.println(ex);
-            model.addAttribute("message", ex);
+            message = ex.getMessage();
         } catch (Exception ex) {
             System.out.println(ex);
-            Object[] message = {"Error initialize object at row number " + (i + 1), ex};
-            model.addAttribute("message", message);
+            message = "Error initialize object at row number " + (i + 1);
         } finally {
             try {
                 if (workbook != null) {
@@ -198,7 +198,7 @@ public class FileUploadController {
                 System.out.println(ex);
             }
         }
-        return "forward:pages/fileupload.jsp";
+        return message;
     }
 
     private Object isNull(Object i, Object replaceTarget) {

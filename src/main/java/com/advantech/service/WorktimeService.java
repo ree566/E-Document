@@ -98,7 +98,13 @@ public class WorktimeService {
         for (int i = 0; i < l.size(); i++) {
             Worktime w = l.get(i);
             System.out.println("insert row: " + i + " \\Model: " + w.getModelName());
-            worktimeDAO.saveOrUpdate(w);
+            Worktime existW = this.findByModel(w.getModelName().trim());
+            if (existW == null) {
+                this.insert(w);
+            } else {
+                w.setId(existW.getId());
+                worktimeDAO.merge(w);
+            }
         }
         return 1;
     }

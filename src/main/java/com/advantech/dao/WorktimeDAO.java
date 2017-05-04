@@ -68,9 +68,14 @@ public class WorktimeDAO implements BasicDAO {
         currentSession().save(obj);
         return 1;
     }
+    
+    public int merge(Object obj) {
+        currentSession().merge(obj);
+        return 1;
+    }
 
     public int saveOrUpdate(Object obj) {
-        currentSession().merge(obj);
+        currentSession().saveOrUpdate(obj);
         return 1;
     }
 
