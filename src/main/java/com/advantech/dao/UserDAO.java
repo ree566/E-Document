@@ -6,14 +6,14 @@
 package com.advantech.dao;
 
 import com.advantech.helper.PageInfo;
-import com.advantech.model.Identit;
+import com.advantech.model.User;
 import java.util.Collection;
 import java.util.List;
 import org.hibernate.Criteria;
-import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.CriteriaSpecification;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -23,11 +23,11 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class IdentitDAO implements BasicDAO {
+public class UserDAO implements BasicDAO {
 
     @Autowired
     private SessionFactory sessionFactory;
-    
+
     @Autowired
     private PaginateDAO paginateDAO;
 
@@ -37,29 +37,28 @@ public class IdentitDAO implements BasicDAO {
 
     @Override
     public Collection findAll() {
-        return currentSession().createQuery("from Identit i order by i.name").list();
+        return currentSession().createCriteria(User.class).addOrder(Order.asc("name")).list();
     }
 
-    public List<Identit> findAll(PageInfo info) {
-        return paginateDAO.findAll(this.currentSession(), Identit.class, info);
+    public List<User> findAll(PageInfo info) {
+        return paginateDAO.findAll(this.currentSession(), User.class, info);
     }
 
     @Override
     public Object findByPrimaryKey(Object obj_id) {
         //Use get for not lazy loading, load for lazy loading.
-        return currentSession().get(Identit.class, (int) obj_id);
+        return currentSession().get(User.class, (int) obj_id);
     }
 
-    public Identit findByJobnumber(String jobnumber) {
-        String HQL = "from Identit i where i.jobnumber = :jobnumber";
-        Query query = currentSession().createQuery(HQL);
-        query.setParameter("jobnumber", jobnumber);
-        Identit i = (Identit) query.uniqueResult();
+    public User findByJobnumber(String jobnumber) {
+        Criteria criteria = currentSession().createCriteria(User.class);
+        criteria.add(Restrictions.eq("jobnumber", jobnumber));
+        User i = (User) criteria.uniqueResult();
         return i;
     }
 
-    public List<Identit> findByUserTypeName(String userTypeName) {
-        Criteria criteria = currentSession().createCriteria(Identit.class, "i");
+    public List<User> findByUnitName(String userTypeName) {
+        Criteria criteria = currentSession().createCriteria(User.class, "i");
         criteria.createAlias("i.userType", "u");
         criteria.add(Restrictions.eq("u.name", userTypeName));
         criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);

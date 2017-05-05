@@ -74,8 +74,9 @@ Contributor(s):
     <mapping class="com.advantech.model.FlowGroup"/>
     <mapping class="com.advantech.model.Floor"/>
     <mapping class="com.advantech.model.Pending"/>
-    <mapping class="com.advantech.model.Identit"/>
-    <mapping class="com.advantech.model.UserType"/>
+    <mapping class="com.advantech.model.Unit"/>
+    <mapping class="com.advantech.model.User"/>
+    <mapping class="com.advantech.model.UserProfile"/>
     <mapping class="com.advantech.model.Flow"/>
     <mapping class="com.advantech.model.SheetView"/>
     <mapping class="com.advantech.model.PreAssy"/>

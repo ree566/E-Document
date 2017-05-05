@@ -7,11 +7,11 @@ package com.advantech.controller;
 
 import com.advantech.service.FloorService;
 import com.advantech.service.FlowService;
-import com.advantech.service.IdentitService;
+import com.advantech.service.UserService;
 import com.advantech.service.PendingService;
 import com.advantech.service.PreAssyService;
 import com.advantech.service.TypeService;
-import com.advantech.service.UserTypeService;
+import com.advantech.service.UnitService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -31,7 +31,7 @@ public class EditOptionViewController {
     private FloorService floorService;
 
     @Autowired
-    private IdentitService identitService;
+    private UserService userService;
 
     @Autowired
     private TypeService typeService;
@@ -46,7 +46,7 @@ public class EditOptionViewController {
     private PendingService pendingService;
     
     @Autowired
-    private UserTypeService userTypeService;
+    private UnitService unitService;
 
     @ResponseBody
     @RequestMapping(value = "/floorOption.do", method = {RequestMethod.GET})
@@ -55,9 +55,9 @@ public class EditOptionViewController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/identitOption.do/{unitName}", method = {RequestMethod.GET})
-    public List getIdentitOption(@PathVariable(value = "unitName") final String unitName) {
-        return identitService.findByUserTypeName(unitName);
+    @RequestMapping(value = "/userOption.do/{unitName}", method = {RequestMethod.GET})
+    public List getUserOption(@PathVariable(value = "unitName") final String unitName) {
+        return userService.findByUnitName(unitName);
     }
 
     @ResponseBody
@@ -85,8 +85,8 @@ public class EditOptionViewController {
     }
     
     @ResponseBody
-    @RequestMapping(value = "/userTypeOption.do", method = {RequestMethod.GET})
+    @RequestMapping(value = "/unitOption.do", method = {RequestMethod.GET})
     public List getUserTypeOption() {
-        return userTypeService.findAll();
+        return unitService.findAll();
     }
 }

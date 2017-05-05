@@ -34,7 +34,7 @@ public class FlowGroupDAO implements BasicDAO {
 
     @Override
     public Collection findAll() {
-        return currentSession().createQuery("from FlowGroup").list();
+        return currentSession().createCriteria(FlowGroup.class).list();
     }
 
     public List<FlowGroup> findAll(PageInfo info) {

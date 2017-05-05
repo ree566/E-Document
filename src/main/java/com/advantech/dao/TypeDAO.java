@@ -33,7 +33,7 @@ public class TypeDAO implements BasicDAO {
 
     @Override
     public Collection findAll() {
-        return currentSession().createQuery("from Type").list();
+        return currentSession().createCriteria(Type.class).list();
     }
 
     public List<Type> findAll(PageInfo info) {

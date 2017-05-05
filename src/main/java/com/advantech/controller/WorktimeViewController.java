@@ -7,7 +7,7 @@ package com.advantech.controller;
 
 import static com.advantech.helper.JqGridResponseUtils.toJqGridResponse;
 import com.advantech.helper.PageInfo;
-import com.advantech.model.Identit;
+import com.advantech.model.User;
 import com.advantech.model.SheetView;
 import com.advantech.response.JqGridResponse;
 import com.advantech.service.SheetViewService;
@@ -47,7 +47,7 @@ public class WorktimeViewController {
 
     @ResponseBody
     @RequestMapping(value = "/getSheetView.do", method = {RequestMethod.POST})
-    public JqGridResponse getSheetView(@ModelAttribute PageInfo info, @ModelAttribute("user") Identit user, BindingResult errors) throws JsonProcessingException, JsonProcessingException, IOException {
+    public JqGridResponse getSheetView(@ModelAttribute PageInfo info, @ModelAttribute("user") User user, BindingResult errors) throws JsonProcessingException, JsonProcessingException, IOException {
         if (errors.hasErrors()) {
             // error handling code goes here.
             log.error(new Gson().toJson(errors.getFieldErrors()));
@@ -69,7 +69,7 @@ public class WorktimeViewController {
 
     @ResponseBody
     @RequestMapping(value = "/sheetViewTestMode.do", method = {RequestMethod.POST})
-    public JqGridResponse getSheetViewTestMode(@ModelAttribute PageInfo info, @ModelAttribute("user") Identit user) {
+    public JqGridResponse getSheetViewTestMode(@ModelAttribute PageInfo info, @ModelAttribute("user") User user) {
         
         List l = new ArrayList();
         JqGridResponse viewResp = toJqGridResponse(l, info);

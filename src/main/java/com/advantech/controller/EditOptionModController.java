@@ -10,14 +10,14 @@ import com.advantech.helper.PageInfo;
 import static com.advantech.helper.PasswordEncoder.encryptPassord;
 import com.advantech.model.Flow;
 import com.advantech.model.FlowGroup;
-import com.advantech.model.Identit;
+import com.advantech.model.User;
 import com.advantech.model.Pending;
 import com.advantech.model.PreAssy;
 import com.advantech.model.Type;
 import com.advantech.response.JqGridResponse;
 import com.advantech.service.FlowGroupService;
 import com.advantech.service.FlowService;
-import com.advantech.service.IdentitService;
+import com.advantech.service.UserService;
 import com.advantech.service.PendingService;
 import com.advantech.service.PreAssyService;
 import com.advantech.service.TypeService;
@@ -66,7 +66,7 @@ public class EditOptionModController {
     private FlowGroupService flowGroupService;
 
     @Autowired
-    private IdentitService identitService;
+    private UserService identitService;
 
     @Autowired
     private PendingService pendingService;
@@ -79,7 +79,7 @@ public class EditOptionModController {
 
     @ResponseBody
     @RequestMapping(value = "/getSelectOption.do/{tableName}", method = {RequestMethod.GET})
-    public JqGridResponse findAll(@PathVariable(value = "tableName") final String tableName, @ModelAttribute PageInfo info, @ModelAttribute("user") Identit user) throws JsonProcessingException, IOException {
+    public JqGridResponse findAll(@PathVariable(value = "tableName") final String tableName, @ModelAttribute PageInfo info, @ModelAttribute("user") User user) throws JsonProcessingException, IOException {
 
         JqGridResponse viewResp;
         List l;
@@ -117,10 +117,10 @@ public class EditOptionModController {
             @PathVariable(value = "tableName") final String tableName,
             @RequestParam final String oper,
             @ModelAttribute PageInfo info,
-            @ModelAttribute Identit user,
+            @ModelAttribute User user,
             @ModelAttribute Flow flow,
             @RequestParam(required = false, defaultValue = "0") int parentFlowId,
-            @ModelAttribute Identit identit,
+            @ModelAttribute User identit,
             @ModelAttribute Pending pending,
             @ModelAttribute PreAssy preAssy,
             @ModelAttribute Type type,
@@ -191,7 +191,7 @@ public class EditOptionModController {
                         responseFlag = identitService.insert(identit);
                         break;
                     case EDIT:
-                        Identit i = identitService.findByPrimaryKey(identit.getId());
+                        User i = identitService.findByPrimaryKey(identit.getId());
                         if (!identit.getPassword().equals(i.getPassword())) {
                             encryptPassword(identit);
                         }
@@ -254,7 +254,7 @@ public class EditOptionModController {
                 .body(modifyMessage);
     }
 
-    private void encryptPassword(Identit identit) {
+    private void encryptPassword(User identit) {
         try {
             identit.setPassword(encryptPassord(identit.getPassword()));
         } catch (NoSuchAlgorithmException | UnsupportedEncodingException ex) {

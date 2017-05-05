@@ -6,8 +6,8 @@
 package com.advantech.controller;
 
 import static com.advantech.helper.PasswordEncoder.isPasswordHashMatches;
-import com.advantech.model.Identit;
-import com.advantech.service.IdentitService;
+import com.advantech.model.User;
+import com.advantech.service.UserService;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import javax.servlet.http.HttpSession;
@@ -28,12 +28,12 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 public class LoginController {
 
     @Autowired
-    private IdentitService service;
+    private UserService service;
 
     @RequestMapping(value = "/login.do", method = {RequestMethod.POST})
     public String login(@RequestParam String jobnumber, @RequestParam String password, Model model, HttpSession session) throws NoSuchAlgorithmException, UnsupportedEncodingException {
         System.out.println("user login");
-        Identit i = service.findByJobnumber(jobnumber);
+        User i = service.findByJobnumber(jobnumber);
         if (i == null || !isPasswordHashMatches(password, i.getPassword())) {
             System.out.println("user not found");
             model.addAttribute("errormsg", "錯誤的帳號或密碼");

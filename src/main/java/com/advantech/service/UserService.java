@@ -8,7 +8,7 @@ package com.advantech.service;
 import com.advantech.dao.*;
 import com.advantech.helper.MD5Encoder;
 import com.advantech.helper.PageInfo;
-import com.advantech.model.Identit;
+import com.advantech.model.User;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
@@ -23,49 +23,49 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @Transactional
-public class IdentitService {
+public class UserService {
 
     @Autowired
-    private IdentitDAO identitDAO;
+    private UserDAO userDAO;
 
-    public List<Identit> findAll() {
-        return (List<Identit>) identitDAO.findAll();
+    public List<User> findAll() {
+        return (List<User>) userDAO.findAll();
     }
 
-    public List<Identit> findAll(PageInfo info) {
-        return identitDAO.findAll(info);
+    public List<User> findAll(PageInfo info) {
+        return userDAO.findAll(info);
     }
 
-    public Identit findByPrimaryKey(Object obj_id) {
-        return (Identit) identitDAO.findByPrimaryKey(obj_id);
+    public User findByPrimaryKey(Object obj_id) {
+        return (User) userDAO.findByPrimaryKey(obj_id);
     }
 
-    public Identit findByJobnumber(String jobnumber) {
-        Identit i = identitDAO.findByJobnumber(jobnumber);
+    public User findByJobnumber(String jobnumber) {
+        User i = userDAO.findByJobnumber(jobnumber);
 
         if (i == null) {
             return null;
         }
 
         //Initialize the lazy loading relative object
-        Hibernate.initialize(i.getUserType());
+        Hibernate.initialize(i.getUnit());
         Hibernate.initialize(i.getFloor());
         return i;
     }
 
-    public List<Identit> findByUserTypeName(String userTypeName) {
-        return identitDAO.findByUserTypeName(userTypeName);
+    public List<User> findByUnitName(String unitName) {
+        return userDAO.findByUnitName(unitName);
     }
 
-    public int insert(Identit identit) {
-        return identitDAO.insert(identit);
+    public int insert(User identit) {
+        return userDAO.insert(identit);
     }
 
-    public int update(Identit identit) {
-        return identitDAO.update(identit);
+    public int update(User identit) {
+        return userDAO.update(identit);
     }
 
-    public int delete(Identit identit) {
-        return identitDAO.delete(identit);
+    public int delete(User identit) {
+        return userDAO.delete(identit);
     }
 }

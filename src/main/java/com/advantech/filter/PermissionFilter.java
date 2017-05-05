@@ -5,7 +5,7 @@
  */
 package com.advantech.filter;
 
-import com.advantech.model.Identit;
+import com.advantech.model.User;
 import com.advantech.model.Permission;
 import static com.advantech.model.Permission.SYSOP_PERMISSION;
 import java.io.IOException;
@@ -37,7 +37,7 @@ public class PermissionFilter implements Filter {
         HttpServletResponse response = (HttpServletResponse) res;
         HttpSession session = request.getSession(false);
 
-        Identit i = (Identit) session.getAttribute("user");
+        User i = (User) session.getAttribute("user");
         int userPermission = i.getPermission();
 
         if (userPermission >= SYSOP_PERMISSION) {

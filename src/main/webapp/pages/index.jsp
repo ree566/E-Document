@@ -173,7 +173,7 @@
                                             <a class="redirect-link" href="mod/flow">Flow</a>
                                         </li>
                                         <li>
-                                            <a class="redirect-link" href="mod/identit">Identit</a>
+                                            <a class="redirect-link" href="mod/user">User</a>
                                         </li>
                                         <li>
                                             <a class="redirect-link" href="mod/pending">Pending</a>

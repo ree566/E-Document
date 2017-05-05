@@ -5,10 +5,11 @@
  */
 package com.advantech.dao;
 
-import com.advantech.model.UserType;
+import com.advantech.model.Unit;
 import java.util.Collection;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Order;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -17,7 +18,7 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class UserTypeDAO implements BasicDAO {
+public class UnitDAO implements BasicDAO {
 
     @Autowired
     private SessionFactory sessionFactory;
@@ -28,12 +29,12 @@ public class UserTypeDAO implements BasicDAO {
 
     @Override
     public Collection findAll() {
-        return currentSession().createQuery("from UserType").list();
+        return currentSession().createCriteria(Unit.class).addOrder(Order.asc("name")).list();
     }
 
     @Override
     public Object findByPrimaryKey(Object obj_id) {
-        return currentSession().load(UserType.class, (int) obj_id);
+        return currentSession().load(Unit.class, (int) obj_id);
     }
 
     @Override

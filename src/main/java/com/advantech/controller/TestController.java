@@ -7,7 +7,7 @@ package com.advantech.controller;
 
 import static com.advantech.helper.JqGridResponseUtils.toJqGridResponse;
 import com.advantech.helper.PageInfo;
-import com.advantech.model.Identit;
+import com.advantech.model.User;
 import com.advantech.response.JqGridResponse;
 import com.advantech.service.FlowService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +35,7 @@ public class TestController {
     public JqGridResponse test(
             @RequestParam int id,
             @ModelAttribute PageInfo info,
-            @ModelAttribute("user") Identit user) {
+            @ModelAttribute("user") User user) {
 
         JqGridResponse viewResp = toJqGridResponse(flowService.findByParent(id), info);
         return viewResp;

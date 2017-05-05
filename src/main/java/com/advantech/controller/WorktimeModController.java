@@ -5,8 +5,8 @@
  */
 package com.advantech.controller;
 
-import com.advantech.model.Identit;
-import com.advantech.model.UserType;
+import com.advantech.model.User;
+import com.advantech.model.Unit;
 import com.advantech.model.Worktime;
 import com.advantech.model.WorktimeColumnGroup;
 import com.advantech.service.WorktimeColumnGroupService;
@@ -56,7 +56,7 @@ public class WorktimeModController {
     public ResponseEntity updateSheet(
             @RequestParam String oper,
             @ModelAttribute Worktime worktime,
-            @ModelAttribute("user") Identit user,
+            @ModelAttribute("user") User user,
             HttpServletRequest req,
             BindingResult errors) throws ServletException, IOException {
 
@@ -79,7 +79,7 @@ public class WorktimeModController {
             Worktime existWorktime = worktimeService.findByPrimaryKey(worktime.getId());
             modifyMessage = worktimeService.delete(existWorktime) == 1 ? this.SUCCESS_MESSAGE : this.FAIL_MESSAGE;
         } else {
-            UserType userType = user.getUserType();
+            Unit userType = user.getUnit();
             if (userType != null) {
                 if (isModelExists(worktime)) {
                     modifyMessage = "This model name is already exists";
@@ -146,8 +146,8 @@ public class WorktimeModController {
 
     @ResponseBody
     @RequestMapping(value = "/unitColumn.do", method = {RequestMethod.POST})
-    public String[] getUnitColumnName(@ModelAttribute("user") Identit user) {
-        int unit = user.getUserType().getId();
+    public String[] getUnitColumnName(@ModelAttribute("user") User user) {
+        int unit = user.getUnit().getId();
 
         String[] columnName;
 

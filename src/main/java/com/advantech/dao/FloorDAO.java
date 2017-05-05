@@ -28,7 +28,7 @@ public class FloorDAO implements BasicDAO {
 
     @Override
     public Collection findAll() {
-        return currentSession().createQuery("from Floor").list();
+        return currentSession().createCriteria(Floor.class).list();
     }
 
     @Override

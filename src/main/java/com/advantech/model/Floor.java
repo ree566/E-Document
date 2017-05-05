@@ -30,7 +30,7 @@ public class Floor implements java.io.Serializable {
     private int id;
     private String name;
     private Set<Worktime> worktimes = new HashSet<>(0);
-    private Set<Identit> identits = new HashSet<>(0);
+    private Set<User> identits = new HashSet<>(0);
 
     public Floor() {
     }
@@ -40,7 +40,7 @@ public class Floor implements java.io.Serializable {
         this.name = name;
     }
 
-    public Floor(int id, String name, Set<Worktime> worktimes, Set<Identit> identits) {
+    public Floor(int id, String name, Set<Worktime> worktimes, Set<User> identits) {
         this.id = id;
         this.name = name;
         this.worktimes = worktimes;
@@ -81,11 +81,11 @@ public class Floor implements java.io.Serializable {
     @JsonIgnore
     @JsonIgnoreProperties
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "floor")
-    public Set<Identit> getIdentits() {
+    public Set<User> getIdentits() {
         return this.identits;
     }
 
-    public void setIdentits(Set<Identit> identits) {
+    public void setIdentits(Set<User> identits) {
         this.identits = identits;
     }
 

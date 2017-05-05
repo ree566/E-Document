@@ -47,9 +47,9 @@ public class Worktime implements java.io.Serializable {
     private Flow flowByTestFlowId;
     private Flow flowByPackingFlowId;
     private Flow flowByBabFlowId;
-    private Identit identitByEeOwnerId;
-    private Identit identitByQcOwnerId;
-    private Identit identitBySpeOwnerId;
+    private User userByEeOwnerId;
+    private User userByQcOwnerId;
+    private User userBySpeOwnerId;
     private Pending pending;
     private PreAssy preAssy;
     private Type type;
@@ -157,32 +157,32 @@ public class Worktime implements java.io.Serializable {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ee_owner_id", nullable = false)
-    public Identit getIdentitByEeOwnerId() {
-        return this.identitByEeOwnerId;
+    public User getUserByEeOwnerId() {
+        return this.userByEeOwnerId;
     }
 
-    public void setIdentitByEeOwnerId(Identit identitByEeOwnerId) {
-        this.identitByEeOwnerId = identitByEeOwnerId;
+    public void setUserByEeOwnerId(User userByEeOwnerId) {
+        this.userByEeOwnerId = userByEeOwnerId;
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "qc_owner_id", nullable = false)
-    public Identit getIdentitByQcOwnerId() {
-        return this.identitByQcOwnerId;
+    public User getUserByQcOwnerId() {
+        return this.userByQcOwnerId;
     }
 
-    public void setIdentitByQcOwnerId(Identit identitByQcOwnerId) {
-        this.identitByQcOwnerId = identitByQcOwnerId;
+    public void setUserByQcOwnerId(User userByQcOwnerId) {
+        this.userByQcOwnerId = userByQcOwnerId;
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "spe_owner_id", nullable = false)
-    public Identit getIdentitBySpeOwnerId() {
-        return this.identitBySpeOwnerId;
+    public User getUserBySpeOwnerId() {
+        return this.userBySpeOwnerId;
     }
 
-    public void setIdentitBySpeOwnerId(Identit identitBySpeOwnerId) {
-        this.identitBySpeOwnerId = identitBySpeOwnerId;
+    public void setUserBySpeOwnerId(User userBySpeOwnerId) {
+        this.userBySpeOwnerId = userBySpeOwnerId;
     }
 
     @ManyToOne(fetch = FetchType.LAZY)

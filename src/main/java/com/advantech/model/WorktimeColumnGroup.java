@@ -26,7 +26,7 @@ import javax.persistence.Table;
 public class WorktimeColumnGroup implements java.io.Serializable {
 
     private int id;
-    private UserType userType;
+    private Unit unit;
     private Clob columnName;
 
     public WorktimeColumnGroup() {
@@ -36,9 +36,9 @@ public class WorktimeColumnGroup implements java.io.Serializable {
         this.id = id;
     }
 
-    public WorktimeColumnGroup(int id, UserType userType, Clob columnName) {
+    public WorktimeColumnGroup(int id, Unit unit, Clob columnName) {
         this.id = id;
-        this.userType = userType;
+        this.unit = unit;
         this.columnName = columnName;
     }
 
@@ -54,13 +54,13 @@ public class WorktimeColumnGroup implements java.io.Serializable {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userType_id")
-    public UserType getUserType() {
-        return this.userType;
+    @JoinColumn(name = "unit_id")
+    public Unit getUnit() {
+        return this.unit;
     }
 
-    public void setUserType(UserType userType) {
-        this.userType = userType;
+    public void setUnit(Unit unit) {
+        this.unit = unit;
     }
 
     @Column(name = "column_name")

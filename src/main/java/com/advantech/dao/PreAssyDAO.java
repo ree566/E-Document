@@ -33,7 +33,7 @@ public class PreAssyDAO implements BasicDAO {
 
     @Override
     public Collection findAll() {
-        return currentSession().createQuery("from PreAssy").list();
+        return currentSession().createCriteria(PreAssy.class).list();
     }
 
     public List<PreAssy> findAll(PageInfo info) {

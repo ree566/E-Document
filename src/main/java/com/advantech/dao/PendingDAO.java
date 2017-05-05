@@ -33,7 +33,7 @@ public class PendingDAO implements BasicDAO {
 
     @Override
     public Collection findAll() {
-        return currentSession().createQuery("from Pending").list();
+        return currentSession().createCriteria(Pending.class).list();
     }
 
     public List<Pending> findAll(PageInfo info) {

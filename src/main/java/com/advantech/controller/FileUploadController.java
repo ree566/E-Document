@@ -7,12 +7,12 @@ package com.advantech.controller;
 
 import com.advantech.model.Floor;
 import com.advantech.model.Flow;
-import com.advantech.model.Identit;
+import com.advantech.model.User;
 import com.advantech.model.Type;
 import com.advantech.model.Worktime;
 import com.advantech.service.FloorService;
 import com.advantech.service.FlowService;
-import com.advantech.service.IdentitService;
+import com.advantech.service.UserService;
 import com.advantech.service.PendingService;
 import com.advantech.service.TypeService;
 import com.advantech.service.WorktimeService;
@@ -63,7 +63,7 @@ public class FileUploadController {
     private WorktimeService worktimeService;
 
     @Autowired
-    private IdentitService identitService;
+    private UserService identitService;
 
     @Autowired
     private FloorService floorService;
@@ -110,7 +110,7 @@ public class FileUploadController {
 
                 System.out.println("Max sheet rows: " + sheet.getPhysicalNumberOfRows());
 
-                Identit sysop = identitService.findByJobnumber("sysop");
+                User sysop = identitService.findByJobnumber("sysop");
                 Type type_ok = typeService.findByPrimaryKey(8);
                 Floor floor_all = floorService.findByPrimaryKey(3);
 
@@ -127,9 +127,9 @@ public class FileUploadController {
                         w.setFlowByTestFlowId((Flow) flowOptions.get(getCellValue(row, "AG")));
                         w.setFlowByPackingFlowId((Flow) flowOptions.get(getCellValue(row, "AH")));
                         w.setFlowByBabFlowId((Flow) flowOptions.get(getCellValue(row, "AF")));
-                        w.setIdentitByEeOwnerId((Identit) isNull((Identit) identitOptions.get(getCellValue(row, "AA")), sysop));
-                        w.setIdentitByQcOwnerId((Identit) isNull((Identit) identitOptions.get(getCellValue(row, "AB")), sysop));
-                        w.setIdentitBySpeOwnerId((Identit) isNull((Identit) identitOptions.get(getCellValue(row, "Z")), sysop));
+                        w.setUserByEeOwnerId((User) isNull((User) identitOptions.get(getCellValue(row, "AA")), sysop));
+                        w.setUserByQcOwnerId((User) isNull((User) identitOptions.get(getCellValue(row, "AB")), sysop));
+                        w.setUserBySpeOwnerId((User) isNull((User) identitOptions.get(getCellValue(row, "Z")), sysop));
                         w.setType((Type) isNull((Type) typeOptions.get(getCellValue(row, "B")), type_ok));
                         w.setModelName((String) getCellValue(row, "A"));
                         w.setTotalModule((Double) getCellValue(row, "D"));

@@ -31,7 +31,7 @@ public class WorktimeColumnGroupDAO implements BasicDAO {
 
     @Override
     public Collection findAll() {
-        return currentSession().createQuery("from WorktimeColumnGroup").list();
+        return currentSession().createCriteria(WorktimeColumnGroup.class).list();
     }
 
     @Override

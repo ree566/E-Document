@@ -35,7 +35,7 @@ public class WorktimeDAO implements BasicDAO {
 
     @Override
     public Collection findAll() {
-        return currentSession().createQuery("from Worktime").list();
+        return currentSession().createCriteria(Worktime.class).list();
     }
 
     public List<Worktime> findAll(PageInfo info) {

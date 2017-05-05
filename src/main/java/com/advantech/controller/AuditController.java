@@ -7,7 +7,7 @@ package com.advantech.controller;
 
 import static com.advantech.helper.JqGridResponseUtils.toJqGridResponse;
 import com.advantech.helper.PageInfo;
-import com.advantech.model.Identit;
+import com.advantech.model.User;
 import com.advantech.model.Worktime;
 import com.advantech.response.JqGridResponse;
 import com.advantech.service.AuditService;
@@ -44,7 +44,7 @@ public class AuditController {
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime startDate,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime endDate,
             @ModelAttribute PageInfo info,
-            @ModelAttribute("user") Identit user) {
+            @ModelAttribute("user") User user) {
 
         List l;
         if (id == -1 && version == -1 && startDate != null && endDate != null) {
