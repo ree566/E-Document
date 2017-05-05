@@ -1,6 +1,7 @@
 package com.advantech.model;
 // Generated 2017/4/7 下午 02:26:06 by Hibernate Tools 4.3.1
 
+import com.advantech.security.State;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -39,6 +40,7 @@ public class User implements java.io.Serializable {
     private String name;
     private Integer permission;
     private String email;
+    private String state = State.ACTIVE.getState();
     private Set<UserProfile> userProfiles = new HashSet<>(0);
     private Set<Worktime> worktimesForEeOwnerId = new HashSet<>(0);
     private Set<Worktime> worktimesForQcOwnerId = new HashSet<>(0);
@@ -51,7 +53,7 @@ public class User implements java.io.Serializable {
         this.id = id;
     }
 
-    public User(int id, Floor floor, Unit unit, String email, String jobnumber, String password, Integer permission, String name, Set<UserProfile> userProfiles, Set<Worktime> worktimesForSpeOwnerId, Set<Worktime> worktimesForQcOwnerId, Set<Worktime> worktimesForEeOwnerId) {
+    public User(int id, Floor floor, Unit unit, String email, String jobnumber, String password, Integer permission, String name, String state, Set<UserProfile> userProfiles, Set<Worktime> worktimesForSpeOwnerId, Set<Worktime> worktimesForQcOwnerId, Set<Worktime> worktimesForEeOwnerId) {
         this.id = id;
         this.floor = floor;
         this.unit = unit;
@@ -61,6 +63,7 @@ public class User implements java.io.Serializable {
         this.permission = permission;
         this.name = name;
         this.userProfiles = userProfiles;
+        this.state = state;
         this.worktimesForSpeOwnerId = worktimesForSpeOwnerId;
         this.worktimesForQcOwnerId = worktimesForQcOwnerId;
         this.worktimesForEeOwnerId = worktimesForEeOwnerId;
@@ -140,6 +143,15 @@ public class User implements java.io.Serializable {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    @Column(name = "[state]", length = 50)
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
     }
 
     @JsonIgnore
