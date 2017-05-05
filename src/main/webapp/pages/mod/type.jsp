@@ -16,6 +16,7 @@
             url: '${root}getSelectOption.do/' + tableName,
             datatype: 'json',
             mtype: 'GET',
+            autoencode: true,
             colModel: [
                 {label: 'id', name: "id", width: 60, key: true, editable: true, editoptions: {readonly: 'readonly', disabled: true, defaultValue: "0"}},
                 {label: 'name', name: "name", width: 60, editable: true}

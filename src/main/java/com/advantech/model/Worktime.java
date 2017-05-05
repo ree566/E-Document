@@ -684,13 +684,17 @@ public class Worktime implements java.io.Serializable {
     }
 
     public void setDefaultAssyKanbanTime() {
-        Double defaultValue = round((this.assy - this.assyLeadTime) / this.assyStation, 2);
-        this.setPackingStation(defaultValue.intValue());
+        if (this.assyStation != null && this.assyStation != 0) {
+            Double defaultValue = round((this.assy - this.assyLeadTime) / this.assyStation, 2);
+            this.setAssyKanbanTime(defaultValue);
+        }
     }
 
     public void setDefaultPackingKanbanTime() {
-        Double defaultValue = round((this.packing - this.packingLeadTime) / this.packingStation, 2);
-        this.setPackingStation(defaultValue.intValue());
+        if (this.packingStation != null && this.packingStation != 0) {
+            Double defaultValue = round((this.packing - this.packingLeadTime) / this.packingStation, 2);
+            this.setPackingKanbanTime(defaultValue);
+        }
     }
 
     public void setDefaultCleanPanelAndAssembly() {

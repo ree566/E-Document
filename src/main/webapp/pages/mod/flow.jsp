@@ -78,6 +78,7 @@
             url: '${root}getSelectOption.do/' + tableName,
             datatype: 'json',
             mtype: 'GET',
+            autoencode: true,
 //            guiStyle: "bootstrap",
             colModel: [
                 {label: 'id', name: "id", width: 60, key: true, editable: true, editoptions: {readonly: 'readonly', disabled: true, defaultValue: "0"}},

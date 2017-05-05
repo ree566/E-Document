@@ -68,30 +68,30 @@ public class WorktimeService {
         if (w.getCleanPanelAndAssembly() == null || w.getCleanPanelAndAssembly() == 0) {
             w.setDefaultCleanPanelAndAssembly();
         }
-//        if (w.getProductionWt() == null || w.getProductionWt() == 0) {
-//            w.setDefaultProductWt();
-//        }
-//        if (w.getSetupTime() == null || w.getSetupTime() == 0) {
-//            w.setDefaultSetupTime();
-//        }
-//        if (w.getAssyToT1() == null || w.getAssyToT1() == 0) {
-//            w.setDefaultAssyToT1();
-//        }
-//        if (w.getT2ToPacking() == null || w.getT2ToPacking() == 0) {
-//            w.setDefaultT2ToPacking();
-//        }
-//        if (w.getAssyStation() == null || w.getAssyStation() == 0) {
-//            w.setDefaultAssyStation();
-//        }
-//        if (w.getPackingStation() == null || w.getPackingStation() == 0) {
-//            w.setDefaultPackingStation();
-//        }
-//        if (w.getAssyKanbanTime() == null || w.getAssyKanbanTime() == 0) {
-//            w.setDefaultAssyKanbanTime();
-//        }
-//        if (w.getPackingKanbanTime() == null || w.getPackingKanbanTime() == 0) {
-//            w.setDefaultPackingKanbanTime();
-//        }
+        if (w.getProductionWt() == null || w.getProductionWt() == 0) {
+            w.setDefaultProductWt();
+        }
+        if (w.getSetupTime() == null || w.getSetupTime() == 0) {
+            w.setDefaultSetupTime();
+        }
+        if (w.getAssyToT1() == null || w.getAssyToT1() == 0) {
+            w.setDefaultAssyToT1();
+        }
+        if (w.getT2ToPacking() == null || w.getT2ToPacking() == 0) {
+            w.setDefaultT2ToPacking();
+        }
+        if (w.getAssyStation() == null || w.getAssyStation() == 0) {
+            w.setDefaultAssyStation();
+        }
+        if (w.getPackingStation() == null || w.getPackingStation() == 0) {
+            w.setDefaultPackingStation();
+        }
+        if (w.getAssyKanbanTime() == null || w.getAssyKanbanTime() == 0) {
+            w.setDefaultAssyKanbanTime();
+        }
+        if (w.getPackingKanbanTime() == null || w.getPackingKanbanTime() == 0) {
+            w.setDefaultPackingKanbanTime();
+        }
     }
 
     public int saveOrUpdate(List<Worktime> l) {

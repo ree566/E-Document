@@ -55,6 +55,7 @@
                 integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
         crossorigin="anonymous"></script>
 
+        <script src="//cdnjs.cloudflare.com/ajax/libs/jquery.form/4.2.1/jquery.form.min.js"></script>
 
 <!--        <script src="//cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.14.0/jquery.jqgrid.min.js"></script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.14.0/modules/grid.jqueryui.js"></script>
@@ -70,7 +71,6 @@
         <script src="${root}/js/jqgrid-custom-param.js"></script> 
         <script src="${root}js/sessionExpiredDetect.js"></script>
 
-        <!--<script src="//cdnjs.cloudflare.com/ajax/libs/jquery.form/4.2.1/jquery.form.min.js"></script>-->
         <!--<script src="//cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.14.0/modules/grid.subgrid.js"></script>-->
         <script>
             var current_include_page_name = "";

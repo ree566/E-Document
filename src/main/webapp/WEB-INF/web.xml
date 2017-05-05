@@ -43,23 +43,33 @@
     </context-param>
     
     <context-param>
-        <param-name>UNIT_OPERATOR_PERMISSION</param-name>
+        <param-name>SPECIAL_VISITOR_PERMISSION</param-name>
         <param-value>1</param-value>
     </context-param>
     
     <context-param>
-        <param-name>UNIT_LEADER_PERMISSION</param-name>
+        <param-name>DATA_OPERATOR_PERMISSION</param-name>
         <param-value>2</param-value>
     </context-param>
     
     <context-param>
-        <param-name>SYSOP_PERMISSION</param-name>
+        <param-name>DATA_OPERATOR_LEADER_PERMISSION</param-name>
         <param-value>3</param-value>
     </context-param>
     
     <context-param>
+        <param-name>SYSOP_PERMISSION</param-name>
+        <param-value>5</param-value>
+    </context-param>
+    
+    <context-param>
+        <param-name>SYSOP_OPERATE_AREA_PERMISSION</param-name>
+        <param-value>5</param-value>
+    </context-param>
+    
+    <context-param>
         <param-name>TEST_FIELD_ACCESS_LIMIT_PERMISSION</param-name>
-        <param-value>3</param-value>
+        <param-value>5</param-value>
     </context-param>
     
     <!--filter mapping--> 
