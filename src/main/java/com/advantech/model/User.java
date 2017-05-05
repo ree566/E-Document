@@ -39,10 +39,10 @@ public class User implements java.io.Serializable {
     private String name;
     private Integer permission;
     private String email;
+    private Set<UserProfile> userProfiles = new HashSet<>(0);
     private Set<Worktime> worktimesForEeOwnerId = new HashSet<>(0);
     private Set<Worktime> worktimesForQcOwnerId = new HashSet<>(0);
     private Set<Worktime> worktimesForSpeOwnerId = new HashSet<>(0);
-    private Set<UserProfile> userProfiles = new HashSet<>(0);
 
     public User() {
     }
@@ -51,18 +51,19 @@ public class User implements java.io.Serializable {
         this.id = id;
     }
 
-    public User(int id, Floor floor, Unit unit, String jobnumber, String password, String name, Integer permission, String email, Set<Worktime> worktimesForEeOwnerId, Set<Worktime> worktimesForQcOwnerId, Set<Worktime> worktimesForSpeOwnerId) {
+    public User(int id, Floor floor, Unit unit, String email, String jobnumber, String password, Integer permission, String name, Set<UserProfile> userProfiles, Set<Worktime> worktimesForSpeOwnerId, Set<Worktime> worktimesForQcOwnerId, Set<Worktime> worktimesForEeOwnerId) {
         this.id = id;
         this.floor = floor;
         this.unit = unit;
+        this.email = email;
         this.jobnumber = jobnumber;
         this.password = password;
-        this.name = name;
         this.permission = permission;
-        this.email = email;
-        this.worktimesForEeOwnerId = worktimesForEeOwnerId;
-        this.worktimesForQcOwnerId = worktimesForQcOwnerId;
+        this.name = name;
+        this.userProfiles = userProfiles;
         this.worktimesForSpeOwnerId = worktimesForSpeOwnerId;
+        this.worktimesForQcOwnerId = worktimesForQcOwnerId;
+        this.worktimesForEeOwnerId = worktimesForEeOwnerId;
     }
 
     @Id
@@ -175,13 +176,11 @@ public class User implements java.io.Serializable {
     }
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "user_user_profile",
-            joinColumns = {
-                @JoinColumn(name = "user_id")},
-            inverseJoinColumns = {
-                @JoinColumn(name = "user_profile_id")})
+    @JoinTable(name = "User_Profile_REF", schema = "dbo", catalog = "E_Document", joinColumns = {
+        @JoinColumn(name = "user_id", nullable = false, updatable = false)}, inverseJoinColumns = {
+        @JoinColumn(name = "user_profile_id", nullable = false, updatable = false)})
     public Set<UserProfile> getUserProfiles() {
-        return userProfiles;
+        return this.userProfiles;
     }
 
     public void setUserProfiles(Set<UserProfile> userProfiles) {

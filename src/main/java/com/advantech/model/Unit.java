@@ -73,7 +73,7 @@ public class Unit implements java.io.Serializable {
         return this.users;
     }
 
-    public void setIdentits(Set<User> users) {
+    public void setUsers(Set<User> users) {
         this.users = users;
     }
 

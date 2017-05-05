@@ -6,11 +6,8 @@
 package com.advantech.service;
 
 import com.advantech.dao.*;
-import com.advantech.helper.MD5Encoder;
 import com.advantech.helper.PageInfo;
 import com.advantech.model.User;
-import java.io.UnsupportedEncodingException;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +47,8 @@ public class UserService {
         //Initialize the lazy loading relative object
         Hibernate.initialize(i.getUnit());
         Hibernate.initialize(i.getFloor());
+        Hibernate.initialize(i.getUserProfiles());
+
         return i;
     }
 

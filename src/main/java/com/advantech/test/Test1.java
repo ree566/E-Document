@@ -6,7 +6,7 @@
 package com.advantech.test;
 
 import com.advantech.helper.HibernateUtil;
-import com.advantech.model.Flow;
+import com.advantech.model.User;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
@@ -28,8 +28,8 @@ public class Test1 {
             session = factory.getCurrentSession();
             tx = session.beginTransaction();
             
-            Flow f = (Flow) session.get(Flow.class, 10);
-            print(f);
+            User u = (User) session.get(User.class, 10);
+            print(u);
 
             tx.commit();
         } catch (Exception e) {

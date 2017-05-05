@@ -10,8 +10,8 @@ package com.advantech.security;
  * @author Wei.Cheng
  */
 public enum UserProfileType {
+    GUEST("GUEST"),
     USER("USER"),
-    DBA("DBA"),
     ADMIN("ADMIN");
 
     String userProfileType;

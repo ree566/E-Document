@@ -59,7 +59,7 @@ public class UserDAO implements BasicDAO {
 
     public List<User> findByUnitName(String userTypeName) {
         Criteria criteria = currentSession().createCriteria(User.class, "i");
-        criteria.createAlias("i.userType", "u");
+        criteria.createAlias("i.unit", "u");
         criteria.add(Restrictions.eq("u.name", userTypeName));
         criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
         return criteria.list();

@@ -118,7 +118,7 @@
                     <li class="dropdown">
                     <lable for="jobnumber">Jobnumber: </lable><font id="jobnumber"><c:out value="${sessionScope.user.jobnumber}" /></font> / 
                     <lable for="name">Name: </lable><font id="name"><c:out value="${sessionScope.user.name}" /></font> / 
-                    <lable for="unit">Unit: </lable><font id="unit"><c:out value="${sessionScope.user.userType.name}" /></font> / 
+                    <lable for="unit">Unit: </lable><font id="unit"><c:out value="${sessionScope.user.unit.name}" /></font> / 
                     <lable for="floor">Floor: </lable><font id="floor"><c:out value="${sessionScope.user.floor.name}" /></font> 
                     </li>
 
@@ -168,7 +168,7 @@
                                     <li>
                                         <a class="redirect-link" href="worktime">工時大表</a>
                                     </li>
-                                    <c:if test="${sessionScope.user.permission >= initParam.UNIT_LEADER_PERMISSION}">
+                                    <c:if test="${sessionScope.user.permission >= initParam.DATA_OPERATOR_LEADER_PERMISSION}">
                                         <li>
                                             <a class="redirect-link" href="mod/flow">Flow</a>
                                         </li>
@@ -187,7 +187,7 @@
                                     </c:if>
                                 </ul>
                             </li>
-                            <c:if test="${sessionScope.user.permission >= initParam.UNIT_LEADER_PERMISSION}">
+                            <c:if test="${sessionScope.user.permission >= initParam.DATA_OPERATOR_LEADER_PERMISSION}">
                                 <li>
                                     <a href="#"><i class="fa fa-wrench fa-fw"></i> UI Elements<span class="fa arrow"></span></a>
                                     <ul class="nav nav-second-level">
