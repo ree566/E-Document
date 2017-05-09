@@ -2,10 +2,7 @@
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
- * 105/01/14改為主要show出當下sensor資料的websocket server 改良版
- * 參考來源 : 
- * websocket : https://dzone.com/articles/sample-java-web-socket-client
- * quartz : http://potatolattle.blogspot.tw/2013/10/java-classquartz.html
+ * 組測包狀態回饋
  */
 package com.advantech.endpoint;
 

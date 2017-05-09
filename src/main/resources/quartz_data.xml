@@ -148,8 +148,9 @@
         </trigger>
     </schedule>
     
-    把Cell是否合格資訊轉換到資料庫
-    <schedule> 
+    -->    
+    <!--把Cell是否合格資訊轉換到資料庫-->
+<!--    <schedule> 
         <job>
             <name>CellJobWorker</name>
             <job-class>com.advantech.quartzJob.CellJobWorker</job-class>
@@ -162,8 +163,9 @@
                 <cron-expression>0/30 * 8-20 ? * MON-SAT *</cron-expression>
             </cron>
         </trigger>
-    </schedule>
+    </schedule>-->
     
+    <!--
     Cell auto close
     <schedule> 
         <job>

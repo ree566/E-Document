@@ -312,7 +312,7 @@
                                         display: "inline-block"
                                     })
                                     .addClass("draggable blub-empty divCustomBg")
-                                    .html(lineName.substring(0, 1));
+                                    .html(lineName.substring(0, 2));
                             childAmount--;
                         });
                         $("#" + lineName)
@@ -376,7 +376,7 @@
                                     if (people.T_Num == 1) {
                                         $("#titleArea #" + people.TagName + "_title").attr("onClick", "window.open( 'BabTotal?babId=" + people.BABid + "','_blank' ); return false;");
                                     }
-                                } 
+                                }
                             }
                         }
                     }
@@ -425,15 +425,20 @@
                                 var childElement = $("#cellArea #" + cell.lineName + "_cell" + " #" + cell.lineName + "_cell_1");
 
                                 if (childElement.length) {
-                                    childElement.removeClass("blub-empty")
-                                            .addClass((cell.isAlarm ? "blub-alarm" : "blub-normal"));
-                                    var cellInfo =
-                                            "PO:" + cell.PO + "<br/>" +
-                                            "Barcode:" + cell.barcode + "<br/>" +
-                                            "Standard:" + cell.standard + " Min<br/>" +
-                                            "Diff:" + cell.diff + " Min<br/>" +
-                                            "Percent:" + getPercent(cell.percent) + "%<br/>";
-                                    childElement.parent().tooltipster('content', cellInfo);
+                                    if (cell.diff == 0) {
+                                        childElement.removeClass("blub-empty")
+                                                .addClass("blub-prepared");
+                                    } else {
+                                        childElement.removeClass("blub-empty", "blub-prepared")
+                                                .addClass((cell.isAlarm ? "blub-alarm" : "blub-normal"));
+                                        var cellInfo =
+                                                "PO:" + cell.PO + "<br/>" +
+                                                "Barcode:" + cell.barcode + "<br/>" +
+                                                "Standard:" + cell.standard + " Min<br/>" +
+                                                "Diff:" + cell.diff + " Min<br/>" +
+                                                "Percent:" + getPercent(cell.percent) + "%<br/>";
+                                        childElement.parent().tooltipster('content', cellInfo);
+                                    }
                                 }
                             }
                         }

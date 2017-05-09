@@ -6,6 +6,7 @@
  * 參考來源 : 
  * websocket : https://dzone.com/articles/sample-java-web-socket-client
  * quartz : http://potatolattle.blogspot.tw/2013/10/java-classquartz.html
+ * 感應器狀態
  */
 package com.advantech.endpoint;
 

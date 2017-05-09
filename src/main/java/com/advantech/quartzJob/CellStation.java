@@ -3,6 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  * 此job的相關設定在CellScheduleJobServlet中，由此servlet分派子工作(本class)對webservice監聽並save data into database
+ * 插入從WebService取得的過站資料job
  */
 package com.advantech.quartzJob;
 
@@ -61,17 +62,13 @@ public class CellStation implements Job {
 
     public static void checkDifferenceAndInsert(String PO, int apsLineId) {
 
-        out.println("Begin check");
         List<PassStation> l = WebServiceRV.getInstance().getPassStationRecords(PO, apsLineId);
         List<PassStation> history = BasicService.getPassStationService().getPassStation(PO);
         List<PassStation> newData = (List<PassStation>) CollectionUtils.subtract(l, history);
 
         if (!newData.isEmpty()) {
-            out.println("Begin insert");
             BasicService.getPassStationService().insertPassStation(newData);
-        } else {
-            out.println("No difference");
-        }
+        } 
     }
 
     private boolean isPieceReachMaxium(List<PassStation> l) {
