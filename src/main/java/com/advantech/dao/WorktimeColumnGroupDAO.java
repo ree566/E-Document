@@ -41,7 +41,7 @@ public class WorktimeColumnGroupDAO implements BasicDAO {
 
     public Object findByUserType(Object obj_id) {
         Criteria criteria = currentSession().createCriteria(WorktimeColumnGroup.class, "w");
-        criteria.createAlias("w.userType", "u");
+        criteria.createAlias("w.unit", "u");
         criteria.add(Restrictions.eq("u.id", obj_id));
         criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
         return criteria.uniqueResult();

@@ -102,4 +102,7 @@
         </mvc:message-converters>
     </mvc:annotation-driven>
 
+    <!--other import-->
+    
+    <import resource="classpath:spring-security.xml"/>
 </beans>

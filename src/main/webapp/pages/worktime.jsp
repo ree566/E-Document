@@ -1,35 +1,37 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<c:set var="root" value="${pageContext.request.contextPath}/"/>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+
+<sec:authentication var="user" property="principal" />
 <style>
     .permission-hint{
         color: red;
     }
 </style>
 
-<script src="${root}js/urlParamGetter.js"></script>
-<script src="${root}js/column-name-setting.js"></script>
-<script src="${root}js/jqgrid-custom-select-option-reader.js"></script>
+<script src="<c:url value="/js/urlParamGetter.js" />"></script>
+<script src="<c:url value="/js/column-name-setting.js" />"></script>
+<script src="<c:url value="/js/jqgrid-custom-select-option-reader.js" />"></script>
 
 <script>
     $(function () {
         var lastsel, scrollPosition;
 
-        var unitName = '${sessionScope.user.userType.name}';
+        var unitName = '${user.unit.name}';
         var modifyColumns = (unitName == null || unitName == "") ? [] : getColumn();
         var grid = $("#list");
-        var isEditable = ${sessionScope.user.permission > 0};
+        var isEditable = ${user.permission > 0};
 
         //Set param into jqgrid-custom-select-option-reader.js and get option by param selectOptions
         //You can get the floor select options and it's formatter function
         //ex: floor selector -> floor and floor_func
         setSelectOptions({
-            rootUrl: "${root}",
+            rootUrl: "<c:url value="/" />",
             columnInfo: [
                 {name: "floor", isNullable: false},
-                {name: "identit", nameprefix: "spe_", isNullable: false, dataToServer: "SPE"},
-                {name: "identit", nameprefix: "ee_", isNullable: false, dataToServer: "EE"},
-                {name: "identit", nameprefix: "qc_", isNullable: false, dataToServer: "QC"},
+                {name: "user", nameprefix: "spe_", isNullable: false, dataToServer: "SPE"},
+                {name: "user", nameprefix: "ee_", isNullable: false, dataToServer: "EE"},
+                {name: "user", nameprefix: "qc_", isNullable: false, dataToServer: "QC"},
                 {name: "type", isNullable: false},
                 {name: "flow", nameprefix: "bab_", isNullable: false, dataToServer: "1"},
                 {name: "flow", nameprefix: "test_", isNullable: true, dataToServer: "3"},
@@ -65,9 +67,9 @@
         ];
 
         grid.jqGrid({
-            url: '${root}getSheetView.do',
+            url: '<c:url value="/getSheetView.do" />',
             datatype: 'json',
-            mtype: 'POST',
+            mtype: 'GET',
 //            guiStyle: "bootstrap",
             autoencode: true,
             colModel: [
@@ -99,9 +101,9 @@
                 {label: 'BurnIn', name: "burnIn", edittype: "select", editoptions: {value: "N:N;BI:BI;RI:RI", dataEvents: burnIn_select_event}, width: 100, searchrules: {required: true}, searchoptions: search_string_options},
                 {label: 'B/I Time', name: "biTime", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {required: true, number: true}, editoptions: {defaultValue: '0'}, formoptions: required_form_options},
                 {label: 'BI_Temperature', name: "biTemperature", width: 120, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {required: true, number: true}, editoptions: {defaultValue: '0'}, formoptions: required_form_options},
-                {label: 'SPE Owner', name: "identitBySpeOwnerId.id", edittype: "select", editoptions: {value: selectOptions["spe_identit"]}, formatter: selectOptions["spe_identit_func"], width: 100, searchrules: {required: true}, searchoptions: search_string_options},
-                {label: 'EE Owner', name: "identitByEeOwnerId.id", edittype: "select", editoptions: {value: selectOptions["ee_identit"]}, formatter: selectOptions["ee_identit_func"], width: 100, searchrules: {required: true}, searchoptions: search_string_options},
-                {label: 'QC Owner', name: "identitByQcOwnerId.id", edittype: "select", editoptions: {value: selectOptions["qc_identit"]}, formatter: selectOptions["qc_identit_func"], width: 100, searchrules: {required: true}, searchoptions: search_string_options},
+                {label: 'SPE Owner', name: "userBySpeOwnerId.id", edittype: "select", editoptions: {value: selectOptions["spe_user"]}, formatter: selectOptions["spe_user_func"], width: 100, searchrules: {required: true}, searchoptions: search_string_options},
+                {label: 'EE Owner', name: "userByEeOwnerId.id", edittype: "select", editoptions: {value: selectOptions["ee_user"]}, formatter: selectOptions["ee_user_func"], width: 100, searchrules: {required: true}, searchoptions: search_string_options},
+                {label: 'QC Owner', name: "userByQcOwnerId.id", edittype: "select", editoptions: {value: selectOptions["qc_user"]}, formatter: selectOptions["qc_user_func"], width: 100, searchrules: {required: true}, searchoptions: search_string_options},
                 {label: '組包SOP', name: "assyPackingSop", width: 100, searchrules: {required: true}, searchoptions: search_string_options, edittype: "textarea", editoptions: {maxlength: 500}},
                 {label: '測試SOP', name: "testSop", width: 100, searchrules: {required: true}, searchoptions: search_string_options, edittype: "textarea", editoptions: {maxlength: 500}},
                 {label: 'KEYPART_A', name: "keypartA", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, editoptions: {defaultValue: '0'}},
@@ -170,7 +172,7 @@
             navOptions: {reloadGridOptions: {fromServer: true}},
             caption: "工時大表",
             height: 450,
-            editurl: '${root}updateSheet.do',
+            editurl: '<c:url value="/updateSheet.do" />',
             sortname: 'id', sortorder: 'desc',
             error: function (xhr, ajaxOptions, thrownError) {
                 alert("Ajax Error occurred\n"
@@ -180,45 +182,6 @@
                         );
             }
         })
-                .jqGrid('navGrid', '#pager',
-                        {edit: isEditable, add: isEditable, del: isEditable, search: true},
-                        {
-                            jqModal: true,
-                            dataheight: 350,
-                            width: 450,
-                            closeAfterEdit: false,
-                            reloadAfterSubmit: true,
-                            errorTextFormat: customErrorTextFormat,
-                            recreateForm: true,
-                            beforeShowForm: greyout,
-                            closeOnEscape: true,
-                            zIndex: 9999,
-                            cols: 20,
-                            bottominfo: "Fields marked with (*) are required<br/>Fields marked with (F) set to zero will be re-count"
-                        },
-                        {
-                            jqModal: true,
-                            dataheight: 350,
-                            width: 450,
-                            closeAfterAdd: false,
-                            reloadAfterSubmit: true,
-                            errorTextFormat: customErrorTextFormat,
-                            recreateForm: true,
-                            beforeShowForm: greyout,
-                            closeOnEscape: true,
-                            zIndex: 9999,
-                            bottominfo: "Fields marked with (*) are required"
-                        },
-                        {
-                            zIndex: 9999,
-                            reloadAfterSubmit: true
-                        },
-                        {
-                            zIndex: 9999,
-                            closeAfterSearch: false,
-                            reloadAfterSubmit: true
-                        }
-                )
                 .jqGrid('setGroupHeaders', {
                     useColSpanStyle: true,
                     groupHeaders: [
@@ -231,10 +194,52 @@
                     caption: "Export to Excel",
                     buttonicon: "ui-icon-disk",
                     onClickButton: function () {
-                        grid.jqGrid('excelExport', {"url": "${root}generateExcel.do"});
+                        grid.jqGrid('excelExport', {"url": "<c:url value="/generateExcel.do" />"});
                     },
                     position: "last"
                 });
+
+    <sec:authorize access="hasRole('ADMIN') and hasRole('USER')">
+        grid.jqGrid('navGrid', '#pager',
+                {edit: isEditable, add: isEditable, del: isEditable, search: true},
+                {
+                    jqModal: true,
+                    dataheight: 350,
+                    width: 450,
+                    closeAfterEdit: false,
+                    reloadAfterSubmit: true,
+                    errorTextFormat: customErrorTextFormat,
+                    recreateForm: true,
+                    beforeShowForm: greyout,
+                    closeOnEscape: true,
+                    zIndex: 9999,
+                    cols: 20,
+                    bottominfo: "Fields marked with (*) are required<br/>Fields marked with (F) set to zero will be re-count"
+                },
+                {
+                    jqModal: true,
+                    dataheight: 350,
+                    width: 450,
+                    closeAfterAdd: false,
+                    reloadAfterSubmit: true,
+                    errorTextFormat: customErrorTextFormat,
+                    recreateForm: true,
+                    beforeShowForm: greyout,
+                    closeOnEscape: true,
+                    zIndex: 9999,
+                    bottominfo: "Fields marked with (*) are required"
+                },
+                {
+                    zIndex: 9999,
+                    reloadAfterSubmit: true
+                },
+                {
+                    zIndex: 9999,
+                    closeAfterSearch: false,
+                    reloadAfterSubmit: true
+                }
+        );
+    </sec:authorize>
 
         var columns = grid.jqGrid('getGridParam', 'colModel');
         var columnNames = [];
@@ -280,8 +285,8 @@
         function getColumn() {
             var result;
             $.ajax({
-                type: "Post",
-                url: "${root}unitColumn.do",
+                type: "GET",
+                url: "<c:url value="/unitColumn.do" />",
                 dataType: "json",
                 async: false,
                 success: function (response) {
@@ -296,7 +301,7 @@
     });
 </script>
 <div id="worktime-content">
-    <h5>Your permission is: <b class="permission-hint"><c:out value="${sessionScope.user.permission <= 0 ? 'R' : 'RW'}" /></b></h5>
+    <h5>Your permission is: <b class="permission-hint"><c:out value="${user.permission <= 0 ? 'R' : 'RW'}" /></b></h5>
     <table id="list"></table> 
     <div id="pager"></div>
 </div>

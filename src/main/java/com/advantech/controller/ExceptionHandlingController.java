@@ -9,6 +9,7 @@ package com.advantech.controller;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.HttpSessionRequiredException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -27,6 +28,11 @@ public class ExceptionHandlingController {
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
                 .body("The session has expired.");
+    }
+    
+    @ExceptionHandler(AccessDeniedException.class)
+    public String handleAccessDeniedException() {
+        return "accessDenied";
     }
 
     // Total control - setup a model and return the view name yourself. Or

@@ -6,13 +6,16 @@
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<c:set var="root" value="${pageContext.request.contextPath}/"/>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+<sec:authentication var="user" property="principal" />
 <!DOCTYPE html>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta name="_csrf" content="${_csrf.token}"/>
+        <meta name="_csrf_header" content="${_csrf.headerName}"/>
         <title>${initParam.pageTitle}</title>
-        <link rel="shortcut icon" href="${root}images/favicon.ico"/>
+        <link rel="shortcut icon" href="<c:url value="/images/favicon.ico" />"/>
 
         <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
         <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap-theme.min.css" rel="stylesheet">
@@ -57,10 +60,10 @@
 
         <script src="//cdnjs.cloudflare.com/ajax/libs/jquery.form/4.2.1/jquery.form.min.js"></script>
 
-<!--        <script src="//cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.14.0/jquery.jqgrid.min.js"></script>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.14.0/modules/grid.jqueryui.js"></script>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.14.0/modules/grid.formedit.js"></script>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.14.0/modules/min/jqmodal.js"></script>-->
+        <!--        <script src="//cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.14.0/jquery.jqgrid.min.js"></script>
+                <script src="//cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.14.0/modules/grid.jqueryui.js"></script>
+                <script src="//cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.14.0/modules/grid.formedit.js"></script>
+                <script src="//cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.14.0/modules/min/jqmodal.js"></script>-->
 
         <script src="//cdnjs.cloudflare.com/ajax/libs/jqgrid/4.6.0/js/i18n/grid.locale-tw.js"></script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/jqgrid/4.6.0/js/jquery.jqGrid.min.js"></script>
@@ -68,8 +71,8 @@
         <script src="../js/sb-admin-2.min.js"></script>
         <script src="../js/metisMenu.min.js"></script>
 
-        <script src="${root}/js/jqgrid-custom-param.js"></script> 
-        <script src="${root}js/sessionExpiredDetect.js"></script>
+        <script src="<c:url value="/js/jqgrid-custom-param.js" />"></script> 
+        <script src="<c:url value="/js/sessionExpiredDetect.js" />"></script>
 
         <!--<script src="//cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.14.0/modules/grid.subgrid.js"></script>-->
         <script>
@@ -94,6 +97,12 @@
                 });
 
                 $("#preload_page").trigger("click");
+
+                var token = $("meta[name='_csrf']").attr("content");
+                var header = $("meta[name='_csrf_header']").attr("content");
+                $(document).ajaxSend(function (e, xhr, options) {
+                    xhr.setRequestHeader(header, token);
+                });
             });
         </script>
 
@@ -116,10 +125,10 @@
 
                 <ul class="nav navbar-top-links navbar-right">
                     <li class="dropdown">
-                    <lable for="jobnumber">Jobnumber: </lable><font id="jobnumber"><c:out value="${sessionScope.user.jobnumber}" /></font> / 
-                    <lable for="name">Name: </lable><font id="name"><c:out value="${sessionScope.user.name}" /></font> / 
-                    <lable for="unit">Unit: </lable><font id="unit"><c:out value="${sessionScope.user.unit.name}" /></font> / 
-                    <lable for="floor">Floor: </lable><font id="floor"><c:out value="${sessionScope.user.floor.name}" /></font> 
+                    <lable for="jobnumber">Jobnumber: </lable><font id="jobnumber"><c:out value="${user.jobnumber}" /></font> / 
+                    <lable for="name">Name: </lable><font id="name"><c:out value="${user.username}" /></font> / 
+                    <lable for="unit">Unit: </lable><font id="unit"><c:out value="${user.unit.name}" /></font> / 
+                    <lable for="floor">Floor: </lable><font id="floor"><c:out value="${user.floor.name}" /></font> 
                     </li>
 
                     <!-- /.dropdown -->
@@ -134,7 +143,9 @@
                             </li>
                             <li class="divider"></li>
                             <li>
-                                <form id="logout_form" action="${root}/logout.do" method="post"></form>
+                                <form id="logout_form" action="<c:url value="/logout" />" method="post">
+                                    <input type="hidden" name="${_csrf.parameterName}"  value="${_csrf.token}" />
+                                </form>
                                 <a href="#" onclick="$('#logout_form').submit()"><i class="fa fa-sign-out fa-fw"></i> logout</a>
                             </li>
                         </ul>
@@ -168,7 +179,7 @@
                                     <li>
                                         <a class="redirect-link" href="worktime">工時大表</a>
                                     </li>
-                                    <c:if test="${sessionScope.user.permission >= initParam.DATA_OPERATOR_LEADER_PERMISSION}">
+                                    <sec:authorize access="hasRole('ADMIN') and hasRole('USER')">
                                         <li>
                                             <a class="redirect-link" href="mod/flow">Flow</a>
                                         </li>
@@ -184,18 +195,18 @@
                                         <li>
                                             <a class="redirect-link" href="mod/type">Type</a>
                                         </li>
-                                    </c:if>
+                                    </sec:authorize>
                                 </ul>
                             </li>
-                            <c:if test="${sessionScope.user.permission >= initParam.DATA_OPERATOR_LEADER_PERMISSION}">
-                                <li>
-                                    <a href="#"><i class="fa fa-wrench fa-fw"></i> UI Elements<span class="fa arrow"></span></a>
-                                    <ul class="nav nav-second-level">
+                            <li>
+                                <a href="#"><i class="fa fa-wrench fa-fw"></i> UI Elements<span class="fa arrow"></span></a>
+                                <ul class="nav nav-second-level"> 
+                                    <li>
+                                        <a class="redirect-link" id="preload_page" href="audit">資料版本查詢</a>
+                                    </li>
+                                    <sec:authorize access="hasRole('ADMIN') and hasRole('USER')">
                                         <li>
                                             <a class="redirect-link" href="fileupload">Excel文件上傳</a>
-                                        </li>
-                                        <li>
-                                            <a class="redirect-link" id="preload_page" href="audit">資料版本查詢</a>
                                         </li>
                                         <li>
                                             <a class="redirect-link" href="worktime-permission">欄位權限設定</a>
@@ -203,10 +214,10 @@
                                         <li>
                                             <a class="redirect-link" href="wowface">Not exist page</a>
                                         </li>
-                                    </ul>
-                                    <!-- /.nav-second-level -->
-                                </li>
-                            </c:if>
+                                    </sec:authorize>
+                                </ul>
+                                <!-- /.nav-second-level -->
+                            </li>
                         </ul>
                     </div>
                     <!-- /.sidebar-collapse -->

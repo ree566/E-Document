@@ -5,8 +5,8 @@
  */
 package com.advantech.controller;
 
-import com.advantech.model.User;
 import com.advantech.model.Unit;
+import com.advantech.model.User;
 import com.advantech.model.Worktime;
 import com.advantech.model.WorktimeColumnGroup;
 import com.advantech.service.WorktimeColumnGroupService;
@@ -23,6 +23,9 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -30,14 +33,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.SessionAttributes;
 
 /**
  *
  * @author Wei.Cheng
  */
 @Controller
-@SessionAttributes({"user"})
+@Secured({"ROLE_USER", "ROLE_ADMIN"})
 public class WorktimeModController {
 
     private final String ADD = "add", EDIT = "edit", DELETE = "del";
@@ -56,7 +58,6 @@ public class WorktimeModController {
     public ResponseEntity updateSheet(
             @RequestParam String oper,
             @ModelAttribute Worktime worktime,
-            @ModelAttribute("user") User user,
             HttpServletRequest req,
             BindingResult errors) throws ServletException, IOException {
 
@@ -79,6 +80,7 @@ public class WorktimeModController {
             Worktime existWorktime = worktimeService.findByPrimaryKey(worktime.getId());
             modifyMessage = worktimeService.delete(existWorktime) == 1 ? this.SUCCESS_MESSAGE : this.FAIL_MESSAGE;
         } else {
+            User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             Unit userType = user.getUnit();
             if (userType != null) {
                 if (isModelExists(worktime)) {
@@ -88,7 +90,7 @@ public class WorktimeModController {
                     if (worktime.getPreAssy().getId() == 0) {
                         worktime.setPreAssy(null);
                     }
-                    
+
                     if (worktime.getFlowByBabFlowId().getId() == 0) {
                         worktime.setFlowByBabFlowId(null);
                     }
@@ -145,8 +147,9 @@ public class WorktimeModController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/unitColumn.do", method = {RequestMethod.POST})
-    public String[] getUnitColumnName(@ModelAttribute("user") User user) {
+    @RequestMapping(value = "/unitColumn.do", method = {RequestMethod.GET})
+    public String[] getUnitColumnName() {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         int unit = user.getUnit().getId();
 
         String[] columnName;

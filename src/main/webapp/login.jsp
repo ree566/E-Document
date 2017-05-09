@@ -122,7 +122,7 @@
         <script>
             $('body').removeClass('noscript');
         </script>
-        <c:if test="${sessionScope.user.jobnumber != null}">
+        <c:if test="${sessionScope.SPRING_SECURITY_CONTEXT != null}">
             <c:redirect url="pages/"/>
         </c:if>
         <div class="system-environment-checkMsg">
@@ -134,7 +134,8 @@
                 <fieldset class="scheduler-border">
                     <legend class="scheduler-border">${initParam.pageTitle}系統:</legend>
                     <div>
-                        <form action="login.do" method="post" onsubmit="dosubmit()" id="login">
+                        <c:url var="loginUrl" value="/login" />
+                        <form action="${loginUrl}" method="post" onsubmit="dosubmit()" id="login">
                             <table class="table borderless">
                                 <tr>
                                     <td><label for="jobnumber">Name:</label></td>
@@ -152,9 +153,25 @@
                                     <td></td> 
                                 </tr>
                             </table>
+                            <input type="hidden" name="${_csrf.parameterName}"  value="${_csrf.token}" />
                             <img src="">This is some img</img>
-                            <div id="errormsg" style="color:red;float:left">
-                                <c:out value="${errormsg}" default=""></c:out>
+                            <div>
+                                <c:if test="${param.error != null}">
+                                    <div class="alert alert-danger">
+                                        <p>Invalid username and password.</p>
+                                    </div>
+                                </c:if>
+                                <c:if test="${param.logout != null}">
+                                    <div class="alert alert-success">
+                                        <p>You have been logged out successfully.</p>
+                                    </div>
+                                </c:if>
+                                <c:if test="${not empty SPRING_SECURITY_LAST_EXCEPTION}">
+                                    <font color="red">
+                                        Your login attempt was not successful due to <br/><br/>
+                                        <c:out value="${SPRING_SECURITY_LAST_EXCEPTION.message}"/>.
+                                    </font>
+                                </c:if>
                             </div>
                         </form>
                     </div>

@@ -5,8 +5,6 @@
  */
 package com.advantech.listener;
 
-import com.advantech.model.Permission;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import org.slf4j.Logger;
@@ -26,18 +24,7 @@ public class ContextListener implements ServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        try {
-            ServletContext context = sce.getServletContext();
-            Permission.VISITOR_PERMISSION = Integer.parseInt(context.getInitParameter("VISITOR_PERMISSION"));
-            Permission.SPECIAL_VISITOR_PERMISSION = Integer.parseInt(context.getInitParameter("SPECIAL_VISITOR_PERMISSION"));
-            Permission.DATA_OPERATOR_PERMISSION = Integer.parseInt(context.getInitParameter("DATA_OPERATOR_PERMISSION"));
-            Permission.DATA_OPERATOR_LEADER_PERMISSION = Integer.parseInt(context.getInitParameter("DATA_OPERATOR_LEADER_PERMISSION"));
-            Permission.SYSOP_PERMISSION = Integer.parseInt(context.getInitParameter("SYSOP_PERMISSION"));
-            Permission.SYSOP_OPERATE_AREA_PERMISSION = Integer.parseInt(context.getInitParameter("SYSOP_OPERATE_AREA_PERMISSION"));
-            Permission.TEST_FIELD_ACCESS_LIMIT_PERMISSION = Integer.parseInt(context.getInitParameter("TEST_FIELD_ACCESS_LIMIT_PERMISSION"));
-        } catch (Exception ex) {
-            log.error("Permission init fail");
-        }
+
     }
 
     @Override

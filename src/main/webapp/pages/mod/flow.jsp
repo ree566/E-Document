@@ -6,9 +6,8 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<c:set var="root" value="${pageContext.request.contextPath}/"/>
-<link href="${root}/css/jquery-ui-multiselect.css" rel="stylesheet">
-<script src="${root}js/jquery-ui-multiselect.min.js"></script>
+<link href="<c:url value="/css/jquery-ui-multiselect.css" />" rel="stylesheet">
+<script src="<c:url value="/js/jquery-ui-multiselect.min.js" />"></script>
 <script>
     var scrollPosition = 0;
 
@@ -75,7 +74,7 @@
         };
 
         grid.jqGrid({
-            url: '${root}getSelectOption.do/' + tableName,
+            url: '<c:url value="/getSelectOption.do/" />' + tableName,
             datatype: 'json',
             mtype: 'GET',
             autoencode: true,
@@ -108,7 +107,7 @@
             navOptions: {reloadGridOptions: {fromServer: true}},
             caption: tableName + " modify",
             height: 450,
-            editurl: '${root}updateSelectOption.do/' + tableName,
+            editurl: '<c:url value="/updateSelectOption.do/" />' + tableName,
             sortname: 'id', sortorder: 'asc',
             onSelectRow: function () {
                 scrollPosition = grid.closest(".ui-jqgrid-bdiv").scrollTop();
@@ -135,7 +134,7 @@
                 pager_id = "p_" + subgrid_table_id;
                 $("#" + subgrid_id).html("<table id='" + subgrid_table_id + "' class='scroll'></table><div id='" + pager_id + "' class='scroll'></div>");
                 $("#" + subgrid_table_id).jqGrid({
-                    url: '${root}test.do',
+                    url: '<c:url value="/flowOptionByParent.do" />',
                     mtype: 'GET',
                     datatype: "json",
                     postData: {
@@ -150,7 +149,7 @@
                     pager: pager_id,
                     sortname: 'id',
                     autowidth: true,
-                    editurl: '${root}updateSelectOption.do/' + tableName + "_sub",
+                    editurl: '<c:url value="/updateSelectOption.do/" />' + tableName + "_sub",
                     jsonReader: {
                         root: "rows",
                         page: "page",
@@ -224,7 +223,7 @@
             var result = {};
             $.ajax({
                 type: "GET",
-                url: "${root}getSelectOption.do/" + columnName,
+                url: "<c:url value="/getSelectOption.do/" />" + columnName,
                 data: data,
                 async: false,
                 success: function (response) {

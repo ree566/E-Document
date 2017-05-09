@@ -6,14 +6,13 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<c:set var="root" value="${pageContext.request.contextPath}/"/>
 <script>
     $(function () {
         var grid = $("#list");
         var tableName = "Type";
 
         grid.jqGrid({
-            url: '${root}getSelectOption.do/' + tableName,
+            url: '<c:url value="/getSelectOption.do/" />' + tableName,
             datatype: 'json',
             mtype: 'GET',
             autoencode: true,
@@ -44,7 +43,7 @@
             navOptions: {reloadGridOptions: {fromServer: true}},
             caption: tableName + " modify",
             height: 450,
-            editurl: '${root}updateSelectOption.do/' + tableName,
+            editurl: '<c:url value="/updateSelectOption.do/" />' + tableName,
             sortname: 'id', sortorder: 'asc',
             error: function (xhr, ajaxOptions, thrownError) {
                 alert("Ajax Error occurred\n"
@@ -92,7 +91,7 @@
             var result = {};
             $.ajax({
                 type: "GET",
-                url: "${root}getSelectOption.do/" + columnName,
+                url: "<c:url value="/getSelectOption.do/" />" + columnName,
                 data: data,
                 async: false,
                 success: function (response) {

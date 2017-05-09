@@ -7,6 +7,7 @@ package com.advantech.service;
 
 import com.advantech.model.User;
 import com.advantech.model.UserProfile;
+import com.advantech.security.State;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,18 +35,21 @@ public class CustomUserDetailsService implements UserDetailsService {
             System.out.println("User not found");
             throw new UsernameNotFoundException("Username not found");
         }
-        return new org.springframework.security.core.userdetails.User(user.getJobnumber(), user.getPassword(),
-                user.getState().equals("Active"), true, true, true, getGrantedAuthorities(user));
+
+        user.addSecurityInfo(user.getState().equals("Active"), true, true, true, getGrantedAuthorities(user));
+        return user;
+//        return new org.springframework.security.core.userdetails.User(user.getJobnumber(), user.getPassword(),
+//                user.getState().equals("Active"), true, true, true, getGrantedAuthorities(user));
     }
 
     private List<GrantedAuthority> getGrantedAuthorities(User user) {
         List<GrantedAuthority> authorities = new ArrayList<>();
 
         for (UserProfile userProfile : user.getUserProfiles()) {
-            System.out.println("UserProfile : " + userProfile);
             authorities.add(new SimpleGrantedAuthority("ROLE_" + userProfile.getType()));
         }
-        System.out.print("authorities :" + authorities);
+        
+        System.out.println("authorities :" + authorities);
         return authorities;
     }
 

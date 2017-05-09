@@ -5,50 +5,32 @@
  */
 package com.advantech.controller;
 
-import static com.advantech.helper.JqGridResponseUtils.toJqGridResponse;
-import com.advantech.helper.PageInfo;
-import com.advantech.model.User;
-import com.advantech.response.JqGridResponse;
-import com.advantech.service.UnitService;
-import com.advantech.service.UserProfileService;
-import com.advantech.service.UserService;
-import java.util.ArrayList;
-import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.google.gson.Gson;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.SessionAttributes;
 
 /**
  *
  * @author Wei.Cheng
  */
 @Controller
-@SessionAttributes({"user"})
 public class TestController {
 
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private UnitService unitService;
-
-    @Autowired
-    private UserProfileService userProfileService;
-
+    @Secured("ROLE_ADMIN")
     @ResponseBody
-    @RequestMapping(value = "/test.do/{jobnumber}", method = {RequestMethod.GET, RequestMethod.POST})
-    public JqGridResponse test(
-            @PathVariable String jobnumber,
-            @ModelAttribute PageInfo info,
-            @ModelAttribute("user") User user) {
-        List l = new ArrayList();
-        l.add(userService.findByJobnumber(jobnumber));
-        JqGridResponse viewResp = toJqGridResponse(l, info);
-        return viewResp;
+    @RequestMapping(value = "/test", method = RequestMethod.GET)
+    public String test(HttpServletRequest request, HttpServletResponse response) {
+        return "hi";
     }
+
 }

@@ -75,8 +75,8 @@ public class UserProfile implements java.io.Serializable {
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "User_Profile_REF", schema = "dbo", catalog = "E_Document", joinColumns = {
-        @JoinColumn(name = "user_profile_id", nullable = false, updatable = false)}, inverseJoinColumns = {
-        @JoinColumn(name = "user_id", nullable = false, updatable = false)})
+        @JoinColumn(name = "user_profile_id", nullable = false, insertable = false, updatable = false)}, inverseJoinColumns = {
+        @JoinColumn(name = "user_id", nullable = false, insertable = false, updatable = false)})
     public Set<User> getUsers() {
         return this.users;
     }
@@ -85,4 +85,42 @@ public class UserProfile implements java.io.Serializable {
         this.users = users;
     }
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + id;
+        result = prime * result + ((type == null) ? 0 : type.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof UserProfile)) {
+            return false;
+        }
+        UserProfile other = (UserProfile) obj;
+        if (id != other.id) {
+            return false;
+        }
+        if (type == null) {
+            if (other.type != null) {
+                return false;
+            }
+        } else if (!type.equals(other.type)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "UserProfile [id=" + id + ",  type=" + type + "]";
+    }
 }

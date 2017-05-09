@@ -22,7 +22,7 @@ public class UserNameRecordFilter extends AbstractRequestLoggingFilter {
         final HttpSession session = request.getSession();
         final User user = session != null ? (User) session.getAttribute("user") : null;
         if (user != null) {
-            MDC.put("username", user.getName());
+            MDC.put("username", user.getUsername());
         }
     }
 

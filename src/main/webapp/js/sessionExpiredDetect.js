@@ -14,3 +14,4 @@ $(document).ajaxError(function (event, jqxhr, settings, exception) {
         }
     }
 });
+

@@ -15,7 +15,7 @@ public enum State {
     DELETED("Deleted"),
     LOCKED("Locked");
 
-    private String state;
+    private final String state;
 
     private State(final String state) {
         this.state = state;

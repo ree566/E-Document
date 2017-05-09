@@ -7,7 +7,6 @@ package com.advantech.controller;
 
 import static com.advantech.helper.JqGridResponseUtils.toJqGridResponse;
 import com.advantech.helper.PageInfo;
-import com.advantech.model.User;
 import com.advantech.model.Worktime;
 import com.advantech.response.JqGridResponse;
 import com.advantech.service.AuditService;
@@ -16,6 +15,7 @@ import java.util.List;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,14 +23,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.SessionAttributes;
 
 /**
  *
  * @author Wei.Cheng
  */
 @Controller
-@SessionAttributes({"user"})
+@Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_GUEST"})
 public class AuditController {
 
     @Autowired
@@ -43,8 +42,7 @@ public class AuditController {
             @PathVariable(value = "version") final int version,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime startDate,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime endDate,
-            @ModelAttribute PageInfo info,
-            @ModelAttribute("user") User user) {
+            @ModelAttribute PageInfo info) {
 
         List l;
         if (id == -1 && version == -1 && startDate != null && endDate != null) {

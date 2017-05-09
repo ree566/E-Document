@@ -6,9 +6,8 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<c:set var="root" value="${pageContext.request.contextPath}/"/>
-<script src="${root}js/jqgrid-custom-select-option-reader.js"></script>
-<script src="${root}js/moment.js"></script>
+<script src="<c:url value="/js/jqgrid-custom-select-option-reader.js" />"></script>
+<script src="<c:url value="/js/moment.js" />"></script>
 <script>
     $(function () {
         var grid = $("#list");
@@ -19,7 +18,7 @@
         $("#eD").datepicker({dateFormat: 'yy-mm-dd', defaultDate: today}).datepicker("setDate", today);
 
         setSelectOptions({
-            rootUrl: "${root}",
+            rootUrl: "<c:url value="/" />",
             columnInfo: [
                 {name: "floor", isNullable: false},
                 {name: "user", nameprefix: "spe_", isNullable: false, dataToServer: "SPE"},
@@ -49,7 +48,7 @@
             }
 
             grid.jqGrid('clearGridData');
-            grid.jqGrid('setGridParam', {url: '${root}getAudit.do/' + rowId + '/' + version, postData: {startDate: startDate, endDate: endDate}});
+            grid.jqGrid('setGridParam', {url: '<c:url value="/getAudit.do/" />' + rowId + '/' + version, postData: {startDate: startDate, endDate: endDate}});
             grid.trigger('reloadGrid');
 
         });
@@ -92,7 +91,7 @@
 
         function getEditRecord(rowId, version, startDate, endDate) {
             grid.jqGrid({
-                url: '${root}getAudit.do/' + rowId + '/' + version,
+                url: '<c:url value="/getAudit.do/" />' + rowId + '/' + version,
                 postData: {
                     startDate: startDate,
                     endDate: endDate

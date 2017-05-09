@@ -5,6 +5,9 @@
  */
 package com.advantech.controller;
 
+import static com.advantech.helper.JqGridResponseUtils.toJqGridResponse;
+import com.advantech.helper.PageInfo;
+import com.advantech.response.JqGridResponse;
 import com.advantech.service.FloorService;
 import com.advantech.service.FlowService;
 import com.advantech.service.UserService;
@@ -14,10 +17,13 @@ import com.advantech.service.TypeService;
 import com.advantech.service.UnitService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
@@ -25,6 +31,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @author Wei.Cheng
  */
 @Controller
+@Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_GUEST"})
 public class EditOptionViewController {
 
     @Autowired
@@ -44,7 +51,7 @@ public class EditOptionViewController {
 
     @Autowired
     private PendingService pendingService;
-    
+
     @Autowired
     private UnitService unitService;
 
@@ -73,6 +80,14 @@ public class EditOptionViewController {
     }
 
     @ResponseBody
+    @RequestMapping(value = "/flowOptionByParent.do", method = {RequestMethod.GET})
+    public List getFlowOptionByParent(
+            @RequestParam int id,
+            @ModelAttribute PageInfo info) {
+        return flowService.findByParent(id);
+    }
+
+    @ResponseBody
     @RequestMapping(value = "/preAssyOption.do", method = {RequestMethod.GET})
     public List getPreAssyOption() {
         return preAssyService.findAll();
@@ -83,7 +98,7 @@ public class EditOptionViewController {
     public List getPendingOption() {
         return pendingService.findAll();
     }
-    
+
     @ResponseBody
     @RequestMapping(value = "/unitOption.do", method = {RequestMethod.GET})
     public List getUserTypeOption() {

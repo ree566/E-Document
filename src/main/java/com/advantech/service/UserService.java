@@ -6,6 +6,7 @@
 package com.advantech.service;
 
 import com.advantech.dao.*;
+import com.advantech.helper.CustomPasswordEncoder;
 import com.advantech.helper.PageInfo;
 import com.advantech.model.User;
 import java.util.List;
@@ -56,15 +57,26 @@ public class UserService {
         return userDAO.findByUnitName(unitName);
     }
 
-    public int insert(User identit) {
-        return userDAO.insert(identit);
+    public int insert(User user) {
+        encryptPassword(user);
+        return userDAO.insert(user);
     }
 
-    public int update(User identit) {
-        return userDAO.update(identit);
+    public int update(User user) {
+        User i = this.findByPrimaryKey(user.getId());
+        if (!user.getPassword().equals(i.getPassword())) {
+            encryptPassword(user);
+        }
+        return userDAO.update(user);
     }
 
-    public int delete(User identit) {
-        return userDAO.delete(identit);
+    public int delete(User user) {
+        return userDAO.delete(user);
+    }
+    
+    private void encryptPassword(User user) {
+        CustomPasswordEncoder encoder = new CustomPasswordEncoder();
+        String encryptPassord = encoder.encode(user.getPassword());
+        user.setPassword(encryptPassord);
     }
 }

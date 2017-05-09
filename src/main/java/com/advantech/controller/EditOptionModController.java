@@ -5,9 +5,9 @@
  */
 package com.advantech.controller;
 
+import com.advantech.helper.CustomPasswordEncoder;
 import static com.advantech.helper.JqGridResponseUtils.toJqGridResponse;
 import com.advantech.helper.PageInfo;
-import static com.advantech.helper.PasswordEncoder.encryptPassord;
 import com.advantech.model.Flow;
 import com.advantech.model.FlowGroup;
 import com.advantech.model.User;
@@ -23,12 +23,9 @@ import com.advantech.service.PreAssyService;
 import com.advantech.service.TypeService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.Set;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
@@ -36,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -43,14 +41,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.SessionAttributes;
 
 /**
  *
  * @author Wei.Cheng
  */
 @Controller
-@SessionAttributes({"user"})
+@Secured("ROLE_ADMIN")
 public class EditOptionModController {
 
     private static final Logger log = LoggerFactory.getLogger(EditOptionModController.class);
@@ -66,7 +63,7 @@ public class EditOptionModController {
     private FlowGroupService flowGroupService;
 
     @Autowired
-    private UserService identitService;
+    private UserService userService;
 
     @Autowired
     private PendingService pendingService;
@@ -79,7 +76,7 @@ public class EditOptionModController {
 
     @ResponseBody
     @RequestMapping(value = "/getSelectOption.do/{tableName}", method = {RequestMethod.GET})
-    public JqGridResponse findAll(@PathVariable(value = "tableName") final String tableName, @ModelAttribute PageInfo info, @ModelAttribute("user") User user) throws JsonProcessingException, IOException {
+    public JqGridResponse findAll(@PathVariable(value = "tableName") final String tableName, @ModelAttribute PageInfo info) throws JsonProcessingException, IOException {
 
         JqGridResponse viewResp;
         List l;
@@ -91,8 +88,8 @@ public class EditOptionModController {
             case "FlowGroup":
                 l = flowGroupService.findAll(info);
                 break;
-            case "Identit":
-                l = identitService.findAll(info);
+            case "User":
+                l = userService.findAll(info);
                 break;
             case "Pending":
                 l = pendingService.findAll(info);
@@ -117,10 +114,9 @@ public class EditOptionModController {
             @PathVariable(value = "tableName") final String tableName,
             @RequestParam final String oper,
             @ModelAttribute PageInfo info,
-            @ModelAttribute User user,
             @ModelAttribute Flow flow,
             @RequestParam(required = false, defaultValue = "0") int parentFlowId,
-            @ModelAttribute User identit,
+            @ModelAttribute User user,
             @ModelAttribute Pending pending,
             @ModelAttribute PreAssy preAssy,
             @ModelAttribute Type type,
@@ -184,21 +180,16 @@ public class EditOptionModController {
                         modifyMessage = this.FAIL_MESSAGE;
                 }
                 break;
-            case "Identit":
+            case "User":
                 switch (oper) {
                     case ADD:
-                        encryptPassword(identit);
-                        responseFlag = identitService.insert(identit);
+                        responseFlag = userService.insert(user);
                         break;
                     case EDIT:
-                        User i = identitService.findByPrimaryKey(identit.getId());
-                        if (!identit.getPassword().equals(i.getPassword())) {
-                            encryptPassword(identit);
-                        }
-                        responseFlag = identitService.update(identit);
+                        responseFlag = userService.update(user);
                         break;
                     case DELETE:
-                        responseFlag = identitService.delete(identitService.findByPrimaryKey(identit.getId()));
+                        responseFlag = userService.delete(userService.findByPrimaryKey(user.getId()));
                         break;
                 }
                 modifyMessage = responseFlag == 1 ? this.SUCCESS_MESSAGE : this.FAIL_MESSAGE;
@@ -252,14 +243,6 @@ public class EditOptionModController {
         return ResponseEntity
                 .status(SUCCESS_MESSAGE.equals(modifyMessage) ? HttpStatus.CREATED : HttpStatus.FORBIDDEN)
                 .body(modifyMessage);
-    }
-
-    private void encryptPassword(User identit) {
-        try {
-            identit.setPassword(encryptPassord(identit.getPassword()));
-        } catch (NoSuchAlgorithmException | UnsupportedEncodingException ex) {
-            log.error("The password user provided is invalid!( " + identit.getPassword() + " )");
-        }
     }
 
     private void showParams(HttpServletRequest req) throws ServletException, IOException {

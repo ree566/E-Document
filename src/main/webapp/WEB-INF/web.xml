@@ -15,61 +15,11 @@
         </listener-class>
     </listener>
     
-    <listener>
-        <listener-class>
-            com.advantech.listener.ContextListener
-        </listener-class>
-    </listener>
-    
-    <!--    <filter>
-        <filter-name>hibernateFilterChain</filter-name>
-        <filter-class>org.springframework.orm.hibernate4.support.OpenSessionInViewFilter</filter-class>
-    </filter>
-    <filter-mapping>
-        <filter-name>hibernateFilterChain</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>-->
-    
     <!--global context setting--> 
     
     <context-param>
         <param-name>pageTitle</param-name>
         <param-value>E-Document</param-value>
-    </context-param>
-    
-    <context-param>
-        <param-name>VISITOR_PERMISSION</param-name>
-        <param-value>0</param-value>
-    </context-param>
-    
-    <context-param>
-        <param-name>SPECIAL_VISITOR_PERMISSION</param-name>
-        <param-value>1</param-value>
-    </context-param>
-    
-    <context-param>
-        <param-name>DATA_OPERATOR_PERMISSION</param-name>
-        <param-value>2</param-value>
-    </context-param>
-    
-    <context-param>
-        <param-name>DATA_OPERATOR_LEADER_PERMISSION</param-name>
-        <param-value>3</param-value>
-    </context-param>
-    
-    <context-param>
-        <param-name>SYSOP_PERMISSION</param-name>
-        <param-value>5</param-value>
-    </context-param>
-    
-    <context-param>
-        <param-name>SYSOP_OPERATE_AREA_PERMISSION</param-name>
-        <param-value>5</param-value>
-    </context-param>
-    
-    <context-param>
-        <param-name>TEST_FIELD_ACCESS_LIMIT_PERMISSION</param-name>
-        <param-value>5</param-value>
     </context-param>
     
     <!--filter mapping--> 
@@ -84,31 +34,13 @@
     </filter-mapping>
     
     <filter>
-        <filter-name>LoginFilter</filter-name>
-        <filter-class>com.advantech.filter.LoginFilter</filter-class>
+        <filter-name>springSecurityFilterChain</filter-name>
+        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
     </filter>
+ 
     <filter-mapping>
-        <filter-name>LoginFilter</filter-name>
-        <url-pattern>/pages/*</url-pattern>
-    </filter-mapping>
-    
-    <filter>
-        <filter-name>PermissionFilter</filter-name>
-        <filter-class>com.advantech.filter.PermissionFilter</filter-class>
-    </filter>
-    <filter-mapping>
-        <filter-name>PermissionFilter</filter-name>
-        <url-pattern>/pages/mod/*</url-pattern>
-    </filter-mapping>
-    
-    <filter>
-        <filter-name>UserNameRecordFilter</filter-name>
-        <filter-class>com.advantech.filter.UserNameRecordFilter</filter-class>
-    </filter>
-    <filter-mapping>
-        <filter-name>UserNameRecordFilter</filter-name>
-        <url-pattern>/updateSheet.do</url-pattern>
-        <url-pattern>/uploadFile.do</url-pattern>
+        <filter-name>springSecurityFilterChain</filter-name>
+        <url-pattern>/*</url-pattern>
     </filter-mapping>
     
     <servlet>

@@ -9,7 +9,7 @@ import com.advantech.model.AuditedRevisionEntity;
 import org.hibernate.envers.RevisionListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
  *
@@ -22,7 +22,7 @@ public class AuditingRevisionListener implements RevisionListener {
     @Override
     public void newRevision(Object revisionEntity) {
         AuditedRevisionEntity revEntity = (AuditedRevisionEntity) revisionEntity;
-        String userName = MDC.get("username");
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         revEntity.setUsername(userName);
     }
 }

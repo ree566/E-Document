@@ -37,7 +37,11 @@ function getSelectOption(columnName, isNullable, data) {
             }
             for (var i = 0; i < arr.length; i++) {
                 var obj = arr[i];
-                result[obj.id] = obj.name;
+                if (columnName == 'user') {
+                    result[obj.id] = obj.username;
+                } else {
+                    result[obj.id] = obj.name;
+                }
             }
         },
         error: function (xhr, ajaxOptions, thrownError) {
