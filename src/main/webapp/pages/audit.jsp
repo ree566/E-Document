@@ -48,7 +48,7 @@
             }
 
             grid.jqGrid('clearGridData');
-            grid.jqGrid('setGridParam', {url: '<c:url value="/getAudit.do/" />' + rowId + '/' + version, postData: {startDate: startDate, endDate: endDate}});
+            grid.jqGrid('setGridParam', {url: '<c:url value="/Audit/find/" />' + rowId + '/' + version, postData: {startDate: startDate, endDate: endDate}});
             grid.trigger('reloadGrid');
 
         });
@@ -73,25 +73,13 @@
             ]
         };
 
-        $("#group-change").on("change", function () {
-            var groupingType = $(this).val();
-            if (groupingType) {
-                var obj = groupObj[groupingType];
-                grid.jqGrid('groupingGroupBy', obj[0], {
-                    groupOrder: obj[1],
-                    groupColumnShow: false,
-                    groupCollapse: true,
-                    groupText: obj[2]
-                });
-
-            } else {
-                grid.jqGrid('groupingRemove', true);
-            }
-        });
+        function keyFormat(cellvalue, options, rowObject) {
+            return rowObject[0].id * rowObject[1].rev;
+        }
 
         function getEditRecord(rowId, version, startDate, endDate) {
             grid.jqGrid({
-                url: '<c:url value="/getAudit.do/" />' + rowId + '/' + version,
+                url: '<c:url value="/Audit/find/" />' + rowId + '/' + version,
                 postData: {
                     startDate: startDate,
                     endDate: endDate
@@ -100,10 +88,11 @@
                 mtype: 'GET',
                 autoencode: true,
                 colModel: [
-                    {label: 'REV', name: "REV", jsonmap: "1.rev", key: true, width: 60, frozen: false, hidden: true, search: false},
+                    {label: 'REVV', width: 60, key: true, frozen: false, hidden: true, search: false, formatter: keyFormat},
+                    {label: 'REV', name: "REV", jsonmap: "1.rev", width: 60, frozen: false, hidden: true, search: false},
                     {label: 'username', name: "username", jsonmap: "1.username", width: 60, frozen: false, hidden: false, search: false},
                     {label: 'REVTYPE', name: "REVTYPE", jsonmap: "2", width: 60, frozen: false, hidden: false, search: false},
-                    {label: 'id', name: "id", jsonmap: "0.id", key: true, width: 60, frozen: false, hidden: false, search: false},
+                    {label: 'id', name: "id", jsonmap: "0.id", width: 60, frozen: false, hidden: false, search: false},
                     {label: 'Model', name: "modelName", jsonmap: "0.modelName", frozen: false, searchrules: {required: true}, searchoptions: search_string_options, formoptions: required_form_options},
                     {label: 'TYPE', name: "type_id", jsonmap: "0.type.id", formatter: selectOptions["type_func"], width: 100, searchrules: {required: true}, searchoptions: search_string_options},
                     {label: 'ProductionWT', name: "productionWt", jsonmap: "0.productionWt", width: 120, searchrules: number_search_rule, searchoptions: search_decimal_options},
@@ -176,7 +165,7 @@
                     groupField: ['modifiedDate', 'id'],
                     groupOrder: ['desc', 'asc'],
                     groupColumnShow: [true, false],
-                    groupCollapse: true,
+                    groupCollapse: false,
                     groupText: ['<b>Date {0} - {1} Record(s)</b>', '<b>Id {0}</b>'],
                     formatDisplayField: [
                         function (displayValue) {
@@ -236,11 +225,7 @@
         <input type="text" id="sD" name="startDate" placeholder="startDate" class="form-control" />
         <input type="text" id="eD" name="endDate" placeholder="endDate" class="form-control" />
         <input type="button" id="send" class="form-control" value="send" />
-        <select id="group-change" class="form-control">
-            <option value="1">ID & REV</option>
-            <option value="2">REV & ID</option>
-            <option value="3">ID</option>
-        </select>
+        <h5 class="form-control alert">※rowId or version 不指定請留白</h5>
     </div>
     <table id="list"></table> 
     <div id="pager"></div>

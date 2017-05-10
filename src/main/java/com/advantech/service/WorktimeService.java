@@ -119,8 +119,9 @@ public class WorktimeService {
         return 1;
     }
 
-    public int delete(Object pojo) {
-        return worktimeDAO.delete(pojo);
+    public int delete(Worktime worktime) {
+        Worktime existRecord = this.findByPrimaryKey(worktime.getId());
+        return worktimeDAO.delete(existRecord);
     }
 
 }

@@ -24,13 +24,20 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @author Wei.Cheng
  */
 @Controller
+@Secured("ROLE_ADMIN")
+@RequestMapping(value = "/testCtrl")
 public class TestController {
 
-    @Secured("ROLE_ADMIN")
     @ResponseBody
     @RequestMapping(value = "/test", method = RequestMethod.GET)
-    public String test(HttpServletRequest request, HttpServletResponse response) {
+    public String test() {
         return "hi";
+    }
+    
+    @ResponseBody
+    @RequestMapping(value = "/test1", method = RequestMethod.GET)
+    public String test1() {
+        return "hi1";
     }
 
 }

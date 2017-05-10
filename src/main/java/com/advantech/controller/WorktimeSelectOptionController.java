@@ -5,10 +5,8 @@
  */
 package com.advantech.controller;
 
-import static com.advantech.helper.JqGridResponseUtils.toJqGridResponse;
-import com.advantech.helper.PageInfo;
-import com.advantech.response.JqGridResponse;
 import com.advantech.service.FloorService;
+import com.advantech.service.FlowGroupService;
 import com.advantech.service.FlowService;
 import com.advantech.service.UserService;
 import com.advantech.service.PendingService;
@@ -19,11 +17,9 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
@@ -32,7 +28,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
  */
 @Controller
 @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_GUEST"})
-public class EditOptionViewController {
+@RequestMapping(value = "/SelectOption")
+public class WorktimeSelectOptionController {
 
     @Autowired
     private FloorService floorService;
@@ -45,6 +42,9 @@ public class EditOptionViewController {
 
     @Autowired
     private FlowService flowService;
+    
+    @Autowired
+    private FlowGroupService flowGroupService;
 
     @Autowired
     private PreAssyService preAssyService;
@@ -56,51 +56,55 @@ public class EditOptionViewController {
     private UnitService unitService;
 
     @ResponseBody
-    @RequestMapping(value = "/floorOption.do", method = {RequestMethod.GET})
+    @RequestMapping(value = "/floor", method = {RequestMethod.GET})
     public List getFloorOption() {
         return floorService.findAll();
     }
 
     @ResponseBody
-    @RequestMapping(value = "/userOption.do/{unitName}", method = {RequestMethod.GET})
+    @RequestMapping(value = "/user/{unitName}", method = {RequestMethod.GET})
     public List getUserOption(@PathVariable(value = "unitName") final String unitName) {
         return userService.findByUnitName(unitName);
     }
 
     @ResponseBody
-    @RequestMapping(value = "/typeOption.do", method = {RequestMethod.GET})
+    @RequestMapping(value = "/type", method = {RequestMethod.GET})
     public List getTypeOption() {
         return typeService.findAll();
     }
 
     @ResponseBody
-    @RequestMapping(value = "/flowOption.do/{flowGroupId}", method = {RequestMethod.GET})
+    @RequestMapping(value = "/flow/{flowGroupId}", method = {RequestMethod.GET})
     public List getFlowOption(@PathVariable(value = "flowGroupId") final int flowGroupId) {
         return flowService.findByFlowGroup(flowGroupId);
     }
-
+    
     @ResponseBody
-    @RequestMapping(value = "/flowOptionByParent.do", method = {RequestMethod.GET})
-    public List getFlowOptionByParent(
-            @RequestParam int id,
-            @ModelAttribute PageInfo info) {
-        return flowService.findByParent(id);
+    @RequestMapping(value = "/flow", method = {RequestMethod.GET})
+    public List getAllFlowOption() {
+        return flowService.findAll();
+    }
+    
+    @ResponseBody
+    @RequestMapping(value = "/flowGroup", method = {RequestMethod.GET})
+    public List getFlowGroupOption() {
+        return flowGroupService.findAll();
     }
 
     @ResponseBody
-    @RequestMapping(value = "/preAssyOption.do", method = {RequestMethod.GET})
+    @RequestMapping(value = "/preAssy", method = {RequestMethod.GET})
     public List getPreAssyOption() {
         return preAssyService.findAll();
     }
 
     @ResponseBody
-    @RequestMapping(value = "/pendingOption.do", method = {RequestMethod.GET})
+    @RequestMapping(value = "/pending", method = {RequestMethod.GET})
     public List getPendingOption() {
         return pendingService.findAll();
     }
 
     @ResponseBody
-    @RequestMapping(value = "/unitOption.do", method = {RequestMethod.GET})
+    @RequestMapping(value = "/unit", method = {RequestMethod.GET})
     public List getUserTypeOption() {
         return unitService.findAll();
     }

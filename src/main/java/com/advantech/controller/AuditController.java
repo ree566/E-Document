@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @author Wei.Cheng
  */
 @Controller
+@RequestMapping("/Audit")
 @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_GUEST"})
 public class AuditController {
 
@@ -36,7 +37,7 @@ public class AuditController {
     private AuditService auditService;
 
     @ResponseBody
-    @RequestMapping(value = "/getAudit.do/{id}/{version}", method = {RequestMethod.GET, RequestMethod.POST})
+    @RequestMapping(value = "/find/{id}/{version}", method = {RequestMethod.GET, RequestMethod.POST})
     public JqGridResponse getAudit(
             @PathVariable(value = "id") final int id,
             @PathVariable(value = "version") final int version,

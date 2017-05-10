@@ -7,8 +7,10 @@ package com.advantech.dao;
 
 import com.advantech.model.UserProfile;
 import java.util.Collection;
+import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -34,6 +36,12 @@ public class UserProfileDAO implements BasicDAO {
     @Override
     public Object findByPrimaryKey(Object obj_id) {
         return currentSession().load(UserProfile.class, (int) obj_id);
+    }
+    
+    public UserProfile findByType(String typeName){
+        Criteria c = currentSession().createCriteria(UserProfile.class);
+        c.add(Restrictions.eq("type", typeName));
+        return (UserProfile) c.uniqueResult();
     }
 
     @Override

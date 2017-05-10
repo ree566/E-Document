@@ -9,6 +9,8 @@
 <script src="<c:url value="/js/jqgrid-custom-select-option-reader.js" />"></script>
 <script>
     $(function () {
+        var scrollPosition = 0;
+        
         var grid = $("#list");
         var tableName = "User";
 
@@ -21,13 +23,13 @@
         });
 
         grid.jqGrid({
-            url: '<c:url value="/getSelectOption.do/" />' + tableName,
+            url: '<c:url value="/User/find" />',
             datatype: 'json',
             mtype: 'GET',
             autoencode: true,
             colModel: [
                 {label: 'id', name: "id", width: 60, key: true, editable: true, editoptions: {readonly: 'readonly', disabled: true, defaultValue: "0"}},
-                {label: 'jobnumber', name: "jobnumber", width: 60, editable: true},
+                {label: 'jobnumber', name: "jobnumber", width: 60, editable: true, editoptions: {readonly: 'readonly', disabled: true}},
                 {label: 'password', name: "password", width: 60, editable: true, edittype: "password"},
                 {label: 'username', name: "username", width: 60, editable: true},
                 {label: 'permission', name: "permission", width: 60, editable: true},
@@ -59,8 +61,14 @@
             navOptions: {reloadGridOptions: {fromServer: true}},
             caption: tableName + " modify",
             height: 450,
-            editurl: '<c:url value="/updateSelectOption.do/" />' + tableName,
+            editurl: '<c:url value="/User/mod" />',
             sortname: 'id', sortorder: 'asc',
+            onSelectRow: function () {
+                scrollPosition = grid.closest(".ui-jqgrid-bdiv").scrollTop();
+            },
+            gridComplete: function () {
+                grid.closest(".ui-jqgrid-bdiv").scrollTop(scrollPosition);
+            },
             error: function (xhr, ajaxOptions, thrownError) {
                 alert("Ajax Error occurred\n"
                         + "\nstatus is: " + xhr.status

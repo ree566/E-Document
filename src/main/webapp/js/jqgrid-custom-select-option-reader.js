@@ -25,7 +25,7 @@ function syncSelectOptionInfo() {
 
 function getSelectOption(columnName, isNullable, data) {
     var result = {};
-    var url = data == null ? rootUrl + columnName + "Option.do" : (rootUrl + columnName + "Option.do/" + data);
+    var url = rootUrl + "SelectOption/" + (data == null ?  columnName : columnName + "/" + data);
     $.ajax({
         type: "GET",
         url: url,

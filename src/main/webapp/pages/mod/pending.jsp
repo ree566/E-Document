@@ -12,7 +12,7 @@
         var tableName = "Pending";
 
         grid.jqGrid({
-            url: '<c:url value="/getSelectOption.do/" />' + tableName,
+            url: '<c:url value="/Pending/find" />',
             datatype: 'json',
             mtype: 'GET',
             autoencode: true,
@@ -43,7 +43,7 @@
             navOptions: {reloadGridOptions: {fromServer: true}},
             caption: tableName + " modify",
             height: 450,
-            editurl: '<c:url value="/updateSelectOption.do/" />' + tableName,
+            editurl: '<c:url value="/Pending/mod" />',
             sortname: 'id', sortorder: 'asc',
             error: function (xhr, ajaxOptions, thrownError) {
                 alert("Ajax Error occurred\n"
@@ -86,28 +86,6 @@
                             reloadAfterSubmit: true
                         }
                 );
-
-        function getSelectOption(columnName, data) {
-            var result = {};
-            $.ajax({
-                type: "GET",
-                url: "<c:url value="/getSelectOption.do/" />" + columnName,
-                data: data,
-                async: false,
-                success: function (response) {
-                    var arr = response.rows;
-
-                    for (var i = 0; i < arr.length; i++) {
-                        var innerObj = arr[i];
-                        result[innerObj.id] = innerObj.name;
-                    }
-                },
-                error: function (xhr, ajaxOptions, thrownError) {
-                    console.log(xhr.responseText);
-                }
-            });
-            return result;
-        }
 
     });
 </script>

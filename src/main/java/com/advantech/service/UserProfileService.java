@@ -31,6 +31,10 @@ public class UserProfileService {
         return (UserProfile) userProfileDAO.findByPrimaryKey(obj_id);
     }
 
+    public UserProfile findByType(String typeName) {
+        return userProfileDAO.findByType(typeName);
+    }
+
     public int insert(UserProfile userProfile) {
         return userProfileDAO.insert(userProfile);
     }

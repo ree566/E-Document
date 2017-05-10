@@ -15,7 +15,7 @@
 
 <script>
     $(function () {
-        var lastsel, scrollPosition;
+        var scrollPosition = 0;
 
         var unitName = '${user.unit.name}';
         var modifyColumns = (unitName == null || unitName == "") ? [] : getColumn();
@@ -67,7 +67,7 @@
         ];
 
         grid.jqGrid({
-            url: '<c:url value="/getSheetView.do" />',
+            url: '<c:url value="/Worktime/find" />',
             datatype: 'json',
             mtype: 'GET',
 //            guiStyle: "bootstrap",
@@ -172,8 +172,14 @@
             navOptions: {reloadGridOptions: {fromServer: true}},
             caption: "工時大表",
             height: 450,
-            editurl: '<c:url value="/updateSheet.do" />',
+            editurl: '<c:url value="/Worktime/mod" />',
             sortname: 'id', sortorder: 'desc',
+            onSelectRow: function () {
+                scrollPosition = grid.closest(".ui-jqgrid-bdiv").scrollTop();
+            },
+            gridComplete: function () {
+                grid.closest(".ui-jqgrid-bdiv").scrollTop(scrollPosition);
+            },
             error: function (xhr, ajaxOptions, thrownError) {
                 alert("Ajax Error occurred\n"
                         + "\nstatus is: " + xhr.status
@@ -194,7 +200,7 @@
                     caption: "Export to Excel",
                     buttonicon: "ui-icon-disk",
                     onClickButton: function () {
-                        grid.jqGrid('excelExport', {"url": "<c:url value="/generateExcel.do" />"});
+                        grid.jqGrid('excelExport', {"url": "<c:url value="/Worktime/excel" />"});
                     },
                     position: "last"
                 });
@@ -286,7 +292,7 @@
             var result;
             $.ajax({
                 type: "GET",
-                url: "<c:url value="/unitColumn.do" />",
+                url: "<c:url value="/Worktime/unitColumn" />",
                 dataType: "json",
                 async: false,
                 success: function (response) {

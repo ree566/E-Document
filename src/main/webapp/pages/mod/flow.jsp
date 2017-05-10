@@ -15,66 +15,16 @@
         var grid = $("#list");
         var tableName = "Flow";
 
-        var flow = getSelectOption("Flow", {rows: 1000});
-        var flowGroup = getSelectOption("FlowGroup");
-
-        for (var property in flow) {
-            if (flow.hasOwnProperty(property)) {
-                $("#select-options").append("<option value=" + property + ">" + flow[property] + "</option>");
-            }
-        }
-
-        var flowFormater = function (cellvalue, options, rowObject) {
-            var obj = flow[cellvalue];
-            return obj == null ? "空值" : obj;
-        };
-
-        var flowGroupFormater = function (cellvalue, options, rowObject) {
-            var obj = flowGroup[cellvalue];
-            return obj == null ? "" : obj;
-        };
-
-        var tagFormatter = function (cellvalue, options, rowObject) {
-            var text = "";
-            if (cellvalue != null && cellvalue.length > 0)
-            {
-                for (var i = 0; i < cellvalue.length; i++)
-                {
-                    text += cellvalue[i].name;
-                    if (i < cellvalue.length - 1)
-                    {
-                        text += ", ";
-                    }
-                }
-            }
-            return text;
-        };
-
-        var customMultiSelect = {
-            value: flow,
-            dataInit: function (elem) {
-                setTimeout(function () {
-                    $(elem).multiselect({
-                        minWidth: 100, //'auto',
-//                        height: 100,
-                        selectedList: 2,
-                        checkAllText: "all",
-                        uncheckAllText: "no",
-                        noneSelectedText: "Any",
-                        open: function () {
-                            var $menu = $(".ui-multiselect-menu:visible");
-                            $menu.width("auto");
-                            return;
-                        }
-                    });
-                }, 50);
-            },
-            multiple: true,
-            defaultValue: '111'
-        };
+        setSelectOptions({
+            rootUrl: "<c:url value="/" />",
+            columnInfo: [
+                {name: "flow", isNullable: false},
+                {name: "flowGroup", isNullable: false}
+            ]
+        });
 
         grid.jqGrid({
-            url: '<c:url value="/getSelectOption.do/" />' + tableName,
+            url: '<c:url value="/Flow/find" />',
             datatype: 'json',
             mtype: 'GET',
             autoencode: true,
@@ -82,7 +32,7 @@
             colModel: [
                 {label: 'id', name: "id", width: 60, key: true, editable: true, editoptions: {readonly: 'readonly', disabled: true, defaultValue: "0"}},
                 {label: 'name', name: "name", width: 60, editable: true, editrules: {required: true}, formoptions: {elmsuffix: "(*必填)"}},
-                {label: 'flow_group', name: "flowGroup.id", editable: true, formatter: flowGroupFormater, edittype: 'select', editoptions: {value: flowGroup}}
+                {label: 'flow_group', name: "flowGroup.id", editable: true, formatter: selectOptions["flowGroup_func"], edittype: 'select', editoptions: {value: selectOptions["flowGroup"]}}
             ],
             rowNum: 20,
             rowList: [20, 50, 100, 1000],
@@ -107,7 +57,7 @@
             navOptions: {reloadGridOptions: {fromServer: true}},
             caption: tableName + " modify",
             height: 450,
-            editurl: '<c:url value="/updateSelectOption.do/" />' + tableName,
+            editurl: '<c:url value="/Flow/mod" />',
             sortname: 'id', sortorder: 'asc',
             onSelectRow: function () {
                 scrollPosition = grid.closest(".ui-jqgrid-bdiv").scrollTop();
@@ -134,7 +84,7 @@
                 pager_id = "p_" + subgrid_table_id;
                 $("#" + subgrid_id).html("<table id='" + subgrid_table_id + "' class='scroll'></table><div id='" + pager_id + "' class='scroll'></div>");
                 $("#" + subgrid_table_id).jqGrid({
-                    url: '<c:url value="/flowOptionByParent.do" />',
+                    url: '<c:url value="/Flow/find_sub" />',
                     mtype: 'GET',
                     datatype: "json",
                     postData: {
@@ -142,14 +92,14 @@
                     },
                     colNames: ['id', 'name'],
                     colModel: [
-                        {name: "id", index: "id", width: 80, key: true, editable: true, edittype: 'select', editoptions: {value: flow}},
+                        {name: "id", index: "id", width: 80, key: true, editable: true, edittype: 'select', editoptions: {value: selectOptions["flow"]}},
                         {name: "name", index: "name", width: 130}
                     ],
                     rowNum: 20,
                     pager: pager_id,
                     sortname: 'id',
                     autowidth: true,
-                    editurl: '<c:url value="/updateSelectOption.do/" />' + tableName + "_sub",
+                    editurl: '<c:url value="/Flow/mod_sub" />',
                     jsonReader: {
                         root: "rows",
                         page: "page",
@@ -165,7 +115,6 @@
                             recreateForm: true,
                             zIndex: 9999,
                             beforeSubmit: function (postdata, form) {
-                                console.log("add");
                                 if (row_id != null) {
                                     // additional parameters
                                     postdata.parentFlowId = row_id;
@@ -218,28 +167,6 @@
                             reloadAfterSubmit: true
                         }
                 );
-
-        function getSelectOption(columnName, data) {
-            var result = {};
-            $.ajax({
-                type: "GET",
-                url: "<c:url value="/getSelectOption.do/" />" + columnName,
-                data: data,
-                async: false,
-                success: function (response) {
-                    var arr = response.rows;
-
-                    for (var i = 0; i < arr.length; i++) {
-                        var innerObj = arr[i];
-                        result[innerObj.id] = innerObj.name;
-                    }
-                },
-                error: function (xhr, ajaxOptions, thrownError) {
-                    console.log(xhr.responseText);
-                }
-            });
-            return result;
-        }
 
     });
 </script>
