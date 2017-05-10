@@ -58,25 +58,15 @@ public class UserService {
     }
 
     public int insert(User user) {
-        encryptPassword(user);
         return userDAO.insert(user);
     }
 
     public int update(User user) {
-        User i = this.findByPrimaryKey(user.getId());
-        if (!user.getPassword().equals(i.getPassword())) {
-            encryptPassword(user);
-        }
         return userDAO.update(user);
     }
 
     public int delete(User user) {
         return userDAO.delete(user);
     }
-    
-    private void encryptPassword(User user) {
-        CustomPasswordEncoder encoder = new CustomPasswordEncoder();
-        String encryptPassord = encoder.encode(user.getPassword());
-        user.setPassword(encryptPassord);
-    }
+   
 }

@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Date;
+import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -664,7 +665,7 @@ public class Worktime implements java.io.Serializable {
     public void setDefaultAssyToT1() {
         Double defaultValue = this.cleanPanelAndAssembly + this.t1 + this.upBiRi + this.vibration
                 + this.hiPotLeakage + this.coldBoot + this.warmBoot;
-        this.setSetupTime(defaultValue);
+        this.setAssyToT1(defaultValue);
     }
 
     public void setDefaultT2ToPacking() {
@@ -711,4 +712,246 @@ public class Worktime implements java.io.Serializable {
         bd = bd.setScale(places, RoundingMode.HALF_UP);
         return bd.doubleValue();
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 23 * hash + Objects.hashCode(this.floor);
+        hash = 23 * hash + Objects.hashCode(this.flowByTestFlowId);
+        hash = 23 * hash + Objects.hashCode(this.flowByPackingFlowId);
+        hash = 23 * hash + Objects.hashCode(this.flowByBabFlowId);
+        hash = 23 * hash + Objects.hashCode(this.userByEeOwnerId);
+        hash = 23 * hash + Objects.hashCode(this.userByQcOwnerId);
+        hash = 23 * hash + Objects.hashCode(this.userBySpeOwnerId);
+        hash = 23 * hash + Objects.hashCode(this.pending);
+        hash = 23 * hash + Objects.hashCode(this.preAssy);
+        hash = 23 * hash + Objects.hashCode(this.type);
+        hash = 23 * hash + Objects.hashCode(this.modelName);
+        hash = 23 * hash + Objects.hashCode(this.totalModule);
+        hash = 23 * hash + Objects.hashCode(this.cleanPanel);
+        hash = 23 * hash + Objects.hashCode(this.assy);
+        hash = 23 * hash + Objects.hashCode(this.t1);
+        hash = 23 * hash + Objects.hashCode(this.t2);
+        hash = 23 * hash + Objects.hashCode(this.t3);
+        hash = 23 * hash + Objects.hashCode(this.t4);
+        hash = 23 * hash + Objects.hashCode(this.packing);
+        hash = 23 * hash + Objects.hashCode(this.upBiRi);
+        hash = 23 * hash + Objects.hashCode(this.downBiRi);
+        hash = 23 * hash + Objects.hashCode(this.biCost);
+        hash = 23 * hash + Objects.hashCode(this.vibration);
+        hash = 23 * hash + Objects.hashCode(this.hiPotLeakage);
+        hash = 23 * hash + Objects.hashCode(this.coldBoot);
+        hash = 23 * hash + Objects.hashCode(this.warmBoot);
+        hash = 23 * hash + Objects.hashCode(this.pendingTime);
+        hash = 23 * hash + Objects.hashCode(this.burnIn);
+        hash = 23 * hash + (int) (Double.doubleToLongBits(this.biTime) ^ (Double.doubleToLongBits(this.biTime) >>> 32));
+        hash = 23 * hash + (int) (Double.doubleToLongBits(this.biTemperature) ^ (Double.doubleToLongBits(this.biTemperature) >>> 32));
+        hash = 23 * hash + Objects.hashCode(this.assyPackingSop);
+        hash = 23 * hash + Objects.hashCode(this.testSop);
+        hash = 23 * hash + Objects.hashCode(this.keypartA);
+        hash = 23 * hash + Objects.hashCode(this.keypartB);
+        hash = 23 * hash + Objects.hashCode(this.partLink);
+        hash = 23 * hash + this.ce;
+        hash = 23 * hash + this.ul;
+        hash = 23 * hash + this.rohs;
+        hash = 23 * hash + this.weee;
+        hash = 23 * hash + this.madeInTaiwan;
+        hash = 23 * hash + this.fcc;
+        hash = 23 * hash + this.eac;
+        hash = 23 * hash + Objects.hashCode(this.nsInOneCollectionBox);
+        hash = 23 * hash + this.partNoAttributeMaintain;
+        hash = 23 * hash + Objects.hashCode(this.assyLeadTime);
+        hash = 23 * hash + Objects.hashCode(this.packingLeadTime);
+        hash = 23 * hash + Objects.hashCode(this.productionWt);
+        hash = 23 * hash + Objects.hashCode(this.setupTime);
+        hash = 23 * hash + Objects.hashCode(this.assyToT1);
+        hash = 23 * hash + Objects.hashCode(this.t2ToPacking);
+        hash = 23 * hash + Objects.hashCode(this.assyStation);
+        hash = 23 * hash + Objects.hashCode(this.packingStation);
+        hash = 23 * hash + Objects.hashCode(this.assyKanbanTime);
+        hash = 23 * hash + Objects.hashCode(this.packingKanbanTime);
+        hash = 23 * hash + Objects.hashCode(this.cleanPanelAndAssembly);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Worktime other = (Worktime) obj;
+        if (Double.doubleToLongBits(this.biTime) != Double.doubleToLongBits(other.biTime)) {
+            return false;
+        }
+        if (Double.doubleToLongBits(this.biTemperature) != Double.doubleToLongBits(other.biTemperature)) {
+            return false;
+        }
+        if (this.ce != other.ce) {
+            return false;
+        }
+        if (this.ul != other.ul) {
+            return false;
+        }
+        if (this.rohs != other.rohs) {
+            return false;
+        }
+        if (this.weee != other.weee) {
+            return false;
+        }
+        if (this.madeInTaiwan != other.madeInTaiwan) {
+            return false;
+        }
+        if (this.fcc != other.fcc) {
+            return false;
+        }
+        if (this.eac != other.eac) {
+            return false;
+        }
+        if (this.partNoAttributeMaintain != other.partNoAttributeMaintain) {
+            return false;
+        }
+        if (!Objects.equals(this.modelName, other.modelName)) {
+            return false;
+        }
+        if (!Objects.equals(this.burnIn, other.burnIn)) {
+            return false;
+        }
+        if (!Objects.equals(this.assyPackingSop, other.assyPackingSop)) {
+            return false;
+        }
+        if (!Objects.equals(this.testSop, other.testSop)) {
+            return false;
+        }
+        if (!Objects.equals(this.floor, other.floor)) {
+            return false;
+        }
+        if (!Objects.equals(this.flowByTestFlowId, other.flowByTestFlowId)) {
+            return false;
+        }
+        if (!Objects.equals(this.flowByPackingFlowId, other.flowByPackingFlowId)) {
+            return false;
+        }
+        if (!Objects.equals(this.flowByBabFlowId, other.flowByBabFlowId)) {
+            return false;
+        }
+        if (!Objects.equals(this.userByEeOwnerId, other.userByEeOwnerId)) {
+            return false;
+        }
+        if (!Objects.equals(this.userByQcOwnerId, other.userByQcOwnerId)) {
+            return false;
+        }
+        if (!Objects.equals(this.userBySpeOwnerId, other.userBySpeOwnerId)) {
+            return false;
+        }
+        if (!Objects.equals(this.pending, other.pending)) {
+            return false;
+        }
+        if (!Objects.equals(this.preAssy, other.preAssy)) {
+            return false;
+        }
+        if (!Objects.equals(this.type, other.type)) {
+            return false;
+        }
+        if (!Objects.equals(this.totalModule, other.totalModule)) {
+            return false;
+        }
+        if (!Objects.equals(this.cleanPanel, other.cleanPanel)) {
+            return false;
+        }
+        if (!Objects.equals(this.assy, other.assy)) {
+            return false;
+        }
+        if (!Objects.equals(this.t1, other.t1)) {
+            return false;
+        }
+        if (!Objects.equals(this.t2, other.t2)) {
+            return false;
+        }
+        if (!Objects.equals(this.t3, other.t3)) {
+            return false;
+        }
+        if (!Objects.equals(this.t4, other.t4)) {
+            return false;
+        }
+        if (!Objects.equals(this.packing, other.packing)) {
+            return false;
+        }
+        if (!Objects.equals(this.upBiRi, other.upBiRi)) {
+            return false;
+        }
+        if (!Objects.equals(this.downBiRi, other.downBiRi)) {
+            return false;
+        }
+        if (!Objects.equals(this.biCost, other.biCost)) {
+            return false;
+        }
+        if (!Objects.equals(this.vibration, other.vibration)) {
+            return false;
+        }
+        if (!Objects.equals(this.hiPotLeakage, other.hiPotLeakage)) {
+            return false;
+        }
+        if (!Objects.equals(this.coldBoot, other.coldBoot)) {
+            return false;
+        }
+        if (!Objects.equals(this.warmBoot, other.warmBoot)) {
+            return false;
+        }
+        if (!Objects.equals(this.pendingTime, other.pendingTime)) {
+            return false;
+        }
+        if (!Objects.equals(this.keypartA, other.keypartA)) {
+            return false;
+        }
+        if (!Objects.equals(this.keypartB, other.keypartB)) {
+            return false;
+        }
+        if (!Objects.equals(this.partLink, other.partLink)) {
+            return false;
+        }
+        if (!Objects.equals(this.nsInOneCollectionBox, other.nsInOneCollectionBox)) {
+            return false;
+        }
+        if (!Objects.equals(this.assyLeadTime, other.assyLeadTime)) {
+            return false;
+        }
+        if (!Objects.equals(this.packingLeadTime, other.packingLeadTime)) {
+            return false;
+        }
+        if (!Objects.equals(this.productionWt, other.productionWt)) {
+            return false;
+        }
+        if (!Objects.equals(this.setupTime, other.setupTime)) {
+            return false;
+        }
+        if (!Objects.equals(this.assyToT1, other.assyToT1)) {
+            return false;
+        }
+        if (!Objects.equals(this.t2ToPacking, other.t2ToPacking)) {
+            return false;
+        }
+        if (!Objects.equals(this.assyStation, other.assyStation)) {
+            return false;
+        }
+        if (!Objects.equals(this.packingStation, other.packingStation)) {
+            return false;
+        }
+        if (!Objects.equals(this.assyKanbanTime, other.assyKanbanTime)) {
+            return false;
+        }
+        if (!Objects.equals(this.packingKanbanTime, other.packingKanbanTime)) {
+            return false;
+        }
+        if (!Objects.equals(this.cleanPanelAndAssembly, other.cleanPanelAndAssembly)) {
+            return false;
+        }
+        return true;
+    }
+
 }

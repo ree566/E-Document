@@ -19,7 +19,7 @@ public class PageInfo {
     private String sord;
 
     private String searchField;
-    private Object searchString;
+    private String searchString;
     private String searchOper;
     private String filters;
 
@@ -104,11 +104,11 @@ public class PageInfo {
         this.searchField = searchField;
     }
 
-    public Object getSearchString() {
+    public String getSearchString() {
         return searchString;
     }
 
-    public void setSearchString(Object searchString) {
+    public void setSearchString(String searchString) {
         this.searchString = searchString;
     }
 

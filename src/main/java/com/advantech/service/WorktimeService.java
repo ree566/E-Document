@@ -30,9 +30,7 @@ public class WorktimeService {
     }
 
     public List<Worktime> findAll(PageInfo info) {
-        List l = worktimeDAO.findAll(info);
-        Hibernate.initialize(l);
-        return l;
+        return worktimeDAO.findAll(info);
     }
 
     public Worktime findByPrimaryKey(Object obj_id) {
@@ -48,12 +46,12 @@ public class WorktimeService {
     }
 
     public int insert(Worktime worktime) {
-        checkAndSetFormulaColumn(worktime);
+        initUnfilledFormulaColumn(worktime);
         return worktimeDAO.insert(worktime);
     }
 
     public int update(Worktime worktime) {
-        checkAndSetFormulaColumn(worktime);
+        initUnfilledFormulaColumn(worktime);
         return worktimeDAO.update(worktime);
     }
 
@@ -64,7 +62,12 @@ public class WorktimeService {
         return 1;
     }
 
-    public void checkAndSetFormulaColumn(Worktime w) {
+    public int merge(Worktime worktime) {
+        initUnfilledFormulaColumn(worktime);
+        return worktimeDAO.merge(worktime);
+    }
+
+    public void initUnfilledFormulaColumn(Worktime w) {
         if (w.getCleanPanelAndAssembly() == null || w.getCleanPanelAndAssembly() == 0) {
             w.setDefaultCleanPanelAndAssembly();
         }

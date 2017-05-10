@@ -7,44 +7,11 @@
         <link rel="shortcut icon" href="images/favicon.ico"/>
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
         <style>
-            fieldset {
-                width: 400px;
-                margin-top:150px;
-            }
-
-            /*            fieldset legend {
-                            border: 1px solid;
-                            padding: 5px 5px;
-                        }*/
-
-            img {
-                position: relative;
-                width: 200px;
-                float: right;
-                bottom: 0px;
-            }
-
-            .borderless tbody tr td, .borderless tbody tr th, .borderless thead tr th {
-                border: none;
+            body {
+                padding-top: 90px;
             }
             .error{
                 color: red;
-            }
-            .divctrl{
-                /*border: 1px solid;*/
-            }
-            fieldset.scheduler-border{
-                border: 1px groove #ddd !important;
-                padding: 0 1.4em 1.4em 1.4em !important;
-                /*margin: 0 0 1.5em 0 !important;*/
-                -webkit-box-shadow:  0px 0px 0px 0px #000;
-                box-shadow:  0px 0px 0px 0px #000;
-            }
-            legend.scheduler-border {
-                width:inherit; /* Or auto */
-                padding:0 10px; /* To give a bit of padding on the left and right */
-                border-bottom:none;
-                border: 1px groove #ddd;
             }
             .system-environment-checkMsg{
                 text-align:center; 
@@ -53,6 +20,66 @@
             .noscript input{
                 display: none;
             }
+
+            .panel-login {
+                border-color: #ccc;
+                -webkit-box-shadow: 0px 2px 3px 0px rgba(0,0,0,0.2);
+                -moz-box-shadow: 0px 2px 3px 0px rgba(0,0,0,0.2);
+                box-shadow: 0px 2px 3px 0px rgba(0,0,0,0.2);
+            }
+
+            .panel-login>.panel-heading {
+                color: #00415d;
+                background-color: #fff;
+                border-color: #fff;
+                text-align:center;
+            }
+            /* Bordered form */
+/*            form {
+                border: 3px solid #f1f1f1;
+            }*/
+
+            /* Avatar image */
+            img.avatar {
+                width: 40%;
+                border-radius: 10%;
+            }
+
+            .panel-login input[type="text"], .panel-login input[type="password"] {
+                height: 45px;
+                border: 1px solid #ddd;
+                font-size: 16px;
+                -webkit-transition: all 0.1s linear;
+                -moz-transition: all 0.1s linear;
+                transition: all 0.1s linear;
+            }
+
+            .panel-login input:hover,
+            .panel-login input:focus {
+                outline:none;
+                -webkit-box-shadow: none;
+                -moz-box-shadow: none;
+                box-shadow: none;
+                border-color: #ccc;
+            }
+            #btnSubmit {
+                background-color: #59B2E0;
+                outline: none;
+                color: #fff;
+                font-size: 14px;
+                height: auto;
+                font-weight: normal;
+                padding: 14px 0;
+                text-transform: uppercase;
+                border-color: #59B2E6;
+            }
+            #btnSubmit:hover,
+            #btnSubmit:focus {
+                color: #fff;
+                background-color: #53A3CD;
+                border-color: #53A3CD;
+            }
+
         </style>
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
         <script src="js/jquery.validation.min.js"></script> 
@@ -75,7 +102,7 @@
             var rule = {required: true, regex: "^[0-9a-zA-Z-]+$"};
             var msg = {required: "必须填寫", regex: "格式錯誤"};
             $(function () {
-                $("#login").validate({
+                $("#login-form").validate({
                     rules: {
                         jobnumber: rule, //密码1必填
                         password: rule
@@ -85,7 +112,7 @@
                         password: msg
                     },
                     errorPlacement: function (error, element) {                             //错误信息位置设置方法  
-                        error.appendTo(element.parent().next());                            //这里的element是录入数据的对象  
+                        error.appendTo(element.next());                            //这里的element是录入数据的对象  
                     },
                     submitHandler: function (form) {
                         block();
@@ -111,10 +138,6 @@
                     }
                 });
             }
-            $(function () {
-                $(":text,:password").addClass("form-control");
-                $(":submit,:reset").addClass("btn btn-default");
-            });
         </script>
     </head>
 
@@ -129,55 +152,72 @@
             <noscript>For full functionality of this page it is necessary to enable JavaScript. Here are the <a href="http://www.enable-javascript.com" target="_blank"> instructions how to enable JavaScript in your web browser</a></noscript>
         </div>
         <div id="not_detect_jquery" class="system-environment-checkMsg"></div>
-        <center>
-            <div class="divctrl">
-                <fieldset class="scheduler-border">
-                    <legend class="scheduler-border">${initParam.pageTitle}系統:</legend>
-                    <div>
-                        <c:url var="loginUrl" value="/login" />
-                        <form action="${loginUrl}" method="post" onsubmit="dosubmit()" id="login">
-                            <table class="table borderless">
-                                <tr>
-                                    <td><label for="jobnumber">Name:</label></td>
-                                    <td><input type="text" name="jobnumber" maxlength="20" autocomplete="off"></td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td><label for="password">Password:</label></td>
-                                    <td><input type="password" name="password" maxlength="20"></td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td></td>
-                                    <td><input type="submit" id="btnSubmit" value="提交" /><input type="reset" value="取消"/></td>
-                                    <td></td> 
-                                </tr>
-                            </table>
-                            <input type="hidden" name="${_csrf.parameterName}"  value="${_csrf.token}" />
-                            <img src="">This is some img</img>
-                            <div>
-                                <c:if test="${param.error != null}">
-                                    <div class="alert alert-danger">
-                                        <p>Invalid username and password.</p>
-                                    </div>
-                                </c:if>
-                                <c:if test="${param.logout != null}">
-                                    <div class="alert alert-success">
-                                        <p>You have been logged out successfully.</p>
-                                    </div>
-                                </c:if>
-                                <c:if test="${not empty SPRING_SECURITY_LAST_EXCEPTION}">
-                                    <font color="red">
-                                        Your login attempt was not successful due to <br/><br/>
-                                        <c:out value="${SPRING_SECURITY_LAST_EXCEPTION.message}"/>.
-                                    </font>
-                                </c:if>
+
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 col-md-offset-3">
+                    <div class="panel panel-login">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <h2>${initParam.pageTitle}系統:</h2>
+                                    <!--<div class="imgcontainer">-->
+                                        <!--<img src="<c:url value="/images/mfg_lgo_advantech.gif" />" alt="Avatar" class="avatar">-->
+                                    <!--</div>-->
+                                </div>
                             </div>
-                        </form>
+                            <hr>
+                        </div>
+                        <div class="panel-body">
+
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <c:url var="loginUrl" value="/login" />
+                                    <form action="${loginUrl}" method="post" onsubmit="dosubmit()" id="login-form">
+                                        <div class="form-group">
+                                            <input type="text" tabindex="1" class="form-control" placeholder="Enter Username" name="jobnumber" maxlength="20" autocomplete="off" required>
+                                            <div class="validMessage"></div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <input type="password" tabindex="2" class="form-control" placeholder="Enter Password" name="password" maxlength="20" required>
+                                            <div class="validMessage"></div>
+                                        </div>
+
+<!--                                        <div class="form-group text-center">
+                                            <input type="checkbox" tabindex="3" class="" name="remember" id="remember">
+                                            <label for="remember"> Remember Me</label>
+                                        </div>-->
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-sm-6 col-sm-offset-3">
+                                                    <input type="submit" name="login-submit" id="btnSubmit" tabindex="4" class="form-control btn btn-info" value="Login">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <input type="hidden" name="${_csrf.parameterName}"  value="${_csrf.token}" />
+
+                                        <div class="form-group">
+                                            <c:if test="${param.error != null}">
+                                                <div class="alert alert-danger">
+                                                    <p>Invalid username or password.</p>
+                                                </div>
+                                            </c:if>
+                                            <c:if test="${param.logout != null}">
+                                                <div class="alert alert-success">
+                                                    <p>You have been logged out successfully.</p>
+                                                </div>
+                                            </c:if>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </fieldset>
+                </div>
             </div>
-        </center>
+        </div>
         <script src="js/jquery.detector.js"></script>
     </body>
 </html>

@@ -183,9 +183,15 @@ public class EditOptionModController {
             case "User":
                 switch (oper) {
                     case ADD:
+                        encryptPassword(user);
                         responseFlag = userService.insert(user);
                         break;
                     case EDIT:
+                        User i = userService.findByJobnumber(user.getJobnumber());
+                        if (!user.getPassword().equals(i.getPassword())) {
+                            encryptPassword(user);
+                        }
+                        user.setUserProfiles(i.getUserProfiles());
                         responseFlag = userService.update(user);
                         break;
                     case DELETE:
@@ -251,5 +257,11 @@ public class EditOptionModController {
             String paramName = (String) params.nextElement();
             System.out.println("Parameter Name - " + paramName + ", Value - " + req.getParameter(paramName));
         }
+    }
+
+    private void encryptPassword(User user) {
+        CustomPasswordEncoder encoder = new CustomPasswordEncoder();
+        String encryptPassord = encoder.encode(user.getPassword());
+        user.setPassword(encryptPassord);
     }
 }

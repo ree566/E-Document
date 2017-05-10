@@ -6,7 +6,6 @@
 package com.advantech.dao;
 
 import com.advantech.helper.PageInfo;
-import java.text.ParseException;
 import java.util.List;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.hibernate.Criteria;
@@ -15,7 +14,6 @@ import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
-import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.springframework.stereotype.Repository;
@@ -33,10 +31,14 @@ public class PaginateDAO {
         if (info.getSearchField() != null) {
             String searchOper = info.getSearchOper();
             String searchField = info.getSearchField();
-            String searchString = info.getSearchString().toString();
+            String searchString = info.getSearchString();
 
             if (NumberUtils.isNumber(searchString)) {
-                addSearchCriteria(criteria, searchOper, searchField, searchString.contains(".") ? Double.parseDouble(searchString) : Integer.parseInt(searchString));
+                if (searchString.contains(".")) {
+                    addSearchCriteria(criteria, searchOper, searchField, Double.parseDouble(searchString));
+                } else {
+                    addSearchCriteria(criteria, searchOper, searchField, Integer.parseInt(searchString));
+                }
             } else if (isValidDate(searchString)) {
                 DateTimeFormatter fmt = DateTimeFormat.forPattern("YYYY-MM-dd");
                 addSearchCriteria(criteria, searchOper, searchField, fmt.parseDateTime(searchString).toDate());
@@ -84,28 +86,28 @@ public class PaginateDAO {
         c.setResultTransformer(Criteria.ROOT_ENTITY);
     }
 
-    private Criteria addSearchCriteria(Criteria criteria, String searchOper, String searchField, Object searchString) {
+    private Criteria addSearchCriteria(Criteria criteria, String searchOper, String searchField, Object searchParam) {
         switch (searchOper) {
             case "eq":
-                criteria.add(Restrictions.eq(searchField, searchString));
+                criteria.add(Restrictions.eq(searchField, searchParam));
                 break;
             case "ne":
-                criteria.add(Restrictions.ne(searchField, searchString));
+                criteria.add(Restrictions.ne(searchField, searchParam));
                 break;
             case "bw":
-                criteria.add(Restrictions.like(searchField, searchString.toString(), MatchMode.START));
+                criteria.add(Restrictions.like(searchField, searchParam.toString(), MatchMode.START));
                 break;
             case "ew":
-                criteria.add(Restrictions.like(searchField, searchString.toString(), MatchMode.END));
+                criteria.add(Restrictions.like(searchField, searchParam.toString(), MatchMode.END));
                 break;
             case "cn":
-                criteria.add(Restrictions.like(searchField, searchString.toString(), MatchMode.ANYWHERE));
+                criteria.add(Restrictions.like(searchField, searchParam.toString(), MatchMode.ANYWHERE));
                 break;
             case "lt":
-                criteria.add(Restrictions.lt(searchField, searchString));
+                criteria.add(Restrictions.lt(searchField, searchParam));
                 break;
             case "gt":
-                criteria.add(Restrictions.gt(searchField, searchString));
+                criteria.add(Restrictions.gt(searchField, searchParam));
                 break;
             default:
                 break;

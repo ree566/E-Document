@@ -16,7 +16,7 @@
             login-page="/login.jsp"
             default-target-url="/pages/"
             always-use-default-target="true"                    
-            authentication-failure-url="/login.jsp" 
+            authentication-failure-url="/login.jsp?error=true" 
             username-parameter="jobnumber"
             password-parameter="password"
         />

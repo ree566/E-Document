@@ -33,7 +33,8 @@
                 {label: 'permission', name: "permission", width: 60, editable: true},
                 {label: 'floor', name: "floor.id", width: 60, editable: true, edittype: "select", editoptions: {value: selectOptions["floor"]}, formatter: selectOptions["floor_func"]},
                 {label: 'unit', name: "unit.id", width: 60, editable: true, edittype: "select", editoptions: {value: selectOptions["unit"]}, formatter: selectOptions["unit_func"]},
-                {label: 'email', name: "email", width: 60, editable: true}
+                {label: 'email', name: "email", width: 60, editable: true},
+                {label: 'state', name: "state", width: 60, editable: true, edittype: "select", editoptions: {value: "Active:Active;Inactive:Inactive;Deleted:Deleted;Locked:Locked"}}
             ],
             rowNum: 20,
             rowList: [20, 50, 100],

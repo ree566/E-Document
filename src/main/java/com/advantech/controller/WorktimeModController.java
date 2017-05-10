@@ -131,7 +131,8 @@ public class WorktimeModController {
             case ADD:
                 return worktimeService.insert(worktime) == 1 ? this.SUCCESS_MESSAGE : FAIL_MESSAGE;
             case EDIT:
-                return worktimeService.update(worktime) == 1 ? this.SUCCESS_MESSAGE : FAIL_MESSAGE;
+                //This table is audited, select if changed before update(use merge)
+                return worktimeService.merge(worktime) == 1 ? this.SUCCESS_MESSAGE : FAIL_MESSAGE;
             default:
                 return "Unsupport action";
         }

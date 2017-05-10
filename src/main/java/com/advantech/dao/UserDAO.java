@@ -7,6 +7,7 @@ package com.advantech.dao;
 
 import com.advantech.helper.PageInfo;
 import com.advantech.model.User;
+import com.advantech.security.State;
 import java.util.Collection;
 import java.util.List;
 import org.hibernate.Criteria;
@@ -61,6 +62,7 @@ public class UserDAO implements BasicDAO {
         Criteria criteria = currentSession().createCriteria(User.class, "i");
         criteria.createAlias("i.unit", "u");
         criteria.add(Restrictions.eq("u.name", userTypeName));
+//        criteria.add(Restrictions.eq("i.state", State.ACTIVE.getName()));
         criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
         return criteria.list();
     }

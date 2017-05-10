@@ -40,7 +40,7 @@ public class WorktimeViewController {
 
     @Autowired
     private SheetViewService sheetViewService;
-    
+
     @Autowired
     private WorktimeService worktimeService;
 
@@ -51,13 +51,9 @@ public class WorktimeViewController {
             // error handling code goes here.
             log.error(new Gson().toJson(errors.getFieldErrors()));
         }
-
-        List l = worktimeService.findAll(info);
-        
-        JqGridResponse viewResp = toJqGridResponse(l, info);
-        return viewResp;
+        return toJqGridResponse(worktimeService.findAll(info), info);
     }
-    
+
     @ResponseBody
     @RequestMapping(value = "/generateExcel.do", method = {RequestMethod.GET})
     public ModelAndView generateExcel() {
@@ -69,7 +65,7 @@ public class WorktimeViewController {
     @ResponseBody
     @RequestMapping(value = "/sheetViewTestMode.do", method = {RequestMethod.POST})
     public JqGridResponse getSheetViewTestMode(@ModelAttribute PageInfo info) {
-        
+
         List l = new ArrayList();
         JqGridResponse viewResp = toJqGridResponse(l, info);
 
