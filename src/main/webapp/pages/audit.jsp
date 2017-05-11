@@ -55,26 +55,14 @@
 
         getEditRecord(-1, -1, $("#sD").val(), $("#eD").val());
 
-        var groupObj = {
-            1: [
-                ['id', 'REV'],
-                ['asc', 'desc'],
-                ['<b>Id {0} - {1} Record(s)</b>', '<b>Version {0}</b>']
-            ],
-            2: [
-                ['REV', 'id'],
-                ['desc', 'asc'],
-                ['<b>Version {0} - {1} Record(s)</b>', '<b>Id {0}</b>']
-            ],
-            3: [
-                ['id'],
-                ['asc'],
-                ['<b>Id {0}</b>']
-            ]
-        };
-
+        //Jqgrid 沒有支援複合主鍵，所以自己產生(用SQL的複合主鍵值相乘產生新的唯一鍵)
         function keyFormat(cellvalue, options, rowObject) {
             return rowObject[0].id * rowObject[1].rev;
+        }
+
+        function timestampFormat(cellvalue, options, rowObject) {
+            var t = moment(cellvalue);
+            return t.format('YYYY-MM-DD H:mm:ss');
         }
 
         function getEditRecord(rowId, version, startDate, endDate) {
@@ -88,7 +76,8 @@
                 mtype: 'GET',
                 autoencode: true,
                 colModel: [
-                    {label: 'REVV', width: 60, key: true, frozen: false, hidden: true, search: false, formatter: keyFormat},
+                    {label: 'CPK', name: 'CPK', width: 60, key: true, frozen: false, hidden: true, search: false, formatter: keyFormat},
+                    {label: 'revtstmp', name: "REVTSTMP", jsonmap: "1.revtstmp", hidden: false, search: false, formatter: timestampFormat},
                     {label: 'REV', name: "REV", jsonmap: "1.rev", width: 60, frozen: false, hidden: true, search: false},
                     {label: 'username', name: "username", jsonmap: "1.username", width: 60, frozen: false, hidden: false, search: false},
                     {label: 'REVTYPE', name: "REVTYPE", jsonmap: "2", width: 60, frozen: false, hidden: false, search: false},
@@ -148,7 +137,7 @@
                     {label: '前置時間', name: "packingLeadTime", jsonmap: "0.packingLeadTime", width: 80, searchrules: number_search_rule, searchoptions: search_decimal_options},
                     {label: '看板工時', name: "packingKanbanTime", jsonmap: "0.packingKanbanTime", width: 80, searchrules: number_search_rule, searchoptions: search_decimal_options},
                     {label: 'CleanPanel+Assembly', name: "cleanPanelAndAssembly", jsonmap: "0.cleanPanelAndAssembly", width: 200, searchrules: number_search_rule, searchoptions: search_decimal_options},
-                    {label: 'Modified_Date', width: 200, name: "modifiedDate", jsonmap: "0.modifiedDate", index: "modifiedDate", formatter: 'date', formatoptions: {srcformat: 'Y-m-d H:i:s A', newformat: 'Y-m-d H:i:s A'}, stype: 'text', searchrules: date_search_rule, searchoptions: search_date_options, align: 'center'}
+                    {label: 'Modified_Date', width: 200, name: "modifiedDate", jsonmap: "0.modifiedDate", index: "modifiedDate", formatter: 'date', formatoptions: {srcformat: 'Y-m-d H:i:s A', newformat: 'Y-m-d H:i:s A'}, stype: 'text', searchrules: date_search_rule, searchoptions: search_date_options, align: 'center', hidden: true}
                 ],
                 rowNum: 100,
                 rowList: [100, 200, 500, 1000],
@@ -159,22 +148,21 @@
                 hidegrid: true,
                 stringResult: true,
                 gridview: true,
-                prmNames: {id: "modifiedDate"},
                 grouping: true,
                 groupingView: {
-                    groupField: ['modifiedDate', 'id'],
+                    groupField: ['REVTSTMP', 'id'],
                     groupOrder: ['desc', 'asc'],
                     groupColumnShow: [true, false],
-                    groupCollapse: false,
+                    groupCollapse: true,
                     groupText: ['<b>Date {0} - {1} Record(s)</b>', '<b>Id {0}</b>'],
                     formatDisplayField: [
                         function (displayValue) {
-                            return moment(displayValue, "YYYY-MM-DD").format("YYYY-MM-DD");
+                            return moment(displayValue).format("YYYY-MM-DD");
                         }
                     ],
                     isInTheSameGroup: [
                         function (x, y) {
-                            return moment(x, "DD-MM-YYYY").isSame(moment(y, "DD-MM-YYYY"));
+                            return moment(x).isSame(moment(y), 'day');
                         }
                     ]
                 },
@@ -192,7 +180,6 @@
                 navOptions: {reloadGridOptions: {fromServer: true}},
                 caption: "Worktime_AUD",
                 height: 450,
-//                sortname: 'REV', sortorder: 'desc',
                 error: function (xhr, ajaxOptions, thrownError) {
                     alert("Ajax Error occurred\n"
                             + "\nstatus is: " + xhr.status

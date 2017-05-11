@@ -32,7 +32,7 @@ public class AuditDAO implements AuditAction {
     private final boolean selectedEntitiesOnly = false;
     private final boolean selectDeletedEntities = true;
     private final Set<String> auditColumnNames = new HashSet<>(Arrays.asList(
-            new String[]{"REV", "username"}
+            new String[]{"REV", "username", "REVTSTMP"}
     ));
 
     private final Pattern LTRIM = Pattern.compile("^\\s+");
@@ -107,7 +107,7 @@ public class AuditDAO implements AuditAction {
     public List findByDate(Class clz, Object id, PageInfo info, Date startDate, Date endDate) {
         //Group by first, get total rows number
         AuditQuery q = getReader().createQuery().forRevisionsOfEntity(clz, selectedEntitiesOnly, selectDeletedEntities);
-        q.add(AuditEntity.property("modifiedDate").between(startDate, endDate));
+        q.add(AuditEntity.revisionProperty("REVTSTMP").between(startDate.getTime(), endDate.getTime()));
         if (id != null) {
             q.add(AuditEntity.id().eq(id));
         }
@@ -118,7 +118,7 @@ public class AuditDAO implements AuditAction {
         q = getReader().createQuery().forRevisionsOfEntity(clz, selectedEntitiesOnly, selectDeletedEntities)
                 .setMaxResults(info.getRows())
                 .setFirstResult((info.getPage() - 1) * info.getRows())
-                .add(AuditEntity.property("modifiedDate").between(startDate, endDate));
+                .add(AuditEntity.revisionProperty("REVTSTMP").between(startDate.getTime(), endDate.getTime()));
 
         if (id != null) {
             q.add(AuditEntity.id().eq(id));

@@ -27,6 +27,7 @@
 
         <link href="../css/sb-admin-2.min.css" rel="stylesheet">
         <link href="../css/metisMenu.min.css" rel="stylesheet">
+        <!--<link href="../css/sbadmin2-sidebar-toggle.css" rel="stylesheet">-->
 
         <style>
             #loading {

@@ -20,12 +20,8 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
-import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.NotFound;
-import org.hibernate.annotations.NotFoundAction;
-import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.envers.Audited;
 import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -101,7 +97,6 @@ public class Worktime implements java.io.Serializable {
     private Double assyKanbanTime;
     private Double packingKanbanTime;
     private Double cleanPanelAndAssembly;
-    private Date createDate;
     private Date modifiedDate;
 
     public Worktime() {
@@ -158,7 +153,6 @@ public class Worktime implements java.io.Serializable {
         this.flowByBabFlowId = flowByBabFlowId;
     }
 
-    @NotFound(action = NotFoundAction.IGNORE)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ee_owner_id", nullable = false)
     public User getUserByEeOwnerId() {
@@ -169,7 +163,6 @@ public class Worktime implements java.io.Serializable {
         this.userByEeOwnerId = userByEeOwnerId;
     }
 
-    @NotFound(action = NotFoundAction.IGNORE)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "qc_owner_id", nullable = false)
     public User getUserByQcOwnerId() {
@@ -180,7 +173,6 @@ public class Worktime implements java.io.Serializable {
         this.userByQcOwnerId = userByQcOwnerId;
     }
 
-    @NotFound(action = NotFoundAction.IGNORE)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "spe_owner_id", nullable = false)
     public User getUserBySpeOwnerId() {
@@ -629,21 +621,7 @@ public class Worktime implements java.io.Serializable {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @JsonFormat(pattern = "yyyy-MM-dd'T'kk:mm:ss.SSS'Z'", timezone = "GMT+8")
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "create_date", updatable = false, length = 23)
-    @CreationTimestamp
-    public Date getCreateDate() {
-        return this.createDate;
-    }
-
-    public void setCreateDate(Date createDate) {
-        this.createDate = createDate;
-    }
-
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-    @JsonFormat(pattern = "yyyy-MM-dd'T'kk:mm:ss.SSS'Z'", timezone = "GMT+8")
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "modified_date", length = 23)
-    @UpdateTimestamp
+    @Column(name = "modified_date", length = 23, insertable = false, updatable = false)
     public Date getModifiedDate() {
         return this.modifiedDate;
     }
@@ -660,7 +638,7 @@ public class Worktime implements java.io.Serializable {
         this.setProductionWt(defaultValue);
     }
 
-    public void setDefaultSetupTime() {
+    public void setDefaultSetupTime() { 
         Double defaultValue = (this.totalModule == 0 ? 0 : 10 + this.assy == 0 ? 0 : 30 + this.t1 == 0 ? 0 : 15
                 + this.t2 == 0 ? 0 : 15 + this.t3 == 0 ? 0 : 5 + this.t4 == 0 ? 0 : 5
                                         + this.packing == 0 ? 0 : 20 + this.cleanPanel == 0 ? 0 : 10) + 0.0;
