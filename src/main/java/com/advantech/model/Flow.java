@@ -44,10 +44,10 @@ public class Flow implements java.io.Serializable {
     @JsonIgnore
     private Set<Worktime> worktimesForPackingFlowId = new HashSet<Worktime>(0);
     
-//    @JsonManagedReference
+    @JsonIgnore
     private Set<Flow> flowsForTestFlowId = new HashSet<Flow>(0);
     
-//    @JsonBackReference
+    @JsonIgnore
     private Set<Flow> flowsForBabFlowId = new HashSet<Flow>(0);
     
     @JsonIgnore

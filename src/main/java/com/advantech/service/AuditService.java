@@ -7,6 +7,7 @@ package com.advantech.service;
 
 import com.advantech.dao.AuditAction;
 import com.advantech.dao.AuditDAO;
+import com.advantech.helper.JsonHelper;
 import com.advantech.helper.PageInfo;
 import java.util.Date;
 import java.util.List;
@@ -55,6 +56,10 @@ public class AuditService implements AuditAction {
     }
 
     public List findByDate(Class clz, PageInfo info, Date startDate, Date endDate) {
-        return auditDAO.findByDate(clz, info, startDate, endDate);
+        return this.findByDate(clz, null, info, startDate, endDate);
+    }
+
+    public List findByDate(Class clz, Integer id, PageInfo info, Date startDate, Date endDate) {
+        return auditDAO.findByDate(clz, id, info, startDate, endDate);
     }
 }

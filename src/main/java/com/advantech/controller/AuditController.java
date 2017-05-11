@@ -45,16 +45,17 @@ public class AuditController {
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime endDate,
             @ModelAttribute PageInfo info) {
 
-        List l;
-        if (id == -1 && version == -1 && startDate != null && endDate != null) {
+        List l = new ArrayList();
+        if (startDate != null && endDate != null) {
             DateTime d1 = startDate.withTimeAtStartOfDay();
             DateTime d2 = endDate.withHourOfDay(23).withMinuteOfHour(59);
 
-            l = auditService.findByDate(Worktime.class, info, d1.toDate(), d2.toDate());
-        } else if (id != -1) {
-            l = auditService.findByPrimaryKey(Worktime.class, id);
+            if (id == -1 && version == -1) {
+                l = auditService.findByDate(Worktime.class, info, d1.toDate(), d2.toDate());
+            } else if (id != -1) {
+                l = auditService.findByDate(Worktime.class, id, info, d1.toDate(), d2.toDate());
+            }
         } else {
-            l = new ArrayList();
             l.add(auditService.findByPrimaryKeyAndVersion(Worktime.class, id, version));
         }
 

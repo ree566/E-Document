@@ -30,7 +30,7 @@ import org.springframework.stereotype.Repository;
 public class AuditDAO implements AuditAction {
 
     private final boolean selectedEntitiesOnly = false;
-    private final boolean selectDeletedEntities = false;
+    private final boolean selectDeletedEntities = true;
     private final Set<String> auditColumnNames = new HashSet<>(Arrays.asList(
             new String[]{"REV", "username"}
     ));
@@ -104,16 +104,26 @@ public class AuditDAO implements AuditAction {
         return q.getResultList();
     }
 
-    public List findByDate(Class clz, PageInfo info, Date startDate, Date endDate) {
+    public List findByDate(Class clz, Object id, PageInfo info, Date startDate, Date endDate) {
+        //Group by first, get total rows number
         AuditQuery q = getReader().createQuery().forRevisionsOfEntity(clz, selectedEntitiesOnly, selectDeletedEntities);
         q.add(AuditEntity.property("modifiedDate").between(startDate, endDate));
+        if (id != null) {
+            q.add(AuditEntity.id().eq(id));
+        }
 
         info.setMaxNumOfRows(((Long) q.addProjection(AuditEntity.id().count()).getSingleResult()).intValue());
 
+        //Paginate rows
         q = getReader().createQuery().forRevisionsOfEntity(clz, selectedEntitiesOnly, selectDeletedEntities)
                 .setMaxResults(info.getRows())
                 .setFirstResult((info.getPage() - 1) * info.getRows())
                 .add(AuditEntity.property("modifiedDate").between(startDate, endDate));
+
+        if (id != null) {
+            q.add(AuditEntity.id().eq(id));
+        }
+
         String sortIndex = info.getSidx();
         String[] orderColumns = sortIndex.split(",");
         for (String orderString : orderColumns) {

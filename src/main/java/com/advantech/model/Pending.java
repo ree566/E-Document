@@ -28,6 +28,7 @@ public class Pending implements java.io.Serializable {
 
     private int id;
     private String name;
+    
     @JsonIgnore
     private Set<Worktime> worktimes = new HashSet<Worktime>(0);
 

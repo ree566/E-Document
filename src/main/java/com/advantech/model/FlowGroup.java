@@ -28,6 +28,7 @@ public class FlowGroup implements java.io.Serializable {
 
     private int id;
     private String name;
+    
     @JsonIgnore
     private Set<Flow> flows = new HashSet<Flow>(0);
 

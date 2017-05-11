@@ -35,8 +35,8 @@ import org.springframework.security.core.userdetails.UserDetails;
         catalog = "E_Document",
         uniqueConstraints = @UniqueConstraint(columnNames = "jobnumber")
 )
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-public class User implements UserDetails, java.io.Serializable {
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = User.class)
+public class User implements java.io.Serializable, UserDetails {
 
     private int id;
     private Floor floor;
@@ -47,10 +47,18 @@ public class User implements UserDetails, java.io.Serializable {
     private Integer permission;
     private String email;
     private String state = State.ACTIVE.getState();
-    private Set<UserProfile> userProfiles = new HashSet<>(0);
-    private Set<Worktime> worktimesForEeOwnerId = new HashSet<>(0);
-    private Set<Worktime> worktimesForQcOwnerId = new HashSet<>(0);
-    private Set<Worktime> worktimesForSpeOwnerId = new HashSet<>(0);
+    
+    @JsonIgnore
+    private Set<UserProfile> userProfiles = new HashSet<UserProfile>(0);
+    
+    @JsonIgnore
+    private Set<Worktime> worktimesForEeOwnerId = new HashSet<Worktime>(0);
+    
+    @JsonIgnore
+    private Set<Worktime> worktimesForQcOwnerId = new HashSet<Worktime>(0);
+    
+    @JsonIgnore
+    private Set<Worktime> worktimesForSpeOwnerId = new HashSet<Worktime>(0);
 
     private boolean enabled;
     private boolean accountNonExpired;
@@ -168,8 +176,6 @@ public class User implements UserDetails, java.io.Serializable {
         this.state = state;
     }
 
-    @JsonIgnore
-    @JsonIgnoreProperties
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "userByEeOwnerId")
     public Set<Worktime> getWorktimesForEeOwnerId() {
         return this.worktimesForEeOwnerId;
@@ -179,8 +185,6 @@ public class User implements UserDetails, java.io.Serializable {
         this.worktimesForEeOwnerId = worktimesForEeOwnerId;
     }
 
-    @JsonIgnore
-    @JsonIgnoreProperties
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "userByQcOwnerId")
     public Set<Worktime> getWorktimesForQcOwnerId() {
         return this.worktimesForQcOwnerId;
@@ -190,8 +194,6 @@ public class User implements UserDetails, java.io.Serializable {
         this.worktimesForQcOwnerId = worktimesForQcOwnerId;
     }
 
-    @JsonIgnore
-    @JsonIgnoreProperties
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "userBySpeOwnerId")
     public Set<Worktime> getWorktimesForSpeOwnerId() {
         return this.worktimesForSpeOwnerId;

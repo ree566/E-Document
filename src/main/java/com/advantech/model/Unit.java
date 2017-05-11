@@ -28,8 +28,10 @@ public class Unit implements java.io.Serializable {
 
     private int id;
     private String name;
+    
     @JsonIgnore
     private Set<User> users = new HashSet<User>(0);
+    
     @JsonIgnore
     private Set<WorktimeColumnGroup> worktimeColumnGroups = new HashSet<WorktimeColumnGroup>(0);
 

@@ -23,6 +23,8 @@ import javax.persistence.UniqueConstraint;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.envers.Audited;
 import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
@@ -39,7 +41,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 )
 @DynamicInsert(true)
 @DynamicUpdate(true)
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = Worktime.class)
 @Audited(targetAuditMode = NOT_AUDITED)
 public class Worktime implements java.io.Serializable {
 
@@ -156,6 +158,7 @@ public class Worktime implements java.io.Serializable {
         this.flowByBabFlowId = flowByBabFlowId;
     }
 
+    @NotFound(action = NotFoundAction.IGNORE)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ee_owner_id", nullable = false)
     public User getUserByEeOwnerId() {
@@ -166,6 +169,7 @@ public class Worktime implements java.io.Serializable {
         this.userByEeOwnerId = userByEeOwnerId;
     }
 
+    @NotFound(action = NotFoundAction.IGNORE)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "qc_owner_id", nullable = false)
     public User getUserByQcOwnerId() {
@@ -176,6 +180,7 @@ public class Worktime implements java.io.Serializable {
         this.userByQcOwnerId = userByQcOwnerId;
     }
 
+    @NotFound(action = NotFoundAction.IGNORE)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "spe_owner_id", nullable = false)
     public User getUserBySpeOwnerId() {
