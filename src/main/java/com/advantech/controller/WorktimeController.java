@@ -19,12 +19,15 @@ import com.advantech.service.WorktimeService;
 import java.sql.Clob;
 import java.sql.SQLException;
 import java.util.List;
+import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -42,7 +45,7 @@ public class WorktimeController extends CrudController<Worktime> {
 
     @Autowired
     private WorktimeService worktimeService;
-    
+
     @Autowired
     private SheetViewService sheetViewService;
 
@@ -61,8 +64,19 @@ public class WorktimeController extends CrudController<Worktime> {
     @Secured({"ROLE_USER", "ROLE_ADMIN"})
     @Override
     public ResponseEntity update(
-            @RequestParam final String oper,
-            @ModelAttribute Worktime worktime) {
+            @RequestParam
+            final String oper,
+            @Valid @ModelAttribute Worktime worktime,
+            BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            List<FieldError> errors = bindingResult.getFieldErrors();
+            for (FieldError error : errors) {
+                return ResponseEntity
+                        .status(HttpStatus.FORBIDDEN)
+                        .body(error.getField() + " " + error.getDefaultMessage());
+            }
+        }
 
         String modifyMessage;
 

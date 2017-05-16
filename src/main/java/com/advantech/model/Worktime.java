@@ -20,10 +20,13 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.envers.Audited;
 import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
+import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.format.annotation.DateTimeFormat;
 
 /**
@@ -53,29 +56,29 @@ public class Worktime implements java.io.Serializable {
     private PreAssy preAssy;
     private Type type;
     private String modelName;
-    private Double totalModule;
-    private Double cleanPanel;
-    private Double assy;
-    private Double t1;
-    private Double t2;
-    private Double t3;
-    private Double t4;
-    private Double packing;
-    private Double upBiRi;
-    private Double downBiRi;
-    private Double biCost;
-    private Double vibration;
-    private Double hiPotLeakage;
-    private Double coldBoot;
-    private Double warmBoot;
-    private Double pendingTime;
+    private Double totalModule = 0d;
+    private Double cleanPanel = 0d;
+    private Double assy = 0d;
+    private Double t1 = 0d;
+    private Double t2 = 0d;
+    private Double t3 = 0d;
+    private Double t4 = 0d;
+    private Double packing = 0d;
+    private Double upBiRi = 0d;
+    private Double downBiRi = 0d;
+    private Double biCost = 0d;
+    private Double vibration = 0d;
+    private Double hiPotLeakage = 0d;
+    private Double coldBoot = 0d;
+    private Double warmBoot = 0d;
+    private double pendingTime;
     private String burnIn;
     private double biTime;
     private double biTemperature;
     private String assyPackingSop;
     private String testSop;
-    private Integer keypartA;
-    private Integer keypartB;
+    private Integer keypartA = 0;
+    private Integer keypartB = 0;
     private Character partLink;
     private int ce;
     private int ul;
@@ -84,10 +87,10 @@ public class Worktime implements java.io.Serializable {
     private int madeInTaiwan;
     private int fcc;
     private int eac;
-    private Double nsInOneCollectionBox;
+    private Double nsInOneCollectionBox = 0d;
     private char partNoAttributeMaintain;
-    private Double assyLeadTime;
-    private Double packingLeadTime;
+    private Double assyLeadTime = 0d;
+    private Double packingLeadTime = 0d;
     private Double productionWt;
     private Double setupTime;
     private Double assyToT1;
@@ -113,6 +116,7 @@ public class Worktime implements java.io.Serializable {
         this.id = id;
     }
 
+    @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "floor_id", nullable = false)
     public Floor getFloor() {
@@ -123,6 +127,7 @@ public class Worktime implements java.io.Serializable {
         this.floor = floor;
     }
 
+    @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "test_flow_id")
     public Flow getFlowByTestFlowId() {
@@ -133,6 +138,7 @@ public class Worktime implements java.io.Serializable {
         this.flowByTestFlowId = flowByTestFlowId;
     }
 
+    @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "packing_flow_id")
     public Flow getFlowByPackingFlowId() {
@@ -143,6 +149,7 @@ public class Worktime implements java.io.Serializable {
         this.flowByPackingFlowId = flowByPackingFlowId;
     }
 
+    @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bab_flow_id")
     public Flow getFlowByBabFlowId() {
@@ -153,6 +160,7 @@ public class Worktime implements java.io.Serializable {
         this.flowByBabFlowId = flowByBabFlowId;
     }
 
+    @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ee_owner_id", nullable = false)
     public User getUserByEeOwnerId() {
@@ -163,6 +171,7 @@ public class Worktime implements java.io.Serializable {
         this.userByEeOwnerId = userByEeOwnerId;
     }
 
+    @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "qc_owner_id", nullable = false)
     public User getUserByQcOwnerId() {
@@ -173,6 +182,7 @@ public class Worktime implements java.io.Serializable {
         this.userByQcOwnerId = userByQcOwnerId;
     }
 
+    @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "spe_owner_id", nullable = false)
     public User getUserBySpeOwnerId() {
@@ -183,6 +193,7 @@ public class Worktime implements java.io.Serializable {
         this.userBySpeOwnerId = userBySpeOwnerId;
     }
 
+    @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pending_id", nullable = false)
     public Pending getPending() {
@@ -193,6 +204,7 @@ public class Worktime implements java.io.Serializable {
         this.pending = pending;
     }
 
+    @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pre_assy_id")
     public PreAssy getPreAssy() {
@@ -203,6 +215,7 @@ public class Worktime implements java.io.Serializable {
         this.preAssy = preAssy;
     }
 
+    @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "type_id", nullable = false)
     public Type getType() {
@@ -213,6 +226,9 @@ public class Worktime implements java.io.Serializable {
         this.type = type;
     }
 
+    @NotNull
+    @NotEmpty 
+    @Size(min = 0, max = 50)
     @Column(name = "model_name", unique = true, nullable = false, length = 50)
     public String getModelName() {
         return this.modelName;
@@ -357,8 +373,9 @@ public class Worktime implements java.io.Serializable {
         this.warmBoot = warmBoot;
     }
 
+    @NotNull(message = "Pending Time 不可為空")
     @Column(name = "pending_time", nullable = false)
-    public Double getPendingTime() {
+    public double getPendingTime() {
         return this.pendingTime;
     }
 
@@ -366,6 +383,8 @@ public class Worktime implements java.io.Serializable {
         this.pendingTime = pendingTime;
     }
 
+    @NotNull
+    @NotEmpty
     @Column(name = "burn_in", nullable = false, length = 10)
     public String getBurnIn() {
         return this.burnIn;
@@ -375,6 +394,7 @@ public class Worktime implements java.io.Serializable {
         this.burnIn = burnIn;
     }
 
+    @NotNull
     @Column(name = "bi_time", nullable = false)
     public double getBiTime() {
         return this.biTime;
@@ -393,6 +413,7 @@ public class Worktime implements java.io.Serializable {
         this.biTemperature = biTemperature;
     }
 
+    @Size(min = 0, max = 500)
     @Column(name = "assy_packing_sop", length = 500)
     public String getAssyPackingSop() {
         return this.assyPackingSop;
@@ -402,6 +423,7 @@ public class Worktime implements java.io.Serializable {
         this.assyPackingSop = assyPackingSop;
     }
 
+    @Size(min = 0, max = 500)
     @Column(name = "test_sop", length = 500)
     public String getTestSop() {
         return this.testSop;
@@ -438,6 +460,7 @@ public class Worktime implements java.io.Serializable {
         this.partLink = partLink;
     }
 
+    @NotNull
     @Column(name = "ce", nullable = false)
     public int getCe() {
         return this.ce;
@@ -447,6 +470,7 @@ public class Worktime implements java.io.Serializable {
         this.ce = ce;
     }
 
+    @NotNull
     @Column(name = "ul", nullable = false)
     public int getUl() {
         return this.ul;
@@ -456,6 +480,7 @@ public class Worktime implements java.io.Serializable {
         this.ul = ul;
     }
 
+    @NotNull
     @Column(name = "rohs", nullable = false)
     public int getRohs() {
         return this.rohs;
@@ -465,6 +490,7 @@ public class Worktime implements java.io.Serializable {
         this.rohs = rohs;
     }
 
+    @NotNull
     @Column(name = "weee", nullable = false)
     public int getWeee() {
         return this.weee;
@@ -474,6 +500,7 @@ public class Worktime implements java.io.Serializable {
         this.weee = weee;
     }
 
+    @NotNull
     @Column(name = "made_in_taiwan", nullable = false)
     public int getMadeInTaiwan() {
         return this.madeInTaiwan;
@@ -483,6 +510,7 @@ public class Worktime implements java.io.Serializable {
         this.madeInTaiwan = madeInTaiwan;
     }
 
+    @NotNull
     @Column(name = "fcc", nullable = false)
     public int getFcc() {
         return this.fcc;
@@ -492,6 +520,7 @@ public class Worktime implements java.io.Serializable {
         this.fcc = fcc;
     }
 
+    @NotNull
     @Column(name = "eac", nullable = false)
     public int getEac() {
         return this.eac;
@@ -510,6 +539,7 @@ public class Worktime implements java.io.Serializable {
         this.nsInOneCollectionBox = NsInOneCollectionBox;
     }
 
+    @NotNull
     @Column(name = "part_no_attribute_maintain", nullable = false, length = 1)
     public char getPartNoAttributeMaintain() {
         return this.partNoAttributeMaintain;
@@ -638,7 +668,7 @@ public class Worktime implements java.io.Serializable {
         this.setProductionWt(defaultValue);
     }
 
-    public void setDefaultSetupTime() { 
+    public void setDefaultSetupTime() {
         Double defaultValue = (this.totalModule == 0 ? 0 : 10 + this.assy == 0 ? 0 : 30 + this.t1 == 0 ? 0 : 15
                 + this.t2 == 0 ? 0 : 15 + this.t3 == 0 ? 0 : 5 + this.t4 == 0 ? 0 : 5
                                         + this.packing == 0 ? 0 : 20 + this.cleanPanel == 0 ? 0 : 10) + 0.0;

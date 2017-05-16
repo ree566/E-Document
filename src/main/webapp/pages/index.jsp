@@ -27,7 +27,7 @@
 
         <link href="../css/sb-admin-2.min.css" rel="stylesheet">
         <link href="../css/metisMenu.min.css" rel="stylesheet">
-        <!--<link href="../css/sbadmin2-sidebar-toggle.css" rel="stylesheet">-->
+        <link href="../css/sbadmin2-sidebar-toggle.css" rel="stylesheet">
 
         <style>
             #loading {
@@ -104,22 +104,39 @@
                 $(document).ajaxSend(function (e, xhr, options) {
                     xhr.setRequestHeader(header, token);
                 });
+
+                $("#menu-toggle").click(function (e) {
+                    e.preventDefault();
+
+                    $("#wrapper").toggleClass("toggled");
+
+                    $('#wrapper.toggled').find("#sidebar-wrapper").find(".collapse").collapse('hide');
+
+                });
             });
         </script>
 
     </head>
     <body>
-        <div id="wrapper">
+        <div id="wrapper" >
 
             <!-- Navigation -->
             <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
                 <div class="navbar-header">
-                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
+                    <!--                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                                            <span class="sr-only">Toggle navigation</span>
+                                            <span class="icon-bar"></span>
+                                            <span class="icon-bar"></span>
+                                            <span class="icon-bar"></span>
+                                        </button> -->
+                    <ul class="nav navbar-top-links navbar-right">
+                        <li>
+                            <!--menu toggle button -->
+                            <button id="menu-toggle" type="button" data-toggle="button" class="btn btn-default btn-xs">
+                                <i class="fa fa-exchange fa-fw"></i>
+                            </button>
+                        </li>
+                    </ul>
                     <a class="navbar-brand" href="index.html">${initParam.pageTitle}</a>
                 </div>
                 <!-- /.navbar-header -->
@@ -156,74 +173,86 @@
                 </ul>
                 <!-- /.navbar-top-links -->
 
-                <div class="navbar-default sidebar" role="navigation">
-                    <div class="sidebar-nav navbar-collapse">
-                        <ul class="nav" id="side-menu">
-                            <li>
-                                <a href="#"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
-                            </li>
-                            <li>
-                                <a href="#"><i class="fa fa-bar-chart-o fa-fw"></i> Charts<span class="fa arrow"></span></a>
-                                <ul class="nav nav-second-level">
-                                    <li>
-                                        <a class="redirect-link" href="chart">Flot Charts</a>
-                                    </li>
-                                    <li>
-                                        <a class="redirect-link" href="chart">Morris.js Charts</a>
-                                    </li>
-                                </ul>
-                                <!-- /.nav-second-level -->
-                            </li>
-                            <li>
-                                <a href="#"><i class="fa fa-table fa-fw"></i> Tables<span class="fa arrow"></span></a>
-                                <ul class="nav nav-second-level">
-                                    <li>
-                                        <a class="redirect-link" href="worktime">工時大表</a>
-                                    </li>
-                                    <sec:authorize access="hasRole('ADMIN') and hasRole('USER')">
+                <!-- Sidebar wrapper over SB Admin 2 sidebar -->
+                <div id="sidebar-wrapper">
+
+                    <div class="navbar-default sidebar" role="navigation">
+                        <div class="sidebar-nav navbar-collapse">
+                            <ul class="nav in" id="side-menu">
+                                <li>
+                                    <a href="#" class="active"><i class="fa fa-dashboard fa-fw"></i> 
+                                        <span class="masked">
+                                            Dashboard
+                                        </span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#"><i class="fa fa-bar-chart-o fa-fw"></i> 
+                                        <span class="masked">
+                                            Charts<span class="fa arrow"></span>
+                                        </span>
+                                    </a>
+                                    <ul class="nav nav-second-level">
                                         <li>
-                                            <a class="redirect-link" href="mod/flow">Flow</a>
+                                            <a class="redirect-link" href="chart">Flot Charts</a>
                                         </li>
                                         <li>
-                                            <a class="redirect-link" href="mod/user">User</a>
+                                            <a class="redirect-link" href="chart">Morris.js Charts</a>
                                         </li>
+                                    </ul>
+                                    <!-- /.nav-second-level -->
+                                </li>
+                                <li>
+                                    <a href="#"><i class="fa fa-table fa-fw"></i> Tables<span class="fa arrow"></span></a>
+                                    <ul class="nav nav-second-level">
                                         <li>
-                                            <a class="redirect-link" href="mod/pending">Pending</a>
+                                            <a class="redirect-link" href="worktime">工時大表</a>
                                         </li>
+                                        <sec:authorize access="hasRole('ADMIN') and hasRole('USER')">
+                                            <li>
+                                                <a class="redirect-link" href="mod/flow">Flow</a>
+                                            </li>
+                                            <li>
+                                                <a class="redirect-link" href="mod/user">User</a>
+                                            </li>
+                                            <li>
+                                                <a class="redirect-link" href="mod/pending">Pending</a>
+                                            </li>
+                                            <li>
+                                                <a class="redirect-link" href="mod/preAssy">PreAssy</a>
+                                            </li>
+                                            <li>
+                                                <a class="redirect-link" href="mod/type">Type</a>
+                                            </li>
+                                        </sec:authorize>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <a href="#"><i class="fa fa-wrench fa-fw"></i> UI Elements<span class="fa arrow"></span></a>
+                                    <ul class="nav nav-second-level"> 
                                         <li>
-                                            <a class="redirect-link" href="mod/preAssy">PreAssy</a>
+                                            <a class="redirect-link" id="preload_page" href="audit">資料版本查詢</a>
                                         </li>
-                                        <li>
-                                            <a class="redirect-link" href="mod/type">Type</a>
-                                        </li>
-                                    </sec:authorize>
-                                </ul>
-                            </li>
-                            <li>
-                                <a href="#"><i class="fa fa-wrench fa-fw"></i> UI Elements<span class="fa arrow"></span></a>
-                                <ul class="nav nav-second-level"> 
-                                    <li>
-                                        <a class="redirect-link" id="preload_page" href="audit">資料版本查詢</a>
-                                    </li>
-                                    <sec:authorize access="hasRole('ADMIN') and hasRole('USER')">
-                                        <li>
-                                            <a class="redirect-link" href="fileupload">Excel文件上傳</a>
-                                        </li>
-                                        <li>
-                                            <a class="redirect-link" href="worktime-permission">欄位權限設定</a>
-                                        </li>
-                                        <li>
-                                            <a class="redirect-link" href="wowface">Not exist page</a>
-                                        </li>
-                                    </sec:authorize>
-                                </ul>
-                                <!-- /.nav-second-level -->
-                            </li>
-                        </ul>
+                                        <sec:authorize access="hasRole('ADMIN') and hasRole('USER')">
+                                            <li>
+                                                <a class="redirect-link" href="fileupload">Excel文件上傳</a>
+                                            </li>
+                                            <li>
+                                                <a class="redirect-link" href="worktime-permission">欄位權限設定</a>
+                                            </li>
+                                            <li>
+                                                <a class="redirect-link" href="wowface">Not exist page</a>
+                                            </li>
+                                        </sec:authorize>
+                                    </ul>
+                                    <!-- /.nav-second-level -->
+                                </li>
+                            </ul>
+                        </div>
+                        <!-- /.sidebar-collapse -->
                     </div>
-                    <!-- /.sidebar-collapse -->
+                    <!-- /.navbar-static-side -->
                 </div>
-                <!-- /.navbar-static-side -->
             </nav>
 
             <div id="page-wrapper">

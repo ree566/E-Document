@@ -37,7 +37,9 @@ public class FlowDAO implements BasicDAO {
 
     @Override
     public Collection findAll() {
-        return currentSession().createCriteria(Flow.class).list();
+        Criteria criteria = currentSession().createCriteria(Flow.class);
+        criteria.addOrder(Order.asc("name"));
+        return criteria.list();
     }
 
     public List<Flow> findAll(PageInfo info) {

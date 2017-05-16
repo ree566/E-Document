@@ -66,6 +66,20 @@
             }
         ];
 
+        var babFlow_select_event = [
+            {
+                type: 'change', fn: function (e) {
+                    $.get('<c:url value="/SelectOption/flow-byParent/" />' + $(this).val(), function (data) {
+                        var sel2 = $("#flowByTestFlowId\\.id");
+                        sel2.html("");
+                        for (var i = 0; i < data.length; i++) {
+                            sel2.append("<option role='option' value=" + data[i].id + ">" + data[i].name + "</option>");
+                        }
+                    });
+                }
+            }
+        ];
+
         grid.jqGrid({
             url: '<c:url value="/Worktime/find" />',
             datatype: 'json',
@@ -97,7 +111,7 @@
                 {label: 'T2_PACKING', name: "t2ToPacking", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: formula_hint, editrules: {number: true}},
                 {label: 'Floor', name: "floor.id", edittype: "select", editoptions: {value: selectOptions["floor"]}, width: 100, formatter: selectOptions["floor_func"], searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["floor"], sopt: ['eq']}},
                 {label: 'Pending', name: "pending.id", edittype: "select", editoptions: {value: selectOptions["pending"], dataEvents: pending_select_event}, formatter: selectOptions["pending_func"], width: 100, searchrules: number_search_rule, stype: "select", searchoptions: {value: selectOptions["pending"], sopt: ['eq']}},
-                {label: 'Pending TIME', name: "pendingTime", width: 100, searchrules: {required: true}, searchoptions: search_decimal_options, editrules: {required: true, number: true}, formoptions: required_form_options},
+                {label: 'Pending TIME', name: "pendingTime", width: 100, searchrules: {required: true}, searchoptions: search_decimal_options, editrules: { number: true}, formoptions: required_form_options},
                 {label: 'BurnIn', name: "burnIn", edittype: "select", editoptions: {value: "N:N;BI:BI;RI:RI", dataEvents: burnIn_select_event}, width: 100, searchrules: {required: true}, searchoptions: search_string_options},
                 {label: 'B/I Time', name: "biTime", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {required: true, number: true}, editoptions: {defaultValue: '0'}, formoptions: required_form_options},
                 {label: 'BI_Temperature', name: "biTemperature", width: 120, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {required: true, number: true}, editoptions: {defaultValue: '0'}, formoptions: required_form_options},
@@ -109,7 +123,7 @@
                 {label: 'KEYPART_A', name: "keypartA", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, editoptions: {defaultValue: '0'}},
                 {label: 'KEYPART_B', name: "keypartB", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, editoptions: {defaultValue: '0'}},
                 {label: 'PRE-ASSY', name: "preAssy.id", edittype: "select", editoptions: {value: selectOptions["preAssy"]}, formatter: selectOptions["preAssy_func"], width: 100, searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["preAssy"], sopt: ['eq']}},
-                {label: 'BAB_FLOW', name: "flowByBabFlowId.id", edittype: "select", editoptions: {value: selectOptions["bab_flow"]}, formatter: selectOptions["bab_flow_func"], width: 100, searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["bab_flow"], sopt: ['eq']}},
+                {label: 'BAB_FLOW', name: "flowByBabFlowId.id", edittype: "select", editoptions: {value: selectOptions["bab_flow"], dataEvents: babFlow_select_event, defaultValue: "111"}, formatter: selectOptions["bab_flow_func"], width: 100, searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["bab_flow"], sopt: ['eq']}},
                 {label: 'TEST_FLOW', name: "flowByTestFlowId.id", edittype: "select", editoptions: {value: selectOptions["test_flow"]}, formatter: selectOptions["test_flow_func"], width: 100, searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["test_flow"], sopt: ['eq']}},
                 {label: 'PACKING_FLOW', name: "flowByPackingFlowId.id", edittype: "select", editoptions: {value: selectOptions["pkg_flow"]}, formatter: selectOptions["pkg_flow_func"], width: 140, searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["pkg_flow"], sopt: ['eq']}},
                 {label: 'PART-LINK', name: "partLink", edittype: "select", editoptions: {value: ":empty;Y:Y;N:N"}, width: 100, searchrules: number_search_rule, searchoptions: search_string_options},
@@ -220,7 +234,7 @@
                     closeOnEscape: true,
                     zIndex: 9999,
                     cols: 20,
-                    bottominfo: "Fields marked with (*) are required<br/>Fields marked with (F) set to zero will be re-count"
+                    bottominfo: "Fields marked with (*) are required.<br/>Fields marked with (F) set to zero will be recalculate."
                 },
                 {
                     jqModal: true,
@@ -233,7 +247,7 @@
                     beforeShowForm: greyout,
                     closeOnEscape: true,
                     zIndex: 9999,
-                    bottominfo: "Fields marked with (*) are required"
+                    bottominfo: "Fields marked with (*) are required.<br/>Fields marked with (F) set to zero will be recalculate."
                 },
                 {
                     zIndex: 9999,
@@ -307,7 +321,14 @@
     });
 </script>
 <div id="worktime-content">
-    <h5>Your permission is: <b class="permission-hint"><c:out value="${user.permission <= 0 ? 'R' : 'RW'}" /></b></h5>
+    <h5>Your permission is: 
+        <b class="permission-hint">
+            R
+            <sec:authorize access="hasRole('ADMIN') and hasRole('USER')">
+                W
+            </sec:authorize>
+        </b>
+    </h5>
     <table id="list"></table> 
     <div id="pager"></div>
 </div>

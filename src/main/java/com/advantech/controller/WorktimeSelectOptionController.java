@@ -5,6 +5,14 @@
  */
 package com.advantech.controller;
 
+import com.advantech.model.Floor;
+import com.advantech.model.Flow;
+import com.advantech.model.FlowGroup;
+import com.advantech.model.Pending;
+import com.advantech.model.PreAssy;
+import com.advantech.model.Type;
+import com.advantech.model.Unit;
+import com.advantech.model.User;
 import com.advantech.service.FloorService;
 import com.advantech.service.FlowGroupService;
 import com.advantech.service.FlowService;
@@ -42,7 +50,7 @@ public class WorktimeSelectOptionController {
 
     @Autowired
     private FlowService flowService;
-    
+
     @Autowired
     private FlowGroupService flowGroupService;
 
@@ -57,55 +65,61 @@ public class WorktimeSelectOptionController {
 
     @ResponseBody
     @RequestMapping(value = "/floor", method = {RequestMethod.GET})
-    public List getFloorOption() {
+    public List<Floor> getFloorOption() {
         return floorService.findAll();
     }
 
     @ResponseBody
     @RequestMapping(value = "/user/{unitName}", method = {RequestMethod.GET})
-    public List getUserOption(@PathVariable(value = "unitName") final String unitName) {
+    public List<User> getUserOption(@PathVariable(value = "unitName") final String unitName) {
         return userService.findByUnitName(unitName);
     }
 
     @ResponseBody
     @RequestMapping(value = "/type", method = {RequestMethod.GET})
-    public List getTypeOption() {
+    public List<Type> getTypeOption() {
         return typeService.findAll();
     }
 
     @ResponseBody
-    @RequestMapping(value = "/flow/{flowGroupId}", method = {RequestMethod.GET})
-    public List getFlowOption(@PathVariable(value = "flowGroupId") final int flowGroupId) {
-        return flowService.findByFlowGroup(flowGroupId);
-    }
-    
-    @ResponseBody
     @RequestMapping(value = "/flow", method = {RequestMethod.GET})
-    public List getAllFlowOption() {
+    public List<Flow> getAllFlowOption() {
         return flowService.findAll();
     }
-    
+
+    @ResponseBody
+    @RequestMapping(value = "/flow/{flowGroupId}", method = {RequestMethod.GET})
+    public List<Flow> getFlowOption(@PathVariable(value = "flowGroupId") final int flowGroupId) {
+        return flowService.findByFlowGroup(flowGroupId);
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/flow-byParent/{parentFlowId}", method = {RequestMethod.GET})
+    public List<Flow> getFlowOptionByParent(@PathVariable(value = "parentFlowId") final int parentFlowId) {
+        return flowService.findByParent(parentFlowId); 
+    }
+
     @ResponseBody
     @RequestMapping(value = "/flowGroup", method = {RequestMethod.GET})
-    public List getFlowGroupOption() {
+    public List<FlowGroup> getFlowGroupOption() {
         return flowGroupService.findAll();
     }
 
     @ResponseBody
     @RequestMapping(value = "/preAssy", method = {RequestMethod.GET})
-    public List getPreAssyOption() {
+    public List<PreAssy> getPreAssyOption() {
         return preAssyService.findAll();
     }
 
     @ResponseBody
     @RequestMapping(value = "/pending", method = {RequestMethod.GET})
-    public List getPendingOption() {
+    public List<Pending> getPendingOption() {
         return pendingService.findAll();
     }
 
     @ResponseBody
     @RequestMapping(value = "/unit", method = {RequestMethod.GET})
-    public List getUserTypeOption() {
+    public List<Unit> getUnitOption() {
         return unitService.findAll();
     }
 }

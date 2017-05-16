@@ -92,8 +92,8 @@
                     },
                     colNames: ['id', 'name'],
                     colModel: [
-                        {name: "id", index: "id", width: 80, key: true, editable: true, edittype: 'select', editoptions: {value: selectOptions["flow"]}},
-                        {name: "name", index: "name", width: 130}
+                        {name: "id", index: "id", width: 80, key: true, editable: true, sortable: false, edittype: 'select', editoptions: {value: selectOptions["flow"]}},
+                        {name: "name", index: "name", width: 130, sortable: false}
                     ],
                     rowNum: 20,
                     pager: pager_id,
@@ -109,7 +109,7 @@
                     },
                     sortorder: "asc", height: '100%'});
                 $("#" + subgrid_table_id).jqGrid('navGrid', "#" + pager_id,
-                        {edit: false, add: true, del: true},
+                        {edit: false, add: true, del: true, search: false},
                         {},
                         {
                             recreateForm: true,
@@ -130,7 +130,8 @@
                                 var val = $("#" + subgrid_table_id).getCell(rowid, 'id');
                                 return {id: val, parentFlowId: row_id};
                             }
-                        }
+                        },
+                        {}
                 );
             }
         })
