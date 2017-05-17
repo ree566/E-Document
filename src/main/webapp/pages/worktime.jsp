@@ -15,6 +15,7 @@
 <script src="<c:url value="/js/urlParamGetter.js" />"></script>
 <script src="<c:url value="/js/column-name-setting.js" />"></script>
 <script src="<c:url value="/js/jqgrid-custom-select-option-reader.js" />"></script>
+<script src="<c:url value="/js/jqgrid-custom-validator.js" />"></script>
 
 <script>
     $(function () {
@@ -94,12 +95,51 @@
             greyout(form);
         };
 
-        var customEditRule = {
-            custom: true,
-            custom_func: function () {
+        var flowVerify = function (postdata, formid) {
+            var babArr = selectOptions["bab_flow"],
+                    testArr = selectOptions["test_flow"],
+                    pkgArr = selectOptions["pkg_flow"];
+            var babFlowName = babArr[postdata["flowByBabFlowId.id"]],
+                    testFlowName = testArr[postdata["flowByTestFlowId.id"]],
+                    pkgFlowName = pkgArr[postdata["flowByPackingFlowId.id"]];
+            var babCheckLogic = flow_check_logic.BAB,
+                    testCheckLogic = flow_check_logic.TEST,
+                    pkgCheckLogic = flow_check_logic.PKG;
 
+            var babCheckMessage = flowCheck(babCheckLogic, babFlowName, postdata);
+            if (babCheckMessage === true) {
+                var testCheckMessage = flowCheck(testCheckLogic, testFlowName, postdata);
+                if (testCheckMessage === true) {
+                    var pkgCheckMessage = flowCheck(pkgCheckLogic, pkgFlowName, postdata);
+                    return pkgCheckMessage === true ? [true, "saved"] : pkgCheckMessage;
+                } else {
+                    return testCheckMessage;
+                }
+            } else {
+                return babCheckMessage;
             }
         };
+
+        function flowCheck(logicArr, flowName, formObj) {
+            for (var i = 0; i < logicArr.length; i++) {
+                var logic = logicArr[i];
+                var keyword = logic.keyword;
+                for (var j = 0; j < keyword.length; j++) {
+                    var key = keyword[j];
+                    if (flowName.indexOf(key) > -1) {
+                        var checkCol = logic.checkColumn;
+                        for (var k = 0; k < checkCol.length; k++) {
+                            var colName = checkCol[k];
+                            console.log(colName);
+                            if (!logic.valid(formObj[colName])) {
+                                return[false, colName + " " + logic.message];
+                            }
+                        }
+                    }
+                }
+            }
+            return true;
+        }
 
         grid.jqGrid({
             url: '<c:url value="/Worktime/read" />',
@@ -249,7 +289,8 @@
                     closeAfterEdit: false,
                     reloadAfterSubmit: true,
                     errorTextFormat: errorTextFormatF,
-                    afterclickPgButtons: function(whichbutton, formid, rowid){
+                    beforeSubmit: flowVerify,
+                    afterclickPgButtons: function (whichbutton, formid, rowid) {
                         $("#flowByBabFlowId\\.id").trigger("change");
                     },
                     recreateForm: true,
@@ -267,6 +308,7 @@
                     reloadAfterSubmit: true,
                     errorTextFormat: errorTextFormatF,
                     afterclickPgButtons: cleanEditForm,
+                    beforeSubmit: flowVerify,
                     recreateForm: true,
                     beforeShowForm: testFlowInit,
                     closeOnEscape: true,

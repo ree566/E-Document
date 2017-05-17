@@ -111,53 +111,55 @@
                     'TEST_T2-WiFi-WWAN-PI(T1-BI)',
                     'PKG'
                 ];
-                var looptime = 0;
-                var BAB_FLOW_GROUP = "BAB";
-                var TEST_FLOW_GROUP = "TEST";
-                var PKG_FLOW_GROUP = "PKG";
-
-                for (var i = 0; i < testflow.length; i++) {
-                    var flowName = testflow[i];
-                    var check_logic = [];
-
-                    if (flowName.includes(BAB_FLOW_GROUP)) {
-                        check_logic = flow_check_logic[BAB_FLOW_GROUP];
-                    } else if (flowName.includes(TEST_FLOW_GROUP)) {
-                        check_logic = flow_check_logic[TEST_FLOW_GROUP];
-                    } else {
-                        check_logic = flow_check_logic[PKG_FLOW_GROUP];
-                    }
-                    
-//                    appendTestString(JSON.stringify(check_logic));
-
-                    for (var j = 0; j < check_logic.length; j++) {
-                        var keyword = check_logic[j].keyword;
-                        looptime++;
-
-                        if (typeof keyword == 'string') {
-                            if (flowName.includes(keyword)) {
-                                appendTestString(flowName + " is in validator check.");
-                                appendTestString("&nbsp;&nbsp;&nbsp;" + keyword);
-                            }
-                        } else {
-                            for (var k = 0; k < keyword.length; k++) {
-                                if (flowName.includes(keyword[k])) {
-                                    appendTestString(flowName + " is in validator check.");
-                                    appendTestString("&nbsp;&nbsp;&nbsp;" + keyword.toString());
-                                }
-                            }
-                        }
-
-                    }
-                    
-                    appendTestString("-----------------------");
-                }
-
-                appendTestString("loop " + looptime);
-
-                function appendTestString(st) {
-                    $("#testarea").append("<h5>" + st + "</h5>");
-                }
+//                var looptime = 0;
+//                var BAB_FLOW_GROUP = "BAB";
+//                var TEST_FLOW_GROUP = "TEST";
+//                var PKG_FLOW_GROUP = "PKG";
+//
+//                for (var i = 0; i < testflow.length; i++) {
+//                    var flowName = testflow[i];
+//                    var check_logic = [];
+//
+//                    if (flowName.includes(BAB_FLOW_GROUP)) {
+//                        check_logic = flow_check_logic[BAB_FLOW_GROUP];
+//                    } else if (flowName.includes(TEST_FLOW_GROUP)) {
+//                        check_logic = flow_check_logic[TEST_FLOW_GROUP];
+//                    } else {
+//                        check_logic = flow_check_logic[PKG_FLOW_GROUP];
+//                    }
+//                    
+////                    appendTestString(JSON.stringify(check_logic));
+//
+//                    for (var j = 0; j < check_logic.length; j++) {
+//                        var keyword = check_logic[j].keyword;
+//                        looptime++;
+//
+//                        if (typeof keyword == 'string') {
+//                            if (flowName.includes(keyword)) {
+//                                appendTestString(flowName + " is in validator check.");
+//                                appendTestString("&nbsp;&nbsp;&nbsp;" + keyword);
+//                            }
+//                        } else {
+//                            for (var k = 0; k < keyword.length; k++) {
+//                                if (flowName.includes(keyword[k])) {
+//                                    appendTestString(flowName + " is in validator check.");
+//                                    appendTestString("&nbsp;&nbsp;&nbsp;" + keyword.toString());
+//                                }
+//                            }
+//                        }
+//
+//                    }
+//                    
+//                    appendTestString("-----------------------");
+//                }
+//
+//                appendTestString("loop " + looptime);
+//
+//                function appendTestString(st) {
+//                    $("#testarea").append("<h5>" + st + "</h5>");
+//                }
+                var arr = [];
+                alert(arr === true);
             });
         </script>
     </head>
