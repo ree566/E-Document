@@ -7,6 +7,9 @@
     .permission-hint{
         color: red;
     }
+    .ui-jqgrid .ui-jqdialog {
+        color: red;
+    }
 </style>
 
 <script src="<c:url value="/js/urlParamGetter.js" />"></script>
@@ -71,17 +74,35 @@
                 type: 'change', fn: function (e) {
                     $.get('<c:url value="/SelectOption/flow-byParent/" />' + $(this).val(), function (data) {
                         var sel2 = $("#flowByTestFlowId\\.id");
+                        var selVal = sel2.val();
                         sel2.html("");
+                        sel2.append("<option role='option' value=0>empty</option>");
                         for (var i = 0; i < data.length; i++) {
                             sel2.append("<option role='option' value=" + data[i].id + ">" + data[i].name + "</option>");
                         }
+                        sel2.val(selVal);
                     });
                 }
             }
         ];
 
+        var testFlowInit = function (form) {
+            setTimeout(function () {
+                // do here all what you need (like alert('yey');)
+                $("#flowByBabFlowId\\.id").trigger("change");
+            }, 50);
+            greyout(form);
+        };
+
+        var customEditRule = {
+            custom: true,
+            custom_func: function () {
+
+            }
+        };
+
         grid.jqGrid({
-            url: '<c:url value="/Worktime/find" />',
+            url: '<c:url value="/Worktime/read" />',
             datatype: 'json',
             mtype: 'GET',
 //            guiStyle: "bootstrap",
@@ -111,7 +132,7 @@
                 {label: 'T2_PACKING', name: "t2ToPacking", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: formula_hint, editrules: {number: true}},
                 {label: 'Floor', name: "floor.id", edittype: "select", editoptions: {value: selectOptions["floor"]}, width: 100, formatter: selectOptions["floor_func"], searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["floor"], sopt: ['eq']}},
                 {label: 'Pending', name: "pending.id", edittype: "select", editoptions: {value: selectOptions["pending"], dataEvents: pending_select_event}, formatter: selectOptions["pending_func"], width: 100, searchrules: number_search_rule, stype: "select", searchoptions: {value: selectOptions["pending"], sopt: ['eq']}},
-                {label: 'Pending TIME', name: "pendingTime", width: 100, searchrules: {required: true}, searchoptions: search_decimal_options, editrules: { number: true}, formoptions: required_form_options},
+                {label: 'Pending TIME', name: "pendingTime", width: 100, searchrules: {required: true}, searchoptions: search_decimal_options, editrules: {required: true, number: true}, formoptions: required_form_options},
                 {label: 'BurnIn', name: "burnIn", edittype: "select", editoptions: {value: "N:N;BI:BI;RI:RI", dataEvents: burnIn_select_event}, width: 100, searchrules: {required: true}, searchoptions: search_string_options},
                 {label: 'B/I Time', name: "biTime", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {required: true, number: true}, editoptions: {defaultValue: '0'}, formoptions: required_form_options},
                 {label: 'BI_Temperature', name: "biTemperature", width: 120, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {required: true, number: true}, editoptions: {defaultValue: '0'}, formoptions: required_form_options},
@@ -186,7 +207,6 @@
             navOptions: {reloadGridOptions: {fromServer: true}},
             caption: "工時大表",
             height: 450,
-            editurl: '<c:url value="/Worktime/mod" />',
             sortname: 'id', sortorder: 'desc',
             onSelectRow: function () {
                 scrollPosition = grid.closest(".ui-jqgrid-bdiv").scrollTop();
@@ -223,33 +243,38 @@
         grid.jqGrid('navGrid', '#pager',
                 {edit: isEditable, add: isEditable, del: isEditable, search: true},
                 {
-                    jqModal: true,
+                    url: '<c:url value="/Worktime/update" />',
                     dataheight: 350,
                     width: 450,
                     closeAfterEdit: false,
                     reloadAfterSubmit: true,
-                    errorTextFormat: customErrorTextFormat,
+                    errorTextFormat: errorTextFormatF,
+                    afterclickPgButtons: function(whichbutton, formid, rowid){
+                        $("#flowByBabFlowId\\.id").trigger("change");
+                    },
                     recreateForm: true,
-                    beforeShowForm: greyout,
+                    beforeShowForm: testFlowInit,
                     closeOnEscape: true,
                     zIndex: 9999,
                     cols: 20,
                     bottominfo: "Fields marked with (*) are required.<br/>Fields marked with (F) set to zero will be recalculate."
                 },
                 {
-                    jqModal: true,
+                    url: '<c:url value="/Worktime/create" />',
                     dataheight: 350,
                     width: 450,
                     closeAfterAdd: false,
                     reloadAfterSubmit: true,
-                    errorTextFormat: customErrorTextFormat,
+                    errorTextFormat: errorTextFormatF,
+                    afterclickPgButtons: cleanEditForm,
                     recreateForm: true,
-                    beforeShowForm: greyout,
+                    beforeShowForm: testFlowInit,
                     closeOnEscape: true,
                     zIndex: 9999,
                     bottominfo: "Fields marked with (*) are required.<br/>Fields marked with (F) set to zero will be recalculate."
                 },
                 {
+                    url: '<c:url value="/Worktime/delete" />',
                     zIndex: 9999,
                     reloadAfterSubmit: true
                 },

@@ -45,7 +45,8 @@ public class PreAssyService {
         return preAssyDAO.update(preAssy);
     }
 
-    public int delete(PreAssy preAssy) {
+    public int delete(int id) {
+        PreAssy preAssy = this.findByPrimaryKey(id);
         return preAssyDAO.delete(preAssy);
     }
 

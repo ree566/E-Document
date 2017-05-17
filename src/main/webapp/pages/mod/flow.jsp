@@ -24,7 +24,7 @@
         });
 
         grid.jqGrid({
-            url: '<c:url value="/Flow/find" />',
+            url: '<c:url value="/Flow/read" />',
             datatype: 'json',
             mtype: 'GET',
             autoencode: true,
@@ -57,7 +57,6 @@
             navOptions: {reloadGridOptions: {fromServer: true}},
             caption: tableName + " modify",
             height: 450,
-            editurl: '<c:url value="/Flow/mod" />',
             sortname: 'id', sortorder: 'asc',
             onSelectRow: function () {
                 scrollPosition = grid.closest(".ui-jqgrid-bdiv").scrollTop();
@@ -84,7 +83,7 @@
                 pager_id = "p_" + subgrid_table_id;
                 $("#" + subgrid_id).html("<table id='" + subgrid_table_id + "' class='scroll'></table><div id='" + pager_id + "' class='scroll'></div>");
                 $("#" + subgrid_table_id).jqGrid({
-                    url: '<c:url value="/Flow/find_sub" />',
+                    url: '<c:url value="/Flow/read_sub" />',
                     mtype: 'GET',
                     datatype: "json",
                     postData: {
@@ -99,7 +98,7 @@
                     pager: pager_id,
                     sortname: 'id',
                     autowidth: true,
-                    editurl: '<c:url value="/Flow/mod_sub" />',
+                    editurl: '<c:url value="/Flow/update_sub" />',
                     jsonReader: {
                         root: "rows",
                         page: "page",
@@ -112,7 +111,6 @@
                         {edit: false, add: true, del: true, search: false},
                         {},
                         {
-                            recreateForm: true,
                             zIndex: 9999,
                             beforeSubmit: function (postdata, form) {
                                 if (row_id != null) {
@@ -124,7 +122,6 @@
                             }
                         },
                         {
-                            recreateForm: true,
                             zIndex: 9999,
                             onclickSubmit: function (rowid) {
                                 var val = $("#" + subgrid_table_id).getCell(rowid, 'id');
@@ -138,26 +135,23 @@
                 .jqGrid('navGrid', '#pager',
                         {edit: true, add: true, del: true, search: true},
                         {
-                            dataheight: 350,
-                            width: 450,
+                            url: '<c:url value="/Flow/update" />',
                             closeAfterEdit: false,
                             reloadAfterSubmit: true,
                             errorTextFormat: customErrorTextFormat,
                             beforeShowForm: greyout,
-                            zIndex: 9999,
-                            recreateForm: true
+                            zIndex: 9999
                         },
                         {
-                            dataheight: 350,
-                            width: 450,
+                            url: '<c:url value="/Flow/create" />',
                             closeAfterAdd: false,
                             reloadAfterSubmit: true,
                             errorTextFormat: customErrorTextFormat,
                             beforeShowForm: greyout,
-                            zIndex: 9999,
-                            recreateForm: true
+                            zIndex: 9999
                         },
                         {
+                            url: '<c:url value="/Flow/delete" />',
                             zIndex: 9999,
                             reloadAfterSubmit: true
                         },

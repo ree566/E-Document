@@ -7,6 +7,7 @@ package com.advantech.controller;
 
 import com.advantech.model.Floor;
 import com.advantech.model.Flow;
+import com.advantech.model.Pending;
 import com.advantech.model.User;
 import com.advantech.model.Type;
 import com.advantech.model.Worktime;
@@ -21,12 +22,14 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
@@ -63,7 +66,7 @@ public class FileUploadController {
     private WorktimeService worktimeService;
 
     @Autowired
-    private UserService identitService;
+    private UserService userService;
 
     @Autowired
     private FloorService floorService;
@@ -100,7 +103,7 @@ public class FileUploadController {
         try {
             if (l.isEmpty()) {
                 Map floorOptions = this.tranToIdNameCompare(floorService.findAll());
-                Map identitOptions = this.tranToIdNameCompare(identitService.findAll());
+                Map userOptions = this.tranToIdNameCompare(userService.findAll());
                 Map typeOptions = this.tranToIdNameCompare(typeService.findAll());
                 Map flowOptions = this.tranToIdNameCompare(flowService.findAll());
 
@@ -108,13 +111,26 @@ public class FileUploadController {
 
                 Sheet sheet = workbook.getSheetAt(0);
 
-                System.out.println("Max sheet rows: " + sheet.getPhysicalNumberOfRows());
+                int maxNumberfRows = sheet.getPhysicalNumberOfRows();
+                System.out.println("Max sheet rows: " + maxNumberfRows);
 
-                User sysop = identitService.findByJobnumber("sysop");
-                Type type_ok = typeService.findByPrimaryKey(8);
-                Floor floor_all = floorService.findByPrimaryKey(3);
+                System.out.println("Init default options...");
 
-                for (i = 2; i < sheet.getPhysicalNumberOfRows(); i++) {
+                System.out.println("Init default user option");
+                User sysop = (User) userOptions.get("sysop"); //sysop
+
+                System.out.println("Init default type option");
+                Type type_ok = (Type) typeOptions.get("OK"); //ok
+
+                System.out.println("Init default floor option");
+                Floor floor_all = (Floor) floorOptions.get("All"); //all
+
+                System.out.println("Init default pending option");
+                Pending default_pending = pendingService.findByPrimaryKey(1); //AASSY
+
+                System.out.println("Done.");
+
+                for (i = 2; i < maxNumberfRows; i++) {
                     // 由於第 0 Row 為 title, 故 i 從 1 開始
 
                     Row row = sheet.getRow(i); // 取得第 i Row
@@ -123,35 +139,43 @@ public class FileUploadController {
                         cell_A.setCellType(CellType.STRING);
 
                         Worktime w = new Worktime();
-                        w.setFloor((Floor) isNull((Floor) floorOptions.get(getCellValue(row, "V")), floor_all));
-                        w.setFlowByTestFlowId((Flow) flowOptions.get(getCellValue(row, "AG")));
-                        w.setFlowByPackingFlowId((Flow) flowOptions.get(getCellValue(row, "AH")));
-                        w.setFlowByBabFlowId((Flow) flowOptions.get(getCellValue(row, "AF")));
-                        w.setUserByEeOwnerId((User) isNull((User) identitOptions.get(getCellValue(row, "AA")), sysop));
-                        w.setUserByQcOwnerId((User) isNull((User) identitOptions.get(getCellValue(row, "AB")), sysop));
-                        w.setUserBySpeOwnerId((User) isNull((User) identitOptions.get(getCellValue(row, "Z")), sysop));
-                        w.setType((Type) isNull((Type) typeOptions.get(getCellValue(row, "B")), type_ok));
+                        w.setFloor((Floor) isNull(floorOptions.get(getCellValue(row, "V")), floor_all));
+                        w.setFlowByTestFlowId((Flow) flowOptions.get(trimStringObject(getCellValue(row, "AG"))));
+                        w.setFlowByPackingFlowId((Flow) flowOptions.get(trimStringObject(getCellValue(row, "AH"))));
+                        w.setFlowByBabFlowId((Flow) flowOptions.get(trimStringObject(getCellValue(row, "AF"))));
+                        w.setUserByEeOwnerId((User) isNull(userOptions.get(getCellValue(row, "AA")), sysop));
+                        w.setUserByQcOwnerId((User) isNull(userOptions.get(getCellValue(row, "AB")), sysop));
+                        w.setUserBySpeOwnerId((User) isNull(userOptions.get(getCellValue(row, "Z")), sysop));
+                        w.setType((Type) isNull(typeOptions.get(getCellValue(row, "B")), type_ok));
                         w.setModelName((String) getCellValue(row, "A"));
-                        w.setTotalModule((Double) getCellValue(row, "D"));
-                        w.setCleanPanel((Double) getCellValue(row, "F"));
-                        w.setAssy((Double) getCellValue(row, "G"));
-                        w.setT1((Double) getCellValue(row, "H"));
-                        w.setT2((Double) getCellValue(row, "I"));
-                        w.setT3((Double) getCellValue(row, "J"));
-                        w.setT4((Double) getCellValue(row, "K"));
-                        w.setPacking((Double) getCellValue(row, "L"));
-                        w.setUpBiRi((Double) getCellValue(row, "M"));
-                        w.setDownBiRi((Double) getCellValue(row, "N"));
-                        w.setBiCost((Double) getCellValue(row, "O"));
-                        w.setVibration((Double) getCellValue(row, "P"));
-                        w.setHiPotLeakage((Double) getCellValue(row, "Q"));
-                        w.setColdBoot((Double) getCellValue(row, "R"));
-                        w.setWarmBoot((Double) getCellValue(row, "S"));
+                        w.setTotalModule(objToBigDecimal(getCellValue(row, "D")));
+                        w.setCleanPanel(objToBigDecimal(getCellValue(row, "F")));
+                        w.setAssy(objToBigDecimal(getCellValue(row, "G")));
+                        w.setT1(objToBigDecimal(getCellValue(row, "H")));
+                        w.setT2(objToBigDecimal(getCellValue(row, "I")));
+                        w.setT3(objToBigDecimal(getCellValue(row, "J")));
+                        w.setT4(objToBigDecimal(getCellValue(row, "K")));
+                        w.setPacking(objToBigDecimal(getCellValue(row, "L")));
+                        w.setUpBiRi(objToBigDecimal(getCellValue(row, "M")));
+                        w.setDownBiRi(objToBigDecimal(getCellValue(row, "N")));
+                        w.setBiCost(objToBigDecimal(getCellValue(row, "O")));
+                        w.setVibration(objToBigDecimal(getCellValue(row, "P")));
+                        w.setHiPotLeakage(objToBigDecimal(getCellValue(row, "Q")));
+                        w.setColdBoot(objToBigDecimal(getCellValue(row, "R")));
+                        w.setWarmBoot(objToBigDecimal(getCellValue(row, "S")));
                         w.setBurnIn(getCellValue(row, "W") == null ? "N" : "Y");
-                        w.setBiTime(getCellValue(row, "X") == null || getCellValue(row, "X") instanceof String ? 0.0 : (Double) checkAndConvertReturn(getCellValue(row, "X")));
-                        w.setBiTemperature(getCellValue(row, "Y") == null || getCellValue(row, "Y") instanceof String ? 0.0 : (Double) checkAndConvertReturn(getCellValue(row, "Y")));
-                        w.setKeypartA(getCellValue(row, "AD") == null ? null : ((Double) checkAndConvertReturn(getCellValue(row, "AD"))).intValue());
-                        w.setKeypartB(getCellValue(row, "AE") == null ? null : ((Double) checkAndConvertReturn(getCellValue(row, "AE"))).intValue());
+
+                        BigDecimal biTime = objToBigDecimal(getCellValue(row, "X"));
+                        w.setBiTime(biTime == null ? BigDecimal.ZERO : biTime); //Not null
+
+                        BigDecimal biTemperature = objToBigDecimal(getCellValue(row, "Y"));
+                        w.setBiTemperature(biTemperature == null ? BigDecimal.ZERO : biTemperature); //Not null
+
+                        BigDecimal keypartA = objToBigDecimal(getCellValue(row, "AD"));
+                        w.setKeypartA(keypartA == null ? null : keypartA.intValue());
+
+                        BigDecimal keypartB = objToBigDecimal(getCellValue(row, "AE"));
+                        w.setKeypartB(keypartB == null ? null : keypartB.intValue());
                         w.setPartLink(getCellValue(row, "AI") == null ? null : ((String) getCellValue(row, "AI")).charAt(0));
                         w.setCe(getCellValue(row, "AJ") == null ? 0 : 1);
                         w.setUl(getCellValue(row, "AK") == null ? 0 : 1);
@@ -160,21 +184,26 @@ public class FileUploadController {
                         w.setMadeInTaiwan(getCellValue(row, "AN") == null ? 0 : 1);
                         w.setFcc(getCellValue(row, "AO") == null ? 0 : 1);
                         w.setEac(getCellValue(row, "AP") == null ? 0 : 1);
-                        w.setNsInOneCollectionBox(getCellValue(row, "AQ") == null || getCellValue(row, "AQ") instanceof String ? null : (Double) checkAndConvertReturn(getCellValue(row, "AQ")));
+                        w.setNsInOneCollectionBox(objToBigDecimal(getCellValue(row, "AQ")));
                         w.setPartNoAttributeMaintain(getCellValue(row, "AR") == null ? 'N' : (getCellValue(row, "AR")).toString().charAt(0));
-                        w.setAssyLeadTime((Double) getCellValue(row, "AU"));
-                        w.setPackingLeadTime((Double) getCellValue(row, "AW"));
-                        w.setProductionWt((Double) getCellValue(row, "C"));
-                        w.setSetupTime((Double) getCellValue(row, "E"));
-                        w.setAssyToT1((Double) getCellValue(row, "T"));
-                        w.setT2ToPacking((Double) getCellValue(row, "U"));
-                        w.setAssyStation(getCellValue(row, "AS") == null ? null : ((Double) getCellValue(row, "AS")).intValue());
-                        w.setPackingStation(((Double) getCellValue(row, "AT")).intValue());
-                        w.setAssyKanbanTime((Double) getCellValue(row, "AV"));
-                        w.setPackingKanbanTime((Double) getCellValue(row, "AX"));
-                        w.setCleanPanelAndAssembly((Double) getCellValue(row, "BB"));
-                        w.setPending(pendingService.findByPrimaryKey(1));
-                        w.setPendingTime(0.0);
+                        w.setAssyLeadTime(objToBigDecimal(getCellValue(row, "AU")));
+                        w.setPackingLeadTime(objToBigDecimal(getCellValue(row, "AW")));
+                        w.setProductionWt(objToBigDecimal(getCellValue(row, "C")));
+                        w.setSetupTime(objToBigDecimal(getCellValue(row, "E")));
+                        w.setAssyToT1(objToBigDecimal(getCellValue(row, "T")));
+                        w.setT2ToPacking(objToBigDecimal(getCellValue(row, "U")));
+
+                        BigDecimal assyStation = objToBigDecimal(getCellValue(row, "AS"));
+                        w.setAssyStation(assyStation == null ? null : assyStation.intValue());
+
+                        BigDecimal packingStation = objToBigDecimal(getCellValue(row, "AT"));
+                        w.setPackingStation(packingStation == null ? null : packingStation.intValue());
+
+                        w.setAssyKanbanTime(objToBigDecimal(getCellValue(row, "AV")));
+                        w.setPackingKanbanTime(objToBigDecimal(getCellValue(row, "AX")));
+                        w.setCleanPanelAndAssembly(objToBigDecimal(getCellValue(row, "BB")));
+                        w.setPending(default_pending);
+                        w.setPendingTime(BigDecimal.ZERO);
                         w.setAssyPackingSop(getCellValue(row, "AC") == null ? null : (String) getCellValue(row, "AC"));
 
                         l.add(w);
@@ -205,13 +234,12 @@ public class FileUploadController {
         return i == null ? replaceTarget : i;
     }
 
-    private Object checkAndConvertReturn(Object obj) {
-        if (obj instanceof String) {
-            String value = (String) obj;
-            return "".equals(value) ? null : (StringUtils.isNumeric(value) && value.contains(".") ? Double.parseDouble(value) : Integer.parseInt(value));
-        } else {
-            return obj == null ? null : obj;
-        }
+    private Object trimStringObject(Object o) {
+        return o == null ? o : o.toString().trim();
+    }
+
+    private BigDecimal objToBigDecimal(Object o) {
+        return o != null && NumberUtils.isNumber(o.toString()) ? new BigDecimal(o.toString()) : null;
     }
 
     private Object getCellValue(Row row, String letter) {
@@ -249,9 +277,13 @@ public class FileUploadController {
 
     private Map tranToIdNameCompare(List l) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         Map m = new HashMap();
-        for (Object obj : l) {
-            String name = (String) PropertyUtils.getProperty(obj, "name");
-            m.put(name, obj);
+        if (!l.isEmpty()) {
+            Object firstObj = l.get(0);
+            boolean isUserObject = firstObj instanceof User;
+            for (Object obj : l) {
+                String name = (String) PropertyUtils.getProperty(obj, isUserObject ? "username" : "name");
+                m.put(name, obj);
+            }
         }
         return m;
     }

@@ -44,7 +44,7 @@ public class User implements java.io.Serializable, UserDetails {
     private String jobnumber;
     private String password;
     private String username;
-    private Integer permission;
+    private Integer permission = 0;
     private String email;
     private String state = State.ACTIVE.getState();
     

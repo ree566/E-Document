@@ -44,7 +44,8 @@ public class TypeService {
         return typeDAO.update(type);
     }
 
-    public int delete(Type type) {
+    public int delete(int id) {
+        Type type = this.findByPrimaryKey(id);
         return typeDAO.delete(type);
     }
 

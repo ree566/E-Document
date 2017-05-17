@@ -11,7 +11,6 @@ import com.advantech.model.Type;
 import com.advantech.response.JqGridResponse;
 import com.advantech.service.TypeService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
@@ -35,32 +34,32 @@ public class TypeController extends CrudController<Type> {
     @ResponseBody
     @RequestMapping(value = SELECT_URL, method = {RequestMethod.GET})
     @Override
-    protected JqGridResponse findAll(PageInfo info) {
+    protected JqGridResponse read(PageInfo info) {
         return toJqGridResponse(typeService.findAll(info), info);
+    }
+
+    @ResponseBody
+    @RequestMapping(value = INSERT_URL, method = {RequestMethod.POST})
+    @Override
+    protected ResponseEntity insert(Type type, BindingResult bindingResult) {
+        String modifyMessage = typeService.insert(type) == 1 ? this.SUCCESS_MESSAGE : this.FAIL_MESSAGE;
+        return serverResponse(modifyMessage);
     }
 
     @ResponseBody
     @RequestMapping(value = UPDATE_URL, method = {RequestMethod.POST})
     @Override
-    protected ResponseEntity update(String oper, Type type, BindingResult bindingResult) {
-        String modifyMessage;
-        int responseFlag = 0;
-        switch (oper) {
-            case ADD:
-                responseFlag = typeService.insert(type);
-                break;
-            case EDIT:
-                responseFlag = typeService.update(type);
-                break;
-            case DELETE:
-                responseFlag = typeService.delete(typeService.findByPrimaryKey(type.getId()));
-                break;
-        }
-        modifyMessage = responseFlag == 1 ? this.SUCCESS_MESSAGE : this.FAIL_MESSAGE;
+    protected ResponseEntity update(Type type, BindingResult bindingResult) {
+        String modifyMessage = typeService.update(type) == 1 ? this.SUCCESS_MESSAGE : this.FAIL_MESSAGE;
+        return serverResponse(modifyMessage);
+    }
 
-        return ResponseEntity
-                .status(SUCCESS_MESSAGE.equals(modifyMessage) ? HttpStatus.CREATED : HttpStatus.FORBIDDEN)
-                .body(modifyMessage);
+    @ResponseBody
+    @RequestMapping(value = DELETE_URL, method = {RequestMethod.POST})
+    @Override
+    protected ResponseEntity delete(int id) {
+        String modifyMessage = typeService.delete(id) == 1 ? this.SUCCESS_MESSAGE : this.FAIL_MESSAGE;
+        return serverResponse(modifyMessage);
     }
 
 }

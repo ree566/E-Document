@@ -65,7 +65,8 @@ public class UserService {
         return userDAO.update(user);
     }
 
-    public int delete(User user) {
+    public int delete(int id) {
+        User user = this.findByPrimaryKey(id);
         return userDAO.delete(user);
     }
    

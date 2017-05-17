@@ -7,6 +7,7 @@ package com.advantech.controller;
 
 import com.advantech.helper.PageInfo;
 import com.advantech.response.JqGridResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -22,12 +23,19 @@ public abstract class CrudController<T> {
     protected final String ADD = "add", EDIT = "edit", DELETE = "del";
     protected final String SUCCESS_MESSAGE = "SUCCESS", FAIL_MESSAGE = "FAIL";
 
-    protected final String SELECT_URL = "/find", UPDATE_URL = "/mod";
+    protected final String SELECT_URL = "/read", INSERT_URL = "/create", UPDATE_URL = "/update", DELETE_URL = "/delete";
 
-    protected abstract JqGridResponse findAll(@ModelAttribute PageInfo info);
+    protected abstract JqGridResponse read(@ModelAttribute PageInfo info);
 
-    protected abstract ResponseEntity update(
-            @RequestParam
-            final String oper, @ModelAttribute T pojo,
-            BindingResult bindingResult);
+    protected abstract ResponseEntity insert(@ModelAttribute T pojo, BindingResult bindingResult);
+
+    protected abstract ResponseEntity update(@ModelAttribute T pojo, BindingResult bindingResult);
+
+    protected abstract ResponseEntity delete(@RequestParam int id);
+
+    protected ResponseEntity serverResponse(Object message) {
+        return ResponseEntity
+                .status(SUCCESS_MESSAGE.equals(message) ? HttpStatus.CREATED : HttpStatus.FORBIDDEN)
+                .body(message);
+    }
 }

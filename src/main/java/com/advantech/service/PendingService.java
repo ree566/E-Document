@@ -45,7 +45,8 @@ public class PendingService {
         return pendingDAO.update(pending);
     }
 
-    public int delete(Pending pending) {
+    public int delete(int id) {
+        Pending pending = this.findByPrimaryKey(id);
         return pendingDAO.delete(pending);
     }
 

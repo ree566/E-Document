@@ -10,7 +10,7 @@
 <script>
     $(function () {
         var scrollPosition = 0;
-        
+
         var grid = $("#list");
         var tableName = "User";
 
@@ -23,16 +23,16 @@
         });
 
         grid.jqGrid({
-            url: '<c:url value="/User/find" />',
+            url: '<c:url value="/User/read" />',
             datatype: 'json',
             mtype: 'GET',
             autoencode: true,
             colModel: [
                 {label: 'id', name: "id", width: 60, key: true, editable: true, editoptions: {readonly: 'readonly', disabled: true, defaultValue: "0"}},
-                {label: 'jobnumber', name: "jobnumber", width: 60, editable: true, editoptions: {readonly: 'readonly', disabled: true}},
+                {label: 'jobnumber', name: "jobnumber", width: 60, editable: true},
                 {label: 'password', name: "password", width: 60, editable: true, edittype: "password"},
                 {label: 'username', name: "username", width: 60, editable: true},
-                {label: 'permission', name: "permission", width: 60, editable: true},
+                {label: 'permission', name: "permission", width: 60, editable: false, hidden: true},
                 {label: 'floor', name: "floor.id", width: 60, editable: true, edittype: "select", editoptions: {value: selectOptions["floor"]}, formatter: selectOptions["floor_func"]},
                 {label: 'unit', name: "unit.id", width: 60, editable: true, edittype: "select", editoptions: {value: selectOptions["unit"]}, formatter: selectOptions["unit_func"]},
                 {label: 'email', name: "email", width: 60, editable: true},
@@ -61,7 +61,6 @@
             navOptions: {reloadGridOptions: {fromServer: true}},
             caption: tableName + " modify",
             height: 450,
-            editurl: '<c:url value="/User/mod" />',
             sortname: 'id', sortorder: 'asc',
             onSelectRow: function () {
                 scrollPosition = grid.closest(".ui-jqgrid-bdiv").scrollTop();
@@ -80,6 +79,7 @@
                 .jqGrid('navGrid', '#pager',
                         {edit: true, add: true, del: true, search: true},
                         {
+                            url: '<c:url value="/User/update" />',
                             dataheight: 350,
                             width: 450,
                             closeAfterEdit: false,
@@ -90,6 +90,7 @@
                             recreateForm: true
                         },
                         {
+                            url: '<c:url value="/User/create" />',
                             dataheight: 350,
                             width: 450,
                             closeAfterAdd: false,
@@ -100,6 +101,7 @@
                             recreateForm: true
                         },
                         {
+                            url: '<c:url value="/User/delete" />',
                             zIndex: 9999,
                             reloadAfterSubmit: true
                         },

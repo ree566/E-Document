@@ -16,7 +16,6 @@ import com.advantech.service.UserService;
 import java.util.HashSet;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
@@ -24,7 +23,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
@@ -45,47 +43,49 @@ public class UserProfileController extends CrudController<User> {
     @ResponseBody
     @RequestMapping(value = SELECT_URL, method = {RequestMethod.GET})
     @Override
-    public JqGridResponse findAll(@ModelAttribute PageInfo info) {
+    public JqGridResponse read(@ModelAttribute PageInfo info) {
         return toJqGridResponse(userService.findAll(info), info);
+    }
+
+    @ResponseBody
+    @RequestMapping(value = INSERT_URL, method = {RequestMethod.POST})
+    @Override
+    protected ResponseEntity insert(User user, BindingResult bindingResult) {
+        String modifyMessage;
+        encryptPassword(user);
+        Set profiles = new HashSet();
+        profiles.add(userProfileService.findByType(UserProfileType.USER.getUserProfileType()));
+        user.setUserProfiles(profiles);
+
+        modifyMessage = userService.insert(user) == 1 ? this.SUCCESS_MESSAGE : this.FAIL_MESSAGE;
+
+        return serverResponse(modifyMessage);
     }
 
     @ResponseBody
     @RequestMapping(value = UPDATE_URL, method = {RequestMethod.POST})
     @Override
-    public ResponseEntity update(
-            @RequestParam final String oper, 
-            @ModelAttribute User user,
-            BindingResult bindingResult) {
+    public ResponseEntity update(@ModelAttribute User user, BindingResult bindingResult) {
 
         String modifyMessage;
-        int responseFlag = 0;
 
-        switch (oper) {
-            case ADD:
-                encryptPassword(user);
-                Set profiles = new HashSet();
-                profiles.add(userProfileService.findByType(UserProfileType.USER.getUserProfileType()));
-                user.setUserProfiles(profiles);
-                responseFlag = userService.insert(user);
-                break;
-            case EDIT:
-                User existUser = userService.findByPrimaryKey(user.getId());
-                if (!user.getPassword().equals(existUser.getPassword())) {
-                    encryptPassword(user);
-                }
-                user.setUserProfiles(existUser.getUserProfiles());
-                responseFlag = userService.update(user);
-                break;
-            case DELETE:
-                responseFlag = userService.delete(userService.findByPrimaryKey(user.getId()));
-                break;
+        User existUser = userService.findByPrimaryKey(user.getId());
+        if (!user.getPassword().equals(existUser.getPassword())) {
+            encryptPassword(user);
         }
+        user.setUserProfiles(existUser.getUserProfiles());
 
-        modifyMessage = responseFlag == 1 ? this.SUCCESS_MESSAGE : this.FAIL_MESSAGE;
+        modifyMessage = userService.update(user) == 1 ? this.SUCCESS_MESSAGE : this.FAIL_MESSAGE;
 
-        return ResponseEntity
-                .status(SUCCESS_MESSAGE.equals(modifyMessage) ? HttpStatus.CREATED : HttpStatus.FORBIDDEN)
-                .body(modifyMessage);
+        return serverResponse(modifyMessage);
+    }
+
+    @ResponseBody
+    @RequestMapping(value = DELETE_URL, method = {RequestMethod.POST})
+    @Override
+    protected ResponseEntity delete(int id) {
+        String modifyMessage = userService.delete(id) == 1 ? this.SUCCESS_MESSAGE : this.FAIL_MESSAGE;
+        return serverResponse(modifyMessage);
     }
 
     private void encryptPassword(User user) {

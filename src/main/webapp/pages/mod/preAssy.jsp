@@ -12,7 +12,7 @@
         var tableName = "PreAssy";
 
         grid.jqGrid({
-            url: '<c:url value="/PreAssy/find" />',
+            url: '<c:url value="/PreAssy/read" />',
             datatype: 'json',
             mtype: 'GET',
             autoencode: true,
@@ -43,7 +43,6 @@
             navOptions: {reloadGridOptions: {fromServer: true}},
             caption: tableName + " modify",
             height: 450,
-            editurl: '<c:url value="/PreAssy/mod" />',
             sortname: 'id', sortorder: 'asc',
             error: function (xhr, ajaxOptions, thrownError) {
                 alert("Ajax Error occurred\n"
@@ -56,6 +55,7 @@
                 .jqGrid('navGrid', '#pager',
                         {edit: true, add: true, del: true, search: true},
                         {
+                            url: '<c:url value="/PreAssy/update" />',
                             dataheight: 350,
                             width: 450,
                             closeAfterEdit: false,
@@ -66,6 +66,7 @@
                             recreateForm: true
                         },
                         {
+                            url: '<c:url value="/PreAssy/create" />',
                             dataheight: 350,
                             width: 450,
                             closeAfterAdd: false,
@@ -76,6 +77,7 @@
                             recreateForm: true
                         },
                         {
+                            url: '<c:url value="/PreAssy/delete" />',
                             zIndex: 9999,
                             reloadAfterSubmit: true
                         },

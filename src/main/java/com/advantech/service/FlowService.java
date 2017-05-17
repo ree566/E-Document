@@ -65,7 +65,8 @@ public class FlowService {
         return flowDAO.update(flow);
     }
 
-    public int delete(Flow flow) {
+    public int delete(int id) {
+        Flow flow = this.findByPrimaryKey(id);
         return flowDAO.delete(flow);
     }
 

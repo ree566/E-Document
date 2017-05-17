@@ -11,7 +11,6 @@ import com.advantech.model.PreAssy;
 import com.advantech.response.JqGridResponse;
 import com.advantech.service.PreAssyService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
@@ -35,32 +34,31 @@ public class PreAssyController extends CrudController<PreAssy> {
     @ResponseBody
     @RequestMapping(value = SELECT_URL, method = {RequestMethod.GET})
     @Override
-    protected JqGridResponse findAll(PageInfo info) {
+    protected JqGridResponse read(PageInfo info) {
         return toJqGridResponse(preAssyService.findAll(info), info);
+    }
+
+    @ResponseBody
+    @RequestMapping(value = INSERT_URL, method = {RequestMethod.POST})
+    @Override
+    protected ResponseEntity insert(PreAssy preAssy, BindingResult bindingResult) {
+        String modifyMessage = preAssyService.insert(preAssy) == 1 ? this.SUCCESS_MESSAGE : this.FAIL_MESSAGE;
+        return serverResponse(modifyMessage);
     }
 
     @ResponseBody
     @RequestMapping(value = UPDATE_URL, method = {RequestMethod.POST})
     @Override
-    protected ResponseEntity update(String oper, PreAssy preAssy, BindingResult bindingResult) {
-        String modifyMessage;
-        int responseFlag = 0;
+    protected ResponseEntity update(PreAssy preAssy, BindingResult bindingResult) {
+        String modifyMessage = preAssyService.update(preAssy) == 1 ? this.SUCCESS_MESSAGE : this.FAIL_MESSAGE;
+        return serverResponse(modifyMessage);
+    }
 
-        switch (oper) {
-            case ADD:
-                responseFlag = preAssyService.insert(preAssy);
-                break;
-            case EDIT:
-                responseFlag = preAssyService.update(preAssy);
-                break;
-            case DELETE:
-                responseFlag = preAssyService.delete(preAssyService.findByPrimaryKey(preAssy.getId()));
-                break;
-        }
-        modifyMessage = responseFlag == 1 ? this.SUCCESS_MESSAGE : this.FAIL_MESSAGE;
-
-        return ResponseEntity
-                .status(SUCCESS_MESSAGE.equals(modifyMessage) ? HttpStatus.CREATED : HttpStatus.FORBIDDEN)
-                .body(modifyMessage);
+    @ResponseBody
+    @RequestMapping(value = DELETE_URL, method = {RequestMethod.POST})
+    @Override
+    protected ResponseEntity delete(int id) {
+        String modifyMessage = preAssyService.delete(id) == 1 ? this.SUCCESS_MESSAGE : this.FAIL_MESSAGE;
+        return serverResponse(modifyMessage);
     }
 }

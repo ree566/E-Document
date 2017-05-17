@@ -38,7 +38,7 @@ public class UserDAO implements BasicDAO {
 
     @Override
     public Collection findAll() {
-        return currentSession().createCriteria(User.class).addOrder(Order.asc("name")).list();
+        return currentSession().createCriteria(User.class).addOrder(Order.asc("username")).list();
     }
 
     public List<User> findAll(PageInfo info) {

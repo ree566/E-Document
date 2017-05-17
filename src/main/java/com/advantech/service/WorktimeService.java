@@ -8,8 +8,8 @@ package com.advantech.service;
 import com.advantech.dao.*;
 import com.advantech.helper.PageInfo;
 import com.advantech.model.Worktime;
+import java.math.BigDecimal;
 import java.util.List;
-import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -68,19 +68,19 @@ public class WorktimeService {
     }
 
     public void initUnfilledFormulaColumn(Worktime w) {
-        if (w.getCleanPanelAndAssembly() == null || w.getCleanPanelAndAssembly() == 0) {
+        if (isDecimalColumnNeedReset(w.getCleanPanelAndAssembly())) {
             w.setDefaultCleanPanelAndAssembly();
         }
-        if (w.getProductionWt() == null || w.getProductionWt() == 0) {
+        if (isDecimalColumnNeedReset(w.getProductionWt())) {
             w.setDefaultProductWt();
         }
-        if (w.getSetupTime() == null || w.getSetupTime() == 0) {
+        if (isDecimalColumnNeedReset(w.getSetupTime())) {
             w.setDefaultSetupTime();
         }
-        if (w.getAssyToT1() == null || w.getAssyToT1() == 0) {
+        if (isDecimalColumnNeedReset(w.getAssyToT1())) {
             w.setDefaultAssyToT1();
         }
-        if (w.getT2ToPacking() == null || w.getT2ToPacking() == 0) {
+        if (isDecimalColumnNeedReset(w.getT2ToPacking())) {
             w.setDefaultT2ToPacking();
         }
         if (w.getAssyStation() == null || w.getAssyStation() == 0) {
@@ -89,12 +89,16 @@ public class WorktimeService {
         if (w.getPackingStation() == null || w.getPackingStation() == 0) {
             w.setDefaultPackingStation();
         }
-        if (w.getAssyKanbanTime() == null || w.getAssyKanbanTime() == 0) {
+        if (isDecimalColumnNeedReset(w.getAssyKanbanTime())) {
             w.setDefaultAssyKanbanTime();
         }
-        if (w.getPackingKanbanTime() == null || w.getPackingKanbanTime() == 0) {
+        if (isDecimalColumnNeedReset(w.getPackingKanbanTime())) {
             w.setDefaultPackingKanbanTime();
         }
+    }
+
+    private boolean isDecimalColumnNeedReset(BigDecimal d) {
+        return d == null || d.compareTo(BigDecimal.ZERO) == 0;
     }
 
     public int saveOrUpdate(List<Worktime> l) {
@@ -112,16 +116,9 @@ public class WorktimeService {
         return 1;
     }
 
-    public int delete(List<Worktime> l) {
-        for (Worktime m : l) {
-            this.delete(m);
-        }
-        return 1;
-    }
-
-    public int delete(Worktime worktime) {
-        Worktime existRecord = this.findByPrimaryKey(worktime.getId());
-        return worktimeDAO.delete(existRecord);
+    public int delete(int id) {
+        Worktime worktime = this.findByPrimaryKey(id);
+        return worktimeDAO.delete(worktime);
     }
 
 }
