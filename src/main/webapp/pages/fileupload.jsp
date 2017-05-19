@@ -47,7 +47,7 @@
 </script>
 <div>
     <h3>Upload single files example.</h3>
-    <form id="uploadForm" method="POST" action="${root}uploadFile.do" enctype="multipart/form-data">
+    <form id="uploadForm" method="POST" action="${root}checkWorktime" enctype="multipart/form-data">
         <select name="action">
             <option value="add">add</option>
             <option value="update">update</option>

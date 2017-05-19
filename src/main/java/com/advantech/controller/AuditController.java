@@ -10,6 +10,7 @@ import com.advantech.helper.PageInfo;
 import com.advantech.model.Worktime;
 import com.advantech.response.JqGridResponse;
 import com.advantech.service.AuditService;
+import com.advantech.service.WorktimeService;
 import java.util.ArrayList;
 import java.util.List;
 import org.joda.time.DateTime;
@@ -36,10 +37,13 @@ public class AuditController {
     @Autowired
     private AuditService auditService;
 
+    @Autowired
+    private WorktimeService worktimeService;
+
     @ResponseBody
-    @RequestMapping(value = "/find/{id}/{version}", method = {RequestMethod.GET, RequestMethod.POST})
+    @RequestMapping(value = "/find/{modelName}/{version}", method = {RequestMethod.GET, RequestMethod.POST})
     public JqGridResponse getAudit(
-            @PathVariable(value = "id") final int id,
+            @PathVariable(value = "modelName") final String modelName,
             @PathVariable(value = "version") final int version,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime startDate,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime endDate,
@@ -50,13 +54,12 @@ public class AuditController {
             DateTime d1 = startDate.withTimeAtStartOfDay();
             DateTime d2 = endDate.withHourOfDay(23).withMinuteOfHour(59);
 
-            if (id == -1 && version == -1) {
+            if ("-1".equals(modelName) && version == -1) {
                 l = auditService.findByDate(Worktime.class, info, d1.toDate(), d2.toDate());
-            } else if (id != -1) {
-                l = auditService.findByDate(Worktime.class, id, info, d1.toDate(), d2.toDate());
+            } else if (!"-1".equals(modelName)) {
+                Worktime w = worktimeService.findByModel(modelName);
+                l = auditService.findByDate(Worktime.class, w.getId(), info, d1.toDate(), d2.toDate());
             }
-        } else {
-            l.add(auditService.findByPrimaryKeyAndVersion(Worktime.class, id, version));
         }
 
         JqGridResponse resp = toJqGridResponse(l, info);

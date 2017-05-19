@@ -34,7 +34,7 @@ var errorTextFormatF = function (data) {
     // odd elements are field names, and even elements are error messages.
     // If your JSON has a different format, the code should be adjusted accordingly.
 
-    var validationErrors = data.responseJSON;
+    var validationErrors = $.isArray(data) ? data : data.responseJSON;
 
     if (validationErrors != null) {
         for (var i = 0; i < validationErrors.length; i++) {

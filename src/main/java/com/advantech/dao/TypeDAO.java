@@ -9,8 +9,10 @@ import com.advantech.helper.PageInfo;
 import com.advantech.model.Type;
 import java.util.Collection;
 import java.util.List;
+import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -43,6 +45,12 @@ public class TypeDAO implements BasicDAO {
     @Override
     public Object findByPrimaryKey(Object obj_id) {
         return currentSession().load(Type.class, (int) obj_id);
+    }
+    
+    public List<Type> findByPrimaryKeys(Integer... id) {
+        Criteria criteria = currentSession().createCriteria(Type.class);
+        criteria.add(Restrictions.in("id", id));
+        return criteria.list();
     }
 
     @Override

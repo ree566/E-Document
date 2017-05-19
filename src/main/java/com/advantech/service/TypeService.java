@@ -36,6 +36,10 @@ public class TypeService {
         return (Type) typeDAO.findByPrimaryKey(obj_id);
     }
 
+    public List<Type> findByPrimaryKeys(Integer... id) {
+        return typeDAO.findByPrimaryKeys(id);
+    }
+
     public int insert(Type type) {
         return typeDAO.insert(type);
     }

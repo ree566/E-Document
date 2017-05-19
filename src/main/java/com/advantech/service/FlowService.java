@@ -28,7 +28,7 @@ public class FlowService {
 
     @Autowired
     private FlowDAO flowDAO;
-    
+
     @Autowired
     private FlowGroupDAO flowGroupDAO;
 
@@ -55,6 +55,16 @@ public class FlowService {
         Flow f = this.findByPrimaryKey(parent_id);
         l.addAll(f.getFlowsForTestFlowId());
         return l;
+    }
+
+    public boolean checkFlowInGroup(String babFlowName, String testFlowName) {
+        Flow babFlow = flowDAO.findByFlowName(babFlowName);
+        Flow testFlow = flowDAO.findByFlowName(testFlowName);
+        if (babFlow == null || testFlow == null) {
+            return false;
+        } else {
+            return babFlow.getFlowsForTestFlowId().contains(testFlow);
+        }
     }
 
     public int insert(Flow flow) {

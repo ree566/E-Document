@@ -24,7 +24,8 @@
 
         <link href="//cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.14.0/css/ui.jqgrid.min.css" rel="stylesheet"/>
         <!--<link href="//cdnjs.cloudflare.com/ajax/libs/jqgrid/4.6.0/css/ui.jqgrid.css" rel="stylesheet"/>-->
-
+        <link href="//cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.14.0/plugins/css/ui.multiselect.css" rel="stylesheet"/>
+        
         <link href="../css/sb-admin-2.min.css" rel="stylesheet">
         <link href="../css/metisMenu.min.css" rel="stylesheet">
         <link href="../css/sbadmin2-sidebar-toggle.css" rel="stylesheet">
@@ -47,6 +48,7 @@
                 left: 240px;
                 z-index: 100;
             }
+
         </style>
 
         <script src="//code.jquery.com/jquery-1.12.4.min.js" 
@@ -65,9 +67,10 @@
         <script src="//cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.14.0/modules/grid.jqueryui.js"></script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.14.0/modules/grid.formedit.js"></script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.14.0/modules/min/jqmodal.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.14.0/plugins/min/ui.multiselect.js"></script>
 
-<!--        <script src="//cdnjs.cloudflare.com/ajax/libs/jqgrid/4.6.0/js/i18n/grid.locale-tw.js"></script>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/jqgrid/4.6.0/js/jquery.jqGrid.min.js"></script>-->
+        <!--<script src="//cdnjs.cloudflare.com/ajax/libs/jqgrid/4.6.0/js/i18n/grid.locale-tw.js"></script>-->
+        <!--<script src="//cdnjs.cloudflare.com/ajax/libs/jqgrid/4.6.0/js/jquery.jqGrid.min.js"></script>-->
 
         <script src="../js/sb-admin-2.min.js"></script>
         <script src="../js/metisMenu.min.js"></script>
@@ -129,15 +132,15 @@
                                             <span class="icon-bar"></span>
                                             <span class="icon-bar"></span>
                                         </button> -->
-<!--                    <ul class="nav navbar-top-links navbar-right">
-                        <li>
-                            menu toggle button 
-                            <button id="menu-toggle" type="button" data-toggle="button" class="btn btn-default btn-xs">
-                                <i class="fa fa-exchange fa-fw"></i>
-                            </button>
-                        </li>
-                    </ul>-->
-                    <a class="navbar-brand" href="index.html">${initParam.pageTitle}</a>
+                    <!--                    <ul class="nav navbar-top-links navbar-right">
+                                            <li>
+                                                menu toggle button 
+                                                <button id="menu-toggle" type="button" data-toggle="button" class="btn btn-default btn-xs">
+                                                    <i class="fa fa-exchange fa-fw"></i>
+                                                </button>
+                                            </li>
+                                        </ul>-->
+                    <a class="navbar-brand" href="<c:url value="/" />">${initParam.pageTitle}</a>
                 </div>
                 <!-- /.navbar-header -->
 

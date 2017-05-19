@@ -34,26 +34,29 @@
         });
 
         $("#send").click(function () {
-            var rowId = $("#rowId").val();
+            var modelName = $("#modelName").val();
             var version = $("#version").val();
             var startDate = $("#sD").val();
             var endDate = $("#eD").val();
 
-            if (rowId == null || rowId == '') {
-                rowId = -1;
+            if (modelName == null || modelName == '') {
+                modelName = -1;
             }
 
             if (version == null || version == '') {
                 version = -1;
             }
 
+            var isSearchAll = modelName == -1;
+
             grid.jqGrid('clearGridData');
-            grid.jqGrid('setGridParam', {url: '<c:url value="/Audit/find/" />' + rowId + '/' + version, postData: {startDate: startDate, endDate: endDate}});
+            grid.jqGrid('setGridParam', {url: '<c:url value="/Audit/find/" />' + modelName + '/' + version, postData: {startDate: startDate, endDate: endDate}});
+            grid.setGridParam({grouping: isSearchAll});
             grid.trigger('reloadGrid');
 
         });
 
-        getEditRecord(-1, -1, $("#sD").val(), $("#eD").val());
+        getEditRecord(-1, -1, $("#sD").val(), $("#eD").val()); //init the table
 
         //Jqgrid 沒有支援複合主鍵，所以自己產生(用SQL的複合主鍵值相乘產生新的唯一鍵)
         function keyFormat(cellvalue, options, rowObject) {
@@ -81,7 +84,7 @@
                     {label: 'REV', name: "REV", jsonmap: "1.rev", width: 60, frozen: false, hidden: true, search: false},
                     {label: 'username', name: "username", jsonmap: "1.username", width: 60, frozen: false, hidden: false, search: false},
                     {label: 'REVTYPE', name: "REVTYPE", jsonmap: "2", width: 60, frozen: false, hidden: false, search: false},
-                    {label: 'id', name: "id", jsonmap: "0.id", width: 60, frozen: false, hidden: false, search: false},
+                    {label: 'id', name: "id", jsonmap: "0.id", width: 60, frozen: false, hidden: true, search: false},
                     {label: 'Model', name: "modelName", jsonmap: "0.modelName", frozen: false, searchrules: {required: true}, searchoptions: search_string_options, formoptions: required_form_options},
                     {label: 'TYPE', name: "type_id", jsonmap: "0.type.id", formatter: selectOptions["type_func"], width: 100, searchrules: {required: true}, searchoptions: search_string_options},
                     {label: 'ProductionWT', name: "productionWt", jsonmap: "0.productionWt", width: 120, searchrules: number_search_rule, searchoptions: search_decimal_options},
@@ -148,6 +151,7 @@
                 hidegrid: true,
                 stringResult: true,
                 gridview: true,
+//                multiselect: true,
                 grouping: true,
                 groupingView: {
                     groupField: ['REVTSTMP', 'id'],
@@ -173,10 +177,20 @@
                     records: "records",
                     repeatitems: false
                 },
-                afterSubmit: function () {
-                    $(this).jqGrid("setGridParam", {datatype: 'json'});
-                    return [true];
-                },
+//                beforeSelectRow: function (rowid, e) {
+//                    var $myGrid = $(this),
+//                            i = $.jgrid.getCellIndex($(e.target).closest('td')[0]),
+//                            cm = $myGrid.jqGrid('getGridParam', 'colModel');
+//
+//                    var selRowIds = $myGrid.jqGrid('getGridParam', 'selarrrow');
+//                    console.log(selRowIds.length);
+//                    if (selRowIds.length <= 2) {
+//                        return (cm[i].name === 'cb');
+//                    } else {
+//                        alert("You cannot select more than 2 rows");
+//                        return false;
+//                    }
+//                },
                 navOptions: {reloadGridOptions: {fromServer: true}},
                 caption: "Worktime_AUD",
                 height: 450,
@@ -207,12 +221,12 @@
 
 <div id="flow-content">
     <div class="form-inline">
-        <input type="text" id="rowId" class="form-control" placeholder="table row id" />
+        <input type="text" id="modelName" class="form-control" placeholder="modelName" value="test789" />
         <input type="text" id="version" class="form-control" placeholder="version" />
         <input type="text" id="sD" name="startDate" placeholder="startDate" class="form-control" />
         <input type="text" id="eD" name="endDate" placeholder="endDate" class="form-control" />
         <input type="button" id="send" class="form-control" value="send" />
-        <h5 class="form-control alert">※rowId or version 不指定請留白</h5>
+        <h5 class="form-control alert">※modelName or version 不指定請留白</h5>
     </div>
     <table id="list"></table> 
     <div id="pager"></div>

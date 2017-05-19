@@ -111,6 +111,10 @@ public class AuditDAO implements AuditAction {
         if (id != null) {
             q.add(AuditEntity.id().eq(id));
         }
+        
+        if(info.getSearchField() != null){
+            q.add(AuditEntity.property(info.getSearchField()).eq(info.getSearchString()));
+        }
 
         info.setMaxNumOfRows(((Long) q.addProjection(AuditEntity.id().count()).getSingleResult()).intValue());
 
@@ -122,6 +126,10 @@ public class AuditDAO implements AuditAction {
 
         if (id != null) {
             q.add(AuditEntity.id().eq(id));
+        }
+        
+        if(info.getSearchField() != null){
+            q.add(AuditEntity.property(info.getSearchField()).eq(info.getSearchString()));
         }
 
         String sortIndex = info.getSidx();

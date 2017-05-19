@@ -10,6 +10,14 @@
     .ui-jqgrid .ui-jqdialog {
         color: red;
     }
+
+    .DataTD .ui-widget-content{
+        width: 60%;
+    }
+
+    .CaptionTD{
+        width: 30%;
+    }
 </style>
 
 <script src="<c:url value="/js/urlParamGetter.js" />"></script>
@@ -22,9 +30,9 @@
         var scrollPosition = 0;
 
         var unitName = '${user.unit.name}';
-        var modifyColumns = (unitName == null || unitName == "") ? [] : getColumn();
+        var modifyColumns = [];
+//        var modifyColumns = (unitName == null || unitName == "") ? [] : getColumn();
         var grid = $("#list");
-        var isEditable = ${user.permission > 0};
 
         //Set param into jqgrid-custom-select-option-reader.js and get option by param selectOptions
         //You can get the floor select options and it's formatter function
@@ -75,13 +83,13 @@
                 type: 'change', fn: function (e) {
                     $.get('<c:url value="/SelectOption/flow-byParent/" />' + $(this).val(), function (data) {
                         var sel2 = $("#flowByTestFlowId\\.id");
-                        var selVal = sel2.val();
+//                        var selVal = sel2.val();
                         sel2.html("");
                         sel2.append("<option role='option' value=0>empty</option>");
                         for (var i = 0; i < data.length; i++) {
                             sel2.append("<option role='option' value=" + data[i].id + ">" + data[i].name + "</option>");
                         }
-                        sel2.val(selVal);
+//                        sel2.val(selVal);
                     });
                 }
             }
@@ -96,6 +104,8 @@
         };
 
         var flowVerify = function (postdata, formid) {
+            cleanEditForm();
+
             var babArr = selectOptions["bab_flow"],
                     testArr = selectOptions["test_flow"],
                     pkgArr = selectOptions["pkg_flow"];
@@ -107,38 +117,36 @@
                     pkgCheckLogic = flow_check_logic.PKG;
 
             var babCheckMessage = flowCheck(babCheckLogic, babFlowName, postdata);
-            if (babCheckMessage === true) {
-                var testCheckMessage = flowCheck(testCheckLogic, testFlowName, postdata);
-                if (testCheckMessage === true) {
-                    var pkgCheckMessage = flowCheck(pkgCheckLogic, pkgFlowName, postdata);
-                    return pkgCheckMessage === true ? [true, "saved"] : pkgCheckMessage;
-                } else {
-                    return testCheckMessage;
-                }
-            } else {
-                return babCheckMessage;
-            }
+            var testCheckMessage = flowCheck(testCheckLogic, testFlowName, postdata);
+            var pkgCheckMessage = flowCheck(pkgCheckLogic, pkgFlowName, postdata);
+
+            var totalAlert = babCheckMessage.concat(testCheckMessage).concat(pkgCheckMessage);
+            errorTextFormatF(totalAlert); //field // code
+            return totalAlert.length == 0 ? [true, "saved"] : [false, "There are some errors in the entered data. Hover over the error icons for details."];
+
         };
 
         function flowCheck(logicArr, flowName, formObj) {
+            var validationErrors = [];
             for (var i = 0; i < logicArr.length; i++) {
                 var logic = logicArr[i];
                 var keyword = logic.keyword;
                 for (var j = 0; j < keyword.length; j++) {
-                    var key = keyword[j];
-                    if (flowName.indexOf(key) > -1) {
+                    if (flowName.indexOf(keyword[j]) > -1) {
                         var checkCol = logic.checkColumn;
                         for (var k = 0; k < checkCol.length; k++) {
                             var colName = checkCol[k];
-                            console.log(colName);
-                            if (!logic.valid(formObj[colName])) {
-                                return[false, colName + " " + logic.message];
+                            if (!logic.prmValid(formObj[colName])) {
+                                var err = {};
+                                err.field = colName;
+                                err.code = logic.message;
+                                validationErrors.push(err);
                             }
                         }
                     }
                 }
             }
-            return true;
+            return validationErrors;
         }
 
         grid.jqGrid({
@@ -148,8 +156,8 @@
 //            guiStyle: "bootstrap",
             autoencode: true,
             colModel: [
-                {label: 'id', name: "id", width: 60, frozen: false, hidden: false, key: true, search: false, editable: true, editoptions: {readonly: 'readonly', disabled: true, defaultValue: "0"}},
-                {label: 'Model', name: "modelName", frozen: false, editable: true, searchrules: {required: true}, searchoptions: search_string_options, editrules: {required: true}, formoptions: required_form_options},
+                {label: 'id', name: "id", width: 60, frozen: true, hidden: true, key: true, search: false, editable: true, editrules: {edithidden: true}, editoptions: {readonly: 'readonly', disabled: true, defaultValue: "0"}},
+                {label: 'Model', name: "modelName", frozen: true, editable: true, searchrules: {required: true}, searchoptions: search_string_options, editrules: {required: true}, formoptions: required_form_options},
                 {label: 'TYPE', name: "type.id", edittype: "select", editoptions: {value: selectOptions["type"]}, formatter: selectOptions["type_func"], width: 100, searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["type"], sopt: ['eq']}},
                 {label: 'ProductionWT', name: "productionWt", width: 120, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: formula_hint, editrules: {number: true}},
                 {label: 'Total Module', name: "totalModule", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, editoptions: {defaultValue: '0'}},
@@ -279,9 +287,9 @@
                     position: "last"
                 });
 
-    <sec:authorize access="hasRole('ADMIN') and hasRole('USER')">
+    <sec:authorize access="hasRole('ADMIN') and hasRole('USER')"  var="isAdmin" />
         grid.jqGrid('navGrid', '#pager',
-                {edit: isEditable, add: isEditable, del: isEditable, search: true},
+                {edit: ${isAdmin}, add: ${isAdmin}, del: ${isAdmin}, search: true},
                 {
                     url: '<c:url value="/Worktime/update" />',
                     dataheight: 350,
@@ -292,6 +300,9 @@
                     beforeSubmit: flowVerify,
                     afterclickPgButtons: function (whichbutton, formid, rowid) {
                         $("#flowByBabFlowId\\.id").trigger("change");
+//                        var rowData = grid.jqGrid ('getRowData', rowid);
+//                        console.log(rowData["flowByTestFlowId.id"]);
+//                        $("#flowByTestFlowId\\.id").val(rowData["flowByTestFlowId.id"]);
                     },
                     recreateForm: true,
                     beforeShowForm: testFlowInit,
@@ -326,7 +337,6 @@
                     reloadAfterSubmit: true
                 }
         );
-    </sec:authorize>
 
         var columns = grid.jqGrid('getGridParam', 'colModel');
         var columnNames = [];

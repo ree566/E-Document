@@ -94,4 +94,9 @@ public class UserProfileController extends CrudController<User> {
         user.setPassword(encryptPassord);
     }
 
+    @ResponseBody
+    @RequestMapping(value = "/pswReset/all", method = {RequestMethod.GET})
+    public String resetPsw() {
+        return userService.resetPsw() == 1 ? "Done." : "Fail.";
+    }
 }

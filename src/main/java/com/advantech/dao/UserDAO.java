@@ -66,6 +66,12 @@ public class UserDAO implements BasicDAO {
         criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
         return criteria.list();
     }
+    
+    public List<User> findActive(){
+        Criteria criteria = currentSession().createCriteria(User.class, "i");
+        criteria.add(Restrictions.eq("i.state", State.ACTIVE.getName()));
+        return criteria.list();
+    }
 
     @Override
     public int insert(Object obj) {

@@ -57,6 +57,10 @@ public class UserService {
         return userDAO.findByUnitName(unitName);
     }
 
+    public List<User> findActive() {
+        return userDAO.findActive();
+    }
+
     public int insert(User user) {
         return userDAO.insert(user);
     }
@@ -69,5 +73,16 @@ public class UserService {
         User user = this.findByPrimaryKey(id);
         return userDAO.delete(user);
     }
-   
+
+    public int resetPsw() {
+        CustomPasswordEncoder encoder = new CustomPasswordEncoder();
+        List<User> l = this.findAll();
+        for (User user : l) {
+            String encryptPassord = encoder.encode(user.getJobnumber());
+            user.setPassword(encryptPassord);
+            this.update(user);
+        }
+        return 1;
+    }
+
 }

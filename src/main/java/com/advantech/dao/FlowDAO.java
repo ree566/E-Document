@@ -57,6 +57,12 @@ public class FlowDAO implements BasicDAO {
         criteria.addOrder(Order.asc("name"));
         return criteria.list();
     }
+    
+    public Flow findByFlowName(String flowName) {
+        Criteria criteria = currentSession().createCriteria(Flow.class);
+        criteria.add(Restrictions.eq("name", flowName));
+        return (Flow) criteria.uniqueResult();
+    }
 
     @Override
     public int insert(Object obj) {

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -35,19 +36,19 @@ public class Flow implements java.io.Serializable {
     private int id;
     private FlowGroup flowGroup;
     private String name;
-    
+
     @JsonIgnore
     private Set<Worktime> worktimesForTestFlowId = new HashSet<Worktime>(0);
-    
+
     @JsonIgnore
     private Set<Worktime> worktimesForPackingFlowId = new HashSet<Worktime>(0);
-    
+
     @JsonIgnore
     private Set<Flow> flowsForTestFlowId = new HashSet<Flow>(0);
-    
+
     @JsonIgnore
     private Set<Flow> flowsForBabFlowId = new HashSet<Flow>(0);
-    
+
     @JsonIgnore
     private Set<Worktime> worktimesForBabFlowId = new HashSet<Worktime>(0);
 
@@ -148,6 +149,31 @@ public class Flow implements java.io.Serializable {
 
     public void setWorktimesForBabFlowId(Set<Worktime> worktimesForBabFlowId) {
         this.worktimesForBabFlowId = worktimesForBabFlowId;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 97 * hash + Objects.hashCode(this.name);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Flow other = (Flow) obj;
+        if (!Objects.equals(this.name, other.name)) {
+            return false;
+        }
+        return true;
     }
 
 }

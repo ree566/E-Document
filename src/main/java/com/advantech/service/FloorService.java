@@ -32,6 +32,10 @@ public class FloorService {
         return (Floor) floorDAO.findByPrimaryKey(obj_id);
     }
 
+    public List<Floor> findByPrimaryKeys(Integer... id) {
+        return floorDAO.findByPrimaryKeys(id);
+    }
+
     public int insert(Floor floor) {
         return floorDAO.insert(floor);
     }
