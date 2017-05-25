@@ -85,9 +85,10 @@
         <script src="js/jquery.cookie.js"></script>
         <script src="js/param.check.js"></script>
         <script src="js/moment.js"></script>
+
         <script>
             var cookie_expired_time = moment().set({hour: 23, minute: 0, second: 0});
-            
+
             var totalLineStatus = new Map();
 
             var hnd;//鍵盤輸入間隔
@@ -114,7 +115,7 @@
                     $.unblockUI();//Unblock the ajax when success
                 });
 
-                $("select, input").addClass("form-control");
+                $("select, :text, :button").addClass("form-control");
                 $("#reSearch").hide();
                 $("#people").hide();
 
@@ -281,6 +282,8 @@
                 $("#changeUser").click(function () {
                     dialogMessage.dialog("open");
                 });
+
+//                $("[name='my-checkbox']").bootstrapSwitch();
             });
 
             function block() {
@@ -825,6 +828,9 @@
                                         </select>
                                         <select id='startStation'>
                                         </select>
+                                        <div class="switch" data-on="warning" data-off="danger">
+                                            <input type="checkbox" checked />
+                                        </div>
                                     </td>
                                 </tr>
                                 <tr>

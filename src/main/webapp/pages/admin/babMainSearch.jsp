@@ -1084,8 +1084,12 @@
                     }
                 });
 
-                $("#generateExcel").click(function () {
-
+//excelForEfficiencyReport
+//BABExcelGenerate
+                var excelExport = function () {
+                    var id = $(this).attr("id");
+                    var url = id == "generateExcel" ? "BABExcelGenerate" : "BABExcelForEfficiencyReport";
+                    
                     var lineType = $('#lineType2').val();
                     var sitefloor = $('#sitefloor').val();
                     var startDate = $('#fini').val();
@@ -1093,7 +1097,7 @@
                     var aboveStandard = $("#aboveStandard").is(":checked");
 
                     $("#generateExcel").attr("disabled", true);
-                    $.fileDownload('../../BABExcelGenerate?startDate=' + startDate + '&endDate=' + endDate + '&lineType=' + lineType + '&sitefloor=' + sitefloor + '&aboveStandard=' + aboveStandard, {
+                    $.fileDownload('<c:url value="/" />' + url + '?startDate=' + startDate + '&endDate=' + endDate + '&lineType=' + lineType + '&sitefloor=' + sitefloor + '&aboveStandard=' + aboveStandard, {
                         preparingMessageHtml: "We are preparing your report, please wait...",
                         failMessageHtml: "No reports generated. No Survey data is available.",
                         successCallback: function (url) {
@@ -1103,7 +1107,10 @@
                             $("#generateExcel").attr("disabled", false);
                         }
                     });
-                });
+                };
+
+                $("#generateExcel").click(excelExport);
+                $("#excelForEfficiencyReport").click(excelExport);
 
                 var babId = getQueryVariable("babId");
                 if (babId != null) {
@@ -1226,13 +1233,6 @@
                 <div id="bab_HistoryList">
                     <h3>可查詢歷史紀錄</h3>
                     <p class="alarm">※雙擊表格內的內容可直接於下方帶出資料。</p>
-                    <!--                    <p class="alarm">※亮燈頻率標準為30%，工單結束時低於10台者，異常回覆不用做填寫。</p>
-                                        <p class="alarm">
-                                            ※產出Excel可以下載工單的
-                                            <u data-toggle="tooltip" data-placement="bottom" title="包含10台以下的機子">異常回覆狀況</u>
-                                            以及
-                                            <u data-toggle="tooltip" data-placement="bottom" title="無正常關閉的工單不會顯示在此">各工單的個人亮燈頻率</u>。
-                                        </p>-->
                     <div class="search-container">
                         <div class="ui-widget">
                             <select id="lineType2"> 
@@ -1253,7 +1253,7 @@
                             <label for="aboveStandard"><input type="checkbox" id="aboveStandard">只顯示數量大於十台</label>
                             <input type="button" id="searchAvailableBAB" value="查詢">
                             <input type="button" id="generateExcel" value="產出excel">
-
+                            <input type="button" id="excelForEfficiencyReport" value="效率報表用">
                         </div>
                     </div>
                     <div style="width: 90%; background-color: #F5F5F5">

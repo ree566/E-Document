@@ -350,7 +350,7 @@ public class ExcelGenerator {
     }
 
     //客製化個人亮燈頻率excel download
-    public void appendSpecialPattern(List<Map> list) {
+    public void appendSpecialPattern(List<Map> list, int colSeparateColIndex, String failPersonNumLetter, String failPercentNumLetter) {
         if (spreadsheet == null) {
             createExcelSheet();
         }
@@ -358,7 +358,7 @@ public class ExcelGenerator {
         Cell cell;
         if (!list.isEmpty()) {
             Map firstData = maxMapInList(list);
-            int maxDataIndex, colSeparateColIndex = 9;
+            int maxDataIndex;
             List<String> idCols = new ArrayList();
             List<String> failPercentCols = new ArrayList();
             Iterator it = firstData.keySet().iterator();
@@ -379,6 +379,9 @@ public class ExcelGenerator {
                     }
                 }
             }
+            
+            System.out.println(failPercentCols.toString());
+            System.out.println(idCols.toString());
 
             maxDataIndex = xIndex;
             xIndex = baseXIndex;//跳回第一行
@@ -398,8 +401,8 @@ public class ExcelGenerator {
             }
 
             //設定最後兩攔formula
-            String failPersonNumLetter = "Z";
-            String failPercentNumLetter = "AA";
+//            String failPersonNumLetter = "Z";
+//            String failPercentNumLetter = "AA";
 
             int numLetterZ = CellReference.convertColStringToIndex(failPersonNumLetter);
             int numLetterAA = CellReference.convertColStringToIndex(failPercentNumLetter);

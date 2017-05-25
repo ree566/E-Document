@@ -63,20 +63,21 @@ public class BABFirstStationServlet extends HttpServlet {
         String jobnumber = req.getParameter("jobnumber");
 
         String successMessage = "success";
+        String result = "";
 
         if (pChecker.checkInputVals(po, modelName, line, people, jobnumber, startPosition)) {
             try {
                 int lineNo = Integer.parseInt(line);
                 BAB bab = new BAB(po, modelName, lineNo, Integer.parseInt(people), Integer.parseInt(startPosition));
-                String result = babService.checkAndStartBAB(bab, jobnumber);
-                if (successMessage.equals(result)) {
-//                    sendMailAfterBABRunIn(bab);
-                    Endpoint6.syncAndEcho();
-                }
-                out.print(result);
+                result = babService.checkAndStartBAB(bab, jobnumber);
+                sendMailAfterBABRunIn(bab);
             } catch (Exception e) {
                 log.error(e.toString());
                 out.print(successMessage);//Send succcess no matter send mail success or fail.
+            } finally {
+                if (successMessage.equals(result)) {
+                    Endpoint6.syncAndEcho();
+                }
             }
         } else {
             out.print("Invaild input value");
