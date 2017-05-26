@@ -21,7 +21,7 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class TypeDAO implements BasicDAO {
+public class TypeDAO implements BasicDAO<Type> {
 
     @Autowired
     private SessionFactory sessionFactory;
@@ -34,7 +34,7 @@ public class TypeDAO implements BasicDAO {
     }
 
     @Override
-    public Collection findAll() {
+    public List<Type> findAll() {
         return currentSession().createCriteria(Type.class).list();
     }
 
@@ -43,8 +43,8 @@ public class TypeDAO implements BasicDAO {
     }
 
     @Override
-    public Object findByPrimaryKey(Object obj_id) {
-        return currentSession().load(Type.class, (int) obj_id);
+    public Type findByPrimaryKey(Object obj_id) {
+        return (Type) currentSession().load(Type.class, (int) obj_id);
     }
     
     public List<Type> findByPrimaryKeys(Integer... id) {
@@ -54,19 +54,19 @@ public class TypeDAO implements BasicDAO {
     }
 
     @Override
-    public int insert(Object obj) {
-        this.currentSession().save(obj);
+    public int insert(Type pojo) {
+        this.currentSession().save(pojo);
         return 1;
     }
 
     @Override
-    public int update(Object obj) {
-        this.currentSession().update(obj);
+    public int update(Type pojo) {
+        this.currentSession().update(pojo);
         return 1;
     }
 
     @Override
-    public int delete(Object pojo) {
+    public int delete(Type pojo) {
         this.currentSession().delete(pojo);
         return 1;
     }

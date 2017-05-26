@@ -25,11 +25,11 @@ public class FloorService {
     private FloorDAO floorDAO;
 
     public List<Floor> findAll() {
-        return (List<Floor>) floorDAO.findAll();
+        return floorDAO.findAll();
     }
 
     public Floor findByPrimaryKey(Object obj_id) {
-        return (Floor) floorDAO.findByPrimaryKey(obj_id);
+        return floorDAO.findByPrimaryKey(obj_id);
     }
 
     public List<Floor> findByPrimaryKeys(Integer... id) {

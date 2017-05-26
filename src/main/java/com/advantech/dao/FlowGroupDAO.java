@@ -20,7 +20,7 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class FlowGroupDAO implements BasicDAO {
+public class FlowGroupDAO implements BasicDAO<FlowGroup> {
 
     @Autowired
     private SessionFactory sessionFactory;
@@ -33,7 +33,7 @@ public class FlowGroupDAO implements BasicDAO {
     }
 
     @Override
-    public Collection findAll() {
+    public List<FlowGroup> findAll() {
         return currentSession().createCriteria(FlowGroup.class).list();
     }
 
@@ -42,22 +42,22 @@ public class FlowGroupDAO implements BasicDAO {
     }
  
     @Override
-    public Object findByPrimaryKey(Object obj_id) {
-        return currentSession().load(FlowGroup.class, (int) obj_id);
+    public FlowGroup findByPrimaryKey(Object obj_id) {
+        return (FlowGroup) currentSession().load(FlowGroup.class, (int) obj_id);
     }
 
     @Override
-    public int insert(Object obj) {
+    public int insert(FlowGroup pojo) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public int update(Object obj) {
+    public int update(FlowGroup pojo) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public int delete(Object pojo) {
+    public int delete(FlowGroup pojo) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

@@ -19,7 +19,7 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class PendingDAO implements BasicDAO {
+public class PendingDAO implements BasicDAO<Pending> {
 
     @Autowired
     private SessionFactory sessionFactory;
@@ -32,7 +32,7 @@ public class PendingDAO implements BasicDAO {
     }
 
     @Override
-    public Collection findAll() {
+    public List<Pending> findAll() {
         return currentSession().createCriteria(Pending.class).list();
     }
 
@@ -41,24 +41,24 @@ public class PendingDAO implements BasicDAO {
     }
 
     @Override
-    public Object findByPrimaryKey(Object obj_id) {
-        return currentSession().load(Pending.class, (int) obj_id);
+    public Pending findByPrimaryKey(Object obj_id) {
+        return (Pending) currentSession().load(Pending.class, (int) obj_id);
     }
 
     @Override
-    public int insert(Object obj) {
+    public int insert(Pending obj) {
         this.currentSession().save(obj);
         return 1;
     }
 
     @Override
-    public int update(Object obj) {
+    public int update(Pending obj) {
         this.currentSession().update(obj);
         return 1;
     }
 
     @Override
-    public int delete(Object pojo) {
+    public int delete(Pending pojo) {
         this.currentSession().delete(pojo);
         return 1;
     }

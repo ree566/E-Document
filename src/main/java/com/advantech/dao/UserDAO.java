@@ -24,7 +24,7 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class UserDAO implements BasicDAO {
+public class UserDAO implements BasicDAO<User> {
 
     @Autowired
     private SessionFactory sessionFactory;
@@ -37,7 +37,7 @@ public class UserDAO implements BasicDAO {
     }
 
     @Override
-    public Collection findAll() {
+    public List<User> findAll() {
         return currentSession().createCriteria(User.class).addOrder(Order.asc("username")).list();
     }
 
@@ -46,9 +46,9 @@ public class UserDAO implements BasicDAO {
     }
 
     @Override
-    public Object findByPrimaryKey(Object obj_id) {
+    public User findByPrimaryKey(Object obj_id) {
         //Use get for not lazy loading, load for lazy loading.
-        return currentSession().get(User.class, (int) obj_id);
+        return (User) currentSession().get(User.class, (int) obj_id);
     }
 
     public User findByJobnumber(String jobnumber) {
@@ -74,19 +74,19 @@ public class UserDAO implements BasicDAO {
     }
 
     @Override
-    public int insert(Object obj) {
-        currentSession().save(obj);
+    public int insert(User pojo) {
+        currentSession().save(pojo);
         return 1;
     }
 
     @Override
-    public int update(Object obj) {
-        currentSession().update(obj);
+    public int update(User pojo) {
+        currentSession().update(pojo);
         return 1;
     }
 
     @Override
-    public int delete(Object pojo) {
+    public int delete(User pojo) {
         currentSession().delete(pojo);
         return 1;
     }

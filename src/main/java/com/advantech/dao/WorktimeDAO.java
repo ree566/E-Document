@@ -21,7 +21,7 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class WorktimeDAO implements BasicDAO {
+public class WorktimeDAO implements BasicDAO<Worktime> {
 
     @Autowired
     private SessionFactory sessionFactory;
@@ -34,7 +34,7 @@ public class WorktimeDAO implements BasicDAO {
     }
 
     @Override
-    public Collection findAll() {
+    public List<Worktime> findAll() {
         return currentSession().createCriteria(Worktime.class).list();
     }
 
@@ -43,8 +43,8 @@ public class WorktimeDAO implements BasicDAO {
     }
 
     @Override
-    public Object findByPrimaryKey(Object obj_id) {
-        return currentSession().load(Worktime.class, (int) obj_id);
+    public Worktime findByPrimaryKey(Object obj_id) {
+        return (Worktime) currentSession().load(Worktime.class, (int) obj_id);
     }
 
     public List<Worktime> findByPrimaryKeys(Integer... id) {
@@ -64,29 +64,29 @@ public class WorktimeDAO implements BasicDAO {
     }
 
     @Override
-    public int insert(Object obj) {
-        currentSession().save(obj);
-        return 1;
-    }
-    
-    public int merge(Object obj) {
-        currentSession().merge(obj);
+    public int insert(Worktime pojo) {
+        currentSession().save(pojo);
         return 1;
     }
 
-    public int saveOrUpdate(Object obj) {
-        currentSession().saveOrUpdate(obj);
+    public int merge(Worktime pojo) {
+        currentSession().merge(pojo);
         return 1;
     }
 
-    @Override
-    public int update(Object obj) {
-        currentSession().update(obj);
+    public int saveOrUpdate(Worktime pojo) {
+        currentSession().saveOrUpdate(pojo);
         return 1;
     }
 
     @Override
-    public int delete(Object pojo) {
+    public int update(Worktime pojo) {
+        currentSession().update(pojo);
+        return 1;
+    }
+
+    @Override
+    public int delete(Worktime pojo) {
         currentSession().delete(pojo);
         return 1;
     }

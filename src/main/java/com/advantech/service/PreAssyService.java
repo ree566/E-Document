@@ -26,7 +26,7 @@ public class PreAssyService {
     private PreAssyDAO preAssyDAO;
 
     public List<PreAssy> findAll() {
-        return (List<PreAssy>) preAssyDAO.findAll();
+        return preAssyDAO.findAll();
     }
 
     public List<PreAssy> findAll(PageInfo info) {
@@ -34,7 +34,7 @@ public class PreAssyService {
     }
 
     public PreAssy findByPrimaryKey(Object obj_id) {
-        return (PreAssy) preAssyDAO.findByPrimaryKey(obj_id);
+        return preAssyDAO.findByPrimaryKey(obj_id);
     }
 
     public int insert(PreAssy preAssy) {

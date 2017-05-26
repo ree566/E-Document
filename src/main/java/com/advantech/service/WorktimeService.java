@@ -26,7 +26,7 @@ public class WorktimeService {
     private WorktimeDAO worktimeDAO;
 
     public List<Worktime> findAll() {
-        return (List<Worktime>) worktimeDAO.findAll();
+        return worktimeDAO.findAll();
     }
 
     public List<Worktime> findAll(PageInfo info) {
@@ -34,7 +34,7 @@ public class WorktimeService {
     }
 
     public Worktime findByPrimaryKey(Object obj_id) {
-        return (Worktime) worktimeDAO.findByPrimaryKey(obj_id);
+        return worktimeDAO.findByPrimaryKey(obj_id);
     }
 
     public List<Worktime> findByPrimaryKeys(Integer... ids) {

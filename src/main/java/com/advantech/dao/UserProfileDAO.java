@@ -6,7 +6,7 @@
 package com.advantech.dao;
 
 import com.advantech.model.UserProfile;
-import java.util.Collection;
+import java.util.List;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -19,7 +19,7 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class UserProfileDAO implements BasicDAO {
+public class UserProfileDAO implements BasicDAO<UserProfile> {
 
     @Autowired
     private SessionFactory sessionFactory;
@@ -29,13 +29,13 @@ public class UserProfileDAO implements BasicDAO {
     }
 
     @Override
-    public Collection findAll() {
+    public List<UserProfile> findAll() {
         return currentSession().createCriteria(UserProfile.class).list();
     }
 
     @Override
-    public Object findByPrimaryKey(Object obj_id) {
-        return currentSession().load(UserProfile.class, (int) obj_id);
+    public UserProfile findByPrimaryKey(Object obj_id) {
+        return (UserProfile) currentSession().load(UserProfile.class, (int) obj_id);
     }
     
     public UserProfile findByType(String typeName){
@@ -45,17 +45,17 @@ public class UserProfileDAO implements BasicDAO {
     }
 
     @Override
-    public int insert(Object obj) {
+    public int insert(UserProfile pojo) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public int update(Object obj) {
+    public int update(UserProfile pojo) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public int delete(Object pojo) {
+    public int delete(UserProfile pojo) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

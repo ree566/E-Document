@@ -27,7 +27,7 @@ public class UserService {
     private UserDAO userDAO;
 
     public List<User> findAll() {
-        return (List<User>) userDAO.findAll();
+        return userDAO.findAll();
     }
 
     public List<User> findAll(PageInfo info) {
@@ -35,7 +35,7 @@ public class UserService {
     }
 
     public User findByPrimaryKey(Object obj_id) {
-        return (User) userDAO.findByPrimaryKey(obj_id);
+        return userDAO.findByPrimaryKey(obj_id);
     }
 
     public User findByJobnumber(String jobnumber) {

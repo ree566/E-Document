@@ -27,16 +27,15 @@ public class FlowGroupService {
     private FlowGroupDAO flowGroupDAO;
 
     public List<FlowGroup> findAll() {
-        return (List<FlowGroup>) flowGroupDAO.findAll();
+        return flowGroupDAO.findAll();
     }
 
     public List<FlowGroup> findAll(PageInfo info) {
-        List<FlowGroup> l = flowGroupDAO.findAll(info);
-        return l;
+        return flowGroupDAO.findAll(info);
     }
 
     public FlowGroup findByPrimaryKey(Object obj_id) {
-        return (FlowGroup) flowGroupDAO.findByPrimaryKey(obj_id);
+        return flowGroupDAO.findByPrimaryKey(obj_id);
     }
 
     public int insert(FlowGroup flowGroup) {

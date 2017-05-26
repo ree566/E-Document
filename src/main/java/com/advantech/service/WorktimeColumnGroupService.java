@@ -26,15 +26,15 @@ public class WorktimeColumnGroupService {
     private WorktimeColumnGroupDAO worktimeColumnGroupDAO;
 
     public List<WorktimeColumnGroup> findAll() {
-        return (List<WorktimeColumnGroup>) worktimeColumnGroupDAO.findAll();
+        return worktimeColumnGroupDAO.findAll();
     }
 
     public WorktimeColumnGroup findByPrimaryKey(Object obj_id) {
-        return (WorktimeColumnGroup) worktimeColumnGroupDAO.findByPrimaryKey(obj_id);
+        return worktimeColumnGroupDAO.findByPrimaryKey(obj_id);
     }
 
     public WorktimeColumnGroup findByUserType(Object obj_id) {
-        return (WorktimeColumnGroup)worktimeColumnGroupDAO.findByUserType(obj_id);
+        return worktimeColumnGroupDAO.findByUserType(obj_id);
     }
 
     public int insert(WorktimeColumnGroup w) {

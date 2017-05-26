@@ -25,7 +25,7 @@ public class TypeService {
     private TypeDAO typeDAO;
 
     public List<Type> findAll() {
-        return (List<Type>) typeDAO.findAll();
+        return typeDAO.findAll();
     }
 
     public List<Type> findAll(PageInfo info) {
@@ -33,7 +33,7 @@ public class TypeService {
     }
 
     public Type findByPrimaryKey(Object obj_id) {
-        return (Type) typeDAO.findByPrimaryKey(obj_id);
+        return typeDAO.findByPrimaryKey(obj_id);
     }
 
     public List<Type> findByPrimaryKeys(Integer... id) {

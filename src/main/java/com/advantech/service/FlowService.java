@@ -33,20 +33,19 @@ public class FlowService {
     private FlowGroupDAO flowGroupDAO;
 
     public List<Flow> findAll() {
-        return (List<Flow>) flowDAO.findAll();
+        return flowDAO.findAll();
     }
 
     public List<Flow> findAll(PageInfo info) {
-        List<Flow> l = flowDAO.findAll(info);
-        return l;
+        return flowDAO.findAll(info);
     }
 
     public Flow findByPrimaryKey(Object obj_id) {
-        return (Flow) flowDAO.findByPrimaryKey(obj_id);
+        return flowDAO.findByPrimaryKey(obj_id);
     }
 
     public List<Flow> findByFlowGroup(int flowGroupId) {
-        FlowGroup fg = (FlowGroup) flowGroupDAO.findByPrimaryKey(flowGroupId);
+        FlowGroup fg = flowGroupDAO.findByPrimaryKey(flowGroupId);
         return flowDAO.findByFlowGroup(fg);
     }
 

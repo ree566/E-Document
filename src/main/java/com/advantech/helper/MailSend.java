@@ -43,7 +43,8 @@ public class MailSend {
         try {
             String hostSetting = null;
 //                    properties.getMailServerLocation();
-            hostaddr = new ParamChecker().checkInputVal(hostSetting) ? hostSetting : getHostAddr();
+            hostaddr = getHostAddr();
+//            hostaddr = new ParamChecker().checkInputVal(hostSetting) ? hostSetting : getHostAddr();
         } catch (UnknownHostException | SocketException ex) {
             log.error(ex.toString());
         }

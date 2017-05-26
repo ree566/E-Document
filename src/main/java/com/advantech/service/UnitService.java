@@ -24,11 +24,11 @@ public class UnitService {
     private UnitDAO unitDAO;
 
     public List<Unit> findAll() {
-        return (List<Unit>) unitDAO.findAll();
+        return unitDAO.findAll();
     }
 
     public Unit findByPrimaryKey(Object obj_id) {
-        return (Unit) unitDAO.findByPrimaryKey(obj_id);
+        return unitDAO.findByPrimaryKey(obj_id);
     }
 
     public int insert(Unit unit) {

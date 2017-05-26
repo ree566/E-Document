@@ -19,7 +19,7 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class PreAssyDAO implements BasicDAO {
+public class PreAssyDAO implements BasicDAO<PreAssy> {
 
     @Autowired
     private SessionFactory sessionFactory;
@@ -32,7 +32,7 @@ public class PreAssyDAO implements BasicDAO {
     }
 
     @Override
-    public Collection findAll() {
+    public List<PreAssy> findAll() {
         return currentSession().createCriteria(PreAssy.class).list();
     }
 
@@ -41,24 +41,24 @@ public class PreAssyDAO implements BasicDAO {
     }
  
     @Override
-    public Object findByPrimaryKey(Object obj_id) {
-        return currentSession().load(PreAssy.class, (int) obj_id);
+    public PreAssy findByPrimaryKey(Object obj_id) {
+        return (PreAssy) currentSession().load(PreAssy.class, (int) obj_id);
     }
 
     @Override
-    public int insert(Object obj) {
-        this.currentSession().save(obj);
+    public int insert(PreAssy pojo) {
+        this.currentSession().save(pojo);
         return 1;
     }
 
     @Override
-    public int update(Object obj) {
-        this.currentSession().update(obj);
+    public int update(PreAssy pojo) {
+        this.currentSession().update(pojo);
         return 1;
     }
 
     @Override
-    public int delete(Object pojo) {
+    public int delete(PreAssy pojo) {
         this.currentSession().delete(pojo);
         return 1;
     }

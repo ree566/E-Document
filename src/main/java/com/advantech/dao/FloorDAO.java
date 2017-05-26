@@ -6,8 +6,6 @@
 package com.advantech.dao;
 
 import com.advantech.model.Floor;
-import com.advantech.model.Worktime;
-import java.util.Collection;
 import java.util.List;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
@@ -21,7 +19,7 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class FloorDAO implements BasicDAO {
+public class FloorDAO implements BasicDAO<Floor> {
 
     @Autowired
     private SessionFactory sessionFactory;
@@ -31,7 +29,7 @@ public class FloorDAO implements BasicDAO {
     }
 
     @Override
-    public Collection findAll() {
+    public List<Floor> findAll() {
         return currentSession().createCriteria(Floor.class).list();
     }
 
@@ -42,22 +40,22 @@ public class FloorDAO implements BasicDAO {
     }
 
     @Override
-    public Object findByPrimaryKey(Object obj_id) {
-        return currentSession().load(Floor.class, (int) obj_id);
+    public Floor findByPrimaryKey(Object obj_id) {
+        return (Floor) currentSession().load(Floor.class, (int) obj_id);
     }
 
     @Override
-    public int insert(Object obj) {
+    public int insert(Floor pojo) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public int update(Object obj) {
+    public int update(Floor pojo) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public int delete(Object pojo) {
+    public int delete(Floor pojo) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

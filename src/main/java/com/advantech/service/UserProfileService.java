@@ -24,11 +24,11 @@ public class UserProfileService {
     private UserProfileDAO userProfileDAO;
 
     public List<UserProfile> findAll() {
-        return (List<UserProfile>) userProfileDAO.findAll();
+        return userProfileDAO.findAll();
     }
 
     public UserProfile findByPrimaryKey(Object obj_id) {
-        return (UserProfile) userProfileDAO.findByPrimaryKey(obj_id);
+        return userProfileDAO.findByPrimaryKey(obj_id);
     }
 
     public UserProfile findByType(String typeName) {

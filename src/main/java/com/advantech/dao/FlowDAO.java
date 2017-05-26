@@ -8,7 +8,6 @@ package com.advantech.dao;
 import com.advantech.helper.PageInfo;
 import com.advantech.model.Flow;
 import com.advantech.model.FlowGroup;
-import java.util.Collection;
 import java.util.List;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
@@ -23,7 +22,7 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class FlowDAO implements BasicDAO {
+public class FlowDAO implements BasicDAO<Flow> {
 
     @Autowired
     private SessionFactory sessionFactory;
@@ -36,7 +35,7 @@ public class FlowDAO implements BasicDAO {
     }
 
     @Override
-    public Collection findAll() {
+    public List<Flow> findAll() {
         Criteria criteria = currentSession().createCriteria(Flow.class);
         criteria.addOrder(Order.asc("name"));
         return criteria.list();
@@ -47,8 +46,8 @@ public class FlowDAO implements BasicDAO {
     }
 
     @Override
-    public Object findByPrimaryKey(Object obj_id) {
-        return currentSession().get(Flow.class, (int) obj_id);
+    public Flow findByPrimaryKey(Object obj_id) {
+        return (Flow) currentSession().get(Flow.class, (int) obj_id);
     }
 
     public List<Flow> findByFlowGroup(FlowGroup flowGroup) {
@@ -65,19 +64,19 @@ public class FlowDAO implements BasicDAO {
     }
 
     @Override
-    public int insert(Object obj) {
-        this.currentSession().save(obj);
+    public int insert(Flow pojo) {
+        this.currentSession().save(pojo);
         return 1;
     }
 
     @Override
-    public int update(Object obj) {
-        this.currentSession().update(obj);
+    public int update(Flow pojo) {
+        this.currentSession().update(pojo);
         return 1;
     }
 
     @Override
-    public int delete(Object pojo) {
+    public int delete(Flow pojo) {
         this.currentSession().delete(pojo);
         return 1;
     }

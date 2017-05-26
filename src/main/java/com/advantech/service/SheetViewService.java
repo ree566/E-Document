@@ -25,11 +25,11 @@ public class SheetViewService {
     private SheetViewDAO sheetViewDAO;
 
     public List<SheetView> findAll() {
-        return (List<SheetView>) sheetViewDAO.findAll();
+        return sheetViewDAO.findAll();
     }
 
     public List<SheetView> findAll(PageInfo info) {
-        return (List<SheetView>) sheetViewDAO.findAll(info);
+        return sheetViewDAO.findAll(info);
     }
 
     public SheetView findByPrimaryKey(Object obj_id) {

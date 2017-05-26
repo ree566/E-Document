@@ -25,7 +25,7 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class SheetViewDAO implements BasicDAO {
+public class SheetViewDAO implements BasicDAO<SheetView> {
 
     @Autowired
     private SessionFactory sessionFactory;
@@ -38,33 +38,33 @@ public class SheetViewDAO implements BasicDAO {
     }
 
     @Override
-    public Collection findAll() {
+    public List<SheetView> findAll() {
         Criteria criteria = currentSession().createCriteria(SheetView.class);
         criteria.setReadOnly(true);
         return criteria.list();
     }
 
-    public Collection findAll(PageInfo info) {
+    public List<SheetView> findAll(PageInfo info) {
         return paginateDAO.findAll(this.currentSession(), SheetView.class, info);
     }
 
     @Override
-    public Object findByPrimaryKey(Object obj_id) {
+    public SheetView findByPrimaryKey(Object obj_id) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public int insert(Object obj) {
+    public int insert(SheetView pojo) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public int update(Object obj) {
+    public int update(SheetView pojo) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public int delete(Object pojo) {
+    public int delete(SheetView pojo) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

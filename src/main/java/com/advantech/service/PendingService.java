@@ -26,7 +26,7 @@ public class PendingService {
     private PendingDAO pendingDAO;
 
     public List<Pending> findAll() {
-        return (List<Pending>) pendingDAO.findAll();
+        return pendingDAO.findAll();
     }
 
     public List<Pending> findAll(PageInfo info) {
@@ -34,7 +34,7 @@ public class PendingService {
     }
 
     public Pending findByPrimaryKey(Object obj_id) {
-        return (Pending) pendingDAO.findByPrimaryKey(obj_id);
+        return pendingDAO.findByPrimaryKey(obj_id);
     }
 
     public int insert(Pending pending) {
