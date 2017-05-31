@@ -21,35 +21,15 @@
         <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap-theme.min.css" rel="stylesheet">
         <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
         <link href="//code.jquery.com/ui/1.12.1/themes/redmond/jquery-ui.css" rel="stylesheet">
+        <link href="//cdnjs.cloudflare.com/ajax/libs/jquery-ui-multiselect-widget/2.0.1/jquery.multiselect.css" rel="stylesheet">
 
         <link href="//cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.14.0/css/ui.jqgrid.min.css" rel="stylesheet"/>
         <!--<link href="//cdnjs.cloudflare.com/ajax/libs/jqgrid/4.6.0/css/ui.jqgrid.css" rel="stylesheet"/>-->
         <link href="//cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.14.0/plugins/css/ui.multiselect.css" rel="stylesheet"/>
-        
+
         <link href="../css/sb-admin-2.min.css" rel="stylesheet">
         <link href="../css/metisMenu.min.css" rel="stylesheet">
         <link href="../css/sbadmin2-sidebar-toggle.css" rel="stylesheet">
-
-        <style>
-            #loading {
-                width: 100%;
-                height: 100%;
-                position: fixed;
-                display: block;
-                opacity: 0.7;
-                background-color: #fff;
-                z-index: 99;
-                text-align: center;
-            }
-
-            #loading-image {
-                position: absolute;
-                top: 100px;
-                left: 240px;
-                z-index: 100;
-            }
-
-        </style>
 
         <script src="//code.jquery.com/jquery-1.12.4.min.js" 
                 integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
@@ -61,6 +41,7 @@
                 integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
         crossorigin="anonymous"></script>
 
+        <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-ui-multiselect-widget/2.0.1/jquery.multiselect.min.js"></script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/jquery.form/4.2.1/jquery.form.min.js"></script>
 
         <script src="//cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.14.0/jquery.jqgrid.min.js"></script>
@@ -77,24 +58,25 @@
 
         <script src="<c:url value="/js/jqgrid-custom-param.js" />"></script> 
         <script src="<c:url value="/js/sessionExpiredDetect.js" />"></script>
+        <script src="<c:url value="/js/jquery.blockUI.js" />"></script>
 
         <!--<script src="//cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.14.0/modules/grid.subgrid.js"></script>-->
         <script>
             var current_include_page_name = "";
             $(function () {
-                $('#loading').hide();
-
+                var page = $("#exchange_page");
+                
                 $(".redirect-link").on("click", function () {
                     var target_page_name = $(this).attr("href");
                     if (target_page_name != current_include_page_name && target_page_name != "#") {
                         current_include_page_name = target_page_name;
-                        $('#loading').show();
-                        $("#exchange_page").load(target_page_name + ".jsp", function (response, status, xhr) {
+                        page.block({ message: "loading" });  
+                        page.load(target_page_name, function (response, status, xhr) {
                             if (status == "error") {
                                 var msg = "Sorry but there was an error: ";
-                                $("#exchange_page").html(msg + xhr.status + " " + xhr.statusText);
+                                page.html(msg + xhr.status + " " + xhr.statusText);
                             }
-                            $('#loading').hide();
+                            page.unblock();
                         });
                     }
                     return false;
@@ -197,10 +179,10 @@
                                     </a>
                                     <ul class="nav nav-second-level">
                                         <li>
-                                            <a class="redirect-link" href="chart">Flot Charts</a>
+                                            <a class="redirect-link" href="chart.jsp">Flot Charts</a>
                                         </li>
                                         <li>
-                                            <a class="redirect-link" href="chart">Morris.js Charts</a>
+                                            <a class="redirect-link" href="chart.jsp">Morris.js Charts</a>
                                         </li>
                                     </ul>
                                     <!-- /.nav-second-level -->
@@ -209,23 +191,23 @@
                                     <a href="#"><i class="fa fa-table fa-fw"></i> Tables<span class="fa arrow"></span></a>
                                     <ul class="nav nav-second-level">
                                         <li>
-                                            <a class="redirect-link" href="worktime">工時大表</a>
+                                            <a class="redirect-link" href="worktime.jsp">工時大表</a>
                                         </li>
-                                        <sec:authorize access="hasRole('ADMIN') and hasRole('USER')">
+                                        <sec:authorize access="hasRole('ADMIN') or hasRole('USER')">
                                             <li>
-                                                <a class="redirect-link" href="mod/flow">Flow</a>
+                                                <a class="redirect-link" href="mod/flow.jsp">Flow</a>
                                             </li>
                                             <li>
-                                                <a class="redirect-link" href="mod/user">User</a>
+                                                <a class="redirect-link" href="mod/user.jsp">User</a>
                                             </li>
                                             <li>
-                                                <a class="redirect-link" href="mod/pending">Pending</a>
+                                                <a class="redirect-link" href="mod/pending.jsp">Pending</a>
                                             </li>
                                             <li>
-                                                <a class="redirect-link" href="mod/preAssy">PreAssy</a>
+                                                <a class="redirect-link" href="mod/preAssy.jsp">PreAssy</a>
                                             </li>
                                             <li>
-                                                <a class="redirect-link" href="mod/type">Type</a>
+                                                <a class="redirect-link" href="mod/type.jsp">Type</a>
                                             </li>
                                         </sec:authorize>
                                     </ul>
@@ -234,17 +216,20 @@
                                     <a href="#"><i class="fa fa-wrench fa-fw"></i> UI Elements<span class="fa arrow"></span></a>
                                     <ul class="nav nav-second-level"> 
                                         <li>
-                                            <a class="redirect-link" id="preload_page" href="audit">資料版本查詢</a>
+                                            <a class="redirect-link" id="preload_page" href="audit.jsp">資料版本查詢</a>
                                         </li>
-                                        <sec:authorize access="hasRole('ADMIN') and hasRole('USER')">
+                                        <sec:authorize access="hasRole('ADMIN')">
                                             <li>
-                                                <a class="redirect-link" href="fileupload">Excel文件上傳</a>
+                                                <a class="redirect-link" href="fileupload.jsp">Excel文件上傳</a>
                                             </li>
                                             <li>
-                                                <a class="redirect-link" href="worktime-permission">欄位權限設定</a>
+                                                <a class="redirect-link" href="worktime-permission.jsp">欄位權限設定</a>
                                             </li>
                                             <li>
-                                                <a class="redirect-link" href="wowface">Not exist page</a>
+                                                <a class="redirect-link" href="wowface.jsp">Not exist page</a>
+                                            </li>
+                                            <li>
+                                                <a href="admin/test.jsp" onclick="">測試區</a>
                                             </li>
                                         </sec:authorize>
                                     </ul>
@@ -266,9 +251,6 @@
                         <!-- /.panel -->
                         <div class="panel panel-default">
                             <div class="panel-body">
-                                <div id="loading">
-                                    <img id="loading-image" src="../images/loading.gif" alt="Loading..." />
-                                </div>
                                 <div id="exchange_page" class="row">
                                 </div>
                                 <!-- /.row -->

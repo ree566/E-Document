@@ -6,7 +6,7 @@
 package com.advantech.service;
 
 import com.advantech.dao.WorktimeColumnGroupDAO;
-import com.advantech.model.Floor;
+import com.advantech.helper.PageInfo;
 import com.advantech.model.WorktimeColumnGroup;
 import java.util.List;
 
@@ -29,6 +29,10 @@ public class WorktimeColumnGroupService {
         return worktimeColumnGroupDAO.findAll();
     }
 
+    public List<WorktimeColumnGroup> findAll(PageInfo info) {
+        return worktimeColumnGroupDAO.findAll(info);
+    }
+
     public WorktimeColumnGroup findByPrimaryKey(Object obj_id) {
         return worktimeColumnGroupDAO.findByPrimaryKey(obj_id);
     }
@@ -45,7 +49,8 @@ public class WorktimeColumnGroupService {
         return worktimeColumnGroupDAO.update(w);
     }
 
-    public int delete(WorktimeColumnGroup w) {
+    public int delete(int id) {
+        WorktimeColumnGroup w = this.findByPrimaryKey(id);
         return worktimeColumnGroupDAO.delete(w);
     }
 

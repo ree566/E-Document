@@ -7,9 +7,9 @@ package com.advantech.controller;
 
 import static com.advantech.helper.JqGridResponseUtils.toJqGridResponse;
 import com.advantech.helper.PageInfo;
-import com.advantech.model.PreAssy;
+import com.advantech.model.WorktimeColumnGroup;
 import com.advantech.response.JqGridResponse;
-import com.advantech.service.PreAssyService;
+import com.advantech.service.WorktimeColumnGroupService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -24,33 +24,33 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @author Wei.Cheng
  */
 @Controller
-@Secured({"ROLE_USER", "ROLE_ADMIN"})
-@RequestMapping(value = "/PreAssy")
-public class PreAssyController extends CrudController<PreAssy> {
+@Secured("ROLE_ADMIN")
+@RequestMapping(value = "/WorktimeColumnGroup")
+public class WorktimeColumnGroupController extends CrudController<WorktimeColumnGroup> {
 
     @Autowired
-    private PreAssyService preAssyService;
+    private WorktimeColumnGroupService worktimeColumnGroupService;
 
     @ResponseBody
     @RequestMapping(value = SELECT_URL, method = {RequestMethod.GET})
     @Override
     protected JqGridResponse read(PageInfo info) {
-        return toJqGridResponse(preAssyService.findAll(info), info);
+        return toJqGridResponse(worktimeColumnGroupService.findAll(info), info);
     }
 
     @ResponseBody
     @RequestMapping(value = INSERT_URL, method = {RequestMethod.POST})
     @Override
-    protected ResponseEntity insert(PreAssy preAssy, BindingResult bindingResult) {
-        String modifyMessage = preAssyService.insert(preAssy) == 1 ? this.SUCCESS_MESSAGE : this.FAIL_MESSAGE;
+    protected ResponseEntity insert(WorktimeColumnGroup pojo, BindingResult bindingResult) {
+        String modifyMessage = worktimeColumnGroupService.insert(pojo) == 1 ? this.SUCCESS_MESSAGE : this.FAIL_MESSAGE;
         return serverResponse(modifyMessage);
     }
 
     @ResponseBody
     @RequestMapping(value = UPDATE_URL, method = {RequestMethod.POST})
     @Override
-    protected ResponseEntity update(PreAssy preAssy, BindingResult bindingResult) {
-        String modifyMessage = preAssyService.update(preAssy) == 1 ? this.SUCCESS_MESSAGE : this.FAIL_MESSAGE;
+    protected ResponseEntity update(WorktimeColumnGroup pojo, BindingResult bindingResult) {
+        String modifyMessage = worktimeColumnGroupService.update(pojo) == 1 ? this.SUCCESS_MESSAGE : this.FAIL_MESSAGE;
         return serverResponse(modifyMessage);
     }
 
@@ -58,7 +58,8 @@ public class PreAssyController extends CrudController<PreAssy> {
     @RequestMapping(value = DELETE_URL, method = {RequestMethod.POST})
     @Override
     protected ResponseEntity delete(int id) {
-        String modifyMessage = preAssyService.delete(id) == 1 ? this.SUCCESS_MESSAGE : this.FAIL_MESSAGE;
+        String modifyMessage = worktimeColumnGroupService.delete(id) == 1 ? this.SUCCESS_MESSAGE : this.FAIL_MESSAGE;
         return serverResponse(modifyMessage);
     }
+
 }

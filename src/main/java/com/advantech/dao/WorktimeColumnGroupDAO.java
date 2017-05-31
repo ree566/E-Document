@@ -5,6 +5,7 @@
  */
 package com.advantech.dao;
 
+import com.advantech.helper.PageInfo;
 import com.advantech.model.WorktimeColumnGroup;
 import java.util.List;
 import org.hibernate.Criteria;
@@ -24,6 +25,9 @@ public class WorktimeColumnGroupDAO implements BasicDAO<WorktimeColumnGroup> {
 
     @Autowired
     private SessionFactory sessionFactory;
+    
+    @Autowired
+    private PaginateDAO paginateDAO;
 
     private Session currentSession() {
         return sessionFactory.getCurrentSession();
@@ -32,6 +36,10 @@ public class WorktimeColumnGroupDAO implements BasicDAO<WorktimeColumnGroup> {
     @Override
     public List<WorktimeColumnGroup> findAll() {
         return currentSession().createCriteria(WorktimeColumnGroup.class).list();
+    }
+    
+    public List<WorktimeColumnGroup> findAll(PageInfo info) {
+        return paginateDAO.findAll(this.currentSession(), WorktimeColumnGroup.class, info);
     }
 
     @Override

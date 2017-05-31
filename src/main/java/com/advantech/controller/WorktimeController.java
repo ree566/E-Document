@@ -142,18 +142,14 @@ public class WorktimeController extends CrudController<Worktime> {
 
         WorktimeColumnGroup w = worktimeColumnGroupService.findByUserType(unit);
 
-        try {
-            Clob columns = w.getColumnName();
-            if (columns == null) {
-                return new String[0];
-            } else {
-                String clobString = columns.getSubString(1, (int) columns.length());
-                columnName = clobString.split(",");
-                return columnName;
-            }
-        } catch (SQLException ex) {
+        String columns = w.getColumnName();
+        if (columns == null) {
             return new String[0];
+        } else {
+            columnName = columns.split(",");
+            return columnName;
         }
+
     }
 
     @ResponseBody

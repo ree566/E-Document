@@ -3,6 +3,7 @@
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
 <sec:authentication var="user" property="principal" />
+<sec:authorize access="hasRole('ADMIN') or hasRole('USER')"  var="isAdmin" />
 <style>
     .permission-hint{
         color: red;
@@ -287,7 +288,6 @@
                     position: "last"
                 });
 
-    <sec:authorize access="hasRole('ADMIN') and hasRole('USER')"  var="isAdmin" />
         grid.jqGrid('navGrid', '#pager',
                 {edit: ${isAdmin}, add: ${isAdmin}, del: ${isAdmin}, search: true},
                 {
@@ -401,9 +401,9 @@
     <h5>Your permission is: 
         <b class="permission-hint">
             R
-            <sec:authorize access="hasRole('ADMIN') and hasRole('USER')">
+            <c:if test="${isAdmin}">
                 W
-            </sec:authorize>
+            </c:if>
         </b>
     </h5>
     <table id="list"></table> 

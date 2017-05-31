@@ -62,7 +62,7 @@ import org.springframework.web.multipart.MultipartFile;
  * Handles requests for the application file upload requests
  */
 @Controller
-@Secured({"ROLE_USER", "ROLE_ADMIN"})
+@Secured({"ROLE_ADMIN"})
 public class FileUploadController {
 
     private static final Logger logger = LoggerFactory.getLogger(FileUploadController.class);

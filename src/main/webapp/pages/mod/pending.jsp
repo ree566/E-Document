@@ -51,43 +51,44 @@
                         + "\najaxOptions is: " + ajaxOptions
                         );
             }
-        })
-                .jqGrid('navGrid', '#pager',
-                        {edit: true, add: true, del: true, search: true},
-                        {
-                            url: '<c:url value="/Pending/update" />',
-                            dataheight: 350,
-                            width: 450,
-                            closeAfterEdit: false,
-                            reloadAfterSubmit: true,
-                            errorTextFormat: customErrorTextFormat,
-                            beforeShowForm: greyout,
-                            zIndex: 9999,
-                            recreateForm: true
-                        },
-                        {
-                            url: '<c:url value="/Pending/create" />',
-                            dataheight: 350,
-                            width: 450,
-                            closeAfterAdd: false,
-                            reloadAfterSubmit: true,
-                            errorTextFormat: customErrorTextFormat,
-                            beforeShowForm: greyout,
-                            zIndex: 9999,
-                            recreateForm: true
-                        },
-                        {
-                            url: '<c:url value="/Pending/delete" />',
-                            zIndex: 9999,
-                            reloadAfterSubmit: true
-                        },
-                        {
-                            sopt: ['eq', 'ne', 'lt', 'gt', 'cn', 'bw', 'ew'],
-                            closeAfterSearch: false,
-                            zIndex: 9999,
-                            reloadAfterSubmit: true
-                        }
-                );
+        });
+        
+        grid.jqGrid('navGrid', '#pager',
+                {edit: true, add: true, del: true, search: true},
+                {
+                    url: '<c:url value="/Pending/update" />',
+                    dataheight: 350,
+                    width: 450,
+                    closeAfterEdit: false,
+                    reloadAfterSubmit: true,
+                    errorTextFormat: customErrorTextFormat,
+                    beforeShowForm: greyout,
+                    zIndex: 9999,
+                    recreateForm: true
+                },
+                {
+                    url: '<c:url value="/Pending/create" />',
+                    dataheight: 350,
+                    width: 450,
+                    closeAfterAdd: false,
+                    reloadAfterSubmit: true,
+                    errorTextFormat: customErrorTextFormat,
+                    beforeShowForm: greyout,
+                    zIndex: 9999,
+                    recreateForm: true
+                },
+                {
+                    url: '<c:url value="/Pending/delete" />',
+                    zIndex: 9999,
+                    reloadAfterSubmit: true
+                },
+                {
+                    sopt: ['eq', 'ne', 'lt', 'gt', 'cn', 'bw', 'ew'],
+                    closeAfterSearch: false,
+                    zIndex: 9999,
+                    reloadAfterSubmit: true
+                }
+        );
 
     });
 </script>

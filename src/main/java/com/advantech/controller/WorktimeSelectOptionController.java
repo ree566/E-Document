@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 /**
  *
  * @author Wei.Cheng
+ * 供大表的lazy loading欄位編輯與查詢
  */
 @Controller
 @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_GUEST"})

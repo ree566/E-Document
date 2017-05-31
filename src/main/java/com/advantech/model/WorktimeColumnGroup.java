@@ -3,7 +3,6 @@ package com.advantech.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import java.sql.Clob;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -11,6 +10,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
@@ -27,7 +27,7 @@ public class WorktimeColumnGroup implements java.io.Serializable {
 
     private int id;
     private Unit unit;
-    private Clob columnName;
+    private String columnName;
 
     public WorktimeColumnGroup() {
     }
@@ -36,7 +36,7 @@ public class WorktimeColumnGroup implements java.io.Serializable {
         this.id = id;
     }
 
-    public WorktimeColumnGroup(int id, Unit unit, Clob columnName) {
+    public WorktimeColumnGroup(int id, Unit unit, String columnName) {
         this.id = id;
         this.unit = unit;
         this.columnName = columnName;
@@ -63,12 +63,13 @@ public class WorktimeColumnGroup implements java.io.Serializable {
         this.unit = unit;
     }
 
+    @Lob
     @Column(name = "column_name")
-    public Clob getColumnName() {
+    public String getColumnName() {
         return this.columnName;
     }
 
-    public void setColumnName(Clob columnName) {
+    public void setColumnName(String columnName) {
         this.columnName = columnName;
     }
 

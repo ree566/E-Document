@@ -221,7 +221,7 @@
 
 <div id="flow-content">
     <div class="form-inline">
-        <input type="text" id="modelName" class="form-control" placeholder="modelName" value="test789" />
+        <input type="text" id="modelName" class="form-control" placeholder="modelName" />
         <input type="text" id="version" class="form-control" placeholder="version" />
         <input type="text" id="sD" name="startDate" placeholder="startDate" class="form-control" />
         <input type="text" id="eD" name="endDate" placeholder="endDate" class="form-control" />

@@ -8,15 +8,19 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <sec:authentication var="user" property="principal" />
+<c:set var="isAnonymous" value="${user == null || user.username == null}" />
 <!DOCTYPE html>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-        <title>AccessDenied page</title>
+        <title>${initParam.pageTitle} - Access denied.</title>
+        <link rel="shortcut icon" href="images/favicon.ico"/>
     </head>
     <body>
-        Dear <strong>${user.username}</strong>, You are not authorized to access this page
+        Dear <strong>${isAnonymous ? 'anonymous' : user.username}</strong>, You are not authorized to access this page
         <a href="<c:url value="/" />">Home</a>
-        <p><c:out value="${user.authorities}" /></p>
+        <c:if test="${!isAnonymous}">
+            <p><c:out value="${user.authorities}" /></p>
+        </c:if>
     </body>
 </html>

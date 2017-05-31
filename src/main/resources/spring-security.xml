@@ -6,12 +6,17 @@
     http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-4.2.xsd">
       
     <beans:bean name="customPasswordEncoder" class="com.advantech.helper.CustomPasswordEncoder"/>
+    
+    <beans:bean id="authenticationEntryPoint"
+                class="com.advantech.security.AjaxAwareAuthenticationEntryPoint">
+        <beans:constructor-arg name="loginUrl" value="/login"/>
+    </beans:bean>
 
-    <http auto-config="true" >
+    <http auto-config="true">
         <intercept-url pattern="/login.jsp" access="permitAll" />
-        <intercept-url pattern="/pages/**" access="hasRole('USER') or hasRole('GUEST')" />
-        <intercept-url pattern="/pages/admin**" access="hasRole('ADMIN')" />
-        <intercept-url pattern="/pages/mod**" access="hasRole('ADMIN') and hasRole('USER')" />
+        <intercept-url pattern="/pages/admin/**" access="hasRole('ADMIN')" />
+        <intercept-url pattern="/pages/mod/**" access="hasAnyRole('USER', 'ADMIN')" />
+        <intercept-url pattern="/pages/**" access="isAuthenticated()" />
         <form-login  
             login-page="/login.jsp"
             default-target-url="/pages/"
@@ -21,10 +26,20 @@
             password-parameter="password"
         />
         <csrf/>
+
+        <logout invalidate-session="true"
+                logout-success-url="/login?logout"
+                logout-url="/logout"
+                delete-cookies="JSESSIONID"
+        />
+        
+        <!-- enable remember me -->
+        <remember-me
+            token-validity-seconds="1209600"
+            remember-me-parameter="remember-me"
+        />
     </http>
-    <!--authentication-failure-url="/Access_Denied"--> 
-    <!--login-page="/login"-->
-  
+
     <authentication-manager >
         <authentication-provider user-service-ref="customUserDetailsService">
             <password-encoder ref="customPasswordEncoder" />
