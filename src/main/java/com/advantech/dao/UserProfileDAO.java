@@ -8,10 +8,7 @@ package com.advantech.dao;
 import com.advantech.model.UserProfile;
 import java.util.List;
 import org.hibernate.Criteria;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -19,27 +16,20 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class UserProfileDAO implements BasicDAO<UserProfile> {
-
-    @Autowired
-    private SessionFactory sessionFactory;
-
-    private Session currentSession() {
-        return sessionFactory.getCurrentSession();
-    }
+public class UserProfileDAO extends AbstractDao<Integer, UserProfile> implements BasicDAO<UserProfile> {
 
     @Override
     public List<UserProfile> findAll() {
-        return currentSession().createCriteria(UserProfile.class).list();
+        return createEntityCriteria().list();
     }
 
     @Override
     public UserProfile findByPrimaryKey(Object obj_id) {
-        return (UserProfile) currentSession().load(UserProfile.class, (int) obj_id);
+        return getByKey((int) obj_id);
     }
-    
-    public UserProfile findByType(String typeName){
-        Criteria c = currentSession().createCriteria(UserProfile.class);
+
+    public UserProfile findByType(String typeName) {
+        Criteria c = createEntityCriteria();
         c.add(Restrictions.eq("type", typeName));
         return (UserProfile) c.uniqueResult();
     }

@@ -49,6 +49,7 @@ Contributor(s):
   <table-filter match-name="User_Profile_REF"/>
   <table-filter match-name="Worktime"/>
   <table-filter match-name="Worktime_ColumnGroup"/>
+  <table-filter match-name="Worktime_FormulaSetting"/>
   <table-filter match-name="Flow"/>
   <table-filter match-name="Flow_REF"/>
   <table-filter match-name="FlowGroup"/>

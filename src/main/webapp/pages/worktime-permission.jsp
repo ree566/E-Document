@@ -11,8 +11,6 @@
 <c:set var="tableName" value="WorktimeColumnGroup" />
 <%--<script src="<c:url value="/js/jquery.multi-select.js" />"></script>--%>
 <script src="<c:url value="/js/worktime-setting/worktime-columnsetting.js" />"></script>
-<h1>Worktime permission change!</h1>
-
 <script>
     $(function () {
 //        var unitPermissionTb = $("#unitPermission");
@@ -161,6 +159,9 @@
 </script>
 
 <form>
+    <div>
+        <h5>Worktime permission change!</h5>
+    </div>
     <div>
         <form id="testForm">
             <table id="unitPermission" class="table table-bordered">

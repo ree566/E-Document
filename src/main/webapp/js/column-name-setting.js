@@ -25,3 +25,15 @@ var specialRelativeColumn = {
     EE: [],
     IE: []
 };
+
+var formulaColumn = [
+    "productionWt",
+    "setupTime",
+    "assyToT1",
+    "t2ToPacking",
+    "assyStation",
+    "packingStation",
+    "assyKanbanTime",
+    "packingKanbanTime",
+    "cleanPanelAndAssembly"
+];

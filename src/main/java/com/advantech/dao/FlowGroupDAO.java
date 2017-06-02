@@ -6,13 +6,8 @@
 package com.advantech.dao;
 
 import com.advantech.helper.PageInfo;
-import com.advantech.model.Flow;
 import com.advantech.model.FlowGroup;
-import java.util.Collection;
 import java.util.List;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -20,30 +15,20 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class FlowGroupDAO implements BasicDAO<FlowGroup> {
-
-    @Autowired
-    private SessionFactory sessionFactory;
-    
-    @Autowired
-    private PaginateDAO paginateDAO;
-
-    private Session currentSession() {
-        return sessionFactory.getCurrentSession();
-    }
+public class FlowGroupDAO extends AbstractDao<Integer, FlowGroup> implements BasicDAO<FlowGroup> {
 
     @Override
     public List<FlowGroup> findAll() {
-        return currentSession().createCriteria(FlowGroup.class).list();
+        return createEntityCriteria().list();
     }
 
     public List<FlowGroup> findAll(PageInfo info) {
-        return paginateDAO.findAll(this.currentSession(), FlowGroup.class, info);
+        return super.getByPaginateInfo(info);
     }
  
     @Override
     public FlowGroup findByPrimaryKey(Object obj_id) {
-        return (FlowGroup) currentSession().load(FlowGroup.class, (int) obj_id);
+        return super.getByKey((int) obj_id);
     }
 
     @Override

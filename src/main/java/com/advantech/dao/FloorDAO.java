@@ -8,10 +8,7 @@ package com.advantech.dao;
 import com.advantech.model.Floor;
 import java.util.List;
 import org.hibernate.Criteria;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -19,29 +16,22 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class FloorDAO implements BasicDAO<Floor> {
-
-    @Autowired
-    private SessionFactory sessionFactory;
-
-    private Session currentSession() {
-        return sessionFactory.getCurrentSession();
-    }
+public class FloorDAO extends AbstractDao<Integer, Floor> implements BasicDAO<Floor> {
 
     @Override
     public List<Floor> findAll() {
-        return currentSession().createCriteria(Floor.class).list();
+        return createEntityCriteria().list();
     }
 
     public List<Floor> findByPrimaryKeys(Integer... id) {
-        Criteria criteria = currentSession().createCriteria(Floor.class);
+        Criteria criteria = createEntityCriteria();
         criteria.add(Restrictions.in("id", id));
         return criteria.list();
     }
 
     @Override
     public Floor findByPrimaryKey(Object obj_id) {
-        return (Floor) currentSession().load(Floor.class, (int) obj_id);
+        return super.getByKey((int) obj_id);
     }
 
     @Override

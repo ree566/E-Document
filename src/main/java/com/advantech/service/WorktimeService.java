@@ -8,8 +8,10 @@ package com.advantech.service;
 import com.advantech.dao.*;
 import com.advantech.helper.PageInfo;
 import com.advantech.model.Worktime;
-import java.math.BigDecimal;
+import com.advantech.model.WorktimeFormulaSetting;
+import static com.google.common.collect.Lists.newArrayList;
 import java.util.List;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +27,9 @@ public class WorktimeService {
     @Autowired
     private WorktimeDAO worktimeDAO;
 
+    @Autowired
+    private WorktimeFormulaSettingDAO worktimeFormulaSettingDAO;
+
     public List<Worktime> findAll() {
         return worktimeDAO.findAll();
     }
@@ -34,7 +39,9 @@ public class WorktimeService {
     }
 
     public Worktime findByPrimaryKey(Object obj_id) {
-        return worktimeDAO.findByPrimaryKey(obj_id);
+        Worktime w = worktimeDAO.findByPrimaryKey(obj_id);
+        Hibernate.initialize(w.getWorktimeFormulaSettings());
+        return w;
     }
 
     public List<Worktime> findByPrimaryKeys(Integer... ids) {
@@ -47,12 +54,18 @@ public class WorktimeService {
 
     public int insert(Worktime worktime) {
         initUnfilledFormulaColumn(worktime);
-        return worktimeDAO.insert(worktime);
+        WorktimeFormulaSetting setting = worktime.getWorktimeFormulaSettings().get(0);
+        worktime.setWorktimeFormulaSettings(null);
+        worktimeDAO.insert(worktime);
+        setting.setWorktime(worktime);
+        worktimeFormulaSettingDAO.insert(setting);
+        return 1;
     }
 
     public int update(Worktime worktime) {
         initUnfilledFormulaColumn(worktime);
-        return worktimeDAO.update(worktime);
+        worktimeDAO.update(worktime);
+        return 1;
     }
 
     public int update(List<Worktime> l) {
@@ -64,41 +77,59 @@ public class WorktimeService {
 
     public int merge(Worktime worktime) {
         initUnfilledFormulaColumn(worktime);
-        return worktimeDAO.merge(worktime);
+
+        //Merge formula setting first
+        List<WorktimeFormulaSetting> existSettings = worktimeFormulaSettingDAO.findByWorktime(worktime.getId());
+        WorktimeFormulaSetting setting = worktime.getWorktimeFormulaSettings().get(0);
+        setting.setWorktime(worktime);
+        if (existSettings.isEmpty()) {
+            worktimeFormulaSettingDAO.insert(setting);
+        } else {
+            setting.setId(existSettings.get(0).getId());
+            worktimeFormulaSettingDAO.merge(setting);
+        }
+        
+        //Add the persisted WorktimeFormulaSetting object
+        worktime.setWorktimeFormulaSettings(newArrayList(setting));
+        worktimeDAO.merge(worktime);
+        return 1;
     }
 
     public void initUnfilledFormulaColumn(Worktime w) {
-        if (isDecimalColumnNeedReset(w.getCleanPanelAndAssembly())) {
+        //Lazy loading
+        WorktimeFormulaSetting setting = w.getWorktimeFormulaSettings().get(0);
+
+        if (isColumnCalculated(setting.getCleanPanelAndAssembly())) {
             w.setDefaultCleanPanelAndAssembly();
         }
-        if (isDecimalColumnNeedReset(w.getProductionWt())) {
+        if (isColumnCalculated(setting.getProductionWt())) {
             w.setDefaultProductWt();
         }
-        if (isDecimalColumnNeedReset(w.getSetupTime())) {
+        if (isColumnCalculated(setting.getSetupTime())) {
             w.setDefaultSetupTime();
         }
-        if (isDecimalColumnNeedReset(w.getAssyToT1())) {
+        if (isColumnCalculated(setting.getAssyToT1())) {
             w.setDefaultAssyToT1();
         }
-        if (isDecimalColumnNeedReset(w.getT2ToPacking())) {
+        if (isColumnCalculated(setting.getT2ToPacking())) {
             w.setDefaultT2ToPacking();
         }
-        if (w.getAssyStation() == null || w.getAssyStation() == 0) {
+        if (isColumnCalculated(setting.getAssyStation())) {
             w.setDefaultAssyStation();
         }
-        if (w.getPackingStation() == null || w.getPackingStation() == 0) {
+        if (isColumnCalculated(setting.getPackingStation())) {
             w.setDefaultPackingStation();
         }
-        if (isDecimalColumnNeedReset(w.getAssyKanbanTime())) {
+        if (isColumnCalculated(setting.getAssyKanbanTime())) {
             w.setDefaultAssyKanbanTime();
         }
-        if (isDecimalColumnNeedReset(w.getPackingKanbanTime())) {
+        if (isColumnCalculated(setting.getPackingKanbanTime())) {
             w.setDefaultPackingKanbanTime();
         }
     }
 
-    private boolean isDecimalColumnNeedReset(BigDecimal d) {
-        return d == null || d.compareTo(BigDecimal.ZERO) == 0;
+    private boolean isColumnCalculated(int i) {
+        return i == 1;
     }
 
     public int saveOrUpdate(List<Worktime> l) {

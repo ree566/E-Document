@@ -9,11 +9,8 @@ import com.advantech.helper.PageInfo;
 import com.advantech.model.WorktimeColumnGroup;
 import java.util.List;
 import org.hibernate.Criteria;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.hibernate.criterion.CriteriaSpecification;
 import org.hibernate.criterion.Restrictions;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -21,35 +18,25 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class WorktimeColumnGroupDAO implements BasicDAO<WorktimeColumnGroup> {
-
-    @Autowired
-    private SessionFactory sessionFactory;
-    
-    @Autowired
-    private PaginateDAO paginateDAO;
-
-    private Session currentSession() {
-        return sessionFactory.getCurrentSession();
-    }
+public class WorktimeColumnGroupDAO extends AbstractDao<Integer, WorktimeColumnGroup> implements BasicDAO<WorktimeColumnGroup> {
 
     @Override
     public List<WorktimeColumnGroup> findAll() {
-        return currentSession().createCriteria(WorktimeColumnGroup.class).list();
+        return createEntityCriteria().list();
     }
-    
+
     public List<WorktimeColumnGroup> findAll(PageInfo info) {
-        return paginateDAO.findAll(this.currentSession(), WorktimeColumnGroup.class, info);
+        return getByPaginateInfo(info);
     }
 
     @Override
     public WorktimeColumnGroup findByPrimaryKey(Object obj_id) {
-        return (WorktimeColumnGroup) currentSession().load(WorktimeColumnGroup.class, (int) obj_id);
+        return getByKey((int) obj_id);
     }
 
     public WorktimeColumnGroup findByUserType(Object obj_id) {
-        Criteria criteria = currentSession().createCriteria(WorktimeColumnGroup.class, "w");
-        criteria.createAlias("w.unit", "u");
+        Criteria criteria = createEntityCriteria();
+        criteria.createAlias("unit", "u");
         criteria.add(Restrictions.eq("u.id", obj_id));
         criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
         return (WorktimeColumnGroup) criteria.uniqueResult();

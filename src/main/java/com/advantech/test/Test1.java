@@ -6,13 +6,16 @@
 package com.advantech.test;
 
 import com.advantech.helper.HibernateUtil;
-import com.advantech.model.User;
+import com.advantech.model.WorktimeColumnGroup;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
+import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.hibernate.criterion.CriteriaSpecification;
+import org.hibernate.criterion.Restrictions;
 
 /**
  *
@@ -27,17 +30,24 @@ public class Test1 {
         try {
             session = factory.getCurrentSession();
             tx = session.beginTransaction();
-            
-            User u = (User) session.get(User.class, 10);
-            print(u);
+
+            Criteria criteria = session.createCriteria(WorktimeColumnGroup.class);
+            criteria.createAlias("unit", "u");
+            criteria.add(Restrictions.eq("u.id", 4));
+            criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
+            WorktimeColumnGroup w = (WorktimeColumnGroup) criteria.uniqueResult();
+
+
+            print(w);
 
             tx.commit();
         } catch (Exception e) {
-            if(tx != null){
+            e.printStackTrace();
+            if (tx != null) {
                 tx.rollback();
             }
         } finally {
-            if(session != null){
+            if (session != null && session.isOpen()) {
                 session.close();
             }
             factory.close();

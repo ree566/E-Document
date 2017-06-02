@@ -7,11 +7,7 @@ package com.advantech.dao;
 
 import com.advantech.helper.PageInfo;
 import com.advantech.model.Pending;
-import java.util.Collection;
 import java.util.List;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -19,47 +15,37 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class PendingDAO implements BasicDAO<Pending> {
-
-    @Autowired
-    private SessionFactory sessionFactory;
-
-    @Autowired
-    private PaginateDAO paginateDAO;
-
-    private Session currentSession() {
-        return sessionFactory.getCurrentSession();
-    }
+public class PendingDAO extends AbstractDao<Integer, Pending> implements BasicDAO<Pending> {
 
     @Override
     public List<Pending> findAll() {
-        return currentSession().createCriteria(Pending.class).list();
+        return createEntityCriteria().list();
     }
 
     public List<Pending> findAll(PageInfo info) {
-        return paginateDAO.findAll(this.currentSession(), Pending.class, info);
+        return super.getByPaginateInfo(info);
     }
 
     @Override
     public Pending findByPrimaryKey(Object obj_id) {
-        return (Pending) currentSession().load(Pending.class, (int) obj_id);
+        return super.getByKey((int) obj_id);
     }
 
     @Override
     public int insert(Pending obj) {
-        this.currentSession().save(obj);
+        getSession().save(obj);
         return 1;
     }
 
     @Override
     public int update(Pending obj) {
-        this.currentSession().update(obj);
+        getSession().update(obj);
         return 1;
     }
 
     @Override
     public int delete(Pending pojo) {
-        this.currentSession().delete(pojo);
+        getSession().delete(pojo);
         return 1;
     }
 

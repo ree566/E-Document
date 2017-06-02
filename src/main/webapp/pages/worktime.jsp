@@ -82,15 +82,15 @@
         var babFlow_select_event = [
             {
                 type: 'change', fn: function (e) {
+                    var sel2 = $("#flowByTestFlowId\\.id");
+                    var sel2Val = sel2.val();
                     $.get('<c:url value="/SelectOption/flow-byParent/" />' + $(this).val(), function (data) {
-                        var sel2 = $("#flowByTestFlowId\\.id");
-//                        var selVal = sel2.val();
                         sel2.html("");
                         sel2.append("<option role='option' value=0>empty</option>");
                         for (var i = 0; i < data.length; i++) {
                             sel2.append("<option role='option' value=" + data[i].id + ">" + data[i].name + "</option>");
                         }
-//                        sel2.val(selVal);
+                        sel2.val(sel2Val);
                     });
                 }
             }
@@ -100,11 +100,13 @@
             setTimeout(function () {
                 // do here all what you need (like alert('yey');)
                 $("#flowByBabFlowId\\.id").trigger("change");
+                settingFormulaCheckbox($("#id").val());
             }, 50);
             greyout(form);
         };
 
         var flowVerify = function (postdata, formid) {
+            var formulaFieldInfo = getFormulaCheckboxField();
             cleanEditForm();
 
             var babArr = selectOptions["bab_flow"],
@@ -123,32 +125,11 @@
 
             var totalAlert = babCheckMessage.concat(testCheckMessage).concat(pkgCheckMessage);
             errorTextFormatF(totalAlert); //field // code
+
+            $.extend(postdata, formulaFieldInfo);
             return totalAlert.length == 0 ? [true, "saved"] : [false, "There are some errors in the entered data. Hover over the error icons for details."];
 
         };
-
-        function flowCheck(logicArr, flowName, formObj) {
-            var validationErrors = [];
-            for (var i = 0; i < logicArr.length; i++) {
-                var logic = logicArr[i];
-                var keyword = logic.keyword;
-                for (var j = 0; j < keyword.length; j++) {
-                    if (flowName.indexOf(keyword[j]) > -1) {
-                        var checkCol = logic.checkColumn;
-                        for (var k = 0; k < checkCol.length; k++) {
-                            var colName = checkCol[k];
-                            if (!logic.prmValid(formObj[colName])) {
-                                var err = {};
-                                err.field = colName;
-                                err.code = logic.message;
-                                validationErrors.push(err);
-                            }
-                        }
-                    }
-                }
-            }
-            return validationErrors;
-        }
 
         grid.jqGrid({
             url: '<c:url value="/Worktime/read" />',
@@ -160,9 +141,9 @@
                 {label: 'id', name: "id", width: 60, frozen: true, hidden: true, key: true, search: false, editable: true, editrules: {edithidden: true}, editoptions: {readonly: 'readonly', disabled: true, defaultValue: "0"}},
                 {label: 'Model', name: "modelName", frozen: true, editable: true, searchrules: {required: true}, searchoptions: search_string_options, editrules: {required: true}, formoptions: required_form_options},
                 {label: 'TYPE', name: "type.id", edittype: "select", editoptions: {value: selectOptions["type"]}, formatter: selectOptions["type_func"], width: 100, searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["type"], sopt: ['eq']}},
-                {label: 'ProductionWT', name: "productionWt", width: 120, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: formula_hint, editrules: {number: true}},
+                {label: 'ProductionWT', name: "productionWt", width: 120, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: {elmsuffix: addFormulaCheckbox("productionWt")}, editrules: {number: true}},
                 {label: 'Total Module', name: "totalModule", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, editoptions: {defaultValue: '0'}},
-                {label: 'Setup Time', name: "setupTime", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: formula_hint, editrules: {number: true}},
+                {label: 'Setup Time', name: "setupTime", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: {elmsuffix: addFormulaCheckbox("setupTime")}, editrules: {number: true}},
                 {label: 'CleanPanel', name: "cleanPanel", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, editoptions: {defaultValue: '0'}},
                 {label: 'Assembly', name: "assy", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, editoptions: {defaultValue: '0'}},
                 {label: 'T1', name: "t1", width: 60, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, editoptions: {defaultValue: '0'}},
@@ -177,8 +158,8 @@
                 {label: 'Hi-Pot/Leakage', name: "hiPotLeakage", width: 120, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, editoptions: {defaultValue: '0'}},
                 {label: 'Cold Boot', name: "coldBoot", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, editoptions: {defaultValue: '0'}},
                 {label: 'Warm Boot', name: "warmBoot", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, editoptions: {defaultValue: '0'}},
-                {label: 'ASS_T1', name: "assyToT1", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: formula_hint, editrules: {number: true}},
-                {label: 'T2_PACKING', name: "t2ToPacking", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: formula_hint, editrules: {number: true}},
+                {label: 'ASS_T1', name: "assyToT1", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: {elmsuffix: addFormulaCheckbox("assyToT1")}, editrules: {number: true}},
+                {label: 'T2_PACKING', name: "t2ToPacking", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: {elmsuffix: addFormulaCheckbox("t2ToPacking")}, editrules: {number: true}},
                 {label: 'Floor', name: "floor.id", edittype: "select", editoptions: {value: selectOptions["floor"]}, width: 100, formatter: selectOptions["floor_func"], searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["floor"], sopt: ['eq']}},
                 {label: 'Pending', name: "pending.id", edittype: "select", editoptions: {value: selectOptions["pending"], dataEvents: pending_select_event}, formatter: selectOptions["pending_func"], width: 100, searchrules: number_search_rule, stype: "select", searchoptions: {value: selectOptions["pending"], sopt: ['eq']}},
                 {label: 'Pending TIME', name: "pendingTime", width: 100, searchrules: {required: true}, searchoptions: search_decimal_options, editrules: {required: true, number: true}, formoptions: required_form_options},
@@ -206,13 +187,13 @@
                 {label: 'EAC', name: "eac", width: 60, searchrules: number_search_rule, searchoptions: search_string_options, edittype: "select", editoptions: {value: "0:0;1:1"}},
                 {label: 'N合1集合箱', name: "nsInOneCollectionBox", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, editoptions: {defaultValue: '0'}},
                 {label: '料號屬性值維護', name: "partNoAttributeMaintain", edittype: "select", editoptions: {value: "Y:Y;N:N"}, width: 120, searchrules: {required: true}, searchoptions: search_string_options},
-                {label: '組裝排站人數', name: "assyStation", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: formula_hint, editrules: {integer: true}},
-                {label: '包裝排站人數', name: "packingStation", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: formula_hint, editrules: {integer: true}},
-                {label: '前置時間', name: "assyLeadTime", width: 80, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, formoptions: {elmsuffix: '(組裝)'}, editoptions: {defaultValue: '0'}},
-                {label: '看板工時', name: "assyKanbanTime", width: 80, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, formoptions: {elmsuffix: '(組裝)(F)'}},
-                {label: '前置時間', name: "packingLeadTime", width: 80, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, formoptions: {elmsuffix: '(包裝)'}, editoptions: {defaultValue: '0'}},
-                {label: '看板工時', name: "packingKanbanTime", width: 80, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, formoptions: {elmsuffix: '(包裝)(F)'}},
-                {label: 'CleanPanel+Assembly', name: "cleanPanelAndAssembly", width: 200, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}},
+                {label: '組裝排站人數', name: "assyStation", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: {elmsuffix: addFormulaCheckbox("assyStation")}, editrules: {integer: true}},
+                {label: '包裝排站人數', name: "packingStation", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: {elmsuffix: addFormulaCheckbox("packingStation")}, editrules: {integer: true}},
+                {label: '前置時間', name: "assyLeadTime", width: 80, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, formoptions: {label: '組裝前置時間'}, editoptions: {defaultValue: '0'}},
+                {label: '看板工時', name: "assyKanbanTime", width: 80, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, formoptions: {label: '組裝看板工時', elmsuffix: addFormulaCheckbox("assyKanbanTime")}},
+                {label: '前置時間', name: "packingLeadTime", width: 80, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, formoptions: {label: '包裝前置時間'}, editoptions: {defaultValue: '0'}},
+                {label: '看板工時', name: "packingKanbanTime", width: 80, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, formoptions: {label: '包裝看板工時', elmsuffix: addFormulaCheckbox("packingKanbanTime")}},
+                {label: 'CleanPanel+Assembly', name: "cleanPanelAndAssembly", width: 200, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, formoptions: {elmsuffix: addFormulaCheckbox("cleanPanelAndAssembly")}},
                 {label: 'Modified_Date', width: 200, name: "modifiedDate", index: "modifiedDate", formatter: 'date', formatoptions: {srcformat: 'Y-m-d H:i:s A', newformat: 'Y-m-d H:i:s A'}, stype: 'text', searchrules: date_search_rule, searchoptions: search_date_options, align: 'center'}
             ],
             rowNum: 20,
@@ -270,23 +251,25 @@
                         + "\najaxOptions is: " + ajaxOptions
                         );
             }
-        })
-                .jqGrid('setGroupHeaders', {
-                    useColSpanStyle: true,
-                    groupHeaders: [
-                        {startColumnName: 'ce', numberOfColumns: 7, titleText: '<em>外箱Label產品資訊 (1：要印   0：不印)</em>'},
-                        {startColumnName: 'assyLeadTime', numberOfColumns: 2, titleText: '<em>組裝看板工時</em>'},
-                        {startColumnName: 'packingLeadTime', numberOfColumns: 2, titleText: '<em>包裝看板工時</em>'}
-                    ]
-                })
-                .navButtonAdd('#pager', {
-                    caption: "Export to Excel",
-                    buttonicon: "ui-icon-disk",
-                    onClickButton: function () {
-                        grid.jqGrid('excelExport', {"url": "<c:url value="/Worktime/excel" />"});
-                    },
-                    position: "last"
-                });
+        });
+
+        grid.jqGrid('setGroupHeaders', {
+            useColSpanStyle: true,
+            groupHeaders: [
+                {startColumnName: 'ce', numberOfColumns: 7, titleText: '<em>外箱Label產品資訊 (1：要印   0：不印)</em>'},
+                {startColumnName: 'assyLeadTime', numberOfColumns: 2, titleText: '<em>組裝看板工時</em>'},
+                {startColumnName: 'packingLeadTime', numberOfColumns: 2, titleText: '<em>包裝看板工時</em>'}
+            ]
+        });
+
+        grid.navButtonAdd('#pager', {
+            caption: "Export to Excel",
+            buttonicon: "ui-icon-disk",
+            onClickButton: function () {
+                grid.jqGrid('excelExport', {"url": "<c:url value="/Worktime/excel" />"});
+            },
+            position: "last"
+        });
 
         grid.jqGrid('navGrid', '#pager',
                 {edit: ${isAdmin}, add: ${isAdmin}, del: ${isAdmin}, search: true},
@@ -300,16 +283,14 @@
                     beforeSubmit: flowVerify,
                     afterclickPgButtons: function (whichbutton, formid, rowid) {
                         $("#flowByBabFlowId\\.id").trigger("change");
-//                        var rowData = grid.jqGrid ('getRowData', rowid);
-//                        console.log(rowData["flowByTestFlowId.id"]);
-//                        $("#flowByTestFlowId\\.id").val(rowData["flowByTestFlowId.id"]);
                     },
                     recreateForm: true,
                     beforeShowForm: testFlowInit,
                     closeOnEscape: true,
                     zIndex: 9999,
                     cols: 20,
-                    bottominfo: "Fields marked with (*) are required.<br/>Fields marked with (F) set to zero will be recalculate."
+                    viewPagerButtons: false,
+                    bottominfo: "Fields marked with (*) are required.<br/>勾選套入公式的欄位將會被重新計算."
                 },
                 {
                     url: '<c:url value="/Worktime/create" />',
@@ -324,7 +305,7 @@
                     beforeShowForm: testFlowInit,
                     closeOnEscape: true,
                     zIndex: 9999,
-                    bottominfo: "Fields marked with (*) are required.<br/>Fields marked with (F) set to zero will be recalculate."
+                    bottominfo: "Fields marked with (*) are required.<br/>勾選套入公式的欄位將會被重新計算."
                 },
                 {
                     url: '<c:url value="/Worktime/delete" />',
@@ -394,6 +375,64 @@
                 }
             });
             return result;
+        }
+
+        function flowCheck(logicArr, flowName, formObj) {
+            var validationErrors = [];
+            for (var i = 0; i < logicArr.length; i++) {
+                var logic = logicArr[i];
+                var keyword = logic.keyword;
+                for (var j = 0; j < keyword.length; j++) {
+                    if (flowName.indexOf(keyword[j]) > -1) {
+                        var checkCol = logic.checkColumn;
+                        for (var k = 0; k < checkCol.length; k++) {
+                            var colName = checkCol[k];
+                            if (!logic.prmValid(formObj[colName])) {
+                                var err = {};
+                                err.field = colName;
+                                err.code = logic.message;
+                                validationErrors.push(err);
+                            }
+                        }
+                    }
+                }
+            }
+            return validationErrors;
+        }
+
+        function addFormulaCheckbox(fieldName) {
+            var str =  "<input type='checkbox' id='f_" + 
+                    fieldName + "' name='f_" + fieldName + 
+                    "' /><label for='f_" + fieldName + "'>套入公式</label>";
+            return str;
+        }
+
+        function getFormulaCheckboxField() {
+            var formulaCheckboxField = {};
+            for (var i = 0; i < formulaColumn.length; i++) {
+                var columnName = formulaColumn[i];
+                var fieldName = "worktimeFormulaSettings[0]." + columnName;
+                formulaCheckboxField[fieldName] = $("#f_" + columnName).is(":checked") ? 1 : 0;
+            }
+            return formulaCheckboxField;
+        }
+
+        function settingFormulaCheckbox(worktimeId) {
+            $.ajax({
+                type: "GET",
+                url: "<c:url value="/WorktimeFormulaSetting/find/" />" + worktimeId,
+                dataType: "json",
+                success: function (response) {
+                    var setting = response;
+                    for (var i = 0; i < formulaColumn.length; i++) {
+                        var columnName = formulaColumn[i];
+                        $("#f_" + columnName).prop("checked", setting[columnName] == 1);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
         }
     });
 </script>

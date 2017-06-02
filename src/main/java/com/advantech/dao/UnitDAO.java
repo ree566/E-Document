@@ -7,10 +7,7 @@ package com.advantech.dao;
 
 import com.advantech.model.Unit;
 import java.util.List;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Order;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -18,23 +15,16 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class UnitDAO implements BasicDAO<Unit> {
-
-    @Autowired
-    private SessionFactory sessionFactory;
-
-    private Session currentSession() {
-        return sessionFactory.getCurrentSession();
-    }
+public class UnitDAO extends AbstractDao<Integer, Unit> implements BasicDAO<Unit> {
 
     @Override
     public List<Unit> findAll() {
-        return currentSession().createCriteria(Unit.class).addOrder(Order.asc("name")).list();
+        return createEntityCriteria().addOrder(Order.asc("name")).list();
     }
 
     @Override
     public Unit findByPrimaryKey(Object obj_id) {
-        return (Unit) currentSession().load(Unit.class, (int) obj_id);
+        return super.getByKey((int) obj_id);
     }
 
     @Override

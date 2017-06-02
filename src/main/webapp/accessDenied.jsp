@@ -7,8 +7,8 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
-<sec:authentication var="user" property="principal" />
-<c:set var="isAnonymous" value="${user == null || user.username == null}" />
+<%--<sec:authentication var="user" property="principal" />
+<c:set var="isAnonymous" value="${user == null || user.username == null}" />--%>
 <!DOCTYPE html>
 <html>
     <head>
@@ -17,10 +17,10 @@
         <link rel="shortcut icon" href="images/favicon.ico"/>
     </head>
     <body>
-        Dear <strong>${isAnonymous ? 'anonymous' : user.username}</strong>, You are not authorized to access this page
+        Dear <strong>User</strong>, You are not authorized to access this page
         <a href="<c:url value="/" />">Home</a>
-        <c:if test="${!isAnonymous}">
+        <%--<c:if test="${!isAnonymous}">
             <p><c:out value="${user.authorities}" /></p>
-        </c:if>
+        </c:if>--%>
     </body>
 </html>
