@@ -34,7 +34,7 @@
                 $("#message").html("<font color='blue'>" + response + "</font>");
             },
             complete: function (response) {
-                $("#message").html("<font color='blue'>Your file has been uploaded!</font>");
+                $("#message").html(response.responseText);
                 $("#sync-img").hide();
             },
             error: function () {
@@ -47,7 +47,7 @@
 </script>
 <div>
     <h3>Upload single files example.</h3>
-    <form id="uploadForm" method="POST" action="${root}checkWorktime" enctype="multipart/form-data">
+    <form id="uploadForm" method="POST" action="${root}uploadFile" enctype="multipart/form-data">
         <select name="action">
             <option value="add">add</option>
             <option value="update">update</option>

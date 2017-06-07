@@ -37,15 +37,12 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 @RequestMapping("/Worktime")
 public class WorktimeController extends CrudController<Worktime> {
-
+    
     @Autowired
     private WorktimeService worktimeService;
-
+    
     @Autowired
     private SheetViewService sheetViewService;
-
-    @Autowired
-    private WorktimeColumnGroupService worktimeColumnGroupService;
 
     @ResponseBody
     @RequestMapping(value = SELECT_URL, method = {RequestMethod.GET})
@@ -54,7 +51,7 @@ public class WorktimeController extends CrudController<Worktime> {
     public JqGridResponse read(PageInfo info) {
         return toJqGridResponse(worktimeService.findAll(info), info);
     }
-
+    
     @RequestMapping(value = INSERT_URL, method = {RequestMethod.POST})
     @Secured({"ROLE_USER", "ROLE_ADMIN"})
     @Override
@@ -62,28 +59,28 @@ public class WorktimeController extends CrudController<Worktime> {
         if (bindingResult.hasErrors()) {
             return serverResponse(bindingResult.getFieldErrors());
         }
-
+        
         String modifyMessage;
-
+        
         if (isModelExists(worktime)) {
             modifyMessage = "This model name is already exists";
         } else {
             resetNullableColumn(worktime);
-            modifyMessage = worktimeService.insert(worktime) == 1 ? this.SUCCESS_MESSAGE : FAIL_MESSAGE;
+            modifyMessage = worktimeService.insertWithFormulaSetting(worktime) == 1 ? this.SUCCESS_MESSAGE : FAIL_MESSAGE;
         }
-
+        
         return serverResponse(modifyMessage);
     }
-
+    
     @RequestMapping(value = UPDATE_URL, method = {RequestMethod.POST})
     @Secured({"ROLE_USER", "ROLE_ADMIN"})
     @Override
     public ResponseEntity update(@Valid @ModelAttribute Worktime worktime, BindingResult bindingResult) {
-
+        
         if (bindingResult.hasErrors()) {
             return serverResponse(bindingResult.getFieldErrors());
         }
-
+        
         String modifyMessage;
         if (isModelExists(worktime)) {
             modifyMessage = "This model name is already exists";
@@ -91,10 +88,10 @@ public class WorktimeController extends CrudController<Worktime> {
             resetNullableColumn(worktime);
             modifyMessage = worktimeService.merge(worktime) == 1 ? this.SUCCESS_MESSAGE : FAIL_MESSAGE;
         }
-
+        
         return serverResponse(modifyMessage);
     }
-
+    
     @RequestMapping(value = DELETE_URL, method = {RequestMethod.POST})
     @Secured({"ROLE_USER", "ROLE_ADMIN"})
     @Override
@@ -102,25 +99,29 @@ public class WorktimeController extends CrudController<Worktime> {
         String modifyMessage = worktimeService.delete(id) == 1 ? this.SUCCESS_MESSAGE : this.FAIL_MESSAGE;
         return serverResponse(modifyMessage);
     }
-
+    
     private void resetNullableColumn(Worktime worktime) {
         if (worktime.getPreAssy().getId() == 0) {
             worktime.setPreAssy(null);
         }
-
+        
         if (worktime.getFlowByBabFlowId().getId() == 0) {
             worktime.setFlowByBabFlowId(null);
         }
-
+        
         if (worktime.getFlowByTestFlowId().getId() == 0) {
             worktime.setFlowByTestFlowId(null);
         }
-
+        
         if (worktime.getFlowByPackingFlowId().getId() == 0) {
             worktime.setFlowByPackingFlowId(null);
         }
+        
+        if (worktime.getUserByEeOwnerId().getId() == 0) {
+            worktime.setUserByEeOwnerId(null);
+        }
     }
-
+    
     private boolean isModelExists(Worktime worktime) {
         Worktime existWorktime = worktimeService.findByModel(worktime.getModelName());
         if (worktime.getId() == 0) {
@@ -131,27 +132,6 @@ public class WorktimeController extends CrudController<Worktime> {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/unitColumn", method = {RequestMethod.GET})
-    @Secured({"ROLE_USER", "ROLE_ADMIN"})
-    public String[] getUnitColumnName() {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        int unit = user.getUnit().getId();
-
-        String[] columnName;
-
-        WorktimeColumnGroup w = worktimeColumnGroupService.findByUserType(unit);
-
-        String columns = w.getColumnName();
-        if (columns == null) {
-            return new String[0];
-        } else {
-            columnName = columns.split(",");
-            return columnName;
-        }
-
-    }
-
-    @ResponseBody
     @RequestMapping(value = "/excel", method = {RequestMethod.GET})
     @Secured({"ROLE_USER", "ROLE_ADMIN"})
     public ModelAndView generateExcel() {
@@ -159,5 +139,5 @@ public class WorktimeController extends CrudController<Worktime> {
         List<SheetView> l = sheetViewService.findAll();
         return new ModelAndView("ExcelRevenueSummary", "revenueData", l);
     }
-
+    
 }

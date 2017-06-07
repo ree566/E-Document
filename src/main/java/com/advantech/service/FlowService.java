@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import org.hibernate.Hibernate;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -56,14 +57,12 @@ public class FlowService {
         return l;
     }
 
-    public boolean checkFlowInGroup(String babFlowName, String testFlowName) {
-        Flow babFlow = flowDAO.findByFlowName(babFlowName);
-        Flow testFlow = flowDAO.findByFlowName(testFlowName);
-        if (babFlow == null || testFlow == null) {
-            return false;
-        } else {
-            return babFlow.getFlowsForTestFlowId().contains(testFlow);
+    public List<Flow> findFlowWithSub() {
+        List<Flow> l = this.findAll();
+        for (Flow f : l) {
+            Hibernate.initialize(f.getFlowsForTestFlowId());
         }
+        return l;
     }
 
     public int insert(Flow flow) {

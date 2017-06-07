@@ -168,9 +168,9 @@ public class Worktime implements java.io.Serializable {
         this.flowByBabFlowId = flowByBabFlowId;
     }
 
-    @NotNull
+//    @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ee_owner_id", nullable = false)
+    @JoinColumn(name = "ee_owner_id", nullable = true)
     public User getUserByEeOwnerId() {
         return this.userByEeOwnerId;
     }
@@ -181,7 +181,7 @@ public class Worktime implements java.io.Serializable {
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "qc_owner_id", nullable = false)
+    @JoinColumn(name = "qc_owner_id", nullable = true)
     public User getUserByQcOwnerId() {
         return this.userByQcOwnerId;
     }
@@ -192,7 +192,7 @@ public class Worktime implements java.io.Serializable {
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "spe_owner_id", nullable = false)
+    @JoinColumn(name = "spe_owner_id", nullable = true)
     public User getUserBySpeOwnerId() {
         return this.userBySpeOwnerId;
     }
@@ -741,14 +741,14 @@ public class Worktime implements java.io.Serializable {
     }
 
     public void setDefaultAssyKanbanTime() {
-        if (this.assyStation != null && this.assyStation != 0) {
+        if (this.assyStation != null && this.assyStation != 0 && assyLeadTime != null) {
             BigDecimal defaultValue = assy.subtract(assyLeadTime).divide(new BigDecimal(assyStation), 2, RoundingMode.HALF_UP);
             this.setAssyKanbanTime(defaultValue);
         }
     }
 
     public void setDefaultPackingKanbanTime() {
-        if (this.packingStation != null && this.packingStation != 0) {
+        if (this.packingStation != null && this.packingStation != 0 && packingLeadTime != null) {
             BigDecimal defaultValue = packing.subtract(packingLeadTime).divide(new BigDecimal(packingStation), 2, RoundingMode.HALF_UP);
             this.setPackingKanbanTime(defaultValue);
         }

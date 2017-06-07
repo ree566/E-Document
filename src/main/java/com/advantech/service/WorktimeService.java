@@ -53,10 +53,15 @@ public class WorktimeService {
     }
 
     public int insert(Worktime worktime) {
+        worktimeDAO.insert(worktime);
+        return 1;
+    }
+
+    public int insertWithFormulaSetting(Worktime worktime) {
         initUnfilledFormulaColumn(worktime);
         WorktimeFormulaSetting setting = worktime.getWorktimeFormulaSettings().get(0);
         worktime.setWorktimeFormulaSettings(null);
-        worktimeDAO.insert(worktime);
+        this.insert(worktime);
         setting.setWorktime(worktime);
         worktimeFormulaSettingDAO.insert(setting);
         return 1;
@@ -88,7 +93,7 @@ public class WorktimeService {
             setting.setId(existSettings.get(0).getId());
             worktimeFormulaSettingDAO.merge(setting);
         }
-        
+
         //Add the persisted WorktimeFormulaSetting object
         worktime.setWorktimeFormulaSettings(newArrayList(setting));
         worktimeDAO.merge(worktime);
@@ -136,12 +141,12 @@ public class WorktimeService {
         for (int i = 0; i < l.size(); i++) {
             Worktime w = l.get(i);
             System.out.println("insert row: " + i + " \\Model: " + w.getModelName());
-            Worktime existW = this.findByModel(w.getModelName().trim());
+            Worktime existW = this.findByModel(w.getModelName());
             if (existW == null) {
-                this.insert(w);
+                this.insertWithFormulaSetting(w);
             } else {
                 w.setId(existW.getId());
-                worktimeDAO.merge(w);
+                this.merge(w);
             }
         }
         return 1;

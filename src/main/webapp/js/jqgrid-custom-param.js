@@ -8,17 +8,17 @@ var number_search_rule = {number: true, required: true};
 var date_search_rule = {date: true, required: true};
 
 var customErrorTextFormat = function (response) {
-//    return '<span class="ui-icon ui-icon-alert" ' +
-//            'style="float:left; margin-right:.3em;"></span>' +
-//            response.responseText;
-    alert(response.responseText);
+    return '<span class="ui-icon ui-icon-alert" ' +
+            'style="float:left; margin-right:.3em;"></span>' +
+            response.responseText;
+//    alert(response.responseText);
 };
 
 var greyout = function ($form) {
     $form.find(".FormElement[readonly]")
+            .parent(".DataTD")
             .prop("disabled", true)
             .addClass("ui-state-disabled")
-            .closest(".DataTD")
             .prev(".CaptionTD")
             .prop("disabled", true)
             .addClass("ui-state-disabled");

@@ -6,7 +6,7 @@
 package com.advantech.test;
 
 import com.advantech.helper.HibernateUtil;
-import com.advantech.model.WorktimeColumnGroup;
+import com.advantech.model.Worktime;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
@@ -14,7 +14,6 @@ import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.hibernate.criterion.CriteriaSpecification;
 import org.hibernate.criterion.Restrictions;
 
 /**
@@ -31,11 +30,9 @@ public class Test1 {
             session = factory.getCurrentSession();
             tx = session.beginTransaction();
 
-            Criteria criteria = session.createCriteria(WorktimeColumnGroup.class);
-            criteria.createAlias("unit", "u");
-            criteria.add(Restrictions.eq("u.id", 4));
-            criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
-            WorktimeColumnGroup w = (WorktimeColumnGroup) criteria.uniqueResult();
+            Criteria criteria = session.createCriteria(Worktime.class);
+            criteria.add(Restrictions.eq("modelName", "GAVV"));
+            Worktime w = (Worktime) criteria.uniqueResult();
 
 
             print(w);

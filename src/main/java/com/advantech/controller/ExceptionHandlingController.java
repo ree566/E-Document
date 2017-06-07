@@ -38,13 +38,11 @@ public class ExceptionHandlingController {
     // Total control - setup a model and return the view name yourself. Or
     // consider subclassing ExceptionHandlerExceptionResolver (see below).
     @ExceptionHandler(Exception.class)
-    public ModelAndView handleError(HttpServletRequest req, Exception ex) {
+    public ResponseEntity handleError(HttpServletRequest req, Exception ex) {
         System.out.println("Request: " + req.getRequestURL() + " raised " + ex);
 
-        ModelAndView mav = new ModelAndView();
-        mav.addObject("exception", ex);
-        mav.addObject("url", req.getRequestURL());
-        mav.setViewName("pages/error");
-        return mav; 
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ex.getMessage());
     }
 }

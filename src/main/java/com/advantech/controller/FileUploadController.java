@@ -11,12 +11,14 @@ import com.advantech.model.Pending;
 import com.advantech.model.User;
 import com.advantech.model.Type;
 import com.advantech.model.Worktime;
+import com.advantech.model.WorktimeFormulaSetting;
 import com.advantech.service.FloorService;
 import com.advantech.service.FlowService;
 import com.advantech.service.UserService;
 import com.advantech.service.PendingService;
 import com.advantech.service.TypeService;
 import com.advantech.service.WorktimeService;
+import static com.google.common.collect.Lists.newArrayList;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -26,7 +28,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.beanutils.PropertyUtils;
@@ -95,9 +96,10 @@ public class FileUploadController {
      * @return
      */
     @ResponseBody
-    @RequestMapping(value = "/uploadFile.do", method = RequestMethod.POST)
+    @RequestMapping(value = "/uploadFile", method = RequestMethod.POST)
     public String uploadFileHandler(@RequestParam String action, @RequestParam("file") MultipartFile file) {
         String message = "";
+        String flowRegex = "[^a-zA-Z0-9\\_\\-\\\\(\\\\)]+";
 
         Workbook workbook = null;
         int i = 0;
@@ -110,20 +112,22 @@ public class FileUploadController {
         try {
             inputStream = file.getInputStream();
             if (l.isEmpty()) {
-                Map floorOptions = this.tranToIdNameCompare(floorService.findAll());
-                Map userOptions = this.tranToIdNameCompare(userService.findAll());
-                Map typeOptions = this.tranToIdNameCompare(typeService.findAll());
-                Map flowOptions = this.tranToIdNameCompare(flowService.findAll());
+                Map<String, Floor> floorOptions = this.tranToIdNameCompare(floorService.findByPrimaryKeys(1, 2));
+                Map<String, User> userOptions = this.tranToIdNameCompare(userService.findAll());
+                Map<String, Type> typeOptions = this.tranToIdNameCompare(typeService.findByPrimaryKeys(6, 9, 10));
+                Pending pendingN = pendingService.findByPrimaryKey(3);
+
+                Map<String, Flow> flowOptions = new HashMap();
+                List<Flow> flows = flowService.findFlowWithSub();
+                for (Flow f : flows) {
+                    flowOptions.put(f.getName().replaceAll(flowRegex, ""), f);
+                }
 
                 workbook = WorkbookFactory.create(inputStream);
 
                 Sheet sheet = workbook.getSheetAt(0);
 
                 int maxNumberfRows = sheet.getPhysicalNumberOfRows();
-                User sysop = (User) userOptions.get("sysop"); //sysop
-                Type type_ok = (Type) typeOptions.get("OK"); //ok
-                Floor floor_all = (Floor) floorOptions.get("All"); //all
-                Pending default_pending = pendingService.findByPrimaryKey(1); //AASSY
 
                 for (i = 2; i < maxNumberfRows; i++) {
                     // 由於第 0 Row 為 title, 故 i 從 1 開始
@@ -134,15 +138,28 @@ public class FileUploadController {
                         cell_A.setCellType(CellType.STRING);
 
                         Worktime w = new Worktime();
-                        w.setFloor((Floor) isNull(floorOptions.get(getCellValue(row, "V")), floor_all));
-                        w.setFlowByTestFlowId((Flow) flowOptions.get(trimStringObject(getCellValue(row, "AG"))));
-                        w.setFlowByPackingFlowId((Flow) flowOptions.get(trimStringObject(getCellValue(row, "AH"))));
-                        w.setFlowByBabFlowId((Flow) flowOptions.get(trimStringObject(getCellValue(row, "AF"))));
-                        w.setUserByEeOwnerId((User) isNull(userOptions.get(getCellValue(row, "AA")), sysop));
-                        w.setUserByQcOwnerId((User) isNull(userOptions.get(getCellValue(row, "AB")), sysop));
-                        w.setUserBySpeOwnerId((User) isNull(userOptions.get(getCellValue(row, "Z")), sysop));
-                        w.setType((Type) isNull(typeOptions.get(getCellValue(row, "B")), type_ok));
-                        w.setModelName(((String) getCellValue(row, "A")).replaceAll("[^a-zA-Z]+", ""));
+                        w.setFloor(floorOptions.get((String) getCellValue(row, "V")));
+
+                        Object babFlowName = getCellValue(row, "AF");
+                        Object testFlowName = getCellValue(row, "AG");
+                        if (babFlowName != null && testFlowName != null) {
+                            babFlowName = babFlowName.toString().replaceAll(flowRegex, "");
+                            testFlowName = testFlowName.toString().replaceAll(flowRegex, "");
+                            Flow babFlow = flowOptions.get(((String) babFlowName));
+                            Flow testFlow = flowOptions.get(((String) testFlowName));
+                            w.setFlowByTestFlowId(testFlow);
+                            w.setFlowByBabFlowId(babFlow);
+                        }
+
+                        w.setFlowByPackingFlowId(getCellValue(row, "AH") == null ? null : flowOptions.get("PKG"));
+
+                        Object eeSheet = getCellValue(row, "AA");
+                        User eeUser = eeSheet == null ? null : userOptions.get(eeSheet.toString().trim().toLowerCase());
+                        w.setUserByEeOwnerId(eeUser);
+                        w.setUserByQcOwnerId(userOptions.get(((String) getCellValue(row, "AB")).trim().toLowerCase()));
+                        w.setUserBySpeOwnerId(userOptions.get(((String) getCellValue(row, "Z")).trim().toLowerCase()));
+                        w.setType(typeOptions.get(getCellValue(row, "B").toString()));
+                        w.setModelName((String) getCellValue(row, "A"));
                         w.setTotalModule(objToBigDecimal(getCellValue(row, "D")));
                         w.setCleanPanel(objToBigDecimal(getCellValue(row, "F")));
                         w.setAssy(objToBigDecimal(getCellValue(row, "G")));
@@ -197,15 +214,30 @@ public class FileUploadController {
                         w.setAssyKanbanTime(objToBigDecimal(getCellValue(row, "AV")));
                         w.setPackingKanbanTime(objToBigDecimal(getCellValue(row, "AX")));
                         w.setCleanPanelAndAssembly(objToBigDecimal(getCellValue(row, "BB")));
-                        w.setPending(default_pending);
+                        w.setPending(pendingN);
                         w.setPendingTime(BigDecimal.ZERO);
                         w.setAssyPackingSop(getCellValue(row, "AC") == null ? null : (String) getCellValue(row, "AC"));
 
+                        WorktimeFormulaSetting setting = new WorktimeFormulaSetting();
+                        
+                        setting.setAssyKanbanTime(isFormula(row, "AV"));
+                        setting.setAssyStation(isFormula(row, "AS"));
+                        setting.setPackingKanbanTime(isFormula(row, "AX"));
+                        setting.setPackingStation(isFormula(row, "AT"));
+                        setting.setAssyToT1(isFormula(row, "T"));
+                        setting.setT2ToPacking(isFormula(row, "U"));
+                        setting.setProductionWt(isFormula(row, "C"));
+                        setting.setSetupTime(isFormula(row, "E"));
+                        setting.setCleanPanelAndAssembly(isFormula(row, "BB"));
+                        
+                        w.setWorktimeFormulaSettings(newArrayList(setting));
                         l.add(w);
+                    } else {
+                        break;
                     }
                 }
             }
-//            worktimeService.saveOrUpdate(l);
+            worktimeService.saveOrUpdate(l);
             message = "Data init done.";
         } catch (IOException | IllegalAccessException | NoSuchMethodException | InvocationTargetException | EncryptedDocumentException | InvalidFormatException ex) {
             System.out.println(ex);
@@ -233,6 +265,7 @@ public class FileUploadController {
     @RequestMapping(value = "/checkWorktime", method = RequestMethod.POST)
     public String checkWorktimeHandler(@RequestParam("file") MultipartFile file) {
         String message = "";
+        String flowRegex = "[^a-zA-Z0-9\\_\\-\\\\(\\\\)]+";
 
         Workbook workbook = null;
         int i = 0;
@@ -246,6 +279,12 @@ public class FileUploadController {
             Map userOptions = this.tranToIdNameCompare(userService.findAll());
             Map typeOptions = this.tranToIdNameCompare(typeService.findByPrimaryKeys(6, 9, 10));
 
+            Map<String, Flow> flowOptions = new HashMap();
+            List<Flow> flows = flowService.findFlowWithSub();
+            for (Flow f : flows) {
+                flowOptions.put(f.getName().replaceAll(flowRegex, ""), f);
+            }
+
             workbook = WorkbookFactory.create(inputStream);
 
             Sheet sheet = workbook.getSheetAt(0);
@@ -256,19 +295,23 @@ public class FileUploadController {
             Font redFont = workbook.createFont();
             redFont.setColor(Font.COLOR_RED);
             alert_style.setFont(redFont);
-            alert_style.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
+            alert_style.setFillForegroundColor(IndexedColors.GREEN.getIndex());
             alert_style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
             CellStyle title_alert = workbook.createCellStyle();
-            title_alert.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
+            title_alert.setFillForegroundColor(IndexedColors.GREEN.getIndex());
             title_alert.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
             for (i = 2; i < maxNumberfRows; i++) {
                 // 由於第 0 Row 為 title, 故 i 從 1 開始
 
                 Row row = sheet.getRow(i); // 取得第 i Row
+                if (row == null) {
+                    break;
+                }
 
                 Cell cell_A = CellUtil.getCell(row, CellReference.convertColStringToIndex("A"));
+
                 cell_A.setCellType(CellType.STRING);
 
                 boolean checkFlag = true;
@@ -279,19 +322,19 @@ public class FileUploadController {
                 }
 
                 Object aa_value = getCellValue(row, "AA");
-                if (aa_value == null || userOptions.get(aa_value.toString().toLowerCase()) == null) {
+                if (aa_value == null || (!"N/A".equals(aa_value) && userOptions.get(aa_value.toString().trim().toLowerCase()) == null)) {
                     cellSetAlert(row, "AA", alert_style);
                     checkFlag = false;
                 }
 
                 Object ab_value = getCellValue(row, "AB");
-                if (ab_value == null || userOptions.get(ab_value.toString().toLowerCase()) == null) {
+                if (ab_value == null || (!"N/A".equals(aa_value) && userOptions.get(ab_value.toString().trim().toLowerCase()) == null)) {
                     cellSetAlert(row, "AB", alert_style);
                     checkFlag = false;
                 }
 
                 Object z_value = getCellValue(row, "Z");
-                if (z_value == null || userOptions.get(z_value.toString().toLowerCase()) == null) {
+                if (z_value == null || (!"N/A".equals(aa_value) && userOptions.get(z_value.toString().trim().toLowerCase()) == null)) {
                     cellSetAlert(row, "Z", alert_style);
                     checkFlag = false;
                 }
@@ -320,7 +363,6 @@ public class FileUploadController {
 //                    cellSetAlert(row, "AR", alert_style);
 //                    checkFlag = false;
 //                }
-
                 if (objToBigDecimal(getCellValue(row, "AS")) == null) {
                     cellSetAlert(row, "AS", alert_style);
                     checkFlag = false;
@@ -371,16 +413,14 @@ public class FileUploadController {
                     checkFlag = false;
                 }
 
-                if (objToBigDecimal(getCellValue(row, "BB")) == null) {
-                    cellSetAlert(row, "BB", alert_style);
-                    checkFlag = false;
-                }
-
-                Object babFlow = getCellValue(row, "AF");
-                Object testFlow = getCellValue(row, "AG");
-                if (babFlow != null && testFlow != null) {
-                    boolean flowCheckFlag = flowService.checkFlowInGroup(babFlow.toString().replaceAll("[^a-zA-Z0-9\\_\\-\\\\(\\\\)]+", ""), testFlow.toString().trim().replaceAll("[^a-zA-Z0-9\\_\\-\\\\(\\\\)]+", ""));
-                    if (flowCheckFlag == false) {
+                Object babFlowName = getCellValue(row, "AF");
+                Object testFlowName = getCellValue(row, "AG");
+                if (babFlowName != null && testFlowName != null) {
+                    babFlowName = babFlowName.toString().replaceAll(flowRegex, "");
+                    testFlowName = testFlowName.toString().replaceAll(flowRegex, "");
+                    Flow babFlow = flowOptions.get(((String) babFlowName));
+                    Flow testFlow = flowOptions.get(((String) testFlowName));
+                    if (babFlow == null || testFlow == null || !babFlow.getFlowsForTestFlowId().contains(testFlow)) {
                         cellSetAlert(row, "AF", alert_style);
                         cellSetAlert(row, "AG", alert_style);
                         checkFlag = false;
@@ -411,9 +451,6 @@ public class FileUploadController {
             System.out.println("File has been upload.");
 
             message = "Data init done.";
-        } catch (IOException | IllegalAccessException | NoSuchMethodException | InvocationTargetException | EncryptedDocumentException | InvalidFormatException ex) {
-            System.out.println(ex);
-            message = ex.getMessage();
         } catch (Exception ex) {
             System.out.println(ex);
             message = "Error initialize object at row number " + (i + 1);
@@ -444,14 +481,6 @@ public class FileUploadController {
                 sheet.removeRow(removingRow);
             }
         }
-    }
-
-    private Object isNull(Object i, Object replaceTarget) {
-        return i == null ? replaceTarget : i;
-    }
-
-    private Object trimStringObject(Object o) {
-        return o == null ? o : o.toString().trim();
     }
 
     private BigDecimal objToBigDecimal(Object o) {
@@ -489,6 +518,11 @@ public class FileUploadController {
                     return null;
             }
         }
+    }
+
+    private int isFormula(Row row, String letter) {
+        Cell cell = CellUtil.getCell(row, CellReference.convertColStringToIndex(letter));
+        return cell.getCellType() == Cell.CELL_TYPE_FORMULA ? 1 : 0;
     }
 
     private void cellSetAlert(Row row, String letter, CellStyle style) {

@@ -4,6 +4,7 @@
 
 <sec:authentication var="user" property="principal" />
 <sec:authorize access="hasRole('ADMIN') or hasRole('USER')"  var="isAdmin" />
+<sec:authorize access="hasRole('GUEST')"  var="isGuest" />
 <style>
     .permission-hint{
         color: red;
@@ -29,11 +30,11 @@
 <script>
     $(function () {
         var scrollPosition = 0;
-
-        var unitName = '${user.unit.name}';
-        var modifyColumns = [];
-//        var modifyColumns = (unitName == null || unitName == "") ? [] : getColumn();
         var grid = $("#list");
+        var unitName = '${user.unit.name}';
+        var modifyColumns = (${isGuest} || unitName == null || unitName == "") ? [] : getColumn();
+        var columnEditableInsetting = modifyColumns.length > 0;
+        var isUserEditable = ${isAdmin} && columnEditableInsetting;
 
         //Set param into jqgrid-custom-select-option-reader.js and get option by param selectOptions
         //You can get the floor select options and it's formatter function
@@ -43,7 +44,7 @@
             columnInfo: [
                 {name: "floor", isNullable: false},
                 {name: "user", nameprefix: "spe_", isNullable: false, dataToServer: "SPE"},
-                {name: "user", nameprefix: "ee_", isNullable: false, dataToServer: "EE"},
+                {name: "user", nameprefix: "ee_", isNullable: true, dataToServer: "EE"},
                 {name: "user", nameprefix: "qc_", isNullable: false, dataToServer: "QC"},
                 {name: "type", isNullable: false},
                 {name: "flow", nameprefix: "bab_", isNullable: false, dataToServer: "1"},
@@ -272,7 +273,7 @@
         });
 
         grid.jqGrid('navGrid', '#pager',
-                {edit: ${isAdmin}, add: ${isAdmin}, del: ${isAdmin}, search: true},
+                {edit: isUserEditable, add: isUserEditable, del: isUserEditable, search: true},
                 {
                     url: '<c:url value="/Worktime/update" />',
                     dataheight: 350,
@@ -319,37 +320,12 @@
                 }
         );
 
-        var columns = grid.jqGrid('getGridParam', 'colModel');
-        var columnNames = [];
-
-        for (var i = 0; i < columns.length; i++) {
-            var obj = columns[i];
-            columnNames[i] = obj.name;
+        //有可編輯column的人再來分可編輯欄位
+        //為0直接hide CRUD的按鈕
+        if (columnEditableInsetting) {
+            checkAndSetEditableAndReadOnlyField();
         }
 
-        //Remove not change column
-        columnNames = $.grep(columnNames, function (value) {
-            return $.inArray(value, do_not_change_columns) == -1;
-        });
-
-        //Separate readyonly column and editable column
-//        var editableColumns = modifyColumns.length == 1 && modifyColumns[0] == -1 ? columnNames : modifyColumns;
-//        var readonlyColumns = $(columnNames).not(editableColumns).get();
-
-        var editableColumns = columnNames;
-        var readonlyColumns = [];
-
-        if (editableColumns.length != 0) {
-            for (var i = 0; i < editableColumns.length; i++) {
-                var editableColumn = editableColumns[i];
-                grid.setColProp(editableColumn, {editable: true});
-            }
-
-            for (var i = 0; i < readonlyColumns.length; i++) {
-                var readonlyColumn = readonlyColumns[i];
-                grid.setColProp(readonlyColumn, {editable: true, editoptions: {readonly: 'readonly', disabled: true}});
-            }
-        }
         grid.jqGrid('setFrozenColumns');
 
         $(window).bind('resize', function () {
@@ -364,17 +340,54 @@
             var result;
             $.ajax({
                 type: "GET",
-                url: "<c:url value="/Worktime/unitColumn" />",
+                url: "<c:url value="/WorktimeColumnGroup/byUnit" />",
                 dataType: "json",
                 async: false,
                 success: function (response) {
-                    result = response;
+                    if (response != null) {
+                        var columnNameString = response.columnName;
+                        result = columnNameString == null ? [] : columnNameString.split(",");
+                    } else {
+                        result = [];
+                    }
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
                     console.log(xhr.responseText);
                 }
             });
             return result;
+        }
+
+        function checkAndSetEditableAndReadOnlyField() {
+            var columns = grid.jqGrid('getGridParam', 'colModel');
+            var columnNames = [];
+
+            for (var i = 0; i < columns.length; i++) {
+                var obj = columns[i];
+                columnNames[i] = obj.name;
+            }
+
+            //Remove not change column
+            columnNames = $.grep(columnNames, function (value) {
+                return $.inArray(value, do_not_change_columns) == -1;
+            });
+
+            //Separate readyonly column and editable column
+            var editableColumns = modifyColumns.length == 1 && modifyColumns[0] == -1 ? columnNames : modifyColumns;
+            var readonlyColumns = $(columnNames).not(editableColumns).get();
+
+//        var editableColumns = columnNames;
+//        var readonlyColumns = [];
+
+            for (var i = 0; i < editableColumns.length; i++) {
+                var editableColumn = editableColumns[i];
+                grid.setColProp(editableColumn, {editable: true});
+            }
+
+            for (var i = 0; i < readonlyColumns.length; i++) {
+                var readonlyColumn = readonlyColumns[i];
+                grid.setColProp(readonlyColumn, {editable: true, editoptions: {readonly: 'readonly', disabled: true}});
+            }
         }
 
         function flowCheck(logicArr, flowName, formObj) {
@@ -401,9 +414,9 @@
         }
 
         function addFormulaCheckbox(fieldName) {
-            var str =  "<input type='checkbox' id='f_" + 
-                    fieldName + "' name='f_" + fieldName + 
-                    "' /><label for='f_" + fieldName + "'>套入公式</label>";
+            var str = "<input type='checkbox' id='f_" +
+                    fieldName + "' name='f_" + fieldName +
+                    "' class='ui-checkbox' checked/><label for='f_" + fieldName + "'>套入公式</label>";
             return str;
         }
 

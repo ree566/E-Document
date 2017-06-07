@@ -37,8 +37,8 @@ public class WorktimeColumnGroupService {
         return worktimeColumnGroupDAO.findByPrimaryKey(obj_id);
     }
 
-    public WorktimeColumnGroup findByUserType(Object obj_id) {
-        return worktimeColumnGroupDAO.findByUserType(obj_id);
+    public WorktimeColumnGroup findByUnit(int obj_id) {
+        return worktimeColumnGroupDAO.findByUnit(obj_id);
     }
 
     public int insert(WorktimeColumnGroup w) {

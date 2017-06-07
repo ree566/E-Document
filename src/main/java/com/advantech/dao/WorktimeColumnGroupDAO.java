@@ -34,7 +34,7 @@ public class WorktimeColumnGroupDAO extends AbstractDao<Integer, WorktimeColumnG
         return getByKey((int) obj_id);
     }
 
-    public WorktimeColumnGroup findByUserType(Object obj_id) {
+    public WorktimeColumnGroup findByUnit(int obj_id) {
         Criteria criteria = createEntityCriteria();
         criteria.createAlias("unit", "u");
         criteria.add(Restrictions.eq("u.id", obj_id));
@@ -44,17 +44,20 @@ public class WorktimeColumnGroupDAO extends AbstractDao<Integer, WorktimeColumnG
 
     @Override
     public int insert(WorktimeColumnGroup pojo) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        getSession().save(pojo);
+        return 1;
     }
 
     @Override
     public int update(WorktimeColumnGroup pojo) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        getSession().update(pojo);
+        return 1;
     }
 
     @Override
     public int delete(WorktimeColumnGroup pojo) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        getSession().delete(pojo);
+        return 1;
     }
 
 }

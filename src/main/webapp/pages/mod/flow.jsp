@@ -30,7 +30,7 @@
             autoencode: true,
 //            guiStyle: "bootstrap",
             colModel: [
-                {label: 'id', name: "id", width: 60, key: true, editable: true, editoptions: {readonly: 'readonly', disabled: true, defaultValue: "0"}},
+                {label: 'id', name: "id", width: 60, key: true, editable: true, search: false, editoptions: {readonly: 'readonly', disabled: true, defaultValue: "0"}},
                 {label: 'name', name: "name", width: 60, editable: true, editrules: {required: true}, formoptions: {elmsuffix: "(*必填)"}},
                 {label: 'flow_group', name: "flowGroup.id", editable: true, formatter: selectOptions["flowGroup_func"], edittype: 'select', editoptions: {value: selectOptions["flowGroup"]}}
             ],
@@ -91,12 +91,13 @@
                     },
                     colNames: ['id', 'name'],
                     colModel: [
-                        {name: "id", index: "id", width: 80, key: true, editable: true, sortable: false, edittype: 'select', editoptions: {value: selectOptions["flow"]}},
-                        {name: "name", index: "name", width: 130, sortable: false}
+                        {name: "id", index: "id", width: 80, key: true, editable: true, sortable: true, edittype: 'select', editoptions: {value: selectOptions["flow"]}},
+                        {name: "name", index: "name", width: 130, sortable: true}
                     ],
                     rowNum: 20,
                     pager: pager_id,
-                    sortname: 'id',
+                    sortname: "id",
+                    sortorder: "asc",
                     autowidth: true,
                     editurl: '<c:url value="/Flow/update_sub" />',
                     jsonReader: {
@@ -106,7 +107,8 @@
                         records: "records",
                         repeatitems: false
                     },
-                    sortorder: "asc", height: '100%'});
+                    height: '100%'
+                });
                 $("#" + subgrid_table_id).jqGrid('navGrid', "#" + pager_id,
                         {edit: false, add: true, del: true, search: false},
                         {},

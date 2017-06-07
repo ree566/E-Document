@@ -9,37 +9,10 @@
 <c:set var="root" value="${pageContext.request.contextPath}/"/>
 <link href="<c:url value="/css/multi-select.css" />" rel="stylesheet">
 <c:set var="tableName" value="WorktimeColumnGroup" />
-<%--<script src="<c:url value="/js/jquery.multi-select.js" />"></script>--%>
+<script src="<c:url value="/js/jquery.multi-select.js" />"></script>
 <script src="<c:url value="/js/worktime-setting/worktime-columnsetting.js" />"></script>
 <script>
     $(function () {
-//        var unitPermissionTb = $("#unitPermission");
-//        var units = ["SPE", "EE", "IE", "QC", "MFG", "unlimited"];
-//
-//        for (var i = 0; i < units.length; i++) {
-//            var str = "";
-//            str += "<tr>" +
-//                    "<td>" + units[i] + "</td>" +
-//                    "<td>" + "<select multiple='multiple' class='my-select' name='" + units[i] + "-select[]'></select>" + "</td>" +
-//                    "<td><input type='submit' value='submit' /></td>" +
-//                    "</tr>";
-//            unitPermissionTb.append(str);
-//        }
-//
-//
-//        var multiSel = $(".my-select");
-//        for (var i = 0; i < worktimeCol.length; i++) {
-//            var colName = worktimeCol[i].name;
-//            multiSel.append("<option value='" + colName + "'>" + colName + "</option>");
-//            multiSel.multiSelect('addOption', {value: colName, text: colName, index: i});
-//        }
-//
-//        multiSel.multiSelect({});
-//
-//        $(":submit").on("click", function () {
-//            console.log(multiSel.val());
-//            return false;
-//        });
 
         setSelectOptions({
             rootUrl: "<c:url value="/" />",
@@ -51,6 +24,17 @@
         var grid = $("#list");
         var tableName = '${tableName}';
 
+        var worktimeColumnSelection = "";
+
+        for (var i = 0; i < worktimeCol.length; i++) {
+            var column = worktimeCol[i].name;
+            var editable = worktimeCol[i].editable;
+            if (editable != null && editable == false) {
+                continue;
+            }
+            worktimeColumnSelection += (column + ":" + column + ";");
+        }
+
         grid.jqGrid({
             url: '<c:url value="/${tableName}/read" />',
             datatype: 'json',
@@ -60,21 +44,12 @@
                 {label: 'id', name: "id", width: 60, key: true, editable: true, editoptions: {readonly: 'readonly', disabled: true, defaultValue: "0"}},
                 {label: 'unit', name: "unit.id", width: 60, editable: true, edittype: "select", editoptions: {value: selectOptions["unit"]}, formatter: selectOptions["unit_func"]},
                 {label: 'name', name: "columnName", width: 60, editable: true, edittype: 'select', editoptions: {
-                        value: 'FE:FedEx;TN:TNT;IN:Intim',
+                        value: worktimeColumnSelection,
                         dataInit: function (elem) {
                             setTimeout(function () {
-                                $(elem).multiselect({
-                                    minWidth: 100, //'auto',
-                                    height: 'auto',
-                                    selectedList: 2,
-                                    checkAllText: "all",
-                                    uncheckAllText: "no",
-                                    noneSelectedText: "Any",
-                                    open: function () {
-                                        var $menu = $(".ui-multiselect-menu:visible");
-                                        $menu.width("auto");
-                                        return;
-                                    }
+                                $(elem).multiSelect({
+                                    selectableHeader: "<div class='custom-header'>可選欄位</div>",
+                                    selectionHeader: "<div class='custom-header'>已選欄位</div>"
                                 });
                             }, 150);
                         },
@@ -154,19 +129,12 @@
         );
 
 
-//        $("input").addClass("form-control");
     });
 </script>
 
 <form>
     <div>
         <h5>Worktime permission change!</h5>
-    </div>
-    <div>
-        <form id="testForm">
-            <table id="unitPermission" class="table table-bordered">
-            </table>
-        </form>
     </div>
     <div>
         <table id="list"></table> 

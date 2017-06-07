@@ -63,7 +63,7 @@ public class WorktimeColumnGroup implements java.io.Serializable {
         this.unit = unit;
     }
 
-    @Lob
+//    @Lob
     @Column(name = "column_name")
     public String getColumnName() {
         return this.columnName;
