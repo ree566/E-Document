@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @author Wei.Cheng
  */
 @Controller
-@Secured({"ROLE_USER", "ROLE_ADMIN"})
+@Secured({"ROLE_OPER", "ROLE_ADMIN"})
 @RequestMapping(value = "/Type")
 public class TypeController extends CrudController<Type> {
 

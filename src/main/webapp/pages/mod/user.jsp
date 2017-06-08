@@ -67,6 +67,7 @@
             },
             gridComplete: function () {
                 grid.closest(".ui-jqgrid-bdiv").scrollTop(scrollPosition);
+                grid.find("#36").hide();
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 alert("Ajax Error occurred\n"
@@ -75,44 +76,44 @@
                         + "\najaxOptions is: " + ajaxOptions
                         );
             }
-        })
-                .jqGrid('navGrid', '#pager',
-                        {edit: true, add: true, del: true, search: true},
-                        {
-                            url: '<c:url value="/User/update" />',
-                            dataheight: 350,
-                            width: 450,
-                            closeAfterEdit: false,
-                            reloadAfterSubmit: true,
-                            errorTextFormat: customErrorTextFormat,
-                            beforeShowForm: greyout,
-                            zIndex: 9999,
-                            recreateForm: true
-                        },
-                        {
-                            url: '<c:url value="/User/create" />',
-                            dataheight: 350,
-                            width: 450,
-                            closeAfterAdd: false,
-                            reloadAfterSubmit: true,
-                            errorTextFormat: customErrorTextFormat,
-                            beforeShowForm: greyout,
-                            zIndex: 9999,
-                            recreateForm: true
-                        },
-                        {
-                            url: '<c:url value="/User/delete" />',
-                            zIndex: 9999,
-                            reloadAfterSubmit: true
-                        },
-                        {
-                            sopt: ['eq', 'ne', 'lt', 'gt', 'cn', 'bw', 'ew'],
-                            closeAfterSearch: false,
-                            zIndex: 9999,
-                            reloadAfterSubmit: true
-                        }
-                );
-
+        });
+        
+        grid.jqGrid('navGrid', '#pager',
+                {edit: true, add: true, del: true, search: true},
+                {
+                    url: '<c:url value="/User/update" />',
+                    dataheight: 350,
+                    width: 450,
+                    closeAfterEdit: false,
+                    reloadAfterSubmit: true,
+                    errorTextFormat: customErrorTextFormat,
+                    beforeShowForm: greyout,
+                    zIndex: 9999,
+                    recreateForm: true
+                },
+                {
+                    url: '<c:url value="/User/create" />',
+                    dataheight: 350,
+                    width: 450,
+                    closeAfterAdd: false,
+                    reloadAfterSubmit: true,
+                    errorTextFormat: customErrorTextFormat,
+                    beforeShowForm: greyout,
+                    zIndex: 9999,
+                    recreateForm: true
+                },
+                {
+                    url: '<c:url value="/User/delete" />',
+                    zIndex: 9999,
+                    reloadAfterSubmit: true
+                },
+                {
+                    sopt: ['eq', 'ne', 'lt', 'gt', 'cn', 'bw', 'ew'],
+                    closeAfterSearch: false,
+                    zIndex: 9999,
+                    reloadAfterSubmit: true
+                }
+        );
 
     });
 </script>

@@ -12,6 +12,7 @@ package com.advantech.security;
 public enum UserProfileType {
     GUEST("GUEST"),
     USER("USER"),
+    OPER("OPER"),
     ADMIN("ADMIN");
 
     String userProfileType;

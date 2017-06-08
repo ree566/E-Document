@@ -63,10 +63,10 @@ public class Worktime implements java.io.Serializable {
     private PreAssy preAssy;
     private Type type;
     private String modelName;
-    
+
     @JsonIgnore
     private List<WorktimeFormulaSetting> worktimeFormulaSettings = new AutoPopulatingList<WorktimeFormulaSetting>(WorktimeFormulaSetting.class);
-    
+
     private BigDecimal totalModule = BigDecimal.ZERO;
     private BigDecimal cleanPanel = BigDecimal.ZERO;
     private BigDecimal assy = BigDecimal.ZERO;
@@ -102,15 +102,15 @@ public class Worktime implements java.io.Serializable {
     private char partNoAttributeMaintain;
     private BigDecimal assyLeadTime = BigDecimal.ZERO;
     private BigDecimal packingLeadTime = BigDecimal.ZERO;
-    private BigDecimal productionWt;
-    private BigDecimal setupTime;
-    private BigDecimal assyToT1;
-    private BigDecimal t2ToPacking;
-    private Integer assyStation;
-    private Integer packingStation;
-    private BigDecimal assyKanbanTime;
-    private BigDecimal packingKanbanTime;
-    private BigDecimal cleanPanelAndAssembly;
+    private BigDecimal productionWt = BigDecimal.ZERO;
+    private BigDecimal setupTime = BigDecimal.ZERO;
+    private BigDecimal assyToT1 = BigDecimal.ZERO;
+    private BigDecimal t2ToPacking = BigDecimal.ZERO;
+    private Integer assyStation = 0;
+    private Integer packingStation = 0;
+    private BigDecimal assyKanbanTime = BigDecimal.ZERO;
+    private BigDecimal packingKanbanTime = BigDecimal.ZERO;
+    private BigDecimal cleanPanelAndAssembly = BigDecimal.ZERO;
     private Date modifiedDate;
 
     public Worktime() {
@@ -680,8 +680,9 @@ public class Worktime implements java.io.Serializable {
 
 //  Default formula column caculate
     public void setDefaultProductWt() {
-        BigDecimal defaultValue = totalModule.add(cleanPanel).add(assy).add(t1).add(t2).add(t3).add(t4)
-                .add(packing).add(upBiRi).add(downBiRi).add(biCost).add(vibration).add(hiPotLeakage)
+        BigDecimal defaultValue = BigDecimal.ZERO.add(totalModule).add(cleanPanel)
+                .add(assy).add(t1).add(t2).add(t3).add(t4).add(packing).add(upBiRi)
+                .add(downBiRi).add(biCost).add(vibration).add(hiPotLeakage)
                 .add(coldBoot).add(warmBoot);
         this.setProductionWt(defaultValue);
     }
@@ -700,13 +701,13 @@ public class Worktime implements java.io.Serializable {
     }
 
     public void setDefaultAssyToT1() {
-        BigDecimal defaultValue = cleanPanelAndAssembly.add(t1).add(upBiRi).add(vibration)
-                .add(hiPotLeakage).add(coldBoot).add(warmBoot);
+        BigDecimal defaultValue = BigDecimal.ZERO.add(cleanPanelAndAssembly).add(t1)
+                .add(upBiRi).add(vibration).add(hiPotLeakage).add(coldBoot).add(warmBoot);
         this.setAssyToT1(defaultValue);
     }
 
     public void setDefaultT2ToPacking() {
-        BigDecimal defaultValue = t2.add(t3).add(t4).add(packing).add(downBiRi);
+        BigDecimal defaultValue = BigDecimal.ZERO.add(t2).add(t3).add(t4).add(packing).add(downBiRi);
         this.setT2ToPacking(defaultValue);
     }
 
@@ -761,5 +762,4 @@ public class Worktime implements java.io.Serializable {
 
     //Override hashcode and equals will force audit query eager loading the one to many field
     //Still looking for reason.
-
 }

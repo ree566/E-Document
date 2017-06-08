@@ -21,27 +21,30 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @author Wei.Cheng
  */
 @Controller
-@Secured({"ROLE_USER", "ROLE_ADMIN"})
+@Secured({"ROLE_ADMIN", "ROLE_GUEST"})
 @RequestMapping(value = "/testCtrl")
 public class TestController {
 
     @Autowired
     private AuditService auditService;
-    
+
     @ResponseBody
     @RequestMapping(value = "/test", method = RequestMethod.GET)
+    @Secured("ROLE_USER")
     public String test() {
         return "hi";
     }
-    
+
     @ResponseBody
     @RequestMapping(value = "/test1", method = RequestMethod.GET)
+    @Secured("ROLE_ADMIN")
     public String test1() {
         return "hi1";
     }
-    
+
     @ResponseBody
     @RequestMapping(value = "/test2/{id}", method = RequestMethod.GET)
+    @Secured({"ROLE_USER", "ROLE_ADMIN"})
     public List test2(@PathVariable int id) {
         return auditService.findByPrimaryKey(Worktime.class, id);
     }

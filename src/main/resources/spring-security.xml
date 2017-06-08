@@ -15,7 +15,7 @@
     <http auto-config="true">
         <intercept-url pattern="/login.jsp" access="permitAll" />
         <intercept-url pattern="/pages/admin/**" access="hasRole('ADMIN')" />
-        <intercept-url pattern="/pages/mod/**" access="hasAnyRole('USER', 'ADMIN')" />
+        <intercept-url pattern="/pages/mod/**" access="hasAnyRole('OPER', 'ADMIN')" />
         <intercept-url pattern="/pages/**" access="isAuthenticated()" />
         <form-login  
             login-page="/login.jsp"

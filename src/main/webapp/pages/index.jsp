@@ -21,7 +21,6 @@
         <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap-theme.min.css" rel="stylesheet">
         <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
         <link href="//code.jquery.com/ui/1.12.1/themes/redmond/jquery-ui.css" rel="stylesheet">
-        <!--<link href="//cdnjs.cloudflare.com/ajax/libs/jquery-ui-multiselect-widget/2.0.1/jquery.multiselect.css" rel="stylesheet">-->
         
         <link href="//cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.14.0/css/ui.jqgrid.min.css" rel="stylesheet"/>
         <!--<link href="//cdnjs.cloudflare.com/ajax/libs/jqgrid/4.6.0/css/ui.jqgrid.css" rel="stylesheet"/>-->
@@ -41,7 +40,6 @@
                 integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
         crossorigin="anonymous"></script>
 
-        <!--<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-ui-multiselect-widget/2.0.1/jquery.multiselect.min.js"></script>-->
         <script src="//cdnjs.cloudflare.com/ajax/libs/jquery.form/4.2.1/jquery.form.min.js"></script>
 
         <script src="//cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.14.0/jquery.jqgrid.min.js"></script>
@@ -193,7 +191,7 @@
                                         <li>
                                             <a class="redirect-link" href="worktime.jsp">工時大表</a>
                                         </li>
-                                        <sec:authorize access="hasRole('ADMIN') or hasRole('USER')">
+                                        <sec:authorize access="hasRole('ADMIN') or (hasRole('USER') and hasRole('OPER'))">
                                             <li>
                                                 <a class="redirect-link" href="mod/flow.jsp">Flow</a>
                                             </li>

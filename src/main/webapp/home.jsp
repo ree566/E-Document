@@ -43,15 +43,15 @@
                     console.log(e);
                 };
                 sock.onmessage = function (e) {
-                    console.log(e)
-                    $("#message").append("<p><font color='red'>" + e.data + "</font>")
+                    console.log(e);
+                    $("#message").append("<p><font color='red'>" + e.data + "</font>");
                 };
                 sock.onerror = function (e) {
                     console.log(e);
                 };
                 sock.onclose = function (e) {
                     console.log(e);
-                }
+                };
             });
 
         </script>

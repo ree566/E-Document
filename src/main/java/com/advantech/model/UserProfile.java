@@ -38,6 +38,7 @@ public class UserProfile implements java.io.Serializable {
 
     private int id;
     private String type = UserProfileType.USER.getUserProfileType();
+    private String description;
     private Set<User> users = new HashSet<>(0);
 
     public UserProfile() {
@@ -71,6 +72,15 @@ public class UserProfile implements java.io.Serializable {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    @Column(name = "[description]", length = 200, nullable = true)
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     @ManyToMany(fetch = FetchType.LAZY)

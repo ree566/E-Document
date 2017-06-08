@@ -3,7 +3,9 @@
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
 <sec:authentication var="user" property="principal" />
-<sec:authorize access="hasRole('ADMIN') or hasRole('USER')"  var="isAdmin" />
+<sec:authorize access="hasRole('ADMIN')"  var="isAdmin" />
+<sec:authorize access="hasRole('USER')"  var="isUser" />
+<sec:authorize access="hasRole('OPER') and hasRole('USER')"  var="isOper" />
 <sec:authorize access="hasRole('GUEST')"  var="isGuest" />
 <style>
     .permission-hint{
@@ -20,6 +22,10 @@
     .CaptionTD{
         width: 30%;
     }
+
+    .danger{
+        color: red;
+    }
 </style>
 
 <script src="<c:url value="/js/urlParamGetter.js" />"></script>
@@ -34,7 +40,8 @@
         var unitName = '${user.unit.name}';
         var modifyColumns = (${isGuest} || unitName == null || unitName == "") ? [] : getColumn();
         var columnEditableInsetting = modifyColumns.length > 0;
-        var isUserEditable = ${isAdmin} && columnEditableInsetting;
+        var isNormalUser = ${isUser} && columnEditableInsetting;
+        var isOperRelative = ${isAdmin || (isUser && isOper)} && columnEditableInsetting;
 
         //Set param into jqgrid-custom-select-option-reader.js and get option by param selectOptions
         //You can get the floor select options and it's formatter function
@@ -142,9 +149,9 @@
                 {label: 'id', name: "id", width: 60, frozen: true, hidden: true, key: true, search: false, editable: true, editrules: {edithidden: true}, editoptions: {readonly: 'readonly', disabled: true, defaultValue: "0"}},
                 {label: 'Model', name: "modelName", frozen: true, editable: true, searchrules: {required: true}, searchoptions: search_string_options, editrules: {required: true}, formoptions: required_form_options},
                 {label: 'TYPE', name: "type.id", edittype: "select", editoptions: {value: selectOptions["type"]}, formatter: selectOptions["type_func"], width: 100, searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["type"], sopt: ['eq']}},
-                {label: 'ProductionWT', name: "productionWt", width: 120, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: {elmsuffix: addFormulaCheckbox("productionWt")}, editrules: {number: true}},
+                {label: 'ProductionWT', name: "productionWt", width: 120, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: {elmsuffix: addFormulaCheckbox("productionWt")}, editrules: {number: true}, editoptions: {defaultValue: '0'}},
                 {label: 'Total Module', name: "totalModule", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, editoptions: {defaultValue: '0'}},
-                {label: 'Setup Time', name: "setupTime", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: {elmsuffix: addFormulaCheckbox("setupTime")}, editrules: {number: true}},
+                {label: 'Setup Time', name: "setupTime", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: {elmsuffix: addFormulaCheckbox("setupTime")}, editrules: {number: true}, editoptions: {defaultValue: '0'}},
                 {label: 'CleanPanel', name: "cleanPanel", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, editoptions: {defaultValue: '0'}},
                 {label: 'Assembly', name: "assy", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, editoptions: {defaultValue: '0'}},
                 {label: 'T1', name: "t1", width: 60, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, editoptions: {defaultValue: '0'}},
@@ -159,8 +166,8 @@
                 {label: 'Hi-Pot/Leakage', name: "hiPotLeakage", width: 120, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, editoptions: {defaultValue: '0'}},
                 {label: 'Cold Boot', name: "coldBoot", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, editoptions: {defaultValue: '0'}},
                 {label: 'Warm Boot', name: "warmBoot", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, editoptions: {defaultValue: '0'}},
-                {label: 'ASS_T1', name: "assyToT1", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: {elmsuffix: addFormulaCheckbox("assyToT1")}, editrules: {number: true}},
-                {label: 'T2_PACKING', name: "t2ToPacking", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: {elmsuffix: addFormulaCheckbox("t2ToPacking")}, editrules: {number: true}},
+                {label: 'ASS_T1', name: "assyToT1", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: {elmsuffix: addFormulaCheckbox("assyToT1")}, editrules: {number: true}, editoptions: {defaultValue: '0'}},
+                {label: 'T2_PACKING', name: "t2ToPacking", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: {elmsuffix: addFormulaCheckbox("t2ToPacking")}, editrules: {number: true}, editoptions: {defaultValue: '0'}},
                 {label: 'Floor', name: "floor.id", edittype: "select", editoptions: {value: selectOptions["floor"]}, width: 100, formatter: selectOptions["floor_func"], searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["floor"], sopt: ['eq']}},
                 {label: 'Pending', name: "pending.id", edittype: "select", editoptions: {value: selectOptions["pending"], dataEvents: pending_select_event}, formatter: selectOptions["pending_func"], width: 100, searchrules: number_search_rule, stype: "select", searchoptions: {value: selectOptions["pending"], sopt: ['eq']}},
                 {label: 'Pending TIME', name: "pendingTime", width: 100, searchrules: {required: true}, searchoptions: search_decimal_options, editrules: {required: true, number: true}, formoptions: required_form_options},
@@ -188,13 +195,13 @@
                 {label: 'EAC', name: "eac", width: 60, searchrules: number_search_rule, searchoptions: search_string_options, edittype: "select", editoptions: {value: "0:0;1:1"}},
                 {label: 'N合1集合箱', name: "nsInOneCollectionBox", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, editoptions: {defaultValue: '0'}},
                 {label: '料號屬性值維護', name: "partNoAttributeMaintain", edittype: "select", editoptions: {value: "Y:Y;N:N"}, width: 120, searchrules: {required: true}, searchoptions: search_string_options},
-                {label: '組裝排站人數', name: "assyStation", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: {elmsuffix: addFormulaCheckbox("assyStation")}, editrules: {integer: true}},
-                {label: '包裝排站人數', name: "packingStation", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: {elmsuffix: addFormulaCheckbox("packingStation")}, editrules: {integer: true}},
+                {label: '組裝排站人數', name: "assyStation", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: {elmsuffix: addFormulaCheckbox("assyStation")}, editrules: {integer: true}, editoptions: {defaultValue: '0'}},
+                {label: '包裝排站人數', name: "packingStation", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: {elmsuffix: addFormulaCheckbox("packingStation")}, editrules: {integer: true}, editoptions: {defaultValue: '0'}},
                 {label: '前置時間', name: "assyLeadTime", width: 80, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, formoptions: {label: '組裝前置時間'}, editoptions: {defaultValue: '0'}},
-                {label: '看板工時', name: "assyKanbanTime", width: 80, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, formoptions: {label: '組裝看板工時', elmsuffix: addFormulaCheckbox("assyKanbanTime")}},
+                {label: '看板工時', name: "assyKanbanTime", width: 80, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, formoptions: {label: '組裝看板工時', elmsuffix: addFormulaCheckbox("assyKanbanTime")}, editoptions: {defaultValue: '0'}},
                 {label: '前置時間', name: "packingLeadTime", width: 80, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, formoptions: {label: '包裝前置時間'}, editoptions: {defaultValue: '0'}},
-                {label: '看板工時', name: "packingKanbanTime", width: 80, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, formoptions: {label: '包裝看板工時', elmsuffix: addFormulaCheckbox("packingKanbanTime")}},
-                {label: 'CleanPanel+Assembly', name: "cleanPanelAndAssembly", width: 200, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, formoptions: {elmsuffix: addFormulaCheckbox("cleanPanelAndAssembly")}},
+                {label: '看板工時', name: "packingKanbanTime", width: 80, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, formoptions: {label: '包裝看板工時', elmsuffix: addFormulaCheckbox("packingKanbanTime")}, editoptions: {defaultValue: '0'}},
+                {label: 'CleanPanel+Assembly', name: "cleanPanelAndAssembly", width: 200, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, formoptions: {elmsuffix: addFormulaCheckbox("cleanPanelAndAssembly")}, editoptions: {defaultValue: '0'}},
                 {label: 'Modified_Date', width: 200, name: "modifiedDate", index: "modifiedDate", formatter: 'date', formatoptions: {srcformat: 'Y-m-d H:i:s A', newformat: 'Y-m-d H:i:s A'}, stype: 'text', searchrules: date_search_rule, searchoptions: search_date_options, align: 'center'}
             ],
             rowNum: 20,
@@ -213,7 +220,7 @@
                 records: "records",
                 repeatitems: false
             },
-//                    onSelectRow: function (rowid, status, e) {
+//            onSelectRow: function (rowid, status, e) {
 //                        if (lastsel)
 //                            grid.jqGrid("restoreRow", lastsel);
 //                        if (rowid !== lastsel) {
@@ -230,7 +237,7 @@
 //                        } else {
 //                            lastsel = null;
 //                        }
-//                    },
+//            },
             afterSubmit: function () {
                 $(this).jqGrid("setGridParam", {datatype: 'json'});
                 return [true];
@@ -239,11 +246,23 @@
             caption: "工時大表",
             height: 450,
             sortname: 'id', sortorder: 'desc',
-            onSelectRow: function () {
+            onSelectRow: function (rowid) {
                 scrollPosition = grid.closest(".ui-jqgrid-bdiv").scrollTop();
+//                
+//                console.log(rowid);
+//                if ($("#" + rowid).hasClass("danger")) {
+//                    alert("Danger!");
+//                } else {
+//                    alert("Pass!");
+//                }
             },
             gridComplete: function () {
                 grid.closest(".ui-jqgrid-bdiv").scrollTop(scrollPosition);
+
+                $("#change-color").click(function () {
+                    var rowId = $("#dyn-clr-id").val();
+                    $("#" + rowId).toggleClass("danger");
+                });
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 alert("Ajax Error occurred\n"
@@ -273,7 +292,7 @@
         });
 
         grid.jqGrid('navGrid', '#pager',
-                {edit: isUserEditable, add: isUserEditable, del: isUserEditable, search: true},
+                {edit: isNormalUser || isOperRelative, add: isOperRelative, del: isOperRelative, search: true},
                 {
                     url: '<c:url value="/Worktime/update" />',
                     dataheight: 350,
@@ -431,6 +450,9 @@
         }
 
         function settingFormulaCheckbox(worktimeId) {
+            if (worktimeId == 0) {
+                return false;
+            }
             $.ajax({
                 type: "GET",
                 url: "<c:url value="/WorktimeFormulaSetting/find/" />" + worktimeId,
@@ -443,6 +465,8 @@
                     }
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
+                    alert("設定Formula時發生錯誤，請稍後再試");
+                    $("#TblGrid_list_2").find("#cData").trigger("click");
                     console.log(xhr.responseText);
                 }
             });
@@ -453,11 +477,15 @@
     <h5>Your permission is: 
         <b class="permission-hint">
             R
-            <c:if test="${isAdmin}">
+            <c:if test="${isAdmin || isOper || isUser}">
                 W
             </c:if>
         </b>
     </h5>
     <table id="list"></table> 
     <div id="pager"></div>
+    <div class="form-inline">
+        <input type="text" id="dyn-clr-id" class="form-control" placeholder="insert rowid here" value="8286" />
+        <input type="button" id="change-color" class="btn btn-default" value="change"/>
+    </div>
 </div>
