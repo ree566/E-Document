@@ -129,9 +129,9 @@ public class WorktimeController extends CrudController<Worktime> {
     @ResponseBody
     @RequestMapping(value = "/excel", method = {RequestMethod.GET})
     @Secured({"ROLE_USER", "ROLE_ADMIN"})
-    public ModelAndView generateExcel() {
+    public ModelAndView generateExcel(PageInfo info) {
         // create some sample data
-        List<SheetView> l = sheetViewService.findAll();
+        List<SheetView> l = sheetViewService.findAll(info);
         return new ModelAndView("ExcelRevenueSummary", "revenueData", l);
     }
     

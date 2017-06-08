@@ -282,15 +282,6 @@
             ]
         });
 
-        grid.navButtonAdd('#pager', {
-            caption: "Export to Excel",
-            buttonicon: "ui-icon-disk",
-            onClickButton: function () {
-                grid.jqGrid('excelExport', {"url": "<c:url value="/Worktime/excel" />"});
-            },
-            position: "last"
-        });
-
         grid.jqGrid('navGrid', '#pager',
                 {edit: isNormalUser || isOperRelative, add: isOperRelative, del: isOperRelative, search: true},
                 {
@@ -338,6 +329,15 @@
                     reloadAfterSubmit: true
                 }
         );
+
+        grid.navButtonAdd('#pager', {
+            caption: "Export to Excel",
+            buttonicon: "ui-icon-disk",
+            onClickButton: function () {
+                grid.jqGrid('excelExport', {"url": "<c:url value="/Worktime/excel" />"});
+            },
+            position: "last"
+        });
 
         //有可編輯column的人再來分可編輯欄位
         //為0直接hide CRUD的按鈕

@@ -68,7 +68,7 @@ public class SheetView implements java.io.Serializable {
     private Integer madeInTaiwan;
     private Integer fcc;
     private Integer eac;
-    private BigDecimal nInOneCollectionBox;
+    private BigDecimal nsInOneCollectionBox;
     private Character partNoAttributeMaintain;
     private Integer assyStation;
     private Integer packingStation;
@@ -82,7 +82,7 @@ public class SheetView implements java.io.Serializable {
     public SheetView() {
     }
 
-    public SheetView(int rowId, String modelName, String typeName, BigDecimal productionWt, BigDecimal totalModule, Integer setupTime, BigDecimal cleanPanel, BigDecimal assy, BigDecimal t1, BigDecimal t2, BigDecimal t3, BigDecimal t4, BigDecimal packing, BigDecimal downBiRi, BigDecimal upBiRi, BigDecimal biCost, Integer vibration, Integer hiPotLeakage, BigDecimal coldBoot, BigDecimal warmBoot, BigDecimal assyToT1, BigDecimal t2ToPacking, String floorName, String pendingName, BigDecimal pendingTime, String burnIn, BigDecimal biTime, BigDecimal biTemperature, String speOwnerName, String eeOwnerName, String qcOwnerName, String assyPackingSop, String testSop, Integer keypartA, Integer keypartB, String preAssyName, String babFlowName, String testFlowName, String packingFlowName, Character partLink, Integer ce, Integer ul, Integer rohs, Integer weee, Integer madeInTaiwan, Integer fcc, Integer eac, BigDecimal nInOneCollectionBox, Character partNoAttributeMaintain, Integer assyStation, Integer packingStation, BigDecimal assyLeadTime, BigDecimal assyKanbanTime, BigDecimal packingLeadTime, BigDecimal packingKanbanTime, BigDecimal cleanPanelAndAssembly, Date modifiedDate) {
+    public SheetView(int rowId, String modelName, String typeName, BigDecimal productionWt, BigDecimal totalModule, Integer setupTime, BigDecimal cleanPanel, BigDecimal assy, BigDecimal t1, BigDecimal t2, BigDecimal t3, BigDecimal t4, BigDecimal packing, BigDecimal downBiRi, BigDecimal upBiRi, BigDecimal biCost, Integer vibration, Integer hiPotLeakage, BigDecimal coldBoot, BigDecimal warmBoot, BigDecimal assyToT1, BigDecimal t2ToPacking, String floorName, String pendingName, BigDecimal pendingTime, String burnIn, BigDecimal biTime, BigDecimal biTemperature, String speOwnerName, String eeOwnerName, String qcOwnerName, String assyPackingSop, String testSop, Integer keypartA, Integer keypartB, String preAssyName, String babFlowName, String testFlowName, String packingFlowName, Character partLink, Integer ce, Integer ul, Integer rohs, Integer weee, Integer madeInTaiwan, Integer fcc, Integer eac, BigDecimal nsInOneCollectionBox, Character partNoAttributeMaintain, Integer assyStation, Integer packingStation, BigDecimal assyLeadTime, BigDecimal assyKanbanTime, BigDecimal packingLeadTime, BigDecimal packingKanbanTime, BigDecimal cleanPanelAndAssembly, Date modifiedDate) {
         this.rowId = rowId;
         this.modelName = modelName;
         this.typeName = typeName;
@@ -130,7 +130,7 @@ public class SheetView implements java.io.Serializable {
         this.madeInTaiwan = madeInTaiwan;
         this.fcc = fcc;
         this.eac = eac;
-        this.nInOneCollectionBox = nInOneCollectionBox;
+        this.nsInOneCollectionBox = nsInOneCollectionBox;
         this.partNoAttributeMaintain = partNoAttributeMaintain;
         this.assyStation = assyStation;
         this.packingStation = packingStation;
@@ -389,12 +389,12 @@ public class SheetView implements java.io.Serializable {
     }
 
     @Column(name = "nInOneCollectionBox", precision = 10, scale = 1)
-    public BigDecimal getnInOneCollectionBox() {
-        return this.nInOneCollectionBox;
+    public BigDecimal getNsInOneCollectionBox() {
+        return this.nsInOneCollectionBox;
     }
 
-    public void setnInOneCollectionBox(BigDecimal nInOneCollectionBox) {
-        this.nInOneCollectionBox = nInOneCollectionBox;
+    public void setNsInOneCollectionBox(BigDecimal nsInOneCollectionBox) {
+        this.nsInOneCollectionBox = nsInOneCollectionBox;
     }
 
     @Column(name = "packing", precision = 10, scale = 1)

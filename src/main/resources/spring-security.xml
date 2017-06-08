@@ -47,6 +47,23 @@
     </authentication-manager>
       
     <beans:bean id="customUserDetailsService" class="com.advantech.service.CustomUserDetailsService" />
+    
+<!--    <websocket-message-broker>
+        <intercept-message type="CONNECT" access="permitAll" />
+        <intercept-message type="UNSUBSCRIBE" access="permitAll" />
+        <intercept-message type="DISCONNECT" access="permitAll" />
+
+        <intercept-message pattern="/user/queue/errors" type="SUBSCRIBE" access="permitAll" /> 
+        <intercept-message pattern="/app/**" access="hasRole('USER')" />      
+    
+        <intercept-message pattern="/user/**" access="hasRole('USER')" />
+        <intercept-message pattern="/topic/friends/*" access="hasRole('USER')" />
+    
+        <intercept-message type="MESSAGE" access="denyAll" />
+        <intercept-message type="SUBSCRIBE" access="denyAll" />
+
+        <intercept-message pattern="/**" access="denyAll" /> 
+    </websocket-message-broker>-->
      
     <global-method-security secured-annotations="enabled" />
 </beans:beans>
