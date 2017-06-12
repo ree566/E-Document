@@ -31,7 +31,7 @@ import org.joda.time.Seconds;
 public class BABExcelForEfficiencyReport extends HttpServlet {
 
     private final CountermeasureService cService = BasicService.getCountermeasureService();
-    
+
     private final int minAllowAmount = 10;
 
     private String lineType, sitefloor;
@@ -53,7 +53,7 @@ public class BABExcelForEfficiencyReport extends HttpServlet {
 
         List list2 = cService.transformEfficiencyReportPattern(data);//把各站亮燈頻率合併為橫式(類似 sql 的 Group by格式)
         List list3 = emptyRecords;
-        
+
         boolean isAbove = Boolean.parseBoolean(aboveStandard);
 
         if (data.isEmpty()) {
@@ -62,7 +62,7 @@ public class BABExcelForEfficiencyReport extends HttpServlet {
         } else {
             try (Workbook w = this.generateBabDetailIntoExcel(list2, list3, isAbove)) {
                 String fileExt = ExcelGenerator.getFileExt(w);
-                
+
                 res.setContentType("application/vnd.ms-excel");
                 res.setHeader("Set-Cookie", "fileDownload=true; path=/");
                 res.setHeader("Content-Disposition",
@@ -97,7 +97,7 @@ public class BABExcelForEfficiencyReport extends HttpServlet {
 
         List<Map> sheet1Data = new ArrayList(), sheet2Data = new ArrayList();
         List<Map> lastSheetData = emptyRecords;
-        
+
         for (Map m : data) {
             if (m.containsKey(filterColumnName)) {
                 if ((Integer) m.get(filterColumnName) >= minAllowAmount) {
@@ -109,15 +109,15 @@ public class BABExcelForEfficiencyReport extends HttpServlet {
         }
 
         ExcelGenerator generator = new ExcelGenerator();
-        
+
         generator.createExcelSheet(countermeasureSheetName + "(" + filterColumnName + "≧" + minAllowAmount + "台)");
-        generator.appendSpecialPattern(sheet1Data, 18, "AM", "AN");
+        generator.appendSpecialPattern(sheet1Data, 18, "AM", "瓶頸站", "AN", "亮燈次數");
 
         if (!showAboveOnly && !sheet2Data.isEmpty()) {
             generator.createExcelSheet(countermeasureSheetName + "(" + filterColumnName + "<" + minAllowAmount + "台)");
-            generator.appendSpecialPattern(sheet2Data, 18, "AM", "AN");
+            generator.appendSpecialPattern(sheet2Data, 18, "AM", "瓶頸站", "AN", "亮燈次數");
         }
-        
+
         generator.createExcelSheet(lastSheetName);
         generator.generateWorkBooks(lastSheetData);
 

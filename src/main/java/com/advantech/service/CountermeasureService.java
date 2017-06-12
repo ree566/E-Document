@@ -115,7 +115,7 @@ public class CountermeasureService {
         List<Map> tList = new ArrayList();
         Map baseMap = null;
         int baseId = 0;
-        String userIdFieldName = "USER";
+        String userIdFieldName = "USER_ID";
         String stationFieldName = "station";
         String failPercentFieldName = "failPcs";
         String idFieldName = "id";

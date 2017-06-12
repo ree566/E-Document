@@ -75,7 +75,7 @@ public class CountermeasureDAO extends BasicDAO {
     }
     
     public List<Map> getCountermeasureAndPersonalAlm(String startDate, String endDate) {
-        return queryProcForMapList(this.getConn(), "{CALL countermeasure_and_personalAlm(?,?)}", startDate, endDate);
+        return queryProcForMapList(this.getConn(), "{CALL countermeasureAndPersonalAlmDownExcel(?,?)}", startDate, endDate);
     }
 
     public List<Map> getErrorCode() {

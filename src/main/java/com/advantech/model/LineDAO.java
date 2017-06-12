@@ -6,6 +6,7 @@
 package com.advantech.model;
 
 import com.advantech.entity.Line;
+import com.advantech.entity.LineState;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,9 +16,6 @@ import java.util.List;
  * @author Wei.Cheng
  */
 public class LineDAO extends BasicDAO {
-
-    private final int LINE_OPEN_SIGN = 1;
-    private final int LINE_CLOSE_SIGN = 0;
 
     private Connection getConn() {
         return getDBUtilConn(SQL.WebAccess);
@@ -30,7 +28,7 @@ public class LineDAO extends BasicDAO {
     private List<Line> queryLineTable(String sql, Object... params) {
         return queryForBeanList(getConn(), Line.class, sql, params);
     }
-    
+
     public List<Line> getLineForJSTL() {
         return getLine();
     }
@@ -38,7 +36,7 @@ public class LineDAO extends BasicDAO {
     public List<Line> getLine() {
         return queryLineTable("SELECT * FROM LS_Line");
     }
-    
+
     public List<Line> getOpenedLine() {
         return queryLineTable("SELECT * FROM LS_Line WHERE lock = 0");
     }
@@ -49,19 +47,19 @@ public class LineDAO extends BasicDAO {
     }
 
     public List<Line> getLine(String sitefloor) {
-        if(sitefloor.length() > 3){
+        if (sitefloor.length() > 3) {
             return new ArrayList();
         }
         return queryLineTable("SELECT * FROM LS_Line WHERE sitefloor = ? ORDER BY name", sitefloor);
     }
 
     public boolean openSingleLine(int lineNo) {
-        return updateLineStatus(LINE_OPEN_SIGN, lineNo);
+        return updateLineStatus(LineState.OPEN.getState(), lineNo);
     }
 
     // End the line.(Station 1)
     public boolean closeSingleLine(int lineNo) {
-        return updateLineStatus(LINE_CLOSE_SIGN, lineNo);
+        return updateLineStatus(LineState.CLOSE.getState(), lineNo);
     }
 
     private boolean updateLineStatus(int openOrClose, int lineNo) {
@@ -69,7 +67,7 @@ public class LineDAO extends BasicDAO {
     }
 
     public boolean allLineEnd() {
-        return updateLine("UPDATE LS_Line SET isused = 0");
+        return updateLine("UPDATE LS_Line SET isused = ?", LineState.CLOSE.getState());
     }
 
 }

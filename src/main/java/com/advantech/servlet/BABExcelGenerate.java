@@ -134,13 +134,13 @@ public class BABExcelGenerate extends HttpServlet {
         generator.generateWorkBooks(sheet1Data);
 
         generator.createExcelSheet(personalAlmSheetName + "(" + filterColumnName + "≧" + minAllowAmount + "台)");
-        generator.appendSpecialPattern(sheet3Data, 9, "Z", "AA");
+        generator.appendSpecialPattern(sheet3Data, 9, "Z", "瓶頸站", "AA", "亮燈頻率");
 
         if (!showAboveOnly && !sheet2Data.isEmpty() && !sheet4Data.isEmpty()) {
             generator.createExcelSheet(countermeasureSheetName + "(" + filterColumnName + "<" + minAllowAmount + "台)");
             generator.generateWorkBooks(sheet2Data);
             generator.createExcelSheet(personalAlmSheetName + "(" + filterColumnName + "<" + minAllowAmount + "台)");
-            generator.appendSpecialPattern(sheet4Data, 9, "Z", "AA");
+            generator.appendSpecialPattern(sheet4Data, 9, "Z", "瓶頸站", "AA", "亮燈頻率");
         }
 
         generator.createExcelSheet(lastSheetName);

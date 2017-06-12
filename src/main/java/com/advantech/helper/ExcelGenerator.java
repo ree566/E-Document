@@ -350,7 +350,12 @@ public class ExcelGenerator {
     }
 
     //客製化個人亮燈頻率excel download
-    public void appendSpecialPattern(List<Map> list, int colSeparateColIndex, String failPersonNumLetter, String failPercentNumLetter) {
+    public void appendSpecialPattern(
+            List<Map> list, int colSeparateColIndex,
+            String failPersonNumLetter,
+            String failPersonColumnName,
+            String failTotalNumLetter,
+            String failTotalColumnName) {
         if (spreadsheet == null) {
             createExcelSheet();
         }
@@ -379,7 +384,7 @@ public class ExcelGenerator {
                     }
                 }
             }
-            
+
             System.out.println(failPercentCols.toString());
             System.out.println(idCols.toString());
 
@@ -400,19 +405,16 @@ public class ExcelGenerator {
                 spreadsheet.createRow(yIndex);
             }
 
-            //設定最後兩攔formula
-//            String failPersonNumLetter = "Z";
-//            String failPercentNumLetter = "AA";
-
-            int numLetterZ = CellReference.convertColStringToIndex(failPersonNumLetter);
-            int numLetterAA = CellReference.convertColStringToIndex(failPercentNumLetter);
+            //依照給定的column name取得index
+            int failPersonNumIndex = CellReference.convertColStringToIndex(failPersonNumLetter);
+            int failTotalNumIndex = CellReference.convertColStringToIndex(failTotalNumLetter);
 
             //Set the final two formula column.
-            spreadsheet.getRow(baseXIndex).createCell(numLetterZ).setCellValue("瓶頸站");
-            spreadsheet.getRow(baseXIndex).createCell(numLetterAA).setCellValue("亮燈頻率");
+            spreadsheet.getRow(baseXIndex).createCell(failPersonNumIndex).setCellValue(failPersonColumnName);
+            spreadsheet.getRow(baseXIndex).createCell(failTotalNumIndex).setCellValue(failTotalColumnName);
 
             //set unused column to hidden
-            for (int a = maxDataIndex; a < numLetterZ - 1; a++) {
+            for (int a = maxDataIndex; a < failPersonNumIndex - 1; a++) {
                 spreadsheet.setColumnHidden(a, true);
             }
 
@@ -422,11 +424,11 @@ public class ExcelGenerator {
                 int currentYIndex = i + 1;
 
                 //瓶頸站人名
-                cell = maxium.createCell(numLetterZ);
+                cell = maxium.createCell(failPersonNumIndex);
                 String formulaString = "";
                 String formulaStringEnding = "";
                 for (int j = 0, m = idCols.size(); j < m; j++) {
-                    String formulaCol = failPercentNumLetter + currentYIndex;
+                    String formulaCol = failTotalNumLetter + currentYIndex;
                     String failPercentCol = failPercentCols.get(j) + currentYIndex;
                     String userNameCol = idCols.get(j) + currentYIndex;
                     formulaString += "if(" + failPercentCol + "=" + formulaCol + "," + userNameCol;
@@ -439,7 +441,7 @@ public class ExcelGenerator {
                 cell.setCellFormula(formulaString);
 
                 //瓶頸站趴數
-                cell = maxium.createCell(numLetterAA);
+                cell = maxium.createCell(failTotalNumIndex);
                 String formulaString1 = "MAX(";
                 for (int j = 0; j < failPercentCols.size(); j++) {
                     formulaString1 += failPercentCols.get(j) + currentYIndex + ",";
