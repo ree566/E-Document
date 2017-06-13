@@ -25,8 +25,14 @@ public class XlsView extends AbstractXlsView {
     protected void buildExcelDocument(Map<String, Object> map, Workbook workbook, HttpServletRequest req, HttpServletResponse res) throws Exception {
         res.setHeader("Content-Disposition", "attachment; filename=\"sample.xls\"");
         List<Object> datas = (List<Object>) map.get("revenueData");
+        if (map.containsKey("templateWorkbook")) {
+            Object o = map.get("templateWorkbook");
+            if (o != null) {
+                workbook = (Workbook) o;
+            }
+        }
         ExcelGenerator generator = new ExcelGenerator(workbook);
-        generator.createExcelSheet("test");
+//        generator.createExcelSheet("test");
         generator.generateWorkBooks(datas);
     }
 }

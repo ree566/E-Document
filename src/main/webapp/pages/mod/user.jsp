@@ -6,7 +6,14 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<style>
+    .danger{
+        color: red;
+    }
+</style>
 <script src="<c:url value="/js/jqgrid-custom-select-option-reader.js" />"></script>
+<script src="<c:url value="/js/websocket/sockjs.min.js" />"></script>
+<script src="<c:url value="/js/websocket/stomp.min.js" />"></script>
 <script>
     $(function () {
         var scrollPosition = 0;
@@ -21,6 +28,17 @@
                 {name: "unit", isNullable: false}
             ]
         });
+
+        var sendMessageToSocket = function (form) {
+            var rowId = grid.jqGrid('getGridParam', 'selrow');
+            sendMessage(rowId, "LOCK");
+            greyout(form);
+        };
+
+        var unLockRow = function () {
+            var rowId = grid.jqGrid('getGridParam', 'selrow');
+            sendMessage(rowId, "UNLOCK");
+        };
 
         grid.jqGrid({
             url: '<c:url value="/User/read" />',
@@ -77,7 +95,7 @@
                         );
             }
         });
-        
+
         grid.jqGrid('navGrid', '#pager',
                 {edit: true, add: true, del: true, search: true},
                 {
@@ -87,7 +105,8 @@
                     closeAfterEdit: false,
                     reloadAfterSubmit: true,
                     errorTextFormat: customErrorTextFormat,
-                    beforeShowForm: greyout,
+                    beforeShowForm: sendMessageToSocket,
+                    onClose: unLockRow,
                     zIndex: 9999,
                     recreateForm: true
                 },
@@ -114,6 +133,48 @@
                     reloadAfterSubmit: true
                 }
         );
+
+        var stompClient = null;
+
+        connect();
+
+        function setConnected(connected) {
+        }
+
+        function connect() {
+            var socket = new SockJS('<c:url value="/socket" />');
+            stompClient = Stomp.over(socket);
+            stompClient.debug = null;
+            stompClient.connect({}, function (frame) {
+                setConnected(true);
+                console.log('Connected: ' + frame);
+                stompClient.subscribe('/topic/messages', function (messageOutput) {
+                    showMessageOutput(JSON.parse(messageOutput.body));
+                });
+            });
+        }
+
+        function disconnect() {
+            if (stompClient != null) {
+                stompClient.disconnect();
+            }
+            setConnected(false);
+            console.log("Disconnected");
+        }
+
+        function sendMessage(rowId, action) {
+            stompClient.send("/app/chat", {},
+                    JSON.stringify({'action': action, 'rowId': rowId}));
+        }
+
+        function showMessageOutput(messageOutput) {
+            var row = $("#" + messageOutput.rowId);
+            if (messageOutput.action == "LOCK") {
+                row.addClass("danger");
+            } else if (messageOutput.action == "UNLOCK") {
+                row.removeClass("danger");
+            }
+        }
 
     });
 </script>

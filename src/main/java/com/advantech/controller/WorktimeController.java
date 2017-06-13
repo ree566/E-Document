@@ -12,8 +12,13 @@ import com.advantech.model.Worktime;
 import com.advantech.response.JqGridResponse;
 import com.advantech.service.SheetViewService;
 import com.advantech.service.WorktimeService;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.List;
 import javax.validation.Valid;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.poifs.filesystem.POIFSFileSystem;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -32,10 +37,10 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 @RequestMapping("/Worktime")
 public class WorktimeController extends CrudController<Worktime> {
-    
+
     @Autowired
     private WorktimeService worktimeService;
-    
+
     @Autowired
     private SheetViewService sheetViewService;
 
@@ -46,7 +51,7 @@ public class WorktimeController extends CrudController<Worktime> {
     public JqGridResponse read(PageInfo info) {
         return toJqGridResponse(worktimeService.findAll(info), info);
     }
-    
+
     @RequestMapping(value = INSERT_URL, method = {RequestMethod.POST})
     @Secured({"ROLE_USER", "ROLE_ADMIN"})
     @Override
@@ -54,28 +59,28 @@ public class WorktimeController extends CrudController<Worktime> {
         if (bindingResult.hasErrors()) {
             return serverResponse(bindingResult.getFieldErrors());
         }
-        
+
         String modifyMessage;
-        
+
         if (isModelExists(worktime)) {
             modifyMessage = "This model name is already exists";
         } else {
             resetNullableColumn(worktime);
             modifyMessage = worktimeService.insertWithFormulaSetting(worktime) == 1 ? this.SUCCESS_MESSAGE : FAIL_MESSAGE;
         }
-        
+
         return serverResponse(modifyMessage);
     }
-    
+
     @RequestMapping(value = UPDATE_URL, method = {RequestMethod.POST})
     @Secured({"ROLE_USER", "ROLE_ADMIN"})
     @Override
     public ResponseEntity update(@Valid @ModelAttribute Worktime worktime, BindingResult bindingResult) {
-        
+
         if (bindingResult.hasErrors()) {
             return serverResponse(bindingResult.getFieldErrors());
         }
-        
+
         String modifyMessage;
         if (isModelExists(worktime)) {
             modifyMessage = "This model name is already exists";
@@ -83,10 +88,10 @@ public class WorktimeController extends CrudController<Worktime> {
             resetNullableColumn(worktime);
             modifyMessage = worktimeService.merge(worktime) == 1 ? this.SUCCESS_MESSAGE : FAIL_MESSAGE;
         }
-        
+
         return serverResponse(modifyMessage);
     }
-    
+
     @RequestMapping(value = DELETE_URL, method = {RequestMethod.POST})
     @Secured({"ROLE_USER", "ROLE_ADMIN"})
     @Override
@@ -94,29 +99,29 @@ public class WorktimeController extends CrudController<Worktime> {
         String modifyMessage = worktimeService.delete(id) == 1 ? this.SUCCESS_MESSAGE : this.FAIL_MESSAGE;
         return serverResponse(modifyMessage);
     }
-    
+
     private void resetNullableColumn(Worktime worktime) {
         if (worktime.getPreAssy().getId() == 0) {
             worktime.setPreAssy(null);
         }
-        
+
         if (worktime.getFlowByBabFlowId().getId() == 0) {
             worktime.setFlowByBabFlowId(null);
         }
-        
+
         if (worktime.getFlowByTestFlowId().getId() == 0) {
             worktime.setFlowByTestFlowId(null);
         }
-        
+
         if (worktime.getFlowByPackingFlowId().getId() == 0) {
             worktime.setFlowByPackingFlowId(null);
         }
-        
+
         if (worktime.getUserByEeOwnerId().getId() == 0) {
             worktime.setUserByEeOwnerId(null);
         }
     }
-    
+
     private boolean isModelExists(Worktime worktime) {
         Worktime existWorktime = worktimeService.findByModel(worktime.getModelName());
         if (worktime.getId() == 0) {
@@ -132,7 +137,29 @@ public class WorktimeController extends CrudController<Worktime> {
     public ModelAndView generateExcel(PageInfo info) {
         // create some sample data
         List<SheetView> l = sheetViewService.findAll(info);
-        return new ModelAndView("ExcelRevenueSummary", "revenueData", l);
+        Workbook tempWorkbook = this.getWorktimeTempWorkbook();
+        ModelAndView mav = new ModelAndView("ExcelRevenueSummary");
+        mav.addObject("revenueData", l);
+        mav.addObject("templateWorkbook", tempWorkbook);
+        return mav;
     }
-    
+
+    private Workbook getWorktimeTempWorkbook() {
+
+        InputStream fis;
+        Workbook w = null;
+        try {
+//            fis = WorktimeController.class.getClassLoader().getResourceAsStream("/excel-template/worktime_template.xls");
+//            POIFSFileSystem fs = new POIFSFileSystem(fis);
+            POIFSFileSystem fs = new POIFSFileSystem(
+                    new FileInputStream("/excel-template/worktime_template.xls"));
+            w = new HSSFWorkbook(fs, true);
+        } catch (Exception ex) {
+            System.out.println(ex);
+        }
+
+        return w;
+
+    }
+
 }
