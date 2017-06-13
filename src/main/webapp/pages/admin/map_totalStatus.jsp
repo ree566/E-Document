@@ -19,6 +19,9 @@
         <link rel="stylesheet" href="../../css/jquery-ui.css">
         <link rel="stylesheet" href="../../css/tooltipster.bundle.min.css">
         <style>
+            body{
+                font-family: 微軟正黑體;
+            }
             .draggable { 
                 width: 25px; 
                 height: 25px; 
@@ -53,6 +56,15 @@
             #goback{
                 cursor: pointer;
                 color: blue;
+            }
+            .mapTitle{
+                padding: 3px; 
+                background-color: white;
+                font-size: 40px;
+                float: left;
+                border: 5px red solid;
+                cursor: none;
+                overflow: auto;
             }
             .lineTitle{
                 padding: 3px; 
@@ -148,6 +160,7 @@
             var maxProductivity = 200;
 
             $(function () {
+                initMapInfo();
                 initTitleGroup();
                 initTestGroup();
                 initBabGroup();
@@ -169,13 +182,22 @@
                 dragableWiget.addClass("adjustPosition");
                 dragableWiget.not(".clearWiget").addClass("ui-helper").draggable({
                     drag: function (e) {
-//                        return false;
+                        return false;
                     }
                 });
 
                 $("#fullBtn").click(function () {
                     $("#wigetCtrl").fullScreen(true);
                 });
+
+                function initMapInfo() {
+                    $("#mapInfo").append("<div></div>");
+                    $("#mapInfo>div")
+                            .attr("id", "map_title")
+                            .addClass("titleWiget mapTitle")
+                            .html(mapInfo.titleName)
+                            .css({left: mapInfo.x + pXa, top: mapInfo.y + pYa});
+                }
 
                 function initTitleGroup() {
                     for (var i = 0; i < titleGroup.length; i++) {
@@ -579,6 +601,8 @@
                     <label for="normalSign" style="float:left">prepared</label>
                     <div class="draggable blub-prepared divCustomBg"></div>
                 </div>
+
+                <div id="mapInfo"></div>
                 <!--<div class="clearWiget" /></div>-->
 
                 <div id="titleArea"></div>

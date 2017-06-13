@@ -641,7 +641,7 @@
                 var startStation = parseInt($("#startStation").val());
                 var people = parseInt($("#people").val());
                 var maxSelection = $("#people > option").length;
-                var ispre = $("#ispre").is("checked") ? 1 : 0;
+                var ispre = $("#ispre").is(":checked") ? 1 : 0;
 
                 if ((startStation + people - 1) > maxSelection) {
                     showMsg("startPosition or people is not valid");

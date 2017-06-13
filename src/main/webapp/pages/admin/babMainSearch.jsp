@@ -1084,8 +1084,6 @@
                     }
                 });
 
-//excelForEfficiencyReport
-//BABExcelGenerate
                 var excelExport = function () {
                     var id = $(this).attr("id");
                     var url = id == "generateExcel" ? "BABExcelGenerate" : "BABExcelForEfficiencyReport";
@@ -1096,15 +1094,15 @@
                     var endDate = $('#ffin').val();
                     var aboveStandard = $("#aboveStandard").is(":checked");
 
-                    $("#generateExcel").attr("disabled", true);
+                    $(".excel_export").attr("disabled", true);
                     $.fileDownload('<c:url value="/" />' + url + '?startDate=' + startDate + '&endDate=' + endDate + '&lineType=' + lineType + '&sitefloor=' + sitefloor + '&aboveStandard=' + aboveStandard, {
                         preparingMessageHtml: "We are preparing your report, please wait...",
                         failMessageHtml: "No reports generated. No Survey data is available.",
                         successCallback: function (url) {
-                            $("#generateExcel").attr("disabled", false);
+                            $(".excel_export").attr("disabled", false);
                         }
                         , failCallback: function (html, url) {
-                            $("#generateExcel").attr("disabled", false);
+                            $(".excel_export").attr("disabled", false);
                         }
                     });
                 };
@@ -1252,8 +1250,8 @@
                             </div>
                             <label for="aboveStandard"><input type="checkbox" id="aboveStandard">只顯示數量大於十台</label>
                             <input type="button" id="searchAvailableBAB" value="查詢">
-                            <input type="button" id="generateExcel" value="產出excel">
-                            <input type="button" id="excelForEfficiencyReport" value="效率報表用">
+                            <input type="button" id="generateExcel" class="excel_export" value="產出excel">
+                            <input type="button" id="excelForEfficiencyReport" class="excel_export" value="效率報表用">
                         </div>
                     </div>
                     <div style="width: 90%; background-color: #F5F5F5">

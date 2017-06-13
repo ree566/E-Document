@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 public abstract class ProcessingBabDetector {
 
     private static final Logger log = LoggerFactory.getLogger(ProcessingBabDetector.class);
-    
+
     public static final String TEMP_BAB_KEYS = "tempBab";
     public static final String PROCESS_STATUS_KEY = "processStatus";
     public static final String STORE_JOB_KEYS = "storeKeys";
@@ -55,13 +55,13 @@ public abstract class ProcessingBabDetector {
         this.scheduleClass = scheduleClass;
         this.babService = BasicService.getBabService();
     }
-    
-    public void setCurrentStatus(JobDataMap jobMap){
+
+    public void setCurrentStatus(JobDataMap jobMap) {
         tempBab = jobMap.get(TEMP_BAB_KEYS) == null ? null : (List<BAB>) jobMap.get(TEMP_BAB_KEYS);
         processStatus = jobMap.get(PROCESS_STATUS_KEY) == null ? new JSONObject() : (JSONObject) jobMap.get(PROCESS_STATUS_KEY);
         storeKeys = jobMap.get(STORE_JOB_KEYS) == null ? new HashMap<String, Map<String, Key>>() : (Map<String, Map<String, Key>>) jobMap.get(STORE_JOB_KEYS);
     }
-    
+
     public abstract List<BAB> getProcessingBab();
 
     public void listeningBab() {
@@ -85,8 +85,8 @@ public abstract class ProcessingBabDetector {
         }
 
     }
-    
-    public void setStausIntoMap(JobDataMap jobMap){
+
+    public void setStausIntoMap(JobDataMap jobMap) {
         //Retrive object status and update map in jobMap
         jobMap.put(TEMP_BAB_KEYS, this.tempBab);
         jobMap.put(PROCESS_STATUS_KEY, this.processStatus);
@@ -105,6 +105,9 @@ public abstract class ProcessingBabDetector {
 
     private void schedulePollingJob(List<BAB> l) {
         for (BAB b : l) {
+            if (b.getIspre() == 1) {
+                continue; //前置工單不做反應
+            }
             try {
                 CronTrigMod ctm = CronTrigMod.getInstance();
                 String jobName = b.getLineName() + quartzJobNameExt;
@@ -118,7 +121,7 @@ public abstract class ProcessingBabDetector {
                     JobDetail jobDetail = ctm.createJobDetail(jobKey, quartzJobGroupName, this.scheduleClass, babDetail);
 
                     ctm.scheduleJob(jobDetail, triggerKey, quartzJobCronTrigger);
-                    
+
                     ctm.triggerJob(jobKey);
 
                     //put key in map when sche is success

@@ -8,6 +8,7 @@ package com.advantech.model;
 import com.advantech.entity.AlarmAction;
 import com.advantech.entity.BAB;
 import com.advantech.entity.BABHistory;
+import com.advantech.entity.BABStatus;
 import com.advantech.entity.LineBalancing;
 import com.advantech.helper.ProcRunner;
 import com.advantech.helper.PropertiesReader;
@@ -19,6 +20,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import javax.mail.MessagingException;
 import org.apache.commons.dbutils.DbUtils;
 import org.apache.commons.dbutils.QueryRunner;
@@ -62,8 +64,8 @@ public class BABDAO extends BasicDAO implements AlarmActions {
         List l = queryBABTable("SELECT * FROM LS_BAB WHERE id = ?", BABid);
         return !l.isEmpty() ? (BAB) l.get(0) : null;
     }
-    
-    public List<BAB> getTodayBAB(){
+
+    public List<BAB> getTodayBAB() {
         return queryBABTable("SELECT * FROM babWithLineView WHERE btime > DATEADD(DAY, DATEDIFF(DAY, 0, GETDATE()), 0) ORDER BY id");
     }
 
@@ -291,6 +293,14 @@ public class BABDAO extends BasicDAO implements AlarmActions {
 
             Object[] param3 = {bab.getId()};
             pRunner.updateProc(conn1, "{CALL LS_closeBABWithSaving(?)}", param3);//關閉線別
+
+            if (Objects.equals(BABStatus.UNFINSHED.getValue(), bab.getIsused())) {
+                qRunner.update(conn1,
+                        "UPDATE LS_BAB SET isused = ? WHERE id = ?)",
+                        bab.getIsused(),
+                        bab.getId()
+                );
+            }
 
             //--------區間內請勿再開啟tran不然會deadlock----------------------------
             DbUtils.commitAndCloseQuietly(conn1);

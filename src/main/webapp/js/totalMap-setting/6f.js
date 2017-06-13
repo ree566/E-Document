@@ -1,6 +1,12 @@
 var pXa = -20;
 var pYa = -20;
 
+var mapInfo = {
+    titleName: "東湖廠6樓",
+    x: 950,
+    y: 50
+};
+
 var titleGroup = [
     //assy
     {lineName: "L1", x: 810, y: 265},
