@@ -5,7 +5,7 @@
  */
 package com.advantech.test;
 
-import com.advantech.entity.BABState;
+import com.advantech.entity.BABStatus;
 import com.advantech.entity.User;
 import com.advantech.webservice.WebServiceRV;
 import com.advantech.webservice.WebServiceTX;
@@ -21,8 +21,7 @@ import java.util.logging.Logger;
 public class TestClass {
 
     public static void main(String[] args) {
-        Integer state = null;
-
+        System.out.println(BABStatus.CLOSED.getValue().toString());
     }
 
 }

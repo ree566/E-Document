@@ -29,7 +29,10 @@ public class BAB implements Serializable {
     private String linetype;
     private String btime;
     private String lastUpdateTime;
-    private Integer cm_id; // check countermeasure is exist or not
+    private int ispre = 0;
+
+    // check countermeasure is exist or not
+    private Integer cm_id; 
 
     //for saving line balance data, not exist in the database
     private JSONArray babavgs;
@@ -38,12 +41,13 @@ public class BAB implements Serializable {
 
     }
 
-    public BAB(String PO, String Model_name, int line, int people, int startPosition) {
+    public BAB(String PO, String Model_name, int line, int people, int startPosition, int ispre) {
         this.PO = PO;
         this.Model_name = Model_name;
         this.line = line;
         this.people = people;
         this.startPosition = startPosition;
+        this.ispre = ispre;
     }
 
     public int getId() {
@@ -140,6 +144,14 @@ public class BAB implements Serializable {
 
     public void setLastUpdateTime(String lastUpdateTime) {
         this.lastUpdateTime = lastUpdateTime;
+    }
+
+    public int getIspre() {
+        return ispre;
+    }
+
+    public void setIspre(int ispre) {
+        this.ispre = ispre;
     }
 
     public JSONArray getBabavgs() {

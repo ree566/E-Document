@@ -2,26 +2,22 @@
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
- * 
+ * Cell過站資訊匯出excel
  */
 package com.advantech.servlet;
 
 import com.advantech.helper.DatetimeGenerator;
 import com.advantech.helper.ExcelGenerator;
-import com.advantech.helper.JsonHelper;
 import com.advantech.helper.ParamChecker;
 import com.advantech.service.BasicService;
 import com.advantech.service.PassStationService;
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**

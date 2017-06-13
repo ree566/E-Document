@@ -2,7 +2,7 @@
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
- * 修改LineBalancing_Main資料表相關資訊用，"暫時"無使用(可刪除)
+ * For 前端的auto complete textbox
  */
 package com.advantech.servlet;
 

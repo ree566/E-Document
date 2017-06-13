@@ -5,6 +5,7 @@
  */
 package com.advantech.servlet;
 
+import com.advantech.entity.BABStatus;
 import com.advantech.helper.ParamChecker;
 import com.advantech.service.BABService;
 import com.advantech.service.BasicService;
@@ -45,10 +46,9 @@ public class BABTimeDetail extends HttpServlet {
         String id = req.getParameter("id");
         String isused = req.getParameter("isused");
 
-        out.print(new JSONObject().put("data", babService.getBABTimeDetail(Integer.parseInt(id), isNull(isused, 0))));
+        BABStatus status = isused == null ? null : BABStatus.CLOSED;
+
+        out.print(new JSONObject().put("data", babService.getBABTimeDetail(Integer.parseInt(id), status)));
     }
 
-    private int isNull(String o, int i) {
-        return o == null ? i : Integer.parseInt(o);
-    }
 }

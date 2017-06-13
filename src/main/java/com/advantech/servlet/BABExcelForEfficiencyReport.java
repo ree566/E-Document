@@ -2,7 +2,7 @@
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
- * 查詢組裝包裝相關資訊(工單對照的機種、線別資訊等用)
+ * 效率報表匯出用 (For MFG)
  */
 package com.advantech.servlet;
 

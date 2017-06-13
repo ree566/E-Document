@@ -9,13 +9,13 @@ package com.advantech.entity;
  *
  * @author Wei.Cheng
  */
-public enum LineState {
+public enum LineStatus {
     OPEN(1),
     CLOSE(0);
  
     private final Integer value;
  
-    private LineState(Integer value) {
+    private LineStatus(Integer value) {
         this.value = value;
     }
  

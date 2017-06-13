@@ -6,7 +6,7 @@
 package com.advantech.model;
 
 import com.advantech.entity.Line;
-import com.advantech.entity.LineState;
+import com.advantech.entity.LineStatus;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,12 +54,12 @@ public class LineDAO extends BasicDAO {
     }
 
     public boolean openSingleLine(int lineNo) {
-        return updateLineStatus(LineState.OPEN.getState(), lineNo);
+        return updateLineStatus(LineStatus.OPEN.getState(), lineNo);
     }
 
     // End the line.(Station 1)
     public boolean closeSingleLine(int lineNo) {
-        return updateLineStatus(LineState.CLOSE.getState(), lineNo);
+        return updateLineStatus(LineStatus.CLOSE.getState(), lineNo);
     }
 
     private boolean updateLineStatus(int openOrClose, int lineNo) {
@@ -67,7 +67,7 @@ public class LineDAO extends BasicDAO {
     }
 
     public boolean allLineEnd() {
-        return updateLine("UPDATE LS_Line SET isused = ?", LineState.CLOSE.getState());
+        return updateLine("UPDATE LS_Line SET isused = ?", LineStatus.CLOSE.getState());
     }
 
 }

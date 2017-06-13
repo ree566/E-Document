@@ -9,14 +9,14 @@ package com.advantech.entity;
  *
  * @author Wei.Cheng
  */
-public enum BABState {
+public enum BABStatus {
     CLOSED(1),
     NO_RECORD(-1),
     UNFINSHED(-2);
  
     private final Integer value;
  
-    private BABState(Integer value) {
+    private BABStatus(Integer value) {
         this.value = value;
     }
  

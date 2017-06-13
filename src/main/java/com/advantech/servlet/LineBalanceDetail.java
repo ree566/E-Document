@@ -2,9 +2,11 @@
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
+ * 取得該工單每pcs的線平衡
  */
 package com.advantech.servlet;
 
+import com.advantech.entity.BABStatus;
 import com.advantech.helper.ParamChecker;
 import com.advantech.service.BABService;
 import com.advantech.service.BasicService;
@@ -49,15 +51,11 @@ public class LineBalanceDetail extends HttpServlet {
         List balnPerGroup;
         if (pChecker.checkInputVals(id)) {
             int i = Integer.parseInt(id);
-            int usedSign = isNull(isused, 0);
-            balnPerGroup = babService.getLineBalanceDetail(i, usedSign);
+            BABStatus status = isused == null ? null : BABStatus.CLOSED;
+            balnPerGroup = babService.getLineBalanceDetail(i, status);
         } else {
             balnPerGroup = new ArrayList();
         }
         out.print(new JSONObject().put("data", balnPerGroup));
-    }
-
-    private int isNull(String o, int i) {
-        return o == null ? i : Integer.parseInt(o) ;
     }
 }

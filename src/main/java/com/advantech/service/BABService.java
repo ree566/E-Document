@@ -3,6 +3,7 @@ package com.advantech.service;
 import com.advantech.entity.AlarmAction;
 import com.advantech.entity.BAB;
 import com.advantech.entity.BABHistory;
+import com.advantech.entity.BABStatus;
 import com.advantech.entity.Line;
 import com.advantech.helper.PropertiesReader;
 import com.advantech.interfaces.AlarmActions;
@@ -29,10 +30,6 @@ public class BABService implements AlarmActions {
 
     private final BABDAO babDAO;
     private final int BALANCE_ROUNDING_DIGIT;
-
-    private final Integer BAB_NO_RECORD_SIGN = -1;
-    private final Integer BAB_UNCLOSE_SIGN = null;
-    private final Integer BAB_CLOSED_SIGN = 1;
 
     private final Integer FIRST_STATION_NUMBER = 1;
 
@@ -266,8 +263,8 @@ public class BABService implements AlarmActions {
         return babDAO.getBABAvgsInSpecGroup(BABid, groupStart, groupEnd);
     }
 
-    public double getAvgType2(int BABid, int closedSign) throws Exception {
-        List<Map> l = getLineBalanceDetail(BABid, closedSign);
+    public double getAvgType2(int BABid, BABStatus state) throws Exception {
+        List<Map> l = getLineBalanceDetail(BABid, state);
         if (l.isEmpty()) {
             return 0;
         } else {
@@ -280,18 +277,18 @@ public class BABService implements AlarmActions {
         }
     }
 
-    public List<Map> getLineBalanceDetail(int BABid, int isused) {
-        return isused == BAB_CLOSED_SIGN ? babDAO.getClosedBalanceDetail(BABid) : babDAO.getBalancePerGroup(BABid);
+    public List<Map> getLineBalanceDetail(int BABid, BABStatus state) {
+        return state == BABStatus.CLOSED ? babDAO.getClosedBalanceDetail(BABid) : babDAO.getBalancePerGroup(BABid);
     }
 
-    public List<Map> getBABTimeDetail(int BABid, int isused) {
-        return isused == BAB_CLOSED_SIGN ? babDAO.getBABTimeHistoryDetail(BABid) : babDAO.getSensorStatus(BABid);
+    public List<Map> getBABTimeDetail(int BABid, BABStatus state) {
+        return state == BABStatus.CLOSED ? babDAO.getBABTimeHistoryDetail(BABid) : babDAO.getSensorStatus(BABid);
     }
 
-    public JSONArray getSensorDiffChart(int BABid, int isused) {
+    public JSONArray getSensorDiffChart(int BABid, BABStatus state) {
         JSONArray totalArrObj = new JSONArray();
 
-        List<Map> l = getBABTimeDetail(BABid, isused);
+        List<Map> l = getBABTimeDetail(BABid, state);
 
         JSONObject innerObj = new JSONObject();
         JSONArray arr = new JSONArray();

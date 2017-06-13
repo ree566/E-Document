@@ -2,10 +2,11 @@
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
- * 顯示看板XML是否有資料用 與其他class無相依關係(開看板刷新時用，若無需求可刪除此servlet)
+ * 取得本次工單與上次的比較
  */
 package com.advantech.servlet;
 
+import com.advantech.entity.BABStatus;
 import com.advantech.helper.ParamChecker;
 import com.advantech.service.BABService;
 import com.advantech.service.BasicService;
@@ -79,13 +80,13 @@ public class GetLineBalancingComparison extends HttpServlet {
             try {
                 if (l != null) {
                     for (Map m : l) {
-                        int ctrl_isused = parseToInt(m.get("ctrl_isused"));
+                        BABStatus ctrl_status = m.get("ctrl_isused") == null ? null : BABStatus.CLOSED;
+                        BABStatus exp_status = m.get("exp_isused") == null ? null : BABStatus.CLOSED;
                         int ctrl_id = parseToInt(m.get("ctrl_id"));
-                        int exp_isused = parseToInt(m.get("exp_isused"));
                         int exp_id = parseToInt(m.get("exp_id"));
 
-                        Double ctrlBalance = ctrl_id == 0 ? 0 : babService.getAvgType2(ctrl_id, ctrl_isused);
-                        Double expBalance = exp_id == 0 ? 0 : babService.getAvgType2(exp_id, exp_isused);
+                        Double ctrlBalance = ctrl_id == 0 ? 0 : babService.getAvgType2(ctrl_id, ctrl_status);
+                        Double expBalance = exp_id == 0 ? 0 : babService.getAvgType2(exp_id, exp_status);
 
                         responseObject.put("ctrlAvgs", ctrlBalance).put("expAvgs", expBalance);
 

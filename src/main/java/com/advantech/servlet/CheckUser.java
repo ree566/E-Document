@@ -1,3 +1,9 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ * 查看所屬人員是否存在
+ */
 package com.advantech.servlet;
 
 import com.advantech.entity.Identit;
@@ -23,13 +29,10 @@ public class CheckUser extends HttpServlet {
     private IdentitService identitService = null;
     private ParamChecker pChecker = null;
 
-    private int BASIC_PERMISSION;
-
     @Override
     public void init() throws ServletException {
         identitService = BasicService.getIdentitService();
         pChecker = new ParamChecker();
-        BASIC_PERMISSION = Integer.parseInt(getServletContext().getInitParameter("BASIC_PERMISSION"));
     }
 
     @Override

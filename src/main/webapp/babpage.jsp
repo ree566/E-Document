@@ -553,6 +553,7 @@
                             success: function (response) {
                                 obj.val(response);
                                 $("#reSearch").show();
+                                $("#ispre").prop("checked", false);
                             },
                             error: function () {
                                 showMsg(serverErrorConnMessage);
@@ -640,6 +641,7 @@
                 var startStation = parseInt($("#startStation").val());
                 var people = parseInt($("#people").val());
                 var maxSelection = $("#people > option").length;
+                var ispre = $("#ispre").is("checked") ? 1 : 0;
 
                 if ((startStation + people - 1) > maxSelection) {
                     showMsg("startPosition or people is not valid");
@@ -656,7 +658,8 @@
                     po: po,
                     modelname: modelname,
                     people: people,
-                    startPosition: startStation
+                    startPosition: startStation,
+                    ispre: ispre
                 });
             }
 
@@ -828,9 +831,7 @@
                                         </select>
                                         <select id='startStation'>
                                         </select>
-                                        <div class="switch" data-on="warning" data-off="danger">
-                                            <input type="checkbox" checked />
-                                        </div>
+                                        <input type="checkbox" id="ispre" /><label for="ispre">前置</label>
                                     </td>
                                 </tr>
                                 <tr>

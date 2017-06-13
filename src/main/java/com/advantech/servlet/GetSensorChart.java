@@ -2,10 +2,11 @@
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
- * 測試資料用servlet 無作用(可刪除)
+ * 將計算紀錄回饋給前端，做成chart
  */
 package com.advantech.servlet;
 
+import com.advantech.entity.BABStatus;
 import com.advantech.helper.ParamChecker;
 import com.advantech.service.BABService;
 import com.advantech.service.BasicService;
@@ -49,14 +50,11 @@ public class GetSensorChart extends HttpServlet {
         JSONObject obj = new JSONObject();
         if (pChecker.checkInputVals(babid)) {
             int id = Integer.parseInt(babid);
-            obj.put("data", babService.getSensorDiffChart(id, isNull(isused, 0)));
+            BABStatus status = isused == null ? null : BABStatus.CLOSED;
+            obj.put("data", babService.getSensorDiffChart(id, status));
             obj.put("avg", babService.getTotalAvg(id).intValue());
         }
         out.print(obj);
-    }
-
-    private int isNull(String o, int i) {
-        return o == null ? i : Integer.parseInt(o);
     }
 
 }

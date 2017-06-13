@@ -36,7 +36,7 @@ public class TestServlet extends HttpServlet {
             throws ServletException, IOException {
         String PO = req.getParameter("PO");
         String line = req.getParameter("line");
-        BAB b = new BAB(PO, "test", Integer.parseInt(line), 2, 1);
+        BAB b = new BAB(PO, "test", Integer.parseInt(line), 2, 1, 1);
         Endpoint6.addNewBab(b);
     }
 
