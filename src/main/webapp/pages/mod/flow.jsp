@@ -8,6 +8,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <link href="<c:url value="/css/jquery-ui-multiselect.css" />" rel="stylesheet">
 <script src="<c:url value="/js/jquery-ui-multiselect.min.js" />"></script>
+<script src="<c:url value="/js/jqgrid-custom-setting.js" />"></script>
 <script>
     var scrollPosition = 0;
 
@@ -138,7 +139,7 @@
                         {edit: true, add: true, del: true, search: true},
                         {
                             url: '<c:url value="/Flow/update" />',
-                            closeAfterEdit: false,
+                            closeAfterEdit: closed_after_edit,
                             reloadAfterSubmit: true,
                             errorTextFormat: customErrorTextFormat,
                             beforeShowForm: greyout,
@@ -146,7 +147,7 @@
                         },
                         {
                             url: '<c:url value="/Flow/create" />',
-                            closeAfterAdd: false,
+                            closeAfterAdd: closed_after_add,
                             reloadAfterSubmit: true,
                             errorTextFormat: customErrorTextFormat,
                             beforeShowForm: greyout,
@@ -159,7 +160,7 @@
                         },
                         {
                             sopt: ['eq', 'ne', 'lt', 'gt', 'cn', 'bw', 'ew'],
-                            closeAfterSearch: false,
+                            closeAfterSearch: closed_after_search,
                             zIndex: 9999,
                             reloadAfterSubmit: true
                         }

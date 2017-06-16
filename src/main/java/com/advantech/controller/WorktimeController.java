@@ -136,12 +136,23 @@ public class WorktimeController extends CrudController<Worktime> {
     @Secured({"ROLE_USER", "ROLE_ADMIN"})
     public ModelAndView generateExcel(PageInfo info) {
         // create some sample data
+        info.setRows(Integer.MAX_VALUE);
+        info.setSidx("id");
+        info.setSord("asc");
         List<SheetView> l = sheetViewService.findAll(info);
-        Workbook tempWorkbook = this.getWorktimeTempWorkbook();
+//        Workbook tempWorkbook = this.getWorktimeTempWorkbook();
         ModelAndView mav = new ModelAndView("ExcelRevenueSummary");
         mav.addObject("revenueData", l);
-        mav.addObject("templateWorkbook", tempWorkbook);
+//        mav.addObject("templateWorkbook", tempWorkbook);
         return mav;
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/reUpdateAllFormulaColumn", method = {RequestMethod.GET})
+    @Secured({"ROLE_ADMIN"})
+    public boolean reUpdateAllFormulaColumn() {
+        worktimeService.reUpdateAllFormulaColumn();
+        return true;
     }
 
     private Workbook getWorktimeTempWorkbook() {

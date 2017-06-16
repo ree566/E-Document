@@ -14,6 +14,7 @@
 <script src="<c:url value="/js/jqgrid-custom-select-option-reader.js" />"></script>
 <script src="<c:url value="/js/websocket/sockjs.min.js" />"></script>
 <script src="<c:url value="/js/websocket/stomp.min.js" />"></script>
+<script src="<c:url value="/js/jqgrid-custom-setting.js" />"></script>
 <script>
     $(function () {
         var scrollPosition = 0;
@@ -24,7 +25,7 @@
         setSelectOptions({
             rootUrl: "<c:url value="/" />",
             columnInfo: [
-                {name: "floor", isNullable: false},
+                {name: "user-floor", isNullable: false},
                 {name: "unit", isNullable: false}
             ]
         });
@@ -51,7 +52,7 @@
                 {label: 'password', name: "password", width: 60, editable: true, edittype: "password"},
                 {label: 'username', name: "username", width: 60, editable: true},
                 {label: 'permission', name: "permission", width: 60, editable: false, hidden: true},
-                {label: 'floor', name: "floor.id", width: 60, editable: true, edittype: "select", editoptions: {value: selectOptions["floor"]}, formatter: selectOptions["floor_func"]},
+                {label: 'floor', name: "floor.id", width: 60, editable: true, edittype: "select", editoptions: {value: selectOptions["user-floor"]}, formatter: selectOptions["user-floor_func"]},
                 {label: 'unit', name: "unit.id", width: 60, editable: true, edittype: "select", editoptions: {value: selectOptions["unit"]}, formatter: selectOptions["unit_func"]},
                 {label: 'email', name: "email", width: 60, editable: true},
                 {label: 'state', name: "state", width: 60, editable: true, edittype: "select", editoptions: {value: "Active:Active;Inactive:Inactive;Deleted:Deleted;Locked:Locked"}}
@@ -102,7 +103,7 @@
                     url: '<c:url value="/User/update" />',
                     dataheight: 350,
                     width: 450,
-                    closeAfterEdit: false,
+                    closeAfterEdit: closed_after_edit,
                     reloadAfterSubmit: true,
                     errorTextFormat: customErrorTextFormat,
                     beforeShowForm: sendMessageToSocket,
@@ -114,7 +115,7 @@
                     url: '<c:url value="/User/create" />',
                     dataheight: 350,
                     width: 450,
-                    closeAfterAdd: false,
+                    closeAfterAdd: closed_after_add,
                     reloadAfterSubmit: true,
                     errorTextFormat: customErrorTextFormat,
                     beforeShowForm: greyout,
@@ -128,7 +129,7 @@
                 },
                 {
                     sopt: ['eq', 'ne', 'lt', 'gt', 'cn', 'bw', 'ew'],
-                    closeAfterSearch: false,
+                    closeAfterSearch: closed_after_search,
                     zIndex: 9999,
                     reloadAfterSubmit: true
                 }

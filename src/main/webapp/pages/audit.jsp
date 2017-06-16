@@ -11,6 +11,7 @@
 <script>
     $(function () {
         var grid = $("#list");
+        var isGridInitialized = false;
         var today = moment().toDate();
         var yesterday = moment().add(-1, 'days').toDate();
 
@@ -40,7 +41,7 @@
             var endDate = $("#eD").val();
 
             if (modelName == null || modelName == '') {
-                modelName = -1;
+                modelName = '-1';
             }
 
             if (version == null || version == '') {
@@ -49,14 +50,18 @@
 
             var isSearchAll = modelName == -1;
 
-            grid.jqGrid('clearGridData');
-            grid.jqGrid('setGridParam', {url: '<c:url value="/Audit/find/" />' + modelName + '/' + version, postData: {startDate: startDate, endDate: endDate}});
-            grid.setGridParam({grouping: isSearchAll});
-            grid.trigger('reloadGrid');
-
+            if (!isGridInitialized) {
+                getEditRecord(modelName, version, $("#sD").val(), $("#eD").val()); //init the table
+                isGridInitialized = true;
+            } else {
+                grid.jqGrid('clearGridData');
+                grid.jqGrid('setGridParam', {url: '<c:url value="/Audit/find/" />' + modelName + '/' + version, postData: {startDate: startDate, endDate: endDate}});
+                grid.setGridParam({grouping: isSearchAll});
+                grid.trigger('reloadGrid');
+            }
         });
 
-        getEditRecord(-1, -1, $("#sD").val(), $("#eD").val()); //init the table
+
 
         //Jqgrid 沒有支援複合主鍵，所以自己產生(用SQL的複合主鍵值相乘產生新的唯一鍵)
         function keyFormat(cellvalue, options, rowObject) {
@@ -153,23 +158,23 @@
                 gridview: true,
 //                multiselect: true,
                 grouping: true,
-                groupingView: {
-                    groupField: ['REVTSTMP', 'id'],
-                    groupOrder: ['desc', 'asc'],
-                    groupColumnShow: [true, false],
-                    groupCollapse: true,
-                    groupText: ['<b>Date {0} - {1} Record(s)</b>', '<b>Id {0}</b>'],
-                    formatDisplayField: [
-                        function (displayValue) {
-                            return moment(displayValue).format("YYYY-MM-DD");
-                        }
-                    ],
-                    isInTheSameGroup: [
-                        function (x, y) {
-                            return moment(x).isSame(moment(y), 'day');
-                        }
-                    ]
-                },
+//                groupingView: {
+//                    groupField: ['REVTSTMP', 'id'],
+//                    groupOrder: ['desc', 'asc'],
+//                    groupColumnShow: [true, false],
+//                    groupCollapse: true,
+//                    groupText: ['<b>Date {0} - {1} Record(s)</b>', '<b>Id {0} - {1} Record(s)</b>'],
+//                    formatDisplayField: [
+//                        function (displayValue) {
+//                            return moment(displayValue).format("YYYY-MM-DD");
+//                        }
+//                    ],
+//                    isInTheSameGroup: [
+//                        function (x, y) {
+//                            return moment(x).isSame(moment(y), 'day');
+//                        }
+//                    ]
+//                },
                 jsonReader: {
                     root: "rows",
                     page: "page",

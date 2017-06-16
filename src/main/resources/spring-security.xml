@@ -55,12 +55,12 @@
       
     <beans:bean id="customUserDetailsService" class="com.advantech.service.CustomUserDetailsService" />
     
-    <websocket:message-broker application-destination-prefix="/app">
+<!--    <websocket:message-broker application-destination-prefix="/app">
         <websocket:stomp-endpoint path="/socket">
             <websocket:sockjs/>
         </websocket:stomp-endpoint>
         <websocket:simple-broker prefix="/topic, /queue"/>
-    </websocket:message-broker>
+    </websocket:message-broker>-->
      
     <global-method-security secured-annotations="enabled" />
 </beans:beans>

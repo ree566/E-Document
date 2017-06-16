@@ -6,6 +6,7 @@
 package com.advantech.dao;
 
 import com.advantech.helper.PageInfo;
+import java.math.BigDecimal;
 import java.util.List;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.hibernate.Criteria;
@@ -35,7 +36,7 @@ public class PaginateDAO {
 
             if (NumberUtils.isNumber(searchString)) {
                 if (searchString.contains(".")) {
-                    addSearchCriteria(criteria, searchOper, searchField, Double.parseDouble(searchString));
+                    addSearchCriteria(criteria, searchOper, searchField, new BigDecimal(searchString));
                 } else {
                     addSearchCriteria(criteria, searchOper, searchField, Integer.parseInt(searchString));
                 }

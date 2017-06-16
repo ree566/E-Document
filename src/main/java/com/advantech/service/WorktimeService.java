@@ -10,6 +10,7 @@ import com.advantech.helper.PageInfo;
 import com.advantech.model.Worktime;
 import com.advantech.model.WorktimeFormulaSetting;
 import static com.google.common.collect.Lists.newArrayList;
+import java.math.BigDecimal;
 import java.util.List;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -157,4 +158,11 @@ public class WorktimeService {
         return worktimeDAO.delete(worktime);
     }
 
+    public void reUpdateAllFormulaColumn() {
+        List<Worktime> l = this.findAll();
+        for (Worktime w : l) {
+            initUnfilledFormulaColumn(w);
+            worktimeDAO.merge(w);
+        }
+    }
 }

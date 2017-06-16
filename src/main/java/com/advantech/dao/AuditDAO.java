@@ -94,12 +94,12 @@ public class AuditDAO implements AuditAction {
     }
 
     @Override
-    public List<Number> findReversions(Class clz, Object id) {
+    public List<Number> findRevisions(Class clz, Object id) {
         return getReader().getRevisions(clz, id);
     }
 
     @Override
-    public List forEntityAtReversion(Class clz, int version) {
+    public List forEntityAtRevision(Class clz, int version) {
         AuditQuery q = getReader().createQuery().forEntitiesAtRevision(clz, version);
         return q.getResultList();
     }
@@ -111,8 +111,8 @@ public class AuditDAO implements AuditAction {
         if (id != null) {
             q.add(AuditEntity.id().eq(id));
         }
-        
-        if(info.getSearchField() != null){
+
+        if (info.getSearchField() != null) {
             q.add(AuditEntity.property(info.getSearchField()).eq(info.getSearchString()));
         }
 
@@ -127,8 +127,8 @@ public class AuditDAO implements AuditAction {
         if (id != null) {
             q.add(AuditEntity.id().eq(id));
         }
-        
-        if(info.getSearchField() != null){
+
+        if (info.getSearchField() != null) {
             q.add(AuditEntity.property(info.getSearchField()).eq(info.getSearchString()));
         }
 
@@ -145,5 +145,18 @@ public class AuditDAO implements AuditAction {
         }
 
         return q.getResultList();
+    }
+
+    public Number findLastRevisions(Class clz, Object id) {
+        AuditQuery q = getReader().createQuery()
+                .forRevisionsOfEntity(clz, false, true)
+                .addProjection(AuditEntity.revisionNumber().max());
+
+        if (id != null) {
+            q.add(AuditEntity.id().eq(id));
+        }
+
+        Number revision = (Number) q.getSingleResult();
+        return revision;
     }
 }

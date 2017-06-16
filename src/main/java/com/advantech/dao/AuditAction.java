@@ -19,7 +19,7 @@ public interface AuditAction {
 
     public Object findByPrimaryKeyAndVersion(Class clz, Object id, int version);
 
-    public List<Number> findReversions(Class clz, Object id);
+    public List<Number> findRevisions(Class clz, Object id);
     
-    public List forEntityAtReversion(Class clz, int version);
+    public List forEntityAtRevision(Class clz, int version);
 }

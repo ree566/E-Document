@@ -58,12 +58,23 @@ public class AuditController {
                 l = auditService.findByDate(Worktime.class, info, d1.toDate(), d2.toDate());
             } else if (!"-1".equals(modelName)) {
                 Worktime w = worktimeService.findByModel(modelName);
-                l = auditService.findByDate(Worktime.class, w.getId(), info, d1.toDate(), d2.toDate());
+                if (w == null) {
+                    l = new ArrayList();
+                } else {
+                    l = auditService.findByDate(Worktime.class, w.getId(), info, d1.toDate(), d2.toDate());
+                }
             }
         }
 
         JqGridResponse resp = toJqGridResponse(l, info);
         return resp;
+    }
+
+//    2017-06-06 11:26:38 AM
+    @ResponseBody
+    @RequestMapping(value = "/findLastRevision", method = {RequestMethod.GET, RequestMethod.POST})
+    public Number getAuditRevision(@RequestParam(required = false) Integer id) {
+        return auditService.findLastRevisions(Worktime.class, id);
     }
 
 }

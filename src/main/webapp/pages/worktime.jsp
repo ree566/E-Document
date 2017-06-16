@@ -32,6 +32,7 @@
 <script src="<c:url value="/js/column-name-setting.js" />"></script>
 <script src="<c:url value="/js/jqgrid-custom-select-option-reader.js" />"></script>
 <script src="<c:url value="/js/jqgrid-custom-validator.js" />"></script>
+<script src="<c:url value="/js/jqgrid-custom-setting.js" />"></script>
 
 <script>
     $(function () {
@@ -42,6 +43,9 @@
         var columnEditableInsetting = modifyColumns.length > 0;
         var isNormalUser = ${isUser} && columnEditableInsetting;
         var isOperRelative = ${isAdmin || (isUser && isOper)} && columnEditableInsetting;
+        var temp_selected_row_revision;
+        var toggle_value = false;
+        var editableColumns, readonlyColumns;
 
         //Set param into jqgrid-custom-select-option-reader.js and get option by param selectOptions
         //You can get the floor select options and it's formatter function
@@ -108,35 +112,34 @@
             setTimeout(function () {
                 // do here all what you need (like alert('yey');)
                 $("#flowByBabFlowId\\.id").trigger("change");
-                settingFormulaCheckbox($("#id").val());
+                settingFormulaCheckbox();
+                temp_selected_row_revision = getRowRevision();
             }, 50);
             greyout(form);
         };
 
-        var flowVerify = function (postdata, formid) {
+        var before_add = function (postdata, formid) {
             var formulaFieldInfo = getFormulaCheckboxField();
-            cleanEditForm();
+            clearCheckErrorIcon();
+            var checkResult = checkFlowIsValid(postdata, formid);
+            if (checkResult.length != 0) {
+                errorTextFormatF(checkResult); //field // code
+                return [false, "There are some errors in the entered data. Hover over the error icons for details."];
+            } else {
+                var revision_number = getRowRevision();
+                if (revision_number != temp_selected_row_revision) {
+                    if (confirm("欄位版本已經被修改，重新整理檢視新版本?")) {
+                        grid.trigger('reloadGrid');
+                    }
+                    return [false, "欄位版本已經被修改，請重新整理檢視新版本"];
+                }
+                $.extend(postdata, formulaFieldInfo);
+                return [true, "saved"];
+            }
+        };
 
-            var babArr = selectOptions["bab_flow"],
-                    testArr = selectOptions["test_flow"],
-                    pkgArr = selectOptions["pkg_flow"];
-            var babFlowName = babArr[postdata["flowByBabFlowId.id"]],
-                    testFlowName = testArr[postdata["flowByTestFlowId.id"]],
-                    pkgFlowName = pkgArr[postdata["flowByPackingFlowId.id"]];
-            var babCheckLogic = flow_check_logic.BAB,
-                    testCheckLogic = flow_check_logic.TEST,
-                    pkgCheckLogic = flow_check_logic.PKG;
-
-            var babCheckMessage = flowCheck(babCheckLogic, babFlowName, postdata);
-            var testCheckMessage = flowCheck(testCheckLogic, testFlowName, postdata);
-            var pkgCheckMessage = flowCheck(pkgCheckLogic, pkgFlowName, postdata);
-
-            var totalAlert = babCheckMessage.concat(testCheckMessage).concat(pkgCheckMessage);
-            errorTextFormatF(totalAlert); //field // code
-
-            $.extend(postdata, formulaFieldInfo);
-            return totalAlert.length == 0 ? [true, "saved"] : [false, "There are some errors in the entered data. Hover over the error icons for details."];
-
+        var before_edit = function (postdata, formid) {
+            return before_add(postdata, formid);
         };
 
         grid.jqGrid({
@@ -169,7 +172,7 @@
                 {label: 'ASS_T1', name: "assyToT1", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: {elmsuffix: addFormulaCheckbox("assyToT1")}, editrules: {number: true}, editoptions: {defaultValue: '0'}},
                 {label: 'T2_PACKING', name: "t2ToPacking", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: {elmsuffix: addFormulaCheckbox("t2ToPacking")}, editrules: {number: true}, editoptions: {defaultValue: '0'}},
                 {label: 'Floor', name: "floor.id", edittype: "select", editoptions: {value: selectOptions["floor"]}, width: 100, formatter: selectOptions["floor_func"], searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["floor"], sopt: ['eq']}},
-                {label: 'Pending', name: "pending.id", edittype: "select", editoptions: {value: selectOptions["pending"], dataEvents: pending_select_event}, formatter: selectOptions["pending_func"], width: 100, searchrules: number_search_rule, stype: "select", searchoptions: {value: selectOptions["pending"], sopt: ['eq']}},
+                {label: 'Pending', name: "pending.id", edittype: "select", editoptions: {value: selectOptions["pending"], defaultValue: 'N', dataEvents: pending_select_event}, formatter: selectOptions["pending_func"], width: 100, searchrules: number_search_rule, stype: "select", searchoptions: {value: selectOptions["pending"], sopt: ['eq']}},
                 {label: 'Pending TIME', name: "pendingTime", width: 100, searchrules: {required: true}, searchoptions: search_decimal_options, editrules: {required: true, number: true}, formoptions: required_form_options},
                 {label: 'BurnIn', name: "burnIn", edittype: "select", editoptions: {value: "N:N;BI:BI;RI:RI", dataEvents: burnIn_select_event}, width: 100, searchrules: {required: true}, searchoptions: search_string_options},
                 {label: 'B/I Time', name: "biTime", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {required: true, number: true}, editoptions: {defaultValue: '0'}, formoptions: required_form_options},
@@ -185,7 +188,7 @@
                 {label: 'BAB_FLOW', name: "flowByBabFlowId.id", edittype: "select", editoptions: {value: selectOptions["bab_flow"], dataEvents: babFlow_select_event, defaultValue: "111"}, formatter: selectOptions["bab_flow_func"], width: 100, searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["bab_flow"], sopt: ['eq']}},
                 {label: 'TEST_FLOW', name: "flowByTestFlowId.id", edittype: "select", editoptions: {value: selectOptions["test_flow"]}, formatter: selectOptions["test_flow_func"], width: 100, searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["test_flow"], sopt: ['eq']}},
                 {label: 'PACKING_FLOW', name: "flowByPackingFlowId.id", edittype: "select", editoptions: {value: selectOptions["pkg_flow"]}, formatter: selectOptions["pkg_flow_func"], width: 140, searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["pkg_flow"], sopt: ['eq']}},
-                {label: 'PART-LINK', name: "partLink", edittype: "select", editoptions: {value: ":empty;Y:Y;N:N"}, width: 100, searchrules: number_search_rule, searchoptions: search_string_options},
+                {label: 'PART-LINK', name: "partLink", edittype: "select", editoptions: {value: "Y:Y;N:N", defaultValue: 'N'}, width: 100, searchrules: number_search_rule, searchoptions: search_string_options},
                 {label: 'CE', name: "ce", width: 60, searchrules: number_search_rule, searchoptions: search_string_options, edittype: "select", editoptions: {value: "0:0;1:1"}},
                 {label: 'UL', name: "ul", width: 60, searchrules: number_search_rule, searchoptions: search_string_options, edittype: "select", editoptions: {value: "0:0;1:1"}},
                 {label: 'ROHS', name: "rohs", width: 60, searchrules: number_search_rule, searchoptions: search_string_options, edittype: "select", editoptions: {value: "0:0;1:1"}},
@@ -194,7 +197,7 @@
                 {label: 'FCC', name: "fcc", width: 60, searchrules: number_search_rule, searchoptions: search_string_options, edittype: "select", editoptions: {value: "0:0;1:1"}},
                 {label: 'EAC', name: "eac", width: 60, searchrules: number_search_rule, searchoptions: search_string_options, edittype: "select", editoptions: {value: "0:0;1:1"}},
                 {label: 'N合1集合箱', name: "nsInOneCollectionBox", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, editoptions: {defaultValue: '0'}},
-                {label: '料號屬性值維護', name: "partNoAttributeMaintain", edittype: "select", editoptions: {value: "Y:Y;N:N"}, width: 120, searchrules: {required: true}, searchoptions: search_string_options},
+                {label: 'SN是否等於SSN', name: "partNoAttributeMaintain", edittype: "select", editoptions: {value: "Y:Y;N:N"}, width: 120, searchrules: {required: true}, searchoptions: search_string_options},
                 {label: '組裝排站人數', name: "assyStation", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: {elmsuffix: addFormulaCheckbox("assyStation")}, editrules: {integer: true}, editoptions: {defaultValue: '0'}},
                 {label: '包裝排站人數', name: "packingStation", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: {elmsuffix: addFormulaCheckbox("packingStation")}, editrules: {integer: true}, editoptions: {defaultValue: '0'}},
                 {label: '前置時間', name: "assyLeadTime", width: 80, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, formoptions: {label: '組裝前置時間'}, editoptions: {defaultValue: '0'}},
@@ -220,24 +223,6 @@
                 records: "records",
                 repeatitems: false
             },
-//            onSelectRow: function (rowid, status, e) {
-//                        if (lastsel)
-//                            grid.jqGrid("restoreRow", lastsel);
-//                        if (rowid !== lastsel) {
-//                            scrollPosition = grid.closest(".ui-jqgrid-bdiv").scrollLeft();
-//                            grid.jqGrid("editRow", rowid, true, function () {
-//                                setTimeout(function () {
-//                                    $("input, select", e.target).focus();
-//                                }, 10);
-//                            });
-//                            setTimeout(function () {
-//                                grid.closest(".ui-jqgrid-bdiv").scrollLeft(scrollPosition);
-//                            }, 0);
-//                            lastsel = rowid;
-//                        } else {
-//                            lastsel = null;
-//                        }
-//            },
             afterSubmit: function () {
                 $(this).jqGrid("setGridParam", {datatype: 'json'});
                 return [true];
@@ -258,11 +243,6 @@
             },
             gridComplete: function () {
                 grid.closest(".ui-jqgrid-bdiv").scrollTop(scrollPosition);
-
-                $("#change-color").click(function () {
-                    var rowId = $("#dyn-clr-id").val();
-                    $("#" + rowId).toggleClass("danger");
-                });
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 alert("Ajax Error occurred\n"
@@ -277,6 +257,7 @@
             useColSpanStyle: true,
             groupHeaders: [
                 {startColumnName: 'ce', numberOfColumns: 7, titleText: '<em>外箱Label產品資訊 (1：要印   0：不印)</em>'},
+                {startColumnName: 'partNoAttributeMaintain', numberOfColumns: 1, titleText: '<em>料號屬性值維護</em>'},
                 {startColumnName: 'assyLeadTime', numberOfColumns: 2, titleText: '<em>組裝看板工時</em>'},
                 {startColumnName: 'packingLeadTime', numberOfColumns: 2, titleText: '<em>包裝看板工時</em>'}
             ]
@@ -288,10 +269,10 @@
                     url: '<c:url value="/Worktime/update" />',
                     dataheight: 350,
                     width: 450,
-                    closeAfterEdit: false,
+                    closeAfterEdit: closed_after_edit,
                     reloadAfterSubmit: true,
                     errorTextFormat: errorTextFormatF,
-                    beforeSubmit: flowVerify,
+                    beforeSubmit: before_edit,
                     afterclickPgButtons: function (whichbutton, formid, rowid) {
                         $("#flowByBabFlowId\\.id").trigger("change");
                     },
@@ -307,11 +288,11 @@
                     url: '<c:url value="/Worktime/create" />',
                     dataheight: 350,
                     width: 450,
-                    closeAfterAdd: false,
+                    closeAfterAdd: closed_after_add,
                     reloadAfterSubmit: true,
                     errorTextFormat: errorTextFormatF,
-                    afterclickPgButtons: cleanEditForm,
-                    beforeSubmit: flowVerify,
+                    afterclickPgButtons: clearCheckErrorIcon,
+                    beforeSubmit: before_add,
                     recreateForm: true,
                     beforeShowForm: testFlowInit,
                     closeOnEscape: true,
@@ -325,10 +306,25 @@
                 },
                 {
                     zIndex: 9999,
-                    closeAfterSearch: false,
+                    closeAfterSearch: closed_after_search,
                     reloadAfterSubmit: true
                 }
         );
+
+        grid.navButtonAdd('#pager', {
+            caption: "Show / Hide",
+            buttonicon: "ui-icon-shuffle",
+            onClickButton: function () {
+                if (editableColumns == null || readonlyColumns == null || readonlyColumns.length == 0 || editableColumns.length == 0) {
+                    return false;
+                }
+                toggle_value = !toggle_value;
+                grid.jqGrid(toggle_value ? 'hideCol' : 'showCol', readonlyColumns)
+                        .jqGrid('destroyFrozenColumns')
+                        .jqGrid('setFrozenColumns');
+            },
+            position: "last"
+        });
 
         grid.navButtonAdd('#pager', {
             caption: "Export to Excel",
@@ -392,11 +388,8 @@
             });
 
             //Separate readyonly column and editable column
-            var editableColumns = modifyColumns.length == 1 && modifyColumns[0] == -1 ? columnNames : modifyColumns;
-            var readonlyColumns = $(columnNames).not(editableColumns).get();
-
-//        var editableColumns = columnNames;
-//        var readonlyColumns = [];
+            editableColumns = modifyColumns.length == 1 && modifyColumns[0] == -1 ? columnNames : modifyColumns;
+            readonlyColumns = $(columnNames).not(editableColumns).get();
 
             for (var i = 0; i < editableColumns.length; i++) {
                 var editableColumn = editableColumns[i];
@@ -449,13 +442,15 @@
             return formulaCheckboxField;
         }
 
-        function settingFormulaCheckbox(worktimeId) {
-            if (worktimeId == 0) {
-                return false;
-            }
+        function getSelectedRowId() {
+            return grid.jqGrid('getGridParam', 'selrow');
+        }
+
+        function settingFormulaCheckbox() {
+            var rowId = getSelectedRowId();
             $.ajax({
                 type: "GET",
-                url: "<c:url value="/WorktimeFormulaSetting/find/" />" + worktimeId,
+                url: "<c:url value="/WorktimeFormulaSetting/find/" />" + rowId,
                 dataType: "json",
                 success: function (response) {
                     var setting = response;
@@ -465,11 +460,57 @@
                     }
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
-                    alert("設定Formula時發生錯誤，請稍後再試");
-                    $("#TblGrid_list_2").find("#cData").trigger("click");
+                    closeEditDialogWhenError("設定Formula時發生錯誤，請稍後再試");
                     console.log(xhr.responseText);
                 }
             });
+        }
+
+        function getRowRevision() {
+            var result;
+            var rowId = getSelectedRowId();
+            $.ajax({
+                type: "GET",
+                url: "<c:url value="/Audit/findLastRevision" />",
+                data: {
+                    id: rowId
+                },
+                dataType: "json",
+                async: false,
+                success: function (response) {
+                    result = response;
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    closeEditDialogWhenError("查詢欄位版本時發生錯誤，請稍後再試");
+                    console.log(xhr.responseText);
+                }
+            });
+            return result;
+        }
+
+        function closeEditDialogWhenError(error_message) {
+            alert(error_message);
+            $("#TblGrid_list_2").find("#cData").trigger("click");
+        }
+
+        function checkFlowIsValid(postdata, formid) {
+            var babArr = selectOptions["bab_flow"],
+                    testArr = selectOptions["test_flow"],
+                    pkgArr = selectOptions["pkg_flow"];
+            var babFlowName = babArr[postdata["flowByBabFlowId.id"]],
+                    testFlowName = testArr[postdata["flowByTestFlowId.id"]],
+                    pkgFlowName = pkgArr[postdata["flowByPackingFlowId.id"]];
+            var babCheckLogic = flow_check_logic.BAB,
+                    testCheckLogic = flow_check_logic.TEST,
+                    pkgCheckLogic = flow_check_logic.PKG;
+
+            var babCheckMessage = flowCheck(babCheckLogic, babFlowName, postdata);
+            var testCheckMessage = flowCheck(testCheckLogic, testFlowName, postdata);
+            var pkgCheckMessage = flowCheck(pkgCheckLogic, pkgFlowName, postdata);
+
+            var totalAlert = babCheckMessage.concat(testCheckMessage).concat(pkgCheckMessage);
+
+            return totalAlert;
         }
     });
 </script>
@@ -484,8 +525,4 @@
     </h5>
     <table id="list"></table> 
     <div id="pager"></div>
-    <div class="form-inline">
-        <input type="text" id="dyn-clr-id" class="form-control" placeholder="insert rowid here" value="8286" />
-        <input type="button" id="change-color" class="btn btn-default" value="change"/>
-    </div>
 </div>

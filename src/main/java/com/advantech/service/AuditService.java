@@ -46,13 +46,13 @@ public class AuditService implements AuditAction {
     }
 
     @Override
-    public List<Number> findReversions(Class clz, Object id) {
-        return auditDAO.findReversions(clz, id);
+    public List<Number> findRevisions(Class clz, Object id) {
+        return auditDAO.findRevisions(clz, id);
     }
 
     @Override
-    public List forEntityAtReversion(Class clz, int version) {
-        return auditDAO.forEntityAtReversion(clz, version);
+    public List forEntityAtRevision(Class clz, int version) {
+        return auditDAO.forEntityAtRevision(clz, version);
     }
 
     public List findByDate(Class clz, PageInfo info, Date startDate, Date endDate) {
@@ -62,4 +62,13 @@ public class AuditService implements AuditAction {
     public List findByDate(Class clz, Integer id, PageInfo info, Date startDate, Date endDate) {
         return auditDAO.findByDate(clz, id, info, startDate, endDate);
     }
+
+    public Number findLastRevisions(Class clz) {
+        return auditDAO.findLastRevisions(clz, null);
+    }
+
+    public Number findLastRevisions(Class clz, Object id) {
+        return auditDAO.findLastRevisions(clz, id);
+    }
+
 }

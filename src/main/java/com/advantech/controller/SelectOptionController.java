@@ -32,13 +32,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  *
- * @author Wei.Cheng
- * 供大表的lazy loading欄位編輯與查詢
+ * @author Wei.Cheng 供大表的lazy loading欄位編輯與查詢
  */
 @Controller
 @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_GUEST"})
 @RequestMapping(value = "/SelectOption")
-public class WorktimeSelectOptionController {
+public class SelectOptionController {
 
     @Autowired
     private FloorService floorService;
@@ -67,6 +66,12 @@ public class WorktimeSelectOptionController {
     @ResponseBody
     @RequestMapping(value = "/floor", method = {RequestMethod.GET})
     public List<Floor> getFloorOption() {
+        return floorService.findByPrimaryKeys(1, 2);
+    }
+    
+    @ResponseBody
+    @RequestMapping(value = "/user-floor", method = {RequestMethod.GET})
+    public List<Floor> getUserFloorOption() {
         return floorService.findAll();
     }
 
@@ -97,7 +102,7 @@ public class WorktimeSelectOptionController {
     @ResponseBody
     @RequestMapping(value = "/flow-byParent/{parentFlowId}", method = {RequestMethod.GET})
     public List<Flow> getFlowOptionByParent(@PathVariable(value = "parentFlowId") final int parentFlowId) {
-        return flowService.findByParent(parentFlowId); 
+        return flowService.findByParent(parentFlowId);
     }
 
     @ResponseBody

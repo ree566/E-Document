@@ -6,6 +6,7 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<script src="<c:url value="/js/jqgrid-custom-setting.js" />"></script>
 <script>
     $(function () {
         var grid = $("#list");
@@ -59,7 +60,7 @@
                     url: '<c:url value="/Pending/update" />',
                     dataheight: 350,
                     width: 450,
-                    closeAfterEdit: false,
+                    closeAfterEdit: closed_after_edit,
                     reloadAfterSubmit: true,
                     errorTextFormat: customErrorTextFormat,
                     beforeShowForm: greyout,
@@ -70,7 +71,7 @@
                     url: '<c:url value="/Pending/create" />',
                     dataheight: 350,
                     width: 450,
-                    closeAfterAdd: false,
+                    closeAfterAdd: closed_after_add,
                     reloadAfterSubmit: true,
                     errorTextFormat: customErrorTextFormat,
                     beforeShowForm: greyout,
@@ -84,7 +85,7 @@
                 },
                 {
                     sopt: ['eq', 'ne', 'lt', 'gt', 'cn', 'bw', 'ew'],
-                    closeAfterSearch: false,
+                    closeAfterSearch: closed_after_search,
                     zIndex: 9999,
                     reloadAfterSubmit: true
                 }

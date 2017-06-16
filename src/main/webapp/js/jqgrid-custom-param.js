@@ -47,6 +47,6 @@ var errorTextFormatF = function (data) {
     return "There are some errors in the entered data. Hover over the error icons for details.";
 };
 
-var cleanEditForm = function () {
+var clearCheckErrorIcon = function () {
     $(".glyphicon-alert").remove();
 };

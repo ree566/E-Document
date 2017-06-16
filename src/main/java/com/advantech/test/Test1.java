@@ -10,11 +10,14 @@ import com.advantech.model.Worktime;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
-import org.hibernate.Criteria;
+import java.util.List;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.hibernate.criterion.Restrictions;
+import org.hibernate.envers.AuditReader;
+import org.hibernate.envers.AuditReaderFactory;
+import org.hibernate.envers.query.AuditEntity;
+import org.hibernate.envers.query.AuditQuery;
 
 /**
  *
@@ -30,12 +33,13 @@ public class Test1 {
             session = factory.getCurrentSession();
             tx = session.beginTransaction();
 
-            Criteria criteria = session.createCriteria(Worktime.class);
-            criteria.add(Restrictions.eq("modelName", "GAVV"));
-            Worktime w = (Worktime) criteria.uniqueResult();
+            Number revision = (Number)  AuditReaderFactory.get(session).createQuery()
+                    .forRevisionsOfEntity(Worktime.class, false, false)
+                    .addProjection(AuditEntity.revisionNumber().max())
+                    .add(AuditEntity.id().eq(8286))
+                    .getSingleResult();
 
-
-            print(w);
+            print(revision);
 
             tx.commit();
         } catch (Exception e) {

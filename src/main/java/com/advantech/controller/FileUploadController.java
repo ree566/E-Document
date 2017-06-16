@@ -141,14 +141,25 @@ public class FileUploadController {
                         w.setFloor(floorOptions.get((String) getCellValue(row, "V")));
 
                         Object babFlowName = getCellValue(row, "AF");
-                        Object testFlowName = getCellValue(row, "AG");
-                        if (babFlowName != null && testFlowName != null) {
+                        if (babFlowName != null) {
                             babFlowName = babFlowName.toString().replaceAll(flowRegex, "");
-                            testFlowName = testFlowName.toString().replaceAll(flowRegex, "");
                             Flow babFlow = flowOptions.get(((String) babFlowName));
-                            Flow testFlow = flowOptions.get(((String) testFlowName));
-                            w.setFlowByTestFlowId(testFlow);
+                            if(babFlow == null){
+                                System.out.println(babFlowName);
+                                throw new Exception("bab flow not found");
+                            }
                             w.setFlowByBabFlowId(babFlow);
+                        }
+                        
+                        Object testFlowName = getCellValue(row, "AG");
+                        if(testFlowName != null){
+                            testFlowName = testFlowName.toString().replaceAll(flowRegex, "");
+                            Flow testFlow = flowOptions.get(((String) testFlowName));
+                            if(testFlow == null){
+                                System.out.println(testFlowName);
+                                throw new Exception("bab flow not found");
+                            }
+                            w.setFlowByTestFlowId(testFlow);
                         }
 
                         w.setFlowByPackingFlowId(getCellValue(row, "AH") == null ? null : flowOptions.get("PKG"));
@@ -175,7 +186,7 @@ public class FileUploadController {
                         w.setHiPotLeakage(objToBigDecimal(getCellValue(row, "Q")));
                         w.setColdBoot(objToBigDecimal(getCellValue(row, "R")));
                         w.setWarmBoot(objToBigDecimal(getCellValue(row, "S")));
-                        w.setBurnIn(getCellValue(row, "W") == null ? "N" : "Y");
+                        w.setBurnIn(getCellValue(row, "W") == null ? "N" : (String) getCellValue(row, "W"));
 
                         BigDecimal biTime = objToBigDecimal(getCellValue(row, "X"));
                         w.setBiTime(biTime == null ? BigDecimal.ZERO : biTime); //Not null
@@ -219,7 +230,7 @@ public class FileUploadController {
                         w.setAssyPackingSop(getCellValue(row, "AC") == null ? null : (String) getCellValue(row, "AC"));
 
                         WorktimeFormulaSetting setting = new WorktimeFormulaSetting();
-                        
+
                         setting.setAssyKanbanTime(isFormula(row, "AV"));
                         setting.setAssyStation(isFormula(row, "AS"));
                         setting.setPackingKanbanTime(isFormula(row, "AX"));
@@ -229,7 +240,7 @@ public class FileUploadController {
                         setting.setProductionWt(isFormula(row, "C"));
                         setting.setSetupTime(isFormula(row, "E"));
                         setting.setCleanPanelAndAssembly(isFormula(row, "BB"));
-                        
+
                         w.setWorktimeFormulaSettings(newArrayList(setting));
                         l.add(w);
                     } else {

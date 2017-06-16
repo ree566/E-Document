@@ -196,7 +196,7 @@
                                                 <a class="redirect-link" href="mod/flow.jsp">Flow</a>
                                             </li>
                                             <li>
-                                                <a class="redirect-link" id="preload_page" href="mod/user.jsp">User</a>
+                                                <a class="redirect-link" id="" href="mod/user.jsp">User</a>
                                             </li>
                                             <li>
                                                 <a class="redirect-link" href="mod/pending.jsp">Pending</a>
@@ -214,7 +214,7 @@
                                     <a href="#"><i class="fa fa-wrench fa-fw"></i> UI Elements<span class="fa arrow"></span></a>
                                     <ul class="nav nav-second-level"> 
                                         <li>
-                                            <a class="redirect-link" id="" href="audit.jsp">資料版本查詢</a>
+                                            <a class="redirect-link" id="preload_page" href="audit.jsp">資料版本查詢</a>
                                         </li>
                                         <sec:authorize access="hasRole('ADMIN')">
                                             <li>
