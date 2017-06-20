@@ -55,7 +55,7 @@ public class WorktimeController extends CrudController<Worktime> {
     @RequestMapping(value = INSERT_URL, method = {RequestMethod.POST})
     @Secured({"ROLE_USER", "ROLE_ADMIN"})
     @Override
-    protected ResponseEntity insert(Worktime worktime, BindingResult bindingResult) {
+    protected ResponseEntity insert(@Valid @ModelAttribute Worktime worktime, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return serverResponse(bindingResult.getFieldErrors());
         }

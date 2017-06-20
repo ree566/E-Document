@@ -28,21 +28,21 @@
 
         <script>
             $(function () {
-                var multiSel = $("#my-select");
-//                multiSel.multiSelect({});
+                var myMap = new Map();
+                myMap.set('3', 'b');
+                myMap.set('1', 'a');
+                myMap.set('2', 'c');
 
-                for (var i = 0; i < worktimeCol.length; i++) {
-                    var colName = worktimeCol[i].name;
-                    multiSel.append("<option value='" + colName + "'>" + colName + "</option>");
-                    multiSel.multiSelect('addOption', {value: colName, text: colName, index: i});
-                }
-
-                multiSel.multiSelect({});
-
-                $("#testForm").submit(function () {
-                    console.log(multiSel.val());
-                    return false;
+                var str = '';
+                myMap.forEach(function(value, key, map) {
+                    console.log(key);
+                    console.log(value);
+                    str += (key + ':' + value + ';');
                 });
+
+                console.log(str);
+                console.log(myMap);
+
             });
         </script>
     </head>

@@ -8,6 +8,7 @@ package com.advantech.service;
 import com.advantech.dao.*;
 import com.advantech.helper.CustomPasswordEncoder;
 import com.advantech.helper.PageInfo;
+import com.advantech.model.Unit;
 import com.advantech.model.User;
 import java.util.List;
 import org.hibernate.Hibernate;
@@ -32,6 +33,10 @@ public class UserService {
 
     public List<User> findAll(PageInfo info) {
         return userDAO.findAll(info);
+    }
+
+    public List<User> findAll(PageInfo info, Unit usersUnit) {
+        return userDAO.findAll(info, usersUnit);
     }
 
     public User findByPrimaryKey(Object obj_id) {

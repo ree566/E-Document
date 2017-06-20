@@ -14,10 +14,13 @@ import com.advantech.security.UserProfileType;
 import com.advantech.service.UserProfileService;
 import com.advantech.service.UserService;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -44,7 +47,14 @@ public class UserProfileController extends CrudController<User> {
     @RequestMapping(value = SELECT_URL, method = {RequestMethod.GET})
     @Override
     public JqGridResponse read(@ModelAttribute PageInfo info) {
-        return toJqGridResponse(userService.findAll(info), info);
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        List l;
+        if (user.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
+            l = userService.findAll(info);
+        } else {
+            l = userService.findAll(info, user.getUnit());
+        }
+        return toJqGridResponse(l, info);
     }
 
     @ResponseBody

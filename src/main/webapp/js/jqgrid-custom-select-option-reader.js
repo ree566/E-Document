@@ -18,29 +18,30 @@ function syncSelectOptionInfo() {
             columnName = column.nameprefix + columnName;
         }
 
-        selectOptions[columnName] = col_options;
-        selectOptions[columnName + "_func"] = getFunc(columnName);
+        selectOptions[columnName + '_options'] = col_options;
+        selectOptions[columnName] = optionsStringify(col_options);
+        selectOptions[columnName + '_func'] = getFunc(columnName);
     }
 }
 
 function getSelectOption(columnName, isNullable, data) {
-    var result = {};
-    var url = rootUrl + "SelectOption/" + (data == null ?  columnName : columnName + "/" + data);
+    var result = new Map();
+    var url = rootUrl + 'SelectOption/' + (data == null ? columnName : columnName + '/' + data);
     $.ajax({
-        type: "GET",
+        type: 'GET',
         url: url,
         async: false,
         success: function (response) {
             var arr = response;
             if (isNullable) {
-                result[0] = "empty";
+                result.set(0, 'empty');
             }
             for (var i = 0; i < arr.length; i++) {
                 var obj = arr[i];
                 if (columnName == 'user') {
-                    result[obj.id] = obj.username;
+                    result.set(obj.id, obj.username);
                 } else {
-                    result[obj.id] = obj.name;
+                    result.set(obj.id, obj.name);
                 }
             }
         },
@@ -51,12 +52,20 @@ function getSelectOption(columnName, isNullable, data) {
     return result;
 }
 
+function optionsStringify(map) {
+    var str = '';
+    map.forEach(function (value, key, map) {
+        str += (key + ':' + value + ';');
+    });
+    return str.replace(/.$/,"");
+}
+
 //http://stackoverflow.com/questions/19696015/javascript-creating-functions-in-a-for-loop
 //use closure 
 function getFunc(columnName) {
     return function (cellvalue, options, rowObject) {
-        var arr = selectOptions[columnName];
-        var obj = arr[cellvalue];
-        return obj == null ? "" : obj;
+        var map = selectOptions[columnName + '_options'];
+        var obj = map.get(cellvalue);
+        return obj == null ? '' : obj;
     };
 }

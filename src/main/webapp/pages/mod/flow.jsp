@@ -19,7 +19,7 @@
         setSelectOptions({
             rootUrl: "<c:url value="/" />",
             columnInfo: [
-                {name: "flow", isNullable: false},
+                {name: "flow", nameprefix: "test_", isNullable: true, dataToServer: "3"},
                 {name: "flowGroup", isNullable: false}
             ]
         });
@@ -58,7 +58,7 @@
             navOptions: {reloadGridOptions: {fromServer: true}},
             caption: tableName + " modify",
             height: 450,
-            sortname: 'id', sortorder: 'asc',
+            sortname: 'name', sortorder: 'asc',
             onSelectRow: function () {
                 scrollPosition = grid.closest(".ui-jqgrid-bdiv").scrollTop();
             },
@@ -73,17 +73,24 @@
                         );
             },
             subGrid: true,
-            subGridOptions: {"plusicon": "ui-icon-triangle-1-e",
+            subGridOptions: {
+                "plusicon": "ui-icon-triangle-1-e",
                 "minusicon": "ui-icon-triangle-1-s",
                 "openicon": "ui-icon-arrowreturn-1-e",
                 "reloadOnExpand": false,
-                "selectOnExpand": true},
+                "selectOnExpand": true,
+                hasSubgrid: function (options) {
+                    return options.data["flowGroup.id"] == 1;
+                }
+            },
             subGridRowExpanded: function (subgrid_id, row_id) {
                 var subgrid_table_id, pager_id;
                 subgrid_table_id = subgrid_id + "_t";
                 pager_id = "p_" + subgrid_table_id;
                 $("#" + subgrid_id).html("<table id='" + subgrid_table_id + "' class='scroll'></table><div id='" + pager_id + "' class='scroll'></div>");
-                $("#" + subgrid_table_id).jqGrid({
+
+                var subgrid = $("#" + subgrid_table_id);
+                subgrid.jqGrid({
                     url: '<c:url value="/Flow/read_sub" />',
                     mtype: 'GET',
                     datatype: "json",
@@ -92,7 +99,7 @@
                     },
                     colNames: ['id', 'name'],
                     colModel: [
-                        {name: "id", index: "id", width: 80, key: true, editable: true, sortable: true, edittype: 'select', editoptions: {value: selectOptions["flow"]}},
+                        {name: "id", index: "id", width: 80, key: true, editable: true, sortable: true, edittype: 'select', editoptions: {value: selectOptions["test_flow"]}},
                         {name: "name", index: "name", width: 130, sortable: true}
                     ],
                     rowNum: 20,
@@ -110,7 +117,7 @@
                     },
                     height: '100%'
                 });
-                $("#" + subgrid_table_id).jqGrid('navGrid', "#" + pager_id,
+                subgrid.jqGrid('navGrid', "#" + pager_id,
                         {edit: false, add: true, del: true, search: false},
                         {},
                         {
@@ -134,37 +141,38 @@
                         {}
                 );
             }
-        })
-                .jqGrid('navGrid', '#pager',
-                        {edit: true, add: true, del: true, search: true},
-                        {
-                            url: '<c:url value="/Flow/update" />',
-                            closeAfterEdit: closed_after_edit,
-                            reloadAfterSubmit: true,
-                            errorTextFormat: customErrorTextFormat,
-                            beforeShowForm: greyout,
-                            zIndex: 9999
-                        },
-                        {
-                            url: '<c:url value="/Flow/create" />',
-                            closeAfterAdd: closed_after_add,
-                            reloadAfterSubmit: true,
-                            errorTextFormat: customErrorTextFormat,
-                            beforeShowForm: greyout,
-                            zIndex: 9999
-                        },
-                        {
-                            url: '<c:url value="/Flow/delete" />',
-                            zIndex: 9999,
-                            reloadAfterSubmit: true
-                        },
-                        {
-                            sopt: ['eq', 'ne', 'lt', 'gt', 'cn', 'bw', 'ew'],
-                            closeAfterSearch: closed_after_search,
-                            zIndex: 9999,
-                            reloadAfterSubmit: true
-                        }
-                );
+        });
+
+        grid.jqGrid('navGrid', '#pager',
+                {edit: true, add: true, del: true, search: true},
+                {
+                    url: '<c:url value="/Flow/update" />',
+                    closeAfterEdit: closed_after_edit,
+                    reloadAfterSubmit: true,
+                    errorTextFormat: customErrorTextFormat,
+                    beforeShowForm: greyout,
+                    zIndex: 9999
+                },
+                {
+                    url: '<c:url value="/Flow/create" />',
+                    closeAfterAdd: closed_after_add,
+                    reloadAfterSubmit: true,
+                    errorTextFormat: customErrorTextFormat,
+                    beforeShowForm: greyout,
+                    zIndex: 9999
+                },
+                {
+                    url: '<c:url value="/Flow/delete" />',
+                    zIndex: 9999,
+                    reloadAfterSubmit: true
+                },
+                {
+                    sopt: ['eq', 'ne', 'lt', 'gt', 'cn', 'bw', 'ew'],
+                    closeAfterSearch: closed_after_search,
+                    zIndex: 9999,
+                    reloadAfterSubmit: true
+                }
+        );
 
     });
 </script>

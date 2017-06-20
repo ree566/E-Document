@@ -36,16 +36,26 @@
 
 <script>
     $(function () {
+        //保持Edit完畢的scroll position
         var scrollPosition = 0;
+
+        //Grid主體
         var grid = $("#list");
+
+        //依照單位分辨可編輯欄位和不可編輯欄位
         var unitName = '${user.unit.name}';
         var modifyColumns = (${isGuest} || unitName == null || unitName == "") ? [] : getColumn();
         var columnEditableInsetting = modifyColumns.length > 0;
         var isNormalUser = ${isUser} && columnEditableInsetting;
-        var isOperRelative = ${isAdmin || (isUser && isOper)} && columnEditableInsetting;
-        var temp_selected_row_revision;
-        var toggle_value = false;
+        var isOperRelative = ${isAdmin || (isUser && isOper) || user.unit.name == 'SPE'} && columnEditableInsetting;
         var editableColumns, readonlyColumns;
+
+        //給使用者隱藏欄位使用(可隱藏非自己部門負責的欄位)
+        var toggle_value = false;
+
+        //版本讀取，避免多人同時編輯覆蓋
+        var selected_row_revision;
+        var table_current_revision;
 
         //Set param into jqgrid-custom-select-option-reader.js and get option by param selectOptions
         //You can get the floor select options and it's formatter function
@@ -113,10 +123,17 @@
                 // do here all what you need (like alert('yey');)
                 $("#flowByBabFlowId\\.id").trigger("change");
                 settingFormulaCheckbox();
-                temp_selected_row_revision = getRowRevision();
             }, 50);
             greyout(form);
         };
+
+        var checkRevision = function (formid) {
+            selected_row_revision = getRowRevision();
+            if (selected_row_revision > table_current_revision) {
+                closeEditDialogWhenError("此欄位有新的版本，請重新整理");
+                return false;
+            }
+        }
 
         var before_add = function (postdata, formid) {
             var formulaFieldInfo = getFormulaCheckboxField();
@@ -126,20 +143,35 @@
                 errorTextFormatF(checkResult); //field // code
                 return [false, "There are some errors in the entered data. Hover over the error icons for details."];
             } else {
-                var revision_number = getRowRevision();
-                if (revision_number != temp_selected_row_revision) {
-                    if (confirm("欄位版本已經被修改，重新整理檢視新版本?")) {
-                        grid.trigger('reloadGrid');
-                    }
-                    return [false, "欄位版本已經被修改，請重新整理檢視新版本"];
-                }
                 $.extend(postdata, formulaFieldInfo);
                 return [true, "saved"];
             }
         };
 
         var before_edit = function (postdata, formid) {
-            return before_add(postdata, formid);
+            var formulaFieldInfo = getFormulaCheckboxField();
+            clearCheckErrorIcon();
+            var checkResult = checkFlowIsValid(postdata, formid);
+            if (checkResult.length != 0) {
+                errorTextFormatF(checkResult); //field // code
+                return [false, "There are some errors in the entered data. Hover over the error icons for details."];
+            } else {
+                //儲存前再check一次版本，給予覆蓋or取消的選擇
+                var revision_number = getRowRevision();
+                if (revision_number != selected_row_revision) {
+                    return [false, "欄位版本已經被修改，請重新整理檢視新版本"];
+                } else {
+                    $.extend(postdata, formulaFieldInfo);
+                    return [true, "saved"];
+                }
+            }
+        };
+
+        var showServerModifyMessage = function (response, postdata) {
+            if (response.status == 200 || response.status == 201) {
+                alert("Row added Successfully");
+                return [true, ''];
+            } 
         };
 
         grid.jqGrid({
@@ -223,26 +255,16 @@
                 records: "records",
                 repeatitems: false
             },
-            afterSubmit: function () {
-                $(this).jqGrid("setGridParam", {datatype: 'json'});
-                return [true];
-            },
             navOptions: {reloadGridOptions: {fromServer: true}},
             caption: "工時大表",
             height: 450,
             sortname: 'id', sortorder: 'desc',
             onSelectRow: function (rowid) {
                 scrollPosition = grid.closest(".ui-jqgrid-bdiv").scrollTop();
-//                
-//                console.log(rowid);
-//                if ($("#" + rowid).hasClass("danger")) {
-//                    alert("Danger!");
-//                } else {
-//                    alert("Pass!");
-//                }
             },
             gridComplete: function () {
                 grid.closest(".ui-jqgrid-bdiv").scrollTop(scrollPosition);
+                getGridRevision();
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 alert("Ajax Error occurred\n"
@@ -273,11 +295,13 @@
                     reloadAfterSubmit: true,
                     errorTextFormat: errorTextFormatF,
                     beforeSubmit: before_edit,
+                    beforeShowForm: testFlowInit,
                     afterclickPgButtons: function (whichbutton, formid, rowid) {
                         $("#flowByBabFlowId\\.id").trigger("change");
                     },
+                    afterShowForm: checkRevision,
+                    afterSubmit: showServerModifyMessage,
                     recreateForm: true,
-                    beforeShowForm: testFlowInit,
                     closeOnEscape: true,
                     zIndex: 9999,
                     cols: 20,
@@ -293,8 +317,10 @@
                     errorTextFormat: errorTextFormatF,
                     afterclickPgButtons: clearCheckErrorIcon,
                     beforeSubmit: before_add,
-                    recreateForm: true,
                     beforeShowForm: testFlowInit,
+                    afterShowForm: checkRevision,
+                    afterSubmit: showServerModifyMessage,
+                    recreateForm: true,
                     closeOnEscape: true,
                     zIndex: 9999,
                     bottominfo: "Fields marked with (*) are required.<br/>勾選套入公式的欄位將會被重新計算."
@@ -302,7 +328,8 @@
                 {
                     url: '<c:url value="/Worktime/delete" />',
                     zIndex: 9999,
-                    reloadAfterSubmit: true
+                    reloadAfterSubmit: true,
+                    afterSubmit: showServerModifyMessage
                 },
                 {
                     zIndex: 9999,
@@ -448,6 +475,9 @@
 
         function settingFormulaCheckbox() {
             var rowId = getSelectedRowId();
+            if (rowId == null || rowId == "") {
+                return false;
+            }
             $.ajax({
                 type: "GET",
                 url: "<c:url value="/WorktimeFormulaSetting/find/" />" + rowId,
@@ -494,12 +524,13 @@
         }
 
         function checkFlowIsValid(postdata, formid) {
-            var babArr = selectOptions["bab_flow"],
-                    testArr = selectOptions["test_flow"],
-                    pkgArr = selectOptions["pkg_flow"];
-            var babFlowName = babArr[postdata["flowByBabFlowId.id"]],
-                    testFlowName = testArr[postdata["flowByTestFlowId.id"]],
-                    pkgFlowName = pkgArr[postdata["flowByPackingFlowId.id"]];
+            var babOptions = selectOptions["bab_flow_options"],
+                    testOptions = selectOptions["test_flow_options"],
+                    pkgOptions = selectOptions["pkg_flow_options"];
+
+            var babFlowName = babOptions.get(parseInt(postdata["flowByBabFlowId.id"])),
+                    testFlowName = testOptions.get(parseInt(postdata["flowByTestFlowId.id"])),
+                    pkgFlowName = pkgOptions.get(parseInt(postdata["flowByPackingFlowId.id"]));
             var babCheckLogic = flow_check_logic.BAB,
                     testCheckLogic = flow_check_logic.TEST,
                     pkgCheckLogic = flow_check_logic.PKG;
@@ -511,6 +542,10 @@
             var totalAlert = babCheckMessage.concat(testCheckMessage).concat(pkgCheckMessage);
 
             return totalAlert;
+        }
+
+        function getGridRevision() {
+            table_current_revision = getRowRevision();
         }
     });
 </script>

@@ -31,14 +31,14 @@
         });
 
         var sendMessageToSocket = function (form) {
-            var rowId = grid.jqGrid('getGridParam', 'selrow');
-            sendMessage(rowId, "LOCK");
+//            var rowId = grid.jqGrid('getGridParam', 'selrow');
+//            sendMessage(rowId, "LOCK");
             greyout(form);
         };
 
         var unLockRow = function () {
-            var rowId = grid.jqGrid('getGridParam', 'selrow');
-            sendMessage(rowId, "UNLOCK");
+//            var rowId = grid.jqGrid('getGridParam', 'selrow');
+//            sendMessage(rowId, "UNLOCK");
         };
 
         grid.jqGrid({
@@ -47,15 +47,15 @@
             mtype: 'GET',
             autoencode: true,
             colModel: [
-                {label: 'id', name: "id", width: 60, key: true, editable: true, editoptions: {readonly: 'readonly', disabled: true, defaultValue: "0"}},
-                {label: 'jobnumber', name: "jobnumber", width: 60, editable: true},
-                {label: 'password', name: "password", width: 60, editable: true, edittype: "password"},
-                {label: 'username', name: "username", width: 60, editable: true},
-                {label: 'permission', name: "permission", width: 60, editable: false, hidden: true},
-                {label: 'floor', name: "floor.id", width: 60, editable: true, edittype: "select", editoptions: {value: selectOptions["user-floor"]}, formatter: selectOptions["user-floor_func"]},
-                {label: 'unit', name: "unit.id", width: 60, editable: true, edittype: "select", editoptions: {value: selectOptions["unit"]}, formatter: selectOptions["unit_func"]},
-                {label: 'email', name: "email", width: 60, editable: true},
-                {label: 'state', name: "state", width: 60, editable: true, edittype: "select", editoptions: {value: "Active:Active;Inactive:Inactive;Deleted:Deleted;Locked:Locked"}}
+                {label: 'id', name: "id", width: 60, key: true, editable: true, editoptions: {readonly: 'readonly', disabled: true, defaultValue: "0"}, search: false},
+                {label: 'jobnumber', name: "jobnumber", width: 60, editable: true, searchoptions: {sopt: ['eq']}},
+                {label: 'password', name: "password", width: 60, editable: true, edittype: "password", search: false},
+                {label: 'username', name: "username", width: 60, editable: true, searchoptions: {sopt: ['eq']}},
+                {label: 'permission', name: "permission", width: 60, editable: false, hidden: true, search: false},
+                {label: 'floor', name: "floor.id", width: 60, editable: true, edittype: "select", editoptions: {value: selectOptions["user-floor"]}, formatter: selectOptions["user-floor_func"], search: false},
+                {label: 'unit', name: "unit.id", width: 60, editable: true, edittype: "select", editoptions: {value: selectOptions["unit"]}, formatter: selectOptions["unit_func"], search: false},
+                {label: 'email', name: "email", width: 60, editable: true, search: false},
+                {label: 'state', name: "state", width: 60, editable: true, edittype: "select", editoptions: {value: "Active:Active;Inactive:Inactive;Deleted:Deleted;Locked:Locked"}, search: false}
             ],
             rowNum: 20,
             rowList: [20, 50, 100],
@@ -137,7 +137,7 @@
 
         var stompClient = null;
 
-        connect();
+//        connect();
 
         function setConnected(connected) {
         }
