@@ -29,10 +29,12 @@ public class ExceptionHandlingController {
                 .status(HttpStatus.UNAUTHORIZED)
                 .body("The session has expired.");
     }
-    
+
     @ExceptionHandler(AccessDeniedException.class)
-    public String handleAccessDeniedException() {
-        return "accessDenied";
+    public ResponseEntity handleAccessDeniedException() {
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body("Access denied.");
     }
 
     // Total control - setup a model and return the view name yourself. Or

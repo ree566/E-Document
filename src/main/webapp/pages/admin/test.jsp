@@ -47,16 +47,5 @@
         </script>
     </head>
     <body>
-        <div class="container">
-            <div class="row">
-                <h5>Dear <strong>${user.username}</strong>, Welcome to Admin Page.</h5>
-                <a href="<c:url value="/" />">Home</a>
-
-                <form id="testForm">
-                    <select multiple="multiple" id="my-select" name="my-select[]"></select>
-                    <input type="submit" value="submit" />
-                </form>
-            </div>
-        </div>
     </body>
 </html>

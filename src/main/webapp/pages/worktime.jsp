@@ -127,7 +127,7 @@
             greyout(form);
         };
 
-        var checkRevision = function (formid) {
+        var checkRevision = function (form) {
             selected_row_revision = getRowRevision();
             if (selected_row_revision > table_current_revision) {
                 closeEditDialogWhenError("此欄位有新的版本，請重新整理");
@@ -171,7 +171,7 @@
             if (response.status == 200 || response.status == 201) {
                 alert("Row added Successfully");
                 return [true, ''];
-            } 
+            }
         };
 
         grid.jqGrid({
