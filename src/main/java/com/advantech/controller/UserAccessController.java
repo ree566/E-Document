@@ -16,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  *
@@ -56,5 +57,19 @@ public class UserAccessController {
             userName = principal.toString();
         }
         return userName;
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/admin", method = RequestMethod.GET)
+    //    @PreAuthorize("hasAnyRole('admin')")
+    public String helloAdmin() {
+        return "admin";
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/user", method = RequestMethod.GET)
+    //    @PreAuthorize("hasAnyRole('admin','user')")
+    public String helloUser() {
+        return "user";
     }
 }

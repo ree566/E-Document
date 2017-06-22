@@ -6,7 +6,7 @@
 package com.advantech.service;
 
 import com.advantech.dao.*;
-import com.advantech.helper.PageInfo;
+import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.Pending;
 import java.util.List;
 

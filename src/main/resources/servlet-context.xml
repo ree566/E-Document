@@ -80,7 +80,14 @@
     </bean>
  
     <!-- 對base-package下及其子資料夾偵測並自動裝配Bean -->
-    <context:component-scan base-package="com.advantech.dao, com.advantech.service, com.advantech.controller, com.advantech.customException, com.advantech.security, com.advantech.websocket" />
+    <context:component-scan base-package="
+            com.advantech.dao, 
+            com.advantech.service, 
+            com.advantech.controller, 
+            com.advantech.customException, 
+            com.advantech.security, 
+            com.advantech.quartzJob,
+            com.advantech.websocket" />
     <!-- 要使用 @Transactional 時需要 -->
     <tx:annotation-driven proxy-target-class="true" transaction-manager="transactionManager"/>
     
@@ -101,6 +108,30 @@
             </bean>
         </mvc:message-converters>
     </mvc:annotation-driven>
+    
+    <!--Email setting-->
+    <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+        <property name="host" value="Relay.advantech.com.tw" />
+        <property name="port" value="25" />
+
+        <property name="javaMailProperties">
+            <props>
+                <prop key="mail.smtp.auth">false</prop>
+                <prop key="mail.smtp.starttls.enable">true</prop>
+            </props>
+        </property>
+    </bean>
+
+    <!-- this is a template message that we can pre-load with default state -->
+    <bean id="templateMessage" class="org.springframework.mail.SimpleMailMessage">
+        <property name="from" value="kevin1@localhost"/>
+        <property name="subject" value="【E-Document】系統訊息"/>
+    </bean>
+
+    <bean id="orderManager" class="com.advantech.helper.MailManager">
+        <property name="mailSender" ref="mailSender"/>
+        <property name="templateMessage" ref="templateMessage"/>
+    </bean>
 
     <!--other import-->
     

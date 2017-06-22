@@ -6,11 +6,11 @@
 package com.advantech.controller;
 
 import static com.advantech.helper.JqGridResponseUtils.toJqGridResponse;
-import com.advantech.helper.PageInfo;
+import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.Unit;
 import com.advantech.model.User;
 import com.advantech.model.WorktimeColumnGroup;
-import com.advantech.response.JqGridResponse;
+import com.advantech.jqgrid.JqGridResponse;
 import com.advantech.service.WorktimeColumnGroupService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

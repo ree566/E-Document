@@ -7,7 +7,7 @@ package com.advantech.service;
 
 import com.advantech.dao.*;
 import com.advantech.helper.CustomPasswordEncoder;
-import com.advantech.helper.PageInfo;
+import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.Unit;
 import com.advantech.model.User;
 import java.util.List;

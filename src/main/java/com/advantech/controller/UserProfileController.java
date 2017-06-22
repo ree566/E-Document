@@ -7,9 +7,10 @@ package com.advantech.controller;
 
 import com.advantech.helper.CustomPasswordEncoder;
 import static com.advantech.helper.JqGridResponseUtils.toJqGridResponse;
-import com.advantech.helper.PageInfo;
+import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.User;
-import com.advantech.response.JqGridResponse;
+import com.advantech.jqgrid.JqGridResponse;
+import com.advantech.security.State;
 import com.advantech.security.UserProfileType;
 import com.advantech.service.UserProfileService;
 import com.advantech.service.UserService;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import sun.net.ProgressSource;
 
 /**
  *
@@ -94,7 +96,11 @@ public class UserProfileController extends CrudController<User> {
     @RequestMapping(value = DELETE_URL, method = {RequestMethod.POST})
     @Override
     protected ResponseEntity delete(int id) {
-        String modifyMessage = userService.delete(id) == 1 ? this.SUCCESS_MESSAGE : this.FAIL_MESSAGE;
+//        String modifyMessage = userService.delete(id) == 1 ? this.SUCCESS_MESSAGE : this.FAIL_MESSAGE;
+//        return serverResponse(modifyMessage);
+        User u = userService.findByPrimaryKey(id);
+        u.setState(State.DELETED.getState());
+        String modifyMessage = userService.update(u) == 1 ? this.SUCCESS_MESSAGE : this.FAIL_MESSAGE;
         return serverResponse(modifyMessage);
     }
 

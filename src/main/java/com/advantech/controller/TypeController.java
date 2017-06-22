@@ -6,9 +6,9 @@
 package com.advantech.controller;
 
 import static com.advantech.helper.JqGridResponseUtils.toJqGridResponse;
-import com.advantech.helper.PageInfo;
+import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.Type;
-import com.advantech.response.JqGridResponse;
+import com.advantech.jqgrid.JqGridResponse;
 import com.advantech.service.TypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

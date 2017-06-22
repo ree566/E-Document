@@ -6,9 +6,9 @@
 package com.advantech.controller;
 
 import static com.advantech.helper.JqGridResponseUtils.toJqGridResponse;
-import com.advantech.helper.PageInfo;
+import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.Flow;
-import com.advantech.response.JqGridResponse;
+import com.advantech.jqgrid.JqGridResponse;
 import com.advantech.service.FlowGroupService;
 import com.advantech.service.FlowService;
 import java.util.ArrayList;

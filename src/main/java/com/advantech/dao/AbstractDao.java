@@ -5,7 +5,7 @@
  */
 package com.advantech.dao;
 
-import com.advantech.helper.PageInfo;
+import com.advantech.jqgrid.PageInfo;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;

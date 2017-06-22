@@ -5,7 +5,7 @@
  */
 package com.advantech.dao;
 
-import com.advantech.helper.PageInfo;
+import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.Unit;
 import com.advantech.model.User;
 import com.advantech.security.State;

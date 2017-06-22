@@ -5,7 +5,7 @@
  */
 package com.advantech.dao;
 
-import com.advantech.helper.PageInfo;
+import com.advantech.jqgrid.PageInfo;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;

@@ -5,7 +5,7 @@
  */
 package com.advantech.dao;
 
-import com.advantech.helper.PageInfo;
+import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.Worktime;
 import java.util.List;
 import org.hibernate.Criteria;

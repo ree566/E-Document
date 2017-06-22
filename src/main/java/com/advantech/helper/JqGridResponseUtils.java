@@ -5,7 +5,8 @@
  */
 package com.advantech.helper;
 
-import com.advantech.response.JqGridResponse;
+import com.advantech.jqgrid.PageInfo;
+import com.advantech.jqgrid.JqGridResponse;
 import java.util.List;
 
 /**

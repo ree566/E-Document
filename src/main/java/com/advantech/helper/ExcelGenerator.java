@@ -8,11 +8,14 @@ package com.advantech.helper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.BufferedReader;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.Reader;
 import static java.lang.System.out;
 import java.math.BigDecimal;
 import java.sql.Clob;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,8 +47,6 @@ public class ExcelGenerator {
     private Workbook workbook;
     private Sheet spreadsheet;
     private int sheetNum = 1;
-
-    private final DatetimeGenerator dg = new DatetimeGenerator("E yyyy/MM/dd HH:mm");
 
     private int xIndex = 0, yIndex = 0;
 
@@ -166,7 +167,7 @@ public class ExcelGenerator {
 
     private Cell setCellValue(Cell cell, Object value) {
         if (value instanceof Clob) {
-            cell.setCellValue(StringParser.clobToString((Clob) value));
+            cell.setCellValue(clobToString((Clob) value));
         } else if (value instanceof java.util.Date) {
             cell.setCellValue(sdf.format((java.util.Date) value));
             cell.setCellStyle(dateCell);
@@ -262,5 +263,22 @@ public class ExcelGenerator {
 
     public Workbook getWorkbook() {
         return workbook;
+    }
+    
+    public static String clobToString(Clob data) {
+        StringBuilder sb = new StringBuilder();
+        try {
+            Reader reader = data.getCharacterStream();
+            BufferedReader br = new BufferedReader(reader);
+
+            String line;
+            while (null != (line = br.readLine())) {
+                sb.append(line);
+            }
+            br.close();
+        } catch (SQLException | IOException e) {
+            log.error(e.toString());
+        }
+        return sb.toString();
     }
 }

@@ -5,8 +5,8 @@
  */
 package com.advantech.controller;
 
-import com.advantech.helper.PageInfo;
-import com.advantech.response.JqGridResponse;
+import com.advantech.jqgrid.PageInfo;
+import com.advantech.jqgrid.JqGridResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;

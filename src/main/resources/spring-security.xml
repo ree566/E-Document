@@ -17,6 +17,16 @@
                 class="com.advantech.security.AjaxAwareAuthenticationEntryPoint">
         <beans:constructor-arg name="loginUrl" value="/login"/>
     </beans:bean>
+    
+<!--    <beans:bean id="CustomSecurityFilter"
+                class="com.spring.security.demo.CustomSecurityFilter">
+         注入决策管理器 
+        <beans:property name="accessDecisionManager" ref="CC_AccessDecisionManager"></beans:property>
+         注入资源角色授权管理器 
+        <beans:property name="securityMetadataSource" ref="CC_SecurityMetadataSource"></beans:property>
+         注入身份认证管理器 
+        <beans:property name="authenticationManager" ref="CC_AuthenticationManager"></beans:property>
+    </beans:bean>-->
 
     <http auto-config="true">
         <intercept-url pattern="/login.jsp" access="permitAll" />
@@ -45,6 +55,13 @@
             token-validity-seconds="1209600"
             remember-me-parameter="remember-me"
         />
+        
+        <!--Prevent multi login at same account-->
+        <session-management>  
+            <concurrency-control max-sessions="1" error-if-maximum-exceeded="false" />  
+        </session-management>  
+        
+        <!--<custom-filter ref="CustomSecurityFilter" before="FILTER_SECURITY_INTERCEPTOR" />-->
     </http>
 
     <authentication-manager >
@@ -55,7 +72,7 @@
       
     <beans:bean id="customUserDetailsService" class="com.advantech.service.CustomUserDetailsService" />
     
-<!--    <websocket:message-broker application-destination-prefix="/app">
+    <!--    <websocket:message-broker application-destination-prefix="/app">
         <websocket:stomp-endpoint path="/socket">
             <websocket:sockjs/>
         </websocket:stomp-endpoint>

@@ -8,7 +8,7 @@ package com.advantech.service;
 import com.advantech.dao.AuditAction;
 import com.advantech.dao.AuditDAO;
 import com.advantech.helper.JsonHelper;
-import com.advantech.helper.PageInfo;
+import com.advantech.jqgrid.PageInfo;
 import java.util.Date;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;

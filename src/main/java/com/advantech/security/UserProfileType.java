@@ -8,11 +8,11 @@ package com.advantech.security;
 /**
  *
  * @author Wei.Cheng
+ * The basic user role type.
  */
 public enum UserProfileType {
     GUEST("GUEST"),
     USER("USER"),
-    OPER("OPER"),
     ADMIN("ADMIN");
 
     String userProfileType;

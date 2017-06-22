@@ -6,10 +6,10 @@
 package com.advantech.controller;
 
 import static com.advantech.helper.JqGridResponseUtils.toJqGridResponse;
-import com.advantech.helper.PageInfo;
+import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.SheetView;
 import com.advantech.model.Worktime;
-import com.advantech.response.JqGridResponse;
+import com.advantech.jqgrid.JqGridResponse;
 import com.advantech.service.SheetViewService;
 import com.advantech.service.WorktimeService;
 import java.io.FileInputStream;
@@ -27,7 +27,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
@@ -155,22 +157,16 @@ public class WorktimeController extends CrudController<Worktime> {
         return true;
     }
 
-    private Workbook getWorktimeTempWorkbook() {
-
-        InputStream fis;
-        Workbook w = null;
-        try {
-//            fis = WorktimeController.class.getClassLoader().getResourceAsStream("/excel-template/worktime_template.xls");
-//            POIFSFileSystem fs = new POIFSFileSystem(fis);
-            POIFSFileSystem fs = new POIFSFileSystem(
-                    new FileInputStream("/excel-template/worktime_template.xls"));
-            w = new HSSFWorkbook(fs, true);
-        } catch (Exception ex) {
-            System.out.println(ex);
-        }
-
-        return w;
-
+    //Update exist worktime by excel sheet.
+    //Check current revision first.
+    @ResponseBody
+    @RequestMapping(value = "/batchUpload", method = RequestMethod.POST)
+    public String uploadFileHandler(@RequestParam("file") MultipartFile file) {
+        //Add revision number into some column.
+        //If revision not found, return error.
+        //Check last revision each row, if pass, update.
+        
+        return null;
     }
 
 }
