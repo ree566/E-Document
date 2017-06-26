@@ -33,6 +33,7 @@
 <script src="<c:url value="/js/jqgrid-custom-select-option-reader.js" />"></script>
 <script src="<c:url value="/js/jqgrid-custom-validator.js" />"></script>
 <script src="<c:url value="/js/jqgrid-custom-setting.js" />"></script>
+<script src="<c:url value="/js/jquery.blockUI.js" />"></script>
 
 <script>
     $(function () {
@@ -82,11 +83,13 @@
                 fn: function (e) {
                     var selectOption = $('option:selected', this).text();
                     var defaultValue = {
-                        BI: 40,
-                        RI: 0,
-                        N: 0
+                        BI: [4, 40],
+                        RI: [4, 0],
+                        N: [0, 0]
                     };
-                    $('input#biTemperature, input#biTime').val(defaultValue[selectOption]);
+
+                    $('input#biTime').val(defaultValue[selectOption][0]);
+                    $('input#biTemperature').val(defaultValue[selectOption][1]);
                 }
             }
         ];

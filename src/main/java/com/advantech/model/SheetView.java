@@ -21,7 +21,7 @@ import javax.persistence.TemporalType;
 )
 public class SheetView implements java.io.Serializable {
 
-    private int rowId;
+    private int id;
     private String modelName;
     private String typeName;
     private BigDecimal productionWt;
@@ -82,8 +82,8 @@ public class SheetView implements java.io.Serializable {
     public SheetView() {
     }
 
-    public SheetView(int rowId, String modelName, String typeName, BigDecimal productionWt, BigDecimal totalModule, Integer setupTime, BigDecimal cleanPanel, BigDecimal assy, BigDecimal t1, BigDecimal t2, BigDecimal t3, BigDecimal t4, BigDecimal packing, BigDecimal downBiRi, BigDecimal upBiRi, BigDecimal biCost, Integer vibration, Integer hiPotLeakage, BigDecimal coldBoot, BigDecimal warmBoot, BigDecimal assyToT1, BigDecimal t2ToPacking, String floorName, String pendingName, BigDecimal pendingTime, String burnIn, BigDecimal biTime, BigDecimal biTemperature, String speOwnerName, String eeOwnerName, String qcOwnerName, String assyPackingSop, String testSop, Integer keypartA, Integer keypartB, String preAssyName, String babFlowName, String testFlowName, String packingFlowName, Character partLink, Integer ce, Integer ul, Integer rohs, Integer weee, Integer madeInTaiwan, Integer fcc, Integer eac, BigDecimal nsInOneCollectionBox, Character partNoAttributeMaintain, Integer assyStation, Integer packingStation, BigDecimal assyLeadTime, BigDecimal assyKanbanTime, BigDecimal packingLeadTime, BigDecimal packingKanbanTime, BigDecimal cleanPanelAndAssembly, Date modifiedDate) {
-        this.rowId = rowId;
+    public SheetView(int id, String modelName, String typeName, BigDecimal productionWt, BigDecimal totalModule, Integer setupTime, BigDecimal cleanPanel, BigDecimal assy, BigDecimal t1, BigDecimal t2, BigDecimal t3, BigDecimal t4, BigDecimal packing, BigDecimal downBiRi, BigDecimal upBiRi, BigDecimal biCost, Integer vibration, Integer hiPotLeakage, BigDecimal coldBoot, BigDecimal warmBoot, BigDecimal assyToT1, BigDecimal t2ToPacking, String floorName, String pendingName, BigDecimal pendingTime, String burnIn, BigDecimal biTime, BigDecimal biTemperature, String speOwnerName, String eeOwnerName, String qcOwnerName, String assyPackingSop, String testSop, Integer keypartA, Integer keypartB, String preAssyName, String babFlowName, String testFlowName, String packingFlowName, Character partLink, Integer ce, Integer ul, Integer rohs, Integer weee, Integer madeInTaiwan, Integer fcc, Integer eac, BigDecimal nsInOneCollectionBox, Character partNoAttributeMaintain, Integer assyStation, Integer packingStation, BigDecimal assyLeadTime, BigDecimal assyKanbanTime, BigDecimal packingLeadTime, BigDecimal packingKanbanTime, BigDecimal cleanPanelAndAssembly, Date modifiedDate) {
+        this.id = id;
         this.modelName = modelName;
         this.typeName = typeName;
         this.productionWt = productionWt;
@@ -144,12 +144,12 @@ public class SheetView implements java.io.Serializable {
 
     @Id
     @Column(name = "rowId", unique = true, nullable = false)
-    public int getRowId() {
-        return this.rowId;
+    public int getId() {
+        return this.id;
     }
 
-    public void setRowId(int rowId) {
-        this.rowId = rowId;
+    public void setId(int id) {
+        this.id = id;
     }
 
     @Column(name = "assy", precision = 10, scale = 1)
