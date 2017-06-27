@@ -11,6 +11,8 @@
     $(function () {
         $("#sync-img").hide();
         var options = {
+            url: "${root}WorktimeBatchMod/" + $("#action").val(),
+            type: "post",
             beforeSend: function () {
                 $("#progressbox").show();
                 // clear everything
@@ -43,25 +45,37 @@
             }
         };
         $("#uploadForm").ajaxForm(options);
+
+//        $('#uploadForm').submit(function () {
+//            var url = "${root}WorktimeBatchMod/" + $("#action").val();
+//            $('#uploadForm').attr('action', url);
+//        });
     });
 </script>
 <div>
     <h3>Upload single files example.</h3>
-    <form id="uploadForm" method="POST" action="${root}uploadFile" enctype="multipart/form-data">
-        <select name="action">
-            <option value="add">add</option>
-            <option value="update">update</option>
-        </select>
-        <div>
-            File to upload: <input type="file" name="file">
+    <form id="uploadForm" enctype="multipart/form-data">
+        <div class="form-inline">
+            <lable for="action">請選擇操作項目</lable>
+            <select id="action" name="action" class="form-control">
+                <option value="add">add</option>
+                <option value="update">update</option>
+                <option value="update">delete</option>
+            </select>
         </div>
-        <input type="submit" value="Upload"> Press here to upload the file!
+        <div class="form-inline">
+            <lable for="file">File to upload: </lable>
+            <input type="file" name="file" class="form-control">
+        </div>
+        <div class="form-inline">
+            <input type="submit" value="Upload" class="form-control"> 
+            <label>Press here to upload the file!</label>
+        </div>
         <div id="progressbox">
             <div id="progressbar"></div>
             <div id="percent">0%</div>
             <img id="sync-img" src="../images/hex-loader2.gif" />
         </div>
-        <br />
         <div id="message"></div>
     </form>	
 </div>

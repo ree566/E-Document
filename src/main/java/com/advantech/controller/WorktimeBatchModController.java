@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.advantech.test;
+package com.advantech.controller;
 
 import com.advantech.excel.XlsWorkBook;
 import com.advantech.excel.XlsWorkSheet;
@@ -22,37 +22,35 @@ import com.advantech.service.PreAssyService;
 import com.advantech.service.TypeService;
 import com.advantech.service.UserService;
 import com.advantech.service.WorktimeService;
-import java.io.IOException;
+import com.google.gson.Gson;
 import java.lang.reflect.InvocationTargetException;
-import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import javax.transaction.Transactional;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
+import java.util.Set;
+import javax.annotation.PostConstruct;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 import org.apache.commons.beanutils.PropertyUtils;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
  * @author Wei.Cheng
  */
-@WebAppConfiguration
-@ContextConfiguration(locations = {
-    "classpath:servlet-context.xml",
-    "classpath:hibernate.cfg.xml"
-})
-@RunWith(SpringJUnit4ClassRunner.class)
-public class ExcelTest {
+@Controller
+//@Secured({"ROLE_ADMIN", "ROLE_OPER"})
+@RequestMapping(value = "/WorktimeBatchMod")
+public class WorktimeBatchModController {
 
     @Autowired
     private TypeService typeService;
@@ -75,96 +73,101 @@ public class ExcelTest {
     @Autowired
     private WorktimeService worktimeService;
 
-    private static XlsWorkBook workbook;
-//  XlsWorkSheet sheet;  
+    private static Validator validator;
 
-    @BeforeClass
-    public static void initSheet() throws IOException {
-        String fileName = "C:\\Users\\Wei.Cheng\\Desktop\\sample2.xls";
-//        File f = new File(fileName);
-//      System.out.println(f.getAbsolutePath());  
-//      f.getAbsolutePath();  
-        workbook = new XlsWorkBook(fileName);
-
+    @PostConstruct
+    public void initValidator() {
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        validator = factory.getValidator();
     }
 
-    @Test
-    public void testSheetNames() {
-        assertNotNull(workbook);
+    @ResponseBody
+    @RequestMapping(value = "/add", method = RequestMethod.POST)
+    public String batchInsert(@RequestParam("file") MultipartFile file) throws Exception {
 
-        assertNotNull(workbook.getSheet("sheet1"));
+        List<Worktime> hgList = this.transToWorktimes(file);
+
+        //Validate the column, throw exception when false.
+        validateWorktime(hgList);
+
+        print(hgList);
+
+//        return worktimeService.insertWithFormulaSetting(hgList) == 1 ? "success" : "fail";
+        return "success";
     }
 
-    @Test
-    public void testCellValue() throws Exception {
+    @ResponseBody
+    @RequestMapping(value = "/update", method = RequestMethod.POST)
+    public String batchUpdate(@RequestParam("file") MultipartFile file) throws Exception {
+
+        List<Worktime> hgList = this.transToWorktimes(file);
+
+        //Validate the column, throw exception when false.
+        validateWorktime(hgList);
+
+        print(hgList);
+
+        return "success";
+
+//        return worktimeService.update(hgList) == 1 ? "success" : "fail";
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/delete", method = RequestMethod.POST)
+    public String batchDelete(@RequestParam("file") MultipartFile file) throws Exception {
+
+        List<Worktime> hgList = this.transToWorktimes(file);
+
+        int[] id = {};
+
+        for (int i = 0; i < hgList.size(); i++) {
+            id[i] = hgList.get(i).getId();
+        }
+
+        print(id);
+
+        return "success";
+
+//        return worktimeService.update(hgList) == 1 ? "success" : "fail";
+    }
+
+    private List<Worktime> transToWorktimes(MultipartFile file) throws Exception {
+        //固定sheet name為sheet1
+        XlsWorkBook workbook = new XlsWorkBook(file.getInputStream());
         XlsWorkSheet sheet = workbook.getSheet("sheet1");
-        String rowId = sheet.getValue(0, "id").toString();
-        String modelName = sheet.getValue(0, "modelName").toString();
-        String typeName = sheet.getValue(0, "typeName").toString();
+        if (sheet == null) {
+            throw new Exception("Sheet named \"sheet1\" not found");
+        }
 
-        assertEquals("8278", rowId);
-        assertEquals("test1122", modelName);
-        assertEquals("MP", typeName);
-    }
-
-    @Test
-    public void testBuildBeans() {
-        XlsWorkSheet sheet = workbook.getSheet("sheet1");
+        //Init not relative column first.
         List<Worktime> hgList = sheet.buildBeans(Worktime.class);
-
-        assertEquals(7, hgList.size());
-
-        assertEquals("test1122", hgList.get(0).getModelName());
-        assertEquals("test3344", hgList.get(1).getModelName());
-        assertTrue(new BigDecimal(3).compareTo(hgList.get(0).getProductionWt()) == 0);
-        assertTrue(new BigDecimal(1).compareTo(hgList.get(1).getProductionWt()) == 0);
-
-//        for (Worktime w : hgList) {
-//            System.out.println(new Gson().toJson(w));
-//        }
-    }
-
-    @Transactional
-    @Rollback(true)
-    @Test
-    public void testUser() throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-        Map<String, User> userOptions = toSelectOptions(userService.findAll());
-        User andy = userOptions.get("CYJAndy.Chiu");
-        assertTrue(andy != null);
-    }
-
-    @Transactional
-    @Rollback(true)
-    @Test
-    public void testInsert() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, Exception {
-        XlsWorkSheet sheet = workbook.getSheet("sheet2");
-        List<Worktime> hgList = sheet.buildBeans(Worktime.class);
-        assertEquals(3, hgList.size());
         hgList = retriveRelativeColumns(sheet, hgList);
 
-        for (Worktime w : hgList) {
-            worktimeService.insert(w);
-            print(w);
+        return hgList;
+    }
+
+    private boolean validateWorktime(List<Worktime> l) throws Exception {
+        Map<String, Map<String, String>> checkResult = new HashMap();
+        for (Worktime w : l) {
+            Set<ConstraintViolation<Worktime>> constraintViolations = validator.validate(w);
+            if (!constraintViolations.isEmpty()) {
+                Iterator it = constraintViolations.iterator();
+                Map errors = new HashMap();
+                while (it.hasNext()) {
+                    ConstraintViolation violation = (ConstraintViolation) it.next();
+                    errors.put(violation.getPropertyPath().toString(), violation.getMessage());
+                }
+                checkResult.put(w.getModelName(), errors);
+            }
+        }
+
+        if (checkResult.isEmpty()) {
+            return true;
+        } else {
+            throw new Exception(new Gson().toJson(checkResult));
         }
     }
 
-    @Transactional
-    @Rollback(true)
-    @Test
-    public void testUpdate() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, Exception {
-        //先將非關聯的欄位填入
-        XlsWorkSheet sheet = workbook.getSheet("sheet1");
-        List<Worktime> hgList = sheet.buildBeans(Worktime.class);
-        assertEquals(7, hgList.size());
-        hgList = retriveRelativeColumns(sheet, hgList);
-
-        for (Worktime w : hgList) {
-            worktimeService.merge(w);
-        }
-
-    }
-
-    @Transactional
     private List retriveRelativeColumns(XlsWorkSheet sheet, List<Worktime> hgList) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, Exception {
         Map<String, Type> typeOptions = toSelectOptions(typeService.findAll());
         Map<String, Floor> floorOptions = toSelectOptions(floorService.findAll());

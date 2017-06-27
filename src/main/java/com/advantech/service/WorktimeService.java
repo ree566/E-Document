@@ -58,6 +58,13 @@ public class WorktimeService {
         return 1;
     }
 
+    public int insertWithFormulaSetting(List<Worktime> l) {
+        for (Worktime w : l) {
+            this.insertWithFormulaSetting(w);
+        }
+        return 1;
+    }
+
     public int insertWithFormulaSetting(Worktime worktime) {
         initUnfilledFormulaColumn(worktime);
         WorktimeFormulaSetting setting = worktime.getWorktimeFormulaSettings().get(0);
@@ -78,6 +85,14 @@ public class WorktimeService {
         for (Worktime w : l) {
             worktimeDAO.update(w);
         }
+        return 1;
+    }
+
+    public int merge(List<Worktime> l) {
+        for (Worktime w : l) {
+            this.merge(w);
+        }
+
         return 1;
     }
 
@@ -149,6 +164,13 @@ public class WorktimeService {
                 w.setId(existW.getId());
                 this.merge(w);
             }
+        }
+        return 1;
+    }
+
+    public int delete(int[] ids) {
+        for (int i = 0; i < ids.length; i++) {
+            this.delete(ids[i]);
         }
         return 1;
     }

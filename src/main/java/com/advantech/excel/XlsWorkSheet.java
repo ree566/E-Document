@@ -124,7 +124,7 @@ public class XlsWorkSheet {
                         + row + ", column=" + column);
 
             case HSSFCell.CELL_TYPE_BLANK:
-                return null;
+                return "";
 
             case HSSFCell.CELL_TYPE_BOOLEAN:
                 return cell.getBooleanCellValue() ? Boolean.TRUE : Boolean.FALSE;
@@ -250,6 +250,9 @@ public class XlsWorkSheet {
                     if (methodName.startsWith("SET") && this._columnList.contains(methodName.substring(3))) {
                         //System.out.println(ms[i].getGenericParameterTypes()[0].toString());  
                         String val = this.getValue(row, methodName.substring(3)).toString();
+                        if (val == null || "".equals(val)) {
+                            continue;
+                        }
                         String pType = m.getGenericParameterTypes()[0].toString();
                         switch (pType) {
                             case "class java.lang.Integer":
