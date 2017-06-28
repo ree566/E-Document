@@ -7,9 +7,6 @@ package com.advantech.quartzJob;
 
 import com.advantech.entity.BAB;
 import com.advantech.helper.CronTrigMod;
-import com.advantech.service.BABService;
-import com.advantech.service.BasicService;
-import static java.lang.System.out;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -41,8 +38,6 @@ public abstract class ProcessingBabDetector {
     private List<BAB> tempBab = null;
     private Map<String, Map<String, Key>> storeKeys = null;
 
-    private final BABService babService;
-
     private final String quartzJobNameExt;
     private final String quartzJobGroupName;
     private final String quartzJobCronTrigger;
@@ -53,7 +48,6 @@ public abstract class ProcessingBabDetector {
         this.quartzJobGroupName = quartzJobGroupName;
         this.quartzJobCronTrigger = quartzJobCronTrigger;
         this.scheduleClass = scheduleClass;
-        this.babService = BasicService.getBabService();
     }
 
     public void setCurrentStatus(JobDataMap jobMap) {
@@ -105,9 +99,6 @@ public abstract class ProcessingBabDetector {
 
     private void schedulePollingJob(List<BAB> l) {
         for (BAB b : l) {
-            if (b.getIspre() == 1) {
-                continue; //前置工單不做反應
-            }
             try {
                 CronTrigMod ctm = CronTrigMod.getInstance();
                 String jobName = b.getLineName() + quartzJobNameExt;

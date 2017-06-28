@@ -10,7 +10,9 @@ import com.advantech.entity.LineOwnerMapping;
 import com.advantech.helper.PropertiesReader;
 import com.advantech.service.BasicService;
 import com.advantech.service.LineOwnerMappingService;
+import com.google.gson.Gson;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.joda.time.DateTime;
@@ -91,6 +93,19 @@ public class SensorDetect extends ProcessingBabDetector implements Job {
 
     @Override
     public List<BAB> getProcessingBab() {
-        return BasicService.getBabService().getAllProcessing();
+        List<BAB> l = BasicService.getBabService().getAllProcessing();
+        return removePreBab(l);
+    }
+
+    private List<BAB> removePreBab(List<BAB> l) {
+        Iterator it = l.iterator();
+        while(it.hasNext()){
+            BAB b = (BAB) it.next();
+            if (b.getIspre() == 1) {
+                it.remove();
+            }
+        }
+        
+        return l;
     }
 }

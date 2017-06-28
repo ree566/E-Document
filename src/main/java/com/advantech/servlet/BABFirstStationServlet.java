@@ -80,11 +80,11 @@ public class BABFirstStationServlet extends HttpServlet {
                 sendMailAfterBABRunIn(bab);
             } catch (Exception e) {
                 log.error(e.toString());
-                out.print(successMessage);//Send succcess no matter send mail success or fail.
             } finally {
                 if (successMessage.equals(result)) {
                     Endpoint6.syncAndEcho();
                 }
+                out.print(result);
             }
         } else {
             out.print("Invaild input value");

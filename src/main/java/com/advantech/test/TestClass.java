@@ -10,6 +10,7 @@ import com.advantech.entity.User;
 import com.advantech.webservice.WebServiceRV;
 import com.advantech.webservice.WebServiceTX;
 import com.google.gson.Gson;
+import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -21,7 +22,9 @@ import java.util.logging.Logger;
 public class TestClass {
 
     public static void main(String[] args) {
-        System.out.println(BABStatus.CLOSED.getValue().toString());
+        BigDecimal b = BigDecimal.ZERO;
+        b = b.add(new BigDecimal(2));
+        System.out.println(b);
     }
 
 }

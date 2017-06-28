@@ -8,6 +8,7 @@ package com.advantech.quartzJob;
 import com.advantech.entity.BAB;
 import com.advantech.service.BasicService;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.json.JSONObject;
@@ -36,7 +37,7 @@ public class NumLamp extends ProcessingBabDetector implements Job {
     public Map createJobDetails(BAB b) {
         Double testStandardTime = BasicService.getWorkTimeService().getTestStandardTime(b.getModel_name());
         Integer totalQuantity = BasicService.getBabService().getPoTotalQuantity(b.getPO());
-        Map m = new HashMap();  
+        Map m = new HashMap();
         m.put("bab", b);
         m.put("testStandardTime", testStandardTime);
         m.put("totalQuantity", totalQuantity);
@@ -59,6 +60,19 @@ public class NumLamp extends ProcessingBabDetector implements Job {
 
     @Override
     public List<BAB> getProcessingBab() {
-        return BasicService.getBabService().getAssyProcessing();
+        List<BAB> l = BasicService.getBabService().getAssyProcessing();
+        return removePreBab(l);
+    }
+
+    private List<BAB> removePreBab(List<BAB> l) {
+        Iterator it = l.iterator();
+        while (it.hasNext()) {
+            BAB b = (BAB) it.next();
+            if (b.getIspre() == 1) {
+                it.remove();
+            }
+        }
+
+        return l;
     }
 }
