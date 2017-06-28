@@ -73,6 +73,7 @@ public class XlsWorkSheet {
      * @return
      */
     public int getRowCount() {
+//        return _sheet.getPhysicalNumberOfRows();
         return _sheet.getLastRowNum();
     }
 
@@ -243,7 +244,11 @@ public class XlsWorkSheet {
         try {
 
             Method[] ms = cls.getDeclaredMethods();
-            for (int row = 0; row < this.getRowCount(); row++) {
+            for (int row = 0, rowCount = this.getRowCount(); row < rowCount; row++) {
+                HSSFCell checkedCell = _sheet.getRow(row).getCell(0);
+                if (checkedCell == null || checkedCell.getCellType() == HSSFCell.CELL_TYPE_BLANK) {
+                    continue;
+                }
                 T bean = (T) cls.newInstance();
                 for (Method m : ms) {
                     String methodName = m.getName().toUpperCase();

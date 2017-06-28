@@ -36,6 +36,7 @@ import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -48,7 +49,7 @@ import org.springframework.web.multipart.MultipartFile;
  * @author Wei.Cheng
  */
 @Controller
-//@Secured({"ROLE_ADMIN", "ROLE_OPER"})
+@Secured({"ROLE_ADMIN", "ROLE_OPER"})
 @RequestMapping(value = "/WorktimeBatchMod")
 public class WorktimeBatchModController {
 
@@ -84,51 +85,51 @@ public class WorktimeBatchModController {
     @ResponseBody
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     public String batchInsert(@RequestParam("file") MultipartFile file) throws Exception {
-
         List<Worktime> hgList = this.transToWorktimes(file);
 
         //Validate the column, throw exception when false.
         validateWorktime(hgList);
-
-        print(hgList);
-
-//        return worktimeService.insertWithFormulaSetting(hgList) == 1 ? "success" : "fail";
-        return "success";
+        return worktimeService.insertWithFormulaSetting(hgList) == 1 ? "success" : "fail";
     }
 
     @ResponseBody
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     public String batchUpdate(@RequestParam("file") MultipartFile file) throws Exception {
-
         List<Worktime> hgList = this.transToWorktimes(file);
 
         //Validate the column, throw exception when false.
         validateWorktime(hgList);
-
-        print(hgList);
-
-        return "success";
-
-//        return worktimeService.update(hgList) == 1 ? "success" : "fail";
+        return worktimeService.merge(hgList) == 1 ? "success" : "fail";
     }
 
     @ResponseBody
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     public String batchDelete(@RequestParam("file") MultipartFile file) throws Exception {
-
         List<Worktime> hgList = this.transToWorktimes(file);
-
-        int[] id = {};
-
+        int[] ids = new int[hgList.size()];
         for (int i = 0; i < hgList.size(); i++) {
-            id[i] = hgList.get(i).getId();
+            ids[i] = hgList.get(i).getId();
         }
+        return worktimeService.delete(ids) == 1 ? "success" : "fail";
+    }
 
-        print(id);
+    //Update exist worktime by excel sheet.
+    //Check current revision first.
+    @ResponseBody
+    @RequestMapping(value = "/batchUpload", method = RequestMethod.POST)
+    public String uploadFileHandler(@RequestParam("file") MultipartFile file) {
+        //Add revision number into some column.
+        //If revision not found, return error.
+        //Check last revision each row, if pass, update.
 
-        return "success";
+        return null;
+    }
 
-//        return worktimeService.update(hgList) == 1 ? "success" : "fail";
+    @ResponseBody
+    @RequestMapping(value = "/reUpdateAllFormulaColumn", method = {RequestMethod.GET})
+    public boolean reUpdateAllFormulaColumn() {
+        worktimeService.reUpdateAllFormulaColumn();
+        return true;
     }
 
     private List<Worktime> transToWorktimes(MultipartFile file) throws Exception {
@@ -148,6 +149,7 @@ public class WorktimeBatchModController {
 
     private boolean validateWorktime(List<Worktime> l) throws Exception {
         Map<String, Map<String, String>> checkResult = new HashMap();
+        int count = 2;
         for (Worktime w : l) {
             Set<ConstraintViolation<Worktime>> constraintViolations = validator.validate(w);
             if (!constraintViolations.isEmpty()) {
@@ -157,8 +159,9 @@ public class WorktimeBatchModController {
                     ConstraintViolation violation = (ConstraintViolation) it.next();
                     errors.put(violation.getPropertyPath().toString(), violation.getMessage());
                 }
-                checkResult.put(w.getModelName(), errors);
+                checkResult.put("Row" + count, errors);
             }
+            count++;
         }
 
         if (checkResult.isEmpty()) {

@@ -47,18 +47,21 @@ public class User implements java.io.Serializable, UserDetails {
     private Integer permission = 0;
     private String email;
     private String state = State.ACTIVE.getState();
-    
+
     @JsonIgnore
     private Set<UserProfile> userProfiles = new HashSet<UserProfile>(0);
-    
+
     @JsonIgnore
     private Set<Worktime> worktimesForEeOwnerId = new HashSet<Worktime>(0);
-    
+
     @JsonIgnore
     private Set<Worktime> worktimesForQcOwnerId = new HashSet<Worktime>(0);
-    
+
     @JsonIgnore
     private Set<Worktime> worktimesForSpeOwnerId = new HashSet<Worktime>(0);
+
+    @JsonIgnore
+    private Set<UserNotification> userNotifications = new HashSet<UserNotification>(0);
 
     private boolean enabled;
     private boolean accountNonExpired;
@@ -73,7 +76,7 @@ public class User implements java.io.Serializable, UserDetails {
         this.id = id;
     }
 
-    public User(int id, Floor floor, Unit unit, String email, String jobnumber, String password, Integer permission, String username, String state, Set<UserProfile> userProfiles, Set<Worktime> worktimesForSpeOwnerId, Set<Worktime> worktimesForQcOwnerId, Set<Worktime> worktimesForEeOwnerId) {
+    public User(int id, Floor floor, Unit unit, String email, String jobnumber, String password, Integer permission, String username, String state, Set<UserProfile> userProfiles, Set<Worktime> worktimesForSpeOwnerId, Set<Worktime> worktimesForQcOwnerId, Set<Worktime> worktimesForEeOwnerId, Set<UserNotification> userNotifications) {
         this.id = id;
         this.floor = floor;
         this.unit = unit;
@@ -82,11 +85,12 @@ public class User implements java.io.Serializable, UserDetails {
         this.password = password;
         this.permission = permission;
         this.username = username;
-        this.userProfiles = userProfiles;
         this.state = state;
+        this.userProfiles = userProfiles;
         this.worktimesForSpeOwnerId = worktimesForSpeOwnerId;
         this.worktimesForQcOwnerId = worktimesForQcOwnerId;
         this.worktimesForEeOwnerId = worktimesForEeOwnerId;
+        this.userNotifications = userNotifications;
     }
 
     @Id
@@ -213,6 +217,18 @@ public class User implements java.io.Serializable, UserDetails {
 
     public void setUserProfiles(Set<UserProfile> userProfiles) {
         this.userProfiles = userProfiles;
+    }
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "User_Notification_REF", schema = "dbo", catalog = "E_Document", joinColumns = {
+        @JoinColumn(name = "user_id", nullable = false, updatable = false)}, inverseJoinColumns = {
+        @JoinColumn(name = "user_notification_id", nullable = false, updatable = false)})
+    public Set<UserNotification> getUserNotifications() {
+        return this.userNotifications;
+    }
+
+    public void setUserNotifications(Set<UserNotification> userNotifications) {
+        this.userNotifications = userNotifications;
     }
 
     @Override

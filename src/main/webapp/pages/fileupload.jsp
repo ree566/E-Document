@@ -9,10 +9,16 @@
 <c:set var="root" value="${pageContext.request.contextPath}/"/>
 <script>
     $(function () {
+        var form = $("#uploadForm");
+        var submitUrl = "${root}WorktimeBatchMod/";
+
         $("#sync-img").hide();
         var options = {
-            url: "${root}WorktimeBatchMod/" + $("#action").val(),
-            type: "post",
+            beforeSubmit: function (arr, $form, options) {
+                if (!confirm("資料確認無誤? " + $("#action").val() + " ?")) {
+                    return false;
+                }
+            },
             beforeSend: function () {
                 $("#progressbox").show();
                 // clear everything
@@ -44,23 +50,24 @@
                 $("#sync-img").hide();
             }
         };
-        $("#uploadForm").ajaxForm(options);
+        form.ajaxForm(options);
+        form.attr("action", submitUrl + $("#action").val());
 
-//        $('#uploadForm').submit(function () {
-//            var url = "${root}WorktimeBatchMod/" + $("#action").val();
-//            $('#uploadForm').attr('action', url);
-//        });
+        $("#action").on("change", function () {
+            form.attr("action", submitUrl + $(this).val());
+        });
+
     });
 </script>
 <div>
     <h3>Upload single files example.</h3>
-    <form id="uploadForm" enctype="multipart/form-data">
+    <form id="uploadForm" method="post" enctype="multipart/form-data">
         <div class="form-inline">
             <lable for="action">請選擇操作項目</lable>
             <select id="action" name="action" class="form-control">
-                <option value="add">add</option>
-                <option value="update">update</option>
-                <option value="update">delete</option>
+                <option value="add">Add</option>
+                <option value="update">Update</option>
+                <option value="delete">Delete</option>
             </select>
         </div>
         <div class="form-inline">

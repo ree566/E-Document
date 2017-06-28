@@ -122,15 +122,8 @@
         </property>
     </bean>
 
-    <!-- this is a template message that we can pre-load with default state -->
-    <bean id="templateMessage" class="org.springframework.mail.SimpleMailMessage">
-        <property name="from" value="kevin1@localhost"/>
-        <property name="subject" value="【E-Document】系統訊息"/>
-    </bean>
-
     <bean id="orderManager" class="com.advantech.helper.MailManager">
         <property name="mailSender" ref="mailSender"/>
-        <property name="templateMessage" ref="templateMessage"/>
     </bean>
 
     <!--other import-->

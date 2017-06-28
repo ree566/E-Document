@@ -47,6 +47,8 @@ Contributor(s):
   <table-filter match-name="User"/>
   <table-filter match-name="User_Profile"/>
   <table-filter match-name="User_Profile_REF"/>
+  <table-filter match-name="User_Notification"/>
+  <table-filter match-name="User_Notification_REF"/>
   <table-filter match-name="Worktime"/>
   <table-filter match-name="Worktime_ColumnGroup"/>
   <table-filter match-name="Worktime_FormulaSetting"/>

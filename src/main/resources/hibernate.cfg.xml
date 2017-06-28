@@ -42,7 +42,6 @@ Contributor(s):
 <hibernate-configuration>
     <session-factory>
         <!--connection setting-->
-        
         <property name="hibernate.connection.driver_class">net.sourceforge.jtds.jdbc.Driver</property>
         <property name="hibernate.connection.url">jdbc:jtds:sqlserver://M3-SERVER:1433/E_Document</property>
         <property name="hibernate.connection.username">waychien</property>
@@ -76,6 +75,7 @@ Contributor(s):
         <mapping class="com.advantech.model.Unit"/>
         <mapping class="com.advantech.model.User"/>
         <mapping class="com.advantech.model.UserProfile"/>
+        <mapping class="com.advantech.model.UserNotification"/>
         <mapping class="com.advantech.model.Flow"/>
         <mapping class="com.advantech.model.SheetView"/>
         <mapping class="com.advantech.model.PreAssy"/>
