@@ -36,7 +36,7 @@ public class UserNotificationService {
     public List<User> findUsersByNotification(String name) {
         UserNotification n = userProfileDAO.findByName(name);
         List l = new ArrayList();
-        if (n != null) {
+        if (n != null && n.enabled()) {
             l.addAll(n.getUsers());
         }
         return l;

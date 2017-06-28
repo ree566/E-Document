@@ -172,7 +172,7 @@
 
         var showServerModifyMessage = function (response, postdata) {
             if (response.status == 200 || response.status == 201) {
-                alert("Row added Successfully");
+                alert("Success");
                 return [true, ''];
             }
         };

@@ -5,6 +5,7 @@
  */
 package com.advantech.controller;
 
+import com.advantech.helper.WorktimeMailManager;
 import com.advantech.excel.XlsWorkBook;
 import com.advantech.excel.XlsWorkSheet;
 import static com.advantech.helper.HibernateObjectPrinter.print;
@@ -54,6 +55,9 @@ import org.springframework.web.multipart.MultipartFile;
 public class WorktimeBatchModController {
 
     @Autowired
+    private WorktimeMailManager worktimeMailManager;
+
+    @Autowired
     private TypeService typeService;
 
     @Autowired
@@ -82,6 +86,7 @@ public class WorktimeBatchModController {
         validator = factory.getValidator();
     }
 
+    //Check model is exist.
     @ResponseBody
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     public String batchInsert(@RequestParam("file") MultipartFile file) throws Exception {
@@ -89,9 +94,22 @@ public class WorktimeBatchModController {
 
         //Validate the column, throw exception when false.
         validateWorktime(hgList);
-        return worktimeService.insertWithFormulaSetting(hgList) == 1 ? "success" : "fail";
+
+        for (Worktime w : hgList) {
+            if (isModelExists(w)) {
+                throw new Exception("This model is already exist.");
+            }
+        }
+
+        if (worktimeService.insertWithFormulaSetting(hgList) == 1) {
+            worktimeMailManager.notifyUser(hgList, "add");
+            return "success";
+        } else {
+            return "fail";
+        }
     }
 
+    //Check current revision & model name is duplicate
     @ResponseBody
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     public String batchUpdate(@RequestParam("file") MultipartFile file) throws Exception {
@@ -99,9 +117,17 @@ public class WorktimeBatchModController {
 
         //Validate the column, throw exception when false.
         validateWorktime(hgList);
+
+        for (Worktime w : hgList) {
+            if (isModelExists(w)) {
+                throw new Exception("This model is already exist.");
+            }
+        }
+
         return worktimeService.merge(hgList) == 1 ? "success" : "fail";
     }
 
+    //Check model is exist
     @ResponseBody
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     public String batchDelete(@RequestParam("file") MultipartFile file) throws Exception {
@@ -110,7 +136,22 @@ public class WorktimeBatchModController {
         for (int i = 0; i < hgList.size(); i++) {
             ids[i] = hgList.get(i).getId();
         }
-        return worktimeService.delete(ids) == 1 ? "success" : "fail";
+
+        if (worktimeService.delete(ids) == 1) {
+            worktimeMailManager.notifyUser(hgList, "del");
+            return "success";
+        } else {
+            return "fail";
+        }
+    }
+
+    private boolean isModelExists(Worktime worktime) {
+        Worktime existWorktime = worktimeService.findByModel(worktime.getModelName());
+        if (worktime.getId() == 0) {
+            return existWorktime != null;
+        } else {
+            return existWorktime != null && existWorktime.getId() != worktime.getId();
+        }
     }
 
     //Update exist worktime by excel sheet.

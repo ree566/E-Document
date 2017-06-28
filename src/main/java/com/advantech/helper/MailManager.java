@@ -27,6 +27,10 @@ public class MailManager {
         this.mailSender = mailSender;
     }
 
+    public boolean sendMail(String[] to, String subject, String text) throws MessagingException {
+        return this.sendMail(to, new String[0], subject, text);
+    }
+
     public boolean sendMail(String[] to, String[] cc, String subject, String text) throws MessagingException {
         boolean flag = false;
 

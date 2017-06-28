@@ -5,6 +5,7 @@
  */
 package com.advantech.test;
 
+import com.advantech.controller.CrudAction;
 import junit.framework.TestCase;
 
 /**
@@ -12,29 +13,14 @@ import junit.framework.TestCase;
  * @author Wei.Cheng
  */
 public class Test1Test extends TestCase {
-    
-    public Test1Test(String testName) {
-        super(testName);
-    }
-    
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
-    
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
 
     /**
      * Test of main method, of class Test1.
      */
     public void testMain() {
-        String flowRegex = "[^a-zA-Z0-9\\_\\-\\\\(\\\\)]+";
-        String testString = "BAB_ASSY-T1 ";
+        CrudAction action = CrudAction.valueOf("ADD");
         
-        System.out.println(testString.replaceAll(flowRegex, ""));
+        assertEquals(action, CrudAction.ADD);
     }
     
 }

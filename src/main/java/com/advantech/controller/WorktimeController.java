@@ -5,19 +5,16 @@
  */
 package com.advantech.controller;
 
+import com.advantech.helper.WorktimeMailManager;
 import static com.advantech.helper.JqGridResponseUtils.toJqGridResponse;
-import com.advantech.helper.MailManager;
 import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.SheetView;
 import com.advantech.model.Worktime;
 import com.advantech.jqgrid.JqGridResponse;
-import com.advantech.model.User;
 import com.advantech.service.SheetViewService;
-import com.advantech.service.UserNotificationService;
 import com.advantech.service.WorktimeService;
-import java.util.ArrayList;
+import static com.google.common.collect.Lists.newArrayList;
 import java.util.List;
-import javax.mail.MessagingException;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -43,12 +40,9 @@ public class WorktimeController extends CrudController<Worktime> {
 
     @Autowired
     private SheetViewService sheetViewService;
-
+    
     @Autowired
-    private UserNotificationService userNotificationService;
-
-    @Autowired
-    private MailManager mailManager;
+    private WorktimeMailManager worktimeMailManager;
 
     @ResponseBody
     @RequestMapping(value = SELECT_URL, method = {RequestMethod.GET})
@@ -73,6 +67,9 @@ public class WorktimeController extends CrudController<Worktime> {
         } else {
             resetNullableColumn(worktime);
             modifyMessage = worktimeService.insertWithFormulaSetting(worktime) == 1 ? this.SUCCESS_MESSAGE : FAIL_MESSAGE;
+            if (SUCCESS_MESSAGE.equals(modifyMessage)) {
+                worktimeMailManager.notifyUser(newArrayList(worktime), ADD);
+            }
         }
 
         return serverResponse(modifyMessage);
@@ -102,7 +99,11 @@ public class WorktimeController extends CrudController<Worktime> {
     @Secured({"ROLE_USER", "ROLE_ADMIN"})
     @Override
     protected ResponseEntity delete(int id) {
+        Worktime w = worktimeService.findByPrimaryKey(id);
         String modifyMessage = worktimeService.delete(id) == 1 ? this.SUCCESS_MESSAGE : this.FAIL_MESSAGE;
+        if (SUCCESS_MESSAGE.equals(modifyMessage)) {
+            worktimeMailManager.notifyUser(newArrayList(w), DELETE);
+        }
         return serverResponse(modifyMessage);
     }
 
@@ -151,43 +152,6 @@ public class WorktimeController extends CrudController<Worktime> {
         mav.addObject("revenueData", l);
 //        mav.addObject("templateWorkbook", tempWorkbook);
         return mav;
-    }
-
-    private void notifyUser(List<Worktime> l, String action) throws MessagingException {
-        List<User> users = userNotificationService.findUsersByNotification("worktime_alarm");
-        List<String> mails = new ArrayList();
-        for (User u : users) {
-            String mail = u.getEmail();
-            if (mail != null && !"".equals(mail)) {
-                mails.add(mail);
-            }
-        }
-        String subject = "大表異動";
-        String text = generateTextBody(l, action);
-        mailManager.sendMail((String[]) mails.toArray(), null, subject, text);
-    }
-
-    private String generateTextBody(List<Worktime> l,final String action) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("<p>Dear All:</p>");
-        sb.append("<p>大表");
-        sb.append(action);
-        sb.append("了相關機種清單如下</p>");
-        for (Worktime w : l) {
-            sb.append("<p>");
-            sb.append(w.getModelName());
-            sb.append("</p>");
-        }
-        switch(action){
-            case "add":
-                sb.append("<p>請相關人員至本系統維護大表。</p>");
-                break;
-            case "update":
-                break;
-            case "delete":
-                break;
-        }
-        return sb.toString();
     }
 
 }

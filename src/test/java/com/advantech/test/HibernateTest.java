@@ -49,10 +49,10 @@ public class HibernateTest {
         
         l = userNotificationService.findUsersByNotification("worktime_alarm");
         
-        assertEquals(l.size(), 2);
+        assertEquals(l.size(), 1);
         
-        User gavin = userService.findByPrimaryKey(47);
-        assertTrue(l.contains(gavin));
+        User sysop = userService.findByPrimaryKey(36);
+        assertTrue(l.contains(sysop));
     }
     
 }

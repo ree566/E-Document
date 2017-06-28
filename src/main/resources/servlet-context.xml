@@ -125,6 +125,8 @@
     <bean id="orderManager" class="com.advantech.helper.MailManager">
         <property name="mailSender" ref="mailSender"/>
     </bean>
+    
+    <bean id="worktimeMailManager" class="com.advantech.helper.WorktimeMailManager"></bean>
 
     <!--other import-->
     
