@@ -6,6 +6,7 @@
 <sec:authorize access="hasRole('ADMIN')"  var="isAdmin" />
 <sec:authorize access="hasRole('USER')"  var="isUser" />
 <sec:authorize access="hasRole('OPER') and hasRole('USER')"  var="isOper" />
+<sec:authorize access="hasRole('AUTHOR') and hasRole('USER')"  var="isAuthor" />
 <sec:authorize access="hasRole('GUEST')"  var="isGuest" />
 <style>
     .permission-hint{
@@ -39,28 +40,29 @@
     $(function () {
         //保持Edit完畢的scroll position
         var scrollPosition = 0;
-
         //Grid主體
         var grid = $("#list");
-
         //依照單位分辨可編輯欄位和不可編輯欄位
         var unitName = '${user.unit.name}';
         var modifyColumns = (${isGuest} || unitName == null || unitName == "") ? [] : getColumn();
         var columnEditableInsetting = modifyColumns.length > 0;
         var isNormalUser = ${isUser} && columnEditableInsetting;
-        var isOperRelative = ${isAdmin || (isUser && isOper) || user.unit.name == 'SPE'} && columnEditableInsetting;
+        
+        //User who can fully CRUD the worktime.
+        var isOperRelative = ${isAdmin || isOper || isAuthor} && columnEditableInsetting;
+        
         var editableColumns, readonlyColumns;
-
+        
         //給使用者隱藏欄位使用(可隱藏非自己部門負責的欄位)
         var toggle_value = false;
-
+        
         //版本讀取，避免多人同時編輯覆蓋
         var selected_row_revision;
         var table_current_revision;
-
         //Set param into jqgrid-custom-select-option-reader.js and get option by param selectOptions
         //You can get the floor select options and it's formatter function
         //ex: floor selector -> floor and floor_func
+        
         setSelectOptions({
             rootUrl: "<c:url value="/" />",
             columnInfo: [
@@ -76,7 +78,6 @@
                 {name: "pending", isNullable: false}
             ]
         });
-
         var burnIn_select_event = [
             {
                 type: 'change',
@@ -87,13 +88,11 @@
                         RI: [4, 0],
                         N: [0, 0]
                     };
-
                     $('input#biTime').val(defaultValue[selectOption][0]);
                     $('input#biTemperature').val(defaultValue[selectOption][1]);
                 }
             }
         ];
-
         var pending_select_event = [
             {
                 type: 'change',
@@ -103,7 +102,6 @@
                 }
             }
         ];
-
         var babFlow_select_event = [
             {
                 type: 'change', fn: function (e) {
@@ -120,7 +118,6 @@
                 }
             }
         ];
-
         var testFlowInit = function (form) {
             setTimeout(function () {
                 // do here all what you need (like alert('yey');)
@@ -129,15 +126,13 @@
             }, 50);
             greyout(form);
         };
-
         var checkRevision = function (form) {
             selected_row_revision = getRowRevision();
             if (selected_row_revision > table_current_revision) {
                 closeEditDialogWhenError("此欄位有新的版本，請重新整理");
                 return false;
             }
-        }
-
+        };
         var before_add = function (postdata, formid) {
             var formulaFieldInfo = getFormulaCheckboxField();
             clearCheckErrorIcon();
@@ -150,7 +145,6 @@
                 return [true, "saved"];
             }
         };
-
         var before_edit = function (postdata, formid) {
             var formulaFieldInfo = getFormulaCheckboxField();
             clearCheckErrorIcon();
@@ -169,14 +163,12 @@
                 }
             }
         };
-
         var showServerModifyMessage = function (response, postdata) {
             if (response.status == 200 || response.status == 201) {
                 alert("Success");
                 return [true, ''];
             }
         };
-
         grid.jqGrid({
             url: '<c:url value="/Worktime/read" />',
             datatype: 'json',
@@ -197,8 +189,8 @@
                 {label: 'T3', name: "t3", width: 60, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, editoptions: {defaultValue: '0'}},
                 {label: 'T4', name: "t4", width: 60, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, editoptions: {defaultValue: '0'}},
                 {label: 'Packing', name: "packing", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, editoptions: {defaultValue: '0'}},
-                {label: 'Up_BI_RI', name: "upBiRi", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, editoptions: {defaultValue: '0'}},
-                {label: 'Down_BI_RI', name: "downBiRi", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, editoptions: {defaultValue: '0'}},
+                {label: 'Up_BI_RI', name: "upBiRi", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, editoptions: {defaultValue: '2'}},
+                {label: 'Down_BI_RI', name: "downBiRi", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, editoptions: {defaultValue: '2'}},
                 {label: 'BI Cost', name: "biCost", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, editoptions: {defaultValue: '0'}},
                 {label: 'Vibration', name: "vibration", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, editoptions: {defaultValue: '0'}},
                 {label: 'Hi-Pot/Leakage', name: "hiPotLeakage", width: 120, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, editoptions: {defaultValue: '0'}},
@@ -277,7 +269,6 @@
                         );
             }
         });
-
         grid.jqGrid('setGroupHeaders', {
             useColSpanStyle: true,
             groupHeaders: [
@@ -287,7 +278,6 @@
                 {startColumnName: 'packingLeadTime', numberOfColumns: 2, titleText: '<em>包裝看板工時</em>'}
             ]
         });
-
         grid.jqGrid('navGrid', '#pager',
                 {edit: isNormalUser || isOperRelative, add: isOperRelative, del: isOperRelative, search: true},
                 {
@@ -340,7 +330,6 @@
                     reloadAfterSubmit: true
                 }
         );
-
         grid.navButtonAdd('#pager', {
             caption: "Show / Hide",
             buttonicon: "ui-icon-shuffle",
@@ -355,7 +344,6 @@
             },
             position: "last"
         });
-
         grid.navButtonAdd('#pager', {
             caption: "Export to Excel",
             buttonicon: "ui-icon-disk",
@@ -364,7 +352,6 @@
             },
             position: "last"
         });
-
         //有可編輯column的人再來分可編輯欄位
         //為0直接hide CRUD的按鈕
         if (columnEditableInsetting) {
@@ -372,15 +359,12 @@
         }
 
         grid.jqGrid('setFrozenColumns');
-
         $(window).bind('resize', function () {
-
             setTimeout(function () {
                 grid.jqGrid("setGridWidth", $('#worktime-content').width());
             }, 1000);
-
         }).trigger('resize');
-
+        
         function getColumn() {
             var result;
             $.ajax({
@@ -406,7 +390,6 @@
         function checkAndSetEditableAndReadOnlyField() {
             var columns = grid.jqGrid('getGridParam', 'colModel');
             var columnNames = [];
-
             for (var i = 0; i < columns.length; i++) {
                 var obj = columns[i];
                 columnNames[i] = obj.name;
@@ -416,11 +399,9 @@
             columnNames = $.grep(columnNames, function (value) {
                 return $.inArray(value, do_not_change_columns) == -1;
             });
-
             //Separate readyonly column and editable column
             editableColumns = modifyColumns.length == 1 && modifyColumns[0] == -1 ? columnNames : modifyColumns;
             readonlyColumns = $(columnNames).not(editableColumns).get();
-
             for (var i = 0; i < editableColumns.length; i++) {
                 var editableColumn = editableColumns[i];
                 grid.setColProp(editableColumn, {editable: true});
@@ -527,23 +508,29 @@
         }
 
         function checkFlowIsValid(postdata, formid) {
-            var babOptions = selectOptions["bab_flow_options"],
+            var preAssyOptions = selectOptions["preAssy_options"],
+                    babOptions = selectOptions["bab_flow_options"],
                     testOptions = selectOptions["test_flow_options"],
                     pkgOptions = selectOptions["pkg_flow_options"];
-
-            var babFlowName = babOptions.get(parseInt(postdata["flowByBabFlowId.id"])),
+            var preAssyName = preAssyOptions.get(parseInt(postdata["preAssy.id"])),
+                    babFlowName = babOptions.get(parseInt(postdata["flowByBabFlowId.id"])),
                     testFlowName = testOptions.get(parseInt(postdata["flowByTestFlowId.id"])),
                     pkgFlowName = pkgOptions.get(parseInt(postdata["flowByPackingFlowId.id"]));
-            var babCheckLogic = flow_check_logic.BAB,
+            var preAssyCheckLogic = flow_check_logic["PRE-ASSY"],
+                    babCheckLogic = flow_check_logic.BAB,
                     testCheckLogic = flow_check_logic.TEST,
                     pkgCheckLogic = flow_check_logic.PKG;
-
+            var preAssyCheckMessage = flowCheck(preAssyCheckLogic, preAssyName, postdata);
             var babCheckMessage = flowCheck(babCheckLogic, babFlowName, postdata);
             var testCheckMessage = flowCheck(testCheckLogic, testFlowName, postdata);
             var pkgCheckMessage = flowCheck(pkgCheckLogic, pkgFlowName, postdata);
 
-            var totalAlert = babCheckMessage.concat(testCheckMessage).concat(pkgCheckMessage);
-
+            var firstCheckResult = babCheckMessage.concat(testCheckMessage).concat(pkgCheckMessage).concat(preAssyCheckMessage);
+            
+            var secondCheckResult = fieldCheck(postdata, preAssyName, babFlowName, testFlowName, pkgFlowName);
+            
+            var totalAlert = firstCheckResult.concat(secondCheckResult);
+            
             return totalAlert;
         }
 

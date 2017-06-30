@@ -1,4 +1,9 @@
 var not_null_and_zero_message = "需有值，不可為0";
+var when_not_empty_or_null = "不等於0時";
+var preAssy = "preAssy\\.id",
+        babFlow = "flowByBabFlowId\\.id",
+        testFlow = "flowByTestFlowId\\.id",
+        packingFlow = "flowByPackingFlowId\\.id";
 
 var notZeroOrNull = function (obj) {
     return obj != null && obj != 0;
@@ -13,6 +18,9 @@ var needRI = function (obj) {
 };
 
 var flow_check_logic = {
+    "PRE-ASSY": [
+        {keyword: ["PRE_ASSY"], checkColumn: ["cleanPanel"], message: not_null_and_zero_message, prmValid: notZeroOrNull}
+    ],
     BAB: [
         {keyword: ["ASSY"], checkColumn: ["assy"], message: not_null_and_zero_message, prmValid: notZeroOrNull},
         {keyword: ["T1"], checkColumn: ["t1"], message: not_null_and_zero_message, prmValid: notZeroOrNull},
@@ -32,3 +40,99 @@ var flow_check_logic = {
         {keyword: ["PKG"], checkColumn: ["packing"], message: not_null_and_zero_message, prmValid: notZeroOrNull}
     ]
 };
+
+var field_check_flow_logic = [
+    {checkColumn: {name: "cleanPanel", equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: preAssy, keyword: ["PRE_ASSY"]}},
+    {checkColumn: {name: "assy", equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: babFlow, keyword: ["ASSY"]}},
+    {checkColumn: {name: "t1", equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: babFlow, keyword: ["T1"]}},
+    {checkColumn: {name: "vibration", equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: babFlow, keyword: ["VB"]}},
+    {checkColumn: {name: "hiPotLeakage", equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: babFlow, keyword: ["H1", "LK"]}},
+    {checkColumn: {name: "coldBoot", equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: babFlow, keyword: ["CB"]}},
+    {checkColumn: {name: "upBiRi", equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: babFlow, keyword: ["BI", "RI"]}},
+    {checkColumn: {name: "downBiRi", equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: babFlow, keyword: ["BI", "RI"]}},
+    {checkColumn: {name: "biCost", equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: babFlow, keyword: ["BI", "RI"]}},
+    {checkColumn: {name: "burnIn", equals: true, value: "BI"}, description: "內容為BI", targetColumn: {name: babFlow, keyword: ["BI"]}},
+    {checkColumn: {name: "burnIn", equals: true, value: "RI"}, description: "內容為RI", targetColumn: {name: babFlow, keyword: ["RI"]}},
+    {checkColumn: {name: "t2", equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: testFlow, keyword: ["T2"]}},
+    {checkColumn: {name: "t3", equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: testFlow, keyword: ["T3"]}},
+    {checkColumn: {name: "t4", equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: testFlow, keyword: ["T4"]}},
+    {checkColumn: {name: "packing", equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: packingFlow, keyword: ["PKG"]}}
+
+];
+
+function fieldCheck(postdata, preAssyVal, babFlowVal, testFlowVal, packingFlowVal) {
+    var validationErrors = [];
+    for (var i = 0; i < field_check_flow_logic.length; i++) {
+        var logic = field_check_flow_logic[i];
+        var colInfo = logic.checkColumn;
+
+        var colName = colInfo.name;
+        var checkBool = colInfo.equals;
+        var fieldVal = postdata[colName];
+        var checkVal = colInfo.value;
+
+        var description = logic.description;
+
+        var targetColInfo = logic.targetColumn;
+        var targetColName = targetColInfo.name;
+        var targetKeyword = targetColInfo.keyword;
+        var targetColVal;
+
+        switch (targetColName) {
+            case preAssy:
+                targetColVal = preAssyVal;
+                break;
+            case babFlow:
+                targetColVal = babFlowVal;
+                break;
+            case testFlow:
+                targetColVal = testFlowVal;
+                break;
+            case packingFlow:
+                targetColVal = packingFlowVal;
+                break;
+            default:
+                throw 'TargetColName not found!';
+        }
+
+        if (checkBool != null) {
+            var errorResult = checkFlow(
+                    (fieldVal != null && (checkBool == true ? fieldVal == checkVal : fieldVal != checkVal)),
+                    targetColName, targetColVal, targetKeyword);
+            if (errorResult.field != null) {
+                appendFieldInfo(colName, description, errorResult);
+                validationErrors.push(errorResult);
+            }
+        } else {
+            throw "CheckBool is not setting!";
+        }
+    }
+    return validationErrors;
+}
+
+function appendFieldInfo(field, description, error) {
+    error.code = field + description + ' , ' + error.code;
+}
+
+function checkFlow(bool, targetColName, targetColVal, keyword) {
+    var err = {};
+    if (bool) {
+        if (targetColVal != null && targetColVal != "") {
+            var keyCheckFlag = false;
+            for (var i = 0; i < keyword.length; i++) {
+                if (targetColVal.indexOf(keyword[i]) > -1) {
+                    keyCheckFlag = true;
+                    break;
+                }
+            }
+            if (keyCheckFlag == false) {
+                err.field = targetColName;
+                err.code = 'flow must conain: ' + keyword;
+            }
+        } else {
+            err.field = targetColName;
+            err.code = 'flow must conain: ' + keyword;
+        }
+    }
+    return err;
+}

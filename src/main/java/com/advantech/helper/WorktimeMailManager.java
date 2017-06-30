@@ -15,6 +15,7 @@ import javax.mail.MessagingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 /**
@@ -59,11 +60,14 @@ public class WorktimeMailManager {
     }
 
     private String generateTextBody(List<Worktime> l, final String action) {
+        User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         StringBuilder sb = new StringBuilder();
         sb.append("<p>Dear All:</p>");
-        sb.append("<p>大表");
+        sb.append("<p>使用者 ");
+        sb.append(user.getUsername());
+        sb.append(" 異動了大表( Action:");
         sb.append(action);
-        sb.append("了相關機種清單如下</p>");
+        sb.append(" )相關機種清單如下</p>");
         for (Worktime w : l) {
             sb.append("<p>");
             sb.append(w.getModelName());

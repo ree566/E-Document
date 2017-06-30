@@ -51,6 +51,7 @@
             }
         };
         form.ajaxForm(options);
+
         form.attr("action", submitUrl + $("#action").val());
 
         $("#action").on("change", function () {
@@ -87,18 +88,6 @@
     </form>	
 </div>
 <hr />
-<div style="display: none">
-    <h3>Upload multiple files example.</h3>
-    <form method="POST" action="${root}uploadMultipleFile" enctype="multipart/form-data">
-        <div>
-            File1 to upload: <input type="file" name="file">
-        </div>
-        <div>
-            File2 to upload: <input type="file" name="file">
-        </div>
-        <input type="submit" value="Upload"> Press here to upload the file!
-    </form>
-</div>
 <div>
     <c:forEach items="${message}" var="element">    
         <c:out value="${element}"/>

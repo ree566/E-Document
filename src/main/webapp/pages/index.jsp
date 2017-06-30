@@ -191,6 +191,10 @@
                                         <li>
                                             <a class="redirect-link" href="worktime.jsp">工時大表</a>
                                         </li>
+                                        
+                                        <li>
+                                            <a class="redirect-link" href="conversion.jsp">工時對照表</a>
+                                        </li>
                                         <sec:authorize access="hasRole('ADMIN') or (hasRole('USER') and hasRole('OPER'))">
                                             <li>
                                                 <a class="redirect-link" href="mod/flow.jsp">Flow</a>

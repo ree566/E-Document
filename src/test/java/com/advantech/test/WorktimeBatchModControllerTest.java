@@ -5,6 +5,8 @@
  */
 package com.advantech.test;
 
+import com.advantech.excel.XlsWorkBook;
+import com.advantech.excel.XlsWorkSheet;
 import com.advantech.model.Worktime;
 import com.advantech.service.WorktimeService;
 import java.io.IOException;
@@ -19,6 +21,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.annotation.Commit;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -39,7 +42,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
     "classpath:servlet-context.xml",
     "classpath:hibernate.cfg.xml"
 })
-//@RunWith(SpringJUnit4ClassRunner.class)
+@RunWith(SpringJUnit4ClassRunner.class)
 public class WorktimeBatchModControllerTest {
 
     @Autowired
@@ -59,7 +62,7 @@ public class WorktimeBatchModControllerTest {
         MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
         mockMvc.perform(MockMvcRequestBuilders.fileUpload("/WorktimeBatchMod/add")
                 .file(firstFile))
-//                .with(user(new User())))
+                //                .with(user(new User())))
                 .andExpect(status().is(HttpStatus.OK.value()));
 
         Worktime w = worktimeService.findByModel("test12311");
@@ -148,4 +151,36 @@ public class WorktimeBatchModControllerTest {
         Path fileLocation = Paths.get(file);
         return Files.readAllBytes(fileLocation);
     }
+
+    @Transactional
+    @Commit
+    @Test
+    public void testUpdateSop() throws Exception {
+        String fileName = "C:\\Users\\Wei.Cheng\\Desktop\\testXls\\work_time_SOP_0629.xls";
+        XlsWorkBook workbook = new XlsWorkBook(fileName);
+        XlsWorkSheet sheet = workbook.getSheet("sheet1");
+
+        int rowCount = sheet.getRowCount();
+
+        for (int i = 0; i < rowCount; i++) {
+            String modelName = sheet.getValue(i, "Model").toString();
+            String babSop = sheet.getValue(i, "組包SOP").toString().trim();
+            String testSop = sheet.getValue(i, "測試SOP").toString().trim();
+
+            if (modelName == null) {
+                throw new Exception("Error at line " + i);
+            }
+
+            Worktime w = worktimeService.findByModel(modelName);
+            if (w == null) {
+                System.out.println(i);
+                throw new Exception(modelName + " not found.");
+            } else {
+                w.setAssyPackingSop(babSop);
+                w.setTestSop(testSop);
+            }
+        }
+
+    }
+
 }
