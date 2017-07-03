@@ -121,7 +121,7 @@
 
                 function init() {
                     console.log(1);
-                    var hostname = "localhost:8080";//Get the host ipaddress to link to the server.
+                    var hostname = window.location.host;//Get the host ipaddress to link to the server.
                     //var hostname = "172.20.131.52:8080";
 
                     //websocket will reconnect by reconnecting-websocket.min.js when client or server is disconnect

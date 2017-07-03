@@ -14,7 +14,7 @@ var titleGroup = [
 var testGroup = [
 ];
 var babGroup = [
-    {people: 10, x: 690, y: 280, lineName: "NA"} // group 1-4
+    {people: 3, x: 690, y: 280, lineName: "NA"} // group 1-4
 ];
 
 var maxTestTableNo = 0;
