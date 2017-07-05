@@ -13,11 +13,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.List;
-import junit.framework.Assert;
-import org.apache.commons.jexl3.JexlBuilder;
-import org.apache.commons.jexl3.JexlContext;
-import org.apache.commons.jexl3.JexlEngine;
-import org.apache.commons.jexl3.MapContext;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.jxls.common.Context;
@@ -93,23 +88,4 @@ public class FileDownloadControllerTest {
         }
     }
 
-//    @Test
-    public void testInaccessibleProperty() throws Exception {
-        JexlEngine engine = new JexlBuilder().strict(true).create(); // 1332806
-        JexlContext context = new MapContext();
-        context.set("foo", new Foo138());
-        Assert.assertEquals("baz", engine.createExpression("foo.baz").evaluate(context));
-        Assert.assertEquals(null, engine.createExpression("foo.bar").evaluate(context));
-    }
-
-    public static class Foo138 {
-
-        public String getBar() {
-            return null;
-        }
-
-        public String getBaz() {
-            return "baz";
-        }
-    }
 }
