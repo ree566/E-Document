@@ -51,7 +51,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
     "classpath:servlet-context.xml",
     "classpath:hibernate.cfg.xml"
 })
-@RunWith(SpringJUnit4ClassRunner.class)
+//@RunWith(SpringJUnit4ClassRunner.class)
 public class ExcelTest {
 
     @Autowired

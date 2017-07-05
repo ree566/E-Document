@@ -35,7 +35,6 @@ public class XlsView extends AbstractXlsView {
             }
         }
         ExcelGenerator generator = new ExcelGenerator(workbook);
-//        generator.createExcelSheet("test");
         generator.generateWorkBooks(datas);
     }
 }

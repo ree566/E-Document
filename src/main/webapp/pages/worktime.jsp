@@ -330,6 +330,8 @@
                     reloadAfterSubmit: true
                 }
         );
+
+        //Button at grid foot.
         grid.navButtonAdd('#pager', {
             caption: "Show / Hide",
             buttonicon: "ui-icon-shuffle",
@@ -352,6 +354,16 @@
             },
             position: "last"
         });
+        
+        grid.navButtonAdd('#pager', {
+            caption: "Export to Excel(SPE)",
+            buttonicon: "ui-icon-disk",
+            onClickButton: function () {
+                grid.jqGrid('excelExport', {"url": "<c:url value="/Worktime/excelForSpe" />"});
+            },
+            position: "last"
+        });
+        
         //有可編輯column的人再來分可編輯欄位
         //為0直接hide CRUD的按鈕
         if (columnEditableInsetting) {

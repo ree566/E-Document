@@ -8,13 +8,11 @@ package com.advantech.controller;
 import com.advantech.helper.WorktimeMailManager;
 import static com.advantech.helper.JqGridResponseUtils.toJqGridResponse;
 import com.advantech.jqgrid.PageInfo;
-import com.advantech.model.SheetView;
 import com.advantech.model.Worktime;
 import com.advantech.jqgrid.JqGridResponse;
 import com.advantech.service.SheetViewService;
 import com.advantech.service.WorktimeService;
 import static com.google.common.collect.Lists.newArrayList;
-import java.util.List;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +23,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.ModelAndView;
 
 /**
  *
@@ -38,9 +35,6 @@ public class WorktimeController extends CrudController<Worktime> {
     @Autowired
     private WorktimeService worktimeService;
 
-    @Autowired
-    private SheetViewService sheetViewService;
-    
     @Autowired
     private WorktimeMailManager worktimeMailManager;
 
@@ -137,21 +131,4 @@ public class WorktimeController extends CrudController<Worktime> {
             return existWorktime != null && existWorktime.getId() != worktime.getId();
         }
     }
-
-    @ResponseBody
-    @RequestMapping(value = "/excel", method = {RequestMethod.GET})
-    @Secured({"ROLE_USER", "ROLE_ADMIN"})
-    public ModelAndView generateExcel(PageInfo info) {
-        // create some sample data
-        info.setRows(Integer.MAX_VALUE);
-        info.setSidx("id");
-        info.setSord("asc");
-        List<SheetView> l = sheetViewService.findAll(info);
-//        Workbook tempWorkbook = this.getWorktimeTempWorkbook();
-        ModelAndView mav = new ModelAndView("ExcelRevenueSummary");
-        mav.addObject("revenueData", l);
-//        mav.addObject("templateWorkbook", tempWorkbook);
-        return mav;
-    }
-
 }

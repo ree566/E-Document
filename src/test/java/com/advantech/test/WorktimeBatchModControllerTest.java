@@ -42,7 +42,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
     "classpath:servlet-context.xml",
     "classpath:hibernate.cfg.xml"
 })
-@RunWith(SpringJUnit4ClassRunner.class)
+//@RunWith(SpringJUnit4ClassRunner.class)
 public class WorktimeBatchModControllerTest {
 
     @Autowired
@@ -150,37 +150,6 @@ public class WorktimeBatchModControllerTest {
         String file = "C:\\Users\\Wei.Cheng\\Desktop\\testXls\\" + fileName;
         Path fileLocation = Paths.get(file);
         return Files.readAllBytes(fileLocation);
-    }
-
-    @Transactional
-    @Commit
-    @Test
-    public void testUpdateSop() throws Exception {
-        String fileName = "C:\\Users\\Wei.Cheng\\Desktop\\testXls\\work_time_SOP_0629.xls";
-        XlsWorkBook workbook = new XlsWorkBook(fileName);
-        XlsWorkSheet sheet = workbook.getSheet("sheet1");
-
-        int rowCount = sheet.getRowCount();
-
-        for (int i = 0; i < rowCount; i++) {
-            String modelName = sheet.getValue(i, "Model").toString();
-            String babSop = sheet.getValue(i, "組包SOP").toString().trim();
-            String testSop = sheet.getValue(i, "測試SOP").toString().trim();
-
-            if (modelName == null) {
-                throw new Exception("Error at line " + i);
-            }
-
-            Worktime w = worktimeService.findByModel(modelName);
-            if (w == null) {
-                System.out.println(i);
-                throw new Exception(modelName + " not found.");
-            } else {
-                w.setAssyPackingSop(babSop);
-                w.setTestSop(testSop);
-            }
-        }
-
     }
 
 }
