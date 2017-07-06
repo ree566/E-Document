@@ -5,9 +5,14 @@
  */
 package com.advantech.test;
 
+import com.advantech.helper.HibernateObjectPrinter;
+import com.advantech.model.BwAvgView;
+import com.advantech.model.Worktime;
 import com.advantech.service.SheetViewService;
 import com.advantech.service.WorktimeService;
 import javax.transaction.Transactional;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
 import org.hibernate.SessionFactory;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,13 +58,13 @@ public class HibernateTest {
     @Rollback(true)
     @Test
     public void testResult() throws Exception {
-//        Worktime worktime = worktimeService.findByModel("965AP22A000000241");
-//        BwAvgView view = worktime.getBwAvgView();
-//        
-//        assertTrue(view != null);
-//        assertEquals(view.getModelName(), "965AP22A000000241");
-//        
-//        HibernateObjectPrinter.print(view);
+        Worktime worktime = worktimeService.findByModel("D-1M06002");
+        BwAvgView view = worktime.getBwAvgView();
+        
+        assertTrue(view != null);
+        assertEquals(view.getModelName(), "D-1M06002");
+        
+        HibernateObjectPrinter.print(view);
     }
 
 }

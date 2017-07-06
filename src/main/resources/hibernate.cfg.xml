@@ -83,6 +83,6 @@ Contributor(s):
     <mapping class="com.advantech.model.WorktimeFormulaSetting"/>
     <!--mapping pojos(view)-->
     <mapping class="com.advantech.model.SheetView"/>
-    <!--<mapping class="com.advantech.model.BwAvgView"/>-->
+    <mapping class="com.advantech.model.BwAvgView"/>
   </session-factory>
 </hibernate-configuration>
