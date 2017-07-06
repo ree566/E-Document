@@ -58,4 +58,5 @@ Contributor(s):
   <table-filter match-name="Pending"/>
   <table-filter match-name="PreAssy"/>
   <!--<table-filter match-name="Sheet_Main_view"/>-->
+  <!--<table-filter match-name="BwWorktimeAvg_view"/>-->
 </hibernate-reverse-engineering>

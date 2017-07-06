@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.hibernate.Criteria;
+import org.hibernate.FetchMode;
 import org.hibernate.Session;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
@@ -28,7 +29,18 @@ public class PaginateDAO {
 
     protected List findAll(Session session, Class clz, PageInfo info) {
         Criteria criteria = session.createCriteria(clz);
+        return this.findAll(criteria, info);
+    }
 
+    protected List findAll(Session session, Class clz, String[] fetchFields, PageInfo info) {
+        Criteria criteria = session.createCriteria(clz);
+        for (String field : fetchFields) {
+            criteria.setFetchMode(field, FetchMode.EAGER);
+        }
+        return this.findAll(criteria, info);
+    }
+
+    private List findAll(Criteria criteria, PageInfo info) {
         if (info.getSearchField() != null) {
             String searchOper = info.getSearchOper();
             String searchField = info.getSearchField();

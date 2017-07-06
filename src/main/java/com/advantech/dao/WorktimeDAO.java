@@ -9,6 +9,7 @@ import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.Worktime;
 import java.util.List;
 import org.hibernate.Criteria;
+import org.hibernate.FetchMode;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
@@ -25,9 +26,10 @@ public class WorktimeDAO extends AbstractDao<Integer, Worktime> implements Basic
     }
 
     public List<Worktime> findAll(PageInfo info) {
-        return getByPaginateInfo(info);
+        String[] fetchField = {"bwAvgView"};
+        return getByPaginateInfo(fetchField, info);
     }
-
+ 
     @Override
     public Worktime findByPrimaryKey(Object obj_id) {
         return getByKey((int) obj_id);
@@ -43,6 +45,15 @@ public class WorktimeDAO extends AbstractDao<Integer, Worktime> implements Basic
         Criteria criteria = createEntityCriteria();
         criteria.add(Restrictions.eq("modelName", modelName));
         return (Worktime) criteria.uniqueResult();
+    }
+
+    public List<Worktime> findWithFullRelation(PageInfo info) {
+        String[] fetchField = {
+            "type", "floor", "pending", "preAssy",
+            "flowByBabFlowId", "flowByPackingFlowId", "flowByTestFlowId",
+            "userBySpeOwnerId", "userByEeOwnerId", "userByQcOwnerId"
+        };
+        return getByPaginateInfo(fetchField, info);
     }
 
     @Override

@@ -23,10 +23,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 public abstract class AbstractDao<PK extends Serializable, T> {
 
     private final Class<T> persistentClass;
-    
+
     @Autowired
     private PaginateDAO paginateDAO;
-    
+
     @Autowired
     private SessionFactory sessionFactory;
 
@@ -41,10 +41,14 @@ public abstract class AbstractDao<PK extends Serializable, T> {
     protected T getByKey(PK key) {
         return (T) getSession().get(persistentClass, key);
     }
-    
-    protected List<T> getByPaginateInfo(PageInfo info){
+
+    protected List<T> getByPaginateInfo(PageInfo info) {
         return paginateDAO.findAll(getSession(), persistentClass, info);
-    }   
+    }
+
+    protected List<T> getByPaginateInfo(String[] fetchFields, PageInfo info) {
+        return paginateDAO.findAll(getSession(), persistentClass, fetchFields, info);
+    }
 
     protected Criteria createEntityCriteria() {
         return getSession().createCriteria(persistentClass);

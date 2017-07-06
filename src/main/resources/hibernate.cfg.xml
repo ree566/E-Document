@@ -40,48 +40,49 @@ made subject to such option by the copyright holder.
 Contributor(s):
 -->
 <hibernate-configuration>
-    <session-factory>
-        <!--connection setting-->
-        <property name="hibernate.connection.driver_class">net.sourceforge.jtds.jdbc.Driver</property>
-        <property name="hibernate.connection.url">jdbc:jtds:sqlserver://M3-SERVER:1433/E_Document</property>
-        <property name="hibernate.connection.username">waychien</property>
-        <property name="hibernate.connection.password">m3server</property>
-        <!--        <property name="connection.provider_class">org.hibernate.connection.C3P0ConnectionProvider</property>
+  <session-factory>
+    <!--connection setting-->
+    <property name="hibernate.connection.driver_class">net.sourceforge.jtds.jdbc.Driver</property>
+    <property name="hibernate.connection.url">jdbc:jtds:sqlserver://M3-SERVER:1433/E_Document</property>
+    <property name="hibernate.connection.username">waychien</property>
+    <property name="hibernate.connection.password">m3server</property>
+    <!--        <property name="connection.provider_class">org.hibernate.connection.C3P0ConnectionProvider</property>
         <property name="hibernate.c3p0.min_size">5</property>
         <property name="hibernate.c3p0.max_size">20</property> 
         <property name="hibernate.c3p0.timeout">300</property>
         <property name="hibernate.c3p0.max_statements">50</property>
         <property name="hibernate.c3p0.idle_test_period">3000</property>-->
-        <!--other setting-->
-        <property name="hibernate.dialect">org.hibernate.dialect.SQLServerDialect</property>
-        <property name="hibernate.show_sql">true</property>
-        <property name="hibernate.current_session_context_class">thread</property>
-        <property name="hibernate.transaction.factory_class">org.hibernate.transaction.JDBCTransactionFactory</property>
-        <property name="hibernate.c3p0.privilegeSpawnedThreads">true</property>
-        <property name="hibernate.c3p0.contextClassLoaderSource">library</property>
-        <!--<property name="hibernate.hbm2ddl.auto">update</property>-->
-        <!--hibernate object change listener plugin-->
-        <!--        <listener class="org.hibernate.envers.event.AuditEventListener" type="post-insert"/>
+    <!--other setting-->
+    <property name="hibernate.dialect">org.hibernate.dialect.SQLServerDialect</property>
+    <property name="hibernate.show_sql">true</property>
+    <property name="hibernate.current_session_context_class">thread</property>
+    <property name="hibernate.transaction.factory_class">org.hibernate.transaction.JDBCTransactionFactory</property>
+    <property name="hibernate.c3p0.privilegeSpawnedThreads">true</property>
+    <property name="hibernate.c3p0.contextClassLoaderSource">library</property>
+    <!--<property name="hibernate.hbm2ddl.auto">update</property>-->
+    <!--hibernate object change listener plugin-->
+    <!--        <listener class="org.hibernate.envers.event.AuditEventListener" type="post-insert"/>
         <listener class="org.hibernate.envers.event.AuditEventListener" type="post-update"/>
         <listener class="org.hibernate.envers.event.AuditEventListener" type="post-delete"/>
         <listener class="org.hibernate.envers.event.AuditEventListener" type="pre-collection-update"/>
         <listener class="org.hibernate.envers.event.AuditEventListener" type="pre-collection-remove"/>
         <listener class="org.hibernate.envers.event.AuditEventListener" type="post-collection-recreate"/>-->
-        <!--mapping pojos-->
-        <mapping class="com.advantech.model.Type"/>
-        <mapping class="com.advantech.model.FlowGroup"/>
-        <mapping class="com.advantech.model.Floor"/>
-        <mapping class="com.advantech.model.Pending"/>
-        <mapping class="com.advantech.model.Unit"/>
-        <mapping class="com.advantech.model.User"/>
-        <mapping class="com.advantech.model.UserProfile"/>
-        <mapping class="com.advantech.model.UserNotification"/>
-        <mapping class="com.advantech.model.Flow"/>
-        <mapping class="com.advantech.model.SheetView"/>
-        <mapping class="com.advantech.model.PreAssy"/>
-        <mapping class="com.advantech.model.Worktime"/>
-        <mapping class="com.advantech.model.WorktimeColumnGroup"/>
-        <mapping class="com.advantech.model.WorktimeFormulaSetting"/>
-
-    </session-factory>
+    <!--mapping pojos-->
+    <mapping class="com.advantech.model.Type"/>
+    <mapping class="com.advantech.model.FlowGroup"/>
+    <mapping class="com.advantech.model.Floor"/>
+    <mapping class="com.advantech.model.Pending"/>
+    <mapping class="com.advantech.model.Unit"/>
+    <mapping class="com.advantech.model.User"/>
+    <mapping class="com.advantech.model.UserProfile"/>
+    <mapping class="com.advantech.model.UserNotification"/>
+    <mapping class="com.advantech.model.Flow"/>
+    <mapping class="com.advantech.model.PreAssy"/>
+    <mapping class="com.advantech.model.Worktime"/>
+    <mapping class="com.advantech.model.WorktimeColumnGroup"/>
+    <mapping class="com.advantech.model.WorktimeFormulaSetting"/>
+    <!--mapping pojos(view)-->
+    <mapping class="com.advantech.model.SheetView"/>
+    <!--<mapping class="com.advantech.model.BwAvgView"/>-->
+  </session-factory>
 </hibernate-configuration>

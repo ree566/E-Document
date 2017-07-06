@@ -5,13 +5,10 @@
  */
 package com.advantech.test;
 
-import com.advantech.model.User;
-import com.advantech.service.UserNotificationService;
-import com.advantech.service.UserService;
-import java.util.List;
+import com.advantech.service.SheetViewService;
+import com.advantech.service.WorktimeService;
 import javax.transaction.Transactional;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
+import org.hibernate.SessionFactory;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,28 +28,38 @@ import org.springframework.test.context.web.WebAppConfiguration;
 })
 @RunWith(SpringJUnit4ClassRunner.class)
 public class HibernateTest {
-    
+
     @Autowired
-    private UserNotificationService userNotificationService;
-    
+    private SheetViewService sheetViewService;
+
     @Autowired
-    private UserService userService;
+    private WorktimeService worktimeService;
+
+    @Autowired
+    private SessionFactory sessionFactory;
 
     //CRUD testing.
+//    @Transactional
+//    @Rollback(true)
+//    @Test
+    public void testSheetView() throws Exception {
+//        SheetView view = sheetViewService.findAll(new PageInfo().setRows(1)).get(0);
+//
+//        assertEquals(view.getBwAssyWorktimeAvg(), new BigDecimal(1));
+//        assertEquals(view.getBwPackingWorktimeAvg(), new BigDecimal(1));
+    }
+
     @Transactional
     @Rollback(true)
     @Test
-    public void testFindUser() throws Exception {
-        List<User> l = userNotificationService.findUsersByNotification("abc");
-        
-        assertTrue(l.isEmpty());
-        
-        l = userNotificationService.findUsersByNotification("worktime_alarm");
-        
-        assertEquals(l.size(), 1);
-        
-        User sysop = userService.findByPrimaryKey(36);
-        assertTrue(l.contains(sysop));
+    public void testResult() throws Exception {
+//        Worktime worktime = worktimeService.findByModel("965AP22A000000241");
+//        BwAvgView view = worktime.getBwAvgView();
+//        
+//        assertTrue(view != null);
+//        assertEquals(view.getModelName(), "965AP22A000000241");
+//        
+//        HibernateObjectPrinter.print(view);
     }
-    
+
 }

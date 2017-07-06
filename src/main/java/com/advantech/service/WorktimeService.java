@@ -53,6 +53,10 @@ public class WorktimeService {
         return worktimeDAO.findByModel(modelName);
     }
 
+    public List<Worktime> findWithFullRelation(PageInfo info) {
+        return worktimeDAO.findWithFullRelation(info);
+    }
+
     public int insert(Worktime worktime) {
         worktimeDAO.insert(worktime);
         return 1;

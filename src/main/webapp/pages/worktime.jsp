@@ -47,22 +47,22 @@
         var modifyColumns = (${isGuest} || unitName == null || unitName == "") ? [] : getColumn();
         var columnEditableInsetting = modifyColumns.length > 0;
         var isNormalUser = ${isUser} && columnEditableInsetting;
-        
+
         //User who can fully CRUD the worktime.
         var isOperRelative = ${isAdmin || isOper || isAuthor} && columnEditableInsetting;
-        
+
         var editableColumns, readonlyColumns;
-        
+
         //給使用者隱藏欄位使用(可隱藏非自己部門負責的欄位)
         var toggle_value = false;
-        
+
         //版本讀取，避免多人同時編輯覆蓋
         var selected_row_revision;
         var table_current_revision;
         //Set param into jqgrid-custom-select-option-reader.js and get option by param selectOptions
         //You can get the floor select options and it's formatter function
         //ex: floor selector -> floor and floor_func
-        
+
         setSelectOptions({
             rootUrl: "<c:url value="/" />",
             columnInfo: [
@@ -231,8 +231,10 @@
                 {label: '看板工時', name: "assyKanbanTime", width: 80, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, formoptions: {label: '組裝看板工時', elmsuffix: addFormulaCheckbox("assyKanbanTime")}, editoptions: {defaultValue: '0'}},
                 {label: '前置時間', name: "packingLeadTime", width: 80, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, formoptions: {label: '包裝前置時間'}, editoptions: {defaultValue: '0'}},
                 {label: '看板工時', name: "packingKanbanTime", width: 80, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, formoptions: {label: '包裝看板工時', elmsuffix: addFormulaCheckbox("packingKanbanTime")}, editoptions: {defaultValue: '0'}},
-                {label: 'CleanPanel+Assembly', name: "cleanPanelAndAssembly", width: 200, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, formoptions: {elmsuffix: addFormulaCheckbox("cleanPanelAndAssembly")}, editoptions: {defaultValue: '0'}},
-                {label: 'Modified_Date', width: 200, name: "modifiedDate", index: "modifiedDate", formatter: 'date', formatoptions: {srcformat: 'Y-m-d H:i:s A', newformat: 'Y-m-d H:i:s A'}, stype: 'text', searchrules: date_search_rule, searchoptions: search_date_options, align: 'center'}
+                {label: 'CleanPanel+Assembly', name: "cleanPanelAndAssembly", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, formoptions: {elmsuffix: addFormulaCheckbox("cleanPanelAndAssembly")}, editoptions: {defaultValue: '0'}},
+                {label: 'Modified_Date', width: 200, name: "modifiedDate", index: "modifiedDate", formatter: 'date', formatoptions: {srcformat: 'Y-m-d H:i:s A', newformat: 'Y-m-d H:i:s A'}, stype: 'text', searchrules: date_search_rule, searchoptions: search_date_options, align: 'center'},
+                {label: '藍燈組裝', width: 80, name: "bwAvgView.assyAvg", index: "bwAssyWorktimeAvg", searchrules: number_search_rule, searchoptions: search_decimal_options},
+                {label: '藍燈包裝', width: 80, name: "bwAvgView.packingAvg", index: "bwPackingWorktimeAvg", searchrules: number_search_rule, searchoptions: search_decimal_options}
             ],
             rowNum: 20,
             rowList: [20, 50, 100],
@@ -354,7 +356,7 @@
             },
             position: "last"
         });
-        
+
         grid.navButtonAdd('#pager', {
             caption: "Export to Excel(SPE)",
             buttonicon: "ui-icon-disk",
@@ -363,7 +365,7 @@
             },
             position: "last"
         });
-        
+
         //有可編輯column的人再來分可編輯欄位
         //為0直接hide CRUD的按鈕
         if (columnEditableInsetting) {
@@ -376,7 +378,7 @@
                 grid.jqGrid("setGridWidth", $('#worktime-content').width());
             }, 1000);
         }).trigger('resize');
-        
+
         function getColumn() {
             var result;
             $.ajax({
@@ -538,11 +540,11 @@
             var pkgCheckMessage = flowCheck(pkgCheckLogic, pkgFlowName, postdata);
 
             var firstCheckResult = babCheckMessage.concat(testCheckMessage).concat(pkgCheckMessage).concat(preAssyCheckMessage);
-            
+
             var secondCheckResult = fieldCheck(postdata, preAssyName, babFlowName, testFlowName, pkgFlowName);
-            
+
             var totalAlert = firstCheckResult.concat(secondCheckResult);
-            
+
             return totalAlert;
         }
 

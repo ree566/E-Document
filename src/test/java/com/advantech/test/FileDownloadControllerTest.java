@@ -7,12 +7,15 @@ package com.advantech.test;
 
 import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.SheetView;
+import com.advantech.model.Worktime;
 import com.advantech.service.SheetViewService;
+import com.advantech.service.WorktimeService;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import static junit.framework.Assert.assertEquals;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.jxls.common.Context;
@@ -55,6 +58,9 @@ public class FileDownloadControllerTest {
     @Autowired
     private SheetViewService sheetViewService;
 
+    @Autowired
+    private WorktimeService worktimeService;
+
 //    @Test
     public void testFileDownloadFromTemp() throws Exception {
 
@@ -65,7 +71,7 @@ public class FileDownloadControllerTest {
 
     }
 
-    @Test
+//    @Test
     public void testAddDataToTemp() throws Exception {
         Resource r = resourceLoader.getResource("classpath:excel-template\\Plant-sp matl status(M3).xls");
         try (InputStream is = r.getInputStream()) {
@@ -79,11 +85,41 @@ public class FileDownloadControllerTest {
 
                 Transformer transformer = TransformerFactory.createTransformer(is, os);
                 JexlExpressionEvaluator evaluator = (JexlExpressionEvaluator) transformer.getTransformationConfig().getExpressionEvaluator();
-                evaluator.getJexlEngine().setSilent(true);
+                evaluator.getJexlEngine().setSilent(false);
 
                 JxlsHelper helper = JxlsHelper.getInstance();
                 helper.processTemplate(context, transformer);
 //                .processTemplate(is, os, context);
+            }
+        }
+    }
+
+    @Test
+    public void testAddDataToTemp2() throws Exception {
+        Resource r = resourceLoader.getResource("classpath:excel-template\\worktime-template.xls");
+        try (InputStream is = r.getInputStream()) {
+            
+            PageInfo info = new PageInfo();
+            info.setSearchField("modelName");
+            info.setSearchString("testing-do-not-remove");
+            info.setSearchOper("eq");
+            
+            List<Worktime> l = worktimeService.findWithFullRelation(info);
+            assertEquals(1, l.size());
+            
+            try (OutputStream os = new FileOutputStream("C:\\Users\\Wei.Cheng\\Desktop\\worktime_output.xls")) {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+
+                Context context = new Context();
+                context.putVar("worktimes", l);
+                context.putVar("dateFormat", dateFormat);
+
+                Transformer transformer = TransformerFactory.createTransformer(is, os);
+                JexlExpressionEvaluator evaluator = (JexlExpressionEvaluator) transformer.getTransformationConfig().getExpressionEvaluator();
+                evaluator.getJexlEngine().setSilent(true);
+
+                JxlsHelper helper = JxlsHelper.getInstance();
+                helper.processTemplate(context, transformer);
             }
         }
     }
