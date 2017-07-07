@@ -5,22 +5,27 @@
  */
 package com.advantech.test;
 
-import com.advantech.controller.CrudAction;
-import junit.framework.TestCase;
+import com.advantech.model.Type;
+import com.advantech.model.Worktime;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import static junit.framework.Assert.assertTrue;
+import org.junit.Test;
+import org.springframework.beans.BeanUtils;
 
 /**
  *
  * @author Wei.Cheng
  */
-public class Test1Test extends TestCase {
+public class Test1Test {
 
-    /**
-     * Test of main method, of class Test1.
-     */
-    public void testMain() {
-        CrudAction action = CrudAction.valueOf("ADD");
+    @Test
+    public void test() throws SecurityException, NoSuchFieldException {
+        Field field = Worktime.class.getDeclaredField("type");
+        field.setAccessible(true);
         
-        assertEquals(action, CrudAction.ADD);
+        assertTrue(field.getType().equals(Type.class));
+
     }
-    
+
 }

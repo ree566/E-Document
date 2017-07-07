@@ -169,6 +169,8 @@
                 return [true, ''];
             }
         };
+
+        //Jqgrid initialize.
         grid.jqGrid({
             url: '<c:url value="/Worktime/read" />',
             datatype: 'json',
@@ -233,8 +235,8 @@
                 {label: '看板工時', name: "packingKanbanTime", width: 80, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, formoptions: {label: '包裝看板工時', elmsuffix: addFormulaCheckbox("packingKanbanTime")}, editoptions: {defaultValue: '0'}},
                 {label: 'CleanPanel+Assembly', name: "cleanPanelAndAssembly", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, formoptions: {elmsuffix: addFormulaCheckbox("cleanPanelAndAssembly")}, editoptions: {defaultValue: '0'}},
                 {label: 'Modified_Date', width: 200, name: "modifiedDate", index: "modifiedDate", formatter: 'date', formatoptions: {srcformat: 'Y-m-d H:i:s A', newformat: 'Y-m-d H:i:s A'}, stype: 'text', searchrules: date_search_rule, searchoptions: search_date_options, align: 'center'},
-                {label: '藍燈組裝', width: 80, name: "bwAvgView.assyAvg", index: "bwAssyWorktimeAvg", searchrules: number_search_rule, searchoptions: search_decimal_options},
-                {label: '藍燈包裝', width: 80, name: "bwAvgView.packingAvg", index: "bwPackingWorktimeAvg", searchrules: number_search_rule, searchoptions: search_decimal_options}
+                {label: '藍燈組裝', width: 80, name: "bwAvgViews.0.assyAvg", sortable: false, editable: false, searchrules: number_search_rule, searchoptions: search_decimal_options},
+                {label: '藍燈包裝', width: 80, name: "bwAvgViews.0.packingAvg", sortable: false, editable: false, searchrules: number_search_rule, searchoptions: search_decimal_options}
             ],
             rowNum: 20,
             rowList: [20, 50, 100],

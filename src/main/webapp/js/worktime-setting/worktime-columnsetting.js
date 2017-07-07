@@ -56,5 +56,7 @@ var worktimeCol = [
     {name: "packingLeadTime"},
     {name: "packingKanbanTime"},
     {name: "cleanPanelAndAssembly"},
-    {name: "modifiedDate", editable: false}
+    {name: "modifiedDate", editable: false},
+    {name: "bwAvgViews.0.assyAvg", editable: false},
+    {name: "bwAvgViews.0.packingAvg", editable: false}
 ];

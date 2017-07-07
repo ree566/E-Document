@@ -7,7 +7,9 @@ package com.advantech.controller;
 
 import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.SheetView;
+import com.advantech.model.Worktime;
 import com.advantech.service.SheetViewService;
+import com.advantech.service.WorktimeService;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -38,6 +40,9 @@ public class FileDownloadController {
 
     @Autowired
     private SheetViewService sheetViewService;
+    
+    @Autowired
+    private WorktimeService worktimeService;
 
     @Autowired
     private ResourceLoader resourceLoader;
@@ -72,7 +77,7 @@ public class FileDownloadController {
         info.setSord("asc");
 
         try (InputStream is = r.getInputStream()) {
-            List<SheetView> l = sheetViewService.findAll(info);
+            List<Worktime> l = worktimeService.findWithFullRelation(info);
             try (OutputStream os = response.getOutputStream()) {
                 this.outputFile(l, is, os);
             }

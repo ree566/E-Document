@@ -6,13 +6,12 @@
 package com.advantech.test;
 
 import com.advantech.helper.HibernateObjectPrinter;
-import com.advantech.model.BwAvgView;
+import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.Worktime;
 import com.advantech.service.SheetViewService;
 import com.advantech.service.WorktimeService;
+import java.util.List;
 import javax.transaction.Transactional;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
 import org.hibernate.SessionFactory;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -58,13 +57,18 @@ public class HibernateTest {
     @Rollback(true)
     @Test
     public void testResult() throws Exception {
-        Worktime worktime = worktimeService.findByModel("D-1M06002");
-        BwAvgView view = worktime.getBwAvgView();
+        List<Worktime> l = worktimeService.findAll(new PageInfo().setMaxNumOfRows(1));
         
-        assertTrue(view != null);
-        assertEquals(view.getModelName(), "D-1M06002");
+        HibernateObjectPrinter.print(l);
         
-        HibernateObjectPrinter.print(view);
+//        List<BwAvgView> l = w.getBwAvgViews();
+//        assertEquals(1, l.size());
+//        
+//        BwAvgView bv = l.get(0);
+//        assertTrue(bv != null);
+//        assertTrue(bv.getAssyAvg() != null);
+//        
+//        assertTrue(new BigDecimal(4.17).compareTo(bv.getAssyAvg()) == 0);
     }
 
 }

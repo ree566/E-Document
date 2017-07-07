@@ -35,7 +35,7 @@ public class PaginateDAO {
     protected List findAll(Session session, Class clz, String[] fetchFields, PageInfo info) {
         Criteria criteria = session.createCriteria(clz);
         for (String field : fetchFields) {
-            criteria.setFetchMode(field, FetchMode.EAGER);
+            criteria.setFetchMode(field, FetchMode.JOIN);
         }
         return this.findAll(criteria, info);
     }

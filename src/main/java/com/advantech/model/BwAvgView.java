@@ -6,20 +6,17 @@
 package com.advantech.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.math.BigDecimal;
-import java.util.HashSet;
-import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 
 /**
  *
@@ -28,19 +25,16 @@ import javax.persistence.UniqueConstraint;
 @Entity
 @Table(name = "BwWorktimeAvg_view",
         schema = "dbo",
-        catalog = "E_Document",
-        uniqueConstraints = @UniqueConstraint(columnNames = "id")
+        catalog = "E_Document"
 )
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = BwAvgView.class)
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class BwAvgView implements java.io.Serializable {
 
     private int id;
-    private String modelName;
     private BigDecimal assyAvg;
     private BigDecimal packingAvg;
 
-    @JsonIgnore
-    private Set<Worktime> worktimes = new HashSet<>(0);
+    private Worktime worktime;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -53,13 +47,14 @@ public class BwAvgView implements java.io.Serializable {
         this.id = id;
     }
 
-    @Column(name = "model_name")
-    public String getModelName() {
-        return modelName;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "worktime_id", nullable = false, insertable = false, updatable = false)
+    public Worktime getWorktime() {
+        return this.worktime;
     }
 
-    public void setModelName(String modelName) {
-        this.modelName = modelName;
+    public void setWorktime(Worktime worktime) {
+        this.worktime = worktime;
     }
 
     @Column(name = "assy_avg")
@@ -78,15 +73,6 @@ public class BwAvgView implements java.io.Serializable {
 
     public void setPackingAvg(BigDecimal packingAvg) {
         this.packingAvg = packingAvg;
-    }
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "bwAvgView")
-    public Set<Worktime> getWorktimes() {
-        return worktimes;
-    }
-
-    public void setWorktimes(Set<Worktime> worktimes) {
-        this.worktimes = worktimes;
     }
 
 }

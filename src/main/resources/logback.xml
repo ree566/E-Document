@@ -72,8 +72,10 @@
     </appender>
     
     <logger name="org.hibernate.type" level="INFO" />
-    <logger name="org.hibernate" level="INFO" />
+    <logger name="org.hibernate" level="INFO" additivity="false" />
     <logger name="org.hibernate.engine.query.HQLQueryPlan" level="DEBUG" additivity="false" />
+    
+    <logger name="org.springframework" level="INFO" additivity="false" />
     
     <logger name="com.piedra.logback" level="INFO" additivity="false">
         <appender-ref ref="FILE" />

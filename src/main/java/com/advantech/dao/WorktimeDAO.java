@@ -26,7 +26,7 @@ public class WorktimeDAO extends AbstractDao<Integer, Worktime> implements Basic
     }
 
     public List<Worktime> findAll(PageInfo info) {
-        String[] fetchField = {"bwAvgView"};
+        String[] fetchField = {"bwAvgViews"};
         return getByPaginateInfo(fetchField, info);
     }
  
