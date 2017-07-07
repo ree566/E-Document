@@ -6,9 +6,9 @@
 package com.advantech.dao;
 
 import com.advantech.jqgrid.PageInfo;
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.util.List;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
 import org.hibernate.Session;
@@ -28,8 +28,7 @@ import org.springframework.stereotype.Repository;
 public class PaginateDAO {
 
     protected List findAll(Session session, Class clz, PageInfo info) {
-        Criteria criteria = session.createCriteria(clz);
-        return this.findAll(criteria, info);
+        return this.findAll(session, clz, new String[0], info);
     }
 
     protected List findAll(Session session, Class clz, String[] fetchFields, PageInfo info) {
@@ -37,27 +36,12 @@ public class PaginateDAO {
         for (String field : fetchFields) {
             criteria.setFetchMode(field, FetchMode.JOIN);
         }
-        return this.findAll(criteria, info);
-    }
 
-    private List findAll(Criteria criteria, PageInfo info) {
         if (info.getSearchField() != null) {
             String searchOper = info.getSearchOper();
             String searchField = info.getSearchField();
-            String searchString = info.getSearchString();
-
-            if (NumberUtils.isNumber(searchString)) {
-                if (searchString.contains(".")) {
-                    addSearchCriteria(criteria, searchOper, searchField, new BigDecimal(searchString));
-                } else {
-                    addSearchCriteria(criteria, searchOper, searchField, Integer.parseInt(searchString));
-                }
-            } else if (isValidDate(searchString)) {
-                DateTimeFormatter fmt = DateTimeFormat.forPattern("YYYY-MM-dd");
-                addSearchCriteria(criteria, searchOper, searchField, fmt.parseDateTime(searchString).toDate());
-            } else {
-                addSearchCriteria(criteria, searchOper, searchField, searchString);
-            }
+            Object searchString = this.autoCaseSearchParam(clz, searchField, info.getSearchString());
+            addSearchCriteria(criteria, searchOper, searchField, searchString);
         }
 
         //Get total row count and reset criteria
@@ -81,13 +65,27 @@ public class PaginateDAO {
         return criteria.list();
     }
 
-    private boolean isValidDate(String date) {
+    private Object autoCaseSearchParam(Class clz, String searchField, String searchParam) {
+        if (searchField.contains(".id")) {
+            return Integer.parseInt(searchParam);
+        }
         try {
-            DateTimeFormatter fmt = DateTimeFormat.forPattern("YYYY-MM-dd");
-            fmt.parseDateTime((String) date);
-            return true;
-        } catch (Exception e) {
-            return false;
+            Field field = clz.getDeclaredField(searchField);
+            field.setAccessible(true);
+            Class type = field.getType();
+
+            if (type.equals(int.class) || type.equals(Integer.class)) {
+                return Integer.parseInt(searchParam);
+            } else if (type.equals(BigDecimal.class)) {
+                return new BigDecimal(searchParam);
+            } else if (type.equals(java.util.Date.class)) {
+                DateTimeFormatter fmt = DateTimeFormat.forPattern("YYYY-MM-dd");
+                return fmt.parseDateTime(searchParam).toDate();
+            } else {
+                return searchParam;
+            }
+        } catch (NoSuchFieldException | NumberFormatException | SecurityException e) {
+            return searchParam;
         }
     }
 
@@ -127,4 +125,5 @@ public class PaginateDAO {
         }
         return criteria;
     }
+
 }

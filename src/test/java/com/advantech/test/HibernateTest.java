@@ -6,12 +6,11 @@
 package com.advantech.test;
 
 import com.advantech.helper.HibernateObjectPrinter;
-import com.advantech.jqgrid.PageInfo;
-import com.advantech.model.Worktime;
 import com.advantech.service.SheetViewService;
 import com.advantech.service.WorktimeService;
-import java.util.List;
 import javax.transaction.Transactional;
+import org.hibernate.Query;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -57,18 +56,12 @@ public class HibernateTest {
     @Rollback(true)
     @Test
     public void testResult() throws Exception {
-        List<Worktime> l = worktimeService.findAll(new PageInfo().setMaxNumOfRows(1));
+        Session session = sessionFactory.getCurrentSession();
+        Query q = session.createQuery("from Worktime w join w.bwAvgViews bv where bv.assyAvg > 5");
         
-        HibernateObjectPrinter.print(l);
+        q.setMaxResults(5);
         
-//        List<BwAvgView> l = w.getBwAvgViews();
-//        assertEquals(1, l.size());
-//        
-//        BwAvgView bv = l.get(0);
-//        assertTrue(bv != null);
-//        assertTrue(bv.getAssyAvg() != null);
-//        
-//        assertTrue(new BigDecimal(4.17).compareTo(bv.getAssyAvg()) == 0);
+        HibernateObjectPrinter.print(q.list());
     }
 
 }
