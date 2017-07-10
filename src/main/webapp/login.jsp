@@ -4,8 +4,8 @@
 <html>
     <head>
         <title>${initParam.pageTitle}</title>
-        <link rel="shortcut icon" href="images/favicon.ico"/>
-        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+        <link rel="shortcut icon" href="<c:url value="/images/favicon.ico" />"/>
+        <link rel="stylesheet" href="<c:url value="/webjars/bootstrap/3.3.7/css/bootstrap.min.css" />">
         <style>
             body {
                 padding-top: 90px;
@@ -35,9 +35,9 @@
                 text-align:center;
             }
             /* Bordered form */
-/*            form {
-                border: 3px solid #f1f1f1;
-            }*/
+            /*            form {
+                            border: 3px solid #f1f1f1;
+                        }*/
 
             /* Avatar image */
             img.avatar {
@@ -81,9 +81,9 @@
             }
 
         </style>
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-        <script src="js/jquery.validation.min.js"></script> 
-        <script src="js/jquery.blockUI.js"></script>
+        <script src="<c:url value="/webjars/jquery/1.12.4/jquery.min.js" />"></script> 
+        <script src="<c:url value="js/jquery.validation.min.js" />"></script> 
+        <script src="<c:url value="js/jquery.blockUI.js" />"></script>
         <script>
             var isCommitted = false;//表单是否已经提交标识，默认为false
             function dosubmit() {
@@ -218,6 +218,6 @@
                 </div>
             </div>
         </div>
-        <script src="js/jquery.detector.js"></script>
+        <script src="<c:url value="js/jquery.detector.js" />"></script>
     </body>
 </html>

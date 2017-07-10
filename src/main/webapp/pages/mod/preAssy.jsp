@@ -52,43 +52,44 @@
                         + "\najaxOptions is: " + ajaxOptions
                         );
             }
-        })
-                .jqGrid('navGrid', '#pager',
-                        {edit: true, add: true, del: true, search: true},
-                        {
-                            url: '<c:url value="/PreAssy/update" />',
-                            dataheight: 350,
-                            width: 450,
-                            closeAfterEdit: closed_after_edit,
-                            reloadAfterSubmit: true,
-                            errorTextFormat: customErrorTextFormat,
-                            beforeShowForm: greyout,
-                            zIndex: 9999,
-                            recreateForm: true
-                        },
-                        {
-                            url: '<c:url value="/PreAssy/create" />',
-                            dataheight: 350,
-                            width: 450,
-                            closeAfterAdd: closed_after_add,
-                            reloadAfterSubmit: true,
-                            errorTextFormat: customErrorTextFormat,
-                            beforeShowForm: greyout,
-                            zIndex: 9999,
-                            recreateForm: true
-                        },
-                        {
-                            url: '<c:url value="/PreAssy/delete" />',
-                            zIndex: 9999,
-                            reloadAfterSubmit: true
-                        },
-                        {
-                            sopt: ['eq', 'ne', 'lt', 'gt', 'cn', 'bw', 'ew'],
-                            closeAfterSearch: closed_after_search,
-                            zIndex: 9999,
-                            reloadAfterSubmit: true
-                        }
-                );
+        });
+
+        grid.jqGrid('navGrid', '#pager',
+                {edit: true, add: true, del: true, search: true},
+                {
+                    url: '<c:url value="/PreAssy/update" />',
+                    dataheight: 350,
+                    width: 450,
+                    closeAfterEdit: closed_after_edit,
+                    reloadAfterSubmit: true,
+                    errorTextFormat: customErrorTextFormat,
+                    beforeShowForm: greyout,
+                    zIndex: 9999,
+                    recreateForm: true
+                },
+                {
+                    url: '<c:url value="/PreAssy/create" />',
+                    dataheight: 350,
+                    width: 450,
+                    closeAfterAdd: closed_after_add,
+                    reloadAfterSubmit: true,
+                    errorTextFormat: customErrorTextFormat,
+                    beforeShowForm: greyout,
+                    zIndex: 9999,
+                    recreateForm: true
+                },
+                {
+                    url: '<c:url value="/PreAssy/delete" />',
+                    zIndex: 9999,
+                    reloadAfterSubmit: true
+                },
+                {
+                    sopt: ['eq', 'ne', 'lt', 'gt', 'cn', 'bw', 'ew'],
+                    closeAfterSearch: closed_after_search,
+                    zIndex: 9999,
+                    reloadAfterSubmit: true
+                }
+        );
     });
 </script>
 

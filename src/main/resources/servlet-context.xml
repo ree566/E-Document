@@ -109,6 +109,7 @@
         </mvc:message-converters>
     </mvc:annotation-driven>
     
+    <mvc:resources mapping="/webjars/**" location="/webjars/"/>
     <!--Email setting-->
     <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
         <property name="host" value="Relay.advantech.com.tw" />
@@ -127,6 +128,7 @@
     </bean>
     
     <bean id="worktimeMailManager" class="com.advantech.helper.WorktimeMailManager"></bean>
+    
 
     <!--other import-->
     

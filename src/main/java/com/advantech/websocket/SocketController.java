@@ -35,6 +35,7 @@ public class SocketController {
 //    private MessageSendingOperations<OutputMessage> messagingTemplate;
 
     private static final Map<Integer, OutputMessage> rowStatus;
+    private final String testUrlPath = "/pages/admin/websocket";
 
     static {
         rowStatus = new HashMap<>();
@@ -42,12 +43,12 @@ public class SocketController {
 
     @RequestMapping("/helloSocket")
     public String index() {
-        return "/stomp";
+        return testUrlPath + "/stomp";
     }
 
     @RequestMapping("/socketClient")
     public String client() {
-        return "/stomp-client";
+        return testUrlPath + "/stomp-client";
     }
 
     @PreAuthorize("hasRole('ROLE_USER')")

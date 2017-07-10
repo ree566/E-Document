@@ -17,58 +17,49 @@
         <title>${initParam.pageTitle}</title>
         <link rel="shortcut icon" href="<c:url value="/images/favicon.ico" />"/>
 
-        <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
-        <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap-theme.min.css" rel="stylesheet">
-        <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-        <link href="//code.jquery.com/ui/1.12.1/themes/redmond/jquery-ui.css" rel="stylesheet">
-        
-        <link href="//cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.14.0/css/ui.jqgrid.min.css" rel="stylesheet"/>
-        <!--<link href="//cdnjs.cloudflare.com/ajax/libs/jqgrid/4.6.0/css/ui.jqgrid.css" rel="stylesheet"/>-->
-        <link href="//cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.14.0/plugins/css/ui.multiselect.css" rel="stylesheet"/>
+        <link href="<c:url value="/webjars/bootstrap/3.3.7/css/bootstrap.min.css" />" rel="stylesheet">
+        <link href="<c:url value="/webjars/bootstrap/3.3.7/css/bootstrap-theme.min.css" />" rel="stylesheet">
+        <link href="<c:url value="/webjars/font-awesome/4.7.0/css/font-awesome.min.css" />" rel="stylesheet">
+        <link href="<c:url value="/webjars/jquery-ui-themes/1.12.1/redmond/jquery-ui.min.css" />" rel="stylesheet">
 
-        <link href="../css/sb-admin-2.min.css" rel="stylesheet">
-        <link href="../css/metisMenu.min.css" rel="stylesheet">
-        <link href="../css/sbadmin2-sidebar-toggle.css" rel="stylesheet">
+        <link href="<c:url value="/webjars/free-jqgrid/4.14.1/css/ui.jqgrid.min.css" />" rel="stylesheet"/>
+        <link href="<c:url value="/webjars/free-jqgrid/4.14.1/plugins/css/ui.multiselect.css" />" rel="stylesheet"/>
 
-        <script src="//code.jquery.com/jquery-1.12.4.min.js" 
-                integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
-        crossorigin="anonymous"></script>
+        <link href="<c:url value="/css/sb-admin-2.min.css" />" rel="stylesheet">
+        <link href="<c:url value="/css/metisMenu.min.css" />" rel="stylesheet">
+        <link href="<c:url value="/css/sbadmin2-sidebar-toggle.css" />" rel="stylesheet">
 
-        <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <script src="<c:url value="/webjars/jquery/1.12.4/jquery.min.js" />"></script>
 
-        <script src="//code.jquery.com/ui/1.12.1/jquery-ui.min.js"
-                integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
-        crossorigin="anonymous"></script>
+        <script src="<c:url value="/webjars/bootstrap/3.3.7/js/bootstrap.min.js" />"></script>
 
-        <script src="//cdnjs.cloudflare.com/ajax/libs/jquery.form/4.2.1/jquery.form.min.js"></script>
+        <script src="<c:url value="/webjars/jquery-ui/1.12.1/jquery-ui.min.js" />"></script>
 
-        <script src="//cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.14.0/jquery.jqgrid.min.js"></script>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.14.0/modules/grid.jqueryui.js"></script>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.14.0/modules/grid.formedit.js"></script>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.14.0/modules/min/jqmodal.js"></script>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.14.0/plugins/min/ui.multiselect.js"></script>
+        <script src="<c:url value="/webjars/jquery-form/4.2.1/jquery.form.min.js" />"></script>
 
-        <!--<script src="//cdnjs.cloudflare.com/ajax/libs/jqgrid/4.6.0/js/i18n/grid.locale-tw.js"></script>-->
-        <!--<script src="//cdnjs.cloudflare.com/ajax/libs/jqgrid/4.6.0/js/jquery.jqGrid.min.js"></script>-->
+        <script src="<c:url value="/webjars/free-jqgrid/4.14.1/js/jquery.jqgrid.min.js" />"></script>
+        <script src="<c:url value="/webjars/free-jqgrid/4.14.1/js/grid.jqueryui.js" />"></script>
+        <script src="<c:url value="/webjars/free-jqgrid/4.14.1/js/grid.formedit.js" />"></script>
+        <script src="<c:url value="/webjars/free-jqgrid/4.14.1/js/jqmodal.js" />"></script>
+        <script src="<c:url value="/webjars/free-jqgrid/4.14.1/plugins/min/ui.multiselect.js" />"></script>
 
-        <script src="../js/sb-admin-2.min.js"></script>
-        <script src="../js/metisMenu.min.js"></script>
+        <script src="<c:url value="/js/sb-admin-2.min.js" />"></script>
+        <script src="<c:url value="/js/metisMenu.min.js" />"></script>
 
         <script src="<c:url value="/js/jqgrid-custom-param.js" />"></script> 
         <script src="<c:url value="/js/sessionExpiredDetect.js" />"></script>
         <script src="<c:url value="/js/jquery.blockUI.js" />"></script>
 
-        <!--<script src="//cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.14.0/modules/grid.subgrid.js"></script>-->
         <script>
             var current_include_page_name = "";
             $(function () {
                 var page = $("#exchange_page");
-                
+
                 $(".redirect-link").on("click", function () {
                     var target_page_name = $(this).attr("href");
                     if (target_page_name != current_include_page_name && target_page_name != "#") {
                         current_include_page_name = target_page_name;
-                        page.block({ message: "loading" });  
+                        page.block({message: "loading"});
                         page.load(target_page_name, function (response, status, xhr) {
                             if (status == "error") {
                                 var msg = "Sorry but there was an error: ";
@@ -191,7 +182,7 @@
                                         <li>
                                             <a class="redirect-link" href="worktime.jsp">工時大表</a>
                                         </li>
-                                        
+
                                         <li>
                                             <a class="redirect-link" href="conversion.jsp">工時對照表</a>
                                         </li>

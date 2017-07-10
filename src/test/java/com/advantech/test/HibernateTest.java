@@ -57,11 +57,11 @@ public class HibernateTest {
     @Test
     public void testResult() throws Exception {
         Session session = sessionFactory.getCurrentSession();
-        Query q = session.createQuery("from Worktime w where w.bwAvgViews.assyAvg > 5");
+//        Query q = session.createQuery("from Worktime w where w.bwAvgViews.assyAvg > 5");
         
-        q.setMaxResults(5);
-        
-        HibernateObjectPrinter.print(q.list());
+//        q.setMaxResults(5);
+//        
+//        HibernateObjectPrinter.print(q.list());
     }
 
 }

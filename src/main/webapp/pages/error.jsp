@@ -13,18 +13,16 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Error</title>
         <link rel="shortcut icon" href="${root}/img/favicon.ico"/>
-        <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
-        <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap-theme.min.css" rel="stylesheet">
+        <link href="<c:url value="/webjars/bootstrap/3.3.7/css/bootstrap.min.css" />" rel="stylesheet">
+        <link href="<c:url value="/webjars/bootstrap/3.3.7/css/bootstrap-theme.min.css"/>" rel="stylesheet">
         <style>
             #errormsg-box{
                 border: 2px red solid;
             }
         </style>
 
-        <script src="//code.jquery.com/jquery-1.12.4.min.js" 
-                integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
-        crossorigin="anonymous"></script>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <script src="<c:url value="/webjars/jquery/1.12.4/jquery.min.js" />"></script>
+        <script src="<c:url value="/webjars/bootstrap/3.3.7/js/bootstrap.min.js" />"></script>
     </head>
     <body>
         <div class="container">

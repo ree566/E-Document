@@ -6,8 +6,6 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<link href="<c:url value="/css/jquery-ui-multiselect.css" />" rel="stylesheet">
-<script src="<c:url value="/js/jquery-ui-multiselect.min.js" />"></script>
 <script src="<c:url value="/js/jqgrid-custom-setting.js" />"></script>
 <script>
     var scrollPosition = 0;
