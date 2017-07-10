@@ -10,12 +10,12 @@ import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.util.List;
 import org.hibernate.Criteria;
-import org.hibernate.FetchMode;
 import org.hibernate.Session;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.sql.JoinType;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.springframework.stereotype.Repository;
@@ -27,14 +27,17 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class PaginateDAO {
 
+    private final String fieldPrefix = "f_";
+
     protected List findAll(Session session, Class clz, PageInfo info) {
         return this.findAll(session, clz, new String[0], info);
     }
 
     protected List findAll(Session session, Class clz, String[] fetchFields, PageInfo info) {
         Criteria criteria = session.createCriteria(clz);
+
         for (String field : fetchFields) {
-            criteria.setFetchMode(field, FetchMode.JOIN);
+            criteria.createAlias(field, field, JoinType.LEFT_OUTER_JOIN);
         }
 
         if (info.getSearchField() != null) {

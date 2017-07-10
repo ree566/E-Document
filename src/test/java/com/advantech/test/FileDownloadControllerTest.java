@@ -41,12 +41,12 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
  *
  * @author Wei.Cheng
  */
-@WebAppConfiguration
-@ContextConfiguration(locations = {
-    "classpath:servlet-context.xml",
-    "classpath:hibernate.cfg.xml"
-})
-@RunWith(SpringJUnit4ClassRunner.class)
+//@WebAppConfiguration
+//@ContextConfiguration(locations = {
+//    "classpath:servlet-context.xml",
+//    "classpath:hibernate.cfg.xml"
+//})
+//@RunWith(SpringJUnit4ClassRunner.class)
 public class FileDownloadControllerTest {
 
     @Autowired
@@ -94,7 +94,7 @@ public class FileDownloadControllerTest {
         }
     }
 
-    @Test
+//    @Test
     public void testAddDataToTemp2() throws Exception {
         Resource r = resourceLoader.getResource("classpath:excel-template\\worktime-template.xls");
         try (InputStream is = r.getInputStream()) {

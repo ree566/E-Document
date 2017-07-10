@@ -23,7 +23,7 @@ import javax.persistence.Table;
  * @author Wei.Cheng
  */
 @Entity
-@Table(name = "BwWorktimeAvg_view",
+@Table(name = "BwWorktimeAvg_view1",
         schema = "dbo",
         catalog = "E_Document"
 )
