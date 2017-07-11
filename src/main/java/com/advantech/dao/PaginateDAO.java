@@ -27,19 +27,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class PaginateDAO {
 
-    private final String fieldPrefix = "f_";
-
-    protected List findAll(Session session, Class clz, PageInfo info) {
-        return this.findAll(session, clz, new String[0], info);
-    }
-
-    protected List findAll(Session session, Class clz, String[] fetchFields, PageInfo info) {
-        Criteria criteria = session.createCriteria(clz);
-
-        for (String field : fetchFields) {
-            criteria.createAlias(field, field, JoinType.LEFT_OUTER_JOIN);
-        }
-
+    protected List paginateResult(Criteria criteria, Class clz, PageInfo info) {
         if (info.getSearchField() != null) {
             String searchOper = info.getSearchOper();
             String searchField = info.getSearchField();

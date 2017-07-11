@@ -43,11 +43,12 @@ public abstract class AbstractDao<PK extends Serializable, T> {
     }
 
     protected List<T> getByPaginateInfo(PageInfo info) {
-        return paginateDAO.findAll(getSession(), persistentClass, info);
+        Criteria criteria = this.createEntityCriteria();
+        return paginateDAO.paginateResult(criteria, persistentClass, info);
     }
-
-    protected List<T> getByPaginateInfo(String[] fetchFields, PageInfo info) {
-        return paginateDAO.findAll(getSession(), persistentClass, fetchFields, info);
+    
+    protected List<T> getByPaginateInfo(Criteria criteria, PageInfo info) {
+        return paginateDAO.paginateResult(criteria, persistentClass, info);
     }
 
     protected Criteria createEntityCriteria() {

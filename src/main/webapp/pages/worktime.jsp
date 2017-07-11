@@ -354,7 +354,7 @@
             caption: "Export to Excel",
             buttonicon: "ui-icon-disk",
             onClickButton: function () {
-                grid.jqGrid('excelExport', {"url": "<c:url value="/Worktime/excel" />"});
+                grid.jqGrid('excelExport', {"url": "<c:url value="/Worktime/excel2" />"});
             },
             position: "last"
         });
@@ -430,6 +430,9 @@
         }
 
         function flowCheck(logicArr, flowName, formObj) {
+            if (flowName == null) {
+                flowName = '';
+            }
             var validationErrors = [];
             for (var i = 0; i < logicArr.length; i++) {
                 var logic = logicArr[i];

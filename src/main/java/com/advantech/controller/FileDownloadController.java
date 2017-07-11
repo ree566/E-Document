@@ -40,7 +40,7 @@ public class FileDownloadController {
 
     @Autowired
     private SheetViewService sheetViewService;
-    
+
     @Autowired
     private WorktimeService worktimeService;
 
@@ -62,11 +62,21 @@ public class FileDownloadController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/Worktime/excelForSpe", method = {RequestMethod.GET})
-//    @Secured({"ROLE_USER", "ROLE_ADMIN"})
-    public void generateExcelForUpload(HttpServletResponse response, PageInfo info) throws IOException {
+    @RequestMapping(value = "/Worktime/excel2", method = {RequestMethod.GET})
+    @Secured({"ROLE_USER"})
+    public void generateExcel2(HttpServletResponse response, PageInfo info) throws IOException {
+        this.fileExport("worktime-template.xls", response, info);
+    }
 
-        Resource r = resourceLoader.getResource("classpath:excel-template\\Plant-sp matl status(M3).xls");
+    @ResponseBody
+    @RequestMapping(value = "/Worktime/excelForSpe", method = {RequestMethod.GET})
+    @Secured({"ROLE_USER"})
+    public void generateExcelForUpload(HttpServletResponse response, PageInfo info) throws IOException {
+        this.fileExport("Plant-sp matl status(M3) (2).xls", response, info);
+    }
+
+    private void fileExport(String tempfileName, HttpServletResponse response, PageInfo info) throws IOException {
+        Resource r = resourceLoader.getResource("classpath:excel-template\\" + tempfileName);
 
         response.setContentType("application/vnd.ms-excel");
         response.setHeader("Set-Cookie", "fileDownload=true; path=/");
@@ -87,14 +97,14 @@ public class FileDownloadController {
     private void outputFile(List data, InputStream is, OutputStream os) throws IOException {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Context context = new Context();
-        context.putVar("sheetViews", data);
+        context.putVar("worktimes", data);
         context.putVar("dateFormat", dateFormat);
 
         Transformer transformer = TransformerFactory.createTransformer(is, os);
         JexlExpressionEvaluator evaluator = (JexlExpressionEvaluator) transformer.getTransformationConfig().getExpressionEvaluator();
 
         //避免Jexl2在javabean值為null時會log
-        evaluator.getJexlEngine().setSilent(true);
+        evaluator.getJexlEngine().setSilent(false);
 
         JxlsHelper helper = JxlsHelper.getInstance();
         helper.processTemplate(context, transformer);

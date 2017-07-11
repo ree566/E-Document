@@ -11,6 +11,7 @@ import java.util.List;
 import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.sql.JoinType;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -26,10 +27,13 @@ public class WorktimeDAO extends AbstractDao<Integer, Worktime> implements Basic
     }
 
     public List<Worktime> findAll(PageInfo info) {
-        String[] fetchField = {"bwAvgViews"};
-        return getByPaginateInfo(fetchField, info);
+        String fetchField = "bwAvgViews";
+        Criteria criteria = createEntityCriteria();
+        criteria.createAlias(fetchField, fetchField, JoinType.LEFT_OUTER_JOIN);
+        List l = getByPaginateInfo(criteria, info);
+        return l;
     }
- 
+
     @Override
     public Worktime findByPrimaryKey(Object obj_id) {
         return getByKey((int) obj_id);
@@ -53,7 +57,17 @@ public class WorktimeDAO extends AbstractDao<Integer, Worktime> implements Basic
             "flowByBabFlowId", "flowByPackingFlowId", "flowByTestFlowId",
             "userBySpeOwnerId", "userByEeOwnerId", "userByQcOwnerId"
         };
-        return getByPaginateInfo(fetchField, info);
+        
+        Criteria criteria = createEntityCriteria();
+        for (String field : fetchField) {
+            criteria.setFetchMode(field, FetchMode.JOIN);
+        }
+        
+        String fetchField_c = "bwAvgViews";
+        criteria.createAlias(fetchField_c, fetchField_c, JoinType.LEFT_OUTER_JOIN);
+        
+        List l = getByPaginateInfo(criteria, info);
+        return l;
     }
 
     @Override

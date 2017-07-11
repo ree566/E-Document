@@ -6,16 +6,18 @@
 package com.advantech.test;
 
 import com.advantech.helper.HibernateObjectPrinter;
+import com.advantech.jqgrid.PageInfo;
+import com.advantech.model.BwAvgView;
+import com.advantech.model.Worktime;
 import com.advantech.service.SheetViewService;
 import com.advantech.service.WorktimeService;
-import javax.transaction.Transactional;
-import org.hibernate.Query;
-import org.hibernate.Session;
+import java.util.List;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
 import org.hibernate.SessionFactory;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -52,16 +54,20 @@ public class HibernateTest {
 //        assertEquals(view.getBwPackingWorktimeAvg(), new BigDecimal(1));
     }
 
-    @Transactional
-    @Rollback(true)
     @Test
     public void testResult() throws Exception {
-        Session session = sessionFactory.getCurrentSession();
-//        Query q = session.createQuery("from Worktime w where w.bwAvgViews.assyAvg > 5");
+        List<Worktime> l = worktimeService.findWithFullRelation(new PageInfo().setRows(1));
+        assertEquals(1, l.size());
         
-//        q.setMaxResults(5);
+        Worktime w = l.get(0);
+        
+        assertTrue(w != null);
+        
+        List<BwAvgView> lview = w.getBwAvgViews();
+        
+        assertTrue(!lview.isEmpty());
 //        
-//        HibernateObjectPrinter.print(q.list());
+        HibernateObjectPrinter.print(lview);
     }
 
 }
