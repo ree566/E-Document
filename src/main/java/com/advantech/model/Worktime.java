@@ -48,7 +48,7 @@ import org.springframework.util.AutoPopulatingList;
 @DynamicInsert(true)
 @DynamicUpdate(true)
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = Worktime.class)
-@Audited(targetAuditMode = NOT_AUDITED, withModifiedFlag = true)
+@Audited(targetAuditMode = NOT_AUDITED)
 public class Worktime implements java.io.Serializable {
 
     private int id;
