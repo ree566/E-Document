@@ -8,6 +8,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <script src="<c:url value="/js/jqgrid-custom-select-option-reader.js" />"></script>
 <script src="<c:url value="/js/moment.js" />"></script>
+<%--<script src="<c:url value="/webjars/free-jqgrid/4.14.1/plugins/ui.multiselect.js" />"></script>--%>
 <script>
     $(function () {
         var grid = $("#list");
@@ -34,7 +35,7 @@
             ]
         });
 
-        $("#send").click(function () {
+        $("#send").on("click", function () {
             var modelName = $("#modelName").val();
             var version = $("#version").val();
             var startDate = $("#sD").val();
@@ -61,7 +62,29 @@
             }
         });
 
+        $("#send").trigger("click");
 
+        $("#dialog").dialog({
+            autoOpen: false,
+            show: {
+                effect: "blind",
+                duration: 1000
+            },
+            hide: {
+                effect: "explode",
+                duration: 1000
+            }
+        });
+
+        var getColumnIndexByName = function (grid, columnName) {
+            var cm = grid.jqGrid('getGridParam', 'colModel');
+            for (var i = 0, l = cm.length; i < l; i++) {
+                if (cm[i].name === columnName) {
+                    return i; // return the index
+                }
+            }
+            return -1;
+        };
 
         //Jqgrid 沒有支援複合主鍵，所以自己產生(用SQL的複合主鍵值相乘產生新的唯一鍵)
         function keyFormat(cellvalue, options, rowObject) {
@@ -80,101 +103,31 @@
                     startDate: startDate,
                     endDate: endDate
                 },
+                iconSet: "fontAwesome",
                 datatype: 'json',
                 mtype: 'GET',
                 autoencode: true,
                 colModel: [
-                    {label: 'CPK', name: 'CPK', width: 60, key: true, frozen: false, hidden: true, search: false, formatter: keyFormat},
-                    {label: 'revtstmp', name: "REVTSTMP", jsonmap: "1.revtstmp", hidden: false, search: false, formatter: timestampFormat},
-                    {label: 'REV', name: "REV", jsonmap: "1.rev", width: 60, frozen: false, hidden: true, search: false},
-                    {label: 'username', name: "username", jsonmap: "1.username", width: 60, frozen: false, hidden: false, search: false},
-                    {label: 'REVTYPE', name: "REVTYPE", jsonmap: "2", width: 60, frozen: false, hidden: false, search: false},
-                    {label: 'id', name: "id", jsonmap: "0.id", width: 60, frozen: false, hidden: true, search: false},
-                    {label: 'Model', name: "modelName", jsonmap: "0.modelName", frozen: false, searchrules: {required: true}, searchoptions: search_string_options, formoptions: required_form_options},
-                    {label: 'TYPE', name: "type_id", jsonmap: "0.type.id", formatter: selectOptions["type_func"], width: 100, searchrules: {required: true}, searchoptions: search_string_options},
-                    {label: 'ProductionWT', name: "productionWt", jsonmap: "0.productionWt", width: 120, searchrules: number_search_rule, searchoptions: search_decimal_options},
-                    {label: 'Total Module', name: "totalModule", jsonmap: "0.totalModule", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options},
-                    {label: 'Setup Time', name: "setupTime", jsonmap: "0.setupTime", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options},
-                    {label: 'CleanPanel', name: "cleanPanel", jsonmap: "0.cleanPanel", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options},
-                    {label: 'Assembly', name: "assy", jsonmap: "0.assy", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options},
-                    {label: 'T1', name: "t1", jsonmap: "0.t1", width: 60, searchrules: number_search_rule, searchoptions: search_decimal_options},
-                    {label: 'T2', name: "t2", jsonmap: "0.t2", width: 60, searchrules: number_search_rule, searchoptions: search_decimal_options},
-                    {label: 'T3', name: "t3", jsonmap: "0.t3", width: 60, searchrules: number_search_rule, searchoptions: search_decimal_options},
-                    {label: 'T4', name: "t4", jsonmap: "0.t4", width: 60, searchrules: number_search_rule, searchoptions: search_decimal_options},
-                    {label: 'Packing', name: "packing", jsonmap: "0.packing", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options},
-                    {label: 'Up_BI_RI', name: "upBiRi", jsonmap: "0.upBiRi", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options},
-                    {label: 'Down_BI_RI', name: "downBiRi", jsonmap: "0.downBiRi", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options},
-                    {label: 'BI Cost', name: "biCost", jsonmap: "0.biCost", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options},
-                    {label: 'Vibration', name: "vibration", jsonmap: "0.vibration", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options},
-                    {label: 'Hi-Pot/Leakage', name: "hiPotLeakage", jsonmap: "0.hiPotLeakage", width: 120, searchrules: number_search_rule, searchoptions: search_decimal_options},
-                    {label: 'Cold Boot', name: "coldBoot", jsonmap: "0.coldBoot", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options},
-                    {label: 'Warm Boot', name: "warmBoot", jsonmap: "0.warmBoot", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options},
-                    {label: 'ASS_T1', name: "assyToT1", jsonmap: "0.assyToT1", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options},
-                    {label: 'T2_PACKING', name: "t2ToPacking", jsonmap: "0.t2ToPacking", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options},
-                    {label: 'Floor', name: "floor_id", jsonmap: "0.floor.id", width: 100, searchrules: {required: true}, searchoptions: search_string_options, formatter: selectOptions["floor_func"]},
-                    {label: 'Pending', name: "pending_id", jsonmap: "0.pending.id", formatter: selectOptions["pending_func"], width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options},
-                    {label: 'Pending TIME', name: "pendingTime", jsonmap: "0.pendingTime", width: 100, searchrules: {required: true}, searchoptions: search_decimal_options, formoptions: required_form_options},
-                    {label: 'BurnIn', name: "burnIn", jsonmap: "0.pendingTime", width: 100, searchrules: {required: true}, searchoptions: search_string_options},
-                    {label: 'B/I Time', name: "biTime", jsonmap: "0.biTime", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: required_form_options},
-                    {label: 'BI_Temperature', name: "biTemperature", jsonmap: "0.biTemperature", width: 120, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: required_form_options},
-                    {label: 'SPE Owner', name: "userBySpeOwnerId_id", jsonmap: "0.userBySpeOwnerId.id", formatter: selectOptions["spe_user_func"], width: 100, searchrules: {required: true}, searchoptions: search_string_options},
-                    {label: 'EE Owner', name: "userByEeOwnerId_id", jsonmap: "0.userByEeOwnerId.id", formatter: selectOptions["ee_user_func"], width: 100, searchrules: {required: true}, searchoptions: search_string_options},
-                    {label: 'QC Owner', name: "userByQcOwnerId_id", jsonmap: "0.userByQcOwnerId.id", formatter: selectOptions["qc_user_func"], width: 100, searchrules: {required: true}, searchoptions: search_string_options},
-                    {label: '組包SOP', name: "assyPackingSop", jsonmap: "0.assyPackingSop", width: 100, searchrules: {required: true}, searchoptions: search_string_options, edittype: "textarea", editoptions: {maxlength: 500}},
-                    {label: '測試SOP', name: "testSop", jsonmap: "0.testSop", width: 100, searchrules: {required: true}, searchoptions: search_string_options, edittype: "textarea", editoptions: {maxlength: 500}},
-                    {label: 'KEYPART_A', name: "keypartA", jsonmap: "0.keypartA", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options},
-                    {label: 'KEYPART_B', name: "keypartB", jsonmap: "0.keypartB", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options},
-                    {label: 'PRE-ASSY', name: "preAssy_id", jsonmap: "0.preAssy.id", formatter: selectOptions["preAssy_func"], width: 100, searchrules: {required: true}, searchoptions: search_string_options},
-                    {label: 'BAB_FLOW', name: "flowByBabFlowId_id", jsonmap: "0.flowByBabFlowId.id", formatter: selectOptions["bab_flow_func"], width: 100, searchrules: {required: true}, searchoptions: search_string_options},
-                    {label: 'TEST_FLOW', name: "flowByTestFlowId_id", jsonmap: "0.flowByTestFlowId.id", formatter: selectOptions["test_flow_func"], width: 100, searchrules: {required: true}, searchoptions: search_string_options},
-                    {label: 'PACKING_FLOW', name: "flowByPackingFlowId_id", jsonmap: "0.flowByPackingFlowId.id", formatter: selectOptions["pkg_flow_func"], width: 140, searchrules: {required: true}, searchoptions: search_string_options},
-                    {label: 'PART-LINK', name: "partLink", jsonmap: "0.partLink", width: 100, searchrules: number_search_rule, searchoptions: search_string_options},
-                    {label: 'CE', name: "ce", jsonmap: "0.ce", width: 60, searchrules: number_search_rule, searchoptions: search_string_options},
-                    {label: 'UL', name: "ul", jsonmap: "0.ul", width: 60, searchrules: number_search_rule, searchoptions: search_string_options},
-                    {label: 'ROHS', name: "rohs", jsonmap: "0.rohs", width: 60, searchrules: number_search_rule, searchoptions: search_string_options},
-                    {label: 'WEEE', name: "weee", jsonmap: "0.weee", width: 60, searchrules: number_search_rule, searchoptions: search_string_options},
-                    {label: 'Made in Taiwan', name: "madeInTaiwan", jsonmap: "0.madeInTaiwan", width: 120, searchrules: number_search_rule, searchoptions: search_string_options},
-                    {label: 'FCC', name: "fcc", jsonmap: "0.fcc", width: 60, searchrules: number_search_rule, searchoptions: search_string_options},
-                    {label: 'EAC', name: "eac", jsonmap: "0.eac", width: 60, searchrules: number_search_rule, searchoptions: search_string_options},
-                    {label: 'N合1集合箱', name: "nsInOneCollectionBox", jsonmap: "0.nsInOneCollectionBox", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options},
-                    {label: '料號屬性值維護', name: "partNoAttributeMaintain", jsonmap: "0.partNoAttributeMaintain", width: 120, searchrules: {required: true}, searchoptions: search_string_options},
-                    {label: '組裝排站人數', name: "assyStation", jsonmap: "0.assyStation", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options},
-                    {label: '包裝排站人數', name: "packingStation", jsonmap: "0.packingStation", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options},
-                    {label: '前置時間', name: "assyLeadTime", jsonmap: "0.assyLeadTime", width: 80, searchrules: number_search_rule, searchoptions: search_decimal_options},
-                    {label: '看板工時', name: "assyKanbanTime", jsonmap: "0.assyKanbanTime", width: 80, searchrules: number_search_rule, searchoptions: search_decimal_options},
-                    {label: '前置時間', name: "packingLeadTime", jsonmap: "0.packingLeadTime", width: 80, searchrules: number_search_rule, searchoptions: search_decimal_options},
-                    {label: '看板工時', name: "packingKanbanTime", jsonmap: "0.packingKanbanTime", width: 80, searchrules: number_search_rule, searchoptions: search_decimal_options},
-                    {label: 'CleanPanel+Assembly', name: "cleanPanelAndAssembly", jsonmap: "0.cleanPanelAndAssembly", width: 200, searchrules: number_search_rule, searchoptions: search_decimal_options},
-                    {label: 'Modified_Date', width: 200, name: "modifiedDate", jsonmap: "0.modifiedDate", index: "modifiedDate", formatter: 'date', formatoptions: {srcformat: 'Y-m-d H:i:s A', newformat: 'Y-m-d H:i:s A'}, stype: 'text', searchrules: date_search_rule, searchoptions: search_date_options, align: 'center', hidden: true}
+                    {label: 'CPK', name: 'CPK', key: true, frozen: false, hidden: true, search: false, formatter: keyFormat},
+                    {label: '差異', name: 'displayorder', template: "actions", search: false, editable: false},
+                    {label: 'id', name: "id", jsonmap: "0.id", frozen: false, hidden: true, search: false},
+                    {label: '版本', name: "REV", jsonmap: "1.rev", frozen: false, hidden: false, search: false},
+                    {label: '機種', name: "modelName", jsonmap: "0.modelName", frozen: false, searchrules: {required: true}, searchoptions: search_string_options, formoptions: required_form_options},
+                    {label: '修改者', name: "username", jsonmap: "1.username", frozen: false, hidden: false, search: false},
+                    {label: '動作', name: "REVTYPE", jsonmap: "2", frozen: false, hidden: false, search: false},
+                    {label: '修改日期', name: "REVTSTMP", jsonmap: "1.revtstmp", hidden: false, search: false, formatter: timestampFormat}
                 ],
                 rowNum: 100,
                 rowList: [100, 200, 500, 1000],
                 pager: '#pager',
                 viewrecords: true,
                 autowidth: true,
-                shrinkToFit: false,
+                shrinkToFit: true,
                 hidegrid: true,
                 stringResult: true,
                 gridview: true,
-//                multiselect: true,
                 grouping: true,
-//                groupingView: {
-//                    groupField: ['REVTSTMP', 'id'],
-//                    groupOrder: ['desc', 'asc'],
-//                    groupColumnShow: [true, false],
-//                    groupCollapse: true,
-//                    groupText: ['<b>Date {0} - {1} Record(s)</b>', '<b>Id {0} - {1} Record(s)</b>'],
-//                    formatDisplayField: [
-//                        function (displayValue) {
-//                            return moment(displayValue).format("YYYY-MM-DD");
-//                        }
-//                    ],
-//                    isInTheSameGroup: [
-//                        function (x, y) {
-//                            return moment(x).isSame(moment(y), 'day');
-//                        }
-//                    ]
-//                },
+//                multiSelect: true,
                 jsonReader: {
                     root: "rows",
                     page: "page",
@@ -182,23 +135,37 @@
                     records: "records",
                     repeatitems: false
                 },
-//                beforeSelectRow: function (rowid, e) {
-//                    var $myGrid = $(this),
-//                            i = $.jgrid.getCellIndex($(e.target).closest('td')[0]),
-//                            cm = $myGrid.jqGrid('getGridParam', 'colModel');
-//
-//                    var selRowIds = $myGrid.jqGrid('getGridParam', 'selarrrow');
-//                    console.log(selRowIds.length);
-//                    if (selRowIds.length <= 2) {
-//                        return (cm[i].name === 'cb');
-//                    } else {
-//                        alert("You cannot select more than 2 rows");
-//                        return false;
-//                    }
-//                },
+                beforeSelectRow: function (rowid, e) {
+//                    return false;
+                },
+                loadComplete: function () {
+                    $(".dia-btn").click(function (e) {
+                        var selRowId = grid.jqGrid('getGridParam', 'selrow');
+                        var cellVal = grid.jqGrid('getCell', selRowId, 'REV');
+                        alert(cellVal);
+                    });
+                },
                 navOptions: {reloadGridOptions: {fromServer: true}},
+                actionsNavOptions: {
+                    editbutton: false,
+                    delbutton: false,
+                    custom: [
+                        {
+                            action: "open", position: "first",
+                            onClick: function (options) {
+                                alert("Open, rowid=" + options.rowid);
+                            }
+                        }
+                    ],
+                    openicon: "fa-folder-open-o",
+                    opentitle: "Open (Enter)",
+                    isDisplayButtons: function (options, rowData) {
+                        if (options.rowData.closed) { // or rowData.closed
+                            return {post: {hidden: true}, del: {display: false}};
+                        }
+                    }
+                },
                 caption: "Worktime_AUD",
-                height: 450,
                 error: function (xhr, ajaxOptions, thrownError) {
                     alert("Ajax Error occurred\n"
                             + "\nstatus is: " + xhr.status
@@ -206,20 +173,26 @@
                             + "\najaxOptions is: " + ajaxOptions
                             );
                 }
-            })
-                    .jqGrid('navGrid', '#pager',
-                            {edit: false, add: false, del: false, search: true},
-                            {},
-                            {},
-                            {},
-                            {
-                                sopt: ['eq', 'ne', 'lt', 'gt', 'cn', 'bw', 'ew'],
-                                closeAfterSearch: false,
-                                zIndex: 9999,
-                                reloadAfterSubmit: true
-                            }
-                    );
+            });
+
+            grid.jqGrid('navGrid', '#pager',
+                    {edit: false, add: false, del: false, search: true},
+                    {},
+                    {},
+                    {},
+                    {
+                        sopt: ['eq', 'ne', 'lt', 'gt', 'cn', 'bw', 'ew'],
+                        closeAfterSearch: false,
+                        zIndex: 9999,
+                        reloadAfterSubmit: true
+                    }
+            );
+
             grid.jqGrid('setFrozenColumns');
+
+            function moveButton(cellvalue, options, rowObject) {
+                return "<input class='btn btn-default dia-btn' type='button' name='" + cellvalue + "' value='與前次比較' />";
+            }
         }
     });
 </script>
@@ -228,12 +201,16 @@
     <h4>大表版本歷史紀錄查詢</h4>
     <div class="form-inline">
         <input type="text" id="modelName" class="form-control" placeholder="modelName" />
-        <input type="text" id="version" class="form-control" placeholder="version" />
+        <input type="text" id="version" class="form-control" placeholder="version" style="display: none" />
         <input type="text" id="sD" name="startDate" placeholder="startDate" class="form-control" />
         <input type="text" id="eD" name="endDate" placeholder="endDate" class="form-control" />
         <input type="button" id="send" class="form-control" value="send" />
-        <h5 class="form-control alert">※modelName or version 不指定請留白</h5>
+        <h5 class="form-control alert">※modelName 不指定請留白</h5>
     </div>
     <table id="list"></table> 
     <div id="pager"></div>
+
+    <div id="dialog" title="Basic dialog">
+        <p>This is an animated dialog which is useful for displaying information. The dialog window can be moved, resized and closed with the 'x' icon.</p>
+    </div>
 </div>

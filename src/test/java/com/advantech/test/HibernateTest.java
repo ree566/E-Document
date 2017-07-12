@@ -14,13 +14,19 @@ import com.advantech.service.WorktimeService;
 import java.util.List;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.envers.AuditReaderFactory;
+import org.hibernate.envers.query.AuditEntity;
+import org.hibernate.envers.query.AuditQuery;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
@@ -44,27 +50,40 @@ public class HibernateTest {
     private SessionFactory sessionFactory;
 
     //CRUD testing.
-//    @Transactional
-//    @Rollback(true)
-//    @Test
+    @Transactional
+    @Rollback(true)
+    @Test
     public void testSheetView() throws Exception {
-//        SheetView view = sheetViewService.findAll(new PageInfo().setRows(1)).get(0);
-//
-//        assertEquals(view.getBwAssyWorktimeAvg(), new BigDecimal(1));
-//        assertEquals(view.getBwPackingWorktimeAvg(), new BigDecimal(1));
+        Session session = sessionFactory.getCurrentSession();
+
+        AuditQuery query = AuditReaderFactory.get(session).createQuery()
+                .forRevisionsOfEntity(Worktime.class, true, false)
+                .add(AuditEntity.id().eq(8364));
+//                .add(AuditEntity.property("warmBoot").hasChanged());
+
+        List<Worktime> l = query.getResultList();
+
+        Worktime w1 = l.get(l.size() - 1);
+        Worktime w2 = l.get(l.size() - 2);
+        
+        assertTrue(w1 != null);
+        assertTrue(w2 != null);
+
+        assertEquals(w1.getWarmBoot(), w2.getWarmBoot());
+//        HibernateObjectPrinter.print(l);
     }
 
-    @Test
+//    @Test
     public void testResult() throws Exception {
         List<Worktime> l = worktimeService.findWithFullRelation(new PageInfo().setRows(1));
         assertEquals(1, l.size());
-        
+
         Worktime w = l.get(0);
-        
+
         assertTrue(w != null);
-        
+
         List<BwAvgView> lview = w.getBwAvgViews();
-        
+
         assertTrue(!lview.isEmpty());
 //        
         HibernateObjectPrinter.print(lview);
