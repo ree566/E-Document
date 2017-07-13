@@ -17,11 +17,11 @@ public class Test1Test {
 
     @Test
     public void test() throws SecurityException, NoSuchFieldException {
-        String str = "2017-07-12 15:18:50";
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        DateTime d = new DateTime(str);
-        
-        System.out.println(d);
+//        String str = "2017-07-12 15:18:50";
+//        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//        DateTime d = new DateTime(str);
+//        
+        System.out.println("hello");
 
     }
 
