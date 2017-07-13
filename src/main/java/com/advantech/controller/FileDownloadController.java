@@ -95,7 +95,7 @@ public class FileDownloadController {
     }
 
     private void outputFile(List data, InputStream is, OutputStream os) throws IOException {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         Context context = new Context();
         context.putVar("worktimes", data);
         context.putVar("dateFormat", dateFormat);

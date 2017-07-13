@@ -5,13 +5,9 @@
  */
 package com.advantech.test;
 
-import com.advantech.model.Type;
-import com.advantech.model.Worktime;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import static junit.framework.Assert.assertTrue;
+import java.text.SimpleDateFormat;
+import org.joda.time.DateTime;
 import org.junit.Test;
-import org.springframework.beans.BeanUtils;
 
 /**
  *
@@ -21,10 +17,11 @@ public class Test1Test {
 
     @Test
     public void test() throws SecurityException, NoSuchFieldException {
-        Field field = Worktime.class.getDeclaredField("type");
-        field.setAccessible(true);
+        String str = "2017-07-12 15:18:50";
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        DateTime d = new DateTime(str);
         
-        assertTrue(field.getType().equals(Type.class));
+        System.out.println(d);
 
     }
 
