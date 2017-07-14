@@ -104,7 +104,7 @@ public class FileDownloadController {
         JexlExpressionEvaluator evaluator = (JexlExpressionEvaluator) transformer.getTransformationConfig().getExpressionEvaluator();
 
         //避免Jexl2在javabean值為null時會log
-        evaluator.getJexlEngine().setSilent(false);
+        evaluator.getJexlEngine().setSilent(true);
 
         JxlsHelper helper = JxlsHelper.getInstance();
         helper.processTemplate(context, transformer);

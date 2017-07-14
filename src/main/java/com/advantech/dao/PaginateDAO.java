@@ -90,6 +90,10 @@ public class PaginateDAO {
 
     private Criteria addSearchCriteria(Criteria criteria, String searchOper, String searchField, Object searchParam) {
         switch (searchOper) {
+            case "in":
+                String[] param = searchParam.toString().split(",");
+                criteria.add(Restrictions.in(searchField, param));
+                break;
             case "eq":
                 criteria.add(Restrictions.eq(searchField, searchParam));
                 break;

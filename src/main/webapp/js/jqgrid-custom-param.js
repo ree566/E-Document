@@ -1,4 +1,4 @@
-var search_string_options = {sopt: ['eq', 'ne', 'cn', 'bw', 'ew']};
+var search_string_options = {sopt: ['eq', 'cn', 'bw', 'ew', 'in']};
 var search_decimal_options = {sopt: ['eq', 'lt', 'gt']};
 var search_date_options = {sopt: ['eq', 'lt', 'gt'], dataInit: getDate};
 var required_form_options = {elmsuffix: "(*必填)"}; //elmprefix: "SSAA", elmsuffix: ''
