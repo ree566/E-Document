@@ -44,7 +44,7 @@ public class CellDAO extends BasicDAO implements AlarmActions {
     }
 
     public List<Cell> getCellProcessing() {
-        return query("SELECT * FROM cellProcessing");
+        return query("SELECT * FROM cellProcessing"); 
     }
 
     public List<Cell> getCellProcessing(int lineId) {
@@ -61,7 +61,7 @@ public class CellDAO extends BasicDAO implements AlarmActions {
 
     //"Model_name" 在dbutil get property時會去取 "model_name"
     public boolean insert(List<Cell> l) {
-        return update(getConn(), "INSERT INTO Cell(lineId, PO, Model_name) VALUES(?,?,?)", l, "lineId", "PO", "model_name");
+        return update(getConn(), "INSERT INTO Cell(lineId, [type], PO, Model_name) VALUES(?,?,?,?)", l, "lineId", "type", "PO", "model_name");
     }
 
     public boolean delete(List<Cell> l) {

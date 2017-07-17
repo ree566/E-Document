@@ -7,21 +7,15 @@
  */
 package com.advantech.quartzJob;
 
-import com.advantech.entity.Cell;
 import com.advantech.entity.PassStation;
-import com.advantech.helper.CronTrigMod;
 import com.advantech.service.BasicService;
-import com.advantech.service.CellService;
 import com.advantech.webservice.WebServiceRV;
-import static java.lang.System.out;
 import java.util.List;
+import java.util.Objects;
 import org.apache.commons.collections4.CollectionUtils;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.quartz.JobKey;
-import org.quartz.SchedulerException;
-import org.quartz.TriggerKey;
 
 /**
  *
@@ -30,62 +24,46 @@ import org.quartz.TriggerKey;
 public class CellStation implements Job {
 
     private String PO;
-    private Integer lineId;
+    private String type;
     private Integer apsLineId;
-    private JobKey currentJobKey;
-    private TriggerKey currentTriggerKey;
-    private String today;
 
     @Override
     public void execute(JobExecutionContext jec) throws JobExecutionException {
-        this.currentTriggerKey = jec.getTrigger().getKey();
-        this.currentJobKey = jec.getJobDetail().getKey();
         syncMesDataToDatabase();
     }
 
+    //讓user自行開收工單，以免造成資料庫已關閉前端卻尚未關閉的情況
     private void syncMesDataToDatabase() {
+        System.out.println("Begin check PO:" + PO + " / type:" + type);
         //先看紀錄幾筆了
-        List<PassStation> l = WebServiceRV.getInstance().getPassStationRecords(PO, apsLineId);
+        List<PassStation> l = WebServiceRV.getInstance().getPassStationRecords(PO, type);
 
         //確認已經開始了
         if (!l.isEmpty()) {
-            checkDifferenceAndInsert(PO, apsLineId);
-            
-            //讓user自行開收工單，以免造成資料庫已關閉前端卻尚未關閉的情況
-            //get PO quantity view 得到該工單所要做的機台數，超過Job self unsched.(台數 * 2 == 紀錄)
-            //未到達台數持續Polling database find new data.
-//            if (isPieceReachMaxium(l)) {
-//                jobSelfRemove();
-//            }
+            checkDifferenceAndInsert(PO, type, apsLineId);
+        } else {
+            System.out.println("Data is empty.");
         }
     }
 
-    public static void checkDifferenceAndInsert(String PO, int apsLineId) {
+    public static void checkDifferenceAndInsert(String PO, String type, Integer apsLineId) {
 
-        List<PassStation> l = WebServiceRV.getInstance().getPassStationRecords(PO, apsLineId);
-        List<PassStation> history = BasicService.getPassStationService().getPassStation(PO);
+        List<PassStation> l = WebServiceRV.getInstance().getPassStationRecords(PO, type);
+        List<PassStation> history = BasicService.getPassStationService().getPassStation(PO, type);
         List<PassStation> newData = (List<PassStation>) CollectionUtils.subtract(l, history);
 
         if (!newData.isEmpty()) {
-            BasicService.getPassStationService().insertPassStation(newData);
-        } 
-    }
+            PassStation testData = newData.get(0);
+            //Check data if matches current process apsLine or not.
+            if (Objects.equals(testData.getLineId(), apsLineId)) {
+                
+                //Set type mark separate "Test, Pkg, Bab"
+                for (PassStation p : newData) {
+                    p.setType(type);
+                }
 
-    private boolean isPieceReachMaxium(List<PassStation> l) {
-        int totalPiece = BasicService.getBabService().getPoTotalQuantity(PO);
-        return (l.size() / 2) == totalPiece;
-    }
-
-    private void jobSelfRemove() {
-        try {
-            CronTrigMod.getInstance().removeJob(currentJobKey);
-            CellService cellService = BasicService.getCellService();
-            List<Cell> list = cellService.getCellProcessing(lineId);
-            if (!list.isEmpty()) {
-                cellService.delete((Cell) list.get(0));
+                BasicService.getPassStationService().insertPassStation(newData);
             }
-        } catch (SchedulerException ex) {
-            out.println(ex.toString());
         }
     }
 
@@ -93,16 +71,12 @@ public class CellStation implements Job {
         this.PO = PO;
     }
 
-    public void setLineId(Integer lineId) {
-        this.lineId = lineId;
+    public void setType(String type) {
+        this.type = type;
     }
 
     public void setApsLineId(Integer apsLineId) {
         this.apsLineId = apsLineId;
-    }
-
-    public void setToday(String today) {
-        this.today = today;
     }
 
 }

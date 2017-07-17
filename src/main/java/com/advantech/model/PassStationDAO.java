@@ -29,12 +29,12 @@ public class PassStationDAO extends BasicDAO {
         return queryForBeanList(this.getConn(), PassStation.class, "SELECT * FROM machineThrough");
     }
 
-    public List<PassStation> getPassStation(String PO) {
-        return queryForBeanList(this.getConn(), PassStation.class, "SELECT * FROM machineThrough WHERE PO = ?", PO);
+    public List<PassStation> getPassStation(String PO, String type) {
+        return queryForBeanList(this.getConn(), PassStation.class, "SELECT * FROM machineThrough WHERE PO = ? AND [type] = ?", PO, type);
     }
 
-    public List<Map> getAllCellPerPcsHistory(String PO, Integer lineName, Integer minPcs, Integer maxPcs, String startDate, String endDate) {
-        return queryProcForMapList(this.getConn(), "{CALL cellDiffPerPcs_1(?,?,?,?,?,?)}", PO, lineName, minPcs, maxPcs, startDate, endDate);
+    public List<Map> getAllCellPerPcsHistory(String PO, String type, Integer lineName, Integer minPcs, Integer maxPcs, String startDate, String endDate) {
+        return queryProcForMapList(this.getConn(), "{CALL cellDiffPerPcs(?,?,?,?,?,?,?)}", PO, type, lineName, minPcs, maxPcs, startDate, endDate);
     }
 
     public List<Map> getCellLastGroupStatusView() {
@@ -44,9 +44,9 @@ public class PassStationDAO extends BasicDAO {
     public boolean insertPassStation(List<PassStation> l) {
         return update(
                 getConn(),
-                "INSERT INTO machineThrough(barcode, PO, lineName, lineId, station, createDate, userNo, userName) VALUES(?,?,?,?,?,?,?,?)",
+                "INSERT INTO machineThrough(barcode, PO, lineName, lineId, station, createDate, userNo, userName, [type]) VALUES(?,?,?,?,?,?,?,?,?)",
                 l,
-                "barcode", "PO", "lineName", "lineId", "station", "createDate", "userNo", "userName"
+                "barcode", "PO", "lineName", "lineId", "station", "createDate", "userNo", "userName", "type"
         );
     }
 }

@@ -6,6 +6,7 @@
 package com.advantech.test;
 
 import com.advantech.entity.BABStatus;
+import com.advantech.entity.CellLineType;
 import com.advantech.entity.User;
 import com.advantech.webservice.WebServiceRV;
 import com.advantech.webservice.WebServiceTX;
@@ -22,9 +23,6 @@ import java.util.logging.Logger;
 public class TestClass {
 
     public static void main(String[] args) {
-        BigDecimal b = BigDecimal.ZERO;
-        b = b.add(new BigDecimal(2));
-        System.out.println(b);
     }
 
 }

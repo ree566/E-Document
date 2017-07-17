@@ -47,6 +47,7 @@ public class CellRecordServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
         String PO = req.getParameter("PO");
+        String type = req.getParameter("type");
         String lineId = req.getParameter("lineId");
         String minPcs = req.getParameter("minPcs");
         String maxPcs = req.getParameter("maxPcs");
@@ -56,10 +57,9 @@ public class CellRecordServlet extends HttpServlet {
 
         JSONObject jsonObject = new JSONObject();
 
-        List l = null;
-
-        l = passStationService.getAllCellPerPcsHistory(
+        List l = passStationService.getAllCellPerPcsHistory(
                 pChecker.checkInputVal(PO) ? PO : null,
+                pChecker.checkInputVal(type) ? type : null,
                 pChecker.checkInputVal(lineId) ? Integer.parseInt(lineId) : null,
                 pChecker.checkInputVal(minPcs) ? Integer.parseInt(minPcs) : null,
                 pChecker.checkInputVal(maxPcs) ? Integer.parseInt(maxPcs) : null,
@@ -86,16 +86,15 @@ public class CellRecordServlet extends HttpServlet {
                     generator.specifyColumnHeaders(columnHeader);
                     generator.generateWorkBooks(l);
 
-                    Workbook w = generator.getWorkbook();
+                    try (Workbook w = generator.getWorkbook()) {
+                        String fileExt = ExcelGenerator.getFileExt(w);
 
-                    String fileExt = ExcelGenerator.getFileExt(w);
-
-                    res.setContentType("application/vnd.ms-excel");
-                    res.setHeader("Set-Cookie", "fileDownload=true; path=/");
-                    res.setHeader("Content-Disposition",
-                            "attachment; filename=sampleData" + new DatetimeGenerator("yyyyMMdd").getToday() + fileExt);
-                    w.write(res.getOutputStream());
-                    w.close();
+                        res.setContentType("application/vnd.ms-excel");
+                        res.setHeader("Set-Cookie", "fileDownload=true; path=/");
+                        res.setHeader("Content-Disposition",
+                                "attachment; filename=sampleData" + new DatetimeGenerator("yyyyMMdd").getToday() + fileExt);
+                        w.write(res.getOutputStream());
+                    }
                 }
                 break;
         }

@@ -71,11 +71,11 @@
 
                     if (cellLoginObj.PO != null) {
                         $("#PO").val(cellLoginObj.PO);
-                        $("#begin, #PO").attr("disabled", true).unbind("click");
+                        $("#begin, #PO, #type").attr("disabled", true).unbind("click");
                         $("#end").removeAttr("disabled");
                     } else {
                         $("#end").attr("disabled", true).unbind("click");
-                        $("#begin, #PO").removeAttr("disabled");
+                        $("#begin, #PO, #type").removeAttr("disabled");
                     }
                     $("#startSchedArea").unblock();
                     showProcessing();
@@ -122,17 +122,19 @@
                     var lineId = $("#lineId").val();
                     var PO = $("#PO").val();
                     var modelname = $("#modelname").val();
+                    var type = $("#type").val();
 
-                    if (checkVal(lineId, PO, modelname) == false || modelname == "data not found") {
+                    if (checkVal(lineId, PO, modelname, type) == false || modelname == "data not found") {
                         showMsg("輸入資料有誤，請重新再確認。");
                         return false;
                     }
 
-                    if (confirm("Begin PO: " + PO + " on line " + $("#lineId option:selected").text().trim() + " ?")) {
+                    if (confirm("Begin PO: " + PO + " on line " + $("#lineId option:selected").text().trim() + " / " + type + " ?")) {
                         insertCellInfo({
                             lineId: lineId,
                             PO: PO,
-                            modelname: modelname
+                            modelname: modelname,
+                            type: type
                         });
                     }
                 });
@@ -355,6 +357,7 @@
                 function addPOInCellCookie(PO) {
                     var cellLoginObj = getCellCookie();
                     cellLoginObj.PO = PO;
+                    cellLoginObj.type = (PO == null ? null : $("#type").val());
                     $.cookie(cellCookieName, JSON.stringify(cellLoginObj), {expires: getExpireDate()});
                 }
 
@@ -412,7 +415,7 @@
                     <option value="-1">請選擇線別</option>
                     <c:forEach var="cellLine" items="${cellLineDAO.findBySitefloor(userSitefloor)}">
                         <option value="${cellLine.id}" ${cellLine.lock == 1 ? "disabled style='opacity:0.5'" : ""}>
-                            線別 ${cellLine.name} / 代號 ${cellLine.aps_lineId} 
+                            線別 ${cellLine.name} 
                         </option>
                     </c:forEach>
                 </select>
@@ -425,6 +428,11 @@
                     <label>Processing</label>
                     <input type="text" id="PO" placeholder="Please insert your PO" />
                     <input type="text" name="modelname" id="modelname" placeholder="機種" readonly style="background: #CCC; width: 180px" />
+                    <select id="type">
+                        <option value="BAB">BAB</option>
+                        <option value="TEST">Test</option>
+                        <option value="PKG">Packing</option>
+                    </select>
                     <input type="button" id="begin" value="Begin" />
                     <input type="button" id="end" value="End" />
                 </div>

@@ -5,6 +5,7 @@
  */
 package com.advantech.webservice;
 
+import com.advantech.entity.CellLineType;
 import com.advantech.entity.PassStation;
 import com.advantech.entity.PassStationRecords;
 import com.advantech.entity.TestLineTypeUser;
@@ -84,16 +85,16 @@ public class WebServiceRV {
         List data = getKanbanUsers();
         for (Object obj : data) {
             Document doc = ((Node) obj).getOwnerDocument();
-            StringWriter sw = new StringWriter();
-            TransformerFactory tf = TransformerFactory.newInstance();
-            Transformer transformer = tf.newTransformer();
-            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
-            transformer.setOutputProperty(OutputKeys.METHOD, "xml");
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-            transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-            transformer.transform(new DOMSource(doc), new StreamResult(sw));
-            list.add(sw.toString());
-            sw.close();
+            try (StringWriter sw = new StringWriter()) {
+                TransformerFactory tf = TransformerFactory.newInstance();
+                Transformer transformer = tf.newTransformer();
+                transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
+                transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+                transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+                transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+                transformer.transform(new DOMSource(doc), new StreamResult(sw));
+                list.add(sw.toString());
+            }
         }
 
         return list;
@@ -136,7 +137,7 @@ public class WebServiceRV {
             Document doc = ((Node) l.get(1)).getOwnerDocument();
             //Skip the <diffgr:diffgram> tag, read QryData tag directly.
             Node node = doc.getFirstChild().getFirstChild().getFirstChild();
-            
+
             Object o = this.unmarshalFromList(node, User.class);
 
             return o == null ? null : (User) o;
@@ -146,15 +147,24 @@ public class WebServiceRV {
         }
     }
 
-    public List<PassStation> getPassStationRecords(String po, Integer lineId) {
+    public List<PassStation> getPassStationRecords(String po, String type) {
+        String stations;
+        if (CellLineType.BAB.toString().equals(type)) {
+            stations = "'2','20'";
+        } else if (CellLineType.PKG.toString().equals(type)) {
+            stations = "'33'";
+        } else {
+            return new ArrayList();
+        }
+
         try {
             String queryString
-                    = "<root><METHOD ID='ETLSO.QryT_SnPassTime'/><WIP_INFO><WIP_NO>"
+                    = "<root><METHOD ID='ETLSO.QryT_SnPassTime001'/><WIP_INFO><WIP_NO>"
                     + po
-                    + "</WIP_NO><UNIT_NO>B</UNIT_NO><LINE_ID>"
-                    + lineId
-                    + "</LINE_ID><STATION_ID>'2','20'</STATION_ID></WIP_INFO></root>";
-            
+                    + "</WIP_NO><UNIT_NO></UNIT_NO><LINE_ID></LINE_ID><STATION_ID>"
+                    + stations
+                    + "</STATION_ID></WIP_INFO></root>";
+
             List l = this.getWebServiceData(queryString);
             Document doc = ((Node) l.get(1)).getOwnerDocument();
             //Skip the <diffgr:diffgram> tag, read QryData tag directly.
@@ -174,9 +184,9 @@ public class WebServiceRV {
             Document doc = ((Node) l.get(1)).getOwnerDocument();
             //Skip the <diffgr:diffgram> tag, read QryData tag directly.
             Node node = doc.getFirstChild().getFirstChild();
-            
+
             Object o = this.unmarshalFromList(node, TestLineTypeUsers.class);
-            
+
             return o == null ? new ArrayList() : ((TestLineTypeUsers) o).getQryData();
         } catch (Exception ex) {
             log.error(ex.toString());

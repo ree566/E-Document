@@ -80,6 +80,7 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                     $("#reset").trigger("click");
                     $("#PO").val(selectData.PO);
                     $("#lineId").val(selectData.lineId);
+                    $("#type").val(selectData.type);
                     $("#send").trigger("click");
 
                     if ($(this).hasClass('selected')) {
@@ -169,6 +170,7 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                         {data: "PO"},
                         {data: "Model_name"},
                         {data: "lineName"},
+                        {data: "type"},
                         {data: "failPercent"},
                         {data: "total"},
                         {data: "isused"},
@@ -177,19 +179,19 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                     ],
                     "columnDefs": [
                         {
-                            "targets": 5,
+                            "targets": 6,
                             'render': function (data, type, full, meta) {
                                 return ((data * 100 < 1 && data !== 0) ? getPercent(data, 2) : getPercent(data, 1)) + '%';
                             }
                         },
                         {
-                            "targets": 7,
+                            "targets": 8,
                             'render': function (data, type, full, meta) {
                                 return data == null ? "進行中" : "已完結";
                             }
                         },
                         {
-                            "targets": [8, 9],
+                            "targets": [9, 10],
                             'render': function (data, type, full, meta) {
                                 return data == null ? "N/A" : formatDate(data);
                             }
@@ -245,6 +247,7 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                                     httpMethod: "Post",
                                     data: {
                                         PO: $("#PO").val(),
+                                        type: $("#type").val(),
                                         lineId: $("#lineId").val(),
                                         minPcs: $("#minPcs").val(),
                                         maxPcs: $("#maxPcs").val(),
@@ -275,6 +278,7 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                         "type": "Post",
                         data: {
                             PO: $("#PO").val(),
+                            type: $("#type").val(),
                             lineId: $("#lineId").val(),
                             minPcs: $("#minPcs").val(),
                             maxPcs: $("#maxPcs").val(),
@@ -383,6 +387,7 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                             <th>工單</th>
                             <th>機種</th>
                             <th>線別</th>
+                            <th>類別</th>
                             <th>亮燈頻率</th>
                             <th>投入數量</th>
                             <th>狀態</th>
@@ -409,10 +414,21 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                                 <select id="lineId">
                                     <option value="">請選擇線別</option>
                                     <c:forEach var="cellLine" items="${cellLineDAO.findAll()}">
-                                        <option value="${cellLine.id}"}>
-                                            線別 ${cellLine.name} / 代號 ${cellLine.aps_lineId} 
+                                        <option value="${cellLine.id}">
+                                            線別 ${cellLine.name}
                                         </option>
                                     </c:forEach>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><label>類別</label></td>
+                            <td>
+                                <select id="type">
+                                    <option value="">請選擇類別</option>
+                                    <option value="BAB">Bab</option>
+                                    <option value="TEST">TEST</option>
+                                    <option value="PKG">Packing</option>
                                 </select>
                             </td>
                         </tr>

@@ -18,7 +18,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "QryData")
-public class PassStation implements Serializable{
+public class PassStation implements Serializable {
 
     @XmlElement(name = "BARCODE_NO")
     private String barcode;
@@ -43,6 +43,8 @@ public class PassStation implements Serializable{
 
     @XmlElement(name = "USER_NAME_CH")
     private String userName;
+
+    private String type;
 
     public String getBarcode() {
         return barcode;
@@ -108,6 +110,14 @@ public class PassStation implements Serializable{
         this.userName = userName;
     }
 
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
     @Override
     public int hashCode() {
         int hash = 3;
@@ -136,6 +146,5 @@ public class PassStation implements Serializable{
         }
         return true;
     }
-    
-    
+
 }

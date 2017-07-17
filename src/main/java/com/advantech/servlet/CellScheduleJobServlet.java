@@ -9,7 +9,6 @@ package com.advantech.servlet;
 import com.advantech.entity.Cell;
 import com.advantech.entity.CellLine;
 import com.advantech.helper.CronTrigMod;
-import com.advantech.helper.DatetimeGenerator;
 import com.advantech.helper.ParamChecker;
 import com.advantech.quartzJob.CellStation;
 import com.advantech.service.BasicService;
@@ -37,11 +36,9 @@ import org.quartz.TriggerKey;
 @WebServlet(name = "CellScheduleJobServlet", urlPatterns = {"/CellScheduleJobServlet"})
 public class CellScheduleJobServlet extends HttpServlet {
 
-    private String jobName = null;
     private final String jobGroup = "Cell";
     private final String cronTrig = "0 0/1 8-20 ? * MON-SAT *";
     private ParamChecker pc = null;
-    private DatetimeGenerator dg = null;
     private Map<String, JobKey> schedJobs;
     private CellService cellService;
     private CellLineService cellLineService;
@@ -49,7 +46,6 @@ public class CellScheduleJobServlet extends HttpServlet {
     @Override
     public void init() throws ServletException {
         pc = new ParamChecker();
-        dg = new DatetimeGenerator("yy-MM-dd");
         schedJobs = new HashMap();
         cellService = BasicService.getCellService();
         cellLineService = BasicService.getCellLineService();
@@ -77,6 +73,7 @@ public class CellScheduleJobServlet extends HttpServlet {
                     String PO = req.getParameter("PO");
                     String modelname = req.getParameter("modelname");
                     String lineId = req.getParameter("lineId");
+                    String type = req.getParameter("type");
                     if (pc.checkInputVals(PO, lineId) == true) {
 
                         int line = Integer.parseInt(lineId);
@@ -87,8 +84,9 @@ public class CellScheduleJobServlet extends HttpServlet {
                             if (cellService.getCellProcessing(line).isEmpty()) {
                                 WorkTimeService workTimeService = BasicService.getWorkTimeService();
                                 if (workTimeService.getAssyStandardTime(modelname) != null) { //Check 標工
-                                    if (cellService.insert(new Cell(line, PO, modelname))) {
-                                        responseObject = this.schedNewJobs(line, PO) ? "success" : "fail";
+                                    Cell cell = new Cell(line, type, PO, modelname);
+                                    if (cellService.insert(cell)) {
+                                        responseObject = this.schedNewJobs(cell) ? "success" : "fail";
                                     } else {
                                         responseObject = "fail";
                                     }
@@ -133,10 +131,10 @@ public class CellScheduleJobServlet extends HttpServlet {
                         List<Cell> cells = cellService.getCellProcessing(line);
                         if (!cells.isEmpty()) {
                             Cell cell = (Cell) cells.get(0);
-                            CellLine cellLine = BasicService.getCellLineService().findOne(cell.getLineId());
-                            CellStation.checkDifferenceAndInsert(PO, cellLine.getAps_lineId()); //Don't forget to check the xml data and insert at last.
+                            CellLine cellLine = cellLineService.findOne(cell.getLineId());
+                            CellStation.checkDifferenceAndInsert(PO, cell.getType(), cellLine.getAps_lineId()); //Don't forget to check the xml data and insert at last.
                             if (cellService.delete(cell) == true) {
-                                responseObject = removeJob(line, PO) ? "success" : "fail";
+                                responseObject = removeJob(cell) ? "success" : "fail";
                             } else {
                                 responseObject = "fail";
                             }
@@ -162,7 +160,7 @@ public class CellScheduleJobServlet extends HttpServlet {
         List<Cell> l = cellService.getCellProcessing();
         for (Cell cell : l) {
             try {
-                this.schedNewJobs(cell.getLineId(), cell.getPO());
+                this.schedNewJobs(cell);
             } catch (SchedulerException ex) {
                 out.println(ex);
             }
@@ -173,34 +171,36 @@ public class CellScheduleJobServlet extends HttpServlet {
         return CronTrigMod.getInstance().getJobKeys("Cell");
     }
 
-    private boolean schedNewJobs(int lineId, String PO) throws SchedulerException {
+    private boolean schedNewJobs(Cell cell) throws SchedulerException {
+        String po = cell.getPO();
+        int lineId = cell.getLineId();
         CronTrigMod ctm = CronTrigMod.getInstance();
         CellLine cellLine = BasicService.getCellLineService().findOne(lineId);
-        jobName = cellLine.getName() + "_" + cellLine.getAps_lineId() + "_" + PO;
+        String jobKeyName = this.generateCellJobKeyName(cellLine, cell);
         Map data = new HashMap();
-        data.put("PO", PO);
-        data.put("lineId", cellLine.getId());
+        data.put("PO", po);
+        data.put("type", cell.getType());
         data.put("apsLineId", cellLine.getAps_lineId());
-        data.put("today", dg.getToday());
-        JobKey jobKey = ctm.createJobKey(jobName, jobGroup);
-        TriggerKey triggerKey = ctm.createTriggerKey(jobName, jobGroup);
+        JobKey jobKey = ctm.createJobKey(jobKeyName, jobGroup);
+        TriggerKey triggerKey = ctm.createTriggerKey(jobKeyName, jobGroup);
         JobDetail detail = ctm.createJobDetail(jobKey, jobGroup, CellStation.class, data);
         ctm.scheduleJob(detail, triggerKey, cronTrig);
         schedJobs.put(Integer.toString(cellLine.getId()), jobKey);
         return true;
     }
 
-    private boolean removeJob(int lineId, String PO) throws SchedulerException {
+    private boolean removeJob(Cell cell) throws SchedulerException {
+        int lineId = cell.getLineId();
         CronTrigMod ctm = CronTrigMod.getInstance();
         CellLine cellLine = BasicService.getCellLineService().findOne(lineId);
         if (cellLine == null) {
             return false;
         }
-//        String key = cellLine.getName() + "_" + cellLine.getAps_lineId() + "_" + PO;
         String key = Integer.toString(lineId);
         JobKey jobKey = schedJobs.get(key);
         if (jobKey == null) {
-            jobKey = ctm.createJobKey(cellLine.getName() + "_" + cellLine.getAps_lineId() + "_" + PO, this.jobGroup);
+            String jobKeyName = this.generateCellJobKeyName(cellLine, cell);
+            jobKey = ctm.createJobKey(jobKeyName, this.jobGroup);
         }
         if (ctm.isJobInScheduleExist(jobKey)) {
             ctm.removeJob(jobKey);
@@ -208,5 +208,9 @@ public class CellScheduleJobServlet extends HttpServlet {
         } else {
             return false;
         }
+    }
+
+    private String generateCellJobKeyName(CellLine cellLine, Cell cell) {
+        return cellLine.getName() + "_" + cell.getType() + "_" + cell.getPO();
     }
 }

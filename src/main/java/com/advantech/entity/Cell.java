@@ -16,6 +16,7 @@ public class Cell implements Serializable {
 
     private int id;
     private int lineId;
+    private String type;
     private String PO;
     private String Model_name;
     private Integer isused;
@@ -24,8 +25,9 @@ public class Cell implements Serializable {
     public Cell() {
     }
 
-    public Cell(int lineId, String PO, String Model_name) {
+    public Cell(int lineId, String type, String PO, String Model_name) {
         this.lineId = lineId;
+        this.type = type;
         this.PO = PO;
         this.Model_name = Model_name;
     }
@@ -44,6 +46,14 @@ public class Cell implements Serializable {
 
     public void setLineId(int lineId) {
         this.lineId = lineId;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public String getPO() {
