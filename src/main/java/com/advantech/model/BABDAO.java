@@ -296,7 +296,7 @@ public class BABDAO extends BasicDAO implements AlarmActions {
 
             if (Objects.equals(BABStatus.UNFINSHED.getValue(), bab.getIsused())) {
                 qRunner.update(conn1,
-                        "UPDATE LS_BAB SET isused = ? WHERE id = ?)",
+                        "UPDATE LS_BAB SET isused = ? WHERE id = ?",
                         bab.getIsused(),
                         bab.getId()
                 );
