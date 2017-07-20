@@ -30,6 +30,10 @@ function getDate(el) {
 
 var errorTextFormatF = function (data) {
 
+    if (data != null && data.responseText != null) {
+        return data.responseText;
+    }
+
     // The JSON object that comes from the server contains an array of strings:
     // odd elements are field names, and even elements are error messages.
     // If your JSON has a different format, the code should be adjusted accordingly.

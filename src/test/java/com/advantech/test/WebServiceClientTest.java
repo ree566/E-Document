@@ -5,15 +5,17 @@
  */
 package com.advantech.test;
 
-import com.advantech.websocket.WsClient;
-import hello.wsdl.GetWeatherResponse;
+import com.advantech.webservice.WsClient;
+import java.util.List;
 import static junit.framework.Assert.assertNotNull;
+import static org.junit.Assert.assertNotEquals;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.tempuri.TxResponse;
 
 /**
  *
@@ -28,13 +30,14 @@ public class WebServiceClientTest {
 
     @Autowired
     private WsClient client;
-    
+
 //    @Test
-    public void test() {
-        GetWeatherResponse response = client.simpleSendAndReceive();
-        assertNotNull(response);
-        System.out.println(response.getGetWeatherResult());
-        
+    public void test() throws Exception {
+        String test = "<root><METHOD ID='WMPSO.TxStandardWordtime'/><STANDARD_WORKTIME><UNIT_NO>B</UNIT_NO><STATION_ID>2</STATION_ID><LINE_ID>37</LINE_ID><ITEM_NO>UTC-542FP-ATB0E</ITEM_NO><TOTAL_CT>3.35</TOTAL_CT><FIRST_TIME>0</FIRST_TIME><CT>10</CT><SIDE>5010</SIDE><OP_CNT>1</OP_CNT><KP_TYPE/><MACHINE_CNT>3</MACHINE_CNT></STANDARD_WORKTIME></root>";
+        TxResponse res = client.simpleTxSendAndReceive(test);
+        assertNotNull(res);
+        System.out.println(res.getTxResult());
+
 //        String ticker = "MSFT";
 //        GetWeatherResponse response = (GetWeatherResponse) client.someOperation(ticker);
 //        System.err.println(response.getGetWeatherResult());

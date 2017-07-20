@@ -5,8 +5,9 @@
  */
 package com.advantech.test;
 
-import java.text.SimpleDateFormat;
-import org.joda.time.DateTime;
+import static com.google.common.collect.Lists.newArrayList;
+import java.util.List;
+import javax.xml.bind.JAXBException;
 import org.junit.Test;
 
 /**
@@ -16,13 +17,9 @@ import org.junit.Test;
 public class Test1Test {
 
     @Test
-    public void test() throws SecurityException, NoSuchFieldException {
-//        String str = "2017-07-12 15:18:50";
-//        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//        DateTime d = new DateTime(str);
-//        
-        System.out.println("hello");
-
+    public void test() throws SecurityException, NoSuchFieldException, JAXBException {
+        List l = newArrayList("A","b","C");
+        System.out.println(l.toString());
     }
 
 }

@@ -10,7 +10,6 @@ import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.Worktime;
 import com.advantech.model.WorktimeFormulaSetting;
 import static com.google.common.collect.Lists.newArrayList;
-import java.math.BigDecimal;
 import java.util.List;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;

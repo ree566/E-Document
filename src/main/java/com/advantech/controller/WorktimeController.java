@@ -10,13 +10,17 @@ import static com.advantech.helper.JqGridResponseUtils.toJqGridResponse;
 import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.Worktime;
 import com.advantech.jqgrid.JqGridResponse;
-import com.advantech.service.SheetViewService;
 import com.advantech.service.WorktimeService;
+import com.advantech.webservice.WorktimeStandardtimeUploadPort;
 import static com.google.common.collect.Lists.newArrayList;
+import java.util.Collection;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestWrapper;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -37,6 +41,9 @@ public class WorktimeController extends CrudController<Worktime> {
 
     @Autowired
     private WorktimeMailManager worktimeMailManager;
+
+    @Autowired
+    private WorktimeStandardtimeUploadPort port;
 
     @ResponseBody
     @RequestMapping(value = SELECT_URL, method = {RequestMethod.GET})
@@ -62,7 +69,13 @@ public class WorktimeController extends CrudController<Worktime> {
             resetNullableColumn(worktime);
             modifyMessage = worktimeService.insertWithFormulaSetting(worktime) == 1 ? this.SUCCESS_MESSAGE : FAIL_MESSAGE;
             if (SUCCESS_MESSAGE.equals(modifyMessage)) {
-                worktimeMailManager.notifyUser(newArrayList(worktime), ADD);
+                try {
+                    this.checkUserRoleAndUpload(worktime);
+                } catch (Exception ex) {
+                    return serverResponse(ex.getMessage());
+                } finally {
+                    worktimeMailManager.notifyUser(newArrayList(worktime), ADD);
+                }
             }
         }
 
@@ -84,6 +97,13 @@ public class WorktimeController extends CrudController<Worktime> {
         } else {
             resetNullableColumn(worktime);
             modifyMessage = worktimeService.merge(worktime) == 1 ? this.SUCCESS_MESSAGE : FAIL_MESSAGE;
+            if (SUCCESS_MESSAGE.equals(modifyMessage)) {
+                try {
+                    this.checkUserRoleAndUpload(worktime);
+                } catch (Exception ex) {
+                    return serverResponse(ex.getMessage());
+                }
+            }
         }
 
         return serverResponse(modifyMessage);
@@ -130,5 +150,23 @@ public class WorktimeController extends CrudController<Worktime> {
         } else {
             return existWorktime != null && existWorktime.getId() != worktime.getId();
         }
+    }
+
+    private void checkUserRoleAndUpload(Worktime worktime) throws Exception {
+        if (hasRole("ROLE_AUTOUPLOADKEY")) {
+            port.uploadStandardTime(worktime);
+        }
+    }
+
+    private boolean hasRole(String role) {
+        Collection<GrantedAuthority> authorities = (Collection<GrantedAuthority>) SecurityContextHolder.getContext().getAuthentication().getAuthorities();
+        boolean hasRole = false;
+        for (GrantedAuthority authority : authorities) {
+            hasRole = authority.getAuthority().equals(role);
+            if (hasRole) {
+                break;
+            }
+        }
+        return hasRole;
     }
 }
