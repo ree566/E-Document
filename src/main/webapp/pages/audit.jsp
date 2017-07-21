@@ -21,6 +21,7 @@
         setSelectOptions({
             rootUrl: "<c:url value="/" />",
             columnInfo: [
+                {name: "businessGroup", isNullable: false},
                 {name: "floor", isNullable: false},
                 {name: "user", nameprefix: "spe_", isNullable: false, dataToServer: "SPE"},
                 {name: "user", nameprefix: "ee_", isNullable: false, dataToServer: "EE"},
@@ -92,6 +93,8 @@
                     {label: 'id', name: "id", jsonmap: "0.id", width: 60, frozen: false, hidden: true, search: false},
                     {label: 'Model', name: "modelName", jsonmap: "0.modelName", frozen: false, searchrules: {required: true}, searchoptions: search_string_options, formoptions: required_form_options},
                     {label: 'TYPE', name: "type_id", jsonmap: "0.type.id", formatter: selectOptions["type_func"], width: 100, searchrules: {required: true}, searchoptions: search_string_options},
+                    {label: 'BU', name: "businessGroup_id", jsonmap: "0.businessGroup.id", formatter: selectOptions["businessGroup_func"], width: 100, searchrules: {required: true}, searchoptions: search_string_options},
+                    {label: 'Work Center', name: "workCenter", jsonmap: "0.workCenter", width: 100, searchrules: {required: true}, searchoptions: search_string_options},
                     {label: 'ProductionWT', name: "productionWt", jsonmap: "0.productionWt", width: 120, searchrules: number_search_rule, searchoptions: search_decimal_options},
                     {label: 'Total Module', name: "totalModule", jsonmap: "0.totalModule", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options},
                     {label: 'Setup Time', name: "setupTime", jsonmap: "0.setupTime", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options},

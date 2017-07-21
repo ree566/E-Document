@@ -46,7 +46,7 @@
         <script src="<c:url value="/js/sb-admin-2.min.js" />"></script>
         <script src="<c:url value="/js/metisMenu.min.js" />"></script>
 
-        <script src="<c:url value="/js/jqgrid-custom-param.js" />"></script> 
+        <script src="<c:url value="/js/jqgrid-custom-setting.js" />"></script> 
         <script src="<c:url value="/js/sessionExpiredDetect.js" />"></script>
         <script src="<c:url value="/js/jquery.blockUI.js" />"></script>
 

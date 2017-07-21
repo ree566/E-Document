@@ -62,6 +62,7 @@ public class Worktime implements java.io.Serializable {
     private Pending pending;
     private PreAssy preAssy;
     private Type type;
+    private BusinessGroup businessGroup;
     private String modelName;
 
 //    @JsonIgnore
@@ -70,6 +71,7 @@ public class Worktime implements java.io.Serializable {
     @JsonIgnore
     private List<WorktimeFormulaSetting> worktimeFormulaSettings = new AutoPopulatingList<WorktimeFormulaSetting>(WorktimeFormulaSetting.class);
 
+    private String workCenter;
     private BigDecimal totalModule = BigDecimal.ZERO;
     private BigDecimal cleanPanel = BigDecimal.ZERO;
     private BigDecimal assy = BigDecimal.ZERO;
@@ -236,6 +238,17 @@ public class Worktime implements java.io.Serializable {
         this.type = type;
     }
 
+//    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "businessGroup_id")
+    public BusinessGroup getBusinessGroup() {
+        return businessGroup;
+    }
+
+    public void setBusinessGroup(BusinessGroup businessGroup) {
+        this.businessGroup = businessGroup;
+    }
+
     @NotNull
     @NotEmpty
     @Size(min = 0, max = 50)
@@ -246,6 +259,16 @@ public class Worktime implements java.io.Serializable {
 
     public void setModelName(String modelName) {
         this.modelName = modelName;
+    }
+
+    @Size(min = 0, max = 50)
+    @Column(name = "work_center", length = 50)
+    public String getWorkCenter() {
+        return workCenter;
+    }
+
+    public void setWorkCenter(String workCenter) {
+        this.workCenter = workCenter;
     }
 
     @Digits(integer = 10 /*precision*/, fraction = 1 /*scale*/)

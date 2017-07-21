@@ -5,6 +5,7 @@
  */
 package com.advantech.controller;
 
+import com.advantech.model.BusinessGroup;
 import com.advantech.model.Floor;
 import com.advantech.model.Flow;
 import com.advantech.model.FlowGroup;
@@ -13,6 +14,7 @@ import com.advantech.model.PreAssy;
 import com.advantech.model.Type;
 import com.advantech.model.Unit;
 import com.advantech.model.User;
+import com.advantech.service.BusinessGroupService;
 import com.advantech.service.FloorService;
 import com.advantech.service.FlowGroupService;
 import com.advantech.service.FlowService;
@@ -37,7 +39,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_GUEST"})
 @RequestMapping(value = "/SelectOption")
-public class SelectOptionController {
+public class WorktimeSelectOptionController {
 
     @Autowired
     private FloorService floorService;
@@ -63,12 +65,15 @@ public class SelectOptionController {
     @Autowired
     private UnitService unitService;
 
+    @Autowired
+    private BusinessGroupService businessGroupService;
+
     @ResponseBody
     @RequestMapping(value = "/floor", method = {RequestMethod.GET})
     public List<Floor> getFloorOption() {
         return floorService.findByPrimaryKeys(1, 2);
     }
-    
+
     @ResponseBody
     @RequestMapping(value = "/user-floor", method = {RequestMethod.GET})
     public List<Floor> getUserFloorOption() {
@@ -127,5 +132,11 @@ public class SelectOptionController {
     @RequestMapping(value = "/unit", method = {RequestMethod.GET})
     public List<Unit> getUnitOption() {
         return unitService.findAll();
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/businessGroup", method = {RequestMethod.GET})
+    public List<BusinessGroup> getBusinessGroupOption() {
+        return businessGroupService.findAll();
     }
 }

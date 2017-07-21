@@ -30,11 +30,12 @@
 </style>
 
 <script src="<c:url value="/js/urlParamGetter.js" />"></script>
-<script src="<c:url value="/js/column-name-setting.js" />"></script>
 <script src="<c:url value="/js/jqgrid-custom-select-option-reader.js" />"></script>
-<script src="<c:url value="/js/jqgrid-custom-validator.js" />"></script>
 <script src="<c:url value="/js/jqgrid-custom-setting.js" />"></script>
 <script src="<c:url value="/js/jquery.blockUI.js" />"></script>
+<script src="<c:url value="/js/worktime-setting/column-selector-autofill.js" />"></script>
+<script src="<c:url value="/js/worktime-setting/column-setting.js" />"></script>
+<script src="<c:url value="/js/worktime-setting/column-validator.js" />"></script>
 
 <script>
     $(function () {
@@ -66,6 +67,7 @@
         setSelectOptions({
             rootUrl: "<c:url value="/" />",
             columnInfo: [
+                {name: "businessGroup", isNullable: false},
                 {name: "floor", isNullable: false},
                 {name: "user", nameprefix: "spe_", isNullable: false, dataToServer: "SPE"},
                 {name: "user", nameprefix: "ee_", isNullable: true, dataToServer: "EE"},
@@ -78,46 +80,7 @@
                 {name: "pending", isNullable: false}
             ]
         });
-        var burnIn_select_event = [
-            {
-                type: 'change',
-                fn: function (e) {
-                    var selectOption = $('option:selected', this).text();
-                    var defaultValue = {
-                        BI: [4, 40],
-                        RI: [4, 0],
-                        N: [0, 0]
-                    };
-                    $('input#biTime').val(defaultValue[selectOption][0]);
-                    $('input#biTemperature').val(defaultValue[selectOption][1]);
-                }
-            }
-        ];
-        var pending_select_event = [
-            {
-                type: 'change',
-                fn: function (e) {
-                    var selectOption = $('option:selected', this).text();
-                    $('input#pendingTime').val(selectOption == 'N' ? 0 : '');
-                }
-            }
-        ];
-        var babFlow_select_event = [
-            {
-                type: 'change', fn: function (e) {
-                    var sel2 = $("#flowByTestFlowId\\.id");
-                    var sel2Val = sel2.val();
-                    $.get('<c:url value="/SelectOption/flow-byParent/" />' + $(this).val(), function (data) {
-                        sel2.html("");
-                        sel2.append("<option role='option' value=0>empty</option>");
-                        for (var i = 0; i < data.length; i++) {
-                            sel2.append("<option role='option' value=" + data[i].id + ">" + data[i].name + "</option>");
-                        }
-                        sel2.val(sel2Val);
-                    });
-                }
-            }
-        ];
+
         var testFlowInit = function (form) {
             setTimeout(function () {
                 // do here all what you need (like alert('yey');)
@@ -126,6 +89,7 @@
             }, 50);
             greyout(form);
         };
+        
         var checkRevision = function (form) {
             selected_row_revision = getRowRevision();
             if (selected_row_revision > table_current_revision) {
@@ -133,6 +97,7 @@
                 return false;
             }
         };
+        
         var before_add = function (postdata, formid) {
             var formulaFieldInfo = getFormulaCheckboxField();
             clearCheckErrorIcon();
@@ -145,10 +110,14 @@
                 return [true, "saved"];
             }
         };
+        
         var before_edit = function (postdata, formid) {
             var formulaFieldInfo = getFormulaCheckboxField();
             clearCheckErrorIcon();
             var checkResult = checkFlowIsValid(postdata, formid);
+            var modelRelativeCheckResult = checkModelIsValid(postdata);
+            checkResult = checkResult.concat(modelRelativeCheckResult);
+            console.log(checkResult);
             if (checkResult.length != 0) {
                 errorTextFormatF(checkResult); //field // code
                 return [false, "There are some errors in the entered data. Hover over the error icons for details."];
@@ -163,6 +132,7 @@
                 }
             }
         };
+        
         var showServerModifyMessage = function (response, postdata) {
             if (response.status == 200 || response.status == 201) {
                 alert("Success");
@@ -181,6 +151,8 @@
                 {label: 'id', name: "id", width: 60, frozen: true, hidden: true, key: true, search: false, editable: true, editrules: {edithidden: true}, editoptions: {readonly: 'readonly', disabled: true, defaultValue: "0"}},
                 {label: 'Model', name: "modelName", frozen: true, editable: true, searchrules: {required: true}, searchoptions: search_string_options, editrules: {required: true}, formoptions: required_form_options},
                 {label: 'TYPE', name: "type.id", edittype: "select", editoptions: {value: selectOptions["type"]}, formatter: selectOptions["type_func"], width: 100, searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["type"], sopt: ['eq']}},
+                {label: 'BU', name: "businessGroup.id", edittype: "select", editoptions: {value: selectOptions["businessGroup"], dataEvents: businessGroup_select_event}, formatter: selectOptions["businessGroup_func"], width: 100, searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["businessGroup"], sopt: ['eq']}},
+                {label: 'Work Center', name: "workCenter", width: 100, searchrules: {required: true}, searchoptions: search_string_options, editrules: {required: false}},
                 {label: 'ProductionWT', name: "productionWt", width: 120, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: {elmsuffix: addFormulaCheckbox("productionWt")}, editrules: {number: true}, editoptions: {defaultValue: '0'}},
                 {label: 'Setup Time', name: "setupTime", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: {elmsuffix: addFormulaCheckbox("setupTime")}, editrules: {number: true}, editoptions: {defaultValue: '0'}},
                 {label: 'CleanPanel', name: "cleanPanel", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, editoptions: {defaultValue: '0'}},
@@ -235,8 +207,8 @@
                 {label: '看板工時', name: "packingKanbanTime", width: 80, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, formoptions: {label: '包裝看板工時', elmsuffix: addFormulaCheckbox("packingKanbanTime")}, editoptions: {defaultValue: '0'}},
                 {label: 'CleanPanel+Assembly', name: "cleanPanelAndAssembly", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, formoptions: {elmsuffix: addFormulaCheckbox("cleanPanelAndAssembly")}, editoptions: {defaultValue: '0'}},
                 {label: 'Modified_Date', width: 200, name: "modifiedDate", index: "modifiedDate", formatter: 'date', formatoptions: {srcformat: 'Y-m-d H:i:s A', newformat: 'Y-m-d H:i:s A'}, stype: 'text', searchrules: date_search_rule, searchoptions: search_date_options, align: 'center'},
-                {label: '藍燈組裝', width: 80, name: "bwAvgViews.0.assyAvg", index: "bwAvgViews.assyAvg", sortable: true, editable: true, searchrules: number_search_rule, searchoptions: search_decimal_options},
-                {label: '藍燈包裝', width: 80, name: "bwAvgViews.0.packingAvg", index: "bwAvgViews.packingAvg", sortable: true, editable: true, searchrules: number_search_rule, searchoptions: search_decimal_options}
+                {label: '藍燈組裝(秒)', width: 80, name: "bwAvgViews.0.assyAvg", index: "bwAvgViews.assyAvg", sortable: true, editable: true, searchrules: number_search_rule, searchoptions: search_decimal_options},
+                {label: '藍燈包裝(秒)', width: 80, name: "bwAvgViews.0.packingAvg", index: "bwAvgViews.packingAvg", sortable: true, editable: true, searchrules: number_search_rule, searchoptions: search_decimal_options}
             ],
             rowNum: 20,
             rowList: [20, 50, 100],
@@ -551,6 +523,17 @@
             var totalAlert = firstCheckResult.concat(secondCheckResult);
 
             return totalAlert;
+        }
+        
+        function checkModelIsValid(postdata){
+            var data = {
+                modelName: postdata["modelName"],
+                "businessGroup\\.id": selectOptions["businessGroup_options"].get(parseInt(postdata["businessGroup.id"]))
+            };
+            console.log(data);
+            var modelCheckResult = modelNameCheckFieldIsValid(data);
+            var otherFieldCheckResult = checkModelNameIsValid(data);
+            return modelCheckResult.concat(otherFieldCheckResult);
         }
 
         function getGridRevision() {

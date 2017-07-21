@@ -10,7 +10,7 @@
 <link href="<c:url value="/css/multi-select.css" />" rel="stylesheet">
 <c:set var="tableName" value="WorktimeColumnGroup" />
 <script src="<c:url value="/js/jquery.multi-select.js" />"></script>
-<script src="<c:url value="/js/worktime-setting/worktime-columnsetting.js" />"></script>
+<script src="<c:url value="/js/worktime-setting/columnsetting.js" />"></script>
 <script>
     $(function () {
 

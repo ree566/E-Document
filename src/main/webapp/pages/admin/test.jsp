@@ -18,98 +18,72 @@
         <script src="<c:url value="/webjars/jquery/1.12.4/jquery.min.js" />"></script>
         <script src="<c:url value="/webjars/bootstrap/3.3.7/js/bootstrap.min.js" />"></script>
 
-        <script src="<c:url value="/js/jqgrid-custom-validator.js" />"></script>
 
         <script>
             $(function () {
-                var msgbox = $("#checkMsg");
-                var postdata = {
-                    cleanPanel: 10,
-                    assy: 0,
-                    t1: 1,
-                    t2: 0,
-                    t3: 0,
-                    t4: null,
-                    vibration: 2,
-                    hiPotLeakage: 0,
-                    coldBoot: 15,
-                    upBiRi: 0,
-                    downBiRi: 0,
-                    biCost: 20,
-                    burnIn: 'BI',
-                    packing: 0,
-                    babFlow: 'BAB_ASSY-VB-T1-RI',
-                    testFlow: 'TEST_MAC-T2-Wifi-T3-PI(T1-BI)',
-                    packingFlow: 'PKG'
+                var testData = {
+                    modelName: "AESBC",
+                    "businessGroup.id": "",
+                    "workCenter": "ES"
                 };
 
-//                fieldCheck(postdata);
-    
-                testFunc(postdata);
-                
-                function testFunc(postdata){
-                    var obj = $.extend(true, {}, postdata);
-                    obj.abb = 1;
-                    print(JSON.stringify(postdata));
-                    
-                }
+                var modelName_check_logic = [
+                    {keyword: "ES", checkColumn: ["businessGroup.id", "workCenter"], message: "Must contain 'ES'"}
+                ];
 
-                function fieldCheck(postdata) {
-                    for (var i = 0; i < field_check_flow_logic.length; i++) {
-                        var logic = field_check_flow_logic[i];
-                        var colInfo = logic.checkColumn;
+                var field_check_modelName_logic = [
+                    {checkColumn: {name: "businessGroup.id", value: "ES"}, description: "內容為ES", targetColumn: {name: "modelName", keyword: ["ES"]}},
+                    {checkColumn: {name: "workCenter", value: "ES"}, description: "內容為ES", targetColumn: {name: "modelName", keyword: ["ES"]}}
+                ];
 
-                        var colName = colInfo.name;
-                        var checkBool = colInfo.equals;
-                        var fieldVal = postdata[colName];
-                        var checkVal = colInfo.value;
-
-                        var description = logic.description;
-
-                        var targetColInfo = logic.targetColumn;
-                        var targetColName = targetColInfo.name;
-                        var targetKeyword = targetColInfo.keyword;
-                        var targetColVal = postdata[targetColName];
-
-                        console.log(targetColName);
-                        console.log(targetColVal);
-
-                        print(colName + ' ' + description + ' ,' + targetColName + ' must contain ' + targetKeyword + '.(Your val: ' + fieldVal + ' / ' + targetColVal + ')');
-                        if (checkBool == true) {
-                            checkFlow((fieldVal != null && fieldVal == checkVal), targetColName, targetColVal, targetKeyword);
-                        } else if (checkBool == false) {
-                            checkFlow((fieldVal != null && fieldVal != checkVal), targetColName, targetColVal, targetKeyword);
+                function modelNameCheckFieldIsValid(data) {
+                    var validationErrors = [];
+                    var modelName = data["modelName"];
+                    for (var i = 0; i < modelName_check_logic.length; i++) {
+                        var logic = modelName_check_logic[i];
+                        var keyword = logic.keyword;
+                        if (modelName.endsWith(keyword) == false) {
+                            continue;
                         }
-                        print('--------------');
-                    }
-                    print('Check complete.');
-                }
-
-                function checkFlow(bool, targetColName, targetColVal, keyword) {
-                    if (bool) {
-                        if (targetColVal != null) {
-                            var keyCheckFlag = false;
-                            for (var i = 0; i < keyword.length; i++) {
-                                if (targetColVal.indexOf(keyword[i]) > -1) {
-                                    keyCheckFlag = true;
-                                    break;
-                                }
+                        var checkCols = logic.checkColumn;
+                        for (var j = 0, k = checkCols.length; j < k; j++) {
+                            var colName = checkCols[j];
+                            var checkVal = data[colName];
+                            if (checkVal.indexOf(keyword) == -1) {
+                                var err = {};
+                                err.field = colName;
+                                err.code = logic.message;
+                                validationErrors.push(err);
                             }
-                            if (keyCheckFlag) {
-                                print('【O】' + targetColName + ': pass. / ' + targetColVal);
-                            } else {
-                                print('【X】' + targetColName + ' must conain: ' + keyword + ' Your val is:' + targetColVal);
-                            }
-                        } else {
-                            print('【X】' + targetColName + ' must conain: ' + keyword + './ Your val is: ' + targetColVal);
                         }
-                    } else {
-                        print('Check ignore.');
                     }
+                    return validationErrors;
                 }
 
-                function print(msg) {
-                    msgbox.append("<p>" + msg + "</p>");
+                function checkModelNameIsValid(data) {
+                    var validationErrors = [];
+                    for (var i = 0; i < field_check_modelName_logic.length; i++) {
+                        var logic = field_check_modelName_logic[i];
+                        var checkColInfo = logic.checkColumn;
+                        var isNeedToCheck = data[checkColInfo.name].indexOf(checkColInfo.value) != -1;
+                        if(isNeedToCheck){
+                            var targetColInfo = logic.targetColumn;
+                            var targetColName = targetColInfo.name;
+                            var colVal = data[targetColName];
+                            if(colVal.endsWith(targetColInfo.keyword) == false){
+                                var err = {};
+                                err.field = targetColName;
+                                err.code = targetColName + " must contain " + targetColInfo.keyword;
+                                appendFieldInfo(checkColInfo.name, logic.description, err);
+                                validationErrors.push(err);
+                            }
+                        }
+                    }
+                    return validationErrors;
+                }
+
+                function appendFieldInfo(field, description, error) {
+                    error.code = field + description + ' , ' + error.code;
                 }
 
             });

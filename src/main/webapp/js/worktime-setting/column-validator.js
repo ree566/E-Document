@@ -1,3 +1,4 @@
+//Custom param
 var not_null_and_zero_message = "需有值，不可為0";
 var when_not_empty_or_null = "不等於0時";
 var preAssy = "preAssy\\.id",
@@ -5,6 +6,7 @@ var preAssy = "preAssy\\.id",
         testFlow = "flowByTestFlowId\\.id",
         packingFlow = "flowByPackingFlowId\\.id";
 
+//Other field check logic
 var notZeroOrNull = function (obj) {
     return obj != null && obj != 0;
 };
@@ -17,6 +19,7 @@ var needRI = function (obj) {
     return obj != null && obj == 'RI';
 };
 
+//Flow check logic setting
 var flow_check_logic = {
     "PRE-ASSY": [
         {keyword: ["PRE_ASSY"], checkColumn: ["cleanPanel"], message: not_null_and_zero_message, prmValid: notZeroOrNull}
@@ -60,6 +63,7 @@ var field_check_flow_logic = [
 
 ];
 
+//Flow check logic
 function fieldCheck(postdata, preAssyVal, babFlowVal, testFlowVal, packingFlowVal) {
     var validationErrors = [];
     for (var i = 0; i < field_check_flow_logic.length; i++) {
@@ -135,4 +139,63 @@ function checkFlow(bool, targetColName, targetColVal, keyword) {
         }
     }
     return err;
+}
+
+//Model
+
+//Check logic setting
+var modelName_check_logic = [
+    {keyword: "ES", checkColumn: ["businessGroup\\.id"], message: "Must contain \"ES\""}
+];
+
+var field_check_modelName_logic = [
+    {checkColumn: {label: "BU", name: "businessGroup\\.id", value: "ES"}, description: "內容為ES", targetColumn: {name: "modelName", keyword: ["ES"]}}
+//    {checkColumn: {name: "workCenter", value: "ES"}, description: "內容為ES", targetColumn: {name: "modelName", keyword: ["ES"]}}
+];
+
+//Check logic
+function modelNameCheckFieldIsValid(data) {
+    var validationErrors = [];
+    var modelName = data["modelName"];
+    for (var i = 0; i < modelName_check_logic.length; i++) {
+        var logic = modelName_check_logic[i];
+        var keyword = logic.keyword;
+        if (modelName.endsWith(keyword) == false) {
+            continue;
+        }
+        var checkCols = logic.checkColumn;
+        for (var j = 0, k = checkCols.length; j < k; j++) {
+            var colName = checkCols[j];
+            var checkVal = data[colName];
+            if (checkVal.indexOf(keyword) == -1) {
+                var err = {};
+                err.field = colName;
+                err.code = logic.message;
+                validationErrors.push(err);
+            }
+        }
+    }
+    return validationErrors;
+}
+
+function checkModelNameIsValid(data) {
+    var validationErrors = [];
+    for (var i = 0; i < field_check_modelName_logic.length; i++) {
+        var logic = field_check_modelName_logic[i];
+        var checkColInfo = logic.checkColumn;
+        var isNeedToCheck = data[checkColInfo.name].indexOf(checkColInfo.value) != -1;
+        if (isNeedToCheck) {
+            var targetColInfo = logic.targetColumn;
+            var targetColName = targetColInfo.name;
+            var colVal = data[targetColName];
+            if (colVal.endsWith(targetColInfo.keyword) == false) {
+                var err = {};
+                err.field = targetColName;
+                err.code = targetColName + " must contain " + targetColInfo.keyword;
+                appendFieldInfo(checkColInfo.label, logic.description, err);
+                validationErrors.push(err);
+            }
+        }
+    }
+    return validationErrors;
 }
