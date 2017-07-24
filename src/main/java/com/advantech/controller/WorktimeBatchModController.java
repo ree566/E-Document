@@ -100,7 +100,7 @@ public class WorktimeBatchModController {
     @ResponseBody
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     public String batchInsert(@RequestParam("file") MultipartFile file) throws Exception {
-        List<Worktime> hgList = this.transToWorktimes(file);
+        List<Worktime> hgList = this.transToWorktimes(file, false);
 
         //Validate the column, throw exception when false.
         validateWorktime(hgList);
@@ -122,7 +122,7 @@ public class WorktimeBatchModController {
     @ResponseBody
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     public String batchUpdate(@RequestParam("file") MultipartFile file) throws Exception {
-        List<Worktime> hgList = this.transToWorktimes(file);
+        List<Worktime> hgList = this.transToWorktimes(file, true);
 
         //Validate the column, throw exception when false.
         validateWorktime(hgList);
@@ -138,7 +138,7 @@ public class WorktimeBatchModController {
     @ResponseBody
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     public String batchDelete(@RequestParam("file") MultipartFile file) throws Exception {
-        List<Worktime> hgList = this.transToWorktimes(file);
+        List<Worktime> hgList = this.transToWorktimes(file, false);
         int[] ids = new int[hgList.size()];
         for (int i = 0; i < hgList.size(); i++) {
             ids[i] = hgList.get(i).getId();
@@ -184,26 +184,26 @@ public class WorktimeBatchModController {
         return true;
     }
 
-    private List<Worktime> transToWorktimes(MultipartFile file) throws Exception {
+    private List<Worktime> transToWorktimes(MultipartFile file, boolean checkRevision) throws Exception {
         //固定sheet name為sheet1
-        XlsWorkBook workbook = new XlsWorkBook(file.getInputStream());
-        XlsWorkSheet sheet = workbook.getSheet("sheet1");
-        if (sheet == null) {
-            throw new Exception("Sheet named \"sheet1\" not found");
+        try (XlsWorkBook workbook = new XlsWorkBook(file.getInputStream())) {
+            XlsWorkSheet sheet = workbook.getSheet("sheet1");
+            if (sheet == null) {
+                throw new Exception("Sheet named \"sheet1\" not found");
+            }
+
+            //Init not relative column first.
+            List<Worktime> hgList = sheet.buildBeans(Worktime.class);
+
+            //If id is zero, the action is add.
+            if (checkRevision) {
+                Integer revisionNum = retriveRevisionNumber(sheet);
+                checkRevision(hgList, revisionNum);
+            }
+
+            hgList = retriveRelativeColumns(sheet, hgList);
+            return hgList;
         }
-
-        //Init not relative column first.
-        List<Worktime> hgList = sheet.buildBeans(Worktime.class);
-
-        //If id is zero, the action is add.
-        if (!hgList.isEmpty() && hgList.get(0).getId() != 0) {
-            Integer revisionNum = retriveRevisionNumber(sheet);
-            checkRevision(hgList, revisionNum);
-        }
-
-        hgList = retriveRelativeColumns(sheet, hgList);
-
-        return hgList;
     }
 
     //Check revision number is greater than current revision

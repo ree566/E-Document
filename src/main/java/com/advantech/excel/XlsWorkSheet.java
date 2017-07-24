@@ -5,7 +5,6 @@
  */
 package com.advantech.excel;
 
-import com.advantech.model.Type;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
@@ -20,6 +19,7 @@ import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.ss.usermodel.CellType;
 import org.dbunit.dataset.excel.XlsDataSetWriter;
 import org.joda.time.DateTime;
 
@@ -246,9 +246,13 @@ public class XlsWorkSheet {
             Method[] ms = cls.getDeclaredMethods();
             for (int row = 0, rowCount = this.getRowCount(); row < rowCount; row++) {
                 HSSFCell checkedCell = _sheet.getRow(row).getCell(0);
-                if (checkedCell == null || checkedCell.getCellType() == HSSFCell.CELL_TYPE_BLANK) {
+                HSSFCell checkedCell2 = _sheet.getRow(row).getCell(1);
+                if (checkedCell == null || checkedCell.getCellTypeEnum() == CellType.BLANK
+                        || checkedCell2 == null || checkedCell2.getCellTypeEnum() == CellType.BLANK
+                        || ("".equals(checkedCell.getStringCellValue()) && "".equals(checkedCell2.getStringCellValue()))) {
                     continue;
                 }
+
                 T bean = (T) cls.newInstance();
                 for (Method m : ms) {
                     String methodName = m.getName().toUpperCase();

@@ -188,7 +188,7 @@ function checkModelNameIsValid(data) {
             var targetColInfo = logic.targetColumn;
             var targetColName = targetColInfo.name;
             var colVal = data[targetColName];
-            if (colVal.endsWith(targetColInfo.keyword) == false) {
+            if (colVal.endsWith(("-" + targetColInfo.keyword)) == false) {
                 var err = {};
                 err.field = targetColName;
                 err.code = targetColName + " must contain " + targetColInfo.keyword;

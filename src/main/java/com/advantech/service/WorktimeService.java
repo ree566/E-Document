@@ -180,6 +180,9 @@ public class WorktimeService {
 
     public int delete(int id) {
         Worktime worktime = this.findByPrimaryKey(id);
+        if (worktime == null) {
+            return 0;
+        }
         return worktimeDAO.delete(worktime);
     }
 
