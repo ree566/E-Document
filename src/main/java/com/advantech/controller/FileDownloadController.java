@@ -8,6 +8,7 @@ package com.advantech.controller;
 import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.SheetView;
 import com.advantech.model.Worktime;
+import com.advantech.service.AuditService;
 import com.advantech.service.SheetViewService;
 import com.advantech.service.WorktimeService;
 import java.io.IOException;
@@ -16,6 +17,7 @@ import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.codec.binary.Base64;
 import org.jxls.common.Context;
 import org.jxls.expression.JexlExpressionEvaluator;
 import org.jxls.transform.Transformer;
@@ -43,6 +45,9 @@ public class FileDownloadController {
 
     @Autowired
     private WorktimeService worktimeService;
+
+    @Autowired
+    private AuditService auditService;
 
     @Autowired
     private ResourceLoader resourceLoader;
@@ -96,9 +101,13 @@ public class FileDownloadController {
 
     private void outputFile(List data, InputStream is, OutputStream os) throws IOException {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        Number revisionNum = auditService.findLastRevisions(Worktime.class);
+        String revisionInfo = this.encodeRevisionInfo(revisionNum);
+
         Context context = new Context();
         context.putVar("worktimes", data);
         context.putVar("dateFormat", dateFormat);
+        context.putVar("revision", revisionInfo);
 
         Transformer transformer = TransformerFactory.createTransformer(is, os);
         JexlExpressionEvaluator evaluator = (JexlExpressionEvaluator) transformer.getTransformationConfig().getExpressionEvaluator();
@@ -108,5 +117,11 @@ public class FileDownloadController {
 
         JxlsHelper helper = JxlsHelper.getInstance();
         helper.processTemplate(context, transformer);
+    }
+
+    private String encodeRevisionInfo(Number revisionNumber) {
+        String encodeString = "revision: " + revisionNumber;
+        byte[] bytesEncoded = Base64.encodeBase64(encodeString.getBytes());
+        return new String(bytesEncoded);
     }
 }

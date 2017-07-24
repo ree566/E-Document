@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 
 /**
  *
@@ -21,14 +22,14 @@ public class XlsWorkBook {
 
     private Map<String, XlsWorkSheet> _sheets;
 
-    public XlsWorkBook(String fileName) throws IOException {
+    public XlsWorkBook(String fileName) throws Exception {
         this(new FileInputStream(new File(fileName)));
     }
 
-    public XlsWorkBook(InputStream in) throws IOException {
+    public XlsWorkBook(InputStream in) throws Exception {
         _sheets = new HashMap<>();
 
-        HSSFWorkbook workbook = new HSSFWorkbook(in);
+        HSSFWorkbook workbook = (HSSFWorkbook) WorkbookFactory.create(in);
         int sheetCount = workbook.getNumberOfSheets();
         for (int i = 0; i < sheetCount; i++) {
             XlsWorkSheet sheet = new XlsWorkSheet(workbook.getSheetName(i),
@@ -36,6 +37,9 @@ public class XlsWorkBook {
             _sheets.put(workbook.getSheetName(i), sheet);
         }
 
+        if (in != null) {
+            in.close();
+        }
     }
 
     public XlsWorkSheet getSheet(String sheetName) {

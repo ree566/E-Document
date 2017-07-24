@@ -53,19 +53,19 @@ public class WorktimeDAO extends AbstractDao<Integer, Worktime> implements Basic
 
     public List<Worktime> findWithFullRelation(PageInfo info) {
         String[] fetchField = {
-            "type", "floor", "pending", "preAssy",
+            "type", "businessGroup", "floor", "pending", "preAssy",
             "flowByBabFlowId", "flowByPackingFlowId", "flowByTestFlowId",
             "userBySpeOwnerId", "userByEeOwnerId", "userByQcOwnerId"
         };
-        
+
         Criteria criteria = createEntityCriteria();
         for (String field : fetchField) {
             criteria.setFetchMode(field, FetchMode.JOIN);
         }
-        
+
         String fetchField_c = "bwAvgViews";
         criteria.createAlias(fetchField_c, fetchField_c, JoinType.LEFT_OUTER_JOIN);
-        
+
         List l = getByPaginateInfo(criteria, info);
         return l;
     }

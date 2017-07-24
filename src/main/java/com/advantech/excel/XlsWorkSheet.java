@@ -290,11 +290,6 @@ public class XlsWorkSheet {
                                 DateTime d = new DateTime(val);
                                 m.invoke(bean, d.toDate());
                                 break;
-                            case "class com.advantech.model.Type":
-                                Type t = new Type();
-                                t.setName(val);
-                                m.invoke(bean, t);
-                                break;
                             default:
                                 m.invoke(bean, val);
                                 break;

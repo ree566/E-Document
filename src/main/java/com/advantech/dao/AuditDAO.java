@@ -6,6 +6,7 @@
 package com.advantech.dao;
 
 import com.advantech.jqgrid.PageInfo;
+import com.advantech.model.Worktime;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
@@ -101,6 +102,12 @@ public class AuditDAO implements AuditAction {
     @Override
     public List forEntityAtRevision(Class clz, int version) {
         AuditQuery q = getReader().createQuery().forEntitiesAtRevision(clz, version);
+        return q.getResultList();
+    }
+
+    public List findModifiedAtRevision(Class clz, int version) {
+        AuditQuery q = getReader().createQuery().forRevisionsOfEntity(clz, true, true);
+        q.add(AuditEntity.revisionNumber().eq(version));
         return q.getResultList();
     }
 

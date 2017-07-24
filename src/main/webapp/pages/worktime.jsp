@@ -89,7 +89,7 @@
             }, 50);
             greyout(form);
         };
-        
+
         var checkRevision = function (form) {
             selected_row_revision = getRowRevision();
             if (selected_row_revision > table_current_revision) {
@@ -97,7 +97,7 @@
                 return false;
             }
         };
-        
+
         var before_add = function (postdata, formid) {
             var formulaFieldInfo = getFormulaCheckboxField();
             clearCheckErrorIcon();
@@ -110,14 +110,13 @@
                 return [true, "saved"];
             }
         };
-        
+
         var before_edit = function (postdata, formid) {
             var formulaFieldInfo = getFormulaCheckboxField();
             clearCheckErrorIcon();
             var checkResult = checkFlowIsValid(postdata, formid);
             var modelRelativeCheckResult = checkModelIsValid(postdata);
             checkResult = checkResult.concat(modelRelativeCheckResult);
-            console.log(checkResult);
             if (checkResult.length != 0) {
                 errorTextFormatF(checkResult); //field // code
                 return [false, "There are some errors in the entered data. Hover over the error icons for details."];
@@ -132,7 +131,7 @@
                 }
             }
         };
-        
+
         var showServerModifyMessage = function (response, postdata) {
             if (response.status == 200 || response.status == 201) {
                 alert("Success");
@@ -524,13 +523,12 @@
 
             return totalAlert;
         }
-        
-        function checkModelIsValid(postdata){
+
+        function checkModelIsValid(postdata) {
             var data = {
                 modelName: postdata["modelName"],
                 "businessGroup\\.id": selectOptions["businessGroup_options"].get(parseInt(postdata["businessGroup.id"]))
             };
-            console.log(data);
             var modelCheckResult = modelNameCheckFieldIsValid(data);
             var otherFieldCheckResult = checkModelNameIsValid(data);
             return modelCheckResult.concat(otherFieldCheckResult);

@@ -7,7 +7,6 @@ package com.advantech.service;
 
 import com.advantech.dao.AuditAction;
 import com.advantech.dao.AuditDAO;
-import com.advantech.helper.JsonHelper;
 import com.advantech.jqgrid.PageInfo;
 import java.util.Date;
 import java.util.List;
@@ -53,6 +52,10 @@ public class AuditService implements AuditAction {
     @Override
     public List forEntityAtRevision(Class clz, int version) {
         return auditDAO.forEntityAtRevision(clz, version);
+    }
+
+    public List findModifiedAtRevision(Class clz, int version) {
+        return auditDAO.findModifiedAtRevision(clz, version);
     }
 
     public List findByDate(Class clz, PageInfo info, Date startDate, Date endDate) {

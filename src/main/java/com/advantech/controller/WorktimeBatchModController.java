@@ -8,7 +8,7 @@ package com.advantech.controller;
 import com.advantech.helper.WorktimeMailManager;
 import com.advantech.excel.XlsWorkBook;
 import com.advantech.excel.XlsWorkSheet;
-import static com.advantech.helper.HibernateObjectPrinter.print;
+import com.advantech.model.BusinessGroup;
 import com.advantech.model.Floor;
 import com.advantech.model.Flow;
 import com.advantech.model.Pending;
@@ -16,6 +16,8 @@ import com.advantech.model.PreAssy;
 import com.advantech.model.Type;
 import com.advantech.model.User;
 import com.advantech.model.Worktime;
+import com.advantech.service.AuditService;
+import com.advantech.service.BusinessGroupService;
 import com.advantech.service.FloorService;
 import com.advantech.service.FlowService;
 import com.advantech.service.PendingService;
@@ -36,6 +38,8 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
@@ -78,6 +82,12 @@ public class WorktimeBatchModController {
     @Autowired
     private WorktimeService worktimeService;
 
+    @Autowired
+    private BusinessGroupService businessGroupService;
+
+    @Autowired
+    private AuditService auditService;
+
     private static Validator validator;
 
     @PostConstruct
@@ -96,9 +106,8 @@ public class WorktimeBatchModController {
         validateWorktime(hgList);
 
         for (Worktime w : hgList) {
-            if (isModelExists(w)) {
-                throw new Exception("This model is already exist.");
-            }
+            w.setId(0);
+            checkModelExists(w);
         }
 
         if (worktimeService.insertWithFormulaSetting(hgList) == 1) {
@@ -119,9 +128,7 @@ public class WorktimeBatchModController {
         validateWorktime(hgList);
 
         for (Worktime w : hgList) {
-            if (isModelExists(w)) {
-                throw new Exception("This model is already exist.");
-            }
+            checkModelExists(w);
         }
 
         return worktimeService.merge(hgList) == 1 ? "success" : "fail";
@@ -145,12 +152,16 @@ public class WorktimeBatchModController {
         }
     }
 
-    private boolean isModelExists(Worktime worktime) {
+    private void checkModelExists(Worktime worktime) throws Exception {
         Worktime existWorktime = worktimeService.findByModel(worktime.getModelName());
+        boolean checkFlag;
         if (worktime.getId() == 0) {
-            return existWorktime != null;
+            checkFlag = existWorktime != null;
         } else {
-            return existWorktime != null && existWorktime.getId() != worktime.getId();
+            checkFlag = existWorktime != null && existWorktime.getId() != worktime.getId();
+        }
+        if (checkFlag == true) {
+            throw new Exception("This modelName &lt;" + worktime.getModelName() + "&gt; is already exist.");
         }
     }
 
@@ -183,9 +194,57 @@ public class WorktimeBatchModController {
 
         //Init not relative column first.
         List<Worktime> hgList = sheet.buildBeans(Worktime.class);
+
+        //If id is zero, the action is add.
+        if (!hgList.isEmpty() && hgList.get(0).getId() != 0) {
+            Integer revisionNum = retriveRevisionNumber(sheet);
+            checkRevision(hgList, revisionNum);
+        }
+
         hgList = retriveRelativeColumns(sheet, hgList);
 
         return hgList;
+    }
+
+    //Check revision number is greater than current revision
+    private void checkRevision(List<Worktime> l, Integer revisionNum) throws Exception {
+
+        Integer currentRevision = auditService.findLastRevisions(Worktime.class).intValue();
+
+        //Check revision history contain update datas or not.
+        if (revisionNum < currentRevision) {
+            for (int i = revisionNum + 1; i <= currentRevision; i++) {
+                List<Worktime> revData = auditService.findModifiedAtRevision(Worktime.class, i);
+                for (Worktime w : l) {
+                    for (Worktime rev_w : revData) {
+                        if (rev_w.getId() == w.getId()) {
+                            throw new Exception("欲更改的資料包含已逾期的資料行 &lt;" + w.getModelName() + "&gt; ，請重新下載excel再上傳.");
+                        }
+                    }
+                }
+            }
+        }
+        //If all pass, begin update.
+    }
+
+    //Check the revision number into info is valid
+    //Check the revision append on the last of the excel file
+    private Integer retriveRevisionNumber(XlsWorkSheet sheet) throws Exception {
+        Object revisionInfo = sheet.getValue(0, "Revision");
+        String revKeyWord = "revision: ";
+        if (revisionInfo == null || "".equals(revisionInfo)) {
+            throw new Exception("Your revision number is not valid!");
+        }
+        String decodeString = new String(Base64.decodeBase64(revisionInfo.toString().getBytes()));
+        if (!decodeString.contains(revKeyWord)) {
+            throw new Exception("Can not retrive the revision number!");
+        }
+        String revNumString = decodeString.split(revKeyWord)[1];
+        if (NumberUtils.isNumber(revNumString)) {
+            return Integer.parseInt(revNumString);
+        } else {
+            throw new Exception("Invalid revision number!");
+        }
     }
 
     private boolean validateWorktime(List<Worktime> l) throws Exception {
@@ -219,6 +278,7 @@ public class WorktimeBatchModController {
         Map<String, Flow> flowOptions = toSelectOptions(flowService.findAll());
         Map<String, Pending> pendingOptions = toSelectOptions(pendingService.findAll());
         Map<String, PreAssy> preAssyOptions = toSelectOptions(preAssyService.findAll());
+        Map<String, BusinessGroup> businessGroupOptions = toSelectOptions(businessGroupService.findAll());
 
         //設定關聯by name
         for (int i = 0; i < hgList.size(); i++) {
@@ -246,6 +306,9 @@ public class WorktimeBatchModController {
 
             String preAssyName = sheet.getValue(i, "preAssyName").toString();
             w.setPreAssy(valid(preAssyName, preAssyOptions.get(preAssyName)));
+
+            String businessGroupName = sheet.getValue(i, "businessGroupName").toString();
+            w.setBusinessGroup(valid(businessGroupName, businessGroupOptions.get(businessGroupName)));
         }
 
         return hgList;

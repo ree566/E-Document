@@ -7,12 +7,23 @@ package com.advantech.test;
 
 import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.Worktime;
-import com.advantech.model.WorktimeAutouploadSetting;
-import com.advantech.service.WorktimeAutouploadSettingService;
+import com.advantech.service.AuditService;
 import com.advantech.service.WorktimeService;
 import com.advantech.webservice.WorktimeStandardtimeUploadPort;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
 import org.hibernate.SessionFactory;
+import org.hibernate.envers.AuditReaderFactory;
+import org.hibernate.envers.query.AuditEntity;
+import org.hibernate.envers.query.AuditQuery;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,12 +37,12 @@ import org.springframework.transaction.annotation.Transactional;
  *
  * @author Wei.Cheng
  */
-//@WebAppConfiguration
-//@ContextConfiguration(locations = {
-//    "classpath:servlet-context.xml",
-//    "classpath:hibernate.cfg.xml"
-//})
-//@RunWith(SpringJUnit4ClassRunner.class)
+@WebAppConfiguration
+@ContextConfiguration(locations = {
+    "classpath:servlet-context.xml",
+    "classpath:hibernate.cfg.xml"
+})
+@RunWith(SpringJUnit4ClassRunner.class)
 public class HibernateTest {
 
     @Autowired
@@ -42,6 +53,17 @@ public class HibernateTest {
 
     @Autowired
     private WorktimeStandardtimeUploadPort port;
+
+    @Autowired
+    private AuditService auditService;
+
+    private static Validator validator;
+
+    @BeforeClass
+    public static void setUp() {
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        validator = factory.getValidator();
+    }
 
     //CRUD testing.
     @Transactional
@@ -55,6 +77,28 @@ public class HibernateTest {
 //    @Test
     public void testResult() throws Exception {
         List<Worktime> l = worktimeService.findWithFullRelation(new PageInfo().setRows(1));
+    }
+
+//    @Test
+    public void testCustomValidator() {
+        Worktime w = new Worktime();
+        w.setFlowByBabFlowId(null);
+        Set<ConstraintViolation<Worktime>> constraintViolations = validator.validate(w);
+        Iterator it = constraintViolations.iterator();
+        while (it.hasNext()) {
+            System.out.println(it.next());
+        }
+    }
+
+    @Test
+    @Transactional
+    @Rollback(true)
+    public void testAudit() {
+        AuditQuery q = AuditReaderFactory.get(sessionFactory.getCurrentSession()).createQuery().forRevisionsOfEntity(Worktime.class, true, true);
+        q.add(AuditEntity.revisionNumber().eq(4663));
+        List<Worktime> l = q.getResultList();
+        assertEquals(1, l.size());
+        assertTrue(l.get(0).getId() == 8364);
     }
 
 }
