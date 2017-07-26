@@ -198,7 +198,9 @@ public class WorktimeBatchModController {
             //If id is zero, the action is add.
             if (checkRevision) {
                 Integer revisionNum = retriveRevisionNumber(sheet);
-                checkRevision(hgList, revisionNum);
+                if (revisionNum != null) {
+                    checkRevision(hgList, revisionNum);
+                }
             }
 
             hgList = retriveRelativeColumns(sheet, hgList);
@@ -209,10 +211,15 @@ public class WorktimeBatchModController {
     //Check revision number is greater than current revision
     private void checkRevision(List<Worktime> l, Integer revisionNum) throws Exception {
 
+        Integer maxAllowRevisionsGap = 10;
         Integer currentRevision = auditService.findLastRevisions(Worktime.class).intValue();
 
         //Check revision history contain update datas or not.
         if (revisionNum < currentRevision) {
+            if(currentRevision - revisionNum >= maxAllowRevisionsGap){
+                throw new Exception("資料版本與現有版本差異過多，請重新下載excel再上傳");
+            }
+            
             for (int i = revisionNum + 1; i <= currentRevision; i++) {
                 List<Worktime> revData = auditService.findModifiedAtRevision(Worktime.class, i);
                 for (Worktime w : l) {
@@ -233,7 +240,8 @@ public class WorktimeBatchModController {
         Object revisionInfo = sheet.getValue(0, "Revision");
         String revKeyWord = "revision: ";
         if (revisionInfo == null || "".equals(revisionInfo)) {
-            throw new Exception("Your revision number is not valid!");
+            return null;
+//            throw new Exception("Your revision number is not valid!");
         }
         String decodeString = new String(Base64.decodeBase64(revisionInfo.toString().getBytes()));
         if (!decodeString.contains(revKeyWord)) {

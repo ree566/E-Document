@@ -1,9 +1,9 @@
 <%-- 
-    Document   : fileupload
+    Document   : batchUpdate
     Created on : 2017/4/17, 上午 08:51:56
     Author     : Wei.Cheng
-
-    Admin test batch update file date is valid or not
+ 
+    Provide user to batch update the worktime column
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -95,4 +95,11 @@
         <br />
     </c:forEach>
 </div>
-
+<div>
+    <h5>格式說明</h5>
+    <ol>
+        <li>僅接受副檔名為xls格式</li>
+        <li>若為本系統下載檔，Update時請保留BJ欄欄位名稱"Revision"的值，讓系統可同步版本資訊</li>
+        <li>若Update時Excel中無"Revision"欄位資訊，系統將跳過版本檢查直接覆蓋現有資料</li>
+    </ol>
+</div>

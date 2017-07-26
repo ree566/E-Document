@@ -20,6 +20,7 @@ import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.DataFormatter;
 import org.dbunit.dataset.excel.XlsDataSetWriter;
 import org.joda.time.DateTime;
 
@@ -244,12 +245,13 @@ public class XlsWorkSheet {
         try {
 
             Method[] ms = cls.getDeclaredMethods();
+            DataFormatter formatter = new DataFormatter();
             for (int row = 0, rowCount = this.getRowCount(); row < rowCount; row++) {
                 HSSFCell checkedCell = _sheet.getRow(row).getCell(0);
                 HSSFCell checkedCell2 = _sheet.getRow(row).getCell(1);
                 if (checkedCell == null || checkedCell.getCellTypeEnum() == CellType.BLANK
                         || checkedCell2 == null || checkedCell2.getCellTypeEnum() == CellType.BLANK
-                        || ("".equals(checkedCell.getStringCellValue()) && "".equals(checkedCell2.getStringCellValue()))) {
+                        || ("".equals(formatter.formatCellValue(checkedCell)) && "".equals(formatter.formatCellValue(checkedCell2)))) {
                     continue;
                 }
 

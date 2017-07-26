@@ -17,17 +17,7 @@
                 class="com.advantech.security.AjaxAwareAuthenticationEntryPoint">
         <beans:constructor-arg name="loginUrl" value="/login"/>
     </beans:bean>
-    
-<!--    <beans:bean id="CustomSecurityFilter"
-                class="com.spring.security.demo.CustomSecurityFilter">
-         注入决策管理器 
-        <beans:property name="accessDecisionManager" ref="CC_AccessDecisionManager"></beans:property>
-         注入资源角色授权管理器 
-        <beans:property name="securityMetadataSource" ref="CC_SecurityMetadataSource"></beans:property>
-         注入身份认证管理器 
-        <beans:property name="authenticationManager" ref="CC_AuthenticationManager"></beans:property>
-    </beans:bean>-->
-
+   
     <http auto-config="true">
         <intercept-url pattern="/login.jsp" access="permitAll" />
         <intercept-url pattern="/pages/admin/**" access="hasRole('ADMIN')" />

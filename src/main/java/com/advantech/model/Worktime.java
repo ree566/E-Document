@@ -67,7 +67,7 @@ public class Worktime implements java.io.Serializable {
     private String modelName;
 
 //    @JsonIgnore
-    private List<BwAvgView> bwAvgViews = new AutoPopulatingList<BwAvgView>(BwAvgView.class);
+    private List<BwField> bwField = new AutoPopulatingList<BwField>(BwField.class);
 
     @JsonIgnore
     private List<WorktimeFormulaSetting> worktimeFormulaSettings = new AutoPopulatingList<WorktimeFormulaSetting>(WorktimeFormulaSetting.class);
@@ -739,12 +739,12 @@ public class Worktime implements java.io.Serializable {
 
     @NotAudited
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "worktime")
-    public List<BwAvgView> getBwAvgViews() {
-        return bwAvgViews;
+    public List<BwField> getBwAvgViews() {
+        return bwField;
     }
 
-    public void setBwAvgViews(List<BwAvgView> bwAvgViews) {
-        this.bwAvgViews = bwAvgViews;
+    public void setBwAvgViews(List<BwField> bwAvgViews) {
+        this.bwField = bwAvgViews;
     }
 
 //  Default formula column caculate

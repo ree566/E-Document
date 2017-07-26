@@ -102,6 +102,8 @@
             var formulaFieldInfo = getFormulaCheckboxField();
             clearCheckErrorIcon();
             var checkResult = checkFlowIsValid(postdata, formid);
+            var modelRelativeCheckResult = checkModelIsValid(postdata);
+            checkResult = checkResult.concat(modelRelativeCheckResult);
             if (checkResult.length != 0) {
                 errorTextFormatF(checkResult); //field // code
                 return [false, "There are some errors in the entered data. Hover over the error icons for details."];
@@ -206,8 +208,8 @@
                 {label: '看板工時', name: "packingKanbanTime", width: 80, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, formoptions: {label: '包裝看板工時', elmsuffix: addFormulaCheckbox("packingKanbanTime")}, editoptions: {defaultValue: '0'}},
                 {label: 'CleanPanel+Assembly', name: "cleanPanelAndAssembly", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, formoptions: {elmsuffix: addFormulaCheckbox("cleanPanelAndAssembly")}, editoptions: {defaultValue: '0'}},
                 {label: 'Modified_Date', width: 200, name: "modifiedDate", index: "modifiedDate", formatter: 'date', formatoptions: {srcformat: 'Y-m-d H:i:s A', newformat: 'Y-m-d H:i:s A'}, stype: 'text', searchrules: date_search_rule, searchoptions: search_date_options, align: 'center'},
-                {label: '藍燈組裝(秒)', width: 80, name: "bwAvgViews.0.assyAvg", index: "bwAvgViews.assyAvg", sortable: true, editable: true, searchrules: number_search_rule, searchoptions: search_decimal_options},
-                {label: '藍燈包裝(秒)', width: 80, name: "bwAvgViews.0.packingAvg", index: "bwAvgViews.packingAvg", sortable: true, editable: true, searchrules: number_search_rule, searchoptions: search_decimal_options}
+                {label: '藍燈組裝(秒)', width: 80, name: "bwAvgViews.0.assyAvg", index: "bwAvgViews.assyAvg", sortable: true, searchrules: number_search_rule, searchoptions: search_decimal_options},
+                {label: '藍燈包裝(秒)', width: 80, name: "bwAvgViews.0.packingAvg", index: "bwAvgViews.packingAvg", sortable: true, searchrules: number_search_rule, searchoptions: search_decimal_options}
             ],
             rowNum: 20,
             rowList: [20, 50, 100],
@@ -235,6 +237,7 @@
             gridComplete: function () {
                 grid.closest(".ui-jqgrid-bdiv").scrollTop(scrollPosition);
                 getGridRevision();
+                registerEndsWithIfIe();
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 alert("Ajax Error occurred\n"
@@ -386,9 +389,11 @@
             columnNames = $.grep(columnNames, function (value) {
                 return $.inArray(value, do_not_change_columns) == -1;
             });
+            
             //Separate readyonly column and editable column
             editableColumns = modifyColumns.length == 1 && modifyColumns[0] == -1 ? columnNames : modifyColumns;
             readonlyColumns = $(columnNames).not(editableColumns).get();
+            
             for (var i = 0; i < editableColumns.length; i++) {
                 var editableColumn = editableColumns[i];
                 grid.setColProp(editableColumn, {editable: true});

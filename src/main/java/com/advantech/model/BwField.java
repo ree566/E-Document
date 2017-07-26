@@ -23,12 +23,12 @@ import javax.persistence.Table;
  * @author Wei.Cheng
  */
 @Entity
-@Table(name = "BwWorktimeAvg_view1",
+@Table(name = "_BwField",
         schema = "dbo",
         catalog = "E_Document"
 )
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-public class BwAvgView implements java.io.Serializable {
+public class BwField implements java.io.Serializable {
 
     private int id;
     private BigDecimal assyAvg;

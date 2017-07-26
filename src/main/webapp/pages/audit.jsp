@@ -90,7 +90,7 @@
                     {label: 'REV', name: "REV", jsonmap: "1.rev", width: 60, frozen: false, hidden: true, search: false},
                     {label: 'username', name: "username", jsonmap: "1.username", width: 60, frozen: false, hidden: false, search: false},
                     {label: 'REVTYPE', name: "REVTYPE", jsonmap: "2", width: 60, frozen: false, hidden: false, search: false},
-                    {label: 'id', name: "id", jsonmap: "0.id", width: 60, frozen: false, hidden: true, search: false},
+                    {label: 'id', name: "id", jsonmap: "0.id", width: 60, frozen: false, hidden: false, search: false},
                     {label: 'Model', name: "modelName", jsonmap: "0.modelName", frozen: false, searchrules: {required: true}, searchoptions: search_string_options, formoptions: required_form_options},
                     {label: 'TYPE', name: "type_id", jsonmap: "0.type.id", formatter: selectOptions["type_func"], width: 100, searchrules: {required: true}, searchoptions: search_string_options},
                     {label: 'BU', name: "businessGroup_id", jsonmap: "0.businessGroup.id", formatter: selectOptions["businessGroup_func"], width: 100, searchrules: {required: true}, searchoptions: search_string_options},
@@ -195,7 +195,7 @@
         <input type="text" id="sD" name="startDate" placeholder="startDate" class="form-control" />
         <input type="text" id="eD" name="endDate" placeholder="endDate" class="form-control" />
         <input type="button" id="send" class="form-control" value="send" />
-        <h5 class="form-control alert">※modelName or version 不指定請留白</h5>
+        <h5 class="form-control alert">※id or modelName 不指定請留白</h5>
     </div>
     <table id="list"></table> 
     <div id="pager"></div>
