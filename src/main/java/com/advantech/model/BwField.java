@@ -16,12 +16,15 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedNativeQueries;
+import javax.persistence.NamedNativeQuery;
 import javax.persistence.Table;
 
 /**
  *
  * @author Wei.Cheng
  */
+
 @Entity
 @Table(name = "_BwField",
         schema = "dbo",

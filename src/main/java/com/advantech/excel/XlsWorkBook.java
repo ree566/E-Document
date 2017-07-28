@@ -12,7 +12,6 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 
 /**
@@ -30,7 +29,7 @@ public class XlsWorkBook implements AutoCloseable {
 
     public XlsWorkBook(InputStream in) throws Exception {
         _sheets = new HashMap<>();
-
+ 
         workbook = (HSSFWorkbook) WorkbookFactory.create(in);
         int sheetCount = workbook.getNumberOfSheets();
         for (int i = 0; i < sheetCount; i++) {
@@ -52,6 +51,12 @@ public class XlsWorkBook implements AutoCloseable {
     public void close() throws IOException {
         if (workbook != null) {
             workbook.close();
+            System.out.println("Close excel.");
+        }
+
+        if (_sheets != null) {
+            _sheets.clear();
+            System.out.println("Clear sheets map.");
         }
     }
 

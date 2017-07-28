@@ -26,6 +26,7 @@ import com.advantech.service.TypeService;
 import com.advantech.service.UserService;
 import com.advantech.service.WorktimeService;
 import com.google.gson.Gson;
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -186,11 +187,12 @@ public class WorktimeBatchModController {
 
     private List<Worktime> transToWorktimes(MultipartFile file, boolean checkRevision) throws Exception {
         //固定sheet name為sheet1
+
         try (XlsWorkBook workbook = new XlsWorkBook(file.getInputStream())) {
             XlsWorkSheet sheet = workbook.getSheet("sheet1");
             if (sheet == null) {
                 throw new Exception("Sheet named \"sheet1\" not found");
-            }
+            }  
 
             //Init not relative column first.
             List<Worktime> hgList = sheet.buildBeans(Worktime.class);
@@ -206,6 +208,7 @@ public class WorktimeBatchModController {
             hgList = retriveRelativeColumns(sheet, hgList);
             return hgList;
         }
+
     }
 
     //Check revision number is greater than current revision
@@ -216,10 +219,10 @@ public class WorktimeBatchModController {
 
         //Check revision history contain update datas or not.
         if (revisionNum < currentRevision) {
-            if(currentRevision - revisionNum >= maxAllowRevisionsGap){
+            if (currentRevision - revisionNum >= maxAllowRevisionsGap) {
                 throw new Exception("資料版本與現有版本差異過多，請重新下載excel再上傳");
             }
-            
+
             for (int i = revisionNum + 1; i <= currentRevision; i++) {
                 List<Worktime> revData = auditService.findModifiedAtRevision(Worktime.class, i);
                 for (Worktime w : l) {

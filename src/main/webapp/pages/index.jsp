@@ -180,7 +180,7 @@
                                     <a href="#"><i class="fa fa-table fa-fw"></i> Tables<span class="fa arrow"></span></a>
                                     <ul class="nav nav-second-level">
                                         <li>
-                                            <a class="redirect-link" href="worktime.jsp">工時大表</a>
+                                            <a class="redirect-link" id="preload_page" href="worktime.jsp">工時大表</a>
                                         </li>
 
                                         <li>
@@ -212,7 +212,7 @@
                                     <a href="#"><i class="fa fa-wrench fa-fw"></i> UI Elements<span class="fa arrow"></span></a>
                                     <ul class="nav nav-second-level"> 
                                         <li>
-                                            <a class="redirect-link" id="preload_page" href="audit.jsp">資料版本查詢</a>
+                                            <a class="redirect-link" href="audit.jsp">資料版本查詢</a>
                                         </li>
                                         <sec:authorize access="hasRole('ADMIN')">
                                             <li>

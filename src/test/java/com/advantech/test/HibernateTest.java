@@ -5,11 +5,14 @@
  */
 package com.advantech.test;
 
+import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.Worktime;
 import com.advantech.service.AuditService;
 import com.advantech.service.WorktimeService;
 import com.advantech.webservice.WorktimeStandardtimeUploadPort;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -18,11 +21,15 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.envers.AuditReaderFactory;
 import org.hibernate.envers.query.AuditEntity;
 import org.hibernate.envers.query.AuditQuery;
+import org.hibernate.procedure.ProcedureCall;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -90,15 +97,35 @@ public class HibernateTest {
         }
     }
 
-    @Test
-    @Transactional
-    @Rollback(true)
-    public void testAudit() {
+//    @Test
+//    @Transactional
+//    @Rollback(true)
+    public void testAudit() throws JsonProcessingException {
+        DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy/MM/dd HH:mm:ss");
+        DateTime sD = formatter.parseDateTime("2017/07/27 00:00:00");
+        DateTime eD = sD.plusDays(1);
+
+        //找到今天所有N欄位有變動的工單
         AuditQuery q = AuditReaderFactory.get(sessionFactory.getCurrentSession()).createQuery().forRevisionsOfEntity(Worktime.class, true, true);
-        q.add(AuditEntity.revisionNumber().eq(4663));
+        q.add(AuditEntity.property("biTime").hasChanged())
+                .add(AuditEntity.revisionProperty("REVTSTMP").between(sD.toDate().getTime(), eD.toDate().getTime()))
+                .addOrder(AuditEntity.revisionNumber().desc())
+                .setMaxResults(1);
+
         List<Worktime> l = q.getResultList();
+
         assertEquals(1, l.size());
-        assertTrue(l.get(0).getId() == 8364);
+
+        HibernateObjectPrinter.print(l);
+    }
+
+    @Transactional
+    @Rollback(false)
+    @Test
+    public void testProc() throws SQLException {
+        Session session = sessionFactory.getCurrentSession();
+        ProcedureCall call = session.createStoredProcedureCall("sp_update_bwField");
+        call.getOutputs();
     }
 
 }

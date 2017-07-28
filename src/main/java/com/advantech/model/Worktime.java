@@ -49,7 +49,7 @@ import org.springframework.util.AutoPopulatingList;
 @DynamicInsert(true)
 @DynamicUpdate(true)
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = Worktime.class)
-@Audited(targetAuditMode = NOT_AUDITED)
+@Audited(targetAuditMode = NOT_AUDITED, withModifiedFlag = true)
 public class Worktime implements java.io.Serializable {
 
     private int id;
