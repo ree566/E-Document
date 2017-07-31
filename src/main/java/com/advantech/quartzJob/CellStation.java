@@ -10,6 +10,7 @@ package com.advantech.quartzJob;
 import com.advantech.entity.PassStation;
 import com.advantech.service.BasicService;
 import com.advantech.webservice.WebServiceRV;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import org.apache.commons.collections4.CollectionUtils;
@@ -49,21 +50,21 @@ public class CellStation implements Job {
     public static void checkDifferenceAndInsert(String PO, String type, Integer apsLineId) {
 
         List<PassStation> l = WebServiceRV.getInstance().getPassStationRecords(PO, type);
-        List<PassStation> history = BasicService.getPassStationService().getPassStation(PO, type);
+        Iterator it = l.iterator();
+        while(it.hasNext()){
+            PassStation p = (PassStation) it.next();
+            if(!Objects.equals(p.getLineId(), apsLineId)){
+                it.remove();
+            }else{
+                p.setType(type);
+            }
+        }
+        
+        List<PassStation> history = BasicService.getPassStationService().getPassStation(PO, apsLineId, type);
         List<PassStation> newData = (List<PassStation>) CollectionUtils.subtract(l, history);
 
         if (!newData.isEmpty()) {
-            PassStation testData = newData.get(0);
-            //Check data if matches current process apsLine or not.
-            if (Objects.equals(testData.getLineId(), apsLineId)) {
-                
-                //Set type mark separate "Test, Pkg, Bab"
-                for (PassStation p : newData) {
-                    p.setType(type);
-                }
-
-                BasicService.getPassStationService().insertPassStation(newData);
-            }
+            BasicService.getPassStationService().insertPassStation(newData);
         }
     }
 

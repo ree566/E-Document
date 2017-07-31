@@ -29,8 +29,8 @@ public class PassStationDAO extends BasicDAO {
         return queryForBeanList(this.getConn(), PassStation.class, "SELECT * FROM machineThrough");
     }
 
-    public List<PassStation> getPassStation(String PO, String type) {
-        return queryForBeanList(this.getConn(), PassStation.class, "SELECT * FROM machineThrough WHERE PO = ? AND [type] = ?", PO, type);
+    public List<PassStation> getPassStation(String PO, int apsLineId, String type) {
+        return queryForBeanList(this.getConn(), PassStation.class, "SELECT * FROM machineThrough WHERE PO = ? AND lineId = ? AND [type] = ?", PO, apsLineId, type);
     }
 
     public List<Map> getAllCellPerPcsHistory(String PO, String type, Integer lineName, Integer minPcs, Integer maxPcs, String startDate, String endDate) {

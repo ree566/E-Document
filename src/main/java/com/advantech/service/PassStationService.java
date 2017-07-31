@@ -26,8 +26,8 @@ public class PassStationService {
         return passStationDAO.getPassStation();
     }
 
-    public List<PassStation> getPassStation(String PO, String type) {
-        return passStationDAO.getPassStation(PO, type);
+    public List<PassStation> getPassStation(String PO, int apsLineId, String type) {
+        return passStationDAO.getPassStation(PO, apsLineId, type);
     }
 
     public boolean insertPassStation(List<PassStation> l) {

@@ -152,7 +152,7 @@ public class WebServiceRV {
         if (CellLineType.BAB.toString().equals(type)) {
             stations = "'2','20'";
         } else if (CellLineType.PKG.toString().equals(type)) {
-            stations = "'33'";
+            stations = "'53','28'";
         } else {
             return new ArrayList();
         }
