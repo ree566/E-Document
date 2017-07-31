@@ -123,5 +123,5 @@ public class FileDownloadController {
         String encodeString = "revision: " + revisionNumber;
         byte[] bytesEncoded = Base64.encodeBase64(encodeString.getBytes());
         return new String(bytesEncoded);
-    }
+    } 
 }

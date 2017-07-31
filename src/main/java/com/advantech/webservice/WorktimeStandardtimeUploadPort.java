@@ -96,6 +96,7 @@ public class WorktimeStandardtimeUploadPort {
                 swt.setCT(setting.getCt());
                 swt.setSIDE(5010);
                 swt.setOPCNT(1);
+                swt.setMIXCT(totalCt); //Temporarily set this column equal to totalCt
 
                 if ("B".equals(columnUnit) && setting.getStationId() != null) {
                     swt.setMACHINECNT(w.getAssyStation());

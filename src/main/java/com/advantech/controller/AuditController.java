@@ -41,33 +41,38 @@ public class AuditController {
     private WorktimeService worktimeService;
 
     @ResponseBody
-    @RequestMapping(value = "/find/{modelName}/{version}", method = {RequestMethod.GET, RequestMethod.POST})
+    @RequestMapping(value = "/find", method = {RequestMethod.GET, RequestMethod.POST})
     public JqGridResponse getAudit(
-            @PathVariable(value = "modelName") final String modelName,
-            @PathVariable(value = "version") final int version,
+            @RequestParam(required = false) final Integer id,
+            @RequestParam(required = false) final String modelName,
+            @RequestParam(required = false) final Integer version,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime startDate,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime endDate,
             @ModelAttribute PageInfo info) {
 
+        List l = this.findRevision(id, modelName, version, startDate, endDate, info);
+        JqGridResponse resp = toJqGridResponse(l, info);
+        return resp;
+    }
+
+    private List findRevision(Integer id, String modelName, Integer version, DateTime startDate, DateTime endDate, PageInfo info) {
         List l = new ArrayList();
         if (startDate != null && endDate != null) {
             DateTime d1 = startDate.withTimeAtStartOfDay();
             DateTime d2 = endDate.withHourOfDay(23).withMinuteOfHour(59);
 
-            if ("-1".equals(modelName) && version == -1) {
+            if (id == null && "".equals(modelName) && version == null) {
                 l = auditService.findByDate(Worktime.class, info, d1.toDate(), d2.toDate());
-            } else if (!"-1".equals(modelName)) {
+            } else if (!"".equals(modelName)) {
                 Worktime w = worktimeService.findByModel(modelName);
-                if (w == null) {
-                    l = new ArrayList();
-                } else {
+                if (w != null) {
                     l = auditService.findByDate(Worktime.class, w.getId(), info, d1.toDate(), d2.toDate());
                 }
+            } else if (id != null) {
+                l = auditService.findByDate(Worktime.class, id, info, d1.toDate(), d2.toDate());
             }
         }
-
-        JqGridResponse resp = toJqGridResponse(l, info);
-        return resp;
+        return l;
     }
 
 //    2017-06-06 11:26:38 AM

@@ -208,7 +208,9 @@ public class Root {
         "side",
         "opcnt",
         "kptype",
-        "machinecnt"
+        "machinecnt",
+        "mixct",
+        "autoct"
     })
     public static class STANDARDWORKTIME {
 
@@ -234,6 +236,10 @@ public class Root {
         protected String kptype;
         @XmlElement(name = "MACHINE_CNT", required = true, nillable = true)
         protected Integer machinecnt;
+        @XmlElement(name = "MIX_CT", required = true, nillable = true)
+        protected BigDecimal mixct;
+        @XmlElement(name = "AUTO_CT", required = true, nillable = true)
+        protected BigDecimal autoct;
 
         /**
          * 取得 unitno 特性的值.
@@ -425,6 +431,38 @@ public class Root {
          */
         public void setMACHINECNT(Integer value) {
             this.machinecnt = value;
+        }
+
+        /**
+         * 取得 mixct 特性的值.
+         *
+         */
+        public BigDecimal getMIXCT() {
+            return mixct;
+        }
+
+        /**
+         * 設定 mixct 特性的值.
+         *
+         */
+        public void setMIXCT(BigDecimal value) {
+            this.mixct = value;
+        }
+
+        /**
+         * 取得 autoct 特性的值.
+         *
+         */
+        public BigDecimal getAUTOCT() {
+            return autoct;
+        }
+
+        /**
+         * 設定 autoct 特性的值.
+         *
+         */
+        public void setAUTOCT(BigDecimal value) {
+            this.autoct = value;
         }
 
     }

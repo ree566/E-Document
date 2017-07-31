@@ -10,13 +10,13 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <script>
     $(function () {
-        var form = $("#uploadForm");
-        var submitUrl = "<c:url value="/WorktimeBatchMod/" />";
+        var form = $("#form");
+        var form2 = $("#form2");
 
         $("#sync-img").hide();
         var options = {
             beforeSubmit: function (arr, $form, options) {
-                if (!confirm("資料確認無誤? " + $("#action").val() + " ?")) {
+                if (!confirm("OK?")) {
                     return false;
                 }
             },
@@ -52,26 +52,12 @@
             }
         };
         form.ajaxForm(options);
-
-        form.attr("action", submitUrl + $("#action").val());
-
-        $("#action").on("change", function () {
-            form.attr("action", submitUrl + $(this).val());
-        });
-
+        form2.ajaxForm(options);
     });
 </script>
 <div>
-    <h3>Upload single files example.</h3>
-    <form id="uploadForm" method="post" enctype="multipart/form-data">
-        <div class="form-inline">
-            <lable for="action">請選擇操作項目</lable>
-            <select id="action" name="action" class="form-control">
-                <option value="add">Add</option>
-                <option value="update">Update</option>
-                <option value="delete">Delete</option>
-            </select>
-        </div>
+    <h3>Data check.</h3>
+    <form id="form" action="<c:url value="/checkWorktime" />" method="post" enctype="multipart/form-data">
         <div class="form-inline">
             <lable for="file">File to upload: </lable>
             <input type="file" name="file" class="form-control">
@@ -80,15 +66,31 @@
             <input type="submit" value="Upload" class="form-control"> 
             <label>Press here to upload the file!</label>
         </div>
-        <div id="progressbox">
-            <div id="progressbar"></div>
-            <div id="percent">0%</div>
-            <img id="sync-img" src="<c:url value="/images/hex-loader2.gif" />" />
-        </div>
-        <div id="message"></div>
     </form>	
 </div>
 <hr />
+<div>
+    <h3>Sync data.</h3>
+    <form id="form2" action="<c:url value="/uploadFile" />" method="post" enctype="multipart/form-data">
+        <div class="form-inline">
+            <lable for="file">File to upload: </lable>
+            <input type="file" name="file" class="form-control">
+        </div>
+        <div class="form-inline">
+            <input type="submit" value="Upload" class="form-control"> 
+            <label>Press here to upload the file!</label>
+        </div>
+    </form>	
+</div>
+<hr />
+<div>
+    <div id="progressbox">
+        <div id="progressbar"></div>
+        <div id="percent">0%</div>
+        <img id="sync-img" src="<c:url value="/images/hex-loader2.gif" />" />
+    </div>
+    <div id="message"></div>
+</div>
 <div>
     <c:forEach items="${message}" var="element">    
         <c:out value="${element}"/>

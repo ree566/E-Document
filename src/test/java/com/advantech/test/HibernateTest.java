@@ -23,10 +23,11 @@ import javax.validation.ValidatorFactory;
 import static junit.framework.Assert.assertEquals;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
+import org.hibernate.envers.RevisionType;
 import org.hibernate.envers.query.AuditEntity;
 import org.hibernate.envers.query.AuditQuery;
-import org.hibernate.procedure.ProcedureCall;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -120,12 +121,19 @@ public class HibernateTest {
     }
 
     @Transactional
-    @Rollback(false)
+    @Rollback(true)
     @Test
-    public void testProc() throws SQLException {
+    public void testProc() throws Exception {
         Session session = sessionFactory.getCurrentSession();
-        ProcedureCall call = session.createStoredProcedureCall("sp_update_bwField");
-        call.getOutputs();
+        AuditReader reader = AuditReaderFactory.get(session);
+        AuditQuery query = reader.createQuery()
+                .forRevisionsOfEntity(Worktime.class, false, true)
+                .add(AuditEntity.revisionType().eq(RevisionType.DEL));
+
+        List results = query.getResultList();
+        for (Object o : results) {
+            HibernateObjectPrinter.print(o);
+        }
     }
 
 }

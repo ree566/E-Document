@@ -738,7 +738,7 @@ public class Worktime implements java.io.Serializable {
     }
 
     @NotAudited
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "worktime")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "worktime", orphanRemoval = true)
     public List<BwField> getBwAvgViews() {
         return bwField;
     }

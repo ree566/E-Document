@@ -36,28 +36,19 @@
         });
 
         $("#send").click(function () {
+            var id = $("#id").val();
             var modelName = $("#modelName").val();
             var version = $("#version").val();
             var startDate = $("#sD").val();
             var endDate = $("#eD").val();
-
-            if (modelName == null || modelName == '') {
-                modelName = '-1';
-            }
-
-            if (version == null || version == '') {
-                version = -1;
-            }
-
-            var isSearchAll = modelName == -1;
 
             if (!isGridInitialized) {
                 getEditRecord(modelName, version, $("#sD").val(), $("#eD").val()); //init the table
                 isGridInitialized = true;
             } else {
                 grid.jqGrid('clearGridData');
-                grid.jqGrid('setGridParam', {url: '<c:url value="/Audit/find/" />' + modelName + '/' + version, postData: {startDate: startDate, endDate: endDate}});
-                grid.setGridParam({grouping: isSearchAll});
+                grid.jqGrid('setGridParam', {url: '<c:url value="/Audit/find" />', postData: {id: id, modelName: modelName, version: version, startDate: startDate, endDate: endDate}});
+                grid.setGridParam({grouping: false});
                 grid.trigger('reloadGrid');
             }
         });
@@ -76,8 +67,10 @@
 
         function getEditRecord(rowId, version, startDate, endDate) {
             grid.jqGrid({
-                url: '<c:url value="/Audit/find/" />' + rowId + '/' + version,
+                url: '<c:url value="/Audit/find" />',
                 postData: {
+                    modelName: rowId,
+                    version: version,
                     startDate: startDate,
                     endDate: endDate
                 },
@@ -190,6 +183,7 @@
 <div id="flow-content">
     <h4>大表版本歷史紀錄查詢</h4>
     <div class="form-inline">
+        <input type="text" id="id" class="form-control" placeholder="id" />
         <input type="text" id="modelName" class="form-control" placeholder="modelName" />
         <input type="text" id="version" class="form-control" placeholder="version" style="display: none"/>
         <input type="text" id="sD" name="startDate" placeholder="startDate" class="form-control" />
