@@ -19,7 +19,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -48,14 +47,14 @@ public class AuditController {
             @RequestParam(required = false) final Integer version,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime startDate,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime endDate,
-            @ModelAttribute PageInfo info) {
+            @ModelAttribute PageInfo info) throws Exception {
 
         List l = this.findRevision(id, modelName, version, startDate, endDate, info);
         JqGridResponse resp = toJqGridResponse(l, info);
         return resp;
     }
 
-    private List findRevision(Integer id, String modelName, Integer version, DateTime startDate, DateTime endDate, PageInfo info) {
+    private List findRevision(Integer id, String modelName, Integer version, DateTime startDate, DateTime endDate, PageInfo info) throws Exception {
         List l = new ArrayList();
         if (startDate != null && endDate != null) {
             DateTime d1 = startDate.withTimeAtStartOfDay();
@@ -65,6 +64,20 @@ public class AuditController {
                 l = auditService.findByDate(Worktime.class, info, d1.toDate(), d2.toDate());
             } else if (!"".equals(modelName)) {
                 Worktime w = worktimeService.findByModel(modelName);
+                if (w == null) {
+//                Search the revision when model not found.
+//                If revision still no info, model is not exist.
+                    PageInfo tempInfo = info.clone();
+                    tempInfo.setSearchField("modelName");
+                    tempInfo.setSearchOper("eq");
+                    tempInfo.setSearchString(modelName);
+                    tempInfo.setMaxNumOfRows(1);
+
+                    List<Object[]> auditInfo = auditService.findAll(Worktime.class, tempInfo);
+                    Worktime auditW = (Worktime) auditInfo.get(0)[0];
+                    w = auditW != null ? auditW : null;
+
+                }
                 if (w != null) {
                     l = auditService.findByDate(Worktime.class, w.getId(), info, d1.toDate(), d2.toDate());
                 }

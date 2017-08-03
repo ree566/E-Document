@@ -131,7 +131,7 @@ public class FileUploadController {
 
                 int maxNumberfRows = sheet.getPhysicalNumberOfRows();
 
-                for (i = 2; i < maxNumberfRows; i++) {
+                for (i = 1; i < maxNumberfRows; i++) {
                     // 由於第 0 Row 為 title, 故 i 從 1 開始
 
                     Row row = sheet.getRow(i); // 取得第 i Row
@@ -159,7 +159,7 @@ public class FileUploadController {
                             Flow testFlow = flowOptions.get(((String) testFlowName));
                             if (testFlow == null) {
                                 System.out.println(testFlowName);
-                                throw new Exception("bab flow not found");
+                                throw new Exception("test flow not found");
                             }
                             w.setFlowByTestFlowId(testFlow);
                         }

@@ -86,7 +86,7 @@
             },
             gridComplete: function () {
                 grid.closest(".ui-jqgrid-bdiv").scrollTop(scrollPosition);
-                grid.find("#36").hide();
+//                grid.find("#36").hide();
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 alert("Ajax Error occurred\n"

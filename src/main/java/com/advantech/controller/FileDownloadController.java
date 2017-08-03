@@ -60,6 +60,8 @@ public class FileDownloadController {
         info.setRows(Integer.MAX_VALUE);
         info.setSidx("id");
         info.setSord("asc");
+        info.setPage(1); //Prevent select query jump to page 2 bug.
+        
         List<SheetView> l = sheetViewService.findAll(info);
         ModelAndView mav = new ModelAndView("ExcelRevenueSummary");
         mav.addObject("revenueData", l);
@@ -90,6 +92,7 @@ public class FileDownloadController {
         info.setRows(Integer.MAX_VALUE);
         info.setSidx("id");
         info.setSord("asc");
+        info.setPage(1); //Prevent select query jump to page 2 bug.
 
         try (InputStream is = r.getInputStream()) {
             List<Worktime> l = worktimeService.findWithFullRelation(info);

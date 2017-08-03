@@ -9,7 +9,7 @@ package com.advantech.jqgrid;
  *
  * @author Wei.Cheng
  */
-public class PageInfo {
+public class PageInfo implements Cloneable {
 
     private boolean _search;
     private String nd;
@@ -128,4 +128,8 @@ public class PageInfo {
         this.filters = filters;
     }
 
+    @Override
+    public PageInfo clone() throws CloneNotSupportedException {
+        return (PageInfo) super.clone();
+    }
 }

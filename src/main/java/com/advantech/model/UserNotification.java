@@ -95,8 +95,8 @@ public class UserNotification implements java.io.Serializable {
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "User_Notification_REF", schema = "dbo", catalog = "E_Document", joinColumns = {
-        @JoinColumn(name = "user_notification_id", nullable = false, updatable = false)}, inverseJoinColumns = {
-        @JoinColumn(name = "user_id", nullable = false, updatable = false)})
+        @JoinColumn(name = "user_notification_id", nullable = false, insertable = false, updatable = false)}, inverseJoinColumns = {
+        @JoinColumn(name = "user_id", nullable = false, insertable = false, updatable = false)})
     public Set<User> getUsers() {
         return this.users;
     }

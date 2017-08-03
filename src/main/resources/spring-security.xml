@@ -48,10 +48,12 @@
         
         <!--Prevent multi login at same account-->
         <session-management>  
-            <concurrency-control max-sessions="1" error-if-maximum-exceeded="false" />  
+            <concurrency-control 
+                max-sessions="1" 
+                error-if-maximum-exceeded="false"
+            />  
         </session-management>  
         
-        <!--<custom-filter ref="CustomSecurityFilter" before="FILTER_SECURITY_INTERCEPTOR" />-->
     </http>
 
     <authentication-manager >

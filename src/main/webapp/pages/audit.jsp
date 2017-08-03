@@ -53,7 +53,7 @@
             }
         });
 
-        $("#send").trigger("click");
+//        $("#send").trigger("click");
 
         //Jqgrid 沒有支援複合主鍵，所以自己產生(用SQL的複合主鍵值相乘產生新的唯一鍵)
         function keyFormat(cellvalue, options, rowObject) {
@@ -166,6 +166,7 @@
                 navOptions: {reloadGridOptions: {fromServer: true}},
                 caption: "Worktime_AUD",
                 height: 450,
+                sortname: 'REVTSTMP', sortorder: 'desc',
                 error: function (xhr, ajaxOptions, thrownError) {
                     alert("Ajax Error occurred\n"
                             + "\nstatus is: " + xhr.status

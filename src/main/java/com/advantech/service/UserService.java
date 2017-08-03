@@ -10,6 +10,8 @@ import com.advantech.helper.CustomPasswordEncoder;
 import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.Unit;
 import com.advantech.model.User;
+import com.advantech.model.UserProfile;
+import java.util.ArrayList;
 import java.util.List;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +58,13 @@ public class UserService {
         Hibernate.initialize(i.getUserProfiles());
 
         return i;
+    }
+    
+    public List<UserProfile> findUserProfiles(Object obj_id){
+        List l = new ArrayList();
+        User u = this.findByPrimaryKey(obj_id);
+        l.addAll(u.getUserProfiles());
+        return l;
     }
 
     public List<User> findByUnitName(String unitName) {

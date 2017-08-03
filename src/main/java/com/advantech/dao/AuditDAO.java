@@ -63,17 +63,16 @@ public class AuditDAO implements AuditAction {
         q = getReader().createQuery().forRevisionsOfEntity(clz, selectedEntitiesOnly, selectDeletedEntities)
                 .setMaxResults(info.getRows())
                 .setFirstResult((info.getPage() - 1) * info.getRows());
-        String sortIndex = info.getSidx();
-        String[] orderColumns = sortIndex.split(",");
-        for (String orderString : orderColumns) {
-            orderString = lrTrim(orderString);
-            String[] orderInfo = orderString.split(" ");
-            if (orderInfo.length != 2) {
-                continue;
-            }
-            AuditProperty property = auditColumnNames.contains(orderInfo[0]) ? AuditEntity.revisionProperty(orderInfo[0]) : AuditEntity.property(orderInfo[0]);
-            q.addOrder(orderInfo[1].equals("asc") || orderInfo[1].equals("") ? property.asc() : property.desc());
+        
+        if (info.getSearchField() != null) {
+            q.add(AuditEntity.property(info.getSearchField()).eq(info.getSearchString()));
         }
+        
+        String sortOrder = info.getSord();
+        String sortIndex = info.getSidx();
+
+        AuditProperty property = auditColumnNames.contains(sortIndex) ? AuditEntity.revisionProperty(sortIndex) : AuditEntity.property(sortIndex);
+        q.addOrder(sortOrder.equals("asc") || sortOrder.equals("") ? property.asc() : property.desc());
 
         return q.getResultList();
     }
@@ -139,17 +138,11 @@ public class AuditDAO implements AuditAction {
             q.add(AuditEntity.property(info.getSearchField()).eq(info.getSearchString()));
         }
 
+        String sortOrder = info.getSord();
         String sortIndex = info.getSidx();
-        String[] orderColumns = sortIndex.split(",");
-        for (String orderString : orderColumns) {
-            orderString = lrTrim(orderString);
-            String[] orderInfo = orderString.split(" ");
-            if (orderInfo.length != 2) {
-                continue;
-            }
-            AuditProperty property = auditColumnNames.contains(orderInfo[0]) ? AuditEntity.revisionProperty(orderInfo[0]) : AuditEntity.property(orderInfo[0]);
-            q.addOrder(orderInfo[1].equals("asc") || orderInfo[1].equals("") ? property.asc() : property.desc());
-        }
+
+        AuditProperty property = auditColumnNames.contains(sortIndex) ? AuditEntity.revisionProperty(sortIndex) : AuditEntity.property(sortIndex);
+        q.addOrder(sortOrder.equals("asc") || sortOrder.equals("") ? property.asc() : property.desc());
 
         return q.getResultList();
     }

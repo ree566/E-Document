@@ -149,11 +149,11 @@
 //            guiStyle: "bootstrap",
             autoencode: true,
             colModel: [
-                {label: 'id', name: "id", width: 60, frozen: true, hidden: true, key: true, search: false, editable: true, editrules: {edithidden: true}, editoptions: {readonly: 'readonly', disabled: true, defaultValue: "0"}},
+                {label: 'id', name: "id", width: 60, frozen: true, hidden: ${!isAdmin}, key: true, search: ${isAdmin}, searchoptions: search_decimal_options, editable: true, editrules: {edithidden: true}, editoptions: {readonly: 'readonly', disabled: true, defaultValue: "0"}},
                 {label: 'Model', name: "modelName", frozen: true, editable: true, searchrules: {required: true}, searchoptions: search_string_options, editrules: {required: true}, formoptions: required_form_options},
                 {label: 'TYPE', name: "type.id", edittype: "select", editoptions: {value: selectOptions["type"]}, formatter: selectOptions["type_func"], width: 100, searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["type"], sopt: ['eq']}},
                 {label: 'BU', name: "businessGroup.id", edittype: "select", editoptions: {value: selectOptions["businessGroup"], dataEvents: businessGroup_select_event}, formatter: selectOptions["businessGroup_func"], width: 100, searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["businessGroup"], sopt: ['eq']}},
-                {label: 'Work Center', name: "workCenter", width: 100, searchrules: {required: true}, searchoptions: search_string_options, editrules: {required: false}},
+                {label: 'Work Center', name: "workCenter", width: 100, searchrules: {required: true}, searchoptions: search_string_options, editrules: {required: false}, editoptions: {defaultValue: 'ASSY'}},
                 {label: 'ProductionWT', name: "productionWt", width: 120, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: {elmsuffix: addFormulaCheckbox("productionWt")}, editrules: {number: true}, editoptions: {defaultValue: '0'}},
                 {label: 'Setup Time', name: "setupTime", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: {elmsuffix: addFormulaCheckbox("setupTime")}, editrules: {number: true}, editoptions: {defaultValue: '0'}},
                 {label: 'CleanPanel', name: "cleanPanel", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, editoptions: {defaultValue: '0'}},
@@ -175,7 +175,7 @@
                 {label: 'T2_PACKING', name: "t2ToPacking", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: {elmsuffix: addFormulaCheckbox("t2ToPacking")}, editrules: {number: true}, editoptions: {defaultValue: '0'}},
                 {label: 'Floor', name: "floor.id", edittype: "select", editoptions: {value: selectOptions["floor"]}, width: 100, formatter: selectOptions["floor_func"], searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["floor"], sopt: ['eq']}},
                 {label: 'Pending', name: "pending.id", edittype: "select", editoptions: {value: selectOptions["pending"], defaultValue: 'N', dataEvents: pending_select_event}, formatter: selectOptions["pending_func"], width: 100, searchrules: number_search_rule, stype: "select", searchoptions: {value: selectOptions["pending"], sopt: ['eq']}},
-                {label: 'Pending TIME', name: "pendingTime", width: 100, searchrules: {required: true}, searchoptions: search_decimal_options, editrules: {required: true, number: true}, formoptions: required_form_options},
+                {label: 'Pending TIME', name: "pendingTime", width: 100, searchrules: {required: true}, searchoptions: search_decimal_options, editrules: {required: true, number: true}, editoptions: {defaultValue: '0'}, formoptions: required_form_options},
                 {label: 'BurnIn', name: "burnIn", edittype: "select", editoptions: {value: "N:N;BI:BI;RI:RI", dataEvents: burnIn_select_event}, width: 100, searchrules: {required: true}, searchoptions: search_string_options},
                 {label: 'B/I Time', name: "biTime", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {required: true, number: true}, editoptions: {defaultValue: '0'}, formoptions: required_form_options},
                 {label: 'BI_Temperature', name: "biTemperature", width: 120, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {required: true, number: true}, editoptions: {defaultValue: '0'}, formoptions: required_form_options},
@@ -199,7 +199,7 @@
                 {label: 'FCC', name: "fcc", width: 60, searchrules: number_search_rule, searchoptions: search_string_options, edittype: "select", editoptions: {value: "0:0;1:1"}},
                 {label: 'EAC', name: "eac", width: 60, searchrules: number_search_rule, searchoptions: search_string_options, edittype: "select", editoptions: {value: "0:0;1:1"}},
                 {label: 'N合1集合箱', name: "nsInOneCollectionBox", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, editoptions: {defaultValue: '0'}},
-                {label: 'SN是否等於SSN', name: "partNoAttributeMaintain", edittype: "select", editoptions: {value: "Y:Y;N:N"}, width: 120, searchrules: {required: true}, searchoptions: search_string_options},
+                {label: 'SN是否等於SSN', name: "partNoAttributeMaintain", edittype: "select", editoptions: {value: "Y:Y;N:N", defaultValue: 'N'}, width: 120, searchrules: {required: true}, searchoptions: search_string_options},
                 {label: '組裝排站人數', name: "assyStation", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: {elmsuffix: addFormulaCheckbox("assyStation")}, editrules: {integer: true}, editoptions: {defaultValue: '0'}},
                 {label: '包裝排站人數', name: "packingStation", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: {elmsuffix: addFormulaCheckbox("packingStation")}, editrules: {integer: true}, editoptions: {defaultValue: '0'}},
                 {label: '前置時間', name: "assyLeadTime", width: 80, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, formoptions: {label: '組裝前置時間'}, editoptions: {defaultValue: '0'}},
@@ -389,11 +389,11 @@
             columnNames = $.grep(columnNames, function (value) {
                 return $.inArray(value, do_not_change_columns) == -1;
             });
-            
+
             //Separate readyonly column and editable column
             editableColumns = modifyColumns.length == 1 && modifyColumns[0] == -1 ? columnNames : modifyColumns;
             readonlyColumns = $(columnNames).not(editableColumns).get();
-            
+
             for (var i = 0; i < editableColumns.length; i++) {
                 var editableColumn = editableColumns[i];
                 grid.setColProp(editableColumn, {editable: true});

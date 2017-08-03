@@ -4,28 +4,56 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans-4.3.xsd">
     
+    <!--job1 setting-->
     <bean id="targetClass" class="com.advantech.quartzJob.BwFieldSyncJob"/>
     
     <bean id="jobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
         <property name="targetObject" ref="targetClass"/>
         <property name="targetMethod" value="syncBwData"/>
     </bean>
-    
+
     <bean id="cronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
         <property name="jobDetail" ref="jobDetail"/>
-        <!-- 每星期天 0:00 分執行-->
+        <!-- 每天 0:00 分執行-->
         <property name="cronExpression" value="0 0 0 ? * * *"/>
     </bean>
-
+    
+    <!--job2 setting-->
+    <bean id="targetClass2" class="com.advantech.quartzJob.StandardTimeUpload"/>
+    
+    <bean id="jobDetail2" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="targetClass2"/>
+        <property name="targetMethod" value="uploadToMes"/>
+    </bean>
+    
+    <bean id="cronTrigger2" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="jobDetail2"/>
+        <!-- 每天 0:00 分執行-->
+        <property name="cronExpression" value="0/30 * * ? * * *"/>
+    </bean>
+    
+    <bean id="cronTrigger3" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="jobDetail2"/>
+        <!-- 每天 0:00 分執行-->
+        <property name="cronExpression" value="0/45 * * ? * * *"/>
+    </bean>
+    
+    <!--schedule jobs-->
     <bean id="schedulerFactoryBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
         <property name="triggers">
             <list>
                 <ref bean="cronTrigger"/>
+<!--                <ref bean="cronTrigger2"/>
+                <ref bean="cronTrigger3"/>-->
             </list>
         </property>
         <property name="schedulerName">
             <value>jobScheduler</value>
         </property>
+        
+<!--        <property name="configLocation">
+            <value>classpath:quartz.properties</value>
+        </property>-->
     </bean>
     
 </beans>

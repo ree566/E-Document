@@ -12,7 +12,6 @@ import com.advantech.service.AuditService;
 import com.advantech.service.WorktimeService;
 import com.advantech.webservice.WorktimeStandardtimeUploadPort;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -21,11 +20,11 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import static junit.framework.Assert.assertEquals;
+import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.envers.AuditReader;
+import org.hibernate.criterion.Restrictions;
 import org.hibernate.envers.AuditReaderFactory;
-import org.hibernate.envers.RevisionType;
 import org.hibernate.envers.query.AuditEntity;
 import org.hibernate.envers.query.AuditQuery;
 import org.joda.time.DateTime;
@@ -124,16 +123,15 @@ public class HibernateTest {
     @Rollback(true)
     @Test
     public void testProc() throws Exception {
-        Session session = sessionFactory.getCurrentSession();
-        AuditReader reader = AuditReaderFactory.get(session);
-        AuditQuery query = reader.createQuery()
-                .forRevisionsOfEntity(Worktime.class, false, true)
-                .add(AuditEntity.revisionType().eq(RevisionType.DEL));
-
-        List results = query.getResultList();
-        for (Object o : results) {
-            HibernateObjectPrinter.print(o);
-        }
+        PageInfo p = new PageInfo();
+        p.setRows(Integer.MAX_VALUE);
+        p.setSearchField("modifiedDate");
+        p.setSearchOper("gt");
+        p.setSearchString("2017-08-02");
+        
+        List l = worktimeService.findAll(p);
+        
+        assertEquals(26, l.size());
     }
 
 }
