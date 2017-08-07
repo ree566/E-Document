@@ -61,6 +61,8 @@ public class StandardTimeUpload {
         this.updatePageInfo();
         List<Worktime> modifiedWorktimes = worktimeService.findAll(tempInfo);
 
+        log.info("Begin upload standardtime to mes: " + modifiedWorktimes + " datas.");
+
         for (Worktime w : modifiedWorktimes) {
             try {
                 port.uploadStandardTime(w);
@@ -71,6 +73,8 @@ public class StandardTimeUpload {
         }
 
         this.notifyUser(errorMessages);
+
+        log.info("Upload standardtime job finished.");
     }
 
     public void updatePageInfo() {

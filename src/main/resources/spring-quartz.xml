@@ -31,7 +31,7 @@
         <!-- 每天 0:00 分執行-->
         <property name="cronExpression" value="0 0 0 ? * * *"/>
     </bean>
-    
+
     <!--schedule jobs-->
     <bean id="schedulerFactoryBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
         <property name="triggers">

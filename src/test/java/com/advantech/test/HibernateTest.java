@@ -5,31 +5,19 @@
  */
 package com.advantech.test;
 
-import com.advantech.helper.HibernateObjectPrinter;
-import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.Worktime;
+import com.advantech.model.WorktimeAutouploadSetting;
 import com.advantech.service.AuditService;
+import com.advantech.service.WorktimeAutouploadSettingService;
 import com.advantech.service.WorktimeService;
 import com.advantech.webservice.WorktimeStandardtimeUploadPort;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import java.util.Iterator;
+import com.google.gson.Gson;
 import java.util.List;
-import java.util.Set;
-import javax.validation.ConstraintViolation;
+import java.util.Map;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
-import static junit.framework.Assert.assertEquals;
 import org.hibernate.SessionFactory;
-import org.hibernate.envers.AuditReaderFactory;
-import org.hibernate.envers.query.AuditEntity;
-import org.hibernate.envers.query.AuditQuery;
-import org.hibernate.envers.query.criteria.AuditProperty;
-import org.hibernate.envers.query.internal.property.EntityPropertyName;
-import org.hibernate.envers.query.internal.property.ModifiedFlagPropertyName;
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -66,6 +54,9 @@ public class HibernateTest {
 
     private static Validator validator;
 
+    @Autowired
+    private WorktimeAutouploadSettingService settingService;
+
     @BeforeClass
     public static void setUp() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
@@ -73,61 +64,19 @@ public class HibernateTest {
     }
 
     //CRUD testing.
-    @Transactional
-    @Rollback(true)
+//    @Transactional
+//    @Rollback(true)
 //    @Test
-    public void testSheetView() throws Exception {
-        Worktime w = worktimeService.findByModel("UTC-542FP-ATB0E");
-        port.uploadStandardTime(w);
-    }
-
-//    @Test
-    public void testResult() throws Exception {
-        List<Worktime> l = worktimeService.findWithFullRelation(new PageInfo().setRows(1));
-    }
-
-//    @Test
-    public void testCustomValidator() {
-        Worktime w = new Worktime();
-        w.setFlowByBabFlowId(null);
-        Set<ConstraintViolation<Worktime>> constraintViolations = validator.validate(w);
-        Iterator it = constraintViolations.iterator();
-        while (it.hasNext()) {
-            System.out.println(it.next());
+    public void test() throws Exception {
+        Worktime w = worktimeService.findByPrimaryKey(8384);
+        List<WorktimeAutouploadSetting> l = settingService.findAll();
+        Map<String, String> m = port.transformData(w, l);
+        for (Map.Entry<String, String> entry : m.entrySet()) {
+            String field = entry.getKey();
+            String xmlString = entry.getValue();
+            System.out.println("--- " + field + " ---");
+            System.out.println(xmlString);
         }
-    }
-
-    @Test
-    @Transactional
-    @Rollback(true)
-    public void testAudit() throws JsonProcessingException {
-
-        AuditQuery q = AuditReaderFactory.get(sessionFactory.getCurrentSession()).createQuery().forRevisionsOfEntity(Worktime.class, false, true);
-        List<Object[]> resultList = q.addProjection(AuditEntity.revisionNumber())
-                // for your normal entity properties
-                .addProjection(AuditEntity.id())
-                .addProjection(AuditEntity.property("assy")) // for each of your entity's properties
-                // for the modification properties
-                .addProjection(new AuditProperty<>(new ModifiedFlagPropertyName(new EntityPropertyName("assy"))))
-                .add(AuditEntity.id().eq(8364))
-                .getResultList();
-        
-        HibernateObjectPrinter.print(resultList);
-    }
-
-    @Transactional
-    @Rollback(true)
-//    @Test
-    public void testProc() throws Exception {
-        PageInfo p = new PageInfo();
-        p.setRows(Integer.MAX_VALUE);
-        p.setSearchField("modifiedDate");
-        p.setSearchOper("gt");
-        p.setSearchString("2017-08-02");
-
-        List l = worktimeService.findAll(p);
-
-        assertEquals(26, l.size());
     }
 
 }

@@ -71,11 +71,11 @@ public class WorktimeStandardtimeUploadPort {
             }
         }
         if (!errorFields.isEmpty()) {
-            throw new Exception("Error on saving xml result to MES on field " + errorFields.toString());
+            throw new Exception(w.getModelName() + ": Error on saving xml result to MES on field " + errorFields.toString());
         }
     }
 
-    private Map<String, String> transformData(Worktime w, List<WorktimeAutouploadSetting> l) throws Exception {
+    public Map<String, String> transformData(Worktime w, List<WorktimeAutouploadSetting> l) throws Exception {
         Map<String, String> xmlResults = new HashMap();
         for (WorktimeAutouploadSetting setting : l) {
             String columnUnit = setting.getColumnUnit();

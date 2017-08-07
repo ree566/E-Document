@@ -28,11 +28,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Wei.Cheng
  */
-@WebAppConfiguration
-@ContextConfiguration(locations = {
-    "classpath:servlet-context.xml"
-})
-@RunWith(SpringJUnit4ClassRunner.class)
+//@WebAppConfiguration
+//@ContextConfiguration(locations = {
+//    "classpath:servlet-context.xml"
+//})
+//@RunWith(SpringJUnit4ClassRunner.class)
 public class SpringSecurityTest {
 
     @Autowired
@@ -48,7 +48,7 @@ public class SpringSecurityTest {
                 .build();
     }
 
-    @Test
+//    @Test
     @WithMockUser(username = "admin", roles = {"USER", "ADMIN"})
     public void testMethod() throws Exception {
 

@@ -37,11 +37,11 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  *
  * @author Wei.Cheng
  */
-@WebAppConfiguration
-@ContextConfiguration(locations = {
-    "classpath:servlet-context.xml",
-    "classpath:hibernate.cfg.xml"
-})
+//@WebAppConfiguration
+//@ContextConfiguration(locations = {
+//    "classpath:servlet-context.xml",
+//    "classpath:hibernate.cfg.xml"
+//})
 //@RunWith(SpringJUnit4ClassRunner.class)
 public class WorktimeBatchModControllerTest {
 

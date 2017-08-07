@@ -5,10 +5,8 @@
  */
 package com.advantech.test;
 
+import java.math.BigDecimal;
 import static junit.framework.Assert.assertEquals;
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.junit.Test;
 
 /**
@@ -19,17 +17,14 @@ public class Test1Test {
 
     @Test
     public void test() throws Exception {
-        String tar = "2017-08-02";
-        DateTime d = new DateTime().minusDays(1);
-        DateTimeFormatter df = DateTimeFormat.forPattern("yyyy-MM-dd");
+        BigDecimal five = new BigDecimal("5");
+        BigDecimal ten = new BigDecimal("10");
+        BigDecimal zero = BigDecimal.ZERO;
+
+        assertEquals(new BigDecimal("2"), ten.divide(five));
+//        assertEquals(new BigDecimal("5"), ten.divide(five).divide(zero));
+        assertEquals(new BigDecimal("6"), ten.add(five.divide(five)));
         
-        String result = df.print(d);
-
-        assertEquals(tar, result);
-    }
-
-    private void testFunc() throws Exception {
-        throw new Exception("Exception detect");
     }
 
 }

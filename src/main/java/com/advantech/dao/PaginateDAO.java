@@ -51,7 +51,10 @@ public class PaginateDAO {
         }
 
         criteria.setFirstResult((info.getPage() - 1) * info.getRows());
-        criteria.setMaxResults(info.getRows());
+        
+        if (info.getRows() > 0) {
+            criteria.setMaxResults(info.getRows());
+        }
 
         return criteria.list();
     }
