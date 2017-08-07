@@ -20,13 +20,13 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import static junit.framework.Assert.assertEquals;
-import org.hibernate.Criteria;
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Restrictions;
 import org.hibernate.envers.AuditReaderFactory;
 import org.hibernate.envers.query.AuditEntity;
 import org.hibernate.envers.query.AuditQuery;
+import org.hibernate.envers.query.criteria.AuditProperty;
+import org.hibernate.envers.query.internal.property.EntityPropertyName;
+import org.hibernate.envers.query.internal.property.ModifiedFlagPropertyName;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -97,40 +97,36 @@ public class HibernateTest {
         }
     }
 
-//    @Test
-//    @Transactional
-//    @Rollback(true)
+    @Test
+    @Transactional
+    @Rollback(true)
     public void testAudit() throws JsonProcessingException {
-        DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy/MM/dd HH:mm:ss");
-        DateTime sD = formatter.parseDateTime("2017/07/27 00:00:00");
-        DateTime eD = sD.plusDays(1);
 
-        //找到今天所有N欄位有變動的工單
-        AuditQuery q = AuditReaderFactory.get(sessionFactory.getCurrentSession()).createQuery().forRevisionsOfEntity(Worktime.class, true, true);
-        q.add(AuditEntity.property("biTime").hasChanged())
-                .add(AuditEntity.revisionProperty("REVTSTMP").between(sD.toDate().getTime(), eD.toDate().getTime()))
-                .addOrder(AuditEntity.revisionNumber().desc())
-                .setMaxResults(1);
-
-        List<Worktime> l = q.getResultList();
-
-        assertEquals(1, l.size());
-
-        HibernateObjectPrinter.print(l);
+        AuditQuery q = AuditReaderFactory.get(sessionFactory.getCurrentSession()).createQuery().forRevisionsOfEntity(Worktime.class, false, true);
+        List<Object[]> resultList = q.addProjection(AuditEntity.revisionNumber())
+                // for your normal entity properties
+                .addProjection(AuditEntity.id())
+                .addProjection(AuditEntity.property("assy")) // for each of your entity's properties
+                // for the modification properties
+                .addProjection(new AuditProperty<>(new ModifiedFlagPropertyName(new EntityPropertyName("assy"))))
+                .add(AuditEntity.id().eq(8364))
+                .getResultList();
+        
+        HibernateObjectPrinter.print(resultList);
     }
 
     @Transactional
     @Rollback(true)
-    @Test
+//    @Test
     public void testProc() throws Exception {
         PageInfo p = new PageInfo();
         p.setRows(Integer.MAX_VALUE);
         p.setSearchField("modifiedDate");
         p.setSearchOper("gt");
         p.setSearchString("2017-08-02");
-        
+
         List l = worktimeService.findAll(p);
-        
+
         assertEquals(26, l.size());
     }
 

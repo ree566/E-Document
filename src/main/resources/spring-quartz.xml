@@ -29,13 +29,7 @@
     <bean id="cronTrigger2" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
         <property name="jobDetail" ref="jobDetail2"/>
         <!-- 每天 0:00 分執行-->
-        <property name="cronExpression" value="0/30 * * ? * * *"/>
-    </bean>
-    
-    <bean id="cronTrigger3" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
-        <property name="jobDetail" ref="jobDetail2"/>
-        <!-- 每天 0:00 分執行-->
-        <property name="cronExpression" value="0/45 * * ? * * *"/>
+        <property name="cronExpression" value="0 0 0 ? * * *"/>
     </bean>
     
     <!--schedule jobs-->
@@ -43,17 +37,16 @@
         <property name="triggers">
             <list>
                 <ref bean="cronTrigger"/>
-<!--                <ref bean="cronTrigger2"/>
-                <ref bean="cronTrigger3"/>-->
+                <ref bean="cronTrigger2"/>
             </list>
         </property>
         <property name="schedulerName">
             <value>jobScheduler</value>
         </property>
         
-<!--        <property name="configLocation">
+        <property name="configLocation">
             <value>classpath:quartz.properties</value>
-        </property>-->
+        </property>
     </bean>
     
 </beans>

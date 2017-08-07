@@ -5,6 +5,10 @@
  */
 package com.advantech.test;
 
+import static junit.framework.Assert.assertEquals;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.junit.Test;
 
 /**
@@ -13,23 +17,15 @@ import org.junit.Test;
  */
 public class Test1Test {
 
-//    @Test
+    @Test
     public void test() throws Exception {
-        int count = 1;
-        int retryTimes = 3;
+        String tar = "2017-08-02";
+        DateTime d = new DateTime().minusDays(1);
+        DateTimeFormatter df = DateTimeFormat.forPattern("yyyy-MM-dd");
+        
+        String result = df.print(d);
 
-        while (true) {
-            try {
-                testFunc();
-                break;
-            } catch (Exception e) {
-                System.out.println("Begin retry. " + count);
-                if (count++ == retryTimes) {
-                    throw e;
-                }
-            }
-        }
-
+        assertEquals(tar, result);
     }
 
     private void testFunc() throws Exception {

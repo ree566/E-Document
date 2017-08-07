@@ -43,7 +43,7 @@
             var endDate = $("#eD").val();
 
             if (!isGridInitialized) {
-                getEditRecord(modelName, version, $("#sD").val(), $("#eD").val()); //init the table
+                getEditRecord(id, modelName, version, startDate, endDate); //init the table
                 isGridInitialized = true;
             } else {
                 grid.jqGrid('clearGridData');
@@ -65,11 +65,12 @@
             return t.format('YYYY-MM-DD H:mm:ss');
         }
 
-        function getEditRecord(rowId, version, startDate, endDate) {
+        function getEditRecord(id, modelName, version, startDate, endDate) {
             grid.jqGrid({
                 url: '<c:url value="/Audit/find" />',
                 postData: {
-                    modelName: rowId,
+                    id: id,
+                    modelName: modelName,
                     version: version,
                     startDate: startDate,
                     endDate: endDate
@@ -151,8 +152,6 @@
                 shrinkToFit: false,
                 hidegrid: true,
                 stringResult: true,
-                gridview: true,
-                grouping: true,
                 jsonReader: {
                     root: "rows",
                     page: "page",

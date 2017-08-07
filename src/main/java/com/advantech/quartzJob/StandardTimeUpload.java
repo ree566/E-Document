@@ -14,8 +14,11 @@ import com.advantech.service.WorktimeService;
 import com.advantech.webservice.WorktimeStandardtimeUploadPort;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.PostConstruct;
 import javax.mail.MessagingException;
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,33 +43,38 @@ public class StandardTimeUpload {
     @Autowired
     private WorktimeStandardtimeUploadPort port;
 
+    private DateTimeFormatter df;
+
+    private PageInfo tempInfo;
+
+    @PostConstruct
+    public void init() {
+        df = DateTimeFormat.forPattern("yyyy-MM-dd");
+        tempInfo = new PageInfo();
+        tempInfo.setRows(Integer.MAX_VALUE);
+        tempInfo.setSearchField("modifiedDate");
+        tempInfo.setSearchOper("gt");
+    }
+
     public void uploadToMes() {
-        System.out.println("Running upload mes..");
         List<String> errorMessages = new ArrayList();
-        
-        errorMessages.add("This is the testing error message.");
-//        PageInfo info = this.generatePageInfo();
-//        List<Worktime> modifiedWorktimes = worktimeService.findAll(info);
-//
-//        for (Worktime w : modifiedWorktimes) {
-//            try {
-//                port.uploadStandardTime(w);
-//            } catch (Exception e) {
-//                errorMessages.add(e.getMessage());
-//                log.error(e.toString());
-//            }
-//        }
-        
+        this.updatePageInfo();
+        List<Worktime> modifiedWorktimes = worktimeService.findAll(tempInfo);
+
+        for (Worktime w : modifiedWorktimes) {
+            try {
+                port.uploadStandardTime(w);
+            } catch (Exception e) {
+                errorMessages.add(e.getMessage());
+                log.error(e.toString());
+            }
+        }
+
         this.notifyUser(errorMessages);
     }
 
-    public PageInfo generatePageInfo() {
-        PageInfo p = new PageInfo();
-        p.setMaxNumOfRows(Integer.MAX_VALUE);
-        p.setSearchField("modifiedDate");
-        p.setSearchOper("gt");
-        p.setSearchString("2017-08-02");
-        return p;
+    public void updatePageInfo() {
+        tempInfo.setSearchString(df.print(new DateTime().minusWeeks(1)));
     }
 
     public void notifyUser(List<String> l) {
@@ -85,12 +93,12 @@ public class StandardTimeUpload {
 
     private String generateTextBody(List<String> l) {
         StringBuilder sb = new StringBuilder();
+        sb.append("<p>Dear All:</p>");
         if (l.isEmpty()) {
-            sb.append("<p>大表上傳成功於　");
+            sb.append("<p>大表標工上傳成功於下列時間</p><p>");
             sb.append(new DateTime());
             sb.append("</p>");
         } else {
-            sb.append("<p>Dear All:</p>");
             sb.append("<p>上傳至大表發生了異常，訊息清單如下</p>");
             for (String st : l) {
                 sb.append("<p>");
