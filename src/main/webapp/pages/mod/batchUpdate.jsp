@@ -43,7 +43,26 @@
                 $("#message").html("<font color='blue'>" + response + "</font>");
             },
             complete: function (response) {
-                $("#message").html(response.responseText);
+                var text = response.responseText;
+                try {
+                    var obj = JSON.parse(JSON.parse(text));
+                    for (var property in obj) {
+                        if (obj.hasOwnProperty(property)) {
+                            var innerObj = obj[property];
+                            $("#message").append("<h5>" + property + "</h5>");
+                            $("#message").append("<ul>");
+                            for (var innerProperty in innerObj) {
+                                if (innerObj.hasOwnProperty(innerProperty)) {
+                                    $("#message").append("<li>" + innerProperty + ':' + innerObj[innerProperty] + "</li>");
+                                }
+                            }
+                            $("#message").append("</ul><hr />");
+                        }
+                    }
+                } catch (e) {
+                    // handle error 
+                    $("#message").append("<p>" + text + "</p>");
+                }
                 $("#sync-img").hide();
             },
             error: function () {

@@ -1,7 +1,9 @@
 package com.advantech.model;
 // Generated 2017/4/7 下午 02:26:06 by Hibernate Tools 4.3.1
 
+import com.advantech.customValidator.EsValidate;
 import com.advantech.customValidator.FlowValidate;
+import com.advantech.customValidator.TestValidate;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -50,6 +52,8 @@ import org.springframework.util.AutoPopulatingList;
 @DynamicUpdate(true)
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = Worktime.class)
 @Audited(targetAuditMode = NOT_AUDITED, withModifiedFlag = true)
+@FlowValidate
+@EsValidate
 public class Worktime implements java.io.Serializable {
     
     private int id;
@@ -738,7 +742,7 @@ public class Worktime implements java.io.Serializable {
     }
     
     @NotAudited
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "worktime", orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "worktime")
     public List<BwField> getBwAvgViews() {
         return bwField;
     }

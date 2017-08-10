@@ -21,11 +21,11 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  */
 @Target({ TYPE, ANNOTATION_TYPE })
 @Retention(RUNTIME)
-@Constraint(validatedBy = { FlowValidator.class })
+@Constraint(validatedBy = { EsValidator.class })
 @Documented
-public @interface FlowValidate {
+public @interface EsValidate {
 
-    String message() default "{com.advantech.customValidator.FlowValidate}";
+    String message() default "Must contain \"ES\"";
 
     Class<?>[] groups() default { };
 

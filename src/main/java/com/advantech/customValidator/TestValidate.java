@@ -21,11 +21,11 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  */
 @Target({ TYPE, ANNOTATION_TYPE })
 @Retention(RUNTIME)
-@Constraint(validatedBy = { FlowValidator.class })
+@Constraint(validatedBy = { TestValidator.class })
 @Documented
-public @interface FlowValidate {
+public @interface TestValidate {
 
-    String message() default "{com.advantech.customValidator.FlowValidate}";
+    String message() default "This is a single testing message.";
 
     Class<?>[] groups() default { };
 

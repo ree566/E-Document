@@ -15,7 +15,7 @@ import org.junit.Test;
  */
 public class Test1Test {
 
-    @Test
+//    @Test
     public void test() throws Exception {
         BigDecimal five = new BigDecimal("5");
         BigDecimal ten = new BigDecimal("10");
