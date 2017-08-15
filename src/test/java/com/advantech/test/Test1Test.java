@@ -5,8 +5,8 @@
  */
 package com.advantech.test;
 
-import java.math.BigDecimal;
-import static junit.framework.Assert.assertEquals;
+import com.advantech.model.Worktime;
+import java.lang.reflect.Method;
 import org.junit.Test;
 
 /**
@@ -15,16 +15,12 @@ import org.junit.Test;
  */
 public class Test1Test {
 
-//    @Test
+    @Test
     public void test() throws Exception {
-        BigDecimal five = new BigDecimal("5");
-        BigDecimal ten = new BigDecimal("10");
-        BigDecimal zero = BigDecimal.ZERO;
-
-        assertEquals(new BigDecimal("2"), ten.divide(five));
-//        assertEquals(new BigDecimal("5"), ten.divide(five).divide(zero));
-        assertEquals(new BigDecimal("6"), ten.add(five.divide(five)));
         
+
     }
+
+    
 
 }

@@ -82,9 +82,6 @@ public class WorktimeStandardtimeUploadPort {
             String columnName = setting.getColumnName();
             try {
                 BigDecimal totalCt = getValueFromFormula(w, setting.getFormula());
-                if (BigDecimal.ZERO.compareTo(totalCt) == 0) {
-                    continue;
-                }
                 Root root = f.createRoot();
                 Root.STANDARDWORKTIME swt = root.getSTANDARDWORKTIME();
                 swt.setUNITNO(columnUnit);
@@ -95,15 +92,17 @@ public class WorktimeStandardtimeUploadPort {
                 swt.setFIRSTTIME(BigDecimal.ZERO);
                 swt.setCT(setting.getCt());
                 swt.setSIDE(5010);
-                swt.setOPCNT(1);
                 swt.setMIXCT(totalCt); //Temporarily set this column equal to totalCt
 
                 if ("B".equals(columnUnit) && setting.getStationId() != null) {
                     swt.setMACHINECNT(w.getAssyStation());
+                    swt.setOPCNT(w.getAssyStation());
                 } else if ("P".equals(columnUnit) && setting.getStationId() != null) {
                     swt.setMACHINECNT(w.getPackingStation());
+                    swt.setOPCNT(w.getPackingStation());
                 } else {
                     swt.setMACHINECNT(0);
+                    swt.setOPCNT(1);
                 }
                 xmlResults.put(columnName, this.generateXmlString(root));
             } catch (Exception e) {

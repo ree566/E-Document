@@ -5,12 +5,15 @@
  */
 package com.advantech.controller;
 
+import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.Worktime;
 import com.advantech.service.AuditService;
+import com.advantech.service.WorktimeService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -27,6 +30,9 @@ public class TestController {
 
     @Autowired
     private AuditService auditService;
+    
+    @Autowired
+    private WorktimeService worktimeService;
 
     @ResponseBody
     @RequestMapping(value = "/test", method = RequestMethod.GET)
@@ -38,7 +44,21 @@ public class TestController {
     @ResponseBody
     @RequestMapping(value = "/test1", method = RequestMethod.GET)
     @Secured("ROLE_ADMIN")
+    @Transactional
     public String test1() {
+        PageInfo info = new PageInfo();
+        info = new PageInfo();
+        info.setRows(Integer.MAX_VALUE);
+        info.setSearchField("id");
+        info.setSearchOper("lt");
+        info.setSearchString("8527");
+        List<Worktime> l = worktimeService.findAll(info);
+        for (Worktime w : l) {
+            w.setTotalModule(w.getAssyLeadTime());
+            w.setAssy(w.getAssy().subtract(w.getAssyLeadTime()));
+            worktimeService.update(w);
+//            port.uploadStandardTime(w);
+        }
         return "hi1";
     }
 

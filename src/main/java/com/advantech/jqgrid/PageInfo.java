@@ -26,7 +26,7 @@ public class PageInfo implements Cloneable {
     private Integer maxNumOfRows;
 
     public PageInfo() {
-        this.sidx = "";
+        this.sidx = "id";
         this.sord = "asc";
         this.page = 1;
         this.rows = 10;

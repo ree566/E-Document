@@ -52,8 +52,8 @@ import org.springframework.util.AutoPopulatingList;
 @DynamicUpdate(true)
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = Worktime.class)
 @Audited(targetAuditMode = NOT_AUDITED, withModifiedFlag = true)
-@FlowValidate
-@EsValidate
+//@FlowValidate
+//@EsValidate
 public class Worktime implements java.io.Serializable {
     
     private int id;
@@ -765,18 +765,17 @@ public class Worktime implements java.io.Serializable {
     public void setDefaultSetupTime() {
         BigDecimal defaultValue = BigDecimal.ZERO
                 .add(notEmpty(totalModule).compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : new BigDecimal(5))
-                .add(notEmpty(assy).compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : new BigDecimal(25))
+                .add((notEmpty(assy)).compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : new BigDecimal(25))
                 .add(notEmpty(t1).compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : new BigDecimal(10))
                 .add(notEmpty(t2).compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : new BigDecimal(10))
                 .add(notEmpty(t3).compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : new BigDecimal(5))
                 .add(notEmpty(t4).compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : new BigDecimal(5))
-                .add(notEmpty(packing).compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : new BigDecimal(15))
-                .add(notEmpty(cleanPanel).compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : new BigDecimal(10));
+                .add((notEmpty(packing)).compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : new BigDecimal(15));
         this.setSetupTime(defaultValue);
     }
     
     public void setDefaultAssyToT1() {
-        BigDecimal defaultValue = notEmpty(cleanPanel).add(notEmpty(assy)).add(notEmpty(t1))
+        BigDecimal defaultValue = notEmpty(cleanPanel).add(notEmpty(assy).add(notEmpty(assyLeadTime))).add(notEmpty(t1))
                 .add(notEmpty(upBiRi)).add(notEmpty(vibration))
                 .add(notEmpty(hiPotLeakage)).add(notEmpty(coldBoot)).add(notEmpty(warmBoot));
         this.setAssyToT1(defaultValue);
@@ -784,16 +783,16 @@ public class Worktime implements java.io.Serializable {
     
     public void setDefaultT2ToPacking() {
         BigDecimal defaultValue = notEmpty(t2)
-                .add(notEmpty(t3)).add(notEmpty(t4)).add(notEmpty(packing)).add(notEmpty(downBiRi));
+                .add(notEmpty(t3)).add(notEmpty(t4)).add(notEmpty(packing).add(notEmpty(packingLeadTime))).add(notEmpty(downBiRi));
         this.setT2ToPacking(defaultValue);
     }
     
     public void setDefaultAssyStation() {
         int defaultValue;
-        if (notEmpty(assy).compareTo(new BigDecimal(45)) <= 0) {
+        if ((notEmpty(assy).add(notEmpty(assyLeadTime))).compareTo(new BigDecimal(45)) <= 0) {
             defaultValue = 3;
         } else {
-            BigDecimal b = notEmpty(assy).divide(new BigDecimal(15), 0, RoundingMode.HALF_UP);
+            BigDecimal b = (notEmpty(assy).add(notEmpty(assyLeadTime))).divide(new BigDecimal(15), 0, RoundingMode.HALF_UP);
             if (b.compareTo(new BigDecimal(6)) >= 0) {
                 defaultValue = 6;
             } else {
@@ -805,10 +804,10 @@ public class Worktime implements java.io.Serializable {
     
     public void setDefaultPackingStation() {
         int defaultValue;
-        if (notEmpty(packing).compareTo(new BigDecimal(10)) <= 0) {
+        if ((notEmpty(packing).add(notEmpty(packingLeadTime))).compareTo(new BigDecimal(10)) <= 0) {
             defaultValue = 2;
         } else {
-            BigDecimal b = notEmpty(packing).divide(new BigDecimal(5), 0, RoundingMode.HALF_UP);
+            BigDecimal b = (notEmpty(packing).add(notEmpty(packingLeadTime))).divide(new BigDecimal(5), 0, RoundingMode.HALF_UP);
             if (b.compareTo(new BigDecimal(6)) >= 0) {
                 defaultValue = 6;
             } else {
@@ -820,7 +819,6 @@ public class Worktime implements java.io.Serializable {
     
     public void setDefaultAssyKanbanTime() {
         BigDecimal defaultValue = notEmpty(assy)
-                .subtract(notEmpty(assyLeadTime))
                 .divide(new BigDecimal(assyStation), 2, RoundingMode.HALF_UP);
         this.setAssyKanbanTime(defaultValue);
         
@@ -828,13 +826,12 @@ public class Worktime implements java.io.Serializable {
     
     public void setDefaultPackingKanbanTime() {
         BigDecimal defaultValue = notEmpty(packing)
-                .subtract(notEmpty(packingLeadTime))
                 .divide(new BigDecimal(packingStation), 2, RoundingMode.HALF_UP);
         this.setPackingKanbanTime(defaultValue);
     }
     
     public void setDefaultCleanPanelAndAssembly() {
-        BigDecimal defaultValue = notEmpty(cleanPanel).add(notEmpty(assy)).subtract(notEmpty(assyLeadTime));
+        BigDecimal defaultValue = notEmpty(cleanPanel).add(notEmpty(assy));
         this.setCleanPanelAndAssembly(defaultValue);
     }
     

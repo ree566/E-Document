@@ -60,7 +60,7 @@ public class HibernateValidatorTest {
         assertNotEquals(0, m.size());
     }
 
-    @Test
+//    @Test
     public void testPreAssy() {
         Worktime w = new Worktime();
         PreAssy p = new PreAssy();
@@ -87,7 +87,7 @@ public class HibernateValidatorTest {
         assertEquals(10, errors.size());
     }
 
-    @Test
+//    @Test
     public void testBabFlow() {
         Worktime w = new Worktime();
         Flow f = new Flow();
