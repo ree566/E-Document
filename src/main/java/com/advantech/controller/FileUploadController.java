@@ -93,7 +93,6 @@ public class FileUploadController {
     /**
      * Upload single file using Spring Controller
      *
-     * @param action
      * @param file
      * @return
      */

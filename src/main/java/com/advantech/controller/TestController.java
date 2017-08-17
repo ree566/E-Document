@@ -27,20 +27,20 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Secured({"ROLE_ADMIN", "ROLE_GUEST"})
 @RequestMapping(value = "/testCtrl")
 public class TestController {
-
+    
     @Autowired
     private AuditService auditService;
     
     @Autowired
     private WorktimeService worktimeService;
-
+    
     @ResponseBody
     @RequestMapping(value = "/test", method = RequestMethod.GET)
     @Secured("ROLE_USER")
     public String test() {
         return "hi";
     }
-
+    
     @ResponseBody
     @RequestMapping(value = "/test1", method = RequestMethod.GET)
     @Secured("ROLE_ADMIN")
@@ -54,19 +54,19 @@ public class TestController {
         info.setSearchString("8527");
         List<Worktime> l = worktimeService.findAll(info);
         for (Worktime w : l) {
-            w.setTotalModule(w.getAssyLeadTime());
-            w.setAssy(w.getAssy().subtract(w.getAssyLeadTime()));
+            w.setTotalModule(w.getTotalModule().subtract(w.getCleanPanel()));
+            w.setAssy(w.getAssy().add(w.getCleanPanel()));
             worktimeService.update(w);
 //            port.uploadStandardTime(w);
         }
         return "hi1";
     }
-
+    
     @ResponseBody
     @RequestMapping(value = "/test2/{id}", method = RequestMethod.GET)
     @Secured({"ROLE_USER", "ROLE_ADMIN"})
     public List test2(@PathVariable int id) {
         return auditService.findByPrimaryKey(Worktime.class, id);
     }
-
+    
 }
