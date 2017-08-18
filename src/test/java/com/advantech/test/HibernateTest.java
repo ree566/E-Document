@@ -37,41 +37,41 @@ import org.springframework.transaction.annotation.Transactional;
  *
  * @author Wei.Cheng
  */
-//@WebAppConfiguration
-//@ContextConfiguration(locations = {
-//    "classpath:servlet-context.xml",
-//    "classpath:hibernate.cfg.xml"
-//})
-//@RunWith(SpringJUnit4ClassRunner.class)
+@WebAppConfiguration
+@ContextConfiguration(locations = {
+    "classpath:servlet-context.xml",
+    "classpath:hibernate.cfg.xml"
+})
+@RunWith(SpringJUnit4ClassRunner.class)
 public class HibernateTest {
-    
+
     @Autowired
     private WorktimeService worktimeService;
-    
+
     @Autowired
     private SessionFactory sessionFactory;
-    
+
     @Autowired
     private WorktimeStandardtimeUploadPort port;
-    
+
     @Autowired
     private AuditService auditService;
-    
+
     private static Validator validator;
-    
+
     @Autowired
     private WorktimeAutouploadSettingService settingService;
-    
+
     @BeforeClass
     public static void setUp() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
     }
 
-    //CRUD testing.
-//    @Transactional
-//    @Rollback(true)
-//    @Test
+//    CRUD testing.
+    @Transactional
+    @Rollback(true)
+    @Test
     public void test() throws Exception {
         Session session = sessionFactory.getCurrentSession();
         AuditReader reader = AuditReaderFactory.get(session);
@@ -82,25 +82,19 @@ public class HibernateTest {
         // for your normal entity properties
         //                .addProjection(AuditEntity.id())
 
-        String[] st = this.getAllFields();
-        
-        for (String f : st) {
-            q.addProjection(AuditEntity.property(f)); // for each of your entity's properties
-                    // for the modification properties
-//                    .addProjection(new AuditProperty<>(new ModifiedFlagPropertyName(new EntityPropertyName(f))));
-        }
-        
+//        q.addProjection(AuditEntity.selectEntity(false));
+
         q.add(AuditEntity.id().eq(8394));
-        
+
         List resultList = q.getResultList();
-        
+
         HibernateObjectPrinter.print(resultList);
     }
-    
+
     private String[] getAllFields() {
         Worktime w = new Worktime();
         Class objClass = w.getClass();
-        
+
         List<String> list = new ArrayList<>();
         // Get the public methods associated with this class.
         Method[] methods = objClass.getMethods();
@@ -112,11 +106,11 @@ public class HibernateTest {
         }
         return list.toArray(new String[0]);
     }
-    
+
     private String lowerCaseFirst(String st) {
         StringBuilder sb = new StringBuilder(st);
         sb.setCharAt(0, Character.toLowerCase(sb.charAt(0)));
         return sb.toString();
     }
-    
+
 }
