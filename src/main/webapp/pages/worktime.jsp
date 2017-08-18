@@ -328,20 +328,24 @@
         );
 
         //Button at grid foot.
-        grid.navButtonAdd('#pager', {
-            caption: "Show / Hide",
-            buttonicon: "ui-icon-shuffle",
-            onClickButton: function () {
-                if (editableColumns == null || readonlyColumns == null || readonlyColumns.length == 0 || editableColumns.length == 0) {
-                    return false;
-                }
-                toggle_value = !toggle_value;
-                grid.jqGrid(toggle_value ? 'hideCol' : 'showCol', readonlyColumns)
-                        .jqGrid('destroyFrozenColumns')
-                        .jqGrid('setFrozenColumns');
-            },
-            position: "last"
-        });
+
+        if (${!isGuest}) {
+            grid.navButtonAdd('#pager', {
+                caption: "Show / Hide",
+                buttonicon: "ui-icon-shuffle",
+                onClickButton: function () {
+                    if (editableColumns == null || readonlyColumns == null || readonlyColumns.length == 0 || editableColumns.length == 0) {
+                        return false;
+                    }
+                    toggle_value = !toggle_value;
+                    grid.jqGrid(toggle_value ? 'hideCol' : 'showCol', readonlyColumns)
+                            .jqGrid('destroyFrozenColumns')
+                            .jqGrid('setFrozenColumns');
+                },
+                position: "last"
+            });
+        }
+
         grid.navButtonAdd('#pager', {
             caption: "Export to Excel",
             buttonicon: "ui-icon-disk",
@@ -351,14 +355,16 @@
             position: "last"
         });
 
-        grid.navButtonAdd('#pager', {
-            caption: "Export to Excel(SPE)",
-            buttonicon: "ui-icon-disk",
-            onClickButton: function () {
-                grid.jqGrid('excelExport', {"url": "<c:url value="/Worktime/excelForSpe" />"});
-            },
-            position: "last"
-        });
+        if (${!isGuest}) {
+            grid.navButtonAdd('#pager', {
+                caption: "Export to Excel(SPE)",
+                buttonicon: "ui-icon-disk",
+                onClickButton: function () {
+                    grid.jqGrid('excelExport', {"url": "<c:url value="/Worktime/excelForSpe" />"});
+                },
+                position: "last"
+            });
+        }
 
         //有可編輯column的人再來分可編輯欄位
         //為0直接hide CRUD的按鈕

@@ -23,6 +23,9 @@ import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
 import org.hibernate.envers.query.AuditEntity;
 import org.hibernate.envers.query.AuditQuery;
+import org.hibernate.envers.query.criteria.AuditProperty;
+import org.hibernate.envers.query.internal.property.EntityPropertyName;
+import org.hibernate.envers.query.internal.property.ModifiedFlagPropertyName;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -81,16 +84,16 @@ public class HibernateTest {
         // for your normal entity properties
         //                .addProjection(AuditEntity.id())
 
-//        String[] st = this.getAllFields();
-        String[] st = new String[0];
+        String[] st = this.getAllFields();
+//        String[] st = new String[0];
 
         for (String f : st) {
-            if ("bwFields".equals(f) || "worktimeFormulaSettings".equals(f)) {
+            if ("id".equals(f) || "bwFields".equals(f) || "worktimeFormulaSettings".equals(f)) {
                 continue;
             }
-            q.addProjection(AuditEntity.property(f)); // for each of your entity's properties
+//            q.addProjection(AuditEntity.property(f)); // for each of your entity's properties
             // for the modification properties
-//                    .addProjection(new AuditProperty<>(new ModifiedFlagPropertyName(new EntityPropertyName(f))));
+            q.addProjection(new AuditProperty<>(new ModifiedFlagPropertyName(new EntityPropertyName(f))));
         }
 
         q.add(AuditEntity.id().eq(8394));
