@@ -44,6 +44,7 @@
 <script src="<c:url value="/js/urlParamGetter.js" />"></script>
 <script src="<c:url value="/js/jqgrid-custom-select-option-reader.js" />"></script>
 <script src="<c:url value="/js/jqgrid-custom-setting.js" />"></script>
+<script src="<c:url value="/webjars/free-jqgrid/4.14.1/plugins/jquery.jqgrid.showhidecolumnmenu.js" />"></script>
 <script src="<c:url value="/js/jquery.blockUI.js" />"></script>
 <script src="<c:url value="/js/worktime-setting/column-selector-autofill.js" />"></script>
 <script src="<c:url value="/js/worktime-setting/column-setting.js" />"></script>
@@ -373,6 +374,7 @@
         }
 
         grid.jqGrid('setFrozenColumns');
+        grid.jqGrid("showHideColumnMenu");
         $(window).bind('resize', function () {
             setTimeout(function () {
                 grid.jqGrid("setGridWidth", $('#worktime-content').width());
@@ -440,13 +442,34 @@
                 for (var j = 0; j < keyword.length; j++) {
                     if (flowName.indexOf(keyword[j]) > -1) {
                         var checkCol = logic.checkColumn;
-                        for (var k = 0; k < checkCol.length; k++) {
-                            var colName = checkCol[k];
-                            if (!logic.prmValid(formObj[colName])) {
-                                var err = {};
-                                err.field = colName;
-                                err.code = logic.message;
-                                validationErrors.push(err);
+                        var checkType = logic.checkType;
+                        if (checkType == null) { //And logic check
+                            for (var k = 0; k < checkCol.length; k++) {
+                                var colName = checkCol[k];
+                                if (!logic.prmValid(formObj[colName])) {
+                                    validationErrors.push({
+                                        field: colName,
+                                        code: logic.message
+                                    });
+                                }
+                            }
+                        } else if (checkType == 'OR') { //Or logic check
+                            var checkFlag = false;
+                            var tempArr = [];
+                            for (var k = 0; k < checkCol.length; k++) {
+                                var colName = checkCol[k];
+                                if (!logic.prmValid(formObj[colName])) {
+                                    tempArr.push({
+                                        field: colName,
+                                        code: logic.message
+                                    });
+                                    checkFlag = checkFlag || false;
+                                } else {
+                                    checkFlag = checkFlag || true;
+                                }
+                            }
+                            if (checkFlag == false) {
+                                validationErrors = validationErrors.concat(tempArr);
                             }
                         }
                     }

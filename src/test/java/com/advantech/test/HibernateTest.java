@@ -40,12 +40,12 @@ import org.springframework.transaction.annotation.Transactional;
  *
  * @author Wei.Cheng
  */
-@WebAppConfiguration
-@ContextConfiguration(locations = {
-    "classpath:servlet-context.xml",
-    "classpath:hibernate.cfg.xml"
-})
-@RunWith(SpringJUnit4ClassRunner.class)
+//@WebAppConfiguration
+//@ContextConfiguration(locations = {
+//    "classpath:servlet-context.xml",
+//    "classpath:hibernate.cfg.xml"
+//})
+//@RunWith(SpringJUnit4ClassRunner.class)
 public class HibernateTest {
 
     @Autowired
@@ -71,9 +71,9 @@ public class HibernateTest {
         validator = factory.getValidator();
     }
 
-    @Transactional
-    @Rollback(true)
-    @Test
+//    @Transactional
+//    @Rollback(true)
+//    @Test
     public void test() throws Exception {
         Session session = sessionFactory.getCurrentSession();
         AuditReader reader = AuditReaderFactory.get(session);

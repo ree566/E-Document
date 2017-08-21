@@ -209,7 +209,7 @@ public class WorktimeBatchModController {
                 }
             }
 
-            hgList = retriveRelativeColumns(sheet, hgList);
+            hgList = retrieveRelativeColumns(sheet, hgList);
             return hgList;
         }
 
@@ -286,7 +286,7 @@ public class WorktimeBatchModController {
         }
     }
 
-    private List retriveRelativeColumns(XlsWorkSheet sheet, List<Worktime> hgList) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, Exception {
+    private List retrieveRelativeColumns(XlsWorkSheet sheet, List<Worktime> hgList) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, Exception {
         Map<String, Type> typeOptions = toSelectOptions(typeService.findAll());
         Map<String, Floor> floorOptions = toSelectOptions(floorService.findAll());
         Map<String, User> userOptions = toSelectOptions(userService.findAll());
