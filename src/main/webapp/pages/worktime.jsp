@@ -44,6 +44,7 @@
 <script src="<c:url value="/js/urlParamGetter.js" />"></script>
 <script src="<c:url value="/js/jqgrid-custom-select-option-reader.js" />"></script>
 <script src="<c:url value="/js/jqgrid-custom-setting.js" />"></script>
+<script src="<c:url value="/webjars/free-jqgrid/4.14.1/plugins/jquery.jqgrid.showhidecolumnmenu.js" />"></script>
 <script src="<c:url value="/js/jquery.blockUI.js" />"></script>
 <script src="<c:url value="/js/worktime-setting/column-selector-autofill.js" />"></script>
 <script src="<c:url value="/js/worktime-setting/column-setting.js" />"></script>
@@ -226,8 +227,8 @@
                 {label: '看板工時', name: "packingKanbanTime", width: 80, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, formoptions: {label: '包裝看板工時', elmsuffix: addFormulaCheckbox("packingKanbanTime")}, editoptions: {defaultValue: '0'}},
                 {label: 'CleanPanel+Assembly', name: "cleanPanelAndAssembly", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, formoptions: {elmsuffix: addFormulaCheckbox("cleanPanelAndAssembly")}, editoptions: {defaultValue: '0'}},
                 {label: 'Modified_Date', width: 200, name: "modifiedDate", index: "modifiedDate", formatter: 'date', formatoptions: {srcformat: 'Y-m-d H:i:s A', newformat: 'Y-m-d H:i:s A'}, stype: 'text', searchrules: date_search_rule, searchoptions: search_date_options, align: 'center'},
-                {label: '藍燈組裝(秒)', width: 80, name: "bwAvgViews.0.assyAvg", index: "bwAvgViews.assyAvg", sortable: true, searchrules: number_search_rule, searchoptions: search_decimal_options},
-                {label: '藍燈包裝(秒)', width: 80, name: "bwAvgViews.0.packingAvg", index: "bwAvgViews.packingAvg", sortable: true, searchrules: number_search_rule, searchoptions: search_decimal_options}
+                {label: '藍燈組裝(秒)', width: 80, name: "bwFields.0.assyAvg", index: "bwFields.assyAvg", sortable: true, searchrules: number_search_rule, searchoptions: search_decimal_options},
+                {label: '藍燈包裝(秒)', width: 80, name: "bwFields.0.packingAvg", index: "bwFields.packingAvg", sortable: true, searchrules: number_search_rule, searchoptions: search_decimal_options}
             ],
             rowNum: 20,
             rowList: [20, 50, 100],
@@ -328,20 +329,24 @@
         );
 
         //Button at grid foot.
-        grid.navButtonAdd('#pager', {
-            caption: "Show / Hide",
-            buttonicon: "ui-icon-shuffle",
-            onClickButton: function () {
-                if (editableColumns == null || readonlyColumns == null || readonlyColumns.length == 0 || editableColumns.length == 0) {
-                    return false;
-                }
-                toggle_value = !toggle_value;
-                grid.jqGrid(toggle_value ? 'hideCol' : 'showCol', readonlyColumns)
-                        .jqGrid('destroyFrozenColumns')
-                        .jqGrid('setFrozenColumns');
-            },
-            position: "last"
-        });
+
+        if (${!isGuest}) {
+            grid.navButtonAdd('#pager', {
+                caption: "Show / Hide",
+                buttonicon: "ui-icon-shuffle",
+                onClickButton: function () {
+                    if (editableColumns == null || readonlyColumns == null || readonlyColumns.length == 0 || editableColumns.length == 0) {
+                        return false;
+                    }
+                    toggle_value = !toggle_value;
+                    grid.jqGrid(toggle_value ? 'hideCol' : 'showCol', readonlyColumns)
+                            .jqGrid('destroyFrozenColumns')
+                            .jqGrid('setFrozenColumns');
+                },
+                position: "last"
+            });
+        }
+
         grid.navButtonAdd('#pager', {
             caption: "Export to Excel",
             buttonicon: "ui-icon-disk",
@@ -351,14 +356,16 @@
             position: "last"
         });
 
-        grid.navButtonAdd('#pager', {
-            caption: "Export to Excel(SPE)",
-            buttonicon: "ui-icon-disk",
-            onClickButton: function () {
-                grid.jqGrid('excelExport', {"url": "<c:url value="/Worktime/excelForSpe" />"});
-            },
-            position: "last"
-        });
+        if (${!isGuest}) {
+            grid.navButtonAdd('#pager', {
+                caption: "Export to Excel(SPE)",
+                buttonicon: "ui-icon-disk",
+                onClickButton: function () {
+                    grid.jqGrid('excelExport', {"url": "<c:url value="/Worktime/excelForSpe" />"});
+                },
+                position: "last"
+            });
+        }
 
         //有可編輯column的人再來分可編輯欄位
         //為0直接hide CRUD的按鈕
@@ -367,6 +374,7 @@
         }
 
         grid.jqGrid('setFrozenColumns');
+        grid.jqGrid("showHideColumnMenu");
         $(window).bind('resize', function () {
             setTimeout(function () {
                 grid.jqGrid("setGridWidth", $('#worktime-content').width());
@@ -434,13 +442,34 @@
                 for (var j = 0; j < keyword.length; j++) {
                     if (flowName.indexOf(keyword[j]) > -1) {
                         var checkCol = logic.checkColumn;
-                        for (var k = 0; k < checkCol.length; k++) {
-                            var colName = checkCol[k];
-                            if (!logic.prmValid(formObj[colName])) {
-                                var err = {};
-                                err.field = colName;
-                                err.code = logic.message;
-                                validationErrors.push(err);
+                        var checkType = logic.checkType;
+                        if (checkType == null) { //And logic check
+                            for (var k = 0; k < checkCol.length; k++) {
+                                var colName = checkCol[k];
+                                if (!logic.prmValid(formObj[colName])) {
+                                    validationErrors.push({
+                                        field: colName,
+                                        code: logic.message
+                                    });
+                                }
+                            }
+                        } else if (checkType == 'OR') { //Or logic check
+                            var checkFlag = false;
+                            var tempArr = [];
+                            for (var k = 0; k < checkCol.length; k++) {
+                                var colName = checkCol[k];
+                                if (!logic.prmValid(formObj[colName])) {
+                                    tempArr.push({
+                                        field: colName,
+                                        code: logic.message
+                                    });
+                                    checkFlag = checkFlag || false;
+                                } else {
+                                    checkFlag = checkFlag || true;
+                                }
+                            }
+                            if (checkFlag == false) {
+                                validationErrors = validationErrors.concat(tempArr);
                             }
                         }
                     }

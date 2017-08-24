@@ -57,8 +57,8 @@ var worktimeCol = [
     {name: "packingKanbanTime"},
     {name: "cleanPanelAndAssembly"},
     {name: "modifiedDate", editable: false},
-    {name: "bwAvgViews.0.assyAvg", editable: false},
-    {name: "bwAvgViews.0.packingAvg", editable: false},
+    {name: "bwFields.0.assyAvg", editable: false},
+    {name: "bwFields.0.packingAvg", editable: false},
     {name: "businessGroup.id"},
     {name: "workCenter"}
     
@@ -66,7 +66,7 @@ var worktimeCol = [
 
 //不受show / hide 影響
 var do_not_change_columns = [
-    "id", "rowId", "modifiedDate", "bwAvgViews.0.assyAvg", "bwAvgViews.0.packingAvg"
+    "id", "rowId", "modifiedDate", "bwFields.0.assyAvg", "bwFields.0.packingAvg"
 ];
 
 //指定的column要有checkbox

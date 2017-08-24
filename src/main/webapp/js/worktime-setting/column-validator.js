@@ -22,7 +22,7 @@ var needRI = function (obj) {
 //Flow check logic setting
 var flow_check_logic = {
     "PRE-ASSY": [
-        {keyword: ["PRE_ASSY"], checkColumn: ["cleanPanel"], message: not_null_and_zero_message, prmValid: notZeroOrNull}
+        {keyword: ["PRE_ASSY"], checkColumn: ["cleanPanel", "totalModule"], checkType: "OR", message: not_null_and_zero_message, prmValid: notZeroOrNull}
     ],
     BAB: [
         {keyword: ["ASSY"], checkColumn: ["assy"], message: not_null_and_zero_message, prmValid: notZeroOrNull},
@@ -46,6 +46,7 @@ var flow_check_logic = {
 
 var field_check_flow_logic = [
     {checkColumn: {name: "cleanPanel", equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: preAssy, keyword: ["PRE_ASSY"]}},
+    {checkColumn: {name: "totalModule", equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: preAssy, keyword: ["PRE_ASSY"]}},
     {checkColumn: {name: "assy", equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: babFlow, keyword: ["ASSY"]}},
     {checkColumn: {name: "t1", equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: babFlow, keyword: ["T1"]}},
     {checkColumn: {name: "vibration", equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: babFlow, keyword: ["VB"]}},

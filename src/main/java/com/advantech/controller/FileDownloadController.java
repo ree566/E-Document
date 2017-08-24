@@ -61,7 +61,7 @@ public class FileDownloadController {
         info.setSidx("id");
         info.setSord("asc");
         info.setPage(1); //Prevent select query jump to page 2 bug.
-        
+
         List<SheetView> l = sheetViewService.findAll(info);
         ModelAndView mav = new ModelAndView("ExcelRevenueSummary");
         mav.addObject("revenueData", l);
@@ -70,7 +70,7 @@ public class FileDownloadController {
 
     @ResponseBody
     @RequestMapping(value = "/Worktime/excel2", method = {RequestMethod.GET})
-    @Secured({"ROLE_USER"})
+    @Secured({"ROLE_GUEST", "ROLE_USER"})
     public void generateExcel2(HttpServletResponse response, PageInfo info) throws IOException {
         this.fileExport("worktime-template.xls", response, info);
     }
@@ -126,5 +126,5 @@ public class FileDownloadController {
         String encodeString = "revision: " + revisionNumber;
         byte[] bytesEncoded = Base64.encodeBase64(encodeString.getBytes());
         return new String(bytesEncoded);
-    } 
+    }
 }

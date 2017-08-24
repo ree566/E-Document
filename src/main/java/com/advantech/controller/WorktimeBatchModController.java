@@ -26,7 +26,6 @@ import com.advantech.service.TypeService;
 import com.advantech.service.UserService;
 import com.advantech.service.WorktimeService;
 import com.google.gson.Gson;
-import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -123,6 +122,11 @@ public class WorktimeBatchModController {
     @ResponseBody
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     public String batchUpdate(@RequestParam("file") MultipartFile file) throws Exception {
+        if (1 == 1) {
+            //Throw because formula will be override when excel is not setting formula info.
+            throw new UnsupportedOperationException("Formula issue is not fix yet.");
+        }
+
         List<Worktime> hgList = this.transToWorktimes(file, true);
 
         //Validate the column, throw exception when false.
@@ -192,7 +196,7 @@ public class WorktimeBatchModController {
             XlsWorkSheet sheet = workbook.getSheet("sheet1");
             if (sheet == null) {
                 throw new Exception("Sheet named \"sheet1\" not found");
-            }  
+            }
 
             //Init not relative column first.
             List<Worktime> hgList = sheet.buildBeans(Worktime.class);
@@ -205,7 +209,7 @@ public class WorktimeBatchModController {
                 }
             }
 
-            hgList = retriveRelativeColumns(sheet, hgList);
+            hgList = retrieveRelativeColumns(sheet, hgList);
             return hgList;
         }
 
@@ -282,7 +286,7 @@ public class WorktimeBatchModController {
         }
     }
 
-    private List retriveRelativeColumns(XlsWorkSheet sheet, List<Worktime> hgList) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, Exception {
+    private List retrieveRelativeColumns(XlsWorkSheet sheet, List<Worktime> hgList) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, Exception {
         Map<String, Type> typeOptions = toSelectOptions(typeService.findAll());
         Map<String, Floor> floorOptions = toSelectOptions(floorService.findAll());
         Map<String, User> userOptions = toSelectOptions(userService.findAll());

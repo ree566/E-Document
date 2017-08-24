@@ -743,12 +743,12 @@ public class Worktime implements java.io.Serializable {
     
     @NotAudited
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "worktime")
-    public List<BwField> getBwAvgViews() {
+    public List<BwField> getBwFields() {
         return bwField;
     }
     
-    public void setBwAvgViews(List<BwField> bwAvgViews) {
-        this.bwField = bwAvgViews;
+    public void setBwFields(List<BwField> bwFields) {
+        this.bwField = bwFields;
     }
 
 //  Default formula column caculate
@@ -775,7 +775,7 @@ public class Worktime implements java.io.Serializable {
     }
     
     public void setDefaultAssyToT1() {
-        BigDecimal defaultValue = notEmpty(cleanPanel).add(notEmpty(assy).add(notEmpty(assyLeadTime))).add(notEmpty(t1))
+        BigDecimal defaultValue = notEmpty(cleanPanel).add(notEmpty(assy).add(notEmpty(totalModule))).add(notEmpty(t1))
                 .add(notEmpty(upBiRi)).add(notEmpty(vibration))
                 .add(notEmpty(hiPotLeakage)).add(notEmpty(coldBoot)).add(notEmpty(warmBoot));
         this.setAssyToT1(defaultValue);
@@ -789,10 +789,10 @@ public class Worktime implements java.io.Serializable {
     
     public void setDefaultAssyStation() {
         int defaultValue;
-        if ((notEmpty(assy).add(notEmpty(assyLeadTime))).compareTo(new BigDecimal(45)) <= 0) {
+        if ((notEmpty(assy).add(notEmpty(totalModule))).compareTo(new BigDecimal(45)) <= 0) {
             defaultValue = 3;
         } else {
-            BigDecimal b = (notEmpty(assy).add(notEmpty(assyLeadTime))).divide(new BigDecimal(15), 0, RoundingMode.HALF_UP);
+            BigDecimal b = (notEmpty(assy).add(notEmpty(totalModule))).divide(new BigDecimal(15), 0, RoundingMode.HALF_UP);
             if (b.compareTo(new BigDecimal(6)) >= 0) {
                 defaultValue = 6;
             } else {
