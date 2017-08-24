@@ -11,12 +11,18 @@ import com.advantech.service.AuditService;
 import com.advantech.service.WorktimeAutouploadSettingService;
 import com.advantech.service.WorktimeService;
 import com.advantech.webservice.WorktimeStandardtimeUploadPort;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
+import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.envers.AuditReader;
@@ -69,9 +75,9 @@ public class HibernateTest {
     }
 
 //    CRUD testing.
-    @Transactional
-    @Rollback(true)
-    @Test
+//    @Transactional
+//    @Rollback(true)
+//    @Test
     public void test() throws Exception {
         Session session = sessionFactory.getCurrentSession();
         AuditReader reader = AuditReaderFactory.get(session);
@@ -83,7 +89,6 @@ public class HibernateTest {
         //                .addProjection(AuditEntity.id())
 
 //        q.addProjection(AuditEntity.selectEntity(false));
-
         q.add(AuditEntity.id().eq(8394));
 
         List resultList = q.getResultList();
@@ -111,6 +116,29 @@ public class HibernateTest {
         StringBuilder sb = new StringBuilder(st);
         sb.setCharAt(0, Character.toLowerCase(sb.charAt(0)));
         return sb.toString();
+    }
+
+    @Transactional
+    @Rollback(true)
+    @Test
+    public void testHibernateQuery() throws JsonProcessingException {
+        Session session = sessionFactory.getCurrentSession();
+//        CriteriaBuilder cb = session.getCriteriaBuilder();
+//        CriteriaQuery<Worktime> cq = cb.createQuery(Worktime.class);
+//        Root<Worktime> root = cq.from(Worktime.class);
+//        cq.select(root);
+////        query.where(cb.equal(root.get("id"), 8592));
+//        cq.orderBy(cb.desc(root.get("id")));
+//        TypedQuery<Worktime> q = session.createQuery(cq);
+//        q.setFirstResult(1);
+//        q.setMaxResults(5);
+
+        Criteria c = session.createCriteria(Worktime.class);
+        c.setFirstResult(1);
+        c.setMaxResults(50);
+        List<Worktime> l = c.list();
+
+        HibernateObjectPrinter.print(l);
     }
 
 }
