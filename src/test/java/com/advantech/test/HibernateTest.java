@@ -136,10 +136,14 @@ public class HibernateTest {
 //        q.setFirstResult(1);
 //        q.setMaxResults(5);
 
-        Criteria c = session.createCriteria(Worktime.class);
-        c.setFirstResult(1);
-        c.setMaxResults(50);
-        List<Worktime> l = c.list();
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+
+        CriteriaQuery<Worktime> criteria = builder.createQuery(Worktime.class);
+        Root<Worktime> root = criteria.from(Worktime.class);
+        criteria.select(root);
+        criteria.where(builder.equal(root.get("id"), "1234"));
+
+        List<Worktime> l = session.createQuery(criteria).getResultList();
 
         HibernateObjectPrinter.print(l);
     }
