@@ -7,6 +7,7 @@ package com.advantech.test;
 
 import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.model.Worktime;
+import com.advantech.quartzJob.StandardTimeUpload;
 import com.advantech.service.AuditService;
 import com.advantech.service.WorktimeAutouploadSettingService;
 import com.advantech.service.WorktimeService;
@@ -19,6 +20,7 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import javax.transaction.Transactional;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
@@ -40,7 +42,6 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
@@ -70,6 +71,9 @@ public class HibernateTest {
 
     @Autowired
     private WorktimeAutouploadSettingService settingService;
+
+    @Autowired
+    private StandardTimeUpload standardTimeUpload;
 
     @BeforeClass
     public static void setUp() {

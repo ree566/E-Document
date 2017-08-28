@@ -63,6 +63,8 @@ public class StandardTimeUpload {
 
         log.info("Begin upload standardtime to mes: " + modifiedWorktimes.size() + " datas.");
 
+        port.initSettings();
+        
         for (Worktime w : modifiedWorktimes) {
             try {
                 port.uploadStandardTime(w);
