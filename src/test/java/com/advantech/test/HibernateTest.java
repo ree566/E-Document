@@ -7,6 +7,7 @@ package com.advantech.test;
 
 import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.model.Worktime;
+import com.advantech.quartzJob.StandardTimeUpload;
 import com.advantech.service.AuditService;
 import com.advantech.service.WorktimeAutouploadSettingService;
 import com.advantech.service.WorktimeService;
@@ -14,6 +15,7 @@ import com.advantech.webservice.WorktimeStandardtimeUploadPort;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import javax.transaction.Transactional;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
@@ -34,18 +36,17 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
  * @author Wei.Cheng
  */
-//@WebAppConfiguration
-//@ContextConfiguration(locations = {
-//    "classpath:servlet-context.xml",
-//    "classpath:hibernate.cfg.xml"
-//})
-//@RunWith(SpringJUnit4ClassRunner.class)
+@WebAppConfiguration
+@ContextConfiguration(locations = {
+    "classpath:servlet-context.xml",
+    "classpath:hibernate.cfg.xml"
+})
+@RunWith(SpringJUnit4ClassRunner.class)
 public class HibernateTest {
 
     @Autowired
@@ -64,6 +65,9 @@ public class HibernateTest {
 
     @Autowired
     private WorktimeAutouploadSettingService settingService;
+
+    @Autowired
+    private StandardTimeUpload standardTimeUpload;
 
     @BeforeClass
     public static void setUp() {
@@ -125,4 +129,10 @@ public class HibernateTest {
         return sb.toString();
     }
 
+    @Transactional
+    @Rollback(true)
+    @Test
+    public void uploadMes() {
+        standardTimeUpload.uploadToMes();
+    }
 }

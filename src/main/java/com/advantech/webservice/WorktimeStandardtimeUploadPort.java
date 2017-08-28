@@ -38,6 +38,7 @@ public class WorktimeStandardtimeUploadPort {
     private ObjectFactory f;
     private Marshaller jaxbMarshaller;
     private ExpressionParser parser;
+    private List<WorktimeAutouploadSetting> settings;
 
     @Autowired
     private WsClient client;
@@ -58,9 +59,17 @@ public class WorktimeStandardtimeUploadPort {
 
     }
 
+    //Don't forget init setting everytime.
+    public void initSettings() {
+        settings = settingService.findAll();
+    }
+
     public void uploadStandardTime(Worktime w) throws Exception {
-        List<WorktimeAutouploadSetting> l = settingService.findAll();
-        Map<String, String> xmlResults = this.transformData(w, l);
+        if (settings == null) {
+            throw new Exception("The upload settings is not initialized.");
+        }
+        
+        Map<String, String> xmlResults = this.transformData(w, settings);
         List<String> errorFields = new ArrayList();
         for (Map.Entry<String, String> entry : xmlResults.entrySet()) {
             String field = entry.getKey();
