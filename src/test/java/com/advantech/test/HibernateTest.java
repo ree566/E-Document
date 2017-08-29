@@ -16,32 +16,17 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
-import javax.transaction.Transactional;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
-import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
 import org.hibernate.envers.query.AuditEntity;
 import org.hibernate.envers.query.AuditQuery;
-import org.hibernate.envers.query.criteria.AuditProperty;
-import org.hibernate.envers.query.internal.property.EntityPropertyName;
-import org.hibernate.envers.query.internal.property.ModifiedFlagPropertyName;
 import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 
 /**
  *
@@ -140,16 +125,7 @@ public class HibernateTest {
 //        q.setFirstResult(1);
 //        q.setMaxResults(5);
 
-        CriteriaBuilder builder = session.getCriteriaBuilder();
 
-        CriteriaQuery<Worktime> criteria = builder.createQuery(Worktime.class);
-        Root<Worktime> root = criteria.from(Worktime.class);
-        criteria.select(root);
-        criteria.where(builder.equal(root.get("id"), "1234"));
-
-        List<Worktime> l = session.createQuery(criteria).getResultList();
-
-        HibernateObjectPrinter.print(l);
     }
 
 }
