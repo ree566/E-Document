@@ -6,14 +6,17 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<link href="<c:url value="/webjars/free-jqgrid/4.14.1/plugins/css/ui.multiselect.min.css" />" rel="stylesheet">
 <script src="<c:url value="/js/jqgrid-custom-select-option-reader.js" />"></script>
 <script src="<c:url value="/js/moment.js" />"></script>
+<script src="<c:url value="/webjars/free-jqgrid/4.14.1/plugins/min/ui.multiselect.js" />"></script>
 <script>
     $(function () {
         var grid = $("#list");
         var isGridInitialized = false;
         var today = moment().toDate();
         var yesterday = moment().add(-1, 'days').toDate();
+        var lastsel;
 
         $("#sD").datepicker({dateFormat: 'yy-mm-dd', defaultDate: yesterday}).datepicker("setDate", yesterday);
         $("#eD").datepicker({dateFormat: 'yy-mm-dd', defaultDate: today}).datepicker("setDate", today);
@@ -53,13 +56,6 @@
             }
         });
 
-//        $("#send").trigger("click");
-
-        //Jqgrid 沒有支援複合主鍵，所以自己產生(用SQL的複合主鍵值相乘產生新的唯一鍵)
-        function keyFormat(cellvalue, options, rowObject) {
-            return rowObject[0].id * rowObject[1].rev;
-        }
-
         function timestampFormat(cellvalue, options, rowObject) {
             var t = moment(cellvalue);
             return t.format('YYYY-MM-DD H:mm:ss');
@@ -79,13 +75,13 @@
                 mtype: 'GET',
                 autoencode: true,
                 colModel: [
-//                    {label: 'CPK', name: 'CPK', width: 60, key: true, frozen: false, hidden: true, search: false, formatter: keyFormat},
-                    {label: 'revtstmp', name: "REVTSTMP", jsonmap: "1.revtstmp", hidden: false, search: false, formatter: timestampFormat},
-                    {label: 'REV', name: "REV", jsonmap: "1.rev", width: 60, frozen: false, hidden: true, search: false},
-                    {label: 'username', name: "username", jsonmap: "1.username", width: 60, frozen: false, hidden: false, search: false},
-                    {label: 'REVTYPE', name: "REVTYPE", jsonmap: "2", width: 60, frozen: false, hidden: false, search: false},
-                    {label: 'id', name: "id", jsonmap: "0.id", width: 60, frozen: false, hidden: false, search: false},
-                    {label: 'Model', name: "modelName", jsonmap: "0.modelName", frozen: false, searchrules: {required: true}, searchoptions: search_string_options, formoptions: required_form_options},
+                    {label: 'CPK', name: '0.cpk', width: 60, key: true, frozen: true, hidden: true, search: false, sortable: false},
+                    {label: 'revtstmp', name: "REVTSTMP", jsonmap: "1.revtstmp", frozen: true, hidden: false, search: false, formatter: timestampFormat},
+                    {label: 'REV', name: "REV", jsonmap: "1.rev", width: 60, frozen: true, hidden: true, search: false},
+                    {label: 'username', name: "username", jsonmap: "1.username", width: 60, frozen: true, hidden: false, search: false},
+                    {label: 'REVTYPE', name: "REVTYPE", jsonmap: "2", width: 60, frozen: true, hidden: false, search: false},
+                    {label: 'id', name: "id", jsonmap: "0.id", width: 60, frozen: true, hidden: true, search: false},
+                    {label: 'Model', name: "modelName", jsonmap: "0.modelName", frozen: true, searchrules: {required: true}, searchoptions: search_string_options, formoptions: required_form_options},
                     {label: 'TYPE', name: "type_id", jsonmap: "0.type.id", formatter: selectOptions["type_func"], width: 100, searchrules: {required: true}, searchoptions: search_string_options},
                     {label: 'BU', name: "businessGroup_id", jsonmap: "0.businessGroup.id", formatter: selectOptions["businessGroup_func"], width: 100, searchrules: {required: true}, searchoptions: search_string_options},
                     {label: 'Work Center', name: "workCenter", jsonmap: "0.workCenter", width: 100, searchrules: {required: true}, searchoptions: search_string_options},
@@ -152,6 +148,8 @@
                 shrinkToFit: false,
                 hidegrid: true,
                 stringResult: true,
+                multiselect: true,
+                multiPageSelection: true,
                 jsonReader: {
                     root: "rows",
                     page: "page",
@@ -161,6 +159,32 @@
                 },
                 beforeSelectRow: function (rowid, e) {
                     e.preventDefault();
+                },
+                onSelectRow: function (rowId, status, e) {
+                    var gridSelRow = grid.getGridParam('selrow');
+                    var s;
+                    s = grid.getGridParam('selarrrow');
+                    if (!s || !s[0]) {
+                        grid.resetSelection();
+                        lastsel = null;
+                        return;
+                    }
+                    var selected = $.inArray(rowId, s) >= 2;
+
+                    if (rowId && rowId !== lastsel && selected) {
+
+                        if (lastsel)
+                            grid.setSelection(lastsel, false);
+                    }
+                    lastsel = rowId;
+                },
+                beforeProcessing: function (data) {
+                    //Generate pk by jqgrid because database only provide cpk(REV & worktime_id).
+                    var arr = data.rows;
+                    for (var i = 0; i < arr.length; i++) {
+                        var innerData = arr[i];
+                        innerData[0].cpk = $.jgrid.randId();
+                    }
                 },
                 navOptions: {reloadGridOptions: {fromServer: true}},
                 caption: "Worktime_AUD",
@@ -174,7 +198,7 @@
                             );
                 }
             });
-
+            $("#cb_" + grid[0].id).hide();
             grid.jqGrid('setFrozenColumns');
         }
     });

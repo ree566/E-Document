@@ -47,12 +47,12 @@ import org.springframework.test.context.web.WebAppConfiguration;
  *
  * @author Wei.Cheng
  */
-@WebAppConfiguration
-@ContextConfiguration(locations = {
-    "classpath:servlet-context.xml",
-    "classpath:hibernate.cfg.xml"
-})
-@RunWith(SpringJUnit4ClassRunner.class)
+//@WebAppConfiguration
+//@ContextConfiguration(locations = {
+//    "classpath:servlet-context.xml",
+//    "classpath:hibernate.cfg.xml"
+//})
+//@RunWith(SpringJUnit4ClassRunner.class)
 public class HibernateTest {
 
     @Autowired
@@ -125,9 +125,9 @@ public class HibernateTest {
         return sb.toString();
     }
 
-    @Transactional
-    @Rollback(true)
-    @Test
+//    @Transactional
+//    @Rollback(true)
+//    @Test
     public void testHibernateQuery() throws JsonProcessingException {
         Session session = sessionFactory.getCurrentSession();
 //        CriteriaBuilder cb = session.getCriteriaBuilder();
