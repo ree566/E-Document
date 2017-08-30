@@ -28,7 +28,6 @@ import org.springframework.stereotype.Component;
  *
  * @author Wei.Cheng
  */
-@Component
 public class BackupDataToExcel {
 
     private final String filePath = "\\\\ACLOA\\New_Group\\Dong_Hu_Plant_Public\\生產部公用資料夾\\工時資料&產能\\worktime-bak.xls";

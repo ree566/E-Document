@@ -40,12 +40,12 @@ import org.springframework.test.context.web.WebAppConfiguration;
  *
  * @author Wei.Cheng
  */
-@WebAppConfiguration
-@ContextConfiguration(locations = {
-    "classpath:servlet-context.xml",
-    "classpath:hibernate.cfg.xml"
-})
-@RunWith(SpringJUnit4ClassRunner.class)
+//@WebAppConfiguration
+//@ContextConfiguration(locations = {
+//    "classpath:servlet-context.xml",
+//    "classpath:hibernate.cfg.xml"
+//})
+//@RunWith(SpringJUnit4ClassRunner.class)
 public class HibernateTest {
 
     @Autowired
@@ -135,9 +135,9 @@ public class HibernateTest {
 
     }
 
-    @Transactional
-    @Rollback(true)
-    @Test
+//    @Transactional
+//    @Rollback(true)
+//    @Test
     public void test11() throws Exception {
         e.backupToDisk();
     }

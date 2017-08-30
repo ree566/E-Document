@@ -45,11 +45,6 @@ public class Test1Test {
         fileExport(wb);
     }
     
-    @Test
-    public void test2() throws Exception {
-        e.backupToDisk();
-    }
-
     private void testCreateEncryptSheet() throws Exception {
         Workbook wb = new HSSFWorkbook();
 
