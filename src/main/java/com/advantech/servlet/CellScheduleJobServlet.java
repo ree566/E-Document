@@ -82,17 +82,17 @@ public class CellScheduleJobServlet extends HttpServlet {
 
                         if (cellLine.isOpened()) {
                             if (cellService.getCellProcessing(line).isEmpty()) {
-                                WorkTimeService workTimeService = BasicService.getWorkTimeService();
-                                if (workTimeService.getAssyStandardTime(modelname) != null) { //Check 標工
-                                    Cell cell = new Cell(line, type, PO, modelname);
-                                    if (cellService.insert(cell)) {
-                                        responseObject = this.schedNewJobs(cell) ? "success" : "fail";
-                                    } else {
-                                        responseObject = "fail";
-                                    }
+//                                WorkTimeService workTimeService = BasicService.getWorkTimeService();
+//                                if (workTimeService.getAssyStandardTime(modelname) != null) { //Check 標工
+                                Cell cell = new Cell(line, type, PO, modelname);
+                                if (cellService.insert(cell)) {
+                                    responseObject = this.schedNewJobs(cell) ? "success" : "fail";
                                 } else {
-                                    responseObject = "PO is not exist";
+                                    responseObject = "fail";
                                 }
+//                                } else {
+//                                    responseObject = "PO is not exist";
+//                                }
                             } else {
                                 responseObject = "Some PO in this line is already processing";
                             }
