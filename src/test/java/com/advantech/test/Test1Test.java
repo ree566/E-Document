@@ -5,6 +5,7 @@
  */
 package com.advantech.test;
 
+import com.advantech.quartzJob.BackupDataToExcel;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -15,6 +16,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
@@ -24,8 +26,11 @@ public class Test1Test {
 
     private final String filePath = "C:\\Users\\Wei.Cheng\\Desktop\\worktime-template(6).xls";
     private final String cloneFilePath = "C:\\Users\\Wei.Cheng\\Desktop\\poi-test.xls";
+    
+    @Autowired
+    private BackupDataToExcel e;
 
-    @Test
+//    @Test
     public void test() throws Exception {
         Workbook wb;
         try (FileInputStream excelFile = new FileInputStream(new File(cloneFilePath))) {
@@ -38,6 +43,11 @@ public class Test1Test {
         sheet.protectSheet("s3cr3t1");
         
         fileExport(wb);
+    }
+    
+    @Test
+    public void test2() throws Exception {
+        e.backupToDisk();
     }
 
     private void testCreateEncryptSheet() throws Exception {

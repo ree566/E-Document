@@ -5,6 +5,7 @@
         http://www.springframework.org/schema/beans/spring-beans-4.3.xsd">
     
     <!--job1 setting-->
+    <!--將藍燈結果update回本系統table(大表最後兩欄位)-->
     <bean id="targetClass" class="com.advantech.quartzJob.BwFieldSyncJob"/>
     
     <bean id="jobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
@@ -14,11 +15,11 @@
 
     <bean id="cronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
         <property name="jobDetail" ref="jobDetail"/>
-        <!-- 每天 0:00 分執行-->
         <property name="cronExpression" value="0 0 0 ? * * *"/>
     </bean>
     
     <!--job2 setting-->
+    <!--上傳標工-->
     <bean id="targetClass2" class="com.advantech.quartzJob.StandardTimeUpload"/>
     
     <bean id="jobDetail2" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
@@ -28,8 +29,21 @@
     
     <bean id="cronTrigger2" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
         <property name="jobDetail" ref="jobDetail2"/>
-        <!-- 禮拜六 0:00 分執行-->
         <property name="cronExpression" value="0 0 0 ? * SAT *"/>
+    </bean>
+    
+    <!--job3 setting-->
+    <!--備份資料-->
+    <bean id="targetClass3" class="com.advantech.quartzJob.BackupDataToExcel"/>
+    
+    <bean id="jobDetail3" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="targetClass3"/>
+        <property name="targetMethod" value="backupToDisk"/>
+    </bean>
+    
+    <bean id="cronTrigger3" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="jobDetail3"/>
+        <property name="cronExpression" value="0 0 18 ? * MON-SAT *"/>
     </bean>
 
     <!--schedule jobs-->
@@ -38,6 +52,7 @@
             <list>
                 <ref bean="cronTrigger"/>
                 <ref bean="cronTrigger2"/>
+                <ref bean="cronTrigger3"/>
             </list>
         </property>
         <property name="schedulerName">
