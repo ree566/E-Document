@@ -11,7 +11,7 @@ import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.Worktime;
 import com.advantech.jqgrid.JqGridResponse;
 import com.advantech.service.WorktimeService;
-import com.advantech.webservice.WorktimeStandardtimeUploadPort;
+import com.advantech.webservice.ie.WorktimeStandardtimeUploadPort;
 import static com.google.common.collect.Lists.newArrayList;
 import java.util.Collection;
 import javax.validation.Valid;

@@ -3,11 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.advantech.webservice;
+package com.advantech.webservice.ie;
 
 import com.advantech.model.Worktime;
 import com.advantech.model.WorktimeAutouploadSetting;
 import com.advantech.service.WorktimeAutouploadSettingService;
+import com.advantech.webservice.ObjectFactory;
+import com.advantech.webservice.WsClient;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -49,7 +51,7 @@ public class WorktimeStandardtimeUploadPort {
     @PostConstruct
     public void init() {
         try {
-            JAXBContext jaxbContext = JAXBContext.newInstance(Root.class);
+            JAXBContext jaxbContext = JAXBContext.newInstance(StandardtimeRoot.class);
             jaxbMarshaller = jaxbContext.createMarshaller();
             f = new ObjectFactory();
             parser = new SpelExpressionParser();
@@ -64,11 +66,15 @@ public class WorktimeStandardtimeUploadPort {
         settings = settingService.findAll();
     }
 
+    public void initSettings(List<WorktimeAutouploadSetting> settings) {
+        this.settings = settings;
+    }
+
     public void uploadStandardTime(Worktime w) throws Exception {
         if (settings == null) {
             throw new Exception("The upload settings is not initialized.");
         }
-        
+
         Map<String, String> xmlResults = this.transformData(w, settings);
         List<String> errorFields = new ArrayList();
         for (Map.Entry<String, String> entry : xmlResults.entrySet()) {
@@ -91,8 +97,8 @@ public class WorktimeStandardtimeUploadPort {
             String columnName = setting.getColumnName();
             try {
                 BigDecimal totalCt = getValueFromFormula(w, setting.getFormula());
-                Root root = f.createRoot();
-                Root.STANDARDWORKTIME swt = root.getSTANDARDWORKTIME();
+                StandardtimeRoot root = f.createRoot();
+                StandardtimeRoot.STANDARDWORKTIME swt = root.getSTANDARDWORKTIME();
                 swt.setUNITNO(columnUnit);
                 swt.setSTATIONID(setting.getStationId());
                 swt.setLINEID(setting.getLineId());
@@ -108,7 +114,7 @@ public class WorktimeStandardtimeUploadPort {
                     swt.setOPCNT(w.getAssyStation());
                 } else if ("P".equals(columnUnit) && setting.getStationId() != null) {
                     swt.setMACHINECNT(w.getPackingStation());
-                    swt.setOPCNT(w.getPackingStation());
+                    swt.setOPCNT(2);
                 } else {
                     swt.setMACHINECNT(0);
                     swt.setOPCNT(1);
@@ -127,7 +133,7 @@ public class WorktimeStandardtimeUploadPort {
         return result;
     }
 
-    public String generateXmlString(Root root) throws JAXBException {
+    public String generateXmlString(StandardtimeRoot root) throws JAXBException {
         StringWriter sw = new StringWriter();
         jaxbMarshaller.marshal(root, sw);
         String xmlString = sw.toString();

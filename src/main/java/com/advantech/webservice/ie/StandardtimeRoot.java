@@ -4,7 +4,7 @@
 // 一旦重新編譯來源綱要, 對此檔案所做的任何修改都將會遺失. 
 // 產生時間: 2017.07.18 於 01:29:51 PM CST 
 //
-package com.advantech.webservice;
+package com.advantech.webservice.ie;
 
 import java.math.BigDecimal;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -70,12 +70,12 @@ import javax.xml.bind.annotation.XmlType;
     "standardworktime"
 })
 @XmlRootElement(name = "root")
-public class Root {
+public class StandardtimeRoot {
 
     @XmlElement(name = "METHOD", required = true)
-    protected Root.METHOD method;
+    protected StandardtimeRoot.METHOD method;
     @XmlElement(name = "STANDARD_WORKTIME", required = true)
-    protected Root.STANDARDWORKTIME standardworktime;
+    protected StandardtimeRoot.STANDARDWORKTIME standardworktime;
 
     /**
      * 取得 method 特性的值.
@@ -83,7 +83,7 @@ public class Root {
      * @return possible object is {@link Root.METHOD }
      *
      */
-    public Root.METHOD getMETHOD() {
+    public StandardtimeRoot.METHOD getMETHOD() {
         return method;
     }
 
@@ -93,7 +93,7 @@ public class Root {
      * @param value allowed object is {@link Root.METHOD }
      *
      */
-    public void setMETHOD(Root.METHOD value) {
+    public void setMETHOD(StandardtimeRoot.METHOD value) {
         this.method = value;
     }
 
@@ -103,7 +103,7 @@ public class Root {
      * @return possible object is {@link Root.STANDARDWORKTIME }
      *
      */
-    public Root.STANDARDWORKTIME getSTANDARDWORKTIME() {
+    public StandardtimeRoot.STANDARDWORKTIME getSTANDARDWORKTIME() {
         return standardworktime;
     }
 
@@ -113,7 +113,7 @@ public class Root {
      * @param value allowed object is {@link Root.STANDARDWORKTIME }
      *
      */
-    public void setSTANDARDWORKTIME(Root.STANDARDWORKTIME value) {
+    public void setSTANDARDWORKTIME(StandardtimeRoot.STANDARDWORKTIME value) {
         this.standardworktime = value;
     }
 

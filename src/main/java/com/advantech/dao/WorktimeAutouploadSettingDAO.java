@@ -23,7 +23,7 @@ public class WorktimeAutouploadSettingDAO extends AbstractDao<Integer, WorktimeA
 
     @Override
     public WorktimeAutouploadSetting findByPrimaryKey(Object obj_id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return super.getByKey((int) obj_id);
     }
 
     @Override
@@ -40,5 +40,5 @@ public class WorktimeAutouploadSettingDAO extends AbstractDao<Integer, WorktimeA
     public int delete(WorktimeAutouploadSetting pojo) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
+
 }

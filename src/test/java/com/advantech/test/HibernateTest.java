@@ -8,12 +8,12 @@ package com.advantech.test;
 import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.model.Worktime;
 import com.advantech.quartzJob.BackupDataToExcel;
-import com.advantech.quartzJob.StandardTimeUpload;
 import com.advantech.service.AuditService;
 import com.advantech.service.WorktimeAutouploadSettingService;
 import com.advantech.service.WorktimeService;
-import com.advantech.webservice.WorktimeStandardtimeUploadPort;
+import com.advantech.webservice.ie.WorktimeStandardtimeUploadPort;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import static com.google.common.collect.Lists.newArrayList;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,12 +40,12 @@ import org.springframework.test.context.web.WebAppConfiguration;
  *
  * @author Wei.Cheng
  */
-//@WebAppConfiguration
-//@ContextConfiguration(locations = {
-//    "classpath:servlet-context.xml",
-//    "classpath:hibernate.cfg.xml"
-//})
-//@RunWith(SpringJUnit4ClassRunner.class)
+@WebAppConfiguration
+@ContextConfiguration(locations = {
+    "classpath:servlet-context.xml",
+    "classpath:hibernate.cfg.xml"
+})
+@RunWith(SpringJUnit4ClassRunner.class)
 public class HibernateTest {
 
     @Autowired
@@ -135,11 +135,14 @@ public class HibernateTest {
 
     }
 
-//    @Transactional
-//    @Rollback(true)
-//    @Test
+    @Transactional
+    @Rollback(true)
+    @Test
     public void test11() throws Exception {
+
         e.backupToDisk();
+
+        
     }
 
 }

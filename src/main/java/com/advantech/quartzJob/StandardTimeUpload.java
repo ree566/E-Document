@@ -11,7 +11,7 @@ import com.advantech.model.User;
 import com.advantech.model.Worktime;
 import com.advantech.service.UserNotificationService;
 import com.advantech.service.WorktimeService;
-import com.advantech.webservice.WorktimeStandardtimeUploadPort;
+import com.advantech.webservice.ie.WorktimeStandardtimeUploadPort;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.PostConstruct;

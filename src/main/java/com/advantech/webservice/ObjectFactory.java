@@ -6,6 +6,7 @@
 //
 package com.advantech.webservice;
 
+import com.advantech.webservice.ie.StandardtimeRoot;
 import javax.xml.bind.annotation.XmlRegistry;
 
 /**
@@ -31,14 +32,14 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Root }
+     * Create an instance of {@link StandardtimeRoot }
      *
      * @return
      */
-    public Root createRoot() {
-        Root r = new Root();
-        r.setMETHOD(new Root.METHOD());
-        r.setSTANDARDWORKTIME(new Root.STANDARDWORKTIME());
+    public StandardtimeRoot createRoot() {
+        StandardtimeRoot r = new StandardtimeRoot();
+        r.setMETHOD(new StandardtimeRoot.METHOD());
+        r.setSTANDARDWORKTIME(new StandardtimeRoot.STANDARDWORKTIME());
         return r;
     }
 
