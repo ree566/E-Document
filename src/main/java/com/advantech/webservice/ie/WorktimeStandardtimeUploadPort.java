@@ -8,7 +8,6 @@ package com.advantech.webservice.ie;
 import com.advantech.model.Worktime;
 import com.advantech.model.WorktimeAutouploadSetting;
 import com.advantech.service.WorktimeAutouploadSettingService;
-import com.advantech.webservice.ObjectFactory;
 import com.advantech.webservice.WsClient;
 import java.io.StringWriter;
 import java.math.BigDecimal;
@@ -37,7 +36,6 @@ import org.tempuri.TxResponse;
 public class WorktimeStandardtimeUploadPort {
 
     private static final Logger logger = LoggerFactory.getLogger(WorktimeStandardtimeUploadPort.class);
-    private ObjectFactory f;
     private Marshaller jaxbMarshaller;
     private ExpressionParser parser;
     private List<WorktimeAutouploadSetting> settings;
@@ -53,7 +51,6 @@ public class WorktimeStandardtimeUploadPort {
         try {
             JAXBContext jaxbContext = JAXBContext.newInstance(StandardtimeRoot.class);
             jaxbMarshaller = jaxbContext.createMarshaller();
-            f = new ObjectFactory();
             parser = new SpelExpressionParser();
         } catch (Exception e) {
             logger.error(e.toString());
@@ -97,7 +94,7 @@ public class WorktimeStandardtimeUploadPort {
             String columnName = setting.getColumnName();
             try {
                 BigDecimal totalCt = getValueFromFormula(w, setting.getFormula());
-                StandardtimeRoot root = f.createRoot();
+                StandardtimeRoot root = new StandardtimeRoot();
                 StandardtimeRoot.STANDARDWORKTIME swt = root.getSTANDARDWORKTIME();
                 swt.setUNITNO(columnUnit);
                 swt.setSTATIONID(setting.getStationId());
@@ -121,6 +118,7 @@ public class WorktimeStandardtimeUploadPort {
                 }
                 xmlResults.put(columnName, this.generateXmlString(root));
             } catch (Exception e) {
+                logger.error(e.toString());
                 throw new Exception("Error on create xml at column name " + columnName);
             }
         }

@@ -77,6 +77,11 @@ public class StandardtimeRoot {
     @XmlElement(name = "STANDARD_WORKTIME", required = true)
     protected StandardtimeRoot.STANDARDWORKTIME standardworktime;
 
+    public StandardtimeRoot() {
+        this.method = new StandardtimeRoot.METHOD();
+        this.standardworktime = new StandardtimeRoot.STANDARDWORKTIME();
+    }
+
     /**
      * 取得 method 特性的值.
      *
