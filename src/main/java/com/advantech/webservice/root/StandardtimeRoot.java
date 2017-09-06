@@ -4,7 +4,7 @@
 // 一旦重新編譯來源綱要, 對此檔案所做的任何修改都將會遺失. 
 // 產生時間: 2017.07.18 於 01:29:51 PM CST 
 //
-package com.advantech.webservice.ie;
+package com.advantech.webservice.root;
 
 import java.math.BigDecimal;
 import javax.xml.bind.annotation.XmlAccessType;

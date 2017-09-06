@@ -6,7 +6,7 @@
 //
 
 
-package com.advantech.webservice.spe;
+package com.advantech.webservice.root;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -55,16 +55,20 @@ import javax.xml.bind.annotation.XmlValue;
     "type"
 })
 @XmlRootElement(name = "root")
-public class MappingUserRoot {
+public class PartMappingUserRoot {
 
     @XmlElement(name = "METHOD", required = true)
-    protected MappingUserRoot.METHOD method;
+    protected PartMappingUserRoot.METHOD method;
     @XmlElement(name = "PART_NO", required = true)
     protected String partno;
     @XmlElement(name = "USER_IDs", required = true)
     protected String useriDs;
     @XmlElement(name = "TYPE", required = true)
     protected String type;
+    
+    public PartMappingUserRoot(){
+        this.method = new PartMappingUserRoot.METHOD();
+    }
 
     /**
      * 取得 method 特性的值.
@@ -74,7 +78,7 @@ public class MappingUserRoot {
      *     {@link Root.METHOD }
      *     
      */
-    public MappingUserRoot.METHOD getMETHOD() {
+    public PartMappingUserRoot.METHOD getMETHOD() {
         return method;
     }
 
@@ -86,7 +90,7 @@ public class MappingUserRoot {
      *     {@link Root.METHOD }
      *     
      */
-    public void setMETHOD(MappingUserRoot.METHOD value) {
+    public void setMETHOD(PartMappingUserRoot.METHOD value) {
         this.method = value;
     }
 

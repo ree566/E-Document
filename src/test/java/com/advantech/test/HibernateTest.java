@@ -7,17 +7,12 @@ package com.advantech.test;
 
 import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.model.Worktime;
-import com.advantech.quartzJob.BackupDataToExcel;
 import com.advantech.service.AuditService;
-import com.advantech.service.WorktimeAutouploadSettingService;
 import com.advantech.service.WorktimeService;
-import com.advantech.webservice.ie.WorktimeStandardtimeUploadPort;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import static com.google.common.collect.Lists.newArrayList;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import javax.transaction.Transactional;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
@@ -28,10 +23,8 @@ import org.hibernate.envers.AuditReaderFactory;
 import org.hibernate.envers.query.AuditEntity;
 import org.hibernate.envers.query.AuditQuery;
 import org.junit.BeforeClass;
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -55,18 +48,9 @@ public class HibernateTest {
     private SessionFactory sessionFactory;
 
     @Autowired
-    private WorktimeStandardtimeUploadPort port;
-
-    @Autowired
     private AuditService auditService;
 
     private static Validator validator;
-
-    @Autowired
-    private WorktimeAutouploadSettingService settingService;
-
-    @Autowired
-    private BackupDataToExcel e;
 
     @BeforeClass
     public static void setUp() {
@@ -133,16 +117,6 @@ public class HibernateTest {
 //        q.setFirstResult(1);
 //        q.setMaxResults(5);
 
-    }
-
-    @Transactional
-    @Rollback(true)
-    @Test
-    public void test11() throws Exception {
-
-        e.backupToDisk();
-
-        
     }
 
 }

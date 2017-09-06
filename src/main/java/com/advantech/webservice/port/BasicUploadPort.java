@@ -3,41 +3,42 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.advantech.webservice;
+package com.advantech.webservice.port;
 
-import com.advantech.webservice.ie.StandardtimeRoot;
-import java.io.IOException;
+import com.advantech.model.Worktime;
+import com.advantech.webservice.WsClient;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.PostConstruct;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.expression.ExpressionParser;
-import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.tempuri.TxResponse;
 
 /**
  *
  * @author Wei.Cheng
  */
-public abstract class UploadPort {
+public abstract class BasicUploadPort {
 
     private Marshaller jaxbMarshaller;
 
     @Autowired
     private WsClient client;
 
+    @PostConstruct
+    protected abstract void initJaxbMarshaller() ;
+
     protected void initJaxbMarshaller(Class persistClass) throws JAXBException {
         JAXBContext jaxbContext = JAXBContext.newInstance(persistClass);
         jaxbMarshaller = jaxbContext.createMarshaller();
     }
 
-    protected void upload(Object bean, List settings) throws Exception {
-
-        Map<String, String> xmlResults = this.transformData(bean, settings);
+    public void upload(Worktime w) throws Exception {
+        Map<String, String> xmlResults = transformData(w);
         List<String> errorFields = new ArrayList();
         for (Map.Entry<String, String> entry : xmlResults.entrySet()) {
             String field = entry.getKey();
@@ -48,15 +49,21 @@ public abstract class UploadPort {
             }
         }
         if (!errorFields.isEmpty()) {
-            throw new Exception("Error on saving xml result to MES on field " + errorFields.toString());
+            throw new Exception(w.getModelName() + ": Error on saving xml result to MES on field " + errorFields.toString());
         }
     }
 
-    protected abstract Map<String, String> transformData(Object bean, List settings);
-    
-    protected String generateXmlString(StandardtimeRoot root) throws JAXBException {
+    /**
+     *
+     * @param w
+     * @return Field name as key and xml generate result as value.
+     * @throws java.lang.Exception
+     */
+    protected abstract Map<String, String> transformData(Worktime w) throws Exception;
+
+    protected String generateXmlString(Object jaxbElement) throws JAXBException {
         StringWriter sw = new StringWriter();
-        jaxbMarshaller.marshal(root, sw);
+        jaxbMarshaller.marshal(jaxbElement, sw);
         String xmlString = sw.toString();
         return xmlString;
     }

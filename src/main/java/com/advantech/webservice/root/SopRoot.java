@@ -4,9 +4,7 @@
 // 一旦重新編譯來源綱要, 對此檔案所做的任何修改都將會遺失. 
 // 產生時間: 2017.09.04 於 11:28:54 AM CST 
 //
-
-
-package com.advantech.webservice.spe;
+package com.advantech.webservice.root;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -16,12 +14,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlValue;
 
-
 /**
- * <p>anonymous complex type 的 Java 類別.
- * 
- * <p>下列綱要片段會指定此類別中包含的預期內容.
- * 
+ * <p>
+ * anonymous complex type 的 Java 類別.
+ *
+ * <p>
+ * 下列綱要片段會指定此類別中包含的預期內容.
+ *
  * <pre>
  * &lt;complexType>
  *   &lt;complexContent>
@@ -60,8 +59,8 @@ import javax.xml.bind.annotation.XmlValue;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
@@ -76,13 +75,16 @@ public class SopRoot {
     @XmlElement(name = "SOP_INFO", required = true)
     protected SopRoot.SOPINFO sopinfo;
 
+    public SopRoot() {
+        this.method = new SopRoot.METHOD();
+        this.sopinfo = new SopRoot.SOPINFO();
+    }
+
     /**
      * 取得 method 特性的值.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Root.METHOD }
-     *     
+     *
+     * @return possible object is {@link Root.METHOD }
+     *
      */
     public SopRoot.METHOD getMETHOD() {
         return method;
@@ -90,11 +92,9 @@ public class SopRoot {
 
     /**
      * 設定 method 特性的值.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Root.METHOD }
-     *     
+     *
+     * @param value allowed object is {@link Root.METHOD }
+     *
      */
     public void setMETHOD(SopRoot.METHOD value) {
         this.method = value;
@@ -102,11 +102,9 @@ public class SopRoot {
 
     /**
      * 取得 sopinfo 特性的值.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Root.SOPINFO }
-     *     
+     *
+     * @return possible object is {@link Root.SOPINFO }
+     *
      */
     public SopRoot.SOPINFO getSOPINFO() {
         return sopinfo;
@@ -114,22 +112,21 @@ public class SopRoot {
 
     /**
      * 設定 sopinfo 特性的值.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Root.SOPINFO }
-     *     
+     *
+     * @param value allowed object is {@link Root.SOPINFO }
+     *
      */
     public void setSOPINFO(SopRoot.SOPINFO value) {
         this.sopinfo = value;
     }
 
-
     /**
-     * <p>anonymous complex type 的 Java 類別.
-     * 
-     * <p>下列綱要片段會指定此類別中包含的預期內容.
-     * 
+     * <p>
+     * anonymous complex type 的 Java 類別.
+     *
+     * <p>
+     * 下列綱要片段會指定此類別中包含的預期內容.
+     *
      * <pre>
      * &lt;complexType>
      *   &lt;simpleContent>
@@ -139,8 +136,8 @@ public class SopRoot {
      *   &lt;/simpleContent>
      * &lt;/complexType>
      * </pre>
-     * 
-     * 
+     *
+     *
      */
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "", propOrder = {
@@ -155,11 +152,9 @@ public class SopRoot {
 
         /**
          * 取得 value 特性的值.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
+         *
+         * @return possible object is {@link String }
+         *
          */
         public String getValue() {
             return value;
@@ -167,11 +162,9 @@ public class SopRoot {
 
         /**
          * 設定 value 特性的值.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
+         *
+         * @param value allowed object is {@link String }
+         *
          */
         public void setValue(String value) {
             this.value = value;
@@ -179,11 +172,9 @@ public class SopRoot {
 
         /**
          * 取得 id 特性的值.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
+         *
+         * @return possible object is {@link String }
+         *
          */
         public String getID() {
             return id;
@@ -191,11 +182,9 @@ public class SopRoot {
 
         /**
          * 設定 id 特性的值.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
+         *
+         * @param value allowed object is {@link String }
+         *
          */
         public void setID(String value) {
             this.id = value;
@@ -203,12 +192,13 @@ public class SopRoot {
 
     }
 
-
     /**
-     * <p>anonymous complex type 的 Java 類別.
-     * 
-     * <p>下列綱要片段會指定此類別中包含的預期內容.
-     * 
+     * <p>
+     * anonymous complex type 的 Java 類別.
+     *
+     * <p>
+     * 下列綱要片段會指定此類別中包含的預期內容.
+     *
      * <pre>
      * &lt;complexType>
      *   &lt;complexContent>
@@ -228,8 +218,8 @@ public class SopRoot {
      *   &lt;/complexContent>
      * &lt;/complexType>
      * </pre>
-     * 
-     * 
+     *
+     *
      */
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "", propOrder = {
@@ -266,11 +256,9 @@ public class SopRoot {
 
         /**
          * 取得 partno 特性的值.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
+         *
+         * @return possible object is {@link String }
+         *
          */
         public String getPARTNO() {
             return partno;
@@ -278,11 +266,9 @@ public class SopRoot {
 
         /**
          * 設定 partno 特性的值.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
+         *
+         * @param value allowed object is {@link String }
+         *
          */
         public void setPARTNO(String value) {
             this.partno = value;
@@ -290,11 +276,9 @@ public class SopRoot {
 
         /**
          * 取得 typeno 特性的值.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
+         *
+         * @return possible object is {@link String }
+         *
          */
         public String getTYPENO() {
             return typeno;
@@ -302,11 +286,9 @@ public class SopRoot {
 
         /**
          * 設定 typeno 特性的值.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
+         *
+         * @param value allowed object is {@link String }
+         *
          */
         public void setTYPENO(String value) {
             this.typeno = value;
@@ -314,11 +296,9 @@ public class SopRoot {
 
         /**
          * 取得 itemno 特性的值.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
+         *
+         * @return possible object is {@link String }
+         *
          */
         public String getITEMNO() {
             return itemno;
@@ -326,11 +306,9 @@ public class SopRoot {
 
         /**
          * 設定 itemno 特性的值.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
+         *
+         * @param value allowed object is {@link String }
+         *
          */
         public void setITEMNO(String value) {
             this.itemno = value;
@@ -338,11 +316,9 @@ public class SopRoot {
 
         /**
          * 取得 sopname 特性的值.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
+         *
+         * @return possible object is {@link String }
+         *
          */
         public String getSOPNAME() {
             return sopname;
@@ -350,11 +326,9 @@ public class SopRoot {
 
         /**
          * 設定 sopname 特性的值.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
+         *
+         * @param value allowed object is {@link String }
+         *
          */
         public void setSOPNAME(String value) {
             this.sopname = value;
@@ -362,11 +336,9 @@ public class SopRoot {
 
         /**
          * 取得 stationno 特性的值.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
+         *
+         * @return possible object is {@link String }
+         *
          */
         public String getSTATIONNO() {
             return stationno;
@@ -374,11 +346,9 @@ public class SopRoot {
 
         /**
          * 設定 stationno 特性的值.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
+         *
+         * @param value allowed object is {@link String }
+         *
          */
         public void setSTATIONNO(String value) {
             this.stationno = value;
@@ -386,11 +356,9 @@ public class SopRoot {
 
         /**
          * 取得 soppageno 特性的值.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
+         *
+         * @return possible object is {@link String }
+         *
          */
         public String getSOPPAGENO() {
             return soppageno;
@@ -398,11 +366,9 @@ public class SopRoot {
 
         /**
          * 設定 soppageno 特性的值.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
+         *
+         * @param value allowed object is {@link String }
+         *
          */
         public void setSOPPAGENO(String value) {
             this.soppageno = value;
@@ -410,11 +376,9 @@ public class SopRoot {
 
         /**
          * 取得 typenoold 特性的值.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
+         *
+         * @return possible object is {@link String }
+         *
          */
         public String getTYPENOOLD() {
             return typenoold;
@@ -422,11 +386,9 @@ public class SopRoot {
 
         /**
          * 設定 typenoold 特性的值.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
+         *
+         * @param value allowed object is {@link String }
+         *
          */
         public void setTYPENOOLD(String value) {
             this.typenoold = value;
@@ -434,11 +396,9 @@ public class SopRoot {
 
         /**
          * 取得 itemnoold 特性的值.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
+         *
+         * @return possible object is {@link String }
+         *
          */
         public String getITEMNOOLD() {
             return itemnoold;
@@ -446,11 +406,9 @@ public class SopRoot {
 
         /**
          * 設定 itemnoold 特性的值.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
+         *
+         * @param value allowed object is {@link String }
+         *
          */
         public void setITEMNOOLD(String value) {
             this.itemnoold = value;
@@ -458,11 +416,9 @@ public class SopRoot {
 
         /**
          * 取得 sopnameold 特性的值.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
+         *
+         * @return possible object is {@link String }
+         *
          */
         public String getSOPNAMEOLD() {
             return sopnameold;
@@ -470,11 +426,9 @@ public class SopRoot {
 
         /**
          * 設定 sopnameold 特性的值.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
+         *
+         * @param value allowed object is {@link String }
+         *
          */
         public void setSOPNAMEOLD(String value) {
             this.sopnameold = value;

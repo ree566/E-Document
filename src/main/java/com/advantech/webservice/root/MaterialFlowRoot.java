@@ -4,9 +4,7 @@
 // 一旦重新編譯來源綱要, 對此檔案所做的任何修改都將會遺失. 
 // 產生時間: 2017.09.04 於 11:23:15 AM CST 
 //
-
-
-package com.advantech.webservice.spe;
+package com.advantech.webservice.root;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -16,12 +14,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlValue;
 
-
 /**
- * <p>anonymous complex type 的 Java 類別.
- * 
- * <p>下列綱要片段會指定此類別中包含的預期內容.
- * 
+ * <p>
+ * anonymous complex type 的 Java 類別.
+ *
+ * <p>
+ * 下列綱要片段會指定此類別中包含的預期內容.
+ *
  * <pre>
  * &lt;complexType>
  *   &lt;complexContent>
@@ -44,7 +43,7 @@ import javax.xml.bind.annotation.XmlValue;
  *                   &lt;element name="MF_ID" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *                   &lt;element name="ITEM_NO" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *                   &lt;element name="FLOW_RULE_ID" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *                   &lt;element name="FLOW_SEQ" type="{http://www.w3.org/2001/XMLSchema}byte"/>
+ *                   &lt;element name="FLOW_SEQ" type="{http://www.w3.org/2001/XMLSchema}Integer"/>
  *                   &lt;element name="ITEM_ID" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *                   &lt;element name="UNIT_NO" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *                   &lt;element name="UPDATE_FLOW_FLAG" type="{http://www.w3.org/2001/XMLSchema}string"/>
@@ -58,8 +57,8 @@ import javax.xml.bind.annotation.XmlValue;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
@@ -67,67 +66,65 @@ import javax.xml.bind.annotation.XmlValue;
     "materialflow"
 })
 @XmlRootElement(name = "root")
-public class FlowRoot {
+public class MaterialFlowRoot {
 
     @XmlElement(name = "METHOD", required = true)
-    protected FlowRoot.METHOD method;
+    protected MaterialFlowRoot.METHOD method;
     @XmlElement(name = "MATERIAL_FLOW", required = true)
-    protected FlowRoot.MATERIALFLOW materialflow;
+    protected MaterialFlowRoot.MATERIALFLOW materialflow;
+
+    public MaterialFlowRoot() {
+        this.method = new MaterialFlowRoot.METHOD();
+        this.materialflow = new MaterialFlowRoot.MATERIALFLOW();
+    }
 
     /**
      * 取得 method 特性的值.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Root.METHOD }
-     *     
+     *
+     * @return possible object is {@link Root.METHOD }
+     *
      */
-    public FlowRoot.METHOD getMETHOD() {
+    public MaterialFlowRoot.METHOD getMETHOD() {
         return method;
     }
 
     /**
      * 設定 method 特性的值.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Root.METHOD }
-     *     
+     *
+     * @param value allowed object is {@link Root.METHOD }
+     *
      */
-    public void setMETHOD(FlowRoot.METHOD value) {
+    public void setMETHOD(MaterialFlowRoot.METHOD value) {
         this.method = value;
     }
 
     /**
      * 取得 materialflow 特性的值.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Root.MATERIALFLOW }
-     *     
+     *
+     * @return possible object is {@link Root.MATERIALFLOW }
+     *
      */
-    public FlowRoot.MATERIALFLOW getMATERIALFLOW() {
+    public MaterialFlowRoot.MATERIALFLOW getMATERIALFLOW() {
         return materialflow;
     }
 
     /**
      * 設定 materialflow 特性的值.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Root.MATERIALFLOW }
-     *     
+     *
+     * @param value allowed object is {@link Root.MATERIALFLOW }
+     *
      */
-    public void setMATERIALFLOW(FlowRoot.MATERIALFLOW value) {
+    public void setMATERIALFLOW(MaterialFlowRoot.MATERIALFLOW value) {
         this.materialflow = value;
     }
 
-
     /**
-     * <p>anonymous complex type 的 Java 類別.
-     * 
-     * <p>下列綱要片段會指定此類別中包含的預期內容.
-     * 
+     * <p>
+     * anonymous complex type 的 Java 類別.
+     *
+     * <p>
+     * 下列綱要片段會指定此類別中包含的預期內容.
+     *
      * <pre>
      * &lt;complexType>
      *   &lt;complexContent>
@@ -136,7 +133,7 @@ public class FlowRoot {
      *         &lt;element name="MF_ID" type="{http://www.w3.org/2001/XMLSchema}string"/>
      *         &lt;element name="ITEM_NO" type="{http://www.w3.org/2001/XMLSchema}string"/>
      *         &lt;element name="FLOW_RULE_ID" type="{http://www.w3.org/2001/XMLSchema}string"/>
-     *         &lt;element name="FLOW_SEQ" type="{http://www.w3.org/2001/XMLSchema}byte"/>
+     *         &lt;element name="FLOW_SEQ" type="{http://www.w3.org/2001/XMLSchema}Integer"/>
      *         &lt;element name="ITEM_ID" type="{http://www.w3.org/2001/XMLSchema}string"/>
      *         &lt;element name="UNIT_NO" type="{http://www.w3.org/2001/XMLSchema}string"/>
      *         &lt;element name="UPDATE_FLOW_FLAG" type="{http://www.w3.org/2001/XMLSchema}string"/>
@@ -145,8 +142,8 @@ public class FlowRoot {
      *   &lt;/complexContent>
      * &lt;/complexType>
      * </pre>
-     * 
-     * 
+     *
+     *
      */
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "", propOrder = {
@@ -167,7 +164,7 @@ public class FlowRoot {
         @XmlElement(name = "FLOW_RULE_ID", required = true)
         protected String flowruleid;
         @XmlElement(name = "FLOW_SEQ")
-        protected byte flowseq;
+        protected Integer flowseq;
         @XmlElement(name = "ITEM_ID", required = true)
         protected String itemid;
         @XmlElement(name = "UNIT_NO", required = true)
@@ -177,11 +174,9 @@ public class FlowRoot {
 
         /**
          * 取得 mfid 特性的值.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
+         *
+         * @return possible object is {@link String }
+         *
          */
         public String getMFID() {
             return mfid;
@@ -189,11 +184,9 @@ public class FlowRoot {
 
         /**
          * 設定 mfid 特性的值.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
+         *
+         * @param value allowed object is {@link String }
+         *
          */
         public void setMFID(String value) {
             this.mfid = value;
@@ -201,11 +194,9 @@ public class FlowRoot {
 
         /**
          * 取得 itemno 特性的值.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
+         *
+         * @return possible object is {@link String }
+         *
          */
         public String getITEMNO() {
             return itemno;
@@ -213,11 +204,9 @@ public class FlowRoot {
 
         /**
          * 設定 itemno 特性的值.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
+         *
+         * @param value allowed object is {@link String }
+         *
          */
         public void setITEMNO(String value) {
             this.itemno = value;
@@ -225,11 +214,9 @@ public class FlowRoot {
 
         /**
          * 取得 flowruleid 特性的值.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
+         *
+         * @return possible object is {@link String }
+         *
          */
         public String getFLOWRULEID() {
             return flowruleid;
@@ -237,11 +224,9 @@ public class FlowRoot {
 
         /**
          * 設定 flowruleid 特性的值.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
+         *
+         * @param value allowed object is {@link String }
+         *
          */
         public void setFLOWRULEID(String value) {
             this.flowruleid = value;
@@ -249,27 +234,25 @@ public class FlowRoot {
 
         /**
          * 取得 flowseq 特性的值.
-         * 
+         *
          */
-        public byte getFLOWSEQ() {
+        public Integer getFLOWSEQ() {
             return flowseq;
         }
 
         /**
          * 設定 flowseq 特性的值.
-         * 
+         *
          */
-        public void setFLOWSEQ(byte value) {
+        public void setFLOWSEQ(Integer value) {
             this.flowseq = value;
         }
 
         /**
          * 取得 itemid 特性的值.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
+         *
+         * @return possible object is {@link String }
+         *
          */
         public String getITEMID() {
             return itemid;
@@ -277,11 +260,9 @@ public class FlowRoot {
 
         /**
          * 設定 itemid 特性的值.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
+         *
+         * @param value allowed object is {@link String }
+         *
          */
         public void setITEMID(String value) {
             this.itemid = value;
@@ -289,11 +270,9 @@ public class FlowRoot {
 
         /**
          * 取得 unitno 特性的值.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
+         *
+         * @return possible object is {@link String }
+         *
          */
         public String getUNITNO() {
             return unitno;
@@ -301,11 +280,9 @@ public class FlowRoot {
 
         /**
          * 設定 unitno 特性的值.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
+         *
+         * @param value allowed object is {@link String }
+         *
          */
         public void setUNITNO(String value) {
             this.unitno = value;
@@ -313,11 +290,9 @@ public class FlowRoot {
 
         /**
          * 取得 updateflowflag 特性的值.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
+         *
+         * @return possible object is {@link String }
+         *
          */
         public String getUPDATEFLOWFLAG() {
             return updateflowflag;
@@ -325,11 +300,9 @@ public class FlowRoot {
 
         /**
          * 設定 updateflowflag 特性的值.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
+         *
+         * @param value allowed object is {@link String }
+         *
          */
         public void setUPDATEFLOWFLAG(String value) {
             this.updateflowflag = value;
@@ -337,12 +310,13 @@ public class FlowRoot {
 
     }
 
-
     /**
-     * <p>anonymous complex type 的 Java 類別.
-     * 
-     * <p>下列綱要片段會指定此類別中包含的預期內容.
-     * 
+     * <p>
+     * anonymous complex type 的 Java 類別.
+     *
+     * <p>
+     * 下列綱要片段會指定此類別中包含的預期內容.
+     *
      * <pre>
      * &lt;complexType>
      *   &lt;simpleContent>
@@ -352,8 +326,8 @@ public class FlowRoot {
      *   &lt;/simpleContent>
      * &lt;/complexType>
      * </pre>
-     * 
-     * 
+     *
+     *
      */
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "", propOrder = {
@@ -368,11 +342,9 @@ public class FlowRoot {
 
         /**
          * 取得 value 特性的值.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
+         *
+         * @return possible object is {@link String }
+         *
          */
         public String getValue() {
             return value;
@@ -380,11 +352,9 @@ public class FlowRoot {
 
         /**
          * 設定 value 特性的值.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
+         *
+         * @param value allowed object is {@link String }
+         *
          */
         public void setValue(String value) {
             this.value = value;
@@ -392,11 +362,9 @@ public class FlowRoot {
 
         /**
          * 取得 id 特性的值.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
+         *
+         * @return possible object is {@link String }
+         *
          */
         public String getID() {
             return id;
@@ -404,11 +372,9 @@ public class FlowRoot {
 
         /**
          * 設定 id 特性的值.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
+         *
+         * @param value allowed object is {@link String }
+         *
          */
         public void setID(String value) {
             this.id = value;

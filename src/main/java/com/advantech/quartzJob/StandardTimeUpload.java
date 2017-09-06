@@ -11,7 +11,7 @@ import com.advantech.model.User;
 import com.advantech.model.Worktime;
 import com.advantech.service.UserNotificationService;
 import com.advantech.service.WorktimeService;
-import com.advantech.webservice.ie.WorktimeStandardtimeUploadPort;
+import com.advantech.webservice.port.StandardtimeUploadPort;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.PostConstruct;
@@ -41,7 +41,7 @@ public class StandardTimeUpload {
     private WorktimeService worktimeService;
 
     @Autowired
-    private WorktimeStandardtimeUploadPort port;
+    private StandardtimeUploadPort port;
 
     private DateTimeFormatter df;
 
@@ -67,7 +67,7 @@ public class StandardTimeUpload {
         
         for (Worktime w : modifiedWorktimes) {
             try {
-                port.uploadStandardTime(w);
+                port.upload(w);
             } catch (Exception e) {
                 errorMessages.add(e.getMessage());
                 log.error(e.toString());

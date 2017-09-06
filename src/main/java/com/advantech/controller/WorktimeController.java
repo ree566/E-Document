@@ -11,7 +11,7 @@ import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.Worktime;
 import com.advantech.jqgrid.JqGridResponse;
 import com.advantech.service.WorktimeService;
-import com.advantech.webservice.ie.WorktimeStandardtimeUploadPort;
+import com.advantech.webservice.port.StandardtimeUploadPort;
 import static com.google.common.collect.Lists.newArrayList;
 import java.util.Collection;
 import javax.validation.Valid;
@@ -43,7 +43,7 @@ public class WorktimeController extends CrudController<Worktime> {
     private WorktimeMailManager worktimeMailManager;
 
     @Autowired
-    private WorktimeStandardtimeUploadPort port;
+    private StandardtimeUploadPort port;
 
     @ResponseBody
     @RequestMapping(value = SELECT_URL, method = {RequestMethod.GET})
@@ -154,7 +154,7 @@ public class WorktimeController extends CrudController<Worktime> {
 
     private void checkUserRoleAndUpload(Worktime worktime) throws Exception {
         if (hasRole("ROLE_AUTOUPLOADKEY")) {
-            port.uploadStandardTime(worktime);
+            port.upload(worktime);
         }
     }
 
