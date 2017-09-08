@@ -26,13 +26,13 @@ import org.springframework.test.context.web.WebAppConfiguration;
  *
  * @author Wei.Cheng
  */
-@WebAppConfiguration
-@ContextConfiguration(locations = {
-    "classpath:servlet-context.xml",
-    "classpath:hibernate.cfg.xml"
-})
-@RunWith(SpringJUnit4ClassRunner.class)
-@Transactional
+//@WebAppConfiguration
+//@ContextConfiguration(locations = {
+//    "classpath:servlet-context.xml",
+//    "classpath:hibernate.cfg.xml"
+//})
+//@RunWith(SpringJUnit4ClassRunner.class)
+//@Transactional
 public class UploadPortTest {
 
     private Worktime w;
@@ -54,31 +54,33 @@ public class UploadPortTest {
     @Autowired
     private WorktimeService worktimeService;
 
-    @Before
+//    @Before
     public void initTestData() {
-        w = worktimeService.findByModel("ACP-1320MB-SG4GE");
+        w = worktimeService.findByModel("HIT-W121-AWM1E");
     }
 
-    @Test
+//    @Test
     public void testStandardtimeUpload() throws Exception {
         standardtimePort.initSettings();
         Map result = standardtimePort.transformData(w);
         assertEquals(17, result.size());
     }
 
-    @Test
+//    @Test
     public void testMaterialFlowUpload() throws Exception {
         Map result = materialPort.transformData(w);
         assertEquals(4, result.size());
     }
 
-    @Test
+//    @Test
     public void testPartMappingUserUpload() throws Exception {
         Map result = mappingUserPort.transformData(w);
         assertEquals(3, result.size());
+        System.out.println(result.get("speOwner").toString());
+        mappingUserPort.upload(w);
     }
 
-    @Test
+//    @Test
     public void testSopUpload() throws Exception {
         Map result = sopPort.transformData(w);
         assertEquals(2, result.size());

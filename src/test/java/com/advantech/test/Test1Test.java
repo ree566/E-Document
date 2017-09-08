@@ -5,11 +5,22 @@
  */
 package com.advantech.test;
 
+import java.util.HashMap;
+import java.util.Map;
+import org.junit.Test;
+
 /**
  *
  * @author Wei.Cheng
  */
 public class Test1Test {
 
-
+    @Test
+    public void test(){
+        
+        Map<String, String> m = new HashMap();
+        m.put("test", "testString");
+        
+        System.out.println(m.toString());
+    }
 }

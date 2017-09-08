@@ -8,8 +8,7 @@ package com.advantech.webservice.port;
 import com.advantech.model.Worktime;
 import com.advantech.webservice.WsClient;
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.xml.bind.JAXBContext;
@@ -39,13 +38,13 @@ public abstract class BasicUploadPort {
 
     public void upload(Worktime w) throws Exception {
         Map<String, String> xmlResults = transformData(w);
-        List<String> errorFields = new ArrayList();
+        Map<String, String> errorFields = new HashMap();
         for (Map.Entry<String, String> entry : xmlResults.entrySet()) {
             String field = entry.getKey();
             String xmlString = entry.getValue();
             TxResponse response = client.simpleTxSendAndReceive(xmlString);
             if (!"OK".equals(response.getTxResult())) {
-                errorFields.add(field);
+                errorFields.put(field, response.getTxResult());
             }
         }
         if (!errorFields.isEmpty()) {

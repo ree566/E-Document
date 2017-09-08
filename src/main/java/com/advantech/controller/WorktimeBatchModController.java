@@ -24,6 +24,7 @@ import com.advantech.service.PendingService;
 import com.advantech.service.PreAssyService;
 import com.advantech.service.TypeService;
 import com.advantech.service.UserService;
+import com.advantech.service.WorktimeFormulaSettingService;
 import com.advantech.service.WorktimeService;
 import com.google.gson.Gson;
 import java.lang.reflect.InvocationTargetException;
@@ -86,6 +87,9 @@ public class WorktimeBatchModController {
     private BusinessGroupService businessGroupService;
 
     @Autowired
+    private WorktimeFormulaSettingService worktimeFormulaSettingService;
+
+    @Autowired
     private AuditService auditService;
 
     private static Validator validator;
@@ -122,10 +126,6 @@ public class WorktimeBatchModController {
     @ResponseBody
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     public String batchUpdate(@RequestParam("file") MultipartFile file) throws Exception {
-        if (1 == 1) {
-            //Throw because formula will be override when excel is not setting formula info.
-            throw new UnsupportedOperationException("Formula issue is not fix yet.");
-        }
 
         List<Worktime> hgList = this.transToWorktimes(file, true);
 
@@ -324,6 +324,8 @@ public class WorktimeBatchModController {
 
             String businessGroupName = sheet.getValue(i, "businessGroupName").toString();
             w.setBusinessGroup(valid(businessGroupName, businessGroupOptions.get(businessGroupName)));
+
+            w.setWorktimeFormulaSettings(worktimeFormulaSettingService.findByWorktime(Integer.parseInt(sheet.getValue(i, "id").toString())));
         }
 
         return hgList;

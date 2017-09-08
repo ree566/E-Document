@@ -5,10 +5,11 @@
  */
 package com.advantech.webservice.port;
 
+import com.advantech.model.User;
 import com.advantech.webservice.root.PartMappingUserRoot;
 import com.advantech.model.Worktime;
-import com.google.gson.Gson;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.xml.bind.JAXBException;
 import org.slf4j.Logger;
@@ -35,22 +36,42 @@ public class PartMappingUserUploadPort extends BasicUploadPort {
 
     @Override
     public void upload(Worktime w) throws Exception {
-//        super.upload(w); //To change body of generated methods, choose Tools | Templates.
-        Map result = this.transformData(w);
-        System.out.println(new Gson().toJson(result));
+        super.upload(w); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public Map<String, String> transformData(Worktime w) throws Exception {
         //SpeUser, EeUser, QcUser
-        
+        Map<String, String> owners = this.getWorktimeOwners(w);
         Map<String, String> xmlResults = new HashMap();
-        PartMappingUserRoot root = new PartMappingUserRoot();
-        root.setPARTNO("a"); //機種
-        root.setUSERIDs("b"); //人員代碼
-        root.setTYPE(""); //寫死
-        xmlResults.put("flow", this.generateXmlString(root));
+
+        for (String key : owners.keySet()) {
+            String jobnumber = owners.get(key);
+            PartMappingUserRoot root = new PartMappingUserRoot();
+            root.setPARTNO(w.getModelName()); //機種
+            root.setUSERIDs(jobnumber); //人員代碼
+            root.setTYPE(""); //寫死
+            xmlResults.put(key, this.generateXmlString(root));
+        }
         return xmlResults;
+    }
+
+    @SuppressWarnings("null")
+    public Map<String, String> getWorktimeOwners(Worktime w) {
+        User speOwner = w.getUserBySpeOwnerId();
+        User eeOwner = w.getUserByEeOwnerId();
+        User qcOwner = w.getUserByQcOwnerId();
+        Map<String, String> m = new HashMap();
+        if (speOwner != null) {
+            m.put("speOwner", speOwner.getJobnumber());
+        }
+        if (eeOwner != null) {
+            m.put("eeOwner", eeOwner.getJobnumber());
+        }
+        if (qcOwner != null) {
+            m.put("qcOwner", qcOwner.getJobnumber());
+        }
+        return m;
     }
 
 }
