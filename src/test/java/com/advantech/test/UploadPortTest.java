@@ -5,16 +5,19 @@
  */
 package com.advantech.test;
 
+import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.Worktime;
+import com.advantech.service.WorktimeAutouploadSettingService;
 import com.advantech.service.WorktimeService;
 import com.advantech.webservice.port.MaterialFlowUploadPort;
 import com.advantech.webservice.port.PartMappingUserUploadPort;
 import com.advantech.webservice.port.SopUploadPort;
 import com.advantech.webservice.port.StandardtimeUploadPort;
+import static com.google.common.collect.Lists.newArrayList;
+import java.util.List;
 import java.util.Map;
 import javax.transaction.Transactional;
 import static junit.framework.Assert.assertEquals;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,13 +29,13 @@ import org.springframework.test.context.web.WebAppConfiguration;
  *
  * @author Wei.Cheng
  */
-//@WebAppConfiguration
-//@ContextConfiguration(locations = {
-//    "classpath:servlet-context.xml",
-//    "classpath:hibernate.cfg.xml"
-//})
-//@RunWith(SpringJUnit4ClassRunner.class)
-//@Transactional
+@WebAppConfiguration
+@ContextConfiguration(locations = {
+    "classpath:servlet-context.xml",
+    "classpath:hibernate.cfg.xml"
+})
+@RunWith(SpringJUnit4ClassRunner.class)
+@Transactional
 public class UploadPortTest {
 
     private Worktime w;
@@ -84,5 +87,31 @@ public class UploadPortTest {
     public void testSopUpload() throws Exception {
         Map result = sopPort.transformData(w);
         assertEquals(2, result.size());
+    }
+
+    @Autowired
+    private WorktimeAutouploadSettingService worktimeAutouploadSettingService;
+
+    //暫時用
+    @Test
+    public void testStandardtimeUpload2() {
+        PageInfo info = new PageInfo();
+        info.setSearchField("modifiedDate");
+        info.setSearchOper("gt");
+        info.setSearchString("2017-09-03");
+        info.setRows(Integer.MAX_VALUE);
+        List<Worktime> l = worktimeService.findAll(info);
+        assertEquals(124, l.size());
+
+        standardtimePort.initSettings(newArrayList(worktimeAutouploadSettingService.findByPrimaryKey(16)));
+
+        for (Worktime worktime : l) {
+            try {
+                System.out.println("Upload model: " + worktime.getModelName());
+                standardtimePort.upload(worktime);
+            } catch (Exception ex) {
+                System.out.println(ex);
+            }
+        }
     }
 }
