@@ -15,7 +15,7 @@ import org.junit.Test;
  */
 public class Test1Test {
 
-    @Test
+//    @Test
     public void test(){
         
         Map<String, String> m = new HashMap();

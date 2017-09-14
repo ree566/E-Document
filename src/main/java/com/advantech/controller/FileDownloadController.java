@@ -26,7 +26,6 @@ import org.jxls.util.TransformerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -38,6 +37,7 @@ import org.springframework.web.servlet.ModelAndView;
  * @author Wei.Cheng
  */
 @Controller
+@RequestMapping("/WorktimeDownload")
 public class FileDownloadController {
 
     @Autowired
@@ -53,9 +53,8 @@ public class FileDownloadController {
     private ResourceLoader resourceLoader;
 
     @ResponseBody
-    @RequestMapping(value = "/Worktime/excel", method = {RequestMethod.GET})
-    @Secured({"ROLE_USER", "ROLE_ADMIN"})
-    public ModelAndView generateExcel(PageInfo info) {
+    @RequestMapping(value = "/excel", method = {RequestMethod.GET})
+    protected ModelAndView generateExcel(PageInfo info) {
         // create some sample data
         info.setRows(Integer.MAX_VALUE);
         info.setSidx("id");
@@ -69,16 +68,14 @@ public class FileDownloadController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/Worktime/excel2", method = {RequestMethod.GET})
-    @Secured({"ROLE_GUEST", "ROLE_USER"})
-    public void generateExcel2(HttpServletResponse response, PageInfo info) throws IOException {
+    @RequestMapping(value = "/excel2", method = {RequestMethod.GET})
+    protected void generateExcel2(HttpServletResponse response, PageInfo info) throws IOException {
         this.fileExport("worktime-template.xls", response, info);
     }
 
     @ResponseBody
-    @RequestMapping(value = "/Worktime/excelForSpe", method = {RequestMethod.GET})
-    @Secured({"ROLE_USER"})
-    public void generateExcelForUpload(HttpServletResponse response, PageInfo info) throws IOException {
+    @RequestMapping(value = "/excelForSpe", method = {RequestMethod.GET})
+    protected void generateExcelForUpload(HttpServletResponse response, PageInfo info) throws IOException {
         this.fileExport("Plant-sp matl status(M3) (2).xls", response, info);
     }
 

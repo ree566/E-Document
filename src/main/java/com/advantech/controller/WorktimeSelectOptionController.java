@@ -25,7 +25,6 @@ import com.advantech.service.TypeService;
 import com.advantech.service.UnitService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,7 +36,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @author Wei.Cheng 供大表的lazy loading欄位編輯與查詢
  */
 @Controller
-@Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_GUEST"})
 @RequestMapping(value = "/SelectOption")
 public class WorktimeSelectOptionController {
 
@@ -70,25 +68,25 @@ public class WorktimeSelectOptionController {
 
     @ResponseBody
     @RequestMapping(value = "/floor", method = {RequestMethod.GET})
-    public List<Floor> getFloorOption() {
+    protected List<Floor> getFloorOption() {
         return floorService.findByPrimaryKeys(1, 2);
     }
 
     @ResponseBody
     @RequestMapping(value = "/user-floor", method = {RequestMethod.GET})
-    public List<Floor> getUserFloorOption() {
+    protected List<Floor> getUserFloorOption() {
         return floorService.findAll();
     }
 
     @ResponseBody
     @RequestMapping(value = "/user/{unitName}", method = {RequestMethod.GET})
-    public List<User> getUserOption(@PathVariable(value = "unitName") final String unitName) {
+    protected List<User> getUserOption(@PathVariable(value = "unitName") final String unitName) {
         return userService.findByUnitName(unitName);
     }
 
     @ResponseBody
     @RequestMapping(value = "/type", method = {RequestMethod.GET})
-    public List<Type> getTypeOption() {
+    protected List<Type> getTypeOption() {
         return typeService.findAll();
     }
 
@@ -100,43 +98,43 @@ public class WorktimeSelectOptionController {
 
     @ResponseBody
     @RequestMapping(value = "/flow/{flowGroupId}", method = {RequestMethod.GET})
-    public List<Flow> getFlowOption(@PathVariable(value = "flowGroupId") final int flowGroupId) {
+    protected List<Flow> getFlowOption(@PathVariable(value = "flowGroupId") final int flowGroupId) {
         return flowService.findByFlowGroup(flowGroupId);
     }
 
     @ResponseBody
     @RequestMapping(value = "/flow-byParent/{parentFlowId}", method = {RequestMethod.GET})
-    public List<Flow> getFlowOptionByParent(@PathVariable(value = "parentFlowId") final int parentFlowId) {
+    protected List<Flow> getFlowOptionByParent(@PathVariable(value = "parentFlowId") final int parentFlowId) {
         return flowService.findByParent(parentFlowId);
     }
 
     @ResponseBody
     @RequestMapping(value = "/flowGroup", method = {RequestMethod.GET})
-    public List<FlowGroup> getFlowGroupOption() {
+    protected List<FlowGroup> getFlowGroupOption() {
         return flowGroupService.findAll();
     }
 
     @ResponseBody
     @RequestMapping(value = "/preAssy", method = {RequestMethod.GET})
-    public List<PreAssy> getPreAssyOption() {
+    protected List<PreAssy> getPreAssyOption() {
         return preAssyService.findAll();
     }
 
     @ResponseBody
     @RequestMapping(value = "/pending", method = {RequestMethod.GET})
-    public List<Pending> getPendingOption() {
+    protected List<Pending> getPendingOption() {
         return pendingService.findAll();
     }
 
     @ResponseBody
     @RequestMapping(value = "/unit", method = {RequestMethod.GET})
-    public List<Unit> getUnitOption() {
+    protected List<Unit> getUnitOption() {
         return unitService.findAll();
     }
 
     @ResponseBody
     @RequestMapping(value = "/businessGroup", method = {RequestMethod.GET})
-    public List<BusinessGroup> getBusinessGroupOption() {
+    protected List<BusinessGroup> getBusinessGroupOption() {
         return businessGroupService.findAll();
     }
 }

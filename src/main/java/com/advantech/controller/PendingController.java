@@ -12,7 +12,6 @@ import com.advantech.jqgrid.JqGridResponse;
 import com.advantech.service.PendingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,7 +23,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @author Wei.Cheng
  */
 @Controller
-@Secured({"ROLE_OPER", "ROLE_ADMIN"})
 @RequestMapping(value = "/Pending")
 public class PendingController extends CrudController<Pending> {
 

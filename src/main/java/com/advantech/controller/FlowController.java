@@ -16,7 +16,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -30,7 +29,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @author Wei.Cheng
  */
 @Controller
-@Secured({"ROLE_OPER", "ROLE_ADMIN"})
 @RequestMapping(value = "/Flow")
 public class FlowController extends CrudController<Flow> {
 
@@ -98,7 +96,7 @@ public class FlowController extends CrudController<Flow> {
     //編輯subgroup用
     @ResponseBody
     @RequestMapping(value = SELECT_URL + "_sub", method = {RequestMethod.GET})
-    public List getFlowOptionByParent(
+    protected List getFlowOptionByParent(
             @RequestParam int id,
             @ModelAttribute PageInfo info) {
         return flowService.findByParent(id);

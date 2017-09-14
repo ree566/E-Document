@@ -19,11 +19,35 @@
     </beans:bean>
    
     <http auto-config="true">
+        <!--Global system access setting-->
         <intercept-url pattern="/login.jsp" access="permitAll" />
         <intercept-url pattern="/pages/admin/**" access="hasRole('ADMIN')" />
         <intercept-url pattern="/pages/mod/**" access="hasAnyRole('OPER', 'ADMIN')" />
         <intercept-url pattern="/pages/**" access="isAuthenticated()" />
         <intercept-url pattern="/socket/**" access="isAuthenticated()" />
+        
+        <!--Controller security role setting-->
+        <intercept-url pattern="/Audit/find" access="isAuthenticated()" />
+        <intercept-url pattern="/Audit/findLastRevision" access="hasAnyRole('AUTHOR', 'CONTRIBUTOR', 'ADMIN', 'OPER')" />
+        <intercept-url pattern="/WorktimeDownload/**" access="hasAnyRole('USER', 'AUTHOR', 'CONTRIBUTOR', 'ADMIN', 'OPER')" />
+        <intercept-url pattern="/Flow/**" access="hasAnyRole('OPER', 'ADMIN')" />
+        <intercept-url pattern="/Pending/**" access="hasAnyRole('OPER', 'ADMIN')" />
+        <intercept-url pattern="/PreAssy/**" access="hasAnyRole('OPER', 'ADMIN')" />
+        <intercept-url pattern="/Type/**" access="hasAnyRole('OPER', 'ADMIN')" />
+        <intercept-url pattern="/User/**" access="hasAnyRole('OPER', 'ADMIN')" />
+        <intercept-url pattern="/WorktimeBatchMod/**" access="hasAnyRole('OPER', 'ADMIN', 'AUTHOR')" />
+        <intercept-url pattern="/WorktimeColumnGroup/read" access="hasAnyRole('OPER', 'ADMIN')" />
+        <intercept-url pattern="/WorktimeColumnGroup/create" access="hasAnyRole('OPER', 'ADMIN')" />
+        <intercept-url pattern="/WorktimeColumnGroup/update" access="hasAnyRole('OPER', 'ADMIN')" />
+        <intercept-url pattern="/WorktimeColumnGroup/delete" access="hasAnyRole('OPER', 'ADMIN')" />
+        <intercept-url pattern="/WorktimeColumnGroup/byUnit" access="hasAnyRole('OPER', 'ADMIN', 'AUTHOR', 'CONTRIBUTOR')" />
+        <intercept-url pattern="/Worktime/**" access="isAuthenticated()" />
+        <intercept-url pattern="/Worktime/create" access="hasAnyRole('AUTHOR', 'ADMIN', 'OPER')" />
+        <intercept-url pattern="/Worktime/update" access="hasAnyRole('AUTHOR', 'CONTRIBUTOR', 'ADMIN', 'OPER')" />
+        <intercept-url pattern="/Worktime/delete" access="hasAnyRole('AUTHOR', 'ADMIN', 'OPER')" />
+        <intercept-url pattern="/WorktimeFormulaSetting" access="hasAnyRole('AUTHOR', 'CONTRIBUTOR', 'ADMIN', 'OPER')" />
+        <intercept-url pattern="/SelectOption" access="isAuthenticated()" />
+        
         <form-login  
             login-page="/login.jsp"
             default-target-url="/pages/"

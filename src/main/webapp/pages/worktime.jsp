@@ -5,8 +5,9 @@
 <sec:authentication var="user" property="principal" />
 <sec:authorize access="hasRole('ADMIN')"  var="isAdmin" />
 <sec:authorize access="hasRole('USER')"  var="isUser" />
-<sec:authorize access="hasRole('OPER') and hasRole('USER')"  var="isOper" />
-<sec:authorize access="hasRole('AUTHOR') and hasRole('USER')"  var="isAuthor" />
+<sec:authorize access="hasRole('OPER')"  var="isOper" />
+<sec:authorize access="hasRole('AUTHOR')"  var="isAuthor" />
+<sec:authorize access="hasRole('CONTRIBUTOR')"  var="isContributor" />
 <sec:authorize access="hasRole('GUEST')"  var="isGuest" />
 <style>
     .permission-hint{
@@ -58,12 +59,14 @@
         var grid = $("#list");
         //依照單位分辨可編輯欄位和不可編輯欄位
         var unitName = '${user.unit.name}';
-        var modifyColumns = (${isGuest} || unitName == null || unitName == "") ? [] : getColumn();
+        var modifyColumns = ${isAdmin || isAuthor || isContributor || isOper} ? getColumn() : [];
         var columnEditableInsetting = modifyColumns.length > 0;
-        var isNormalUser = ${isUser} && columnEditableInsetting;
+
+        //User who can only update the worktime
+        var isUpdatable = ${isAdmin || isAuthor || isContributor || isOper} && columnEditableInsetting;
 
         //User who can fully CRUD the worktime.
-        var isOperRelative = ${isAdmin || isOper || isAuthor} && columnEditableInsetting;
+        var isFullTableControllable = ${isAdmin || isOper || isAuthor} && columnEditableInsetting;
 
         var editableColumns, readonlyColumns;
 
@@ -73,6 +76,9 @@
         //版本讀取，避免多人同時編輯覆蓋
         var selected_row_revision;
         var table_current_revision;
+        
+        var selected_row_formula_id;
+        
         //Set param into jqgrid-custom-select-option-reader.js and get option by param selectOptions
         //You can get the floor select options and it's formatter function
         //ex: floor selector -> floor and floor_func
@@ -99,8 +105,16 @@
                 return " class='hide-emptyName-flow noselect'";
             }
         };
+        
+        var testFlowInit_add = function (form) {
+            setTimeout(function () {
+                // do here all what you need (like alert('yey');)
+                $("#flowByBabFlowId\\.id").trigger("change");
+            }, 50);
+            greyout(form);
+        };
 
-        var testFlowInit = function (form) {
+        var testFlowInit_edit = function (form) {
             setTimeout(function () {
                 // do here all what you need (like alert('yey');)
                 $("#flowByBabFlowId\\.id").trigger("change");
@@ -116,7 +130,7 @@
                 return false;
             }
         };
-
+        
         var before_add = function (postdata, formid) {
             var formulaFieldInfo = getFormulaCheckboxField();
             clearCheckErrorIcon();
@@ -134,6 +148,8 @@
 
         var before_edit = function (postdata, formid) {
             var formulaFieldInfo = getFormulaCheckboxField();
+            formulaFieldInfo["worktimeFormulaSettings[0].id"] = selected_row_formula_id;
+            formulaFieldInfo["worktimeFormulaSettings[0].worktime.id"] = postdata.id;
             clearCheckErrorIcon();
             var checkResult = checkFlowIsValid(postdata, formid);
             var modelRelativeCheckResult = checkModelIsValid(postdata);
@@ -255,7 +271,9 @@
             },
             gridComplete: function () {
                 grid.closest(".ui-jqgrid-bdiv").scrollTop(scrollPosition);
-                getGridRevision();
+                if (isUpdatable || isFullTableControllable) {
+                    getGridRevision();
+                }
                 registerEndsWithIfIe();
             },
             error: function (xhr, ajaxOptions, thrownError) {
@@ -276,7 +294,7 @@
             ]
         });
         grid.jqGrid('navGrid', '#pager',
-                {edit: isNormalUser || isOperRelative, add: isOperRelative, del: isOperRelative, search: true},
+                {edit: isUpdatable || isFullTableControllable, add: isFullTableControllable, del: isFullTableControllable, search: true},
                 {
                     url: '<c:url value="/Worktime/update" />',
                     dataheight: 350,
@@ -285,7 +303,7 @@
                     reloadAfterSubmit: true,
                     errorTextFormat: errorTextFormatF,
                     beforeSubmit: before_edit,
-                    beforeShowForm: testFlowInit,
+                    beforeShowForm: testFlowInit_edit,
                     afterclickPgButtons: function (whichbutton, formid, rowid) {
                         $("#flowByBabFlowId\\.id").trigger("change");
                     },
@@ -307,7 +325,7 @@
                     errorTextFormat: errorTextFormatF,
                     afterclickPgButtons: clearCheckErrorIcon,
                     beforeSubmit: before_add,
-                    beforeShowForm: testFlowInit,
+                    beforeShowForm: testFlowInit_add,
                     afterShowForm: checkRevision,
                     afterSubmit: showServerModifyMessage,
                     recreateForm: true,
@@ -330,7 +348,7 @@
 
         //Button at grid foot.
 
-        if (${!isGuest}) {
+        if (columnEditableInsetting) {
             grid.navButtonAdd('#pager', {
                 caption: "Show / Hide",
                 buttonicon: "ui-icon-shuffle",
@@ -347,21 +365,21 @@
             });
         }
 
-        grid.navButtonAdd('#pager', {
-            caption: "Export to Excel",
-            buttonicon: "ui-icon-disk",
-            onClickButton: function () {
-                grid.jqGrid('excelExport', {"url": "<c:url value="/Worktime/excel2" />"});
-            },
-            position: "last"
-        });
-
         if (${!isGuest}) {
+            grid.navButtonAdd('#pager', {
+                caption: "Export to Excel",
+                buttonicon: "ui-icon-disk",
+                onClickButton: function () {
+                    grid.jqGrid('excelExport', {"url": "<c:url value="/WorktimeDownload/excel2" />"});
+                },
+                position: "last"
+            });
+
             grid.navButtonAdd('#pager', {
                 caption: "Export to Excel(SPE)",
                 buttonicon: "ui-icon-disk",
                 onClickButton: function () {
-                    grid.jqGrid('excelExport', {"url": "<c:url value="/Worktime/excelForSpe" />"});
+                    grid.jqGrid('excelExport', {"url": "<c:url value="/WorktimeDownload/excelForSpe" />"});
                 },
                 position: "last"
             });
@@ -380,7 +398,7 @@
                 grid.jqGrid("setGridWidth", $('#worktime-content').width());
             }, 1000);
         }).trigger('resize');
-
+       
         function getColumn() {
             var result;
             $.ajax({
@@ -514,6 +532,7 @@
                         var columnName = formulaColumn[i];
                         $("#f_" + columnName).prop("checked", setting[columnName] == 1);
                     }
+                    selected_row_formula_id = setting.id;
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
                     closeEditDialogWhenError("設定Formula時發生錯誤，請稍後再試");
@@ -595,7 +614,7 @@
     <h5>Your permission is: 
         <b class="permission-hint">
             R
-            <c:if test="${isAdmin || isOper || isUser}">
+            <c:if test="${isAdmin || isOper || isAuthor || isContributor}">
                 W
             </c:if>
         </b>

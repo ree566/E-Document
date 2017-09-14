@@ -29,12 +29,12 @@ import org.springframework.test.context.web.WebAppConfiguration;
  *
  * @author Wei.Cheng
  */
-@WebAppConfiguration
-@ContextConfiguration(locations = {
-    "classpath:servlet-context.xml",
-    "classpath:hibernate.cfg.xml"
-})
-@RunWith(SpringJUnit4ClassRunner.class)
+//@WebAppConfiguration
+//@ContextConfiguration(locations = {
+//    "classpath:servlet-context.xml",
+//    "classpath:hibernate.cfg.xml"
+//})
+//@RunWith(SpringJUnit4ClassRunner.class)
 @Transactional
 public class UploadPortTest {
 
@@ -93,7 +93,7 @@ public class UploadPortTest {
     private WorktimeAutouploadSettingService worktimeAutouploadSettingService;
 
     //暫時用
-    @Test
+//    @Test
     public void testStandardtimeUpload2() {
         PageInfo info = new PageInfo();
         info.setSearchField("modifiedDate");

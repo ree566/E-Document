@@ -10,6 +10,7 @@ import com.advantech.model.Worktime;
 import java.util.List;
 import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
+import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.sql.JoinType;
 import org.springframework.stereotype.Repository;
@@ -96,5 +97,11 @@ public class WorktimeDAO extends AbstractDao<Integer, Worktime> implements Basic
     public int delete(Worktime pojo) {
         getSession().delete(pojo);
         return 1;
+    }
+
+    public void flushSession() {
+        Session session = this.getSession();
+        session.flush();
+        session.clear();
     }
 }

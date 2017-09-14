@@ -186,7 +186,7 @@
                                         <li>
                                             <a class="redirect-link" href="conversion.jsp">工時對照表</a>
                                         </li>
-                                        <sec:authorize access="hasRole('ADMIN') or (hasRole('USER') and hasRole('OPER'))">
+                                        <sec:authorize access="hasAnyRole('ADMIN', 'OPER')">
                                             <li>
                                                 <a class="redirect-link" href="mod/flow.jsp">Flow</a>
                                             </li>

@@ -239,83 +239,70 @@ public class XlsWorkSheet {
 
     }
 
-    public <T extends Object> List<T> buildBeans(Class cls) {
+    public <T extends Object> List<T> buildBeans(Class cls) throws Exception {
         List<T> list = new ArrayList<>();
 
-        try {
+        Method[] ms = cls.getDeclaredMethods();
+        DataFormatter formatter = new DataFormatter();
+        for (int row = 0, rowCount = this.getRowCount(); row < rowCount; row++) {
+            HSSFCell checkedCell = _sheet.getRow(row).getCell(0);
+            HSSFCell checkedCell2 = _sheet.getRow(row).getCell(1);
+            if (checkedCell == null || checkedCell.getCellTypeEnum() == CellType.BLANK
+                    || checkedCell2 == null || checkedCell2.getCellTypeEnum() == CellType.BLANK
+                    || ("".equals(formatter.formatCellValue(checkedCell)) && "".equals(formatter.formatCellValue(checkedCell2)))) {
+                continue;
+            }
 
-            Method[] ms = cls.getDeclaredMethods();
-            DataFormatter formatter = new DataFormatter();
-            for (int row = 0, rowCount = this.getRowCount(); row < rowCount; row++) {
-                HSSFCell checkedCell = _sheet.getRow(row).getCell(0);
-                HSSFCell checkedCell2 = _sheet.getRow(row).getCell(1);
-                if (checkedCell == null || checkedCell.getCellTypeEnum() == CellType.BLANK
-                        || checkedCell2 == null || checkedCell2.getCellTypeEnum() == CellType.BLANK
-                        || ("".equals(formatter.formatCellValue(checkedCell)) && "".equals(formatter.formatCellValue(checkedCell2)))) {
-                    continue;
-                }
-
-                T bean = (T) cls.newInstance();
-                for (Method m : ms) {
-                    String methodName = m.getName().toUpperCase();
-                    if (methodName.startsWith("SET") && this._columnList.contains(methodName.substring(3))) {
-                        //System.out.println(ms[i].getGenericParameterTypes()[0].toString());  
-                        String val = this.getValue(row, methodName.substring(3)).toString();
-                        if (val == null || "".equals(val)) {
-                            continue;
-                        }
-                        String pType = m.getGenericParameterTypes()[0].toString();
-                        switch (pType) {
-                            case "class java.lang.Integer":
-                            case "int":
-                                m.invoke(bean, Integer.parseInt(val));
-                                break;
-                            case "float":
-                                m.invoke(bean, Float.parseFloat(val));
-                                break;
-                            case "boolean":
-                                m.invoke(bean, Boolean.parseBoolean(val));
-                                break;
-                            case "double":
-                                m.invoke(bean, Double.parseDouble(val));
-                                break;
-                            case "short":
-                                m.invoke(bean, Short.parseShort(val));
-                                break;
-                            case "long":
-                                m.invoke(bean, Long.parseLong(val));
-                                break;
-                            case "class java.lang.Character":
-                            case "char":
-                                m.invoke(bean, val.charAt(0));
-                                break;
-                            case "class java.math.BigDecimal":
-                                m.invoke(bean, new BigDecimal(val));
-                                break;
-                            case "class java.util.Date":
-                                DateTime d = new DateTime(val);
-                                m.invoke(bean, d.toDate());
-                                break;
-                            default:
-                                m.invoke(bean, val);
-                                break;
-                        }
+            T bean = (T) cls.newInstance();
+            for (Method m : ms) {
+                String methodName = m.getName().toUpperCase();
+                if (methodName.startsWith("SET") && this._columnList.contains(methodName.substring(3))) {
+                    //System.out.println(ms[i].getGenericParameterTypes()[0].toString());  
+                    String val = this.getValue(row, methodName.substring(3)).toString();
+                    if (val == null || "".equals(val)) {
+                        continue;
+                    }
+                    String pType = m.getGenericParameterTypes()[0].toString();
+                    switch (pType) {
+                        case "class java.lang.Integer":
+                        case "int":
+                            m.invoke(bean, Integer.parseInt(val));
+                            break;
+                        case "float":
+                            m.invoke(bean, Float.parseFloat(val));
+                            break;
+                        case "boolean":
+                            m.invoke(bean, Boolean.parseBoolean(val));
+                            break;
+                        case "double":
+                            m.invoke(bean, Double.parseDouble(val));
+                            break;
+                        case "short":
+                            m.invoke(bean, Short.parseShort(val));
+                            break;
+                        case "long":
+                            m.invoke(bean, Long.parseLong(val));
+                            break;
+                        case "class java.lang.Character":
+                        case "char":
+                            m.invoke(bean, val.charAt(0));
+                            break;
+                        case "class java.math.BigDecimal":
+                            m.invoke(bean, new BigDecimal(val));
+                            break;
+                        case "class java.util.Date":
+                            DateTime d = new DateTime(val);
+                            m.invoke(bean, d.toDate());
+                            break;
+                        default:
+                            m.invoke(bean, val);
+                            break;
                     }
                 }
-                list.add(bean);
             }
-        } catch (InstantiationException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        } // TODO Auto-generated catch block
-        // TODO Auto-generated catch block
-        catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            list.add(bean);
         }
+
         return list;
     }
 }

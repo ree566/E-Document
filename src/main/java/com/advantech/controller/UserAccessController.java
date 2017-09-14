@@ -26,18 +26,18 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class UserAccessController {
 
     @RequestMapping(value = "/Access_Denied", method = RequestMethod.GET)
-    public String accessDeniedPage(ModelMap model) {
+    protected String accessDeniedPage(ModelMap model) {
         model.addAttribute("user", getPrincipal());
         return "accessDenied";
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.GET)
-    public String loginPage() {
+    protected String loginPage() {
         return "login";
     }
 
     @RequestMapping(value = "/logout", method = RequestMethod.GET)
-    public String logoutPage(HttpServletRequest request, HttpServletResponse response) {
+    protected String logoutPage(HttpServletRequest request, HttpServletResponse response) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null) {
             new SecurityContextLogoutHandler().logout(request, response, auth);
@@ -62,14 +62,14 @@ public class UserAccessController {
     @ResponseBody
     @RequestMapping(value = "/admin", method = RequestMethod.GET)
     //    @PreAuthorize("hasAnyRole('admin')")
-    public String helloAdmin() {
+    protected String helloAdmin() {
         return "admin";
     }
 
     @ResponseBody
     @RequestMapping(value = "/user", method = RequestMethod.GET)
     //    @PreAuthorize("hasAnyRole('admin','user')")
-    public String helloUser() {
+    protected String helloUser() {
         return "user";
     }
 }

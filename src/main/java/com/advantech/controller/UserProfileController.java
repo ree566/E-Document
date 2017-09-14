@@ -10,21 +10,17 @@ import static com.advantech.helper.JqGridResponseUtils.toJqGridResponse;
 import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.User;
 import com.advantech.jqgrid.JqGridResponse;
-import com.advantech.model.Flow;
 import com.advantech.model.UserProfile;
 import com.advantech.security.State;
 import com.advantech.security.UserProfileType;
-import com.advantech.service.UserNotificationService;
 import com.advantech.service.UserProfileService;
 import com.advantech.service.UserService;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -40,7 +36,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @author Wei.Cheng
  */
 @Controller
-@Secured({"ROLE_OPER", "ROLE_ADMIN"})
 @RequestMapping(value = "/User")
 public class UserProfileController extends CrudController<User> {
 
@@ -53,7 +48,7 @@ public class UserProfileController extends CrudController<User> {
     @ResponseBody
     @RequestMapping(value = SELECT_URL, method = {RequestMethod.GET})
     @Override
-    public JqGridResponse read(@ModelAttribute PageInfo info) {
+    protected JqGridResponse read(@ModelAttribute PageInfo info) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         List l;
         if (user.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
@@ -82,7 +77,7 @@ public class UserProfileController extends CrudController<User> {
     @ResponseBody
     @RequestMapping(value = UPDATE_URL, method = {RequestMethod.POST})
     @Override
-    public ResponseEntity update(@ModelAttribute User user, BindingResult bindingResult) {
+    protected ResponseEntity update(@ModelAttribute User user, BindingResult bindingResult) {
 
         String modifyMessage;
 
@@ -116,7 +111,7 @@ public class UserProfileController extends CrudController<User> {
 
     @ResponseBody
     @RequestMapping(value = "/pswReset/all", method = {RequestMethod.GET})
-    public String resetPsw() {
+    protected String resetPsw() {
         return userService.resetPsw() == 1 ? "Done." : "Fail.";
     }
 

@@ -6,8 +6,10 @@
 package com.advantech.dao;
 
 import com.advantech.model.WorktimeFormulaSetting;
+import java.util.Arrays;
 import java.util.List;
 import org.hibernate.Criteria;
+import org.hibernate.FetchMode;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
@@ -27,10 +29,16 @@ public class WorktimeFormulaSettingDAO extends AbstractDao<Integer, WorktimeForm
     public WorktimeFormulaSetting findByPrimaryKey(Object obj_id) {
         return getByKey((int) obj_id);
     }
-    
-    public List<WorktimeFormulaSetting> findByWorktime(int worktimeId){
+
+    public List<WorktimeFormulaSetting> findByWorktime(int worktimeId) {
         Criteria c = createEntityCriteria();
         c.add(Restrictions.eq("worktime.id", worktimeId));
+        return c.list();
+    }
+
+    public List<WorktimeFormulaSetting> findWithWorktime() {
+        Criteria c = createEntityCriteria();
+        c.setFetchMode("worktime", FetchMode.JOIN);
         return c.list();
     }
 

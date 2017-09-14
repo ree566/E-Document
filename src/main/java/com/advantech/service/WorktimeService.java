@@ -10,7 +10,9 @@ import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.Worktime;
 import com.advantech.model.WorktimeFormulaSetting;
 import static com.google.common.collect.Lists.newArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,52 +25,66 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 public class WorktimeService {
-
+    
+    private final int fetchSize = 20;
+    
     @Autowired
     private WorktimeDAO worktimeDAO;
-
+    
     @Autowired
     private WorktimeFormulaSettingDAO worktimeFormulaSettingDAO;
-
+    
     public List<Worktime> findAll() {
         return worktimeDAO.findAll();
     }
-
+    
     public List<Worktime> findAll(PageInfo info) {
         return worktimeDAO.findAll(info);
     }
-
+    
     public Worktime findByPrimaryKey(Object obj_id) {
         Worktime w = worktimeDAO.findByPrimaryKey(obj_id);
         Hibernate.initialize(w.getWorktimeFormulaSettings());
         return w;
     }
-
+    
     public List<Worktime> findByPrimaryKeys(Integer... ids) {
         return worktimeDAO.findByPrimaryKeys(ids);
     }
-
+    
     public Worktime findByModel(String modelName) {
         return worktimeDAO.findByModel(modelName);
     }
-
+    
     public List<Worktime> findWithFullRelation(PageInfo info) {
         return worktimeDAO.findWithFullRelation(info);
     }
-
-    public int insert(Worktime worktime) {
-        worktimeDAO.insert(worktime);
+    
+    public int insert(List<Worktime> l) {
+        int i = 1;
+        for (Worktime w : l) {
+            worktimeDAO.insert(w);
+            flushIfReachFetchSize(i++);
+        }
         return 1;
     }
+    
+    public int insert(Worktime worktime) throws Exception {
+        return worktimeDAO.insert(worktime);
+    }
 
-    public int insertWithFormulaSetting(List<Worktime> l) {
+    //For batch modify.
+    public int insertWithFormulaSetting(List<Worktime> l) throws Exception {
+        int i = 0;
         for (Worktime w : l) {
             this.insertWithFormulaSetting(w);
+            flushIfReachFetchSize(i++);
         }
         return 1;
     }
 
-    public int insertWithFormulaSetting(Worktime worktime) {
+    //For jqgrid edit(single row CRUD)
+    public int insertWithFormulaSetting(Worktime worktime) throws Exception {
         initUnfilledFormulaColumn(worktime);
         WorktimeFormulaSetting setting = worktime.getWorktimeFormulaSettings().get(0);
         worktime.setWorktimeFormulaSettings(null);
@@ -77,52 +93,70 @@ public class WorktimeService {
         worktimeFormulaSettingDAO.insert(setting);
         return 1;
     }
-
-    public int update(Worktime worktime) {
+    
+    public int update(List<Worktime> l) throws Exception {
+        int i = 1;
+        for (Worktime w : l) {
+            this.update(w);
+            flushIfReachFetchSize(i++);
+        }
+        return 1;
+    }
+    
+    public int update(Worktime worktime) throws Exception {
         initUnfilledFormulaColumn(worktime);
+        worktimeFormulaSettingDAO.update(worktime.getWorktimeFormulaSettings().get(0));
         worktimeDAO.update(worktime);
         return 1;
     }
-
-    public int update(List<Worktime> l) {
-        for (Worktime w : l) {
-            worktimeDAO.update(w);
-        }
-        return 1;
-    }
-
-    public int merge(List<Worktime> l) {
+    
+    public int merge(List<Worktime> l) throws Exception {
+        int i = 1;
         for (Worktime w : l) {
             this.merge(w);
+            flushIfReachFetchSize(i++);
         }
-
         return 1;
     }
-
-    public int merge(Worktime worktime) {
+    
+    public int merge(Worktime worktime) throws Exception {
         initUnfilledFormulaColumn(worktime);
-
-        //Merge formula setting first
-        List<WorktimeFormulaSetting> existSettings = worktimeFormulaSettingDAO.findByWorktime(worktime.getId());
-        WorktimeFormulaSetting setting = worktime.getWorktimeFormulaSettings().get(0);
-        setting.setWorktime(worktime);
-        if (existSettings.isEmpty()) {
-            worktimeFormulaSettingDAO.insert(setting);
-        } else {
-            setting.setId(existSettings.get(0).getId());
-            worktimeFormulaSettingDAO.merge(setting);
-        }
-
-        //Add the persisted WorktimeFormulaSetting object
-        worktime.setWorktimeFormulaSettings(newArrayList(setting));
+        worktimeFormulaSettingDAO.update(worktime.getWorktimeFormulaSettings().get(0));
         worktimeDAO.merge(worktime);
         return 1;
     }
-
+    
+    public int insertByExcel(List<Worktime> l) throws Exception {
+        int i = 1;
+        for (Worktime w : l) {
+            w.setWorktimeFormulaSettings(newArrayList(new WorktimeFormulaSetting()));
+            this.insertWithFormulaSetting(w);
+            flushIfReachFetchSize(i++);
+        }
+        return 1;
+    }
+    
+    public int mergeByExcel(List<Worktime> l) throws Exception {
+        List<WorktimeFormulaSetting> settings = worktimeFormulaSettingDAO.findWithWorktime();
+        Map<Integer, WorktimeFormulaSetting> settingMap = new HashMap();
+        for (WorktimeFormulaSetting setting : settings) {
+            settingMap.put(setting.getWorktime().getId(), setting);
+        }
+        
+        int i = 1;
+        for (Worktime w : l) {
+            w.setWorktimeFormulaSettings(newArrayList(settingMap.get(w.getId())));
+            initUnfilledFormulaColumn(w);
+            worktimeDAO.merge(w);
+            flushIfReachFetchSize(i++);
+        }
+        return 1;
+    }
+    
     public void initUnfilledFormulaColumn(Worktime w) {
         //Lazy loading
         WorktimeFormulaSetting setting = w.getWorktimeFormulaSettings().get(0);
-
+        
         if (isColumnCalculated(setting.getCleanPanelAndAssembly())) {
             w.setDefaultCleanPanelAndAssembly();
         }
@@ -151,12 +185,12 @@ public class WorktimeService {
             w.setDefaultPackingKanbanTime();
         }
     }
-
+    
     private boolean isColumnCalculated(int i) {
         return i == 1;
     }
-
-    public int saveOrUpdate(List<Worktime> l) {
+    
+    public int saveOrUpdate(List<Worktime> l) throws Exception {
         for (int i = 0; i < l.size(); i++) {
             Worktime w = l.get(i);
             System.out.println("insert row: " + i + " \\Model: " + w.getModelName());
@@ -170,27 +204,64 @@ public class WorktimeService {
         }
         return 1;
     }
-
-    public int delete(int[] ids) {
-        for (int i = 0; i < ids.length; i++) {
-            this.delete(ids[i]);
+    
+    public int delete(Integer... ids) {
+        List<Worktime> worktimes = worktimeDAO.findByPrimaryKeys(ids);
+        int i = 1;
+        for (Worktime w : worktimes) {
+            worktimeDAO.delete(w);
+            flushIfReachFetchSize(i++);
         }
         return 1;
     }
-
+    
     public int delete(int id) {
         Worktime worktime = this.findByPrimaryKey(id);
-        if (worktime == null) {
-            return 0;
-        }
         return worktimeDAO.delete(worktime);
     }
-
-    public void reUpdateAllFormulaColumn() {
+    
+    public void reUpdateAllFormulaColumn() throws Exception {
         List<Worktime> l = this.findAll();
-        for (Worktime w : l) {
-            initUnfilledFormulaColumn(w);
-            worktimeDAO.merge(w);
+        this.merge(l);
+    }
+    
+    private void flushIfReachFetchSize(int currentRow) {
+        if (currentRow % fetchSize == 0 && currentRow > 0) {
+            worktimeDAO.flushSession();
+        }
+    }
+    
+    public void checkModelExists(Worktime worktime) throws Exception {
+        Worktime existW = worktimeDAO.findByModel(worktime.getModelName());
+        boolean checkFlag;
+        if (worktime.getId() == 0) {
+            checkFlag = existW != null;
+        } else {
+            checkFlag = existW != null && existW.getId() != worktime.getId();
+        }
+        if (checkFlag == true) {
+            throw new Exception("This modelName &lt;" + worktime.getModelName() + "&gt; is already exist.");
+        }
+    }
+    
+    public void checkModelExists(List<Worktime> worktimes) throws Exception {
+        Map<String, Integer> modelMap = new HashMap();
+        List<Worktime> allWorktime = this.findAll();
+        for (Worktime w : allWorktime) {
+            modelMap.put(w.getModelName(), w.getId());
+        }
+        
+        for (Worktime w : worktimes) {
+            boolean checkFlag;
+            Integer worktimeId = modelMap.get(w.getModelName());
+            if (w.getId() == 0) {
+                checkFlag = worktimeId != null;
+            } else {
+                checkFlag = worktimeId != null && worktimeId != w.getId();
+            }
+            if (checkFlag == true) {
+                throw new Exception("This modelName &lt;" + w.getModelName() + "&gt; is already exist.");
+            }
         }
     }
 }

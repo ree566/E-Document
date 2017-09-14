@@ -27,11 +27,11 @@ public abstract class CrudController<T> {
 
     protected abstract JqGridResponse read(@ModelAttribute PageInfo info);
 
-    protected abstract ResponseEntity insert(@ModelAttribute T pojo, BindingResult bindingResult);
+    protected abstract ResponseEntity insert(@ModelAttribute T pojo, BindingResult bindingResult) throws Exception;
 
-    protected abstract ResponseEntity update(@ModelAttribute T pojo, BindingResult bindingResult);
+    protected abstract ResponseEntity update(@ModelAttribute T pojo, BindingResult bindingResult) throws Exception;
 
-    protected abstract ResponseEntity delete(@RequestParam int id);
+    protected abstract ResponseEntity delete(@RequestParam int id) throws Exception;
 
     protected ResponseEntity serverResponse(Object message) {
         return ResponseEntity

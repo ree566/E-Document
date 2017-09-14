@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 /**
  *
  * @author Wei.Cheng
+ * For controller test, can be removed.
  */
 @Controller
 @Secured({"ROLE_ADMIN", "ROLE_GUEST"})
@@ -45,9 +46,8 @@ public class TestController {
     @RequestMapping(value = "/test1", method = RequestMethod.GET)
     @Secured("ROLE_ADMIN")
     @Transactional
-    public String test1() {
+    protected String test1() throws Exception {
         PageInfo info = new PageInfo();
-        info = new PageInfo();
         info.setRows(Integer.MAX_VALUE);
         info.setSearchField("id");
         info.setSearchOper("lt");
@@ -65,7 +65,7 @@ public class TestController {
     @ResponseBody
     @RequestMapping(value = "/test2/{id}", method = RequestMethod.GET)
     @Secured({"ROLE_USER", "ROLE_ADMIN"})
-    public List test2(@PathVariable int id) {
+    protected List test2(@PathVariable int id) {
         return auditService.findByPrimaryKey(Worktime.class, id);
     }
     

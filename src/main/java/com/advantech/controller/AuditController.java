@@ -16,7 +16,6 @@ import java.util.List;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,7 +29,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
  */
 @Controller
 @RequestMapping("/Audit")
-@Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_GUEST"})
 public class AuditController {
 
     @Autowired
@@ -41,7 +39,7 @@ public class AuditController {
 
     @ResponseBody
     @RequestMapping(value = "/find", method = {RequestMethod.GET, RequestMethod.POST})
-    public JqGridResponse getAudit(
+    protected JqGridResponse getAudit(
             @RequestParam(required = false) final Integer id,
             @RequestParam(required = false) final String modelName,
             @RequestParam(required = false) final Integer version,
@@ -88,10 +86,9 @@ public class AuditController {
         return l;
     }
 
-//    2017-06-06 11:26:38 AM
     @ResponseBody
     @RequestMapping(value = "/findLastRevision", method = {RequestMethod.GET, RequestMethod.POST})
-    public Number getAuditRevision(@RequestParam(required = false) Integer id) {
+    protected Number getAuditRevision(@RequestParam(required = false) Integer id) {
         return auditService.findLastRevisions(Worktime.class, id);
     }
 

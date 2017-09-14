@@ -27,7 +27,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @author Wei.Cheng
  */
 @Controller
-@Secured("ROLE_ADMIN")
 @RequestMapping(value = "/WorktimeColumnGroup")
 public class WorktimeColumnGroupController extends CrudController<WorktimeColumnGroup> {
 
@@ -77,8 +76,7 @@ public class WorktimeColumnGroupController extends CrudController<WorktimeColumn
 
     @ResponseBody
     @RequestMapping(value = "/byUnit", method = {RequestMethod.GET})
-    @Secured({"ROLE_USER", "ROLE_ADMIN"})
-    public WorktimeColumnGroup getUnitColumnName() {
+    protected WorktimeColumnGroup getUnitColumnName() {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         int unit = user.getUnit().getId();
         WorktimeColumnGroup w = worktimeColumnGroupService.findByUnit(unit);

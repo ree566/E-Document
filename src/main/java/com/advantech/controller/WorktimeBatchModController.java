@@ -24,7 +24,6 @@ import com.advantech.service.PendingService;
 import com.advantech.service.PreAssyService;
 import com.advantech.service.TypeService;
 import com.advantech.service.UserService;
-import com.advantech.service.WorktimeFormulaSettingService;
 import com.advantech.service.WorktimeService;
 import com.google.gson.Gson;
 import java.lang.reflect.InvocationTargetException;
@@ -42,7 +41,6 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -55,7 +53,6 @@ import org.springframework.web.multipart.MultipartFile;
  * @author Wei.Cheng
  */
 @Controller
-@Secured({"ROLE_ADMIN", "ROLE_OPER"})
 @RequestMapping(value = "/WorktimeBatchMod")
 public class WorktimeBatchModController {
 
@@ -87,15 +84,12 @@ public class WorktimeBatchModController {
     private BusinessGroupService businessGroupService;
 
     @Autowired
-    private WorktimeFormulaSettingService worktimeFormulaSettingService;
-
-    @Autowired
     private AuditService auditService;
 
     private static Validator validator;
 
     @PostConstruct
-    public void initValidator() {
+    protected void initValidator() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
     }
@@ -103,48 +97,50 @@ public class WorktimeBatchModController {
     //Check model is exist.
     @ResponseBody
     @RequestMapping(value = "/add", method = RequestMethod.POST)
-    public String batchInsert(@RequestParam("file") MultipartFile file) throws Exception {
+    protected String batchInsert(@RequestParam("file") MultipartFile file) throws Exception {
+
         List<Worktime> hgList = this.transToWorktimes(file, false);
+        
+        for (Worktime w : hgList) {
+            w.setId(0);
+        }
+
+        worktimeService.checkModelExists(hgList);
 
         //Validate the column, throw exception when false.
         validateWorktime(hgList);
 
-        for (Worktime w : hgList) {
-            w.setId(0);
-            checkModelExists(w);
-        }
-
-        if (worktimeService.insertWithFormulaSetting(hgList) == 1) {
+        if (worktimeService.insertByExcel(hgList) == 1) {
             worktimeMailManager.notifyUser(hgList, "add");
             return "success";
         } else {
             return "fail";
         }
+
     }
 
     //Check current revision & model name is duplicate
     @ResponseBody
     @RequestMapping(value = "/update", method = RequestMethod.POST)
-    public String batchUpdate(@RequestParam("file") MultipartFile file) throws Exception {
+    protected String batchUpdate(@RequestParam("file") MultipartFile file) throws Exception {
 
         List<Worktime> hgList = this.transToWorktimes(file, true);
+
+        worktimeService.checkModelExists(hgList);
 
         //Validate the column, throw exception when false.
         validateWorktime(hgList);
 
-        for (Worktime w : hgList) {
-            checkModelExists(w);
-        }
+        return worktimeService.mergeByExcel(hgList) == 1 ? "success" : "fail";
 
-        return worktimeService.merge(hgList) == 1 ? "success" : "fail";
     }
 
     //Check model is exist
     @ResponseBody
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
-    public String batchDelete(@RequestParam("file") MultipartFile file) throws Exception {
+    protected String batchDelete(@RequestParam("file") MultipartFile file) throws Exception {
         List<Worktime> hgList = this.transToWorktimes(file, false);
-        int[] ids = new int[hgList.size()];
+        Integer[] ids = new Integer[hgList.size()];
         for (int i = 0; i < hgList.size(); i++) {
             ids[i] = hgList.get(i).getId();
         }
@@ -157,34 +153,9 @@ public class WorktimeBatchModController {
         }
     }
 
-    private void checkModelExists(Worktime worktime) throws Exception {
-        Worktime existWorktime = worktimeService.findByModel(worktime.getModelName());
-        boolean checkFlag;
-        if (worktime.getId() == 0) {
-            checkFlag = existWorktime != null;
-        } else {
-            checkFlag = existWorktime != null && existWorktime.getId() != worktime.getId();
-        }
-        if (checkFlag == true) {
-            throw new Exception("This modelName &lt;" + worktime.getModelName() + "&gt; is already exist.");
-        }
-    }
-
-    //Update exist worktime by excel sheet.
-    //Check current revision first.
-    @ResponseBody
-    @RequestMapping(value = "/batchUpload", method = RequestMethod.POST)
-    public String uploadFileHandler(@RequestParam("file") MultipartFile file) {
-        //Add revision number into some column.
-        //If revision not found, return error.
-        //Check last revision each row, if pass, update.
-
-        return null;
-    }
-
     @ResponseBody
     @RequestMapping(value = "/reUpdateAllFormulaColumn", method = {RequestMethod.GET})
-    public boolean reUpdateAllFormulaColumn() {
+    protected boolean reUpdateAllFormulaColumn() throws Exception {
         worktimeService.reUpdateAllFormulaColumn();
         return true;
     }
@@ -263,6 +234,8 @@ public class WorktimeBatchModController {
     }
 
     private boolean validateWorktime(List<Worktime> l) throws Exception {
+        worktimeService.checkModelExists(l);
+
         Map<String, Map<String, String>> checkResult = new HashMap();
         int count = 2;
         for (Worktime w : l) {
@@ -301,9 +274,9 @@ public class WorktimeBatchModController {
             w.setType(typeOptions.get(sheet.getValue(i, "typeName").toString()));
             w.setFloor(floorOptions.get(sheet.getValue(i, "floorName").toString()));
 
-            String eeUserName = sheet.getValue(i, "eeOwnerName").toString();
-            String speUserName = sheet.getValue(i, "speOwnerName").toString();
-            String qcUserName = sheet.getValue(i, "qcOwnerName").toString();
+            String eeUserName = sheet.getValue(i, "eeOwnerName").toString().toUpperCase().trim();
+            String speUserName = sheet.getValue(i, "speOwnerName").toString().toUpperCase().trim();
+            String qcUserName = sheet.getValue(i, "qcOwnerName").toString().toUpperCase().trim();
 
             w.setUserByEeOwnerId(valid(eeUserName, userOptions.get(eeUserName)));
             w.setUserBySpeOwnerId(valid(speUserName, userOptions.get(speUserName)));
@@ -325,7 +298,6 @@ public class WorktimeBatchModController {
             String businessGroupName = sheet.getValue(i, "businessGroupName").toString();
             w.setBusinessGroup(valid(businessGroupName, businessGroupOptions.get(businessGroupName)));
 
-            w.setWorktimeFormulaSettings(worktimeFormulaSettingService.findByWorktime(Integer.parseInt(sheet.getValue(i, "id").toString())));
         }
 
         return hgList;
@@ -339,7 +311,7 @@ public class WorktimeBatchModController {
             boolean isUserObject = firstObj instanceof User;
             for (Object obj : l) {
                 String name = (String) PropertyUtils.getProperty(obj, isUserObject ? "username" : "name");
-                m.put(isUserObject ? name : name, obj);
+                m.put(isUserObject ? name.toUpperCase() : name, obj);
             }
         }
         return m;

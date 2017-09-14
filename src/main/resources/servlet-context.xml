@@ -67,8 +67,6 @@
         覆蓋原hibernate.cfg.xml檔的部份設定 -->
         <property name="hibernateProperties"> 
             <props> 
-                <prop key="hibernate.dialect">org.hibernate.dialect.SQLServerDialect</prop> 
-                <prop key="hibernate.show_sql">true</prop>
                 <!-- 不要用 <prop key="hibernate.current_session_context_class">thread</prop> -->
                 <prop key="hibernate.current_session_context_class">org.springframework.orm.hibernate4.SpringSessionContext</prop>                
                 <prop key="hibernate.query.factory_class">org.hibernate.hql.internal.ast.ASTQueryTranslatorFactory</prop>
