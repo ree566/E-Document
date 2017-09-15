@@ -31,6 +31,10 @@ public class UserProfileService {
         return userProfileDAO.findByPrimaryKey(obj_id);
     }
 
+    public List<UserProfile> findByPrimaryKeys(Integer... ids) {
+        return userProfileDAO.findByPrimaryKeys(ids);
+    }
+
     public UserProfile findByType(String typeName) {
         return userProfileDAO.findByType(typeName);
     }

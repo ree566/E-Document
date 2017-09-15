@@ -18,27 +18,74 @@
 <script>
     $(function () {
         var scrollPosition = 0;
-
         var grid = $("#list");
         var tableName = "User";
-
         setSelectOptions({
             rootUrl: "<c:url value="/" />",
             columnInfo: [
                 {name: "user-floor", isNullable: false},
-                {name: "unit", isNullable: false}
+                {name: "unit", isNullable: false},
+                {name: "userProfiles", isNullable: false},
+                {name: "userUserNotifications", isNullable: true}
             ]
         });
-
         var sendMessageToSocket = function (form) {
 //            var rowId = grid.jqGrid('getGridParam', 'selrow');
 //            sendMessage(rowId, "LOCK");
             greyout(form);
+            setUserProfiles(form);
+            setUserNotifications(form);
         };
 
         var unLockRow = function () {
 //            var rowId = grid.jqGrid('getGridParam', 'selrow');
 //            sendMessage(rowId, "UNLOCK");
+        };
+
+        var setUserProfiles = function (form) {
+            var selectRowId = grid.jqGrid('getGridParam', 'selrow');
+            $.ajax({
+                type: "GET",
+                url: "<c:url value="/User/read/userProfiles" />",
+                data: {
+                    userId: selectRowId
+                },
+                dataType: "json",
+                success: function (response) {
+                    var arr = response;
+                    var idArr = [];
+                    for (var i = 0; i < arr.length; i++) {
+                        idArr.push(arr[i].id);
+                    }
+                    $("#userProfiles").val(idArr);
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        };
+
+        var setUserNotifications = function (form) {
+            var selectRowId = grid.jqGrid('getGridParam', 'selrow');
+            $.ajax({
+                type: "GET",
+                url: "<c:url value="/User/read/userNotifications" />",
+                data: {
+                    userId: selectRowId
+                },
+                dataType: "json",
+                success: function (response) {
+                    var arr = response;
+                    var idArr = [];
+                    for (var i = 0; i < arr.length; i++) {
+                        idArr.push(arr[i].id);
+                    }
+                    $("#userNotifications").val(idArr);
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
         };
 
         grid.jqGrid({
@@ -48,14 +95,16 @@
             autoencode: true,
             colModel: [
                 {label: 'id', name: "id", width: 60, key: true, editable: true, editoptions: {readonly: 'readonly', disabled: true, defaultValue: "0"}, search: false},
-                {label: 'jobnumber', name: "jobnumber", width: 60, editable: true, searchoptions: {sopt: ['eq']}},
-                {label: 'password', name: "password", width: 60, editable: true, edittype: "password", search: false},
-                {label: 'username', name: "username", width: 60, editable: true, searchoptions: {sopt: ['eq']}},
+                {label: 'jobnumber', name: "jobnumber", width: 60, editable: true, editrules: {required: true}, searchoptions: {sopt: ['eq']}},
+                {label: 'password', name: "password", width: 60, editable: true, editrules: {required: true}, edittype: "password", search: false},
+                {label: 'username', name: "username", width: 60, editable: true, editrules: {required: true}, searchoptions: {sopt: ['eq']}},
                 {label: 'permission', name: "permission", width: 60, editable: false, hidden: true, search: false},
                 {label: 'floor', name: "floor.id", width: 60, editable: true, edittype: "select", editoptions: {value: selectOptions["user-floor"]}, formatter: selectOptions["user-floor_func"], search: false},
                 {label: 'unit', name: "unit.id", width: 60, editable: true, edittype: "select", editoptions: {value: selectOptions["unit"]}, formatter: selectOptions["unit_func"], search: false},
                 {label: 'email', name: "email", width: 60, editable: true, search: false},
-                {label: 'state', name: "state", width: 60, editable: true, edittype: "select", editoptions: {value: "Active:Active;Inactive:Inactive;Deleted:Deleted;Locked:Locked"}, search: false}
+                {label: 'state', name: "state", width: 60, editable: true, edittype: "select", editoptions: {value: "Active:Active;Inactive:Inactive;Deleted:Deleted;Locked:Locked"}, search: false},
+                {label: '使用者角色', name: "userProfiles", width: 60, editable: true, hidden: true, editrules: {edithidden: true, required: true}, edittype: "select", editoptions: {multiple: true, value: selectOptions["userProfiles"], defaultValue: "3"}, search: false},
+                {label: '系統通知', name: "userNotifications", width: 60, editable: true, hidden: true, editrules: {edithidden: true, required: false}, edittype: "select", editoptions: {multiple: true, value: selectOptions["userUserNotifications"]}, search: false}
             ],
             rowNum: 20,
             rowList: [20, 50, 100],
@@ -96,7 +145,6 @@
                         );
             }
         });
-
         grid.jqGrid('navGrid', '#pager',
                 {edit: true, add: true, del: true, search: true},
                 {
@@ -109,7 +157,8 @@
                     beforeShowForm: sendMessageToSocket,
                     onClose: unLockRow,
                     zIndex: 9999,
-                    recreateForm: true
+                    recreateForm: true,
+                    viewPagerButtons: false
                 },
                 {
                     url: '<c:url value="/User/create" />',
@@ -134,7 +183,6 @@
                     reloadAfterSubmit: true
                 }
         );
-
     });
 </script>
 

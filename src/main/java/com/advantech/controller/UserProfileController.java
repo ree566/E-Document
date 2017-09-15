@@ -15,11 +15,10 @@ import com.advantech.security.State;
 import com.advantech.security.UserProfileType;
 import com.advantech.service.UserProfileService;
 import com.advantech.service.UserService;
-import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -62,12 +61,11 @@ public class UserProfileController extends CrudController<User> {
     @ResponseBody
     @RequestMapping(value = INSERT_URL, method = {RequestMethod.POST})
     @Override
-    protected ResponseEntity insert(User user, BindingResult bindingResult) {
+    protected ResponseEntity insert(User user, BindingResult bindingResult) throws Exception {
+
+        checkUserRole(user);
         String modifyMessage;
         encryptPassword(user);
-        Set profiles = new HashSet();
-        profiles.add(userProfileService.findByType(UserProfileType.USER.getUserProfileType()));
-        user.setUserProfiles(profiles);
 
         modifyMessage = userService.insert(user) == 1 ? this.SUCCESS_MESSAGE : this.FAIL_MESSAGE;
 
@@ -77,20 +75,35 @@ public class UserProfileController extends CrudController<User> {
     @ResponseBody
     @RequestMapping(value = UPDATE_URL, method = {RequestMethod.POST})
     @Override
-    protected ResponseEntity update(@ModelAttribute User user, BindingResult bindingResult) {
+    protected ResponseEntity update(@ModelAttribute User user, BindingResult bindingResult) throws Exception {
 
         String modifyMessage;
+
+        checkUserRole(user);
+        Set notifications = user.getUserNotifications();
+        if (notifications != null && !notifications.isEmpty() && notifications.iterator().next() == null) {
+            user.setUserNotifications(null);
+        }
 
         User existUser = userService.findByPrimaryKey(user.getId());
         if (!user.getPassword().equals(existUser.getPassword())) {
             encryptPassword(user);
         }
-        user.setUserProfiles(existUser.getUserProfiles());
-        user.setUserNotifications(existUser.getUserNotifications());
 
         modifyMessage = userService.update(user) == 1 ? this.SUCCESS_MESSAGE : this.FAIL_MESSAGE;
 
         return serverResponse(modifyMessage);
+    }
+
+    private void checkUserRole(User user) throws Exception {
+        User userInSession = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Set<UserProfile> s = user.getUserProfiles();
+        for (UserProfile u : s) {
+            if (!userInSession.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN")) && UserProfileType.ADMIN.getUserProfileType().equals(u.getName())) {
+                throw new Exception("Role admin only can add by admin user.");
+            }
+        }
+
     }
 
     @ResponseBody
@@ -117,22 +130,15 @@ public class UserProfileController extends CrudController<User> {
 
     //編輯USER_ROLE用
     @ResponseBody
-    @RequestMapping(value = SELECT_URL + "_sub", method = {RequestMethod.GET})
-    public List<UserProfile> findUserRole(@RequestParam int id) {
-        return userService.findUserProfiles(id);
+    @RequestMapping(value = SELECT_URL + "/userProfiles", method = {RequestMethod.GET})
+    public List<UserProfile> findUserRole(@RequestParam int userId) {
+        return userService.findUserProfiles(userId);
     }
 
-    //編輯subgroup用
     @ResponseBody
-    @RequestMapping(value = UPDATE_URL + "_sub", method = {RequestMethod.POST})
-    protected ResponseEntity updateUserRole(String roles, @RequestParam int parentFlowId) {
-        
-        String modifyMessage = "";
-        
-        String[] roleNames = roles.split(",");
-
-        return ResponseEntity
-                .status(SUCCESS_MESSAGE.equals(modifyMessage) ? HttpStatus.CREATED : HttpStatus.FORBIDDEN)
-                .body(modifyMessage);
+    @RequestMapping(value = SELECT_URL + "/userNotifications", method = {RequestMethod.GET})
+    public List<UserProfile> findUserNotification(@RequestParam int userId) {
+        return userService.findUserNotifications(userId);
     }
+
 }

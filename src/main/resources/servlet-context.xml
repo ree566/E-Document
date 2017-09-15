@@ -100,11 +100,27 @@
     <mvc:default-servlet-handler/>
 
     <!-- Enables the Spring MVC @Controller programming model -->
-    <mvc:annotation-driven>
+    
+    <!--https://segmentfault.com/a/1190000005708254-->
+    <!--
+        config the converter from client request like ids:"1,2,3,4,5"
+        retrieve them by ids with comverter
+    -->
+    <bean id="conversionService"
+          class="org.springframework.context.support.ConversionServiceFactoryBean">
+        <property name="converters">
+            <set>
+                <bean class="com.advantech.converter.UserProfileConverter"/>
+                <bean class="com.advantech.converter.UserNotificationConverter"/>
+            </set>
+        </property>
+    </bean>
+    
+    <mvc:annotation-driven conversion-service="conversionService">
         <mvc:message-converters>
             <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
                 <property name="objectMapper">
-                    <bean class="com.advantech.helper.HibernateAwareObjectMapper" />
+                    <bean class="com.advantech.converter.HibernateAwareObjectMapper" />
                 </property>
             </bean>
         </mvc:message-converters>

@@ -37,7 +37,7 @@ import javax.persistence.UniqueConstraint;
 public class UserProfile implements java.io.Serializable {
 
     private int id;
-    private String type = UserProfileType.USER.getUserProfileType();
+    private String name = UserProfileType.USER.getUserProfileType();
     private String description;
     private Set<User> users = new HashSet<>(0);
 
@@ -48,9 +48,9 @@ public class UserProfile implements java.io.Serializable {
         this.id = id;
     }
 
-    public UserProfile(int id, String type, Set<User> users) {
+    public UserProfile(int id, String name, Set<User> users) {
         this.id = id;
-        this.type = type;
+        this.name = name;
         this.users = users;
     }
 
@@ -66,12 +66,12 @@ public class UserProfile implements java.io.Serializable {
     }
 
     @Column(name = "type", length = 50, unique = true, nullable = false)
-    public String getType() {
-        return type;
+    public String getName() {
+        return name;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Column(name = "[description]", length = 200, nullable = true)
@@ -100,7 +100,7 @@ public class UserProfile implements java.io.Serializable {
         final int prime = 31;
         int result = 1;
         result = prime * result + id;
-        result = prime * result + ((type == null) ? 0 : type.hashCode());
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
         return result;
     }
 
@@ -119,11 +119,11 @@ public class UserProfile implements java.io.Serializable {
         if (id != other.id) {
             return false;
         }
-        if (type == null) {
-            if (other.type != null) {
+        if (name == null) {
+            if (other.name != null) {
                 return false;
             }
-        } else if (!type.equals(other.type)) {
+        } else if (!name.equals(other.name)) {
             return false;
         }
         return true;
@@ -131,6 +131,6 @@ public class UserProfile implements java.io.Serializable {
 
     @Override
     public String toString() {
-        return "UserProfile [id=" + id + ",  type=" + type + "]";
+        return "UserProfile [id=" + id + ",  type=" + name + "]";
     }
 }

@@ -28,6 +28,12 @@ public class UserProfileDAO extends AbstractDao<Integer, UserProfile> implements
         return getByKey((int) obj_id);
     }
 
+    public List<UserProfile> findByPrimaryKeys(Integer... ids) {
+        Criteria c = createEntityCriteria();
+        c.add(Restrictions.in("id", ids));
+        return c.list();
+    }
+
     public UserProfile findByType(String typeName) {
         Criteria c = createEntityCriteria();
         c.add(Restrictions.eq("type", typeName));

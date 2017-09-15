@@ -59,11 +59,18 @@ public class UserService {
 
         return i;
     }
-    
-    public List<UserProfile> findUserProfiles(Object obj_id){
+
+    public List<UserProfile> findUserProfiles(int user_id) {
         List l = new ArrayList();
-        User u = this.findByPrimaryKey(obj_id);
+        User u = this.findByPrimaryKey(user_id);
         l.addAll(u.getUserProfiles());
+        return l;
+    }
+
+    public List<UserProfile> findUserNotifications(int user_id) {
+        List l = new ArrayList();
+        User u = this.findByPrimaryKey(user_id);
+        l.addAll(u.getUserNotifications());
         return l;
     }
 

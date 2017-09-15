@@ -14,6 +14,8 @@ import com.advantech.model.PreAssy;
 import com.advantech.model.Type;
 import com.advantech.model.Unit;
 import com.advantech.model.User;
+import com.advantech.model.UserNotification;
+import com.advantech.model.UserProfile;
 import com.advantech.service.BusinessGroupService;
 import com.advantech.service.FloorService;
 import com.advantech.service.FlowGroupService;
@@ -23,6 +25,8 @@ import com.advantech.service.PendingService;
 import com.advantech.service.PreAssyService;
 import com.advantech.service.TypeService;
 import com.advantech.service.UnitService;
+import com.advantech.service.UserNotificationService;
+import com.advantech.service.UserProfileService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -65,6 +69,12 @@ public class WorktimeSelectOptionController {
 
     @Autowired
     private BusinessGroupService businessGroupService;
+
+    @Autowired
+    private UserProfileService userProfileService;
+
+    @Autowired
+    private UserNotificationService userNotificationService;
 
     @ResponseBody
     @RequestMapping(value = "/floor", method = {RequestMethod.GET})
@@ -136,5 +146,17 @@ public class WorktimeSelectOptionController {
     @RequestMapping(value = "/businessGroup", method = {RequestMethod.GET})
     protected List<BusinessGroup> getBusinessGroupOption() {
         return businessGroupService.findAll();
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/userProfiles", method = {RequestMethod.GET})
+    protected List<UserProfile> getUserProfileOption() {
+        return userProfileService.findAll();
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/userUserNotifications", method = {RequestMethod.GET})
+    protected List<UserNotification> getUserNotificationOption() {
+        return userNotificationService.findAll();
     }
 }
