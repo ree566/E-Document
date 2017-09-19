@@ -84,6 +84,7 @@
             com.advantech.dao, 
             com.advantech.service, 
             com.advantech.controller, 
+            com.advantech.converter, 
             com.advantech.customException, 
             com.advantech.security, 
             com.advantech.quartzJob,
@@ -98,6 +99,8 @@
     
     <!--http://www.cnblogs.com/Irving/archive/2013/02/19/2917501.html-->
     <mvc:default-servlet-handler/>
+    
+    <context:annotation-config/>
 
     <!-- Enables the Spring MVC @Controller programming model -->
     
@@ -106,16 +109,25 @@
         config the converter from client request like ids:"1,2,3,4,5"
         retrieve them by ids with comverter
     -->
+    <!--
+        https://stackoverflow.com/questions/13971279/register-a-custom-conversion-service-while-retaining-the-defaults
+        Adding conversionService with 
+        org.springframework.format.support.FormattingConversionServiceFactoryBean
+        will replaces the setting in list
+        try to replace with 
+        org.springframework.format.support.FormattingConversionServiceFactoryBean
+    -->
+
     <bean id="conversionService"
-          class="org.springframework.context.support.ConversionServiceFactoryBean">
+          class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
         <property name="converters">
-            <set>
-                <bean class="com.advantech.converter.UserProfileConverter"/>
+            <list>
                 <bean class="com.advantech.converter.UserNotificationConverter"/>
-            </set>
+                <bean class="com.advantech.converter.UserProfileConverter"/>
+            </list>
         </property>
     </bean>
-    
+
     <mvc:annotation-driven conversion-service="conversionService">
         <mvc:message-converters>
             <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">

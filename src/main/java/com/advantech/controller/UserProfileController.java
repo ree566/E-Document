@@ -13,9 +13,7 @@ import com.advantech.jqgrid.JqGridResponse;
 import com.advantech.model.UserProfile;
 import com.advantech.security.State;
 import com.advantech.security.UserProfileType;
-import com.advantech.service.UserProfileService;
 import com.advantech.service.UserService;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,9 +38,6 @@ public class UserProfileController extends CrudController<User> {
 
     @Autowired
     private UserService userService;
-
-    @Autowired
-    private UserProfileService userProfileService;
 
     @ResponseBody
     @RequestMapping(value = SELECT_URL, method = {RequestMethod.GET})
