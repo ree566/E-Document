@@ -6,7 +6,6 @@
 package com.advantech.dao;
 
 import com.advantech.model.WorktimeFormulaSetting;
-import java.util.Arrays;
 import java.util.List;
 import org.hibernate.Criteria;
 import org.hibernate.FetchMode;

@@ -5,8 +5,6 @@
  */
 package com.advantech.test;
 
-import com.advantech.excel.XlsWorkBook;
-import com.advantech.excel.XlsWorkSheet;
 import com.advantech.model.Worktime;
 import com.advantech.service.WorktimeService;
 import java.io.IOException;
@@ -16,22 +14,16 @@ import java.nio.file.Paths;
 import javax.transaction.Transactional;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.annotation.Commit;
 import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  *

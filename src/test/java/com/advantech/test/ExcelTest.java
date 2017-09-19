@@ -17,7 +17,6 @@ import java.util.HashMap;
 import java.util.List;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
-import org.junit.Test;
 import org.jxls.reader.ReaderBuilder;
 import org.jxls.reader.XLSReadStatus;
 import org.jxls.reader.XLSReader;

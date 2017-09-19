@@ -7,7 +7,6 @@ package com.advantech.service;
 
 import com.advantech.model.User;
 import com.advantech.model.UserProfile;
-import com.advantech.security.State;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;

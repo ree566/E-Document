@@ -5,7 +5,6 @@
  */
 package com.advantech.customValidator;
 
-import com.advantech.model.BusinessGroup;
 import com.advantech.model.Worktime;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;

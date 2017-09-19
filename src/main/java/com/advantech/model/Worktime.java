@@ -1,9 +1,6 @@
 package com.advantech.model;
 // Generated 2017/4/7 下午 02:26:06 by Hibernate Tools 4.3.1
 
-import com.advantech.customValidator.EsValidate;
-import com.advantech.customValidator.FlowValidate;
-import com.advantech.customValidator.TestValidate;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;

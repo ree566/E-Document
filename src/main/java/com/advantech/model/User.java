@@ -4,7 +4,6 @@ package com.advantech.model;
 import com.advantech.security.State;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.util.Collection;
 import java.util.HashSet;

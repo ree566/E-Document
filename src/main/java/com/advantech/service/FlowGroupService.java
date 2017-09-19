@@ -7,7 +7,6 @@ package com.advantech.service;
 
 import com.advantech.dao.*;
 import com.advantech.jqgrid.PageInfo;
-import com.advantech.model.Flow;
 import com.advantech.model.FlowGroup;
 import java.util.List;
 

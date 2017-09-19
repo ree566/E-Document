@@ -6,7 +6,6 @@
 package com.advantech.test;
 
 import com.advantech.webservice.WsClient;
-import static junit.framework.Assert.assertNotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 
 

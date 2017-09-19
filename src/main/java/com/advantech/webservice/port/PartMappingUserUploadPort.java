@@ -9,7 +9,6 @@ import com.advantech.model.User;
 import com.advantech.webservice.root.PartMappingUserRoot;
 import com.advantech.model.Worktime;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import javax.xml.bind.JAXBException;
 import org.slf4j.Logger;
