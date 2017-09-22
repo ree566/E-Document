@@ -13,6 +13,7 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,7 +57,7 @@ public class StandardtimeUploadPort extends BasicUploadPort {
 
     @Override
     public void upload(Worktime w) throws Exception {
-        super.upload(w);
+        super.upload(w, UploadType.INSERT);
     }
 
     @Override

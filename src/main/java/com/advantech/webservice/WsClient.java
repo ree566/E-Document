@@ -5,6 +5,7 @@
  */
 package com.advantech.webservice;
 
+import com.advantech.webservice.port.UploadType;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -36,11 +37,11 @@ public class WsClient extends WebServiceGatewaySupport {
     @Autowired
     private WebServiceTemplate webServiceTemplate;
 
-    public TxResponse simpleTxSendAndReceive(String v) throws IOException {
+    public TxResponse simpleTxSendAndReceive(String v, UploadType type) throws IOException {
         ObjectFactory factory = new ObjectFactory();
         Tx tx = factory.createTx();
         tx.setSParam(v);
-        tx.setSType("A");
+        tx.setSType(type.toString());
         TxResponse response = (TxResponse) webServiceTemplate.marshalSendAndReceive(tx);
         return response;
     }

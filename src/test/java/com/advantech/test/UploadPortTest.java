@@ -18,18 +18,24 @@ import java.util.List;
 import java.util.Map;
 import javax.transaction.Transactional;
 import static junit.framework.Assert.assertEquals;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
 
 /**
  *
  * @author Wei.Cheng
  */
-//@WebAppConfiguration
-//@ContextConfiguration(locations = {
-//    "classpath:servlet-context.xml",
-//    "classpath:hibernate.cfg.xml"
-//})
-//@RunWith(SpringJUnit4ClassRunner.class)
+@WebAppConfiguration
+@ContextConfiguration(locations = {
+    "classpath:servlet-context.xml",
+    "classpath:hibernate.cfg.xml"
+})
+@RunWith(SpringJUnit4ClassRunner.class)
 @Transactional
 public class UploadPortTest {
 
@@ -52,7 +58,7 @@ public class UploadPortTest {
     @Autowired
     private WorktimeService worktimeService;
 
-//    @Before
+    @Before
     public void initTestData() {
         w = worktimeService.findByModel("HIT-W121-AWM1E");
     }
@@ -78,10 +84,13 @@ public class UploadPortTest {
         mappingUserPort.upload(w);
     }
 
-//    @Test
+    @Test
     public void testSopUpload() throws Exception {
-        Map result = sopPort.transformData(w);
-        assertEquals(2, result.size());
+//        List<Worktime> l = worktimeService.findAll();
+//        for (Worktime worktime : l) {
+//            System.out.println("Upload " + worktime.getModelName());
+        sopPort.upload(w);
+//        }
     }
 
     @Autowired

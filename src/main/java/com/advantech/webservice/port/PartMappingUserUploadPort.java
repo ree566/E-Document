@@ -35,7 +35,7 @@ public class PartMappingUserUploadPort extends BasicUploadPort {
 
     @Override
     public void upload(Worktime w) throws Exception {
-        super.upload(w); //To change body of generated methods, choose Tools | Templates.
+        super.upload(w, UploadType.UPDATE); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override

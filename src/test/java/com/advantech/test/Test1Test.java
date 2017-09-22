@@ -5,8 +5,8 @@
  */
 package com.advantech.test;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.advantech.webservice.port.UploadType;
+import org.junit.Test;
 
 /**
  *
@@ -14,12 +14,9 @@ import java.util.Map;
  */
 public class Test1Test {
 
-//    @Test
+    @Test
     public void test(){
         
-        Map<String, String> m = new HashMap();
-        m.put("test", "testString");
-        
-        System.out.println(m.toString());
+        System.out.println(UploadType.DELETE.toString());
     }
 }

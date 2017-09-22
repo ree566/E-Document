@@ -148,7 +148,7 @@ public class SopRoot {
         @XmlValue
         protected String value;
         @XmlAttribute(name = "ID")
-        protected String id;
+        protected String id = "ETLSO.TxSopInfo001";
 
         /**
          * 取得 value 特性的值.
@@ -235,23 +235,23 @@ public class SopRoot {
     })
     public static class SOPINFO {
 
-        @XmlElement(name = "PART_NO", required = true)
+        @XmlElement(name = "PART_NO", required = true, nillable = true)
         protected String partno;
-        @XmlElement(name = "TYPE_NO", required = true)
+        @XmlElement(name = "TYPE_NO", required = true, nillable = true)
         protected String typeno;
-        @XmlElement(name = "ITEM_NO", required = true)
+        @XmlElement(name = "ITEM_NO", required = true, nillable = true)
         protected String itemno;
-        @XmlElement(name = "SOP_NAME", required = true)
+        @XmlElement(name = "SOP_NAME", required = true, nillable = true)
         protected String sopname;
-        @XmlElement(name = "STATION_NO", required = true)
+        @XmlElement(name = "STATION_NO", required = true, nillable = true)
         protected String stationno;
-        @XmlElement(name = "SOP_PAGE_NO", required = true)
+        @XmlElement(name = "SOP_PAGE_NO", required = true, nillable = true)
         protected String soppageno;
-        @XmlElement(name = "TYPE_NO_OLD", required = true)
+        @XmlElement(name = "TYPE_NO_OLD", required = true, nillable = true)
         protected String typenoold;
-        @XmlElement(name = "ITEM_NO_OLD", required = true)
+        @XmlElement(name = "ITEM_NO_OLD", required = true, nillable = true)
         protected String itemnoold;
-        @XmlElement(name = "SOP_NAME_OLD", required = true)
+        @XmlElement(name = "SOP_NAME_OLD", required = true, nillable = true)
         protected String sopnameold;
 
         /**

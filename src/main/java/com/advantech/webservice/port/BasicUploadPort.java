@@ -35,14 +35,16 @@ public abstract class BasicUploadPort {
         JAXBContext jaxbContext = JAXBContext.newInstance(persistClass);
         jaxbMarshaller = jaxbContext.createMarshaller();
     }
+    
+    public abstract void upload(Worktime w) throws Exception;
 
-    public void upload(Worktime w) throws Exception {
+    protected void upload(Worktime w, UploadType type) throws Exception {
         Map<String, String> xmlResults = transformData(w);
         Map<String, String> errorFields = new HashMap();
         for (Map.Entry<String, String> entry : xmlResults.entrySet()) {
             String field = entry.getKey();
             String xmlString = entry.getValue();
-            TxResponse response = client.simpleTxSendAndReceive(xmlString);
+            TxResponse response = client.simpleTxSendAndReceive(xmlString, type);
             if (!"OK".equals(response.getTxResult())) {
                 errorFields.put(field, response.getTxResult());
             }
@@ -58,7 +60,7 @@ public abstract class BasicUploadPort {
      * @return Field name as key and xml generate result as value.
      * @throws java.lang.Exception
      */
-    protected abstract Map<String, String> transformData(Worktime w) throws Exception;
+    public abstract Map<String, String> transformData(Worktime w) throws Exception;
 
     protected String generateXmlString(Object jaxbElement) throws JAXBException {
         StringWriter sw = new StringWriter();
