@@ -30,7 +30,7 @@ var babGroup = [
     {people: 7, x: 820, y: 60, lineName: "LA"},
     {people: 7, x: 820, y: 170, lineName: "LB"},
     {people: 8, x: 790, y: 220, lineName: "LC"},
-    {people: 8, x: 790, y: 310, lineName: "LC"},
+    {people: 8, x: 790, y: 310, lineName: "LD"},
     {people: 3, x: 100, y: 160, lineName: "LH"},
     {people: 3, x: 260, y: 90, lineName: "LG"},
     {people: 3, x: 260, y: 160, lineName: "LF"}
