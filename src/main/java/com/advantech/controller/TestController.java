@@ -44,26 +44,6 @@ public class TestController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/test1", method = RequestMethod.GET)
-    @Secured("ROLE_ADMIN")
-    @Transactional
-    protected String test1() throws Exception {
-        PageInfo info = new PageInfo();
-        info.setRows(Integer.MAX_VALUE);
-        info.setSearchField("id");
-        info.setSearchOper("lt");
-        info.setSearchString("8527");
-        List<Worktime> l = worktimeService.findAll(info);
-        for (Worktime w : l) {
-            w.setTotalModule(w.getTotalModule().subtract(w.getCleanPanel()));
-            w.setAssy(w.getAssy().add(w.getCleanPanel()));
-            worktimeService.update(w);
-//            port.uploadStandardTime(w);
-        }
-        return "hi1";
-    }
-
-    @ResponseBody
     @RequestMapping(value = "/test2/{id}", method = RequestMethod.GET)
     @Secured({"ROLE_USER", "ROLE_ADMIN"})
     protected List test2(@PathVariable int id) {

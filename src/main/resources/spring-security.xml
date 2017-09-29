@@ -70,14 +70,6 @@
             remember-me-parameter="remember-me"
         />
         
-        <!--Prevent multi login at same account-->
-        <session-management>  
-            <concurrency-control 
-                max-sessions="1" 
-                error-if-maximum-exceeded="false"
-            />  
-        </session-management>  
-        
     </http>
 
     <authentication-manager >

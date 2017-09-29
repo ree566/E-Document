@@ -5,6 +5,7 @@
  */
 package com.advantech.excel;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
+import javax.activation.UnsupportedDataTypeException;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
@@ -97,7 +99,7 @@ public class XlsWorkSheet {
         return _columnList.indexOf(column.toUpperCase());
     }
 
-    public Object getValue(int row, String column) throws Exception {
+    public Object getValue(int row, String column) throws UnsupportedDataTypeException {
         int columnIndex = getColumnIndex(column);
         HSSFCell cell = _sheet.getRow(row + 1).getCell(columnIndex);
         if (cell == null) {
@@ -121,7 +123,7 @@ public class XlsWorkSheet {
                 return cell.getRichStringCellValue().getString();
 
             case HSSFCell.CELL_TYPE_FORMULA:
-                throw new Exception("Formula not supported at row="
+                throw new UnsupportedDataTypeException("Formula not supported at row="
                         + row + ", column=" + column);
 
             case HSSFCell.CELL_TYPE_BLANK:
@@ -131,11 +133,11 @@ public class XlsWorkSheet {
                 return cell.getBooleanCellValue() ? Boolean.TRUE : Boolean.FALSE;
 
             case HSSFCell.CELL_TYPE_ERROR:
-                throw new Exception("Error at row=" + row
+                throw new UnsupportedDataTypeException("Error at row=" + row
                         + ", column=" + column);
 
             default:
-                throw new Exception("Unsupported type at row=" + row
+                throw new UnsupportedDataTypeException("Unsupported type at row=" + row
                         + ", column=" + column);
         }
     }

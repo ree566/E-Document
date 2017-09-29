@@ -25,52 +25,57 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 public class WorktimeService {
-    
+
     private final int fetchSize = 20;
-    
+
     @Autowired
     private WorktimeDAO worktimeDAO;
-    
+
     @Autowired
     private WorktimeFormulaSettingDAO worktimeFormulaSettingDAO;
     
+    @Autowired
+    private WorktimeUploadMesService uploadMesService;
+
     public List<Worktime> findAll() {
         return worktimeDAO.findAll();
     }
-    
+
     public List<Worktime> findAll(PageInfo info) {
         return worktimeDAO.findAll(info);
     }
-    
+
     public Worktime findByPrimaryKey(Object obj_id) {
         Worktime w = worktimeDAO.findByPrimaryKey(obj_id);
         Hibernate.initialize(w.getWorktimeFormulaSettings());
         return w;
     }
-    
+
     public List<Worktime> findByPrimaryKeys(Integer... ids) {
         return worktimeDAO.findByPrimaryKeys(ids);
     }
-    
+
     public Worktime findByModel(String modelName) {
         return worktimeDAO.findByModel(modelName);
     }
-    
+
     public List<Worktime> findWithFullRelation(PageInfo info) {
         return worktimeDAO.findWithFullRelation(info);
     }
-    
-    public int insert(List<Worktime> l) {
+
+    public int insert(List<Worktime> l) throws Exception {
         int i = 1;
         for (Worktime w : l) {
-            worktimeDAO.insert(w);
+            this.insert(w);
             flushIfReachFetchSize(i++);
         }
         return 1;
     }
-    
+
     public int insert(Worktime worktime) throws Exception {
-        return worktimeDAO.insert(worktime);
+        worktimeDAO.insert(worktime);
+        uploadMesService.uploadToMes(worktime);
+        return 1;
     }
 
     //For batch modify.
@@ -91,9 +96,10 @@ public class WorktimeService {
         this.insert(worktime);
         setting.setWorktime(worktime);
         worktimeFormulaSettingDAO.insert(setting);
+        uploadMesService.uploadToMes(worktime);
         return 1;
     }
-    
+
     public int update(List<Worktime> l) throws Exception {
         int i = 1;
         for (Worktime w : l) {
@@ -102,14 +108,15 @@ public class WorktimeService {
         }
         return 1;
     }
-    
+
     public int update(Worktime worktime) throws Exception {
         initUnfilledFormulaColumn(worktime);
         worktimeFormulaSettingDAO.update(worktime.getWorktimeFormulaSettings().get(0));
         worktimeDAO.update(worktime);
+        uploadMesService.uploadToMesWithCheckRevision(worktime);
         return 1;
     }
-    
+
     public int merge(List<Worktime> l) throws Exception {
         int i = 1;
         for (Worktime w : l) {
@@ -118,14 +125,15 @@ public class WorktimeService {
         }
         return 1;
     }
-    
+
     public int merge(Worktime worktime) throws Exception {
         initUnfilledFormulaColumn(worktime);
         worktimeFormulaSettingDAO.update(worktime.getWorktimeFormulaSettings().get(0));
         worktimeDAO.merge(worktime);
+        uploadMesService.uploadToMesWithCheckRevision(worktime);
         return 1;
     }
-    
+
     public int insertByExcel(List<Worktime> l) throws Exception {
         int i = 1;
         for (Worktime w : l) {
@@ -135,14 +143,14 @@ public class WorktimeService {
         }
         return 1;
     }
-    
+
     public int mergeByExcel(List<Worktime> l) throws Exception {
         List<WorktimeFormulaSetting> settings = worktimeFormulaSettingDAO.findWithWorktime();
         Map<Integer, WorktimeFormulaSetting> settingMap = new HashMap();
         for (WorktimeFormulaSetting setting : settings) {
             settingMap.put(setting.getWorktime().getId(), setting);
         }
-        
+
         int i = 1;
         for (Worktime w : l) {
             w.setWorktimeFormulaSettings(newArrayList(settingMap.get(w.getId())));
@@ -152,11 +160,11 @@ public class WorktimeService {
         }
         return 1;
     }
-    
+
     public void initUnfilledFormulaColumn(Worktime w) {
         //Lazy loading
         WorktimeFormulaSetting setting = w.getWorktimeFormulaSettings().get(0);
-        
+
         if (isColumnCalculated(setting.getCleanPanelAndAssembly())) {
             w.setDefaultCleanPanelAndAssembly();
         }
@@ -185,11 +193,11 @@ public class WorktimeService {
             w.setDefaultPackingKanbanTime();
         }
     }
-    
+
     private boolean isColumnCalculated(int i) {
         return i == 1;
     }
-    
+
     public int saveOrUpdate(List<Worktime> l) throws Exception {
         for (int i = 0; i < l.size(); i++) {
             Worktime w = l.get(i);
@@ -204,7 +212,7 @@ public class WorktimeService {
         }
         return 1;
     }
-    
+
     public int delete(Integer... ids) {
         List<Worktime> worktimes = worktimeDAO.findByPrimaryKeys(ids);
         int i = 1;
@@ -214,23 +222,27 @@ public class WorktimeService {
         }
         return 1;
     }
-    
-    public int delete(int id) {
+
+    public int delete(int id) throws Exception {
         Worktime worktime = this.findByPrimaryKey(id);
-        return worktimeDAO.delete(worktime);
+        worktimeDAO.delete(worktime);
+        worktime.setAssyPackingSop("");
+        worktime.setTestSop("");
+        uploadMesService.uploadToMes(worktime);
+        return 1;
     }
-    
+
     public void reUpdateAllFormulaColumn() throws Exception {
         List<Worktime> l = this.findAll();
         this.merge(l);
     }
-    
+
     private void flushIfReachFetchSize(int currentRow) {
         if (currentRow % fetchSize == 0 && currentRow > 0) {
             worktimeDAO.flushSession();
         }
     }
-    
+
     public void checkModelExists(Worktime worktime) throws Exception {
         Worktime existW = worktimeDAO.findByModel(worktime.getModelName());
         boolean checkFlag;
@@ -243,14 +255,14 @@ public class WorktimeService {
             throw new Exception("This modelName &lt;" + worktime.getModelName() + "&gt; is already exist.");
         }
     }
-    
+
     public void checkModelExists(List<Worktime> worktimes) throws Exception {
         Map<String, Integer> modelMap = new HashMap();
         List<Worktime> allWorktime = this.findAll();
         for (Worktime w : allWorktime) {
             modelMap.put(w.getModelName(), w.getId());
         }
-        
+
         for (Worktime w : worktimes) {
             boolean checkFlag;
             Integer worktimeId = modelMap.get(w.getModelName());
@@ -264,4 +276,5 @@ public class WorktimeService {
             }
         }
     }
+
 }

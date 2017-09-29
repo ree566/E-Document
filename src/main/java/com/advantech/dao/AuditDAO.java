@@ -19,6 +19,8 @@ import org.hibernate.envers.AuditReaderFactory;
 import org.hibernate.envers.query.AuditEntity;
 import org.hibernate.envers.query.AuditQuery;
 import org.hibernate.envers.query.criteria.AuditProperty;
+import org.hibernate.envers.query.internal.property.EntityPropertyName;
+import org.hibernate.envers.query.internal.property.ModifiedFlagPropertyName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -158,4 +160,14 @@ public class AuditDAO implements AuditAction {
         Number revision = (Number) q.getSingleResult();
         return revision;
     }
+    
+    public boolean isFieldChangedAtLastRevision(Class clz, Object id, String fieldName){
+        AuditQuery q = getReader().createQuery()
+                .forRevisionsOfEntity(clz, true, false)
+                .addProjection(new AuditProperty<>(new ModifiedFlagPropertyName(new EntityPropertyName(fieldName))))
+                .add(AuditEntity.id().eq(id))
+                .add(AuditEntity.revisionNumber().maximize().computeAggregationInInstanceContext());
+        return (boolean) q.getSingleResult();
+    }
+    
 }

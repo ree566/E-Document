@@ -43,7 +43,7 @@ Contributor(s):
     <session-factory>
         <!--connection setting-->
         <property name="hibernate.connection.driver_class">net.sourceforge.jtds.jdbc.Driver</property>
-    
+     
         <!--        <property name="hibernate.connection.url">jdbc:jtds:sqlserver://localhost:57936/E_Document</property>
         <property name="hibernate.connection.username">test.user</property>
         <property name="hibernate.connection.password">test</property>-->
@@ -51,12 +51,6 @@ Contributor(s):
         <property name="hibernate.connection.username">waychien</property>
         <property name="hibernate.connection.password">m3server</property>
     
-        <!--        <property name="connection.provider_class">org.hibernate.connection.C3P0ConnectionProvider</property>
-        <property name="hibernate.c3p0.min_size">5</property>
-        <property name="hibernate.c3p0.max_size">20</property> 
-        <property name="hibernate.c3p0.timeout">300</property>
-        <property name="hibernate.c3p0.max_statements">50</property>
-        <property name="hibernate.c3p0.idle_test_period">3000</property>-->
         <!--other setting-->
         <property name="hibernate.dialect">org.hibernate.dialect.SQLServerDialect</property>
         <property name="hibernate.show_sql">true</property>
@@ -66,13 +60,18 @@ Contributor(s):
         <property name="hibernate.jdbc.fetch_size">20</property>
     
         <!--<property name="hibernate.hbm2ddl.auto">update</property>-->
-        <!--hibernate object change listener plugin-->
-        <!--        <listener class="org.hibernate.envers.event.AuditEventListener" type="post-insert"/>
-        <listener class="org.hibernate.envers.event.AuditEventListener" type="post-update"/>
-        <listener class="org.hibernate.envers.event.AuditEventListener" type="post-delete"/>
-        <listener class="org.hibernate.envers.event.AuditEventListener" type="pre-collection-update"/>
-        <listener class="org.hibernate.envers.event.AuditEventListener" type="pre-collection-remove"/>
-        <listener class="org.hibernate.envers.event.AuditEventListener" type="post-collection-recreate"/>-->
+        
+        <property name="hibernate.connection.provider_class">org.hibernate.connection.C3P0ConnectionProvider</property>  
+        <property name="hibernate.c3p0.max_size">10</property>  
+        <property name="hibernate.c3p0.min_size">5</property>  
+        <property name="hibernate.c3p0.checkoutTimeout">15000</property>  
+        <property name="hibernate.c3p0.max_statements">200</property>  
+        <property name="hibernate.c3p0.idle_test_period">120</property>  
+        <property name="hibernate.c3p0.timeout">300</property>  
+        <property name="hibernate.c3p0.acquire_increment">1</property>  
+        <property name="hibernate.c3p0.validate">true</property>  
+        <property name="hibernate.c3p0.preferredTestQuery">select 1</property>  
+
         <!--mapping pojos-->
         <mapping class="com.advantech.model.Type"/>
         <mapping class="com.advantech.model.FlowGroup"/>

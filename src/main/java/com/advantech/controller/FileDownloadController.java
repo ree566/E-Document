@@ -20,9 +20,12 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.codec.binary.Base64;
 import org.jxls.common.Context;
 import org.jxls.expression.JexlExpressionEvaluator;
+import org.jxls.expression.JexlExpressionEvaluatorNoThreadLocal;
 import org.jxls.transform.Transformer;
 import org.jxls.util.JxlsHelper;
 import org.jxls.util.TransformerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -39,6 +42,8 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 @RequestMapping("/WorktimeDownload")
 public class FileDownloadController {
+
+    private static final Logger logger = LoggerFactory.getLogger(FileDownloadController.class);
 
     @Autowired
     private SheetViewService sheetViewService;
@@ -69,22 +74,22 @@ public class FileDownloadController {
 
     @ResponseBody
     @RequestMapping(value = "/excel2", method = {RequestMethod.GET})
-    protected void generateExcel2(HttpServletResponse response, PageInfo info) throws IOException {
+    protected void generateExcel2(HttpServletResponse response, PageInfo info) {
         this.fileExport("worktime-template.xls", response, info);
     }
 
     @ResponseBody
     @RequestMapping(value = "/excelForSpe", method = {RequestMethod.GET})
-    protected void generateExcelForUpload(HttpServletResponse response, PageInfo info) throws IOException {
+    protected void generateExcelForUpload(HttpServletResponse response, PageInfo info) {
         this.fileExport("Plant-sp matl status(M3) (2).xls", response, info);
     }
 
-    private void fileExport(String tempfileName, HttpServletResponse response, PageInfo info) throws IOException {
+    private void fileExport(String tempfileName, HttpServletResponse response, PageInfo info) {
         Resource r = resourceLoader.getResource("classpath:excel-template\\" + tempfileName);
 
         response.setContentType("application/vnd.ms-excel");
         response.setHeader("Set-Cookie", "fileDownload=true; path=/");
-        response.setHeader("Content-Disposition", String.format("inline; filename=\"" + r.getFilename() + "\""));
+        response.setHeader("Content-Disposition", String.format("attachment; filename=\"" + r.getFilename() + "\""));
 
         info.setRows(Integer.MAX_VALUE);
         info.setSidx("id");
@@ -96,6 +101,8 @@ public class FileDownloadController {
             try (OutputStream os = response.getOutputStream()) {
                 this.outputFile(l, is, os);
             }
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
         }
     }
 
@@ -110,6 +117,7 @@ public class FileDownloadController {
         context.putVar("revision", revisionInfo);
 
         Transformer transformer = TransformerFactory.createTransformer(is, os);
+//        transformer.getTransformationConfig().setExpressionEvaluator(new JexlExpressionEvaluatorNoThreadLocal());
         JexlExpressionEvaluator evaluator = (JexlExpressionEvaluator) transformer.getTransformationConfig().getExpressionEvaluator();
 
         //避免Jexl2在javabean值為null時會log

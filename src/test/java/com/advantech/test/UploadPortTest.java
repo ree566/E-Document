@@ -13,6 +13,7 @@ import com.advantech.webservice.port.MaterialFlowUploadPort;
 import com.advantech.webservice.port.PartMappingUserUploadPort;
 import com.advantech.webservice.port.SopUploadPort;
 import com.advantech.webservice.port.StandardtimeUploadPort;
+import com.advantech.webservice.port.UploadType;
 import static com.google.common.collect.Lists.newArrayList;
 import java.util.List;
 import java.util.Map;
@@ -89,7 +90,7 @@ public class UploadPortTest {
 //        List<Worktime> l = worktimeService.findAll();
 //        for (Worktime worktime : l) {
 //            System.out.println("Upload " + worktime.getModelName());
-        sopPort.upload(w);
+//        sopPort.upload(w);
 //        }
     }
 

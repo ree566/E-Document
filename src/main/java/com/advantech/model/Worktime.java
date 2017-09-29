@@ -96,8 +96,6 @@ public class Worktime implements java.io.Serializable {
     private BigDecimal biTemperature;
     private String assyPackingSop;
     private String testSop;
-    private String old_assyPackingSop;
-    private String old_testSop;
     private Integer keypartA = 0;
     private Integer keypartB = 0;
     private Character partLink;
@@ -488,24 +486,6 @@ public class Worktime implements java.io.Serializable {
 
     public void setTestSop(String testSop) {
         this.testSop = testSop;
-    }
-
-    @Transient
-    public String getOld_assyPackingSop() {
-        return old_assyPackingSop;
-    }
-
-    public void setOld_assyPackingSop(String old_assyPackingSop) {
-        this.old_assyPackingSop = old_assyPackingSop;
-    }
-
-    @Transient
-    public String getOld_testSop() {
-        return old_testSop;
-    }
-
-    public void setOld_testSop(String old_testSop) {
-        this.old_testSop = old_testSop;
     }
 
     @Column(name = "keypart_a")

@@ -6,6 +6,7 @@
  */
 package com.advantech.controller;
 
+import java.util.Arrays;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,6 +42,7 @@ public class ExceptionHandlingController {
     @ExceptionHandler(Exception.class)
     public ResponseEntity handleError(HttpServletRequest req, Exception ex) {
         System.out.println("Request: " + req.getRequestURL() + " raised " + ex);
+        System.out.println(Arrays.toString(ex.getStackTrace()));
 
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)

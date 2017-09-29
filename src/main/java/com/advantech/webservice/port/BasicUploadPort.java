@@ -29,13 +29,13 @@ public abstract class BasicUploadPort {
     private WsClient client;
 
     @PostConstruct
-    protected abstract void initJaxbMarshaller() ;
+    protected abstract void initJaxbMarshaller();
 
     protected void initJaxbMarshaller(Class persistClass) throws JAXBException {
         JAXBContext jaxbContext = JAXBContext.newInstance(persistClass);
         jaxbMarshaller = jaxbContext.createMarshaller();
     }
-    
+
     public abstract void upload(Worktime w) throws Exception;
 
     protected void upload(Worktime w, UploadType type) throws Exception {

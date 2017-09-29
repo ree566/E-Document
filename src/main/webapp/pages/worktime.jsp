@@ -76,9 +76,9 @@
         //版本讀取，避免多人同時編輯覆蓋
         var selected_row_revision;
         var table_current_revision;
-        
+
         var selected_row_formula_id;
-        
+
         //Set param into jqgrid-custom-select-option-reader.js and get option by param selectOptions
         //You can get the floor select options and it's formatter function
         //ex: floor selector -> floor and floor_func
@@ -105,7 +105,7 @@
                 return " class='hide-emptyName-flow noselect'";
             }
         };
-        
+
         var testFlowInit_add = function (form) {
             setTimeout(function () {
                 // do here all what you need (like alert('yey');)
@@ -132,7 +132,7 @@
                 return false;
             }
         };
-        
+
         var before_add = function (postdata, formid) {
             var formulaFieldInfo = getFormulaCheckboxField();
             clearCheckErrorIcon();
@@ -257,6 +257,7 @@
             hidegrid: true,
             stringResult: true,
             gridview: true,
+            loadui: "block",
             jsonReader: {
                 root: "rows",
                 page: "page",
@@ -400,7 +401,7 @@
                 grid.jqGrid("setGridWidth", $('#worktime-content').width());
             }, 1000);
         }).trigger('resize');
-       
+
         function getColumn() {
             var result;
             $.ajax({

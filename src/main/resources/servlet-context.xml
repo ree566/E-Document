@@ -79,6 +79,8 @@
         <property name="sessionFactory" ref="sessionFactory" />
     </bean>
  
+    <context:annotation-config/>
+    
     <!-- 對base-package下及其子資料夾偵測並自動裝配Bean -->
     <context:component-scan base-package="
             com.advantech.dao, 
@@ -90,18 +92,15 @@
             com.advantech.quartzJob,
             com.advantech.webservice
     " />
+    
     <!-- 要使用 @Transactional 時需要 -->
     <tx:annotation-driven proxy-target-class="true" transaction-manager="transactionManager"/>
-    
-    <tx:annotation-driven />   
 
     <!-- DispatcherServlet Context: defines this servlet's request-processing infrastructure -->
     
     <!--http://www.cnblogs.com/Irving/archive/2013/02/19/2917501.html-->
     <mvc:default-servlet-handler/>
     
-    <context:annotation-config/>
-
     <!-- Enables the Spring MVC @Controller programming model -->
     
     <!--https://segmentfault.com/a/1190000005708254-->
