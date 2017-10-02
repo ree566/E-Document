@@ -78,4 +78,8 @@ public class AuditService implements AuditAction {
         return auditDAO.isFieldChangedAtLastRevision(clz, id, fieldName);
     }
 
+    public Object findLastStatusBeforeUpdate(Class clz, Object id) {
+        return auditDAO.findLastStatusBeforeUpdate(clz, id);
+    }
+
 }

@@ -64,11 +64,11 @@ public class AuditDAO implements AuditAction {
         q = getReader().createQuery().forRevisionsOfEntity(clz, selectedEntitiesOnly, selectDeletedEntities)
                 .setMaxResults(info.getRows())
                 .setFirstResult((info.getPage() - 1) * info.getRows());
-        
+
         if (info.getSearchField() != null) {
             q.add(AuditEntity.property(info.getSearchField()).eq(info.getSearchString()));
         }
-        
+
         String sortOrder = info.getSord();
         String sortIndex = info.getSidx();
 
@@ -160,8 +160,8 @@ public class AuditDAO implements AuditAction {
         Number revision = (Number) q.getSingleResult();
         return revision;
     }
-    
-    public boolean isFieldChangedAtLastRevision(Class clz, Object id, String fieldName){
+
+    public boolean isFieldChangedAtLastRevision(Class clz, Object id, String fieldName) {
         AuditQuery q = getReader().createQuery()
                 .forRevisionsOfEntity(clz, true, false)
                 .addProjection(new AuditProperty<>(new ModifiedFlagPropertyName(new EntityPropertyName(fieldName))))
@@ -169,5 +169,13 @@ public class AuditDAO implements AuditAction {
                 .add(AuditEntity.revisionNumber().maximize().computeAggregationInInstanceContext());
         return (boolean) q.getSingleResult();
     }
-    
+
+    public Object findLastStatusBeforeUpdate(Class clz, Object id) {
+        AuditQuery q = getReader().createQuery()
+                .forRevisionsOfEntity(clz, true, false)
+                .add(AuditEntity.id().eq(id))
+                .add(AuditEntity.revisionNumber().maximize().computeAggregationInInstanceContext());
+        return q.getSingleResult();
+    }
+
 }

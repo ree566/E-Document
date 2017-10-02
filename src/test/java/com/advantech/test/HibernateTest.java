@@ -35,9 +35,7 @@ import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
 import org.hibernate.envers.query.AuditEntity;
 import org.hibernate.envers.query.AuditQuery;
-import org.hibernate.envers.query.criteria.AuditProperty;
-import org.hibernate.envers.query.internal.property.EntityPropertyName;
-import org.hibernate.envers.query.internal.property.ModifiedFlagPropertyName;
+import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -94,16 +92,18 @@ public class HibernateTest {
     @Rollback(true)
     @Test
     public void testAudit() throws JsonProcessingException {
-        String field = "type";
+        DateTime d = new DateTime("2017-09-26").withHourOfDay(0);
+        
         Session session = sessionFactory.getCurrentSession();
         AuditReader reader = AuditReaderFactory.get(session);
         AuditQuery q = reader.createQuery()
-                .forRevisionsOfEntity(Worktime.class, false, false)
-//                .addProjection(AuditEntity.revisionNumber().max())
-                .addProjection(new AuditProperty<>(new ModifiedFlagPropertyName(new EntityPropertyName(field))))
-                .add(AuditEntity.id().eq(17915))
-                .add(AuditEntity.revisionNumber().maximize().computeAggregationInInstanceContext());
-        HibernateObjectPrinter.print(q.getSingleResult());
+                .forRevisionsOfEntity(Worktime.class, false, true)
+                .add(AuditEntity.revisionProperty("REVTSTMP").gt(d.getMillis()))
+                .add(AuditEntity.or(
+                        AuditEntity.property("assyPackingSop").hasChanged(), 
+                        AuditEntity.property("testSop").hasChanged()
+                ));
+        HibernateObjectPrinter.print(q.getResultList());
     }
 
 //    CRUD testing.

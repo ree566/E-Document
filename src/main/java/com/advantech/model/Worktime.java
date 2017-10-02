@@ -471,7 +471,7 @@ public class Worktime implements java.io.Serializable {
     @Size(min = 0, max = 500)
     @Column(name = "assy_packing_sop", length = 500)
     public String getAssyPackingSop() {
-        return this.assyPackingSop;
+        return this.assyPackingSop != null ? ("".equals(this.assyPackingSop.trim()) ? null : this.assyPackingSop.trim()) : null;
     }
 
     public void setAssyPackingSop(String assyPackingSop) {
@@ -481,7 +481,7 @@ public class Worktime implements java.io.Serializable {
     @Size(min = 0, max = 500)
     @Column(name = "test_sop", length = 500)
     public String getTestSop() {
-        return this.testSop;
+        return this.testSop != null ? ("".equals(this.testSop.trim()) ? null : this.testSop.trim()) : null;
     }
 
     public void setTestSop(String testSop) {

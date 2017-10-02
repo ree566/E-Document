@@ -112,6 +112,7 @@ public class WorktimeController extends CrudController<Worktime> {
         if (worktime.getUserByEeOwnerId().getId() == 0) {
             worktime.setUserByEeOwnerId(null);
         }
+        
     }
 
 }

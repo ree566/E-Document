@@ -12,7 +12,6 @@ import com.advantech.webservice.root.SopRoot;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Collections2;
 import static com.google.common.collect.Sets.newHashSet;
-import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -32,23 +31,23 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class SopUploadPort {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(SopUploadPort.class);
-    
+
     private final String regex = "[(\\r\\n|\\n),\" ]+";
-    
+
     private final String[] assyType = {"ASSY", "PKG"};
     private final String[] testType = {"T1", "T2"};
-    
+
     @Autowired
     private SopQueryPort sopQueryPort;
-    
+
     @Autowired
     private SopUploadPort.InsertPort insertPort;
-    
+
     @Autowired
     private SopUploadPort.DeletePort deletePort;
-    
+
     public void upload(Worktime w) throws Exception {
         try {
             insertPort.upload(w, UploadType.INSERT);
@@ -58,25 +57,25 @@ public class SopUploadPort {
             throw e;
         }
     }
-    
+
     private Map<String, String> serializeSops(Worktime w) {
         Map sopMap = new HashMap();
-        
+
         String assyPkgSop = w.getAssyPackingSop();
         String testSop = w.getTestSop();
-        
+
         for (String st : assyType) {
             sopMap.put(st, assyPkgSop);
         }
-        
+
         for (String st : testType) {
             sopMap.put(st, testSop);
         }
-        
+
         return sopMap;
-        
+
     }
-    
+
     private Set<String> toSops(List<SopInfo> l) {
         Set s = new HashSet();
         for (SopInfo info : l) {
@@ -84,7 +83,7 @@ public class SopUploadPort {
         }
         return s;
     }
-    
+
     private Set<String> toSops(String st) {
         Set s = new HashSet();
         if (st != null && !"".equals(st)) {
@@ -93,17 +92,17 @@ public class SopUploadPort {
         }
         return s;
     }
-    
+
     private Set<String> findDifference(Set<String> s1, Set<String> s2) {
         return newHashSet(Collections2.filter(s1, Predicates.not(Predicates.in(s2))));
     }
-    
+
     @Component
     public static class InsertPort extends BasicUploadPort {
-        
+
         @Autowired
         private SopUploadPort outer;
-        
+
         @Override
         protected void initJaxbMarshaller() {
             try {
@@ -112,33 +111,33 @@ public class SopUploadPort {
                 logger.error(e.toString());
             }
         }
-        
+
         @Override
         public void upload(Worktime w) throws Exception {
             super.upload(w, UploadType.INSERT);
         }
-        
+
         @Override
         public Map<String, String> transformData(Worktime w) throws Exception {
             Map<String, String> xmlStrings = new HashMap();
             Map<String, String> serializeSops = outer.serializeSops(w);
-            
+
             for (Map.Entry<String, String> entry : serializeSops.entrySet()) {
                 String type = entry.getKey();
                 String sopInLocal = entry.getValue();
-                
+
                 Set<String> sops = outer.toSops(sopInLocal);
                 //當本地sop為空，一定沒有新增的資料(可省去多query webservice & 比對差異一次)
                 if (sops.isEmpty()) {
                     continue;
                 }
-                
+
                 outer.sopQueryPort.setTypes(type);
                 Set mesSops = outer.toSops(outer.sopQueryPort.query(w));
                 Set<String> insertedSops = outer.findDifference(sops, mesSops);
-                
+
                 System.out.println(type + " sop need to insert:" + insertedSops);
-                
+
                 if (!insertedSops.isEmpty()) {
                     SopBatchInsertRoot root = new SopBatchInsertRoot();
                     SopBatchInsertRoot.SOPINFO sopInfo = root.getSOPINFO();
@@ -146,7 +145,7 @@ public class SopUploadPort {
                     sopInfo.setITEMNO(w.getModelName());
                     SopBatchInsertRoot.SOPINFO.PARTNO partNo = new SopBatchInsertRoot.SOPINFO.PARTNO();
                     List<SopBatchInsertRoot.SOPINFO.PARTNO.KEYNO> l = new ArrayList();
-                    
+
                     for (String sop : insertedSops) {
                         SopBatchInsertRoot.SOPINFO.PARTNO.KEYNO keyNo = new SopBatchInsertRoot.SOPINFO.PARTNO.KEYNO();
                         keyNo.setITEMNO(w.getModelName());
@@ -156,21 +155,21 @@ public class SopUploadPort {
                     }
                     partNo.setKEYNO(l);
                     sopInfo.setPARTNO(partNo);
-                    
+
                     xmlStrings.put(type, this.generateXmlString(root));
                 }
             }
             return xmlStrings;
         }
-        
+
     }
-    
+
     @Component
     public static class DeletePort extends BasicUploadPort {
-        
+
         @Autowired
         private SopUploadPort outer;
-        
+
         @Override
         protected void initJaxbMarshaller() {
             try {
@@ -179,31 +178,31 @@ public class SopUploadPort {
                 logger.error(e.toString());
             }
         }
-        
+
         @Override
         public void upload(Worktime w) throws Exception {
             super.upload(w, UploadType.DELETE);
         }
-        
+
         @Override
         public Map<String, String> transformData(Worktime w) throws Exception {
             Map<String, String> xmlStrings = new HashMap();
             Map<String, String> serializeSops = outer.serializeSops(w);
-            
+
             for (Map.Entry<String, String> entry : serializeSops.entrySet()) {
-                
+
                 String type = entry.getKey();
                 String sopInLocal = entry.getValue();
-                
+
                 Set<String> sops = outer.toSops(sopInLocal);
-                
+
                 outer.sopQueryPort.setTypes(type);
                 Set mesSops = outer.toSops(outer.sopQueryPort.query(w));
-                
+
                 Set<String> deletedSops = outer.findDifference(mesSops, sops);
-                
+
                 System.out.println(type + "sop need to delete:" + deletedSops);
-                
+
                 int i = 1;
                 for (String sop : deletedSops) {
                     SopRoot root = new SopRoot();
@@ -219,7 +218,7 @@ public class SopUploadPort {
             }
             return xmlStrings;
         }
-        
+
     }
-    
+
 }
