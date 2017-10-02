@@ -23,7 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Wei.Cheng
  */
 @Service
-@Transactional
+@Transactional(rollbackFor = Exception.class)
 public class WorktimeService {
 
     private final int fetchSize = 20;
@@ -33,7 +33,7 @@ public class WorktimeService {
 
     @Autowired
     private WorktimeFormulaSettingDAO worktimeFormulaSettingDAO;
-    
+
     @Autowired
     private WorktimeUploadMesService uploadMesService;
 
