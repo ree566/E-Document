@@ -50,6 +50,7 @@
 <script src="<c:url value="/js/worktime-setting/column-selector-autofill.js" />"></script>
 <script src="<c:url value="/js/worktime-setting/column-setting.js" />"></script>
 <script src="<c:url value="/js/worktime-setting/column-validator.js" />"></script>
+<script src="<c:url value="/webjars/github-com-johnculviner-jquery-fileDownload/1.4.6/src/Scripts/jquery.fileDownload.js" />"></script>
 
 <script>
     $(function () {
@@ -372,8 +373,11 @@
             grid.navButtonAdd('#pager', {
                 caption: "Export to Excel",
                 buttonicon: "ui-icon-disk",
+                id: "excelDownload1",
                 onClickButton: function () {
-                    grid.jqGrid('excelExport', {"url": "<c:url value="/WorktimeDownload/excel2" />"});
+                    var button = $("#excelDownload1");
+                    excelDownload(button, "<c:url value="/WorktimeDownload/excel2" />");
+                    return false;
                 },
                 position: "last"
             });
@@ -381,8 +385,11 @@
             grid.navButtonAdd('#pager', {
                 caption: "Export to Excel(SPE)",
                 buttonicon: "ui-icon-disk",
+                id: "excelDownload2",
                 onClickButton: function () {
-                    grid.jqGrid('excelExport', {"url": "<c:url value="/WorktimeDownload/excelForSpe" />"});
+                    var button = $("#excelDownload2");
+                    excelDownload(button, "<c:url value="/WorktimeDownload/excelForSpe" />");
+                    return false;
                 },
                 position: "last"
             });
@@ -401,6 +408,22 @@
                 grid.jqGrid("setGridWidth", $('#worktime-content').width());
             }, 1000);
         }).trigger('resize');
+
+        function excelDownload(buttonId, url) {
+            var button = $(buttonId);
+            button.addClass('ui-state-disabled');
+            $.fileDownload(url, {
+                preparingMessageHtml: "We are preparing your report, please wait...",
+                failMessageHtml: "There was a problem generating your report, please try again.",
+                data: grid.getGridParam("postData"),
+                successCallback: function (url) {
+                    button.removeClass('ui-state-disabled');
+                },
+                failCallback: function (html, url) {
+                    button.removeClass('ui-state-disabled');
+                }
+            });
+        }
 
         function getColumn() {
             var result;

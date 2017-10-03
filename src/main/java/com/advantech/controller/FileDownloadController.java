@@ -20,7 +20,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.codec.binary.Base64;
 import org.jxls.common.Context;
 import org.jxls.expression.JexlExpressionEvaluator;
-import org.jxls.expression.JexlExpressionEvaluatorNoThreadLocal;
 import org.jxls.transform.Transformer;
 import org.jxls.util.JxlsHelper;
 import org.jxls.util.TransformerFactory;
@@ -74,35 +73,44 @@ public class FileDownloadController {
 
     @ResponseBody
     @RequestMapping(value = "/excel2", method = {RequestMethod.GET})
-    protected void generateExcel2(HttpServletResponse response, PageInfo info) {
+    protected void generateExcel2(HttpServletResponse response, PageInfo info) throws Exception {
         this.fileExport("worktime-template.xls", response, info);
     }
 
     @ResponseBody
     @RequestMapping(value = "/excelForSpe", method = {RequestMethod.GET})
-    protected void generateExcelForUpload(HttpServletResponse response, PageInfo info) {
+    protected void generateExcelForUpload(HttpServletResponse response, PageInfo info) throws Exception {
         this.fileExport("Plant-sp matl status(M3) (2).xls", response, info);
     }
 
-    private void fileExport(String tempfileName, HttpServletResponse response, PageInfo info) {
+    private void fileExport(String tempfileName, HttpServletResponse response, PageInfo info) throws Exception {
+
         Resource r = resourceLoader.getResource("classpath:excel-template\\" + tempfileName);
 
+        //Set filedownload header
         response.setContentType("application/vnd.ms-excel");
         response.setHeader("Set-Cookie", "fileDownload=true; path=/");
         response.setHeader("Content-Disposition", String.format("attachment; filename=\"" + r.getFilename() + "\""));
 
+        //Adjust search query and search data
         info.setRows(Integer.MAX_VALUE);
         info.setSidx("id");
         info.setSord("asc");
         info.setPage(1); //Prevent select query jump to page 2 bug.
 
+        //Do nothing when empty result
+        List<Worktime> l = worktimeService.findWithFullRelation(info);
+        if (l.isEmpty()) {
+            throw new Exception("Test");
+        }
+
         try (InputStream is = r.getInputStream()) {
-            List<Worktime> l = worktimeService.findWithFullRelation(info);
             try (OutputStream os = response.getOutputStream()) {
                 this.outputFile(l, is, os);
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
+            throw e;
         }
     }
 

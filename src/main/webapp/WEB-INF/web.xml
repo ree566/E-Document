@@ -49,17 +49,6 @@
         <url-pattern>/pages/index.jsp</url-pattern>
     </servlet-mapping> 
 
-    <!--url mapping-->
-    
-    <servlet>
-        <servlet-name>Error</servlet-name>
-        <jsp-file>/pages/error.jsp</jsp-file>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>Error</servlet-name>
-        <url-pattern>/pages/Error</url-pattern>
-    </servlet-mapping>
-
     <!-- Processes application requests -->
     <servlet>
         <servlet-name>appServlet</servlet-name>

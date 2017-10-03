@@ -85,22 +85,22 @@ public class HibernateTest {
     public void setUp() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
-        l = worktimeService.findAll();
+        l = worktimeService.findByPrimaryKeys(8140);
     }
 
-    @Transactional
-    @Rollback(true)
-    @Test
+//    @Transactional
+//    @Rollback(true)
+//    @Test
     public void testAudit() throws JsonProcessingException {
         DateTime d = new DateTime("2017-09-26").withHourOfDay(0);
-        
+
         Session session = sessionFactory.getCurrentSession();
         AuditReader reader = AuditReaderFactory.get(session);
         AuditQuery q = reader.createQuery()
                 .forRevisionsOfEntity(Worktime.class, false, true)
                 .add(AuditEntity.revisionProperty("REVTSTMP").gt(d.getMillis()))
                 .add(AuditEntity.or(
-                        AuditEntity.property("assyPackingSop").hasChanged(), 
+                        AuditEntity.property("assyPackingSop").hasChanged(),
                         AuditEntity.property("testSop").hasChanged()
                 ));
         HibernateObjectPrinter.print(q.getResultList());
@@ -150,9 +150,9 @@ public class HibernateTest {
         return sb.toString();
     }
 
-//    @Transactional
-//    @Rollback(true)
-//    @Test
+    @Transactional
+    @Rollback(true)
+    @Test
     public void testHibernateQuery() throws Exception {
         String inputLocation = "C:\\Users\\Wei.Cheng\\Desktop\\testXls\\M3SOP-ok.xls";
         String outputFile = "C:\\Users\\Wei.Cheng\\Desktop\\worktime-template.xls";
@@ -164,25 +164,37 @@ public class HibernateTest {
             try (FileOutputStream outputStream = new FileOutputStream(outputFile); FileInputStream excelFile = new FileInputStream(new File(inputLocation))) {
                 XlsWorkBook workbook = new XlsWorkBook(excelFile);
                 assertNotNull(workbook);
-                XlsWorkSheet sheet = workbook.getSheet("工作表1");
+                XlsWorkSheet sheet = workbook.getSheet("Sheet1");
                 assertNotNull(sheet);
+                this.clearSops(l);
                 for (int row = 0, rowCount = sheet.getRowCount(); row < rowCount; row++) {
-                    String modelName = sheet.getValue(row, "modelName").toString();
-                    String assyPkgSop = sheet.getValue(row, "assyPackingSop").toString();
-                    String testSop = sheet.getValue(row, "testSop").toString();
+                    String typeNo = sheet.getValue(row, "TYPE_NO").toString();
+                    String itemNo = sheet.getValue(row, "ITEM_NO").toString();
+                    String sopName = sheet.getValue(row, "SOP_NAME").toString();
 
-                    if (modelName == null || "".equals(modelName)) {
+                    if (itemNo == null || "".equals(itemNo)) {
                         break;
                     }
 
-                    Worktime w = this.findMatches(modelName);
+                    Worktime w = this.findMatches(itemNo);
                     if (w != null) {
-                        w.setAssyPackingSop("--" + this.replaceString(assyPkgSop));
-                        w.setTestSop("--" + this.replaceString(testSop));
+                        String sop = this.replaceString(sopName);
+                        if ("ASSY".equals(typeNo)) {
+                            w.setAssyPackingSop(replaceWhenNull(w.getAssyPackingSop()) + "\n" + sop);
+                        } else if ("T1".equals(typeNo)) {
+                            w.setTestSop(replaceWhenNull(w.getTestSop()) + "\n" + sop);
+                        }
                     }
                 }
                 this.outputFile(l, inputStream, outputStream);
             }
+        }
+    }
+
+    public void clearSops(List<Worktime> l) {
+        for (Worktime w : l) {
+            w.setAssyPackingSop("--");
+            w.setTestSop("--");
         }
     }
 
@@ -214,6 +226,10 @@ public class HibernateTest {
     }
 
     public String replaceString(String st) {
-        return st.replaceAll(regex, " / ");
+        return st.replaceAll(regex, "\n");
+    }
+
+    public String replaceWhenNull(String st) {
+        return st == null ? "" : st;
     }
 }

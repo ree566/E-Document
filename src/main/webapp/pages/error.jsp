@@ -29,7 +29,7 @@
             <h1>錯誤</h1>
             <h3>錯誤訊息如下</h3>
             <div id="errormsg-box">
-                <h3><c:out value="${errorMessage}" /></h3>
+                <h3><c:out value="${exception}" /></h3>
             </div>
             <a href="${root}">回到首頁</a>
         </div>
