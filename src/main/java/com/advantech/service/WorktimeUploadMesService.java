@@ -31,14 +31,14 @@ public class WorktimeUploadMesService {
         Worktime rowLastStatus = (Worktime) auditDAO.findLastStatusBeforeUpdate(Worktime.class, w.getId());
         if (isSopFieldsChanged(rowLastStatus, w)) {
             this.uploadToMes(w);
-        }
+        } 
     }
 
     public void uploadToMes(Worktime w) throws Exception {
         try {
             sopUploadPort.upload(w);
         } catch (Exception e) {
-            throw new Exception("大表更新成功，SOP同步至MES失敗<br />" + e.getMessage());
+            throw new Exception("SOP同步至MES失敗<br />" + e.getMessage());
         }
     }
 

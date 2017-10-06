@@ -136,8 +136,6 @@ public class SopUploadPort {
                 Set mesSops = outer.toSops(outer.sopQueryPort.query(w));
                 Set<String> insertedSops = outer.findDifference(sops, mesSops);
 
-                System.out.println(type + " sop need to insert:" + insertedSops);
-
                 if (!insertedSops.isEmpty()) {
                     SopBatchInsertRoot root = new SopBatchInsertRoot();
                     SopBatchInsertRoot.SOPINFO sopInfo = root.getSOPINFO();
@@ -200,8 +198,6 @@ public class SopUploadPort {
                 Set mesSops = outer.toSops(outer.sopQueryPort.query(w));
 
                 Set<String> deletedSops = outer.findDifference(mesSops, sops);
-
-                System.out.println(type + "sop need to delete:" + deletedSops);
 
                 int i = 1;
                 for (String sop : deletedSops) {

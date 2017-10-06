@@ -17,8 +17,19 @@
                 class="com.advantech.security.AjaxAwareAuthenticationEntryPoint">
         <beans:constructor-arg name="loginUrl" value="/login"/>
     </beans:bean>
-   
+
     <http auto-config="true">
+        <!--
+            If frame option is set to default(deny all), 
+            firefox can't receive the server response when use jquery filedownload.js,
+            this cause a bug when user try to download the file and server throw exception,
+            user can't get the error message and the client stuck on "file will be downloading..." message.
+        -->
+        <headers>
+            <frame-options policy="SAMEORIGIN" />
+            <hsts disabled="true"/>
+        </headers>
+        
         <!--Global system access setting-->
         <intercept-url pattern="/login.jsp" access="permitAll" />
         <intercept-url pattern="/pages/admin/**" access="hasRole('ADMIN')" />

@@ -51,7 +51,7 @@ public class StandardTimeUpload {
     public void init() {
         df = DateTimeFormat.forPattern("yyyy-MM-dd");
         tempInfo = new PageInfo();
-        tempInfo.setRows(Integer.MAX_VALUE);
+        tempInfo.setRows(-1);
         tempInfo.setSearchField("modifiedDate");
         tempInfo.setSearchOper("gt");
     }

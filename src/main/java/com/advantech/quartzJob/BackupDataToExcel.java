@@ -42,7 +42,7 @@ public class BackupDataToExcel {
 
         try (InputStream is = r.getInputStream()) {
             PageInfo info = new PageInfo();
-            info.setRows(Integer.MAX_VALUE);
+            info.setRows(-1);
             List<Worktime> l = worktimeService.findWithFullRelation(info);
             try (OutputStream os = new FileOutputStream(filePath)) {
                 this.outputFile(l, is, os);

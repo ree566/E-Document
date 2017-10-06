@@ -60,10 +60,10 @@ public class FileDownloadController {
     @RequestMapping(value = "/excel", method = {RequestMethod.GET})
     protected ModelAndView generateExcel(PageInfo info) {
         // create some sample data
-        info.setRows(Integer.MAX_VALUE);
+        info.setRows(-1);
         info.setSidx("id");
         info.setSord("asc");
-        info.setPage(1); //Prevent select query jump to page 2 bug.
+        info.setPage(1); //Override the request param from jqgrid.
 
         List<SheetView> l = sheetViewService.findAll(info);
         ModelAndView mav = new ModelAndView("ExcelRevenueSummary");
@@ -85,15 +85,8 @@ public class FileDownloadController {
 
     private void fileExport(String tempfileName, HttpServletResponse response, PageInfo info) throws Exception {
 
-        Resource r = resourceLoader.getResource("classpath:excel-template\\" + tempfileName);
-
-        //Set filedownload header
-        response.setContentType("application/vnd.ms-excel");
-        response.setHeader("Set-Cookie", "fileDownload=true; path=/");
-        response.setHeader("Content-Disposition", String.format("attachment; filename=\"" + r.getFilename() + "\""));
-
         //Adjust search query and search data
-        info.setRows(Integer.MAX_VALUE);
+        info.setRows(-1);
         info.setSidx("id");
         info.setSord("asc");
         info.setPage(1); //Prevent select query jump to page 2 bug.
@@ -101,8 +94,15 @@ public class FileDownloadController {
         //Do nothing when empty result
         List<Worktime> l = worktimeService.findWithFullRelation(info);
         if (l.isEmpty()) {
-            throw new Exception("Test");
+            throw new Exception("The query result is empty.");
         }
+
+        Resource r = resourceLoader.getResource("classpath:excel-template\\" + tempfileName);
+
+        //Set filedownload header
+        response.setContentType("application/vnd.ms-excel");
+        response.setHeader("Set-Cookie", "fileDownload=true; path=/");
+        response.setHeader("Content-Disposition", String.format("attachment; filename=\"" + r.getFilename() + "\""));
 
         try (InputStream is = r.getInputStream()) {
             try (OutputStream os = response.getOutputStream()) {

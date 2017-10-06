@@ -14,67 +14,53 @@
         <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
         <title>Admin page</title>
         <link href="<c:url value="/webjars/bootstrap/3.3.7/css/bootstrap.min.css" />" rel="stylesheet">
-        <link href="<c:url value="/css/multi-select.css" />" rel="stylesheet">
-        <link href="<c:url value="/webjars/free-jqgrid/4.14.1/css/ui.jqgrid.min.css" />" rel="stylesheet"/>
+        <link href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/themes/ui-lightness/jquery-ui.css" rel="stylesheet">
         <script src="<c:url value="/webjars/jquery/1.12.4/jquery.min.js" />"></script>
         <script src="<c:url value="/webjars/bootstrap/3.3.7/js/bootstrap.min.js" />"></script>
-        <script src="<c:url value="/webjars/free-jqgrid/4.14.1/js/jquery.jqgrid.min.js" />"></script>
-        <script src="<c:url value="/webjars/free-jqgrid/4.14.1/js/grid.jqueryui.js" />"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/jquery-ui.min.js"></script>
+        <script src="https://jqueryfiledownload.apphb.com/Scripts/jquery.fileDownload.js"></script>
 
         <script>
             $(function () {
-
-                var testData = [
-                    {"a": "a", "b": "b", "c": "c"},
-                    {"a": "a", "b": "b", "c": "c"},
-                    {"a": "a", "b": "b", "c": "c"}
-                ];
-
-                var keys = Object.keys(testData[0]);
-
-                var arr = [];
-                for (var i = 0; i < keys.length; i++) {
-                    var obj = {};
-                    for (var j = 0; j < testData.length; j++) {
-                        var d = testData[j];
-                        obj[j] = d[keys[i]];
-                    }
-                    arr[i] = obj;
-                }
-
-                var data = {
-                    "page": "1",
-                    "records": "3",
-                    "rows": arr
-                };
-                
-                var grid = $("#list");
-
-                grid.jqGrid({
-                    guiStyle: "bootstrap",
-                    colModel: [
-                        {label: 'a', name: "0"},
-                        {label: 'b', name: "1"},
-                        {label: 'c', name: "2"}
-                    ],
-                    pager: '#packagePager',
-                    datatype: "jsonstring",
-                    datastr: data,
-                    jsonReader: {repeatitems: false},
-                    rowNum: 2,
-                    viewrecords: true,
-                    caption: "Packages",
-                    height: "auto",
-                    ignoreCase: true
+                $(".download").click(function () {
+                    console.log("click");
+                    $.fileDownload($(this).attr("href"), {
+                        preparingMessageHtml: "We are preparing your report, please wait...",
+                        failMessageHtml: "There was a problem generating your report, please try again.",
+                        successCallback: function (url) {
+                            console.log("successCallback");
+                        },
+                        failCallback: function (html, url) {
+                            console.log("failCallback");
+                        }
+                    });
+                    return false;
                 });
-
             });
         </script>
     </head>
     <body>
-        <div id="result">
-            <table id="list"></table> 
-            <div id="pager"></div>
+        <div class="container">
+            <h3>
+                <a class="download" href="<c:url value="/testCtrl/test" />">
+                    test
+                </a>
+            </h3>
+            <h3>
+                <a class="download" href="<c:url value="/testCtrl/exceptionTest" />">
+                    exceptionTest
+                </a>
+            </h3>
+            <h3>
+                <a class="download" href="<c:url value="/testCtrl/runtimeExceptionTest" />">
+                    runtimeExceptionTest
+                </a>
+            </h3>
+            <h3>
+                <a class="download" href="<c:url value="/testCtrl/mavExceptionTest" />">
+                    mavExceptionTest
+                </a>
+            </h3>
         </div>
     </body>
 </html>

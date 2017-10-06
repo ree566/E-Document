@@ -6,13 +6,12 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<c:set var="root" value="${pageContext.request.contextPath}/"/>
 <!DOCTYPE html>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Error</title>
-        <link rel="shortcut icon" href="${root}/img/favicon.ico"/>
+        <link rel="shortcut icon" href="<c:url value="/images/favicon.ico" />"/>
         <link href="<c:url value="/webjars/bootstrap/3.3.7/css/bootstrap.min.css" />" rel="stylesheet">
         <link href="<c:url value="/webjars/bootstrap/3.3.7/css/bootstrap-theme.min.css"/>" rel="stylesheet">
         <style>
@@ -31,7 +30,7 @@
             <div id="errormsg-box">
                 <h3><c:out value="${exception}" /></h3>
             </div>
-            <a href="${root}">回到首頁</a>
+            <a href="<c:url value="/" />">回到首頁</a>
         </div>
     </body>
 </html>

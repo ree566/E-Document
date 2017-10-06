@@ -37,6 +37,11 @@ public class PageInfo implements Cloneable {
         return _search;
     }
 
+    /**
+     * No need to set this
+     * @param _search
+     * @return 
+     */
     public PageInfo set_Search(boolean _search) {
         this._search = _search;
         return this;
@@ -46,6 +51,11 @@ public class PageInfo implements Cloneable {
         return nd;
     }
 
+    /**
+     * No need to set this
+     * @param nd
+     * @return 
+     */
     public PageInfo setNd(String nd) {
         this.nd = nd;
         return this;
@@ -55,6 +65,11 @@ public class PageInfo implements Cloneable {
         return page;
     }
 
+    /**
+     * Begin of the query result, default 1
+     * @param page
+     * @return 
+     */
     public PageInfo setPage(int page) {
         this.page = page;
         return this;
@@ -64,6 +79,11 @@ public class PageInfo implements Cloneable {
         return rows;
     }
 
+    /**
+     * Set rows < 0 to query all result, default 10
+     * @param rows
+     * @return 
+     */
     public PageInfo setRows(int rows) {
         this.rows = rows;
         return this;
@@ -73,6 +93,11 @@ public class PageInfo implements Cloneable {
         return sidx;
     }
 
+    /**
+     * The sort order field name
+     * @param sidx
+     * @return 
+     */
     public PageInfo setSidx(String sidx) {
         this.sidx = sidx;
         return this;
@@ -82,6 +107,11 @@ public class PageInfo implements Cloneable {
         return sord;
     }
 
+    /**
+     * The field sort order (asc, desc)
+     * @param sord
+     * @return 
+     */
     public PageInfo setSord(String sord) {
         this.sord = sord;
         return this;
@@ -91,6 +121,11 @@ public class PageInfo implements Cloneable {
         return maxNumOfRows;
     }
 
+    /**
+     * The total query result with paginate
+     * @param maxNumOfRows
+     * @return 
+     */
     public PageInfo setMaxNumOfRows(Integer maxNumOfRows) {
         this.maxNumOfRows = maxNumOfRows;
         return this;
@@ -100,6 +135,10 @@ public class PageInfo implements Cloneable {
         return searchField;
     }
 
+    /**
+     * The search field name
+     * @param searchField 
+     */
     public void setSearchField(String searchField) {
         this.searchField = searchField;
     }
@@ -108,6 +147,10 @@ public class PageInfo implements Cloneable {
         return searchString;
     }
 
+    /**
+     * The search param
+     * @param searchString 
+     */
     public void setSearchString(String searchString) {
         this.searchString = searchString;
     }
@@ -116,6 +159,10 @@ public class PageInfo implements Cloneable {
         return searchOper;
     }
 
+    /**
+     * The search operation(eq, ne, lt, rt ...etc.)
+     * @param searchOper 
+     */
     public void setSearchOper(String searchOper) {
         this.searchOper = searchOper;
     }
@@ -124,6 +171,10 @@ public class PageInfo implements Cloneable {
         return filters;
     }
 
+    /**
+     * No need to set this param
+     * @param filters 
+     */
     public void setFilters(String filters) {
         this.filters = filters;
     }

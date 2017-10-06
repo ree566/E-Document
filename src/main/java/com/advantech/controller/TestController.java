@@ -9,12 +9,10 @@ import com.advantech.model.Worktime;
 import com.advantech.service.AuditService;
 import com.advantech.service.WorktimeService;
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,11 +36,11 @@ public class TestController {
     @Autowired
     private WorktimeService worktimeService;
 
+    @ResponseBody
     @RequestMapping(value = "/test", method = {RequestMethod.GET, RequestMethod.POST})
     @Secured("ROLE_ADMIN")
-    public void test(HttpServletResponse response) throws Exception {
-        response.setContentType("text/html");
-        throw new Exception("Test");
+    public String test(HttpServletResponse response) throws Exception {
+        return "test";
     }
 
     @ResponseBody
@@ -59,6 +57,30 @@ public class TestController {
             @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime eD) {
         System.out.println(sD);
         System.out.println(eD);
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/exceptionTest", method = {RequestMethod.GET, RequestMethod.POST})
+    @Secured("ROLE_ADMIN")
+    protected void exceptionTest(HttpServletResponse resp) throws Exception {
+        throw new Exception("This is a testing exception");
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/runtimeExceptionTest", method = {RequestMethod.GET, RequestMethod.POST})
+    @Secured("ROLE_ADMIN")
+    protected void runtimeExceptionTest(HttpServletResponse resp) throws Exception {
+        throw new RuntimeException("This is a testing runtimeException");
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/mavExceptionTest", method = {RequestMethod.GET, RequestMethod.POST})
+    @Secured("ROLE_ADMIN")
+    protected ModelAndView mavExceptionTest() throws Exception {
+        ModelAndView mav = new ModelAndView();
+        mav.addObject("exception", new Exception("This is a testing mavException"));
+        mav.setViewName("pages/error");
+        return mav;
     }
 
 }
