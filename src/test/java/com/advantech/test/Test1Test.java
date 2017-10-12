@@ -5,32 +5,45 @@
  */
 package com.advantech.test;
 
-import com.google.common.base.Predicates;
-import com.google.common.collect.Collections2;
-import static com.google.common.collect.Sets.newHashSet;
-import java.util.HashSet;
-import java.util.Set;
+import com.advantech.service.WorktimeService;
+import static junit.framework.Assert.*;
+import org.hibernate.SessionFactory;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
 
 /**
  *
  * @author Wei.Cheng
  */
+@WebAppConfiguration
+@ContextConfiguration(locations = {
+    "classpath:servlet-context.xml"
+})
+@RunWith(SpringJUnit4ClassRunner.class)
 public class Test1Test {
 
+    @Value("${WORKTIME.UPLOAD.SOP}")
+    private boolean sopUpload;
+
+    @Value("${HIBERNATE.JDBC.BATCHSIZE}")
+    private int batchSize;
     
+    @Autowired
+    private SessionFactory sessionFactory;
+    
+    @Autowired
+    private WorktimeService worktimeService;
 
     @Test
     public void test() {
-        Set<String> st = new HashSet();
-        Set<String> st2 = new HashSet();
-        st2.add("b");
-        st2.add("c");
-        System.out.println(this.findDifference(st2, st));
+        assertTrue(sopUpload);
+        assertEquals(20, batchSize);
+        assertNotNull(worktimeService);
     }
 
-    private Set<String> findDifference(Set<String> s1, Set<String> s2) {
-        return newHashSet(Collections2.filter(s1, Predicates.not(Predicates.in(s2))));
-    }
-    
 }

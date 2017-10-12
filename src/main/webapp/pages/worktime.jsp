@@ -187,7 +187,7 @@
 //            guiStyle: "bootstrap",
             autoencode: true,
             colModel: [
-                {label: 'id', name: "id", width: 60, frozen: true, hidden: ${!isAdmin}, key: true, search: ${isAdmin}, searchoptions: search_decimal_options, editable: true, editrules: {edithidden: true}, editoptions: {readonly: 'readonly', disabled: true, defaultValue: "0"}},
+                {label: 'id', name: "id", width: 60, frozen: true, hidden: false, key: true, search: true, searchoptions: search_decimal_options, editable: true, editrules: {edithidden: true}, editoptions: {readonly: 'readonly', disabled: true, defaultValue: "0"}},
                 {label: 'Model', name: "modelName", frozen: true, editable: true, searchrules: {required: true}, searchoptions: search_string_options, editrules: {required: true}, formoptions: required_form_options},
                 {label: 'TYPE', name: "type.id", edittype: "select", editoptions: {value: selectOptions["type"]}, formatter: selectOptions["type_func"], width: 100, searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["type"], sopt: ['eq']}},
                 {label: 'BU', name: "businessGroup.id", edittype: "select", editoptions: {value: selectOptions["businessGroup"], dataEvents: businessGroup_select_event}, formatter: selectOptions["businessGroup_func"], width: 100, searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["businessGroup"], sopt: ['eq']}},
@@ -220,8 +220,8 @@
                 {label: 'SPE Owner', name: "userBySpeOwnerId.id", edittype: "select", editoptions: {value: selectOptions["spe_user"]}, formatter: selectOptions["spe_user_func"], width: 100, searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["spe_user"], sopt: ['eq']}},
                 {label: 'EE Owner', name: "userByEeOwnerId.id", edittype: "select", editoptions: {value: selectOptions["ee_user"]}, formatter: selectOptions["ee_user_func"], width: 100, searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["ee_user"], sopt: ['eq']}},
                 {label: 'QC Owner', name: "userByQcOwnerId.id", edittype: "select", editoptions: {value: selectOptions["qc_user"]}, formatter: selectOptions["qc_user_func"], width: 100, searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["qc_user"], sopt: ['eq']}},
-                {label: '組包SOP', name: "assyPackingSop", width: 100, search: false, edittype: "textarea", editoptions: {maxlength: 500}},
-                {label: '測試SOP', name: "testSop", width: 100, search: false, edittype: "textarea", editoptions: {maxlength: 500}},
+                {label: '組包SOP', name: "assyPackingSop", width: 100, search: true, searchrules: {required: true}, searchoptions: search_string_options, edittype: "textarea", editoptions: {maxlength: 500}},
+                {label: '測試SOP', name: "testSop", width: 100, search: true, searchrules: {required: true}, searchoptions: search_string_options, edittype: "textarea", editoptions: {maxlength: 500}},
                 {label: 'KEYPART_A', name: "keypartA", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, editoptions: {defaultValue: '0'}},
                 {label: 'KEYPART_B', name: "keypartB", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, editoptions: {defaultValue: '0'}},
                 {label: 'PRE-ASSY', name: "preAssy.id", edittype: "select", editoptions: {value: selectOptions["preAssy"]}, formatter: selectOptions["preAssy_func"], width: 100, searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["preAssy"], sopt: ['eq']}},
@@ -637,14 +637,21 @@
     });
 </script>
 <div id="worktime-content">
-    <h5>Your permission is: 
-        <b class="permission-hint">
-            R
-            <c:if test="${isAdmin || isOper || isAuthor || isContributor}">
-                W
-            </c:if>
-        </b>
-    </h5>
+    <div class="form-inline">
+        <h5 class="form-control">Your permission is: 
+            <b class="permission-hint">
+                R
+                <c:if test="${isAdmin || isOper || isAuthor || isContributor}">
+                    W
+                </c:if>
+            </b>
+        </h5>
+        <c:if test="${isAdmin || isAuthor || isContributor}">
+            <h5 style="color:red" class="form-control">
+                ※SOP在該欄位有更動時時會上傳至MES，請務必確認大表SOP是否正確
+            </h5>
+        </c:if>
+    </div>
     <table id="list"></table> 
     <div id="pager"></div>
 </div>

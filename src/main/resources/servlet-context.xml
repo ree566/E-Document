@@ -28,8 +28,10 @@
           http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.3.xsd
           http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.2.xsd
 ">
-    <!--bean setting-->
-
+    <!--Other settings in properties-->
+    <context:property-placeholder location="classpath:upload-setting.properties" />
+    
+    <!--beans setting-->
     <bean class="org.springframework.web.servlet.view.XmlViewResolver">
         <property name="order" value="1"/>
         <property name="location" value="classpath:spring-views.xml"/>
@@ -70,6 +72,7 @@
                 <!-- 不要用 <prop key="hibernate.current_session_context_class">thread</prop> -->
                 <prop key="hibernate.current_session_context_class">org.springframework.orm.hibernate4.SpringSessionContext</prop>                
                 <prop key="hibernate.query.factory_class">org.hibernate.hql.internal.ast.ASTQueryTranslatorFactory</prop>
+                <prop key="hibernate.jdbc.batch_size">${HIBERNATE.JDBC.BATCHSIZE}</prop>
             </props> 
         </property> 
     </bean>
@@ -177,4 +180,5 @@
 
     <import resource="classpath:spring-security.xml"/>
     <import resource="classpath:spring-quartz.xml"/>
+    
 </beans>

@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,7 +27,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(rollbackFor = Exception.class)
 public class WorktimeService {
 
-    private final int fetchSize = 20;
+    @Value("${HIBERNATE.JDBC.BATCHSIZE}")
+    private Integer batchSize;
 
     @Autowired
     private WorktimeDAO worktimeDAO;
@@ -238,7 +240,7 @@ public class WorktimeService {
     }
 
     private void flushIfReachFetchSize(int currentRow) {
-        if (currentRow % fetchSize == 0 && currentRow > 0) {
+        if (currentRow % batchSize == 0 && currentRow > 0) {
             worktimeDAO.flushSession();
         }
     }
