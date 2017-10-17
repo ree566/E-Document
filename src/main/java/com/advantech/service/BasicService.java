@@ -5,7 +5,6 @@
  */
 package com.advantech.service;
 
-import com.advantech.test.TestClassService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +21,6 @@ public class BasicService {
     private static LineBalanceService lineBalanceService = null;
     private static LineService lineService = null;
     private static TestService testService = null;
-    private static TestClassService testClassService = null;
     private static CountermeasureService countermeasureService = null;
     private static IdentitService identitService = null;
     private static BABLoginStatusService babLoginStatusService = null;
@@ -42,7 +40,6 @@ public class BasicService {
         lineBalanceService = new LineBalanceService();
         lineService = new LineService();
         testService = new TestService();
-        testClassService = new TestClassService();
         countermeasureService = new CountermeasureService();
         identitService = new IdentitService();
         babLoginStatusService = new BABLoginStatusService();
@@ -75,10 +72,6 @@ public class BasicService {
 
     public static TestService getTestService() {
         return testService;
-    }
-
-    public static TestClassService getTestClassService() {
-        return testClassService;
     }
 
     public static CountermeasureService getCountermeasureService() {
