@@ -9,16 +9,14 @@ import com.advantech.entity.ActionCodeMapping;
 import java.sql.Connection;
 import java.util.List;
 import java.util.Map;
+import org.springframework.stereotype.Repository;
 
 /**
  *
  * @author Wei.Cheng
  */
+@Repository
 public class ActionCodeMappingDAO extends BasicDAO {
-
-    public ActionCodeMappingDAO() {
-
-    }
 
     private Connection getConn() {
         return getDBUtilConn(SQL.WebAccess);

@@ -13,7 +13,6 @@ import com.advantech.entity.LineBalancing;
 import com.advantech.helper.ProcRunner;
 import com.advantech.helper.PropertiesReader;
 import com.advantech.interfaces.AlarmActions;
-import com.advantech.service.BasicService;
 import com.advantech.service.LineBalanceService;
 import java.sql.Array;
 import java.sql.Connection;
@@ -21,6 +20,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import javax.annotation.PostConstruct;
 import javax.mail.MessagingException;
 import org.apache.commons.dbutils.DbUtils;
 import org.apache.commons.dbutils.QueryRunner;
@@ -28,18 +28,25 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 /**
  *
  * @author Wei.Cheng bab資料表就是生產工單資料表
  */
+@Repository
 public class BABDAO extends BasicDAO implements AlarmActions {
 
     private static final Logger log = LoggerFactory.getLogger(BABDAO.class);
 
-    private static boolean saveToOldDB;
+    private boolean saveToOldDB;
+    
+    @Autowired
+    private LineBalanceService lineBalanceService;
 
-    public BABDAO() {
+    @PostConstruct
+    public void BABDAO() {
         PropertiesReader p = PropertiesReader.getInstance();
         saveToOldDB = p.isSaveToOldDB();
     }
@@ -239,11 +246,9 @@ public class BABDAO extends BasicDAO implements AlarmActions {
      */
     //一連串儲存動作統一commit，不然出問題時會出現A和B資料庫資料不同步問題
     public boolean stopAndSaveBab(BAB bab) {
-        LineBalanceService lineBalanceService = BasicService.getLineBalanceService();
-
         boolean flag = false;
-        Connection conn1 = null;
-        Connection conn2 = null;
+        Connection conn1;
+        Connection conn2;
 
         try {
             //Prevent check Babavg data in database if exists or not multiple times, let ouside check and save value into bab object.
@@ -261,11 +266,9 @@ public class BABDAO extends BasicDAO implements AlarmActions {
 
             //--------區間內請勿再開啟tran不然會deadlock----------------------------
             conn1 = this.getConn();
-            conn1.setAutoCommit(false);
 
             if (saveToOldDB) {
                 conn2 = getDBUtilConn(SQL.LineBalancing);
-                conn2.setAutoCommit(false);
 
                 String columnName = "";
                 String params = ""; //串接sql字串 (待解決Do_not數量與待寫入數量不一之情況)
@@ -288,7 +291,6 @@ public class BABDAO extends BasicDAO implements AlarmActions {
                         "insert into Line_Balancing_Main(Number_of_poople, Do_not_stop, PO, PN, Balance, "
                         + columnName + " Line) values (?,?,?,?,?, " + params + " ?)",
                         param2);
-                DbUtils.commitAndCloseQuietly(conn2);
             }
 
             Object[] param3 = {bab.getId()};
@@ -303,15 +305,12 @@ public class BABDAO extends BasicDAO implements AlarmActions {
             }
 
             //--------區間內請勿再開啟tran不然會deadlock----------------------------
-            DbUtils.commitAndCloseQuietly(conn1);
             lineBalanceService.checkLineBalanceAndSendMail(bab, maxBaln, baln);
             flag = true;
-        } catch (SQLException ex) {
-            log.error(ex.toString());
-            DbUtils.rollbackAndCloseQuietly(conn1);
-            DbUtils.rollbackAndCloseQuietly(conn2);
-        } catch (MessagingException | JSONException ex) {
-            log.error(ex.toString());
+        } catch (SQLException e) {
+            log.error(e.getMessage(), e);
+        } catch (MessagingException | JSONException e) {
+            log.error(e.getMessage(), e);
             flag = true; //即使寄信失敗一樣傳回true給使用者知道(不需要知道寄信fail log有紀錄即可)
         }
         return flag;

@@ -12,11 +12,13 @@ import org.quartz.JobExecutionException;
 import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 /**
  *
  * @author Wei.Cheng
  */
+@Component
 public class ClearPollingJob implements Job {
 
     private static final Logger log = LoggerFactory.getLogger(ClearPollingJob.class);

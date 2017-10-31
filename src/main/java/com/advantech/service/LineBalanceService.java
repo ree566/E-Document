@@ -13,27 +13,40 @@ import com.advantech.helper.PropertiesReader;
 import com.advantech.model.LineBalancingDAO;
 import java.math.BigDecimal;
 import java.util.Date;
+import javax.annotation.PostConstruct;
 import javax.mail.MessagingException;
+import javax.transaction.Transactional;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  *
  * @author Wei.Cheng
  */
+@Service
+@Transactional
 public class LineBalanceService {
 
     private static final Logger log = LoggerFactory.getLogger(LineBalancingDAO.class);
 
-    private final String targetMail = PropertiesReader.getInstance().getTestMail();
-    private final int BALANCE_ROUNDING_DIGIT = PropertiesReader.getInstance().getBalanceRoundingDigit();
+    private String targetMail;
+    private int BALANCE_ROUNDING_DIGIT;
+    
+    @Autowired
+    private LineBalancingDAO lineBalanceDAO;
+    
+    @Autowired
+    private LineService lineService;
 
-    private final LineBalancingDAO lineBalanceDAO;
-
-    protected LineBalanceService() {
-        lineBalanceDAO = new LineBalancingDAO();
+    @PostConstruct
+    protected void init() {
+        PropertiesReader p = PropertiesReader.getInstance();
+        targetMail = p.getTestMail();
+        BALANCE_ROUNDING_DIGIT = p.getBalanceRoundingDigit();
     }
 
     public LineBalancing getMaxBalance(BAB bab) {
@@ -89,7 +102,7 @@ public class LineBalanceService {
     }
 
     private void sendMail(BAB bab, int num1, int num2, int diff) throws JSONException, MessagingException {
-        Line line = BasicService.getLineService().getLine(bab.getLine());
+        Line line = lineService.getLine(bab.getLine());
         String mailto = targetMail; //Get the responsor of linetype.
         if ("".equals(mailto)) {
             return;
@@ -97,26 +110,26 @@ public class LineBalanceService {
         String subject = "[藍燈系統]異常訊息(" + line.getName().trim() + ")";
         MailSend.getInstance().sendMail(mailto, subject,
                 new StringBuilder()
-                .append("<p>時間 <strong>")
-                .append(new Date())
-                .append("</strong> 統計到的線平衡率</p>")
-                .append("<p>與資料庫儲存的最佳平衡比對，下降差距到達了")
-                .append("百分之 ")
-                .append(diff)
-                .append(" </p><p>")
-                .append(num1)
-                .append("% ----> <font style='color:red'>")
-                .append(num2)
-                .append("</font>%</p>")
-                .append("<p>工單號碼: ")
-                .append(bab.getPO())
-                .append("</p><p>生產機種: ")
-                .append(bab.getModel_name())
-                .append("</p><p>生產人數: ")
-                .append(bab.getPeople())
-                .append("</p><p>詳細歷史資料請上 <a href='")
-                .append("http://172.20.131.208/Line_Balancing/Login.aspx")
-                .append("'>線平衡電子化系統</a> 中的歷史紀錄做查詢</p>")
-                .toString());
+                        .append("<p>時間 <strong>")
+                        .append(new Date())
+                        .append("</strong> 統計到的線平衡率</p>")
+                        .append("<p>與資料庫儲存的最佳平衡比對，下降差距到達了")
+                        .append("百分之 ")
+                        .append(diff)
+                        .append(" </p><p>")
+                        .append(num1)
+                        .append("% ----> <font style='color:red'>")
+                        .append(num2)
+                        .append("</font>%</p>")
+                        .append("<p>工單號碼: ")
+                        .append(bab.getPO())
+                        .append("</p><p>生產機種: ")
+                        .append(bab.getModel_name())
+                        .append("</p><p>生產人數: ")
+                        .append(bab.getPeople())
+                        .append("</p><p>詳細歷史資料請上 <a href='")
+                        .append("http://172.20.131.208/Line_Balancing/Login.aspx")
+                        .append("'>線平衡電子化系統</a> 中的歷史紀錄做查詢</p>")
+                        .toString());
     }
 }

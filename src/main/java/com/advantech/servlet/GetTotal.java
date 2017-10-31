@@ -11,24 +11,27 @@ import com.advantech.service.TestLineTypeFacade;
 import java.io.*;
 import java.util.ArrayList;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
  *
  * @author Wei.Cheng
  */
-@WebServlet(name = "GetTotal", urlPatterns = {"/GetTotal"})
-public class GetTotal extends HttpServlet {
+@Controller
+public class GetTotal {
 
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse res)
-            throws ServletException, IOException {
-        res.sendError(HttpServletResponse.SC_FORBIDDEN);
-    }
+    @Autowired
+    private TestLineTypeFacade ts;
+    
+    @Autowired
+    private BabLineTypeFacade bs;
 
-    @Override
+    @RequestMapping(value = "/GetTotal", method = {RequestMethod.POST})
     protected void doPost(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
 
@@ -38,12 +41,10 @@ public class GetTotal extends HttpServlet {
         JSONObject dataObj = null;
         switch (type) {
             case "type1":
-//                dataObj = DataTransformer.getTestJsonObj();
-                dataObj = TestLineTypeFacade.getInstance().getJSONObject();
+                dataObj = ts.getJSONObject();
                 break;
             case "type2":
-//                dataObj = DataTransformer.getBabJsonObj();
-                dataObj = BabLineTypeFacade.getInstance().getJSONObject();
+                dataObj = bs.getJSONObject();
                 break;
             default:
                 break;

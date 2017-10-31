@@ -9,16 +9,14 @@ import com.advantech.entity.BABLoginStatus;
 import com.advantech.entity.BABPeopleRecord;
 import java.sql.Connection;
 import java.util.List;
+import org.springframework.stereotype.Repository;
 
 /**
  *
  * @author Wei.Cheng
  */
+@Repository
 public class BABLoginStatusDAO extends BasicDAO {
-
-    public BABLoginStatusDAO() {
-
-    }
 
     private Connection getConn() {
         return getDBUtilConn(SQL.WebAccess);

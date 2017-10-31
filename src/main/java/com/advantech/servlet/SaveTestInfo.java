@@ -8,7 +8,6 @@ package com.advantech.servlet;
 
 import com.advantech.helper.ParamChecker;
 import com.advantech.webservice.WebServiceTX;
-import com.advantech.service.BasicService;
 import com.advantech.service.TestService;
 import java.io.*;
 import javax.servlet.ServletException;
@@ -16,34 +15,30 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
  *
  * @author Wei.Cheng
  */
-@WebServlet(name = "SaveTestInfo", urlPatterns = {"/SaveTestInfo"})
-public class SaveTestInfo extends HttpServlet {
+@Controller
+public class SaveTestInfo {
 
-    private TestService testService = null;
-    private ParamChecker pChecker = null;
+    private static final Logger log = LoggerFactory.getLogger(SaveTestInfo.class);
+    
+    @Autowired
+    private TestService testService;
+    
+    @Autowired
+    private ParamChecker pChecker;
+    
     private final String login = "LOGIN", logout = "LOGOUT", success = "success", changeDeck = "CHANGE_DECK", fail = "fail";
     private final String webservice_not_connected_message = "WebService connection  timeout, please try again.";
-    private static final Logger log = LoggerFactory.getLogger(SaveTestInfo.class);
 
-    @Override
-    public void init()
-            throws ServletException {
-        testService = BasicService.getTestService();
-        pChecker = new ParamChecker();
-    }
-
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse res)
-            throws ServletException, IOException {
-        res.sendError(HttpServletResponse.SC_FORBIDDEN);
-    }
-
-    @Override
+    @RequestMapping(value = "/SaveTestInfo", method = {RequestMethod.POST})
     protected void doPost(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
 

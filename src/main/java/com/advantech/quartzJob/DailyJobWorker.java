@@ -7,27 +7,29 @@
 package com.advantech.quartzJob;
 
 import com.advantech.service.BabLineTypeFacade;
-import com.advantech.service.BasicLineTypeFacade;
 import com.advantech.service.TestLineTypeFacade;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  *
  * @author Wei.Cheng
  */
+@Component
 public class DailyJobWorker implements Job {
 
     private static final Logger log = LoggerFactory.getLogger(DailyJobWorker.class);
-    private final BasicLineTypeFacade tF = TestLineTypeFacade.getInstance();
-    private final BasicLineTypeFacade bF = BabLineTypeFacade.getInstance();
-
-    public DailyJobWorker() {
-
-    }
+    
+    @Autowired
+    private TestLineTypeFacade tF;
+    
+    @Autowired
+    private BabLineTypeFacade bF;
 
     @Override
     public void execute(JobExecutionContext jec) throws JobExecutionException {

@@ -35,11 +35,7 @@
         <param-name>SYSOP_LIMIT_PERMISSION</param-name>
         <param-value>3</param-value>
     </context-param>
-    
-    <!--    <listener>
-        <listener-class>com.advantech.listener.SessionListener</listener-class>
-    </listener>-->
-    
+
     <filter>
         <filter-name>EncodingFilter</filter-name>
         <filter-class>com.advantech.filter.EncodingFilter</filter-class>
@@ -226,7 +222,7 @@
     </servlet-mapping>
  
     <!--若要停用quartz請從此開始註解-->
-    <servlet>
+<!--    <servlet>
         <servlet-name>QuartzInitializer</servlet-name>
         <servlet-class>
             org.quartz.ee.servlet.QuartzInitializerServlet
@@ -244,7 +240,7 @@
             <param-value>true</param-value>
         </init-param>
         <load-on-startup>2</load-on-startup>
-    </servlet>
+    </servlet>-->
     <!---若要停用quartz請從此結束註解-->
 
     <context-param>
@@ -270,23 +266,18 @@
         <location>/Error</location>
     </error-page>
     
-    <!--DataSource setting reference to context.xml using jndi.-->
-    <resource-ref>
-        <description>MFG-SEVER</description>
-        <res-ref-name>jdbc/res1</res-ref-name>
-        <res-type>javax.sql.DataSource</res-type>
-        <res-auth>Container</res-auth>
-    </resource-ref>
-    <resource-ref>
-        <description>PC-P7H55MLE</description>
-        <res-ref-name>jdbc/res2</res-ref-name>
-        <res-type>javax.sql.DataSource</res-type>
-        <res-auth>Container</res-auth>
-    </resource-ref>
-    <resource-ref>
-        <description>172.22.3.40</description>
-        <res-ref-name>jdbc/res3</res-ref-name>
-        <res-type>javax.sql.DataSource</res-type>
-        <res-auth>Container</res-auth>
-    </resource-ref>
+    <servlet>
+        <servlet-name>appServlet</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>classpath:servlet-context.xml</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>appServlet</servlet-name>
+        <url-pattern>/</url-pattern>
+    </servlet-mapping>
 </web-app>

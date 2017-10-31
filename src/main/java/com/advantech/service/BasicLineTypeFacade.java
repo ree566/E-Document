@@ -14,14 +14,17 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.PostConstruct;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 /**
  *
  * @author Wei.Cheng
  */
+@Component
 public abstract class BasicLineTypeFacade {
 
     private static final Logger log = LoggerFactory.getLogger(BasicLineTypeFacade.class);
@@ -34,12 +37,13 @@ public abstract class BasicLineTypeFacade {
 
     protected boolean resetFlag;//設定Flag，以免被重複init，當True才reset.
 
-    protected final Map dataMap;//占存資料用map
+    protected Map dataMap;//占存資料用map
     protected JSONObject processingJsonObject;//暫存處理過的資料
 
     protected boolean isNeedToOutputResult;//從改寫的function 得知是否要output(有人亮燈時).
 
-    protected BasicLineTypeFacade() {
+    @PostConstruct
+    protected void initValues() {
         PropertiesReader p = PropertiesReader.getInstance();
         isWriteToDB = p.isWriteToDB();
         resetFlag = true;

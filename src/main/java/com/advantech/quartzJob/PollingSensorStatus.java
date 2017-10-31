@@ -7,7 +7,6 @@
 package com.advantech.quartzJob;
 
 import com.advantech.endpoint.Endpoint;
-import com.advantech.service.BasicService;
 import com.advantech.service.FBNService;
 import com.google.gson.Gson;
 import org.quartz.Job;
@@ -15,16 +14,22 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  *
  * @author Wei.Cheng
  */
+@Component
 public class PollingSensorStatus implements Job {
 
-    private static final Gson gson = new Gson();
     private static final Logger log = LoggerFactory.getLogger(PollingSensorStatus.class);
-    private static final FBNService fbnService = BasicService.getFbnService();
+    
+    private static final Gson gson = new Gson();
+    
+    @Autowired
+    private FBNService fbnService;
 
     @Override
     public void execute(JobExecutionContext jec) throws JobExecutionException {

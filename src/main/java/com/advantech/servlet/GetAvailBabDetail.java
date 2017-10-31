@@ -7,35 +7,26 @@
 package com.advantech.servlet;
 
 import com.advantech.service.BABService;
-import com.advantech.service.BasicService;
 import java.io.*;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
  *
  * @author Wei.Cheng
  */
-@WebServlet(name = "GetAvailBabDetail", urlPatterns = {"/GetAvailBabDetail"})
-public class GetAvailBabDetail extends HttpServlet {
+@Controller
+public class GetAvailBabDetail {
 
-    private BABService babService = null;
+    @Autowired
+    private BABService babService;
 
-    @Override
-    public void init()
-            throws ServletException {
-        babService = BasicService.getBabService();
-    }
-
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse res)
-            throws ServletException, IOException {
-        res.sendError(HttpServletResponse.SC_FORBIDDEN);
-    }
-
-    @Override
+    @RequestMapping(value = "/GetAvailBabDetail", method = {RequestMethod.POST})
     protected void doPost(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
 

@@ -9,11 +9,13 @@ import com.advantech.entity.BAB;
 import com.advantech.entity.LineBalancing;
 import java.sql.Connection;
 import java.util.List;
+import org.springframework.stereotype.Repository;
 
 /**
  *
  * @author Wei.Cheng
  */
+@Repository
 public class LineBalancingDAO extends BasicDAO {
 
     private Connection getConn() {

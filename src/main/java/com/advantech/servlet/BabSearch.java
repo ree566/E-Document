@@ -8,7 +8,6 @@ package com.advantech.servlet;
 
 import com.advantech.helper.ParamChecker;
 import com.advantech.service.BABService;
-import com.advantech.service.BasicService;
 import com.advantech.webservice.WebServiceRV;
 import com.google.gson.Gson;
 import java.io.*;
@@ -17,31 +16,25 @@ import java.util.regex.Pattern;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
  *
  * @author Wei.Cheng
  */
-@WebServlet(name = "BabSearch", urlPatterns = {"/BabSearch"})
-public class BabSearch extends HttpServlet {
+@Controller
+public class BabSearch {
 
-    private BABService babService = null;
-    private ParamChecker pChecker = null;
+    @Autowired
+    private BABService babService;
+    
+    @Autowired
+    private ParamChecker pChecker;
 
-    @Override
-    public void init()
-            throws ServletException {
-        babService = BasicService.getBabService();
-        pChecker = new ParamChecker();
-    }
-
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse res)
-            throws ServletException, IOException {
-        res.sendError(HttpServletResponse.SC_FORBIDDEN);
-    }
-
-    @Override
+    @RequestMapping(value = "/BabSearch", method = {RequestMethod.POST})
     protected void doPost(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
 

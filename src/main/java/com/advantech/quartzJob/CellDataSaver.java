@@ -7,24 +7,27 @@
 package com.advantech.quartzJob;
 
 import com.advantech.entity.Cell;
-import com.advantech.model.BasicDAO;
-import com.advantech.service.BasicService;
 import com.advantech.service.CellService;
-import java.util.ArrayList;
 import java.util.List;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  *
  * @author Wei.Cheng
  */
+@Component
 public class CellDataSaver implements Job {
 
     private static final Logger log = LoggerFactory.getLogger(CellDataSaver.class);
+    
+    @Autowired
+    private CellService cellService;
 
     @Override
     public void execute(JobExecutionContext jec) throws JobExecutionException {
@@ -32,21 +35,8 @@ public class CellDataSaver implements Job {
     }
 
     private boolean saveCellData() {
-        CellService cellService = BasicService.getCellService();
         List<Cell> processing = cellService.getCellProcessing();
         return cellService.delete(processing);
     }
 
-    public static void main(String arg0[]) {
-        BasicDAO.dataSourceInit1();
-        CellService cellService = BasicService.getCellService();
-        List<Cell> l = cellService.getAll();
-        List del = new ArrayList();
-        for (Cell cell : l) {
-            if (cell.getId() % 3 == 0) {
-                del.add(cell);
-            }
-        }
-        cellService.delete(del);
-    }
 }

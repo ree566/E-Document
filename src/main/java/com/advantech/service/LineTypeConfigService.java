@@ -10,18 +10,26 @@ import com.advantech.helper.PropertiesReader;
 import com.advantech.model.LineTypeConfigDAO;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.PostConstruct;
+import javax.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  *
  * @author Wei.Cheng
  */
+@Service
+@Transactional
 public class LineTypeConfigService {
-
-    private final LineTypeConfigDAO lineTypeConfigDAO;
-
-    protected LineTypeConfigService() {
-        lineTypeConfigDAO = new LineTypeConfigDAO();
+    
+    @PostConstruct
+    protected void init(){
+//        this.initBasicVariable();
     }
+
+    @Autowired
+    private LineTypeConfigDAO lineTypeConfigDAO;
 
     public List<LineTypeConfig> getAll() {
         return lineTypeConfigDAO.getAll();
@@ -60,7 +68,7 @@ public class LineTypeConfigService {
     }
 
     //將本地設定於options.properties的變數更新到SQL中，系統init時更新
-    public void initBasicVariable() {
+    private void initBasicVariable() {
         String assy = "ASSY";
         String packing = "Packing";
         String test = "Test";

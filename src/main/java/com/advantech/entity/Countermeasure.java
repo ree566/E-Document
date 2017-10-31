@@ -6,6 +6,7 @@
 package com.advantech.entity;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  *
@@ -24,6 +25,9 @@ public class Countermeasure implements Serializable {
     private String editor;
     private String editTime;
     private int lock;
+
+    private List errorCodes;
+    private List editors;
 
     public Countermeasure() {
     }
@@ -98,5 +102,21 @@ public class Countermeasure implements Serializable {
     public void setLock(int lock) {
         this.lock = lock;
     }
-    
+
+    public List getErrorCodes() {
+        return errorCodes;
+    }
+
+    public void setErrorCodes(List errorCodes) {
+        this.errorCodes = errorCodes;
+    }
+
+    public List getEditors() {
+        return editors;
+    }
+
+    public void setEditors(List editors) {
+        this.editors = editors;
+    }
+
 }

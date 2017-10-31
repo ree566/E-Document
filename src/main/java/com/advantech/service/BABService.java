@@ -6,16 +6,19 @@ import com.advantech.entity.BABHistory;
 import com.advantech.entity.BABStatus;
 import com.advantech.entity.Line;
 import com.advantech.helper.PropertiesReader;
-import com.advantech.interfaces.AlarmActions;
 import com.advantech.model.BABDAO;
 import com.google.gson.Gson;
 import java.math.BigDecimal;
 import java.sql.Array;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.PostConstruct;
+import javax.transaction.Transactional;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -26,17 +29,30 @@ import org.json.JSONObject;
  *
  * @author Wei.Cheng
  */
-public class BABService implements AlarmActions {
+@Service
+@Transactional
+public class BABService {
 
-    private final BABDAO babDAO;
-    private final int BALANCE_ROUNDING_DIGIT;
+    @Autowired
+    private BABDAO babDAO;
+    
+    @Autowired
+    private LineService lineService;
+    
+    @Autowired
+    private BABLoginStatusService bs;
+    
+    @Autowired
+    private LineBalanceService lineBalanceService;
+    
+    private int BALANCE_ROUNDING_DIGIT;
 
     private final Integer FIRST_STATION_NUMBER = 1;
 
-    private final int MININUM_SAVE_TO_DB_QUANTITY;
+    private int MININUM_SAVE_TO_DB_QUANTITY;
 
-    protected BABService() {
-        babDAO = new BABDAO();
+    @PostConstruct
+    protected void BABService() {
         PropertiesReader p = PropertiesReader.getInstance();
         BALANCE_ROUNDING_DIGIT = p.getBalanceRoundingDigit();
         MININUM_SAVE_TO_DB_QUANTITY = p.getBabSaveToRecordStandardQuantity();
@@ -132,22 +148,22 @@ public class BABService implements AlarmActions {
         return babDAO.getEmptyRecordDownExcel(startDate, endDate);
     }
 
-    @Override
+//    @Override
     public boolean insertAlarm(List<AlarmAction> l) {
         return babDAO.insertAlarm(l);
     }
 
-    @Override
+//    @Override
     public boolean updateAlarm(List<AlarmAction> l) {
         return babDAO.updateAlarm(l);
     }
 
-    @Override
+//    @Override
     public boolean resetAlarm() {
         return babDAO.resetAlarm();
     }
 
-    @Override
+//    @Override
     public boolean removeAlarmSign() {
         return babDAO.removeAlarmSign();
     }
@@ -157,8 +173,6 @@ public class BABService implements AlarmActions {
     }
 
     public String checkAndStartBAB(BAB bab, String jobnumber) {
-        LineService lineService = BasicService.getLineService();
-
         List<BAB> prevBAB = babDAO.getProcessingBABByPOAndLine(bab.getPO(), bab.getLine());
         if (!prevBAB.isEmpty()) {
             return "工單號碼已經存在";
@@ -179,7 +193,6 @@ public class BABService implements AlarmActions {
                     babDAO.closeBABDirectly(prevBab);
                 }
                 BAB b = this.babDAO.getLastInputBAB(bab.getLine());//get last insert id
-                BABLoginStatusService bs = BasicService.getBabLoginStatusService();
                 return bs.recordBABPeople(b.getId(), this.FIRST_STATION_NUMBER, jobnumber) ? "success" : "發生錯誤，工單已經投入，人員資訊無法記錄";
             } else {
                 return "error";
@@ -235,7 +248,7 @@ public class BABService implements AlarmActions {
     }
 
     public double getLineBalance(int BABid) throws JSONException {
-        return BasicService.getLineBalanceService().caculateLineBalance(getBABAvgs(BABid));
+        return lineBalanceService.caculateLineBalance(getBABAvgs(BABid));
     }
 
     public JSONArray getAvg(int BABid) {

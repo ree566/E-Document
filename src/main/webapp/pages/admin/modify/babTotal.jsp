@@ -414,7 +414,7 @@
                                     case 1:
                                         return "已經關閉";
                                         break;
-                                    case -1:
+                                    case - 1:
                                         return "沒有儲存紀錄";
                                         break;
                                     default:
@@ -605,12 +605,11 @@
 
             function getContermeasure(BABid) {
                 $.ajax({
-                    url: "../../CountermeasureServlet",
+                    url: "<c:url value="/CountermeasureServlet/findAll" />",
                     data: {
-                        BABid: BABid,
-                        action: "select"
+                        BABid: BABid
                     },
-                    type: "POST",
+                    type: "GET",
                     dataType: 'json',
                     success: function (msg) {
                         var jsonData = msg.data[0];
@@ -829,14 +828,13 @@
                 $("#saveCountermeasure").click(function () {
                     if (confirm("確定修改內容?")) {
                         $.ajax({
-                            url: "../../CountermeasureServlet",
+                            url: "<c:url value="/CountermeasureServlet/update" />",
                             data: {
                                 BABid: editId,
                                 reason: $("#errorReasonText").val(),
                                 errorCode_id: $("#errorCode>select").val(),
                                 solution: $("#errorConText").val(),
-                                editor: $("#responseUserText").val(),
-                                action: "update"
+                                editor: $("#responseUserText").val()
                             },
                             type: "POST",
                             dataType: 'json',

@@ -8,39 +8,31 @@ package com.advantech.servlet;
 
 import com.advantech.entity.Identit;
 import com.advantech.helper.ParamChecker;
-import com.advantech.service.BasicService;
 import com.advantech.service.IdentitService;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
-@WebServlet(name = "CheckUser", urlPatterns = {"/CheckUser"})
-public class CheckUser extends HttpServlet {
+/**
+ *
+ * @author Wei.Cheng
+ */
+@Controller
+public class CheckUser {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
+    @Autowired
+    private IdentitService identitService;
 
-    private IdentitService identitService = null;
-    private ParamChecker pChecker = null;
+    @Autowired
+    private ParamChecker pChecker;
 
-    @Override
-    public void init() throws ServletException {
-        identitService = BasicService.getIdentitService();
-        pChecker = new ParamChecker();
-    }
-
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        res.sendError(HttpServletResponse.SC_FORBIDDEN);
-    }
-
-    @Override
+    @RequestMapping(value = "/CheckUser", method = {RequestMethod.POST})
     public void doPost(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
 

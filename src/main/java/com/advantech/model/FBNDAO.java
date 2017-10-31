@@ -9,16 +9,14 @@ import com.advantech.entity.FBN;
 import java.sql.Connection;
 import java.util.List;
 import java.util.Map;
+import org.springframework.stereotype.Repository;
 
 /**
  *
  * @author Wei.Cheng
  */
+@Repository
 public class FBNDAO extends BasicDAO {
-
-    public FBNDAO() {
-
-    }
 
     private Connection getConn() {
         return getDBUtilConn(SQL.WebAccess);

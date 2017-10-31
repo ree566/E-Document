@@ -8,19 +8,21 @@ package com.advantech.service;
 import com.advantech.entity.Line;
 import com.advantech.model.LineDAO;
 import java.util.List;
+import javax.transaction.Transactional;
 import org.json.JSONException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  *
  * @author Wei.Cheng
  */
+@Service
+@Transactional
 public class LineService {
 
-    private final LineDAO lineDAO;
-
-    protected LineService() {
-        lineDAO = new LineDAO();
-    }
+    @Autowired
+    private LineDAO lineDAO;
 
     public List<Line> getLine() {
         return lineDAO.getOpenedLine();

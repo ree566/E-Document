@@ -10,7 +10,6 @@ import com.advantech.entity.BAB;
 import com.advantech.helper.CronTrigMod;
 import com.advantech.helper.PropertiesReader;
 import com.advantech.service.BABService;
-import com.advantech.service.BasicService;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -22,6 +21,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.PostConstruct;
 import org.json.JSONObject;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
@@ -31,6 +31,7 @@ import org.quartz.SchedulerException;
 import org.quartz.TriggerKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
@@ -41,21 +42,23 @@ public class LineBalancePeopleGenerator implements Job {
 
     private static final Logger log = LoggerFactory.getLogger(LineBalancePeopleGenerator.class);
 
-    private final BABService babService;
-    private final int numLampMaxTestRequiredPeople, numLampGroupStart, numLampGroupEnd, numLampSpecCuttingGroup;
+    @Autowired
+    private BABService babService;
+    
+    private int numLampMaxTestRequiredPeople, numLampGroupStart, numLampGroupEnd, numLampSpecCuttingGroup;
 
     private int currentGroup;
 
-    private final Double babStandard;
+    private Double babStandard;
     private Double testStandardTime; //分鐘
     private Integer totalQuantity;
 
     private List<String> message;
 
-    private final DecimalFormat formatter;
-    private final DecimalFormat formatter2;
+    private DecimalFormat formatter;
+    private DecimalFormat formatter2;
 
-    private final int startCountMininumQuantity, startCountMininumStandardTime, minTotalStandardTime, basicSuggestPeople = 1;
+    private int startCountMininumQuantity, startCountMininumStandardTime, minTotalStandardTime, basicSuggestPeople = 1;
 
     private BAB bab;
     private JobKey currentJobKey;
@@ -63,9 +66,8 @@ public class LineBalancePeopleGenerator implements Job {
 
     private NumLamp numLamp;
 
-    public LineBalancePeopleGenerator() {
-        this.babService = BasicService.getBabService();
-
+    @PostConstruct
+    public void init() {
         PropertiesReader p = PropertiesReader.getInstance();
         this.numLampMaxTestRequiredPeople = p.getNumLampMaxTestRequiredPeople();
         this.numLampGroupStart = p.getNumLampGroupStart();

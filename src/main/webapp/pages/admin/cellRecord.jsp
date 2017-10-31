@@ -7,7 +7,6 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<jsp:useBean id="cellLineDAO" class="com.advantech.model.CellLineDAO" scope="application" />
 <!DOCTYPE html>
 <html>
     <head>
@@ -57,6 +56,11 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
 
                 $(":text,input[type='number'],select").addClass("form-control");
                 $(":button").addClass("btn btn-default");
+
+                var lines = getLine();
+                for (var i = 0; i < lines.length; i++) {
+                    setLineOptions(lines[i]);
+                }
 
                 $("#send").click(function () {
                     getDetail();
@@ -127,6 +131,27 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                 getAllCell();
             });
 
+            function setLineOptions(line) {
+                $("#lineId").append("<option value=" + line.id + " " + (line.lock == 1 ? "disabled style='opacity:0.5'" : "") + ">線別 " + line.name + "</option>");
+            }
+
+            function getLine() {
+                var result;
+                $.ajax({
+                    type: "Get",
+                    url: "<c:url value="/CellLineServlet/findAll" />",
+                    dataType: "json",
+                    async: false,
+                    success: function (response) {
+                        result = response;
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        showMsg(xhr.responseText);
+                    }
+                });
+                return result;
+            }
+
             function getAllCell() {
                 availHistoryTable = $("#cellHistory").DataTable({
                     dom: 'lf<"floatright"B>rtip',
@@ -170,7 +195,7 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                         {data: "PO"},
                         {data: "Model_name"},
                         {data: "lineName"},
-                        {data: "type"},
+                        {data: "TYPE"},
                         {data: "failPercent"},
                         {data: "total"},
                         {data: "isused"},
@@ -413,11 +438,6 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                             <td>
                                 <select id="lineId">
                                     <option value="">請選擇線別</option>
-                                    <c:forEach var="cellLine" items="${cellLineDAO.findAll()}">
-                                        <option value="${cellLine.id}">
-                                            線別 ${cellLine.name}
-                                        </option>
-                                    </c:forEach>
                                 </select>
                             </td>
                         </tr>

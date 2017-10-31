@@ -7,52 +7,51 @@ package com.advantech.service;
 
 import com.advantech.entity.AlarmAction;
 import com.advantech.entity.Cell;
-import com.advantech.interfaces.AlarmActions;
-import com.advantech.model.BasicDAO;
 import com.advantech.model.CellDAO;
-import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import javax.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  *
  * @author Wei.Cheng
  */
-public class CellService implements AlarmActions {
+@Service
+@Transactional
+public class CellService {
 
-    private final CellDAO cellProcessDAO;
-
-    protected CellService() {
-        cellProcessDAO = new CellDAO();
-    }
+    @Autowired
+    private CellDAO cellDAO;
 
     public List<Cell> getAll() {
-        return cellProcessDAO.getAll();
+        return cellDAO.getAll();
     }
 
     public Cell getOne(int id) {
-        return cellProcessDAO.getOne(id);
+        return cellDAO.getOne(id);
     }
 
     public List<Cell> getByPo(String PO) {
-        return cellProcessDAO.getByPo(PO);
+        return cellDAO.getByPo(PO);
     }
 
     public List<Cell> getCellProcessing() {
-        return cellProcessDAO.getCellProcessing();
+        return cellDAO.getCellProcessing();
     }
 
     public List<Cell> getCellProcessing(int lineId) {
-        return cellProcessDAO.getCellProcessing(lineId);
+        return cellDAO.getCellProcessing(lineId);
     }
 
     public List<Map> cellHistoryView() {
-        return cellProcessDAO.cellHistoryView();
+        return cellDAO.cellHistoryView();
     }
 
     public List<Map> cellHistoryView(String startDate, String endDate) {
-        return cellProcessDAO.cellHistoryView(startDate, endDate);
+        return cellDAO.cellHistoryView(startDate, endDate);
     }
 
     public boolean insert(Cell cell) {
@@ -62,42 +61,31 @@ public class CellService implements AlarmActions {
     }
 
     public boolean insert(List<Cell> l) {
-        return cellProcessDAO.insert(l);
+        return cellDAO.insert(l);
     }
 
     public boolean delete(List<Cell> l) {
-        return cellProcessDAO.delete(l);
+        return cellDAO.delete(l);
     }
 
     public boolean delete(Cell cell) {
-        return cellProcessDAO.delete(cell);
+        return cellDAO.delete(cell);
     }
 
-    @Override
     public boolean insertAlarm(List<AlarmAction> l) {
-        return cellProcessDAO.insertAlarm(l);
+        return cellDAO.insertAlarm(l);
     }
 
-    @Override
     public boolean updateAlarm(List<AlarmAction> l) {
-        return cellProcessDAO.updateAlarm(l);
+        return cellDAO.updateAlarm(l);
     }
 
-    @Override
     public boolean resetAlarm() {
-        return cellProcessDAO.resetAlarm();
+        return cellDAO.resetAlarm();
     }
 
-    @Override
     public boolean removeAlarmSign() {
-        return cellProcessDAO.removeAlarmSign();
+        return cellDAO.removeAlarmSign();
     }
 
-    public static void main(String arg0[]) {
-        BasicDAO.dataSourceInit1();
-        CellService service = BasicService.getCellService();
-//        System.out.println(service.insert(new Cell(4, "test", "test")));
-//        System.out.println(new Gson().toJson());
-        System.out.println(service.insert(service.getOne(10)));
-    }
 }

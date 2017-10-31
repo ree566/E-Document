@@ -12,22 +12,20 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
-import org.apache.commons.dbutils.DbUtils;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.ScalarHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
 
 /**
  *
  * @author Wei.Cheng bab資料表就是生產工單資料表
  */
+@Repository
 public class CountermeasureDAO extends BasicDAO {
 
     private static final Logger log = LoggerFactory.getLogger(CountermeasureDAO.class);
-
-    public CountermeasureDAO() {
-    }
 
     private Connection getConn() {
         return getDBUtilConn(SQL.WebAccess);
@@ -97,36 +95,31 @@ public class CountermeasureDAO extends BasicDAO {
     public boolean insertCountermeasure(int BABid, String solution, List<String> actionCodes, String editor) {
 
         boolean flag = false;
-        Connection conn = null;
+        Connection conn;
 
         try {
             QueryRunner qRunner = new QueryRunner();
 
             conn = this.getConn();
-            conn.setAutoCommit(false);
 
             Object[] param3 = {BABid, solution};
             int insertId = qRunner.insert(conn, "INSERT INTO Countermeasure(BABid, solution) values(?,?)", new ScalarHandler<BigDecimal>(), param3).intValue();//關閉線別
-
-            PreparedStatement ps = conn.prepareStatement("INSERT INTO CountermeasureDetail(cm_id, ac_id) values(?,?)");
-
-            for (String actionCode : actionCodes) {
-                Object[] param = {insertId, actionCode};
-                qRunner.fillStatement(ps, param);
-                ps.addBatch();
+            try (PreparedStatement ps = conn.prepareStatement("INSERT INTO CountermeasureDetail(cm_id, ac_id) values(?,?)")) {
+                for (String actionCode : actionCodes) {
+                    Object[] param = {insertId, actionCode};
+                    qRunner.fillStatement(ps, param);
+                    ps.addBatch();
+                }
+                ps.executeBatch();
             }
-
-            ps.executeBatch();
-            ps.close();
 
             Object[] param4 = {insertId, editor, "insert"};
             qRunner.update(conn, "INSERT INTO CountermeasureEvent(cm_id, editor, event) VALUES(?,?,?)", param4);
 
-            DbUtils.commitAndCloseQuietly(conn);
             flag = true;
-        } catch (SQLException ex) {
-            log.error(ex.toString());
-            DbUtils.rollbackAndCloseQuietly(conn);
+        } catch (SQLException e) {
+            log.error(e.getMessage(), e);
+            throw new RuntimeException(e);
         }
         return flag;
     }
@@ -134,7 +127,7 @@ public class CountermeasureDAO extends BasicDAO {
     public boolean updateCountermeasure(int BABid, String solution, List<String> actionCodes, String editor) {
 
         boolean flag = false;
-        Connection conn = null;
+        Connection conn;
 
         Countermeasure cm = this.getCountermeasure(BABid);
 
@@ -142,7 +135,6 @@ public class CountermeasureDAO extends BasicDAO {
             QueryRunner qRunner = new QueryRunner();
 
             conn = this.getConn();
-            conn.setAutoCommit(false);
 
             Object[] param3 = {solution, cm.getId()};
             qRunner.update(conn, "UPDATE Countermeasure SET solution = ? WHERE id = ?", param3);//關閉線別
@@ -150,25 +142,23 @@ public class CountermeasureDAO extends BasicDAO {
             int cm_id = cm.getId();
             qRunner.update(conn, "DELETE FROM CountermeasureDetail WHERE cm_id = ?", cm_id);
 
-            PreparedStatement ps = conn.prepareStatement("INSERT INTO CountermeasureDetail(cm_id, ac_id) values(?,?)");
-
-            for (String actionCode : actionCodes) {
-                Object[] param = {cm_id, actionCode};
-                qRunner.fillStatement(ps, param);
-                ps.addBatch();
+            try (PreparedStatement ps = conn.prepareStatement("INSERT INTO CountermeasureDetail(cm_id, ac_id) values(?,?)")) {
+                for (String actionCode : actionCodes) {
+                    Object[] param = {cm_id, actionCode};
+                    qRunner.fillStatement(ps, param);
+                    ps.addBatch();
+                }
+                
+                ps.executeBatch();
             }
-
-            ps.executeBatch();
-            ps.close();
 
             Object[] param4 = {cm_id, editor, "update"};
             qRunner.update(conn, "INSERT INTO CountermeasureEvent(cm_id, editor, event) VALUES(?,?,?)", param4);
 
-            DbUtils.commitAndCloseQuietly(conn);
             flag = true;
-        } catch (SQLException ex) {
-            log.error(ex.toString());
-            DbUtils.rollbackAndCloseQuietly(conn);
+        } catch (SQLException e) {
+            log.error(e.getMessage(), e);
+            throw new RuntimeException(e);
         }
         return flag;
     }

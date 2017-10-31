@@ -7,7 +7,6 @@
 package com.advantech.endpoint;
 
 import com.advantech.entity.BAB;
-import com.advantech.service.BasicService;
 import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -57,9 +56,9 @@ public class Endpoint6 {
     }
 
     private static void syncCurrentBabStatus() {
-        processingBAB.clear();
-        List l = BasicService.getBabService().getTodayBAB();
-        groupBab(l);
+//        processingBAB.clear();
+//        List l = BasicService.getBabService().getTodayBAB();
+//        groupBab(l);
     }
 
     public static void syncAndEcho() {

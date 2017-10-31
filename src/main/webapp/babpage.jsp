@@ -6,7 +6,6 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<jsp:useBean id="lineDAO" class="com.advantech.model.LineDAO" scope="application" />
 <!DOCTYPE html>
 <html>
     <c:set var="userSitefloor" value="${param.sitefloor}" />
@@ -111,7 +110,7 @@
                 $(document).ajaxSend(function () {
                     block();//Block the screen when ajax is sending, Prevent form submit repeatly.
                 });
-                $(document).ajaxSuccess(function () {
+                $(document).ajaxComplete(function () {
                     $.unblockUI();//Unblock the ajax when success
                 });
 
@@ -792,7 +791,6 @@
 
         <!--Contents-->
         <div class="container">
-            <c:set var="lineInfo" value="${lineDAO.getLine(userSitefloor)}" />
             <div id="step1" class="step">
                 <div class="userWiget form-inline">
                     <select id="lineNo" name="lineNo">

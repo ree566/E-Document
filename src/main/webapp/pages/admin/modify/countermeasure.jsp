@@ -41,11 +41,8 @@
                 $("#dataTest").DataTable({
                     "bAutoWidth": false,
                     "ajax": {
-                        "url": "../../../CountermeasureServlet",
-                        "type": "POST",
-                        data: {
-                            action: "select"
-                        }
+                        "url": "<c:url value="/CountermeasureServlet/findAll" />",
+                        "type": "GET"
                     },
                     "columns": [
                         {data: "id"},

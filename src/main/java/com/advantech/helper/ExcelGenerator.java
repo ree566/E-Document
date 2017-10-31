@@ -5,8 +5,7 @@
  */
 package com.advantech.helper;
 
-import com.advantech.model.BasicDAO;
-import com.advantech.service.BasicService;
+import com.advantech.service.BABService;
 import com.advantech.service.FBNService;
 import java.io.FileOutputStream;
 import static java.lang.System.out;
@@ -17,7 +16,6 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.CellReference;
 import org.apache.poi.hssf.util.HSSFColor;
@@ -32,14 +30,23 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  *
  * @author Wei.Cheng
  */
+@Component
 public class ExcelGenerator {
 
     private static final Logger log = LoggerFactory.getLogger(ExcelGenerator.class);
+    
+    @Autowired
+    private FBNService fbnService;
+    
+    @Autowired
+    private BABService babService;
 
     private Workbook workbook;
     private Sheet spreadsheet;
@@ -269,8 +276,7 @@ public class ExcelGenerator {
      * @param date
      */
     private void generateSensorAbnormalData(String date) {
-        FBNService fService = BasicService.getFbnService();
-        List<Map> babList = BasicService.getBabService().getBABForMap(date);
+        List<Map> babList = babService.getBABForMap(date);
         workbook = new HSSFWorkbook();
 
         spreadsheet = workbook.createSheet("test");
@@ -279,16 +285,16 @@ public class ExcelGenerator {
 
         for (Map bab : babList) {
             int BABid = (int) bab.get("id");
-            List<Map> abnormalDataTotal = fService.getTotalAbnormalData(BABid);
-            List<Map> abnormalData = fService.getAbnormalData(BABid);
+            List<Map> abnormalDataTotal = fbnService.getTotalAbnormalData(BABid);
+            List<Map> abnormalData = fbnService.getAbnormalData(BABid);
 
             //Make sure the data if empty or not(deadLock always happen).
             if (abnormalDataTotal.isEmpty()) {
-                abnormalDataTotal = fService.getTotalAbnormalData(BABid);
+                abnormalDataTotal = fbnService.getTotalAbnormalData(BABid);
             }
 
             if (abnormalData.isEmpty()) {
-                abnormalData = fService.getAbnormalData(BABid);
+                abnormalData = fbnService.getAbnormalData(BABid);
             }
 
             CellStyle style = workbook.createCellStyle();
@@ -467,13 +473,4 @@ public class ExcelGenerator {
         return map;
     }
 
-    public static void main(String arg0[]) {
-        BasicDAO.dataSourceInit1();
-        List l = BasicService.getCountermeasureService().getCountermeasures();
-        ExcelGenerator e = new ExcelGenerator();
-        e.generateWorkBook(l);
-
-        e.outputExcel("TEST2");
-
-    }
 }

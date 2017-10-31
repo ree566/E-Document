@@ -9,22 +9,26 @@ package com.advantech.quartzJob;
 import com.advantech.endpoint.Endpoint4;
 import com.advantech.service.CellLineTypeFacade;
 import com.google.gson.Gson;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  *
  * @author Wei.Cheng
  */
+@Component
 public class PollingCellResult implements Job {
 
-    private static final Gson gson = new Gson();
     private static final Logger log = LoggerFactory.getLogger(PollingCellResult.class);
+    
+    @Autowired
+    private CellLineTypeFacade cf;
 
     @Override
     public void execute(JobExecutionContext jec) throws JobExecutionException {
@@ -47,7 +51,7 @@ public class PollingCellResult implements Job {
     }
 
     public String getData() {
-        JSONObject data = CellLineTypeFacade.getInstance().getJSONObject();
+        JSONObject data = cf.getJSONObject();
         return (data == null ? new JSONObject() : data).toString();
     }
 }

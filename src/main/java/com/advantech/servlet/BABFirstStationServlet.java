@@ -12,7 +12,6 @@ import com.advantech.helper.MailSend;
 import com.advantech.helper.ParamChecker;
 import com.advantech.helper.PropertiesReader;
 import com.advantech.service.BABService;
-import com.advantech.service.BasicService;
 import java.io.*;
 import javax.mail.MessagingException;
 import javax.servlet.ServletException;
@@ -22,31 +21,27 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
  *
  * @author Wei.Cheng
  */
-@WebServlet(name = "BABFirstStationServlet", urlPatterns = {"/BABFirstStationServlet"})
-public class BABFirstStationServlet extends HttpServlet {
+@Controller
+public class BABFirstStationServlet {
     
     private static final Logger log = LoggerFactory.getLogger(BABFirstStationServlet.class);
-    private BABService babService = null;
-    private ParamChecker pChecker = null;
     
-    @Override
-    public void init() throws ServletException {
-        babService = BasicService.getBabService();
-        pChecker = new ParamChecker();
-    }
+    @Autowired
+    private BABService babService;
     
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse res)
-            throws ServletException, IOException {
-        res.sendError(HttpServletResponse.SC_FORBIDDEN);
-    }
-    
-    @Override
+    @Autowired
+    private ParamChecker pChecker;
+   
+    @RequestMapping(value = "/BABFirstStationServlet", method = {RequestMethod.POST})
     protected void doPost(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
         

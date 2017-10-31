@@ -11,11 +11,13 @@ import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
 
 /**
  *
  * @author Wei.Cheng
  */
+@Repository
 public class IdentitDAO extends BasicDAO {
 
     private static final Logger log = LoggerFactory.getLogger(BasicDAO.class);
@@ -37,7 +39,7 @@ public class IdentitDAO extends BasicDAO {
     }
 
     public Identit getIdentit(String jobnumber) {
-        List l = queryIdentitTable("SELECT * FROM identitView WHERE jobnumber = ?", jobnumber);
+        List l = queryIdentitTable("SELECT * FROM [M3-SERVER\\M3SERVER,1433].[WebAccess].[dbo].[identitView] WHERE jobnumber = ?", jobnumber);
         return !l.isEmpty() ? (Identit) l.get(0) : null;
     }
 

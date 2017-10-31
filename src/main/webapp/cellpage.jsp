@@ -6,7 +6,6 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<jsp:useBean id="cellLineDAO" class="com.advantech.model.CellLineDAO" scope="application" />
 <!DOCTYPE html>
 <html>
     <c:set var="userSitefloor" value="${param.sitefloor}" />
@@ -48,6 +47,11 @@
 
                 if (checkExistCookies() == false) {
                     return false;
+                }
+
+                var lines = getLine();
+                for (var i = 0; i < lines.length; i++) {
+                    setLineOptions(lines[i]);
                 }
 
                 var cellCookie = $.cookie(cellCookieName);
@@ -169,6 +173,30 @@
 
                 function resizeInput() {
                     $(this).attr('size', $(this).attr('placeholder').length);
+                }
+
+                function setLineOptions(line) {
+                    $("#lineId").append("<option value=" + line.id + " " + (line.lock == 1 ? "disabled style='opacity:0.5'" : "") + ">線別 " + line.name + "</option>");
+                }
+
+                function getLine() {
+                    var result;
+                    $.ajax({
+                        type: "Get",
+                        url: "CellLineServlet/findBySitefloor",
+                        data: {
+                            sitefloor: $("#userSitefloorSelect").val()
+                        },
+                        dataType: "json",
+                        async: false,
+                        success: function (response) {
+                            result = response;
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            showMsg(xhr.responseText);
+                        }
+                    });
+                    return result;
                 }
 
                 function getLineStatus(lineId) {
@@ -412,12 +440,7 @@
             <div class="form-group form-inline">
                 <label>Line login</label>
                 <select id="lineId">
-                    <option value="-1">請選擇線別</option>
-                    <c:forEach var="cellLine" items="${cellLineDAO.findBySitefloor(userSitefloor)}">
-                        <option value="${cellLine.id}" ${cellLine.lock == 1 ? "disabled style='opacity:0.5'" : ""}>
-                            線別 ${cellLine.name} 
-                        </option>
-                    </c:forEach>
+                    <option value="-1">---請選擇線別---</option>
                 </select>
                 <input type="button" id="login" value="Login" />
                 <input type="button" id="logout" value="Logout" />

@@ -10,38 +10,39 @@ import com.advantech.entity.CellLine;
 import com.advantech.helper.PropertiesReader;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.PostConstruct;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  *
  * @author Wei.Cheng
  */
+@Component
 public class CellLineTypeFacade extends BasicLineTypeFacade {
 
     private static final Logger log = LoggerFactory.getLogger(CellLineTypeFacade.class);
 
-    private static CellLineTypeFacade instance;
-    private final CellService cellService;
-    private final Double cellStandardMin, cellStandardMax;
+    @Autowired
+    private CellService cellService;
 
-    private CellLineTypeFacade() {
-        cellService = BasicService.getCellService();
+    @Autowired
+    private CellLineService cellLineService;
+
+    @Autowired
+    private PassStationService passStationService;
+
+    private Double cellStandardMin, cellStandardMax;
+
+    @PostConstruct
+    protected void init() {
         PropertiesReader p = PropertiesReader.getInstance();
         cellStandardMin = p.getCellStandardMin();
         cellStandardMax = p.getCellStandardMax();
-        this.init();
-    }
 
-    public static CellLineTypeFacade getInstance() {
-        if (instance == null) {
-            instance = new CellLineTypeFacade();
-        }
-        return instance;
-    }
-
-    private void init() {
         this.initMap();
         if (isWriteToDB) {
             boolean initStatus = this.initDbAlarmSign();
@@ -54,7 +55,7 @@ public class CellLineTypeFacade extends BasicLineTypeFacade {
     @Override
     protected void initMap() {
         this.dataMap.clear();
-        List<CellLine> l = BasicService.getCellLineService().findAll();
+        List<CellLine> l = cellLineService.findAll();
         for (CellLine cellLine : l) {
             dataMap.put(cellLine.getOutputName(), super.NORMAL_SIGN);
         }
@@ -62,7 +63,7 @@ public class CellLineTypeFacade extends BasicLineTypeFacade {
 
     @Override
     protected boolean generateData() {
-        List<Map> l = BasicService.getPassStationService().getCellLastGroupStatusView();
+        List<Map> l = passStationService.getCellLastGroupStatusView();
         boolean isCellsUnderBalance = false;
         this.initMap();
         if (!l.isEmpty()) {

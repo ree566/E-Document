@@ -9,23 +9,25 @@ import com.advantech.entity.FBN;
 import com.advantech.model.FBNDAO;
 import java.util.List;
 import java.util.Map;
+import javax.transaction.Transactional;
 import org.joda.time.DateTime;
 import org.joda.time.Hours;
 import org.joda.time.Minutes;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  *
  * @author Wei.Cheng
  */
+@Service
+@Transactional
 public class FBNService {
 
-    private final FBNDAO fbnDAO;
-
-    protected FBNService() {
-        fbnDAO = new FBNDAO();
-    }
+    @Autowired
+    private FBNDAO fbnDAO;
 
     public FBN getLastInputData() {
         return fbnDAO.getLastInputData();

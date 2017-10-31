@@ -8,9 +8,8 @@ package com.advantech.quartzJob;
 import com.advantech.entity.BAB;
 import com.advantech.entity.LineOwnerMapping;
 import com.advantech.helper.PropertiesReader;
-import com.advantech.service.BasicService;
+import com.advantech.service.BABService;
 import com.advantech.service.LineOwnerMappingService;
-import com.google.gson.Gson;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -24,6 +23,8 @@ import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.PersistJobDataAfterExecution;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  *
@@ -32,20 +33,24 @@ import org.quartz.PersistJobDataAfterExecution;
  */
 @PersistJobDataAfterExecution
 @DisallowConcurrentExecution
+@Component
 public class SensorDetect extends ProcessingBabDetector implements Job {
 
     public static JobDataMap jobDataMap = null;
-    private static final Integer SENSOR_EXPIRE_TIME;
-    private static final Integer SENSOR_DETECT_PERIOD;
+    private Integer SENSOR_EXPIRE_TIME;
+    private Integer SENSOR_DETECT_PERIOD;
 
-    static {
+    @Autowired
+    private LineOwnerMappingService ownerService;
+
+    @Autowired
+    private BABService babService;
+
+    protected void init() {
         PropertiesReader p = PropertiesReader.getInstance();
         SENSOR_EXPIRE_TIME = p.getSensorDetectExpireTime();
         SENSOR_DETECT_PERIOD = p.getSensorDetectPeriod();
-    }
-
-    public SensorDetect() {
-        super(
+        super.init(
                 "_SensorCheck",
                 "SensorCheck",
                 "0 " + getMinutePeriodTime() + "/" + SENSOR_DETECT_PERIOD + " 8-11,13-20 ? * MON-SAT *",
@@ -53,7 +58,7 @@ public class SensorDetect extends ProcessingBabDetector implements Job {
         );
     }
 
-    private static Integer getMinutePeriodTime() {
+    private Integer getMinutePeriodTime() {
         return new DateTime().getMinuteOfHour() % SENSOR_DETECT_PERIOD;
     }
 
@@ -69,7 +74,6 @@ public class SensorDetect extends ProcessingBabDetector implements Job {
 
     private JSONArray getResponsors(BAB b) {
         JSONArray arr = new JSONArray();
-        LineOwnerMappingService ownerService = BasicService.getLineOwnerMappingService();
         List<LineOwnerMapping> responsors = ownerService.getByLine(b.getLine());
         for (LineOwnerMapping owner : responsors) {
             arr.put(owner.getUser_name());
@@ -93,19 +97,19 @@ public class SensorDetect extends ProcessingBabDetector implements Job {
 
     @Override
     public List<BAB> getProcessingBab() {
-        List<BAB> l = BasicService.getBabService().getAllProcessing();
+        List<BAB> l = babService.getAllProcessing();
         return removePreBab(l);
     }
 
     private List<BAB> removePreBab(List<BAB> l) {
         Iterator it = l.iterator();
-        while(it.hasNext()){
+        while (it.hasNext()) {
             BAB b = (BAB) it.next();
             if (b.getIspre() == 1) {
                 it.remove();
             }
         }
-        
+
         return l;
     }
 }

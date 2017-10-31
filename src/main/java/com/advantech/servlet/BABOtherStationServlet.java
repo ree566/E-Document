@@ -12,7 +12,6 @@ import com.advantech.entity.BAB;
 import com.advantech.helper.ParamChecker;
 import com.advantech.service.BABLoginStatusService;
 import com.advantech.service.BABService;
-import com.advantech.service.BasicService;
 import java.io.*;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -21,36 +20,32 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
  *
  * @author Wei.Cheng
  */
-@WebServlet(name = "BABOtherStationServlet", urlPatterns = {"/BABOtherStationServlet"})
-public class BABOtherStationServlet extends HttpServlet {
+@Controller
+public class BABOtherStationServlet {
 
     private static final Logger log = LoggerFactory.getLogger(BABOtherStationServlet.class);
 
-    private BABLoginStatusService bService = null;
-    private BABService babService = null;
-    private ParamChecker pChecker = null;
+    @Autowired
+    private BABLoginStatusService bService;
+    
+    @Autowired
+    private BABService babService;
+    
+    @Autowired
+    private ParamChecker pChecker;
+    
     private final String successMsg = "success";
 
-    @Override
-    public void init()
-            throws ServletException {
-        bService = BasicService.getBabLoginStatusService();
-        babService = BasicService.getBabService();
-        pChecker = new ParamChecker();
-    }
-
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse res)
-            throws ServletException, IOException {
-        res.sendError(HttpServletResponse.SC_FORBIDDEN);
-    }
-
-    @Override
+    @RequestMapping(value = "/BABOtherStationServlet", method = {RequestMethod.POST})
     protected void doPost(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
 
@@ -124,9 +119,4 @@ public class BABOtherStationServlet extends HttpServlet {
         }
     }
 
-    public static void main(String arg0[]) {
-        JSONArray arr = new JSONArray();
-        arr.put("1");
-        System.out.print(arr.length());
-    }
 }

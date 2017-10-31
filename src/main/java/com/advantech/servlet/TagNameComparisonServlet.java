@@ -9,42 +9,35 @@ package com.advantech.servlet;
 import com.advantech.entity.Line;
 import com.advantech.entity.TagNameComparison;
 import com.advantech.helper.ParamChecker;
-import com.advantech.service.BasicService;
+import com.advantech.service.LineService;
 import com.advantech.service.TagNameComparisonService;
 import java.io.*;
 import java.util.List;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
  *
  * @author Wei.Cheng
  */
-@WebServlet(name = "TagNameComparisonServlet", urlPatterns = {"/TagNameComparisonServlet"})
-public class TagNameComparisonServlet extends HttpServlet {
+@Controller
+public class TagNameComparisonServlet {
+    
+    @Autowired
+    private LineService lineService;
 
-    private TagNameComparisonService tcService = null;
-    private ParamChecker pChecker = null;
+    @Autowired
+    private TagNameComparisonService tcService;
+    
+    @Autowired
+    private ParamChecker pChecker;
 
-    @Override
-    public void init()
-            throws ServletException {
-        tcService = BasicService.getTagNameComparisonService();
-        pChecker = new ParamChecker();
-    }
-
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse res)
-            throws ServletException, IOException {
-        doPost(req, res);
-//        res.setContentType("application/json");
-//        PrintWriter out = res.getWriter();
-//        out.print(new JSONObject().put("data", tcService.getAll()));
-    }
-
-    @Override
+    @RequestMapping(value = "/TagNameComparisonServlet", method = {RequestMethod.POST})
     protected void doPost(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
 
@@ -57,7 +50,7 @@ public class TagNameComparisonServlet extends HttpServlet {
 
         if (pChecker.checkInputVals(lineId, startPosition, people) == true) {
 
-            Line line = BasicService.getLineService().getLine(Integer.parseInt(lineId));
+            Line line = lineService.getLine(Integer.parseInt(lineId));
 
             if (line == null || !line.isOpened()) {
                 out.print(new JSONObject().put("status", "line is not exist or line is not opened"));
@@ -92,7 +85,6 @@ public class TagNameComparisonServlet extends HttpServlet {
             }
             out.print(new JSONObject().put("status", tcService.update(l) ? "ok" : "fail"));
 
-//            out.print(new JSONObject().put("status", l));
         } else {
             out.print(new JSONObject().put("status", "fail"));
         }

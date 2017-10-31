@@ -8,37 +8,28 @@ package com.advantech.servlet;
 
 import com.advantech.helper.UserSelectFilter;
 import com.advantech.service.BABService;
-import com.advantech.service.BasicService;
 import java.io.*;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
  *
  * @author Wei.Cheng
  */
-@WebServlet(name = "AllBAB", urlPatterns = {"/AllBAB"})
-public class AllBAB extends HttpServlet {
+@Controller
+public class AllBAB {
 
-    private BABService babService = null;
+    @Autowired
+    private BABService babService;
 
-    @Override
-    public void init()
-            throws ServletException {
-        babService = BasicService.getBabService();
-    }
-
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse res)
-            throws ServletException, IOException {
-        res.sendError(HttpServletResponse.SC_FORBIDDEN);
-    }
-
-    @Override
+    @RequestMapping(value = "/AllBAB", method = {RequestMethod.POST})
     protected void doPost(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
 
@@ -59,7 +50,8 @@ public class AllBAB extends HttpServlet {
         }
         if (!"-1".equals(sitefloor)) {
             usf.filterData("sitefloor", Integer.parseInt(sitefloor));
-        }if("true".equals(aboveStandard)){
+        }
+        if ("true".equals(aboveStandard)) {
             usf.greaterThan("total", 10 - 1);
         }
 

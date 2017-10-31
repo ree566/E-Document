@@ -8,11 +8,13 @@ package com.advantech.model;
 import com.advantech.entity.CellLine;
 import java.sql.Connection;
 import java.util.List;
+import org.springframework.stereotype.Repository;
 
 /**
  *
  * @author Wei.Cheng
  */
+@Repository
 public class CellLineDAO extends BasicDAO {
 
     private Connection getConn() {

@@ -9,18 +9,20 @@ import com.advantech.entity.PassStation;
 import com.advantech.model.PassStationDAO;
 import java.util.List;
 import java.util.Map;
+import javax.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  *
  * @author Wei.Cheng
  */
+@Service
+@Transactional
 public class PassStationService {
 
-    private final PassStationDAO passStationDAO;
-
-    protected PassStationService() {
-        passStationDAO = new PassStationDAO();
-    }
+    @Autowired
+    private PassStationDAO passStationDAO;
 
     public List<PassStation> getPassStation() {
         return passStationDAO.getPassStation();

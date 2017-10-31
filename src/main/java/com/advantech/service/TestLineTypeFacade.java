@@ -10,53 +10,48 @@ import com.advantech.entity.Test;
 import com.advantech.entity.TestLineTypeUser;
 import com.advantech.helper.PropertiesReader;
 import com.advantech.webservice.WebServiceRV;
-import static java.lang.System.out;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.PostConstruct;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  *
  * @author Wei.Cheng
  */
+@Component
 public class TestLineTypeFacade extends BasicLineTypeFacade {
 
     private static final Logger log = LoggerFactory.getLogger(TestLineTypeFacade.class);
+    
+    @Autowired
+    private TestService ts;
 
-    private static TestLineTypeFacade instance;
+    private int maxTestTable;
+    private Map PEOPLE_NOT_MATCH;
 
-    private final int maxTestTable;
-    private final Map PEOPLE_NOT_MATCH = new HashMap();
+    private double TEST_STANDARD;
 
-    private final double TEST_STANDARD;
-
-    private final WebServiceRV rv;
-    private final TestService testService;
+    private WebServiceRV rv;
+    private TestService testService;
 
     private final int TEST_USER_NOT_IN_SYSTEM_SIGN = -1, TEST_USER_NOT_IN_XML_SIGN = 2;
 
-    private TestLineTypeFacade() {
-        testService = BasicService.getTestService();
+    @PostConstruct
+    protected void init() {
+        PEOPLE_NOT_MATCH = new HashMap();
         PropertiesReader p = PropertiesReader.getInstance();
         TEST_STANDARD = p.getTestStandardMin();
         maxTestTable = p.getMaxTestTable();
         rv = WebServiceRV.getInstance();
-        this.init();
-    }
-
-    public static TestLineTypeFacade getInstance() {
-        if(instance == null){
-            instance = new TestLineTypeFacade();
-        }
-        return instance;
-    }
-
-    private void init() {
+        
         this.initMap();
         if (isWriteToDB) {
             boolean initStatus = this.initDbAlarmSign();
@@ -150,7 +145,6 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
 
     @Override
     protected boolean initDbAlarmSign() {
-        TestService ts = BasicService.getTestService();
         return ts.removeAlarmSign() && ts.insertAlarm(super.mapToAlarmSign(dataMap));
     }
 

@@ -12,19 +12,21 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.transaction.Transactional;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  *
  * @author Wei.Cheng
  */
+@Service
+@Transactional
 public class LineOwnerMappingService {
 
-    private final LineOwnerMappingDAO lineOwnerMappingDAO;
-
-    protected LineOwnerMappingService() {
-        lineOwnerMappingDAO = new LineOwnerMappingDAO();
-    }
+    @Autowired
+    private LineOwnerMappingDAO lineOwnerMappingDAO;
 
     public List<LineOwnerMapping> getAll() {
         return lineOwnerMappingDAO.getAll();
@@ -73,13 +75,6 @@ public class LineOwnerMappingService {
             }
         }
         return new JSONObject(hashMap);
-    }
-
-    public static void main(String arg0[]) {
-        BasicDAO.dataSourceInit1();
-        JSONObject responsorPerLine = BasicService.getLineOwnerMappingService().getSeparateLineOwnerMapping();
-        
-        System.out.println(responsorPerLine);
     }
 
 }

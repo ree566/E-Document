@@ -5,14 +5,14 @@
  */
 package com.advantech.helper;
 
+import org.springframework.stereotype.Component;
+
 /**
  *
  * @author Wei.Cheng
  */
+@Component
 public class ParamChecker {
-
-    public ParamChecker() {
-    }
 
     public boolean checkInputVal(String args) {
         return args != null && !"".equals(args.trim());

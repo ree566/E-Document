@@ -8,7 +8,7 @@
 package com.advantech.quartzJob;
 
 import com.advantech.entity.PassStation;
-import com.advantech.service.BasicService;
+import com.advantech.service.PassStationService;
 import com.advantech.webservice.WebServiceRV;
 import java.util.Iterator;
 import java.util.List;
@@ -17,16 +17,22 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  *
  * @author Wei.Cheng
  */
+@Component
 public class CellStation implements Job {
 
     private String PO;
     private String type;
     private Integer apsLineId;
+    
+    @Autowired
+    private PassStationService passStationService;
 
     @Override
     public void execute(JobExecutionContext jec) throws JobExecutionException {
@@ -47,7 +53,7 @@ public class CellStation implements Job {
         }
     }
 
-    public static void checkDifferenceAndInsert(String PO, String type, Integer apsLineId) {
+    public void checkDifferenceAndInsert(String PO, String type, Integer apsLineId) {
 
         List<PassStation> l = WebServiceRV.getInstance().getPassStationRecords(PO, type);
         Iterator it = l.iterator();
@@ -60,11 +66,11 @@ public class CellStation implements Job {
             }
         }
         
-        List<PassStation> history = BasicService.getPassStationService().getPassStation(PO, apsLineId, type);
+        List<PassStation> history = passStationService.getPassStation(PO, apsLineId, type);
         List<PassStation> newData = (List<PassStation>) CollectionUtils.subtract(l, history);
 
         if (!newData.isEmpty()) {
-            BasicService.getPassStationService().insertPassStation(newData);
+            passStationService.insertPassStation(newData);
         }
     }
 

@@ -6,7 +6,6 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<jsp:useBean id="testDAO" class="com.advantech.model.TestDAO" scope="application" />
 <!DOCTYPE html>
 <html>
     <c:set var="userSitefloor" value="${param.sitefloor}" />
@@ -59,6 +58,13 @@
                     alert(cookie_disabled_message);
                     return;
                 }
+
+                var lines = getLine();
+                for (var i = 0; i < lines.length; i++) {
+                    setLineOptions(lines[i]);
+                }
+
+                findAndSetUserNotLogin();
 
                 //Add class to transform the button type to bootstrap.
                 $(":button").addClass("btn btn-default");
@@ -128,6 +134,54 @@
                     unlockLoginInput();
                     return true;
                 }
+            }
+
+            function setLineOptions(line) {
+                $("#table").append("<option value=" + line.id + " " + (line.lock == 1 ? "disabled style='opacity:0.5'" : "") + ">線別 " + line.name + "</option>");
+            }
+
+            function getLine() {
+                var result;
+                $.ajax({
+                    type: "Get",
+                    url: "TestTableStatus/findBySitefloor",
+                    data: {
+                        sitefloor: $("#userSitefloorSelect").val()
+                    },
+                    dataType: "json",
+                    async: false,
+                    success: function (response) {
+                        result = response;
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        showMsg(xhr.responseText);
+                    }
+                });
+                return result;
+            }
+
+            function findAndSetUserNotLogin() {
+                $.ajax({
+                    type: "Get",
+                    url: "TestTableStatus/findUserNotLogin",
+                    dataType: "json",
+                    async: false,
+                    success: function (response) {
+//                        var usersNotLoginMessageArea = $("#Div1");
+//                        usersNotLoginMessageArea.append("<p>");
+//                        var i = 1;
+//                        $.each(response, function(index, value) {
+//                            usersNotLoginMessageArea.append(value);
+//                            if (i++ % 9 == 0) {
+//                                usersNotLoginMessageArea.append("<br />");
+//                            }
+//                        }
+//                        usersNotLoginMessageArea.append("</p>");
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        showMsg(xhr.responseText);
+                    }
+                });
             }
 
             function lockAllUserInput() {
@@ -238,9 +292,6 @@
                 <input type="text" placeholder="刷入工號" id="user_number" ${key == null ?"":"disabled"} value="${key == null ?"":key}" maxlength="10">
                 <select id="table" ${key == null ?"":"disabled"} value="${tb == null ?"":tb}">
                     <option value="-1">請選擇桌次</option>
-                    <c:forEach var="tab" items="${testDAO.getDesk(userSitefloor)}">
-                        <option value="${tab.id}">${tab.name}</option>
-                    </c:forEach>
                 </select>
                 <input type="button" value="開始" id="begin">
                 <input type="button" value="結束" id="end">
@@ -281,16 +332,6 @@
             </div>
             <div class="Div0">
                 <div class="Div1">未刷入資料庫的使用者:
-                    <p>
-                        <c:set var="i" value="0"/>
-                        <c:forEach var="user" items="${testDAO.peopleNotInDB}">  
-                            ${user.key} 、
-                            <c:set var="i" value="${i + 1}"/>
-                            <c:choose>
-                                <c:when test="${i % 9 == 0}"><br/></c:when>
-                            </c:choose>
-                        </c:forEach>
-                    </p>
                 </div>
                 <div class="Div2">
                     <p><h3>此處會顯示未刷入資料庫的使用者。</h3>刷入成功者請再次確認您的<code>姓名</code>不在這欄位中。<p/>

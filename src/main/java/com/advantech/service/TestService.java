@@ -6,27 +6,37 @@
 package com.advantech.service;
 
 import com.advantech.entity.AlarmAction;
+import com.advantech.entity.Desk;
 import com.advantech.entity.Test;
 import com.advantech.entity.TestLineTypeUser;
-import com.advantech.interfaces.AlarmActions;
 import com.advantech.model.TestDAO;
 import java.util.List;
 import java.util.Map;
+import javax.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  *
  * @author Wei.Cheng
  */
-public class TestService implements AlarmActions{
+@Service
+@Transactional
+public class TestService {
 
-    private final TestDAO testDAO;
-
-    protected TestService() {
-        testDAO = new TestDAO();
-    }
+    @Autowired
+    private TestDAO testDAO;
 
     public List<Test> getAllTableInfo() {
         return testDAO.getAllTableInfo();
+    }
+
+    public List<Desk> getDesk() {
+        return testDAO.getDesk();
+    }
+
+    public List<Desk> getDesk(String sitefloor) {
+        return testDAO.getDesk(sitefloor);
     }
 
     public Test getTableInfo(int tableNo) {
@@ -52,28 +62,24 @@ public class TestService implements AlarmActions{
     public boolean changeDeck(int tableNo, String jobnumber) {
         return testDAO.changeDeck(tableNo, jobnumber);
     }
-    
-    @Override
+
     public boolean insertAlarm(List<AlarmAction> l) {
         return testDAO.insertAlarm(l);
     }
 
-    @Override
     public boolean updateAlarm(List<AlarmAction> l) {
         return testDAO.updateAlarm(l);
     }
 
-    @Override
     public boolean resetAlarm() {
         return testDAO.resetAlarm();
     }
-    
-    @Override
+
     public boolean removeAlarmSign() {
         return testDAO.removeAlarmSign();
     }
-    
-    public boolean setTestAlarmToTestingMode(){
+
+    public boolean setTestAlarmToTestingMode() {
         return testDAO.setTestAlarmToTestingMode();
     }
 

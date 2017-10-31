@@ -8,43 +8,54 @@ package com.advantech.servlet;
 
 import com.advantech.entity.CellLine;
 import com.advantech.helper.ParamChecker;
-import com.advantech.service.BasicService;
 import com.advantech.service.CellLineService;
 import com.google.gson.Gson;
 import java.io.*;
 import java.util.List;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  *
  * @author Wei.Cheng
  */
-@WebServlet(name = "CellLineServlet", urlPatterns = {"/CellLineServlet"})
-public class CellLineServlet extends HttpServlet {
+@Controller
+public class CellLineServlet {
 
     private static final Logger log = LoggerFactory.getLogger(CellLineServlet.class);
 
-    private CellLineService cellLineService = null;
+    @Autowired
+    private CellLineService cellLineService;
 
     private final String LOGIN = "LOGIN";
     private final String LOGOUT = "LOGOUT";
 
-    ParamChecker pChecker = null;
-
-    @Override
-    public void init()
-            throws ServletException {
-        cellLineService = BasicService.getCellLineService();
-        pChecker = new ParamChecker();
+    @Autowired
+    ParamChecker pChecker;
+    
+    @RequestMapping(value = "/CellLineServlet/findAll", method = {RequestMethod.GET})
+    @ResponseBody
+    protected List<CellLine> findAll(){
+        return cellLineService.findAll();
+    }
+    
+    @RequestMapping(value = "/CellLineServlet/findBySitefloor", method = {RequestMethod.GET})
+    @ResponseBody
+    protected List<CellLine> findBySitefloor(@RequestParam(required = true) int sitefloor){
+        return cellLineService.findBySitefloor(sitefloor);
     }
 
-    @Override
+    @RequestMapping(value = "/CellLineServlet", method = {RequestMethod.GET})
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
 
@@ -61,7 +72,7 @@ public class CellLineServlet extends HttpServlet {
 
     }
 
-    @Override
+    @RequestMapping(value = "/CellLineServlet", method = {RequestMethod.POST})
     protected void doPost(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
 

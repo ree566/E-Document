@@ -6,15 +6,13 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<jsp:useBean id="cDAO" class="com.advantech.model.CountermeasureDAO" scope="application" />
-<jsp:useBean id="lineDAO" class="com.advantech.model.LineDAO" scope="application" />
 <!DOCTYPE html>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>${initParam.pageTitle}</title>
         <link rel="shortcut icon" href="../../images/favicon.ico"/>
-        <link rel="stylesheet" href="../../css/bootstrap.min.css">
+        <link rel="stylesheet" href="<c:url value="/css/bootstrap.min.css" />">
         <link rel="stylesheet" href="../../css/font-awesome.min.css">
         <link rel="stylesheet" href="../../css/jquery.dataTables.min.css">
         <link rel="stylesheet" href="../../css/bootstrap-datetimepicker.min.css">
@@ -89,7 +87,7 @@
             }
         </style>
         <script src="../../js/charts.loader.js"></script>
-        <script src="../../js/jquery-1.11.3.min.js"></script>
+        <script src="<c:url value="/js/jquery-1.11.3.min.js" />"></script>
         <script src="../../js/bootstrap.min.js"></script>
         <script src="../../js/jquery-ui-1.10.0.custom.min.js"></script>
         <script src="../../js/canvasjs.min.js"></script>
@@ -693,12 +691,11 @@
                 initCountermeasureDialog();
 
                 $.ajax({
-                    url: "../../CountermeasureServlet",
+                    url: "<c:url value="/CountermeasureServlet/findOne" />",
                     data: {
-                        BABid: BABid,
-                        action: "selectOne"
+                        BABid: BABid
                     },
-                    type: "POST",
+                    type: "GET",
                     dataType: 'json',
                     success: function (msg) {
                         var jsonData = msg;
@@ -734,7 +731,7 @@
             function setupCheckBox() {
 
                 $("#actionCode").html("");
-                var data = actionCodes.data;
+                var data = actionCodes;
                 var array = $.map($('input[name="errorCode"]:checked'), function (c) {
                     return c.value;
                 });
@@ -755,9 +752,25 @@
             function getActionCode() {
                 var result;
                 $.ajax({
-                    url: "../../CountermeasureServlet",
-                    data: {action: "getActionCode"},
-                    type: "POST",
+                    url: "<c:url value="/CountermeasureServlet/getActionCode" />",
+                    type: "GET",
+                    dataType: "json",
+                    async: false,
+                    success: function (response) {
+                        result = response;
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        console.log(xhr.responseText);
+                    }
+                });
+                return result;
+            }
+
+            function getErrorCode() {
+                var result;
+                $.ajax({
+                    url: "<c:url value="/CountermeasureServlet/getErrorCode" />",
+                    type: "GET",
                     dataType: "json",
                     async: false,
                     success: function (response) {
@@ -827,12 +840,12 @@
 
             function saveCountermeasure(data) {
                 $.ajax({
-                    url: "../../CountermeasureServlet",
+                    url: "<c:url value="/CountermeasureServlet/update" />",
                     data: data,
                     type: "POST",
                     dataType: 'json',
                     success: function (msg) {
-                        if (msg.data == true) {
+                        if (msg == true) {
                             counterMeasureModeUndo();
                             getContermeasure(data.BABid);
                             $("#searchAvailableBAB").trigger("click");
@@ -861,6 +874,17 @@
                 setLineObject();
 
                 checkBoxs = $("#actionCode > div").detach();
+
+                var errorCodeOptions = getErrorCode();
+                var errorCodeArea = $("#errorCode .checkbox");
+                for (var i = 0; i < errorCodeOptions.length; i++) {
+                    var errorCode = errorCodeOptions[i];
+                    errorCodeArea.append(
+                            "<label class='checkbox-inline'>" +
+                            "<input type='checkbox' name='errorCode' value=" + errorCode.id + ">" + errorCode.name + "" +
+                            "</label>");
+                }
+
                 actionCodes = getActionCode();
 
                 var saveModelName = $.cookie('lastPOInsert');
@@ -1047,8 +1071,7 @@
                             solution: solution,
                             errorCodes: errorCodes,
                             actionCodes: actionCodes,
-                            editor: editor,
-                            action: "update"
+                            editor: editor
                         });
                     }
 
@@ -1087,7 +1110,7 @@
                 var excelExport = function () {
                     var id = $(this).attr("id");
                     var url = id == "generateExcel" ? "BABExcelGenerate" : "BABExcelForEfficiencyReport";
-                    
+
                     var lineType = $('#lineType2').val();
                     var sitefloor = $('#sitefloor').val();
                     var startDate = $('#fini').val();
@@ -1112,7 +1135,6 @@
 
                 var babId = getQueryVariable("babId");
                 if (babId != null) {
-                    console.log("Query Variable " + babId + " found");
                     $("#Model_name").val("");
                     getBABCompare(babId, null, null, "type2");
 
@@ -1184,11 +1206,6 @@
                                         <td class="lab">Error Code</td>
                                         <td id="errorCode"> 
                                             <div class="checkbox">
-                                                <c:forEach var="errorCode" items="${cDAO.getErrorCode()}">
-                                                    <label class="checkbox-inline">
-                                                        <input type="checkbox" name="errorCode" value="${errorCode.id}">${errorCode.name}
-                                                    </label>
-                                                </c:forEach>
                                             </div>
                                         </td>
                                     </tr>

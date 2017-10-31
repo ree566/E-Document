@@ -10,22 +10,18 @@ import com.advantech.entity.Desk;
 import com.advantech.entity.Test;
 import com.advantech.entity.TestLineTypeUser;
 import com.advantech.interfaces.AlarmActions;
-import com.advantech.service.TestLineTypeFacade;
-import com.google.gson.Gson;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.springframework.stereotype.Repository;
 
 /**
  *
  * @author Wei.Cheng
  */
+@Repository
 public class TestDAO extends BasicDAO implements AlarmActions {
-
-    public TestDAO() {
-
-    }
 
     private Connection getConn() {
         return getDBUtilConn(SQL.WebAccess);
@@ -73,7 +69,7 @@ public class TestDAO extends BasicDAO implements AlarmActions {
     }
 
     public boolean insertTestPeople(int tableNo, String jobnumber) {
-        return updateTestTable("INSERT INTO LS_TEST(id,userid) VALUES (?,?)", tableNo, jobnumber);
+        return updateTestTable("INSERT INTO LS_TEST(table_id, user_id) VALUES (?,?)", tableNo, jobnumber);
     }
 
     public boolean recordTestLineType(List<TestLineTypeUser> l) {
@@ -119,12 +115,6 @@ public class TestDAO extends BasicDAO implements AlarmActions {
 
     private boolean updateTestTable(String sql, Object... params) {
         return update(getConn(), sql, params);
-    }
-
-    //JSTL read data
-    public Map getPeopleNotInDB() {
-//        return DataTransformer.getPeopleNotMatch();
-        return TestLineTypeFacade.getInstance().getPEOPLE_NOT_MATCH();
     }
 
     public boolean deleteTestPeople(int tableNo) {

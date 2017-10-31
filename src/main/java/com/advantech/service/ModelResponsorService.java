@@ -9,18 +9,20 @@ import com.advantech.entity.ModelResponsor;
 import com.advantech.model.ModelResponsorDAO;
 import java.util.List;
 import java.util.Map;
+import javax.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  *
  * @author Wei.Cheng
  */
+@Service
+@Transactional
 public class ModelResponsorService {
 
-    private final ModelResponsorDAO modelResponsorDAO;
-
-    protected ModelResponsorService() {
-        modelResponsorDAO = new ModelResponsorDAO();
-    }
+    @Autowired
+    private ModelResponsorDAO modelResponsorDAO;
 
     public List<ModelResponsor> getModelResponsor() {
         return modelResponsorDAO.getModelResponsor();

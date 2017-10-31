@@ -6,20 +6,17 @@
 package com.advantech.model;
 
 import com.advantech.entity.PassStation;
-import static com.advantech.model.BasicDAO.getDBUtilConn;
 import java.sql.Connection;
 import java.util.List;
 import java.util.Map;
+import org.springframework.stereotype.Repository;
 
 /**
  *
  * @author Wei.Cheng
  */
+@Repository
 public class PassStationDAO extends BasicDAO {
-
-    public PassStationDAO() {
-
-    }
 
     private Connection getConn() {
         return getDBUtilConn(BasicDAO.SQL.WebAccess);

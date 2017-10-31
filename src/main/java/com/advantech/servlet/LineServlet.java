@@ -7,45 +7,36 @@
 package com.advantech.servlet;
 
 import com.advantech.helper.ParamChecker;
-import com.advantech.service.BasicService;
 import com.advantech.service.LineService;
 import java.io.*;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
  *
  * @author Wei.Cheng
  */
-@WebServlet(name = "LineServlet", urlPatterns = {"/LineServlet"})
-public class LineServlet extends HttpServlet {
+@Controller
+public class LineServlet {
 
     private static final Logger log = LoggerFactory.getLogger(LineServlet.class);
 
-    private LineService lineService = null;
+    @Autowired
+    private LineService lineService;
 
     private final String LOGIN = "LOGIN";
     private final String LOGOUT = "LOGOUT";
 
-    ParamChecker pChecker = null;
+    @Autowired
+    ParamChecker pChecker;
 
-    @Override
-    public void init()
-            throws ServletException {
-        lineService = BasicService.getLineService();
-        pChecker = new ParamChecker();
-    }
-
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse res)
-            throws ServletException, IOException {
-        res.sendError(HttpServletResponse.SC_FORBIDDEN);
-    }
-
-    @Override
+    @RequestMapping(value = "/LineServlet", method = {RequestMethod.POST})
     protected void doPost(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
 

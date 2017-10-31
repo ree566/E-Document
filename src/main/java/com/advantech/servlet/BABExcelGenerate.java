@@ -9,7 +9,7 @@ package com.advantech.servlet;
 import com.advantech.helper.DatetimeGenerator;
 import com.advantech.helper.ExcelGenerator;
 import com.advantech.helper.UserSelectFilter;
-import com.advantech.service.BasicService;
+import com.advantech.service.BABService;
 import com.advantech.service.CountermeasureService;
 import java.io.*;
 import static java.lang.System.out;
@@ -19,26 +19,33 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.joda.time.DateTime;
 import org.joda.time.Seconds;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
  *
  * @author Wei.Cheng
  */
-@WebServlet(name = "BABExcelGenerate", urlPatterns = {"/BABExcelGenerate"})
-public class BABExcelGenerate extends HttpServlet {
+@Controller
+public class BABExcelGenerate {
 
     private final int minAllowAmount = 10;
 
-    private final CountermeasureService cService = BasicService.getCountermeasureService();
+    @Autowired
+    private CountermeasureService cService;
+    
+    @Autowired
+    private BABService babService;
 
     private String lineType, sitefloor;
 
-    @Override
+    @RequestMapping(value = "/BABExcelGenerate", method = {RequestMethod.GET})
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
 
@@ -54,7 +61,7 @@ public class BABExcelGenerate extends HttpServlet {
 
         List<Map> countermeasures = fitData(cService.getCountermeasureForExcel(startDate, endDate));
         List<Map> personalAlarms = fitData(cService.getPersonalAlmForExcel(startDate, endDate));
-        List<Map> emptyRecords = fitData(BasicService.getBabService().getEmptyRecordDownExcel(startDate, endDate));
+        List<Map> emptyRecords = fitData(babService.getEmptyRecordDownExcel(startDate, endDate));
 
         boolean isAbove = Boolean.parseBoolean(aboveStandard);
 

@@ -10,18 +10,20 @@ import com.advantech.entity.BABPeopleRecord;
 import com.advantech.model.BABLoginStatusDAO;
 import java.util.ArrayList;
 import java.util.List;
+import javax.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  *
  * @author Wei.Cheng
  */
+@Service
+@Transactional
 public class BABLoginStatusService {
 
-    private final BABLoginStatusDAO babLoginStatusDAO;
-
-    public BABLoginStatusService() {
-        babLoginStatusDAO = new BABLoginStatusDAO();
-    }
+    @Autowired
+    private BABLoginStatusDAO babLoginStatusDAO;
 
     public List<BABLoginStatus> getBABLoginStatus() {
         return babLoginStatusDAO.getBABLoginStatus();

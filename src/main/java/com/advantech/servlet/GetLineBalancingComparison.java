@@ -9,42 +9,36 @@ package com.advantech.servlet;
 import com.advantech.entity.BABStatus;
 import com.advantech.helper.ParamChecker;
 import com.advantech.service.BABService;
-import com.advantech.service.BasicService;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
  *
  * @author Wei.Cheng
  */
-@WebServlet(name = "GetLineBalancingComparison", urlPatterns = {"/GetLineBalancingComparison"})
-public class GetLineBalancingComparison extends HttpServlet {
+@Controller
+public class GetLineBalancingComparison {
 
     private static final Logger log = LoggerFactory.getLogger(GetLineBalancingComparison.class);
-    private BABService babService = null;
-    private ParamChecker pChecker = null;
+    
+    @Autowired
+    private BABService babService;
+    
+    @Autowired
+    private ParamChecker pChecker;
 
-    @Override
-    public void init()
-            throws ServletException {
-        babService = BasicService.getBabService();
-        pChecker = new ParamChecker();
-    }
-
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        res.sendError(HttpServletResponse.SC_FORBIDDEN);
-    }
-
-    @Override
+    @RequestMapping(value = "/GetLineBalancingComparison", method = {RequestMethod.POST})
     protected void doPost(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
 

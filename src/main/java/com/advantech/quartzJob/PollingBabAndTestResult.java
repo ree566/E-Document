@@ -15,14 +15,23 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  *
  * @author Wei.Cheng
  */
+@Component
 public class PollingBabAndTestResult implements Job {
 
     private static final Logger log = LoggerFactory.getLogger(PollingBabAndTestResult.class);
+    
+    @Autowired
+    private TestLineTypeFacade tf;
+    
+    @Autowired
+    private BabLineTypeFacade bf;
 
     @Override
     public void execute(JobExecutionContext jec) throws JobExecutionException {
@@ -46,7 +55,7 @@ public class PollingBabAndTestResult implements Job {
     }
 
     public String getData() {
-        return new JSONArray().put(TestLineTypeFacade.getInstance().getJSONObject())
-                .put(BabLineTypeFacade.getInstance().getJSONObject()).toString();
+        return new JSONArray().put(tf.getJSONObject())
+                .put(bf.getJSONObject()).toString();
     }
 }

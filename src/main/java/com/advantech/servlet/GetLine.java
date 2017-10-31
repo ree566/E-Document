@@ -7,31 +7,36 @@
 package com.advantech.servlet;
 
 import com.advantech.entity.Line;
-import com.advantech.service.BasicService;
 import com.advantech.service.LineService;
 import com.google.gson.Gson;
 import java.io.*;
 import java.util.List;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
  *
  * @author Wei.Cheng
  */
-@WebServlet(name = "GetLine", urlPatterns = {"/GetLine"})
-public class GetLine extends HttpServlet {
+@Controller
+public class GetLine {
+    
+    @Autowired
+    private LineService lineService;
 
-    @Override
+    @RequestMapping(value = "/GetLine", method = {RequestMethod.GET})
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
         res.setContentType("application/json");
         PrintWriter out = res.getWriter();
 
-        List<Line> l = BasicService.getLineService().getLine();
+        List<Line> l = lineService.getLine();
         JSONArray arr = new JSONArray();
         for (Line line : l) {
             arr.put(new JSONObject().put(Integer.toString(line.getId()), line.getName()));
@@ -40,7 +45,7 @@ public class GetLine extends HttpServlet {
         out.println(arr);
     }
 
-    @Override
+    @RequestMapping(value = "/GetLine", method = {RequestMethod.POST})
     protected void doPost(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
 
@@ -48,8 +53,6 @@ public class GetLine extends HttpServlet {
         PrintWriter out = res.getWriter();
 
         String sitefloor = req.getParameter("sitefloor");
-
-        LineService lineService = BasicService.getLineService();
 
         out.print(new Gson().toJson(sitefloor == null ? lineService.getLine() : lineService.getLine(sitefloor)));
 

@@ -10,11 +10,13 @@ import com.advantech.entity.LineStatus;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.stereotype.Repository;
 
 /**
  *
  * @author Wei.Cheng
  */
+@Repository
 public class LineDAO extends BasicDAO {
 
     private Connection getConn() {

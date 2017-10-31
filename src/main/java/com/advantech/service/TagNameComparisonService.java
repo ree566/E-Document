@@ -8,18 +8,20 @@ package com.advantech.service;
 import com.advantech.entity.TagNameComparison;
 import com.advantech.model.TagNameComparisonDAO;
 import java.util.List;
+import javax.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  *
  * @author Wei.Cheng
  */
+@Service
+@Transactional
 public class TagNameComparisonService {
 
-    private final TagNameComparisonDAO tagNameComparisonDAO;
-
-    public TagNameComparisonService() {
-        this.tagNameComparisonDAO = new TagNameComparisonDAO();
-    }
+    @Autowired
+    private TagNameComparisonDAO tagNameComparisonDAO;
 
     public List<TagNameComparison> getAll() {
         return tagNameComparisonDAO.getAll();

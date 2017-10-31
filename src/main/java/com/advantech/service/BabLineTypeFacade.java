@@ -9,44 +9,40 @@ import com.advantech.entity.AlarmAction;
 import com.advantech.entity.BAB;
 import com.advantech.entity.Line;
 import com.advantech.helper.PropertiesReader;
-import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.PostConstruct;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  *
  * @author Wei.Cheng
  */
+@Component
 public class BabLineTypeFacade extends BasicLineTypeFacade {
 
     private static final Logger log = LoggerFactory.getLogger(BabLineTypeFacade.class);
 
-    private static BabLineTypeFacade instance;
+    @Autowired
+    private LineBalanceService lineBalanceService;
+    
+    @Autowired
+    private BABService babService;
+    
+    @Autowired
+    private LineService lineService;
 
-    private final LineBalanceService lineBalanceService;
-    private final BABService babService;
+    private double BAB_STANDARD;
 
-    private final double BAB_STANDARD;
-
-    private BabLineTypeFacade() {
-        lineBalanceService = BasicService.getLineBalanceService();
-        babService = BasicService.getBabService();
+    @PostConstruct
+    protected void init() {
         PropertiesReader p = PropertiesReader.getInstance();
         BAB_STANDARD = p.getAssyStandard();
-        this.init();
-    }
-
-    public static BabLineTypeFacade getInstance() {
-        if (instance == null) {
-            instance = new BabLineTypeFacade();
-        }
-        return instance;
-    }
-
-    private void init() {
+        
         this.initMap();
         if (isWriteToDB) {
             boolean initStatus = this.initDbAlarmSign();
@@ -59,7 +55,7 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
     @Override
     protected void initMap() {
         dataMap.clear();
-        List<Line> babLineStatus = BasicService.getLineService().getLine();
+        List<Line> babLineStatus = lineService.getLine();
         for (Line line : babLineStatus) {
             String lineName = line.getName().trim();
             for (int i = 1, length = line.getPeople(); i <= length; i++) {

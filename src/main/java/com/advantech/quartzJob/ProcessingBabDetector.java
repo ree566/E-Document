@@ -38,12 +38,12 @@ public abstract class ProcessingBabDetector {
     private List<BAB> tempBab = null;
     private Map<String, Map<String, Key>> storeKeys = null;
 
-    private final String quartzJobNameExt;
-    private final String quartzJobGroupName;
-    private final String quartzJobCronTrigger;
-    private final Class scheduleClass;
+    private String quartzJobNameExt;
+    private String quartzJobGroupName;
+    private String quartzJobCronTrigger;
+    private Class scheduleClass;
 
-    protected ProcessingBabDetector(String quartzJobNameExt, String quartzJobGroupName, String quartzJobCronTrigger, Class scheduleClass) {
+    protected void init(String quartzJobNameExt, String quartzJobGroupName, String quartzJobCronTrigger, Class scheduleClass) {
         this.quartzJobNameExt = quartzJobNameExt;
         this.quartzJobGroupName = quartzJobGroupName;
         this.quartzJobCronTrigger = quartzJobCronTrigger;

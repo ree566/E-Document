@@ -9,7 +9,7 @@ package com.advantech.servlet;
 import com.advantech.helper.DatetimeGenerator;
 import com.advantech.helper.ExcelGenerator;
 import com.advantech.helper.UserSelectFilter;
-import com.advantech.service.BasicService;
+import com.advantech.service.BABService;
 import com.advantech.service.CountermeasureService;
 import java.io.*;
 import static java.lang.System.out;
@@ -17,26 +17,33 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.joda.time.DateTime;
 import org.joda.time.Seconds;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
  *
  * @author Wei.Cheng
  */
-@WebServlet(name = "BABExcelForEfficiencyReport", urlPatterns = {"/BABExcelForEfficiencyReport"})
-public class BABExcelForEfficiencyReport extends HttpServlet {
+@Controller
+public class BABExcelForEfficiencyReport{
 
-    private final CountermeasureService cService = BasicService.getCountermeasureService();
+    @Autowired
+    private CountermeasureService cService;
+    
+    @Autowired
+    private BABService babService;
 
     private final int minAllowAmount = 10;
 
     private String lineType, sitefloor;
 
-    @Override
+    @RequestMapping(value = "/BABExcelForEfficiencyReport", method = {RequestMethod.GET})
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
 
@@ -49,7 +56,7 @@ public class BABExcelForEfficiencyReport extends HttpServlet {
         String aboveStandard = req.getParameter("aboveStandard");
 
         List<Map> data = fitData(cService.getCountermeasureAndPersonalAlm(startDate, endDate));
-        List<Map> emptyRecords = fitData(BasicService.getBabService().getEmptyRecordDownExcel(startDate, endDate));
+        List<Map> emptyRecords = fitData(babService.getEmptyRecordDownExcel(startDate, endDate));
 
         List list2 = cService.transformEfficiencyReportPattern(data);//把各站亮燈頻率合併為橫式(類似 sql 的 Group by格式)
         List list3 = emptyRecords;

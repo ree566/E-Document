@@ -11,8 +11,9 @@ import com.advantech.entity.FBN;
 import com.advantech.entity.Line;
 import com.advantech.helper.MailSend;
 import com.advantech.helper.PropertiesReader;
-import com.advantech.model.BasicDAO;
-import com.advantech.service.BasicService;
+import com.advantech.service.FBNService;
+import com.advantech.service.LineOwnerMappingService;
+import com.advantech.service.LineService;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -30,11 +31,14 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  *
  * @author Wei.Cheng
  */
+@Component
 public class CheckSensor implements Job {
 
     private static final Logger log = LoggerFactory.getLogger(CheckSensor.class);
@@ -45,6 +49,15 @@ public class CheckSensor implements Job {
     private int expireTime;
     private int detectPeriod;
     private JSONArray responsors;
+
+    @Autowired
+    private FBNService fbnService;
+
+    @Autowired
+    private LineService lineService;
+
+    @Autowired
+    private LineOwnerMappingService lineOwnerMappingService;
 
     @Override
     public void execute(JobExecutionContext jec) throws JobExecutionException {
@@ -58,18 +71,18 @@ public class CheckSensor implements Job {
     //定時查看sensor資料是否又暫停or異常
     private void checkSensorAndSendMail() throws MessagingException {
 
-        List<FBN> sensorStatus = BasicService.getFbnService().getSensorStatus(bab.getId());
+        List<FBN> sensorStatus = fbnService.getSensorStatus(bab.getId());
         DateTime currentTime = new DateTime();
 
         int period;
-        
+
         //所有13點開始，且13:30以前的感應器都去看與12:00相差多久，避開中午休息時間
         if (currentTime.getHourOfDay() == 13 && currentTime.getMinuteOfHour() < 30) {
             period = new Period(DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.SSS").parseDateTime(bab.getBtime()), new DateTime().withTime(12, 00, 0, 0)).toStandardMinutes().getMinutes();
         } else {
             period = periodToNow(DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.SSS").parseDateTime(bab.getBtime()));
         }
-        
+
         //開線後N分鐘開始監聽
         if (period >= expireTime && currentTime.getHourOfDay() != excludeHour) {
             if (bab.getPeople() != sensorStatus.size()) {
@@ -125,9 +138,9 @@ public class CheckSensor implements Job {
 
     //Add the mail which want sensor_alarm and lineId is not setting per sitefloor
     private void addExtraMailToCCLoop(JSONArray arr) {
-        Line line = BasicService.getLineService().getLine(bab.getLine());
+        Line line = lineService.getLine(bab.getLine());
 
-        List<Map> l = BasicService.getLineOwnerMappingService().getLineNotSetting();
+        List<Map> l = lineOwnerMappingService.getLineNotSetting();
 
         for (Map m : l) {
             if (m.containsKey("sitefloor") && m.containsKey("sensor_alarm") && m.containsKey("user_name")) {
@@ -175,23 +188,6 @@ public class CheckSensor implements Job {
 
     public void setResponsors(JSONArray responsors) {
         this.responsors = responsors;
-    }
-
-    public static void main(String arg0[]) {
-        BasicDAO.dataSourceInit1();
-
-        BAB b = BasicService.getBabService().getBAB(3711);
-        DateTime currentTime = new DateTime();
-
-        int period;
-
-        if (true) {//13:30以前的check，去找資料是否 < 11:30
-            period = new Period(new DateTime().withTime(11, 30, 0, 0), DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.SSS").parseDateTime(b.getBtime())).toStandardMinutes().getMinutes();
-        } else {
-            period = new CheckSensor().periodToNow(DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.SSS").parseDateTime(b.getBtime()));
-        }
-
-        System.out.println(period);
     }
 
 }

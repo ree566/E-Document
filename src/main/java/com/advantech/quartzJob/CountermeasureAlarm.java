@@ -8,7 +8,7 @@ package com.advantech.quartzJob;
 import com.advantech.helper.DatetimeGenerator;
 import com.advantech.helper.MailSend;
 import com.advantech.helper.StringParser;
-import com.advantech.service.BasicService;
+import com.advantech.service.CountermeasureService;
 import com.advantech.service.LineOwnerMappingService;
 import java.sql.Clob;
 import java.text.DecimalFormat;
@@ -24,12 +24,21 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  *
  * @author Wei.Cheng
  */
+@Component
 public class CountermeasureAlarm implements Job {
+    
+    @Autowired
+    private LineOwnerMappingService lomService;
+    
+    @Autowired
+    private CountermeasureService countermeasureService;
 
     private static final Logger log = LoggerFactory.getLogger(CountermeasureAlarm.class);
     private final DecimalFormat formatter = new DecimalFormat("#.##%");
@@ -46,7 +55,6 @@ public class CountermeasureAlarm implements Job {
     }
 
     public void sendMail() throws Exception {
-        LineOwnerMappingService lomService = BasicService.getLineOwnerMappingService();
         JSONObject responsorPerLine = lomService.getSeparateLineOwnerMapping();
         JSONObject responsorPerSitefloor = lomService.getSeparateResponsorPerSitefloor();
 
@@ -63,7 +71,7 @@ public class CountermeasureAlarm implements Job {
     }
 
     public String generateMailBody(String sitefloor) {
-        List<Map> l = BasicService.getCountermeasureService().getUnFillCountermeasureBabs(sitefloor);
+        List<Map> l = countermeasureService.getUnFillCountermeasureBabs(sitefloor);
         if (l.isEmpty()) {
             return "";
         } else {

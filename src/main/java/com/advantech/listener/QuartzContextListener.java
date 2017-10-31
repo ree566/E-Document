@@ -11,8 +11,6 @@ import com.advantech.endpoint.Endpoint3;
 import com.advantech.endpoint.Endpoint4;
 import com.advantech.helper.PropertiesReader;
 import com.advantech.helper.ThreadLocalCleanUtil;
-import com.advantech.model.BasicDAO;
-import com.advantech.service.BasicService;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import org.slf4j.Logger;
@@ -30,22 +28,17 @@ public class QuartzContextListener implements ServletContextListener {
     private static final Logger log = LoggerFactory.getLogger(QuartzContextListener.class);
 
     public QuartzContextListener() {
-//        getLoggerExtender();
     }
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-//        BasicConfigurator.configure();
-        BasicDAO.dataSourceInit();
         PropertiesReader.getInstance();
-        BasicService.getLineTypeConfigService().initBasicVariable();
     }
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
 
         try {
-            BasicDAO.objectInit();
 //            CronTrigMod.getInstance().unScheduleAllJob();
             
             Endpoint.clearSessions();

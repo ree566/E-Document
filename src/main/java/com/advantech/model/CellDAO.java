@@ -11,16 +11,14 @@ import com.advantech.interfaces.AlarmActions;
 import java.sql.Connection;
 import java.util.List;
 import java.util.Map;
+import org.springframework.stereotype.Repository;
 
 /**
  *
  * @author Wei.Cheng
  */
+@Repository
 public class CellDAO extends BasicDAO implements AlarmActions {
-
-    public CellDAO() {
-
-    }
 
     private Connection getConn() {
         return getDBUtilConn(SQL.WebAccess);

@@ -10,7 +10,6 @@ import com.advantech.entity.BAB;
 import com.advantech.entity.BABStatus;
 import com.advantech.entity.FBN;
 import com.advantech.service.BABService;
-import com.advantech.service.BasicService;
 import com.advantech.service.FBNService;
 import com.google.gson.Gson;
 import java.util.ArrayList;
@@ -21,12 +20,18 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 /**
  *
  * @author Wei.Cheng
  */
+@Component
 public class BABDataSaver implements Job {
+    
+    private FBNService fbnService;
+    
+    private BABService babService;
     
     private static final Logger log = LoggerFactory.getLogger(BABDataSaver.class);
     private final int LAST_HOUR_OF_DAY = 22;
@@ -46,14 +51,12 @@ public class BABDataSaver implements Job {
         for (BAB bab : unClosedBabs) {
             bab.setIsused(BABStatus.UNFINSHED.getValue());
             log.info("Begin save unclose bab " + new Gson().toJson(bab));
-            log.info("Close bab status :" + (BasicService.getBabService().closeBABWithoutCheckPrevSensor(bab) ? "success" : "fail"));
+            log.info("Close bab status :" + (babService.closeBABWithoutCheckPrevSensor(bab) ? "success" : "fail"));
         }
         
     }
     
     private List getUnclosedBabs() {
-        BABService babService = BasicService.getBabService();
-        FBNService fbnService = BasicService.getFbnService();
         DateTime dt = new DateTime();
         int currentHour = dt.getHourOfDay();
         List<BAB> unClosedBabs;
@@ -77,9 +80,5 @@ public class BABDataSaver implements Job {
         
         return unClosedBabs;
     }
-    
-    public static void main(String[] arg0) {
-        
-    }
-    
+ 
 }

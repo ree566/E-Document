@@ -6,11 +6,13 @@
 package com.advantech.quartzJob;
 
 import com.advantech.entity.BAB;
-import com.advantech.service.BasicService;
+import com.advantech.service.BABService;
+import com.advantech.service.WorkTimeService;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.PostConstruct;
 import org.json.JSONObject;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
@@ -18,6 +20,7 @@ import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.PersistJobDataAfterExecution;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
@@ -28,15 +31,22 @@ import org.quartz.PersistJobDataAfterExecution;
 public class NumLamp extends ProcessingBabDetector implements Job {
 
     public static JobDataMap jobDataMap = null;
+    
+    @Autowired
+    private WorkTimeService workTimeService;
+    
+    @Autowired
+    private BABService babService;
 
-    public NumLamp() {
-        super("_NumLamp", "NumLamp", "25 0/5 8-20 ? * MON-SAT *", LineBalancePeopleGenerator.class);
+    @PostConstruct
+    public void init() {
+        super.init("_NumLamp", "NumLamp", "25 0/5 8-20 ? * MON-SAT *", LineBalancePeopleGenerator.class);
     }
 
     @Override
     public Map createJobDetails(BAB b) {
-        Double testStandardTime = BasicService.getWorkTimeService().getTestStandardTime(b.getModel_name());
-        Integer totalQuantity = BasicService.getBabService().getPoTotalQuantity(b.getPO());
+        Double testStandardTime = workTimeService.getTestStandardTime(b.getModel_name());
+        Integer totalQuantity = babService.getPoTotalQuantity(b.getPO());
         Map m = new HashMap();
         m.put("bab", b);
         m.put("testStandardTime", testStandardTime);
@@ -60,7 +70,7 @@ public class NumLamp extends ProcessingBabDetector implements Job {
 
     @Override
     public List<BAB> getProcessingBab() {
-        List<BAB> l = BasicService.getBabService().getAssyProcessing();
+        List<BAB> l = babService.getAssyProcessing();
         return removePreBab(l);
     }
 

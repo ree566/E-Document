@@ -8,30 +8,25 @@ package com.advantech.servlet;
 
 import com.advantech.helper.CronTrigMod;
 import java.io.*;
-import java.util.logging.Level;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
  *
  * @author Wei.Cheng
  */
-@WebServlet(name = "QuartzTriggerControl", urlPatterns = {"/QuartzTriggerControl"})
-public class QuartzTriggerControl extends HttpServlet {
+@Controller
+public class QuartzTriggerControl {
     
     private static final Logger log = LoggerFactory.getLogger(QuartzTriggerControl.class);
 
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse res)
-            throws ServletException, IOException {
-        res.sendError(HttpServletResponse.SC_FORBIDDEN);
-    }
-
-    @Override
+    @RequestMapping(value = "/QuartzTriggerControl", method = {RequestMethod.POST})
     protected void doPost(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
 

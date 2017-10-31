@@ -8,16 +8,14 @@ package com.advantech.model;
 import com.advantech.entity.TagNameComparison;
 import java.sql.Connection;
 import java.util.List;
+import org.springframework.stereotype.Repository;
 
 /**
  *
  * @author Wei.Cheng
  */
+@Repository
 public class TagNameComparisonDAO extends BasicDAO {
-
-    public TagNameComparisonDAO() {
-
-    }
 
     private Connection getConn() {
         return getDBUtilConn(SQL.WebAccess);

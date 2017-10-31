@@ -11,15 +11,14 @@ import com.advantech.entity.CellLine;
 import com.advantech.helper.CronTrigMod;
 import com.advantech.helper.ParamChecker;
 import com.advantech.quartzJob.CellStation;
-import com.advantech.service.BasicService;
 import com.advantech.service.CellLineService;
 import com.advantech.service.CellService;
-import com.advantech.service.WorkTimeService;
 import java.io.*;
 import static java.lang.System.out;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.PostConstruct;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
@@ -28,38 +27,42 @@ import org.quartz.JobDetail;
 import org.quartz.JobKey;
 import org.quartz.SchedulerException;
 import org.quartz.TriggerKey;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
  *
  * @author Wei.Cheng 前端給予PO, servlet 負責 sched the new polling job.
  */
-@WebServlet(name = "CellScheduleJobServlet", urlPatterns = {"/CellScheduleJobServlet"})
-public class CellScheduleJobServlet extends HttpServlet {
+@Controller
+public class CellScheduleJobServlet {
 
     private final String jobGroup = "Cell";
     private final String cronTrig = "0 0/1 8-20 ? * MON-SAT *";
-    private ParamChecker pc = null;
+    
+    @Autowired
+    private ParamChecker pc;
+    
     private Map<String, JobKey> schedJobs;
+    
+    @Autowired
     private CellService cellService;
+    
+    @Autowired
     private CellLineService cellLineService;
+    
+    @Autowired
+    private CellStation cellStation;
 
-    @Override
-    public void init() throws ServletException {
-        pc = new ParamChecker();
+    @PostConstruct
+    public void init() {
         schedJobs = new HashMap();
-        cellService = BasicService.getCellService();
-        cellLineService = BasicService.getCellLineService();
-
         this.initProcessingCells();
     }
 
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse res)
-            throws ServletException, IOException {
-        res.sendError(HttpServletResponse.SC_FORBIDDEN);
-    }
-
-    @Override
+    @RequestMapping(value = "/CellScheduleJobServlet", method = {RequestMethod.POST})
     protected void doPost(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
         String action = req.getParameter("action");
@@ -132,7 +135,7 @@ public class CellScheduleJobServlet extends HttpServlet {
                         if (!cells.isEmpty()) {
                             Cell cell = (Cell) cells.get(0);
                             CellLine cellLine = cellLineService.findOne(cell.getLineId());
-                            CellStation.checkDifferenceAndInsert(PO, cell.getType(), cellLine.getAps_lineId()); //Don't forget to check the xml data and insert at last.
+                            cellStation.checkDifferenceAndInsert(PO, cell.getType(), cellLine.getAps_lineId()); //Don't forget to check the xml data and insert at last.
                             if (cellService.delete(cell) == true) {
                                 responseObject = removeJob(cell) ? "success" : "fail";
                             } else {
@@ -175,7 +178,7 @@ public class CellScheduleJobServlet extends HttpServlet {
         String po = cell.getPO();
         int lineId = cell.getLineId();
         CronTrigMod ctm = CronTrigMod.getInstance();
-        CellLine cellLine = BasicService.getCellLineService().findOne(lineId);
+        CellLine cellLine = cellLineService.findOne(lineId);
         String jobKeyName = this.generateCellJobKeyName(cellLine, cell);
         Map data = new HashMap();
         data.put("PO", po);
@@ -192,7 +195,7 @@ public class CellScheduleJobServlet extends HttpServlet {
     private boolean removeJob(Cell cell) throws SchedulerException {
         int lineId = cell.getLineId();
         CronTrigMod ctm = CronTrigMod.getInstance();
-        CellLine cellLine = BasicService.getCellLineService().findOne(lineId);
+        CellLine cellLine = cellLineService.findOne(lineId);
         if (cellLine == null) {
             return false;
         }

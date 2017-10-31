@@ -9,18 +9,20 @@ import com.advantech.entity.Identit;
 import com.advantech.model.IdentitDAO;
 import java.util.List;
 import java.util.Map;
+import javax.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  *
  * @author Wei.Cheng
  */
+@Service
+@Transactional
 public class IdentitService {
 
-    private final IdentitDAO identitDAO;
-
-    protected IdentitService() {
-        identitDAO = new IdentitDAO();
-    }
+    @Autowired
+    private IdentitDAO identitDAO;
 
     public Identit getIdentit(String jobnumber) {
         return identitDAO.getIdentit(jobnumber);

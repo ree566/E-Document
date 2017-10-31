@@ -7,5 +7,4 @@ function getQueryVariable(variable) {
             return pair[1];
         }
     }
-    console.log('Query Variable ' + variable + ' not found');
 }

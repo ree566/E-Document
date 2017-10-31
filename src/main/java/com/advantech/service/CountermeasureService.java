@@ -7,6 +7,9 @@ import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import javax.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -17,13 +20,12 @@ import java.util.Map;
  *
  * @author Wei.Cheng
  */
+@Service
+@Transactional
 public class CountermeasureService {
 
-    private final CountermeasureDAO countermeasureDAO;
-
-    protected CountermeasureService() {
-        countermeasureDAO = new CountermeasureDAO();
-    }
+    @Autowired
+    private CountermeasureDAO countermeasureDAO;
 
     public List<Countermeasure> getCountermeasure() {
         return countermeasureDAO.getCountermeasures();
@@ -179,10 +181,4 @@ public class CountermeasureService {
         return countermeasureDAO.deleteCountermeasure(id);
     }
 
-    public static void main(String arg0[]) {
-        int BABid = 856;
-        BasicDAO.dataSourceInit1();
-        List<Map> list = BasicService.getCountermeasureService().getCountermeasureForExcel("16-10-01", "16-10-20");
-
-    }
 }

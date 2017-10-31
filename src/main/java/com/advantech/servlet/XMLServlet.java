@@ -10,21 +10,23 @@ import com.advantech.webservice.WebServiceRV;
 import java.io.*;
 import java.util.List;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
  *
  * @author Wei.Cheng
  */
-@WebServlet(name = "XMLServlet", urlPatterns = {"/XMLServlet"})
-public class XMLServlet extends HttpServlet {
+@Controller
+public class XMLServlet {
 
     private static final Logger log = LoggerFactory.getLogger(XMLServlet.class);
 
-    @Override
+    @RequestMapping(value = "/XMLServlet", method = {RequestMethod.POST})
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
         
@@ -40,9 +42,4 @@ public class XMLServlet extends HttpServlet {
 
     }
 
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse res)
-            throws ServletException, IOException {
-        doGet(req, res);
-    }
 }

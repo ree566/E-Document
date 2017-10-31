@@ -6,38 +6,48 @@
  */
 package com.advantech.servlet;
 
-import com.advantech.service.BasicService;
+import com.advantech.entity.Desk;
+import com.advantech.service.TestLineTypeFacade;
 import com.advantech.service.TestService;
 import com.google.gson.Gson;
 import java.io.*;
+import java.util.List;
+import java.util.Map;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  *
  * @author Wei.Cheng
  */
-@WebServlet(name = "TestTableStatus", urlPatterns = {"/TestTableStatus"})
-public class TestTableStatus extends HttpServlet {
+@Controller
+public class TestTableStatus {
 
-    private TestService testService = null;
-//    private ParamChecker pChecker = null;
+    @Autowired
+    private TestService testService;
+    
+    @Autowired
+    private TestLineTypeFacade ts;
 
-    @Override
-    public void init()
-            throws ServletException {
-        testService = BasicService.getTestService();
-//        pChecker = new ParamChecker();
+    @RequestMapping(value = "/TestTableStatus/findBySitefloor", method = {RequestMethod.GET})
+    @ResponseBody
+    protected List<Desk> findBySitefloor(@RequestParam(required = true) String sitefloor) {
+        return testService.getDesk(sitefloor);
+    }
+    
+    @RequestMapping(value = "/TestTableStatus/findUserNotLogin", method = {RequestMethod.GET})
+    @ResponseBody
+    protected Map findUserNotLogin(){
+        return ts.getPEOPLE_NOT_MATCH();
     }
 
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse res)
-            throws ServletException, IOException {
-        res.sendError(HttpServletResponse.SC_FORBIDDEN);
-    }
-
-    @Override
+    @RequestMapping(value = "/TestTableStatus", method = {RequestMethod.POST})
     protected void doPost(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
 

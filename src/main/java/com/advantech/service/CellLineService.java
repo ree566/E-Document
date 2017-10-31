@@ -8,21 +8,23 @@ package com.advantech.service;
 import com.advantech.entity.CellLine;
 import com.advantech.model.CellLineDAO;
 import java.util.List;
+import javax.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  *
  * @author Wei.Cheng
  */
+@Service
+@Transactional
 public class CellLineService {
 
-    private final CellLineDAO cellDAO;
+    @Autowired
+    private CellLineDAO cellDAO;
 
     private final int LINE_OPEN_SIGN = 1;
     private final int LINE_CLOSE_SIGN = 0;
-
-    protected CellLineService() {
-        cellDAO = new CellLineDAO();
-    }
 
     public List<CellLine> findAll() {
         return cellDAO.findAll();
@@ -32,6 +34,10 @@ public class CellLineService {
         return cellDAO.findOne(id);
     }
 
+    public List<CellLine> findBySitefloor(int sitefloor) {
+        return cellDAO.findBySitefloor(sitefloor);
+    }
+
     public boolean login(int id) {
         return cellDAO.updateStatus(id, LINE_OPEN_SIGN);
     }
@@ -39,8 +45,8 @@ public class CellLineService {
     public boolean logout(int id) {
         return cellDAO.updateStatus(id, LINE_CLOSE_SIGN);
     }
-    
-    public boolean closeAll(){
+
+    public boolean closeAll() {
         return cellDAO.updateStatus(LINE_CLOSE_SIGN);
     }
 

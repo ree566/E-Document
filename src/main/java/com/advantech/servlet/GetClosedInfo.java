@@ -6,37 +6,29 @@
  */
 package com.advantech.servlet;
 
-import com.advantech.service.BasicService;
 import com.advantech.service.TestService;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
  *
  * @author Wei.Cheng
  */
-@WebServlet(name = "GetClosedInfo", urlPatterns = {"/GetClosedInfo"})
-public class GetClosedInfo extends HttpServlet {
+@Controller
+public class GetClosedInfo {
 
-    private TestService testService = null;
+    @Autowired
+    private TestService testService;
 
-    @Override
-    public void init() throws ServletException {
-        testService = BasicService.getTestService();
-    }
-
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse res)
-            throws ServletException, IOException {
-        res.sendError(HttpServletResponse.SC_FORBIDDEN);
-    }
-
-    @Override
+    @RequestMapping(value = "/GetClosedInfo", method = {RequestMethod.POST})
     protected void doPost(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
 

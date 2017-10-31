@@ -144,8 +144,8 @@ public class CronTrigMod {
     }
 
     private void changeResultOutputFlag(boolean flag) {
-        BabLineTypeFacade.getInstance().isNeedToOutput(flag);
-        TestLineTypeFacade.getInstance().isNeedToOutput(flag);
+//        BabLineTypeFacade.getInstance().isNeedToOutput(flag);
+//        TestLineTypeFacade.getInstance().isNeedToOutput(flag);
     }
 
     public void updateMainJobCronExpressionToDefault() throws SchedulerException {
