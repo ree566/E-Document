@@ -7,9 +7,13 @@ package com.advantech.service;
 
 import com.advantech.entity.PassStation;
 import com.advantech.model.PassStationDAO;
+import com.advantech.webservice.WebServiceRV;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import javax.transaction.Transactional;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,6 +42,27 @@ public class PassStationService {
 
     public List<Map> getCellLastGroupStatusView() {
         return passStationDAO.getCellLastGroupStatusView();
+    }
+
+    public void checkDifferenceAndInsert(String PO, String type, Integer apsLineId) {
+
+        List<PassStation> l = WebServiceRV.getInstance().getPassStationRecords(PO, type);
+        Iterator it = l.iterator();
+        while (it.hasNext()) {
+            PassStation p = (PassStation) it.next();
+            if (!Objects.equals(p.getLineId(), apsLineId)) {
+                it.remove();
+            } else {
+                p.setType(type);
+            }
+        }
+
+        List<PassStation> history = this.getPassStation(PO, apsLineId, type);
+        List<PassStation> newData = (List<PassStation>) CollectionUtils.subtract(l, history);
+
+        if (!newData.isEmpty()) {
+            this.insertPassStation(newData);
+        }
     }
 
     public List<Map> getAllCellPerPcsHistory(String PO, String type, Integer lineName, Integer minPcs, Integer maxPcs, String startDate, String endDate) {

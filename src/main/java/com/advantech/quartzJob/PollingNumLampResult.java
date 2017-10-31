@@ -8,24 +8,22 @@ package com.advantech.quartzJob;
 
 import com.advantech.endpoint.Endpoint3;
 import org.json.JSONObject;
-import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
+import org.springframework.scheduling.quartz.QuartzJobBean;
 
 /**
  *
  * @author Wei.Cheng
  */
-@Component
-public class PollingNumLampResult implements Job {
+public class PollingNumLampResult extends QuartzJobBean {
 
     private static final Logger log = LoggerFactory.getLogger(PollingNumLampResult.class);
 
     @Override
-    public void execute(JobExecutionContext jec) throws JobExecutionException {
+    protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
         dataBrocast();
     }
 

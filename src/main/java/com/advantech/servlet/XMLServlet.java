@@ -26,7 +26,7 @@ public class XMLServlet {
 
     private static final Logger log = LoggerFactory.getLogger(XMLServlet.class);
 
-    @RequestMapping(value = "/XMLServlet", method = {RequestMethod.POST})
+    @RequestMapping(value = "/XMLServlet", method = {RequestMethod.GET})
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
         

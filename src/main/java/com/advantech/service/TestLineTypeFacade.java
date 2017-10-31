@@ -40,6 +40,8 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
     private double TEST_STANDARD;
 
     private WebServiceRV rv;
+    
+    @Autowired
     private TestService testService;
 
     private final int TEST_USER_NOT_IN_SYSTEM_SIGN = -1, TEST_USER_NOT_IN_XML_SIGN = 2;
@@ -53,12 +55,6 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
         rv = WebServiceRV.getInstance();
         
         this.initMap();
-        if (isWriteToDB) {
-            boolean initStatus = this.initDbAlarmSign();
-            if (initStatus == false) {
-                log.error("Init db output fail.");
-            }
-        }
     }
 
     @Override

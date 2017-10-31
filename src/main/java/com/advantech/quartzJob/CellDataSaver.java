@@ -9,20 +9,18 @@ package com.advantech.quartzJob;
 import com.advantech.entity.Cell;
 import com.advantech.service.CellService;
 import java.util.List;
-import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.scheduling.quartz.QuartzJobBean;
 
 /**
  *
  * @author Wei.Cheng
  */
-@Component
-public class CellDataSaver implements Job {
+public class CellDataSaver extends QuartzJobBean {
 
     private static final Logger log = LoggerFactory.getLogger(CellDataSaver.class);
     
@@ -30,7 +28,7 @@ public class CellDataSaver implements Job {
     private CellService cellService;
 
     @Override
-    public void execute(JobExecutionContext jec) throws JobExecutionException {
+    protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
         saveCellData();
     }
 

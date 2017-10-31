@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-4.3.xsd">
+    
+    <!--job1 setting-->
+    <!--主要工作job，把資料轉換到TXT控制燈號-->
+    <bean id="schedulingJob1" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="DailyJobWorker"/>
+        <property name="targetMethod" value="execute" />      
+    </bean>
+
+    <bean id="cronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="schedulingJob1"/>
+        <property name="cronExpression" value="0/30 * 8-20 ? * MON-SAT *"/>
+    </bean>
+    
+    <!--Reset資料庫job-->  
+    <bean id="schedulingJob2" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="DataBaseInit"/>
+        <property name="targetMethod" value="execute" />      
+    </bean>
+
+    <bean id="cronTrigger2" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="schedulingJob2"/>
+        <property name="cronExpression" value="0 30 6,21 ? * MON-SAT *"/>
+    </bean> 
+    
+    <!--把Cell是否合格資訊轉換到資料庫-->
+    <bean id="schedulingJob3" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="CellJobWorker"/>
+        <property name="targetMethod" value="execute" />      
+    </bean>
+
+    <bean id="cronTrigger3" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="schedulingJob3"/>
+        <property name="cronExpression" value="0/30 * 8-20 ? * MON-SAT *"/>
+    </bean> 
+
+    <!--schedule jobs-->
+    <bean id="schedulerFactoryBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="applicationContextSchedulerContextKey" value="applicationContext" />
+        
+        <property name="triggers">
+            <list>
+                <ref bean="cronTrigger"/>
+                <ref bean="cronTrigger2"/>
+                <ref bean="cronTrigger3"/>
+            </list>
+        </property>
+        <property name="schedulerName">
+            <value>jobScheduler</value>
+        </property>
+        
+        <property name="configLocation">
+            <value>classpath:quartz.properties</value>
+        </property>
+    </bean>
+    
+</beans>

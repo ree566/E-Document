@@ -19,20 +19,18 @@ import java.util.Map;
 import java.util.Set;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.scheduling.quartz.QuartzJobBean;
 
 /**
  *
  * @author Wei.Cheng
  */
-@Component
-public class CountermeasureAlarm implements Job {
+public class CountermeasureAlarm extends QuartzJobBean {
     
     @Autowired
     private LineOwnerMappingService lomService;
@@ -45,7 +43,7 @@ public class CountermeasureAlarm implements Job {
     private final DatetimeGenerator dg = new DatetimeGenerator("yyyy-MM-dd HH:mm");
 
     @Override
-    public void execute(JobExecutionContext jec) throws JobExecutionException {
+    protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
         try {
             //Link the mailloop to send daily mail
             sendMail();

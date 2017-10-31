@@ -44,12 +44,6 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
         BAB_STANDARD = p.getAssyStandard();
         
         this.initMap();
-        if (isWriteToDB) {
-            boolean initStatus = this.initDbAlarmSign();
-            if (initStatus == false) {
-                log.error("Init db output fail.");
-            }
-        }
     }
 
     @Override

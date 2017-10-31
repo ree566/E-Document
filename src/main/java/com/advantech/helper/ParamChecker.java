@@ -30,8 +30,4 @@ public class ParamChecker {
        return arr != null && arr.length != 0;
     }
     
-    public static void main(String[] args){
-        ParamChecker p = new ParamChecker();
-        System.out.println(p.checkInputVals("   ","B","C"));
-    }
 }

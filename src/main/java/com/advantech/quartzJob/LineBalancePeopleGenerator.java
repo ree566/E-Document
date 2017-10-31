@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
 import org.json.JSONObject;
-import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.JobKey;
@@ -32,13 +31,14 @@ import org.quartz.TriggerKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.quartz.QuartzJobBean;
 
 /**
  *
  * @author Wei.Cheng Job separate by class NumLamp, caculate the lineBalance
  * between testLine and babLine.
  */
-public class LineBalancePeopleGenerator implements Job {
+public class LineBalancePeopleGenerator extends QuartzJobBean {
 
     private static final Logger log = LoggerFactory.getLogger(LineBalancePeopleGenerator.class);
 
@@ -65,6 +65,9 @@ public class LineBalancePeopleGenerator implements Job {
     private TriggerKey currentTriggerKey;
 
     private NumLamp numLamp;
+    
+    @Autowired
+    private CronTrigMod ctm;
 
     @PostConstruct
     public void init() {
@@ -85,15 +88,15 @@ public class LineBalancePeopleGenerator implements Job {
     }
 
     @Override
-    public void execute(JobExecutionContext jec) throws JobExecutionException {
-        this.currentTriggerKey = jec.getTrigger().getKey();
-        this.currentJobKey = jec.getJobDetail().getKey();
+    protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
+        this.currentTriggerKey = context.getTrigger().getKey();
+        this.currentJobKey = context.getJobDetail().getKey();
         this.generateTestPeople();
     }
 
     private void jobSelfRemove() {
         try {
-            CronTrigMod.getInstance().jobPause(currentJobKey);
+            ctm.jobPause(currentJobKey);
         } catch (SchedulerException ex) {
             log.error(ex.toString());
         }

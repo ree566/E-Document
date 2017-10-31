@@ -5,12 +5,9 @@
  */
 package com.advantech.helper;
 
-import com.advantech.service.BabLineTypeFacade;
-import com.advantech.service.TestLineTypeFacade;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -27,53 +24,43 @@ import org.quartz.SimpleScheduleBuilder;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 import org.quartz.TriggerKey;
-import org.quartz.impl.StdSchedulerFactory;
 import org.quartz.impl.triggers.CronTriggerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.quartz.impl.matchers.GroupMatcher;
 import static org.quartz.TriggerKey.triggerKey;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.quartz.SchedulerFactoryBean;
+import org.springframework.stereotype.Component;
 
 /**
  *
  * @author Wei.Cheng
  */
+@Component
 public class CronTrigMod {
 
     private static final Logger log = LoggerFactory.getLogger(CronTrigMod.class);
 
     public Map changedJobKey;
 
-    private final Scheduler scheduler;
-    private static CronTrigMod instance;
+    @Autowired
+    private SchedulerFactoryBean schedulerFactory;
 
-    private CronTrigMod() throws SchedulerException {
-        this.changedJobKey = new HashMap();
-        scheduler = new StdSchedulerFactory().getScheduler();
-        if(scheduler == null || !scheduler.isStarted()){
-            throw new SchedulerException("Scheduler is not started");
-        }
-    }
-
-//    http://openhome.cc/Gossip/DesignPattern/SingletonPattern.htm
-    @SuppressWarnings("DoubleCheckedLocking")
-    public static CronTrigMod getInstance() throws SchedulerException {
-        if (instance == null) {
-            instance = new CronTrigMod();
-        }
-        return instance;
+    private Scheduler getScheduler() {
+        return schedulerFactory.getScheduler();
     }
 
     public List<JobKey> getJobKeys() throws SchedulerException {
-        return new ArrayList(scheduler.getJobKeys(GroupMatcher.anyJobGroup()));
+        return new ArrayList(getScheduler().getJobKeys(GroupMatcher.anyJobGroup()));
     }
 
     public List<JobKey> getJobKeys(String jobGroup) throws SchedulerException {
-        return new ArrayList(scheduler.getJobKeys(GroupMatcher.jobGroupEquals(jobGroup)));
+        return new ArrayList(getScheduler().getJobKeys(GroupMatcher.jobGroupEquals(jobGroup)));
     }
 
     public List<TriggerKey> getTriggerKeys(String jobGroup) throws SchedulerException {
-        return new ArrayList(scheduler.getTriggerKeys(GroupMatcher.triggerGroupEquals(jobGroup)));
+        return new ArrayList(getScheduler().getTriggerKeys(GroupMatcher.triggerGroupEquals(jobGroup)));
     }
 
     public JobKey createJobKey(String jobName) {
@@ -101,7 +88,7 @@ public class CronTrigMod {
 
     public String getCronTriggerByJobKey(String jobKeyName) {
         try {
-            Trigger t = scheduler.getTrigger(new TriggerKey(jobKeyName));
+            Trigger t = getScheduler().getTrigger(new TriggerKey(jobKeyName));
             return ((CronTrigger) t).getCronExpression();
         } catch (SchedulerException ex) {
             log.error(ex.toString());
@@ -111,7 +98,7 @@ public class CronTrigMod {
 
     public void triggerJob(JobKey jobKey) {
         try {
-            scheduler.triggerJob(jobKey);
+            getScheduler().triggerJob(jobKey);
         } catch (SchedulerException ex) {
             log.error(ex.toString());
         }
@@ -153,6 +140,7 @@ public class CronTrigMod {
 
         // retrieve the trigger
         Object trig = changedJobKey.get(mainJobKey);
+        Scheduler scheduler = getScheduler();
         Trigger oldTrigger = (trig != null) ? (Trigger) trig : scheduler.getTrigger(triggerKey(mainJobKey));
         scheduler.rescheduleJob(oldTrigger.getKey(), oldTrigger);
         changedJobKey.remove(mainJobKey);
@@ -163,6 +151,7 @@ public class CronTrigMod {
 
         // retrieve the trigger
         Object trig = changedJobKey.get(mainJobKey);
+        Scheduler scheduler = getScheduler();
 
         Trigger oldTrigger = (trig != null) ? (Trigger) trig : scheduler.getTrigger(triggerKey(mainJobKey));
         changedJobKey.put(mainJobKey, oldTrigger);
@@ -181,6 +170,7 @@ public class CronTrigMod {
     }
 
     public boolean updateCronExpression(String triggerKey, String cronExpression, Integer executeNow) {
+        Scheduler scheduler = getScheduler();
         if (StringUtils.isBlank(triggerKey) || StringUtils.isBlank(cronExpression)) {
             log.error("参数错误");
             return false;
@@ -218,7 +208,7 @@ public class CronTrigMod {
             JobDetail job = JobBuilder.newJob(jobClass).withIdentity(jobKey).build();
             CronTrigger trigger = TriggerBuilder.newTrigger().withIdentity(trigKey)
                     .withSchedule(CronScheduleBuilder.cronSchedule(crontrigger)).build();
-            scheduler.scheduleJob(job, trigger);
+            getScheduler().scheduleJob(job, trigger);
             log.info("The job with key name " + jobKey + " ,TriggerKey " + trigKey + " is sched");
         } else {
             log.info("The job with key name " + jobKey + " is exist.");
@@ -230,7 +220,7 @@ public class CronTrigMod {
         if (!isKeyInScheduleExist(jobKey)) {
             CronTrigger trigger = TriggerBuilder.newTrigger().withIdentity(trigKey)
                     .withSchedule(CronScheduleBuilder.cronSchedule(crontrigger)).build();
-            scheduler.scheduleJob(job, trigger);
+            getScheduler().scheduleJob(job, trigger);
             log.info("The job with key name " + jobKey + " ,TriggerKey " + trigKey + " is sched");
         } else {
             log.info("The job with key name " + jobKey + " is already exist.");
@@ -239,48 +229,50 @@ public class CronTrigMod {
     }
 
     public void jobPause(JobKey jobKey) throws SchedulerException {
-        scheduler.pauseJob(jobKey);
+        getScheduler().pauseJob(jobKey);
         log.info("The job with key name " + jobKey + " is already pause.");
     }
 
     public void interruptJob(JobKey jobKey) throws SchedulerException {
-        scheduler.interrupt(jobKey);
+        getScheduler().interrupt(jobKey);
         log.info("Job " + jobKey + "  -- INTERRUPTING --");
     }
 
     public void removeJob(String jobName) throws SchedulerException {
+        Scheduler scheduler = getScheduler();
         JobKey jobKey = this.createJobKey(jobName);
         scheduler.deleteJob(jobKey);
         log.info("The job with key name " + jobKey + (scheduler.checkExists(jobKey) ? " remove fail." : " remove success."));
     }
 
     public void removeJob(JobKey jobKey) throws SchedulerException {
+        Scheduler scheduler = getScheduler();
         scheduler.deleteJob(jobKey);
         log.info("The job with key name " + jobKey + (scheduler.checkExists(jobKey) ? " remove fail." : " remove success."));
     }
 
     public void removeJobs(String jobGroupName) throws SchedulerException {
-        Set<JobKey> jobs = scheduler.getJobKeys(GroupMatcher.jobGroupEquals(jobGroupName));
+        Set<JobKey> jobs = getScheduler().getJobKeys(GroupMatcher.jobGroupEquals(jobGroupName));
         this.removeJobs(new ArrayList(jobs));
         log.info("Job group " + jobGroupName + " remove " + (this.getJobKeys(jobGroupName).isEmpty() ? "success" : "fail"));
     }
 
     public void removeJobs(List<JobKey> l) throws SchedulerException {
-        scheduler.deleteJobs(l);
+        getScheduler().deleteJobs(l);
     }
 
     public void removeTriggers(String jobGroupName) throws SchedulerException {
-        Set<TriggerKey> triggers = scheduler.getTriggerKeys(GroupMatcher.triggerGroupEquals(jobGroupName));
+        Set<TriggerKey> triggers = getScheduler().getTriggerKeys(GroupMatcher.triggerGroupEquals(jobGroupName));
         this.removeTriggers(new ArrayList(triggers));
         log.info("Trigger group " + jobGroupName + " remove " + (this.getTriggerKeys(jobGroupName).isEmpty() ? "success" : "fail"));
     }
 
     public void removeTrigger(TriggerKey triggerKey) throws SchedulerException {
-        scheduler.unscheduleJob(triggerKey);
+        getScheduler().unscheduleJob(triggerKey);
     }
 
     public void removeTriggers(List<TriggerKey> l) throws SchedulerException {
-        scheduler.unscheduleJobs(l);
+        getScheduler().unscheduleJobs(l);
     }
 
     public boolean isJobInScheduleExist(JobKey jobKey) throws SchedulerException {
@@ -288,6 +280,7 @@ public class CronTrigMod {
     }
 
     public boolean isKeyInScheduleExist(Object key) throws SchedulerException {
+        Scheduler scheduler = getScheduler();
         if (key instanceof JobKey) {
             return scheduler.checkExists((JobKey) key);
         } else if (key instanceof TriggerKey) {
@@ -300,14 +293,7 @@ public class CronTrigMod {
     }
 
     public void unScheduleAllJob() throws SchedulerException {
-        this.scheduler.clear();
+        this.getScheduler().clear();
     }
 
-    public static void main(String arg0[]) {
-        Trigger trigger = TriggerBuilder.newTrigger()
-                .withIdentity("trigger3", "group1")
-                .withSchedule(CronScheduleBuilder.dailyAtHourAndMinute(10, 42))
-                .forJob(new JobKey("AAA"))
-                .build();
-    }
 }

@@ -10,12 +10,14 @@ import com.advantech.endpoint.Endpoint2;
 import com.advantech.service.BabLineTypeFacade;
 import com.advantech.service.TestLineTypeFacade;
 import org.json.JSONArray;
-import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.scheduling.quartz.QuartzJobBean;
 import org.springframework.stereotype.Component;
 
 /**
@@ -23,18 +25,17 @@ import org.springframework.stereotype.Component;
  * @author Wei.Cheng
  */
 @Component
-public class PollingBabAndTestResult implements Job {
+public class PollingBabAndTestResult {
 
     private static final Logger log = LoggerFactory.getLogger(PollingBabAndTestResult.class);
-    
-    @Autowired
-    private TestLineTypeFacade tf;
-    
-    @Autowired
-    private BabLineTypeFacade bf;
 
-    @Override
-    public void execute(JobExecutionContext jec) throws JobExecutionException {
+    @Autowired
+    private TestLineTypeFacade tF;
+
+    @Autowired
+    private BabLineTypeFacade bF;
+
+    protected void execute() {
         dataBrocast();
     }
 
@@ -55,7 +56,8 @@ public class PollingBabAndTestResult implements Job {
     }
 
     public String getData() {
-        return new JSONArray().put(tf.getJSONObject())
-                .put(bf.getJSONObject()).toString();
+        System.out.println("Return data");
+        return new JSONArray().put(tF.getJSONObject())
+                .put(bF.getJSONObject()).toString();
     }
 }

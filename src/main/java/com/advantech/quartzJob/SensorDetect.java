@@ -18,7 +18,6 @@ import org.joda.time.DateTime;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.quartz.DisallowConcurrentExecution;
-import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -33,8 +32,7 @@ import org.springframework.stereotype.Component;
  */
 @PersistJobDataAfterExecution
 @DisallowConcurrentExecution
-@Component
-public class SensorDetect extends ProcessingBabDetector implements Job {
+public class SensorDetect extends ProcessingBabDetector {
 
     public static JobDataMap jobDataMap = null;
     private Integer SENSOR_EXPIRE_TIME;
@@ -82,8 +80,8 @@ public class SensorDetect extends ProcessingBabDetector implements Job {
     }
 
     @Override
-    public void execute(JobExecutionContext jec) throws JobExecutionException {
-        JobDataMap jobMap = jec.getJobDetail().getJobDataMap();
+    protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
+        JobDataMap jobMap = context.getJobDetail().getJobDataMap();
         jobDataMap = jobMap;
         super.setCurrentStatus(jobMap);
         super.listeningBab(); //Process and get data

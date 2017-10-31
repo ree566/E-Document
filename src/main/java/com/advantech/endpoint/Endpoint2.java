@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import javax.annotation.PostConstruct;
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
 import javax.websocket.OnMessage;
@@ -23,22 +24,32 @@ import javax.websocket.server.ServerEndpoint;
 import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  *
  * @author Wei.Cheng
  */
 @ServerEndpoint("/echo2")
+@Component
 public class Endpoint2 {
     
     private static final Logger log = LoggerFactory.getLogger(Endpoint2.class);
 //    private static final Queue<Session> queue = new ConcurrentLinkedQueue<>();
     private static final Set<Session> sessions = Collections.synchronizedSet(new HashSet<Session>());
     
-    private static final String POLLING_FREQUENCY;
+    private static String POLLING_FREQUENCY;
     private static final String JOB_NAME = "JOB2";
     
-    static {
+    @Autowired
+    private CronTrigMod ctm;
+    
+    @Autowired
+    private PollingBabAndTestResult ptr;
+    
+    @PostConstruct
+    protected void init(){
         POLLING_FREQUENCY = PropertiesReader.getInstance().getEndpointQuartzTrigger();
     }
     
@@ -47,14 +58,18 @@ public class Endpoint2 {
         
         //Push the current status on client first connect
         try {
-            session.getBasicRemote().sendText(new PollingBabAndTestResult().getData());
-        } catch (IOException ex) {
-            log.error(ex.toString());
+            System.out.println("open");
+            session.getBasicRemote().sendText(ptr.getData());
+            System.out.println("Send Finished");
+        } catch (Exception ex) {
+            System.out.println("Error cause");
+            log.error(ex.getMessage(), ex);
         }
-        
+        System.out.println("Add session");
         sessions.add(session);
         //每次當client連接進來時，去看目前session的數量 當有1個session時把下方quartz job加入到schedule裏頭(只要執行一次，不要重複加入)
         int a = sessions.size();
+        System.out.println(a);
         if (a == 1) {
             System.out.println("Some session exist, begin polling.");
             pollingDBAndBrocast();
@@ -103,7 +118,7 @@ public class Endpoint2 {
     // Generate when connect users are at least one.
     private void pollingDBAndBrocast() {
         try {
-            CronTrigMod.getInstance().scheduleJob(PollingBabAndTestResult.class, JOB_NAME, POLLING_FREQUENCY);
+            ctm.scheduleJob(PollingBabAndTestResult.class, JOB_NAME, POLLING_FREQUENCY);
         } catch (SchedulerException ex) {
             log.error(ex.toString());
         }
@@ -112,7 +127,7 @@ public class Endpoint2 {
     // Delete when all users are disconnect.
     private void unPollingDB() {
         try {
-            CronTrigMod.getInstance().removeJob(JOB_NAME);
+            ctm.removeJob(JOB_NAME);
 //            System.out.println("trigger has been removed");
         } catch (SchedulerException ex) {
             log.error(ex.toString());

@@ -59,13 +59,5 @@ public class WebSocketConfig extends Configurator {
         log.info("origin check:" + (checkStatus ? "pass": "fail"));
         return checkStatus;
     }
-    
-    public static void main(String arg0[]){
-        try {
-            System.out.print(InetAddress.getLocalHost().getHostName());
-        } catch (UnknownHostException ex) {
-            System.out.println(ex);
-        }
-    }
 
 }

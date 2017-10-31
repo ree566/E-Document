@@ -26,20 +26,18 @@ import org.joda.time.Period;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.json.JSONArray;
-import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.scheduling.quartz.QuartzJobBean;
 
 /**
  *
  * @author Wei.Cheng
  */
-@Component
-public class CheckSensor implements Job {
+public class CheckSensor extends QuartzJobBean {
 
     private static final Logger log = LoggerFactory.getLogger(CheckSensor.class);
 
@@ -60,7 +58,7 @@ public class CheckSensor implements Job {
     private LineOwnerMappingService lineOwnerMappingService;
 
     @Override
-    public void execute(JobExecutionContext jec) throws JobExecutionException {
+    protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
         try {
             checkSensorAndSendMail();
         } catch (MessagingException ex) {

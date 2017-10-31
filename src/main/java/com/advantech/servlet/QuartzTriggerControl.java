@@ -13,6 +13,7 @@ import javax.servlet.http.*;
 import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -25,6 +26,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public class QuartzTriggerControl {
     
     private static final Logger log = LoggerFactory.getLogger(QuartzTriggerControl.class);
+    
+    @Autowired
+    private CronTrigMod ctm;
 
     @RequestMapping(value = "/QuartzTriggerControl", method = {RequestMethod.POST})
     protected void doPost(HttpServletRequest req, HttpServletResponse res)
@@ -34,13 +38,9 @@ public class QuartzTriggerControl {
         PrintWriter out = res.getWriter();
         String order = req.getParameter("order");
         if (order != null && !"".equals(order)) {
-            try {
-                String remoteIp = req.getRemoteAddr();
-                out.print(CronTrigMod.getInstance().triggerPauseOrResume(order) ? "success" : "fail");
-                log.info("Someone change the flag to :" + order + " --- " + remoteIp);
-            } catch (SchedulerException ex) {
-                log.info(ex.toString());
-            }
+            String remoteIp = req.getRemoteAddr();
+            out.print(ctm.triggerPauseOrResume(order) ? "success" : "fail");
+            log.info("Someone change the flag to :" + order + " --- " + remoteIp);
         }
     }
 

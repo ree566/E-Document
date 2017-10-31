@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import javax.annotation.PostConstruct;
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
 import javax.websocket.OnMessage;
@@ -24,21 +25,25 @@ import javax.websocket.server.ServerEndpoint;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 /**
  *
  * @author Wei.Cheng
  */
 @ServerEndpoint(value = "/echo6/{clientId}")
+@Component
 public class Endpoint6 {
 
     private static final Logger log = LoggerFactory.getLogger(Endpoint6.class);
     private static final Set<Session> sessions = Collections.synchronizedSet(new HashSet<Session>());
-    private static final Gson gson = new Gson();
+    private Gson gson;
 
     private static final HashMap<Integer, List<BAB>> processingBAB = new HashMap();
-
-    static {
+    
+    @PostConstruct
+    protected void init(){
+        gson = new Gson();
         syncCurrentBabStatus();
     }
 

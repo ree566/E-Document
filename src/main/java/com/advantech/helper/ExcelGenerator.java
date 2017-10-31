@@ -37,7 +37,7 @@ import org.springframework.stereotype.Component;
  *
  * @author Wei.Cheng
  */
-@Component
+//@Component
 public class ExcelGenerator {
 
     private static final Logger log = LoggerFactory.getLogger(ExcelGenerator.class);

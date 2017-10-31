@@ -13,9 +13,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
+import javax.annotation.PostConstruct;
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
 import javax.websocket.OnMessage;
@@ -25,22 +24,29 @@ import javax.websocket.server.ServerEndpoint;
 import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  *
  * @author Wei.Cheng
  */
 @ServerEndpoint("/echo4")
+@Component
 public class Endpoint4 {
 
     private static final Logger log = LoggerFactory.getLogger(Endpoint4.class);
 //    private static final Queue<Session> queue = new ConcurrentLinkedQueue<>();
     private static final Set<Session> sessions = Collections.synchronizedSet(new HashSet<Session>());
 
-    private static final String POLLING_FREQUENCY;
+    private static String POLLING_FREQUENCY;
     private static final String JOB_NAME = "JOB4";
+    
+    @Autowired
+    private CronTrigMod ctm;
 
-    static {
+    @PostConstruct
+    protected void init(){
         POLLING_FREQUENCY = PropertiesReader.getInstance().getEndpointQuartzTrigger();
     }
 
@@ -107,7 +113,7 @@ public class Endpoint4 {
     // Generate when connect users are at least one.
     private void pollingDBAndBrocast() {
         try {
-            CronTrigMod.getInstance().scheduleJob(PollingCellResult.class, JOB_NAME, POLLING_FREQUENCY);
+            ctm.scheduleJob(PollingCellResult.class, JOB_NAME, POLLING_FREQUENCY);
         } catch (SchedulerException ex) {
             log.error(ex.toString());
         }
@@ -116,7 +122,7 @@ public class Endpoint4 {
     // Delete when all users are disconnect.
     private void unPollingDB() {
         try {
-            CronTrigMod.getInstance().removeJob(JOB_NAME);
+            ctm.removeJob(JOB_NAME);
         } catch (SchedulerException ex) {
             log.error(ex.toString());
         }
@@ -126,12 +132,4 @@ public class Endpoint4 {
         sessions.clear();
     }
 
-    private void showUrlParam(Session session) {
-        Map map = session.getRequestParameterMap();
-        Iterator it = map.keySet().iterator();
-        while (it.hasNext()) {
-            System.out.println("Receive endpoint param: " + map.get(it.next()));
-        }
-    }
-    
 }

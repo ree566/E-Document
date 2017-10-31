@@ -28,7 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 @PersistJobDataAfterExecution
 @DisallowConcurrentExecution
-public class NumLamp extends ProcessingBabDetector implements Job {
+public class NumLamp extends ProcessingBabDetector {
 
     public static JobDataMap jobDataMap = null;
     
@@ -55,8 +55,8 @@ public class NumLamp extends ProcessingBabDetector implements Job {
     }
 
     @Override
-    public void execute(JobExecutionContext jec) throws JobExecutionException {
-        JobDataMap jobMap = jec.getJobDetail().getJobDataMap();
+    protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
+        JobDataMap jobMap = context.getJobDetail().getJobDataMap();
         jobDataMap = jobMap;
         super.setCurrentStatus(jobMap);
         super.listeningBab(); //Process and get data

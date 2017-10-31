@@ -21,12 +21,14 @@ import org.quartz.TriggerKey;
 import org.quartz.utils.Key;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.quartz.QuartzJobBean;
 
 /**
  *
  * @author Wei.Cheng Detect the bab begin and end perLine
  */
-public abstract class ProcessingBabDetector {
+public abstract class ProcessingBabDetector extends QuartzJobBean{
 
     private static final Logger log = LoggerFactory.getLogger(ProcessingBabDetector.class);
 
@@ -42,6 +44,9 @@ public abstract class ProcessingBabDetector {
     private String quartzJobGroupName;
     private String quartzJobCronTrigger;
     private Class scheduleClass;
+    
+    @Autowired
+    private CronTrigMod ctm;
 
     protected void init(String quartzJobNameExt, String quartzJobGroupName, String quartzJobCronTrigger, Class scheduleClass) {
         this.quartzJobNameExt = quartzJobNameExt;
@@ -100,7 +105,6 @@ public abstract class ProcessingBabDetector {
     private void schedulePollingJob(List<BAB> l) {
         for (BAB b : l) {
             try {
-                CronTrigMod ctm = CronTrigMod.getInstance();
                 String jobName = b.getLineName() + quartzJobNameExt;
                 JobKey jobKey = ctm.createJobKey(jobName, quartzJobGroupName);
 
@@ -131,7 +135,6 @@ public abstract class ProcessingBabDetector {
 
     private void unschedulePollingJob(String lineName) {
         try {
-            CronTrigMod ctm = CronTrigMod.getInstance();
             Map keyMap = storeKeys.get(lineName);
             JobKey jobKey = (JobKey) keyMap.get("job");
             ctm.removeJob(jobKey);

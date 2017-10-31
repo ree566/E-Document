@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import javax.annotation.PostConstruct;
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
 import javax.websocket.OnMessage;
@@ -27,25 +28,28 @@ import javax.websocket.server.ServerEndpoint;
 import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  *
  * @author Wei.Cheng
  */
-@ServerEndpoint(
-        value = "/echo"
-//        , 
-//        configurator = WebSocketConfig.class
-)
+@ServerEndpoint("/echo")
+@Component
 public class Endpoint {
 
     private static final Logger log = LoggerFactory.getLogger(Endpoint.class);
     private static final Set<Session> sessions = Collections.synchronizedSet(new HashSet<Session>());
 
-    private static final String POLLING_FREQUENCY;
+    private static String POLLING_FREQUENCY;
     private static final String JOB_NAME = "JOB1";
 
-    static {
+    @Autowired
+    private CronTrigMod ctm;
+
+    @PostConstruct
+    protected void init(){
         POLLING_FREQUENCY = PropertiesReader.getInstance().getEndpointQuartzTrigger();
     }
 
@@ -57,7 +61,7 @@ public class Endpoint {
         } catch (IOException ex) {
             log.error(ex.toString());
         }
-        
+
 //        HandshakeRequest req = (HandshakeRequest) conf.getUserProperties().get("handshakereq");
 //        Map<String,List<String>> headers = req.getHeaders();
         sessions.add(session);
@@ -116,7 +120,7 @@ public class Endpoint {
     // Generate when connect users are at least one.
     private void pollingDBAndBrocast() {
         try {
-            CronTrigMod.getInstance().scheduleJob(PollingSensorStatus.class, JOB_NAME, POLLING_FREQUENCY);
+            ctm.scheduleJob(PollingSensorStatus.class, JOB_NAME, POLLING_FREQUENCY);
         } catch (SchedulerException ex) {
             log.error(ex.toString());
         }
@@ -125,14 +129,14 @@ public class Endpoint {
     // Delete when all users are disconnect. 
     private void unPollingDB() {
         try {
-            CronTrigMod.getInstance().removeJob(JOB_NAME);
+            ctm.removeJob(JOB_NAME);
 //            System.out.println("trigger has been removed");
         } catch (SchedulerException ex) {
             log.error(ex.toString());
         }
     }
-    
-    public static void clearSessions(){
+
+    public static void clearSessions() {
         sessions.clear();
     }
 }

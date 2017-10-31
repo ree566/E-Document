@@ -13,6 +13,7 @@ import com.advantech.helper.ParamChecker;
 import com.advantech.quartzJob.CellStation;
 import com.advantech.service.CellLineService;
 import com.advantech.service.CellService;
+import com.advantech.service.PassStationService;
 import java.io.*;
 import static java.lang.System.out;
 import java.util.HashMap;
@@ -54,7 +55,10 @@ public class CellScheduleJobServlet {
     private CellLineService cellLineService;
     
     @Autowired
-    private CellStation cellStation;
+    private PassStationService passStationService;
+    
+    @Autowired
+    private CronTrigMod ctm;
 
     @PostConstruct
     public void init() {
@@ -135,7 +139,7 @@ public class CellScheduleJobServlet {
                         if (!cells.isEmpty()) {
                             Cell cell = (Cell) cells.get(0);
                             CellLine cellLine = cellLineService.findOne(cell.getLineId());
-                            cellStation.checkDifferenceAndInsert(PO, cell.getType(), cellLine.getAps_lineId()); //Don't forget to check the xml data and insert at last.
+                            passStationService.checkDifferenceAndInsert(PO, cell.getType(), cellLine.getAps_lineId()); //Don't forget to check the xml data and insert at last.
                             if (cellService.delete(cell) == true) {
                                 responseObject = removeJob(cell) ? "success" : "fail";
                             } else {
@@ -171,13 +175,12 @@ public class CellScheduleJobServlet {
     }
 
     private List<JobKey> getSchedJobs() throws SchedulerException {
-        return CronTrigMod.getInstance().getJobKeys("Cell");
+        return ctm.getJobKeys("Cell");
     }
 
     private boolean schedNewJobs(Cell cell) throws SchedulerException {
         String po = cell.getPO();
         int lineId = cell.getLineId();
-        CronTrigMod ctm = CronTrigMod.getInstance();
         CellLine cellLine = cellLineService.findOne(lineId);
         String jobKeyName = this.generateCellJobKeyName(cellLine, cell);
         Map data = new HashMap();
@@ -194,7 +197,6 @@ public class CellScheduleJobServlet {
 
     private boolean removeJob(Cell cell) throws SchedulerException {
         int lineId = cell.getLineId();
-        CronTrigMod ctm = CronTrigMod.getInstance();
         CellLine cellLine = cellLineService.findOne(lineId);
         if (cellLine == null) {
             return false;

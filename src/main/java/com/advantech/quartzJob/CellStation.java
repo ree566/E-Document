@@ -14,18 +14,16 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import org.apache.commons.collections4.CollectionUtils;
-import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.scheduling.quartz.QuartzJobBean;
 
 /**
  *
  * @author Wei.Cheng
  */
-@Component
-public class CellStation implements Job {
+public class CellStation extends QuartzJobBean {
 
     private String PO;
     private String type;
@@ -35,7 +33,7 @@ public class CellStation implements Job {
     private PassStationService passStationService;
 
     @Override
-    public void execute(JobExecutionContext jec) throws JobExecutionException {
+    protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
         syncMesDataToDatabase();
     }
 
@@ -47,32 +45,13 @@ public class CellStation implements Job {
 
         //確認已經開始了
         if (!l.isEmpty()) {
-            checkDifferenceAndInsert(PO, type, apsLineId);
+            passStationService.checkDifferenceAndInsert(PO, type, apsLineId);
         } else {
             System.out.println("Data is empty.");
         }
     }
 
-    public void checkDifferenceAndInsert(String PO, String type, Integer apsLineId) {
-
-        List<PassStation> l = WebServiceRV.getInstance().getPassStationRecords(PO, type);
-        Iterator it = l.iterator();
-        while(it.hasNext()){
-            PassStation p = (PassStation) it.next();
-            if(!Objects.equals(p.getLineId(), apsLineId)){
-                it.remove();
-            }else{
-                p.setType(type);
-            }
-        }
-        
-        List<PassStation> history = passStationService.getPassStation(PO, apsLineId, type);
-        List<PassStation> newData = (List<PassStation>) CollectionUtils.subtract(l, history);
-
-        if (!newData.isEmpty()) {
-            passStationService.insertPassStation(newData);
-        }
-    }
+    
 
     public void setPO(String PO) {
         this.PO = PO;

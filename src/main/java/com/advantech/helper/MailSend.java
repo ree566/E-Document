@@ -114,13 +114,6 @@ public class MailSend {
         return true;
     }
 
-    //測試main
-    public static void main(String[] arg0) {
-        MailSend m = MailSend.getInstance();
-        System.out.println(m.mailHost);
-        System.out.println(m.mailPort);
-    }
-
     //Get the Host address.
     private String getHostAddr() throws UnknownHostException, SocketException {
         return InetAddress.getLocalHost().getHostAddress();  // often returns "127.0.0.1"
