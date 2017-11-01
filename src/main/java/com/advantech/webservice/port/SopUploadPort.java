@@ -50,8 +50,14 @@ public class SopUploadPort {
 
     public void upload(Worktime w) throws Exception {
         try {
-            insertPort.upload(w, UploadType.INSERT);
+            /*
+                請先刪除後新增
+                因MES空白SOP卡在製程段時，該製成只能維持單一SOP
+                故先刪除時，可先將空白SOP刪除
+                先新增的話，就會因上述原因產生exception
+            */
             deletePort.upload(w, UploadType.DELETE);
+            insertPort.upload(w, UploadType.INSERT);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw e;

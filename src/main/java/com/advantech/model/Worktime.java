@@ -21,7 +21,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
@@ -106,6 +105,7 @@ public class Worktime implements java.io.Serializable {
     private int madeInTaiwan;
     private int fcc;
     private int eac;
+    private int kc;
     private BigDecimal nsInOneCollectionBox = BigDecimal.ZERO;
     private char partNoAttributeMaintain;
     private BigDecimal assyLeadTime = BigDecimal.ZERO;
@@ -583,6 +583,16 @@ public class Worktime implements java.io.Serializable {
 
     public void setEac(int eac) {
         this.eac = eac;
+    }
+    
+    @NotNull
+    @Column(name = "kc", nullable = false)
+    public int getKc() {
+        return this.kc;
+    }
+
+    public void setKc(int kc) {
+        this.kc = kc;
     }
 
     @Digits(integer = 10 /*precision*/, fraction = 1 /*scale*/)

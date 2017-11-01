@@ -1,0 +1,16 @@
+大表sql新增欄位時須執行
+1.
+hibernate的<property name="hibernate.hbm2ddl.auto">update</property>打開
+並在sql中建立欄位
+把system deploy一次(系統會自動建立Worktime_AUD的欄位)
+
+2.
+worktime.jsp將欄位加入，否則nullable = false時無法update
+
+3.
+Excel download的template file需要加入欄位
+
+4.將js/worktime-setting/column-setting.js加入欄位並將欄位編輯權限設定請加入
+
+5.audit.jsp將欄位加入
+

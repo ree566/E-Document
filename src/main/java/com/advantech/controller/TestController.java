@@ -72,6 +72,13 @@ public class TestController {
     protected void runtimeExceptionTest(HttpServletResponse resp) throws Exception {
         throw new RuntimeException("This is a testing runtimeException");
     }
+    
+    @ResponseBody
+    @RequestMapping(value = "/exceptionTestInChinese", method = {RequestMethod.GET, RequestMethod.POST})
+    @Secured("ROLE_ADMIN")
+    protected void exceptionTestInChinese(HttpServletResponse resp) throws Exception {
+        throw new Exception("這是一段中文錯誤訊息");
+    }
 
     @ResponseBody
     @RequestMapping(value = "/mavExceptionTest", method = {RequestMethod.GET, RequestMethod.POST})

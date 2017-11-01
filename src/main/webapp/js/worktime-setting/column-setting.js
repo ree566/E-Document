@@ -47,6 +47,7 @@ var worktimeCol = [
     {name: "madeInTaiwan"},
     {name: "fcc"},
     {name: "eac"},
+    {name: "kc"},
     {name: "nsInOneCollectionBox"},
     {name: "partNoAttributeMaintain"},
     {name: "assyStation"},
