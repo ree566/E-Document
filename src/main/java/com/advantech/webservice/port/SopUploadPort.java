@@ -199,6 +199,14 @@ public class SopUploadPort {
             super.upload(w, UploadType.DELETE);
         }
 
+        /**
+         * 
+         * @param w
+         * @return
+         * @throws Exception 
+         * 考慮減少與接口溝通的次數未撰寫刪除all功能
+         * 故刪除前須將Worktime的sop字串設為""，將空值upload至MES中即等於刪除
+         */
         @Override
         public Map<String, String> transformData(Worktime w) throws Exception {
             Map<String, String> xmlStrings = new HashMap();

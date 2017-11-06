@@ -124,6 +124,10 @@ public class ModelResponsorUploadPort {
             super.upload(w, UploadType.UPDATE);
         }
 
+        /*
+            因接口提供批次更新，故此delete不用像Sop的port一樣判斷新增刪除的資料(判斷是為了減少與接口溝通的次數)
+            直接丟空字串當刪除即可
+        */
         @Override
         public Map<String, String> transformData(Worktime w) throws Exception {
             //SpeUser, EeUser, QcUser
