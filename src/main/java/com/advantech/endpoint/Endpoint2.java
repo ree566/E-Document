@@ -6,15 +6,14 @@
  */
 package com.advantech.endpoint;
 
+import com.advantech.helper.ApplicationContextHelper;
 import com.advantech.helper.CronTrigMod;
 import com.advantech.helper.PropertiesReader;
 import com.advantech.quartzJob.PollingBabAndTestResult;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import javax.annotation.PostConstruct;
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
 import javax.websocket.OnMessage;
@@ -24,33 +23,29 @@ import javax.websocket.server.ServerEndpoint;
 import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 /**
  *
  * @author Wei.Cheng
  */
 @ServerEndpoint("/echo2")
-@Component
 public class Endpoint2 {
     
     private static final Logger log = LoggerFactory.getLogger(Endpoint2.class);
-//    private static final Queue<Session> queue = new ConcurrentLinkedQueue<>();
     private static final Set<Session> sessions = Collections.synchronizedSet(new HashSet<Session>());
     
     private static String POLLING_FREQUENCY;
     private static final String JOB_NAME = "JOB2";
     
-    @Autowired
     private CronTrigMod ctm;
     
-    @Autowired
     private PollingBabAndTestResult ptr;
     
-    @PostConstruct
-    protected void init(){
+    public Endpoint2(){
+        System.out.println("New endpoint2");
         POLLING_FREQUENCY = PropertiesReader.getInstance().getEndpointQuartzTrigger();
+        ctm = (CronTrigMod)ApplicationContextHelper.getBean("cronTrigMod");
+        ptr = (PollingBabAndTestResult)ApplicationContextHelper.getBean("pollingBabAndTestResult");
     }
     
     @OnOpen
@@ -94,6 +89,8 @@ public class Endpoint2 {
     
     @OnError
     public void error(Session session, Throwable t) {
+        System.out.println("Error cause");
+        log.error(t.getMessage(), t);
         sessions.remove(session);
     }
 
@@ -120,7 +117,7 @@ public class Endpoint2 {
         try {
             ctm.scheduleJob(PollingBabAndTestResult.class, JOB_NAME, POLLING_FREQUENCY);
         } catch (SchedulerException ex) {
-            log.error(ex.toString());
+            log.error(ex.getMessage(), ex);
         }
     }
 

@@ -6,6 +6,7 @@
  */
 package com.advantech.endpoint;
 
+import com.advantech.helper.ApplicationContextHelper;
 import com.advantech.helper.CronTrigMod;
 import com.advantech.helper.PropertiesReader;
 import com.advantech.quartzJob.PollingCellResult;
@@ -24,30 +25,27 @@ import javax.websocket.server.ServerEndpoint;
 import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 /**
  *
  * @author Wei.Cheng
  */
 @ServerEndpoint("/echo4")
-@Component
 public class Endpoint4 {
 
     private static final Logger log = LoggerFactory.getLogger(Endpoint4.class);
-//    private static final Queue<Session> queue = new ConcurrentLinkedQueue<>();
     private static final Set<Session> sessions = Collections.synchronizedSet(new HashSet<Session>());
 
     private static String POLLING_FREQUENCY;
     private static final String JOB_NAME = "JOB4";
     
-    @Autowired
     private CronTrigMod ctm;
 
     @PostConstruct
     protected void init(){
+        System.out.println("New endpoint4");
         POLLING_FREQUENCY = PropertiesReader.getInstance().getEndpointQuartzTrigger();
+        ctm = (CronTrigMod)ApplicationContextHelper.getBean("cronTrigMod");
     }
 
     @OnOpen
@@ -56,7 +54,6 @@ public class Endpoint4 {
         try {
             Object obj = new PollingCellResult().getData();
             session.getBasicRemote().sendText(obj.toString());
-//            showUrlParam(session);
         } catch (IOException ex) {
             log.error(ex.toString());
         }
@@ -78,7 +75,6 @@ public class Endpoint4 {
 
     @OnClose
     public void onClose(Session session) {
-//        showUrlParam(session);
         sessions.remove(session);
         //當client端完全沒有連結中的使用者時，把job給關閉(持續執行浪費性能)
         if (sessions.isEmpty()) {

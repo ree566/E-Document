@@ -10,6 +10,7 @@
  */
 package com.advantech.endpoint;
 
+import com.advantech.helper.ApplicationContextHelper;
 import com.advantech.helper.CronTrigMod;
 import com.advantech.helper.PropertiesReader;
 import com.advantech.quartzJob.PollingSensorStatus;
@@ -28,15 +29,12 @@ import javax.websocket.server.ServerEndpoint;
 import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 /**
  *
  * @author Wei.Cheng
  */
 @ServerEndpoint("/echo")
-@Component
 public class Endpoint {
 
     private static final Logger log = LoggerFactory.getLogger(Endpoint.class);
@@ -45,12 +43,12 @@ public class Endpoint {
     private static String POLLING_FREQUENCY;
     private static final String JOB_NAME = "JOB1";
 
-    @Autowired
     private CronTrigMod ctm;
 
     @PostConstruct
     protected void init(){
         POLLING_FREQUENCY = PropertiesReader.getInstance().getEndpointQuartzTrigger();
+        ctm = (CronTrigMod)ApplicationContextHelper.getBean("cronTrigMod");
     }
 
     @OnOpen
@@ -62,8 +60,6 @@ public class Endpoint {
             log.error(ex.toString());
         }
 
-//        HandshakeRequest req = (HandshakeRequest) conf.getUserProperties().get("handshakereq");
-//        Map<String,List<String>> headers = req.getHeaders();
         sessions.add(session);
 //        System.out.println("New session opened: " + session.getId());
 

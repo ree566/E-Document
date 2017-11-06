@@ -32,7 +32,6 @@ import org.springframework.stereotype.Component;
  * @author Wei.Cheng
  */
 @ServerEndpoint(value = "/echo6/{clientId}")
-@Component
 public class Endpoint6 {
 
     private static final Logger log = LoggerFactory.getLogger(Endpoint6.class);

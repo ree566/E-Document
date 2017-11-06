@@ -6,6 +6,7 @@
  */
 package com.advantech.endpoint;
 
+import com.advantech.helper.ApplicationContextHelper;
 import com.advantech.helper.CronTrigMod;
 import com.advantech.helper.PropertiesReader;
 import com.advantech.quartzJob.PollingNumLampResult;
@@ -31,11 +32,10 @@ import org.springframework.stereotype.Component;
  * @author Wei.Cheng
  */
 @ServerEndpoint("/echo3")
-@Component
 public class Endpoint3 {
 
     private static final Logger log = LoggerFactory.getLogger(Endpoint3.class);
-//    private static final Queue<Session> queue = new ConcurrentLinkedQueue<>();
+    
     private static final Set<Session> sessions = Collections.synchronizedSet(new HashSet<Session>());
 
     private static String POLLING_FREQUENCY;
@@ -46,8 +46,8 @@ public class Endpoint3 {
     @PostConstruct
     protected void init(){
         POLLING_FREQUENCY = PropertiesReader.getInstance().getEndpointQuartzTrigger();
+        ctm = (CronTrigMod)ApplicationContextHelper.getBean("cronTrigMod");
     }
-
 
     @OnOpen
     public void onOpen(final Session session) {
