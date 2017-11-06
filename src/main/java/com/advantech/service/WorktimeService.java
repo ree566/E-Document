@@ -76,7 +76,7 @@ public class WorktimeService {
 
     public int insert(Worktime worktime) throws Exception {
         worktimeDAO.insert(worktime);
-        uploadMesService.uploadToMes(worktime);
+        uploadMesService.uploadToMes(worktime, false);
         return 1;
     }
 
@@ -98,7 +98,7 @@ public class WorktimeService {
         this.insert(worktime);
         setting.setWorktime(worktime);
         worktimeFormulaSettingDAO.insert(setting);
-        uploadMesService.uploadToMes(worktime);
+        uploadMesService.uploadToMes(worktime, false);
         return 1;
     }
 
@@ -115,7 +115,7 @@ public class WorktimeService {
         initUnfilledFormulaColumn(worktime);
         worktimeFormulaSettingDAO.update(worktime.getWorktimeFormulaSettings().get(0));
         worktimeDAO.update(worktime);
-        uploadMesService.uploadToMesWithCheckRevision(worktime);
+        uploadMesService.uploadToMes(worktime, true);
         return 1;
     }
 
@@ -132,7 +132,7 @@ public class WorktimeService {
         initUnfilledFormulaColumn(worktime);
         worktimeFormulaSettingDAO.update(worktime.getWorktimeFormulaSettings().get(0));
         worktimeDAO.merge(worktime);
-        uploadMesService.uploadToMesWithCheckRevision(worktime);
+        uploadMesService.uploadToMes(worktime, true);
         return 1;
     }
 
@@ -149,9 +149,9 @@ public class WorktimeService {
     public int mergeByExcel(List<Worktime> l) throws Exception {
         List<WorktimeFormulaSetting> settings = worktimeFormulaSettingDAO.findWithWorktime();
         Map<Integer, WorktimeFormulaSetting> settingMap = new HashMap();
-        for (WorktimeFormulaSetting setting : settings) {
+        settings.forEach((setting) -> {
             settingMap.put(setting.getWorktime().getId(), setting);
-        }
+        });
 
         int i = 1;
         for (Worktime w : l) {
@@ -228,9 +228,7 @@ public class WorktimeService {
     public int delete(int id) throws Exception {
         Worktime worktime = this.findByPrimaryKey(id);
         worktimeDAO.delete(worktime);
-        worktime.setAssyPackingSop("");
-        worktime.setTestSop("");
-        uploadMesService.uploadToMes(worktime);
+        uploadMesService.deleteOnMes(worktime);
         return 1;
     }
 
@@ -261,9 +259,9 @@ public class WorktimeService {
     public void checkModelExists(List<Worktime> worktimes) throws Exception {
         Map<String, Integer> modelMap = new HashMap();
         List<Worktime> allWorktime = this.findAll();
-        for (Worktime w : allWorktime) {
+        allWorktime.forEach((w) -> {
             modelMap.put(w.getModelName(), w.getId());
-        }
+        });
 
         for (Worktime w : worktimes) {
             boolean checkFlag;

@@ -4,7 +4,7 @@
 // 一旦重新編譯來源綱要, 對此檔案所做的任何修改都將會遺失. 
 // 產生時間: 2017.09.27 於 05:09:43 PM CST 
 //
-package sopQuery;
+package com.advantech.webservice.root;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

@@ -6,8 +6,9 @@
 package com.advantech.webservice.port;
 
 import com.advantech.model.Worktime;
-import com.advantech.webservice.unmarshallclass.SopInfo;
-import com.advantech.webservice.unmarshallclass.SopInfos;
+import com.advantech.webservice.unmarshallclass.ModelResponsor;
+import com.advantech.webservice.root.ModelResponsorQueryRoot;
+import com.advantech.webservice.unmarshallclass.ModelResponsors;
 import com.advantech.webservice.root.SopQueryRoot;
 import java.util.HashMap;
 import java.util.List;
@@ -22,24 +23,14 @@ import org.springframework.stereotype.Component;
  * @author Wei.Cheng
  */
 @Component
-public class SopQueryPort extends BasicQueryPort {
+public class ModelResponsorQueryPort extends BasicQueryPort {
 
-    private static final Logger logger = LoggerFactory.getLogger(SopQueryPort.class);
-
-    private String[] types = {};
-
-    public String[] getTypes() {
-        return types;
-    }
-
-    public void setTypes(String... types) {
-        this.types = types;
-    }
+    private static final Logger logger = LoggerFactory.getLogger(ModelResponsorQueryPort.class);
 
     @Override
     protected void initJaxb() {
         try {
-            super.initJaxb(SopQueryRoot.class, SopInfos.class);
+            super.initJaxb(ModelResponsorQueryRoot.class, ModelResponsors.class);
         } catch (JAXBException e) {
             logger.error(e.toString());
         }
@@ -47,19 +38,17 @@ public class SopQueryPort extends BasicQueryPort {
 
     @Override
     public List query(Worktime w) throws Exception {
-        return (List<SopInfo>) super.query(w); //To change body of generated methods, choose Tools | Templates.
+        return (List<ModelResponsor>) super.query(w); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public Map<String, String> transformData(Worktime w) throws Exception {
         Map<String, String> xmlResults = new HashMap();
-        for (String type : types) {
-            SopQueryRoot root = new SopQueryRoot();
-            SopQueryRoot.SOPINFO sopInfo = root.getSOPINFO();
-            sopInfo.setITEMNO(w.getModelName());
-            sopInfo.setTYPENO(type);
-            xmlResults.put(type, super.generateXmlString(root));
-        }
+
+        ModelResponsorQueryRoot root = new ModelResponsorQueryRoot();
+        root.setPARTNO(w.getModelName());
+        xmlResults.put("modelName", super.generateXmlString(root));
+
         return xmlResults;
     }
 

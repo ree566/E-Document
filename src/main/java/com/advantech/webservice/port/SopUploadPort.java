@@ -7,7 +7,7 @@ package com.advantech.webservice.port;
 
 import com.advantech.model.Worktime;
 import com.advantech.webservice.root.SopBatchInsertRoot;
-import com.advantech.webservice.root.SopInfo;
+import com.advantech.webservice.unmarshallclass.SopInfo;
 import com.advantech.webservice.root.SopRoot;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Collections2;
@@ -48,16 +48,27 @@ public class SopUploadPort {
     @Autowired
     private SopUploadPort.DeletePort deletePort;
 
-    public void upload(Worktime w) throws Exception {
+    public void update(Worktime w) throws Exception {
         try {
             /*
                 請先刪除後新增
                 因MES空白SOP卡在製程段時，該製成只能維持單一SOP
                 故先刪除時，可先將空白SOP刪除
                 先新增的話，就會因上述原因產生exception
-            */
-            deletePort.upload(w, UploadType.DELETE);
-            insertPort.upload(w, UploadType.INSERT);
+             */
+            deletePort.upload(w);
+            insertPort.upload(w);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw e;
+        }
+    }
+
+    public void delete(Worktime w) throws Exception {
+        try {
+            w.setAssyPackingSop("");
+            w.setTestSop("");
+            this.deletePort.upload(w);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw e;

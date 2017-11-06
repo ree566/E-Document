@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.advantech.webservice.root;
+package com.advantech.webservice.unmarshallclass;
 
+import com.advantech.webservice.root.QueryResult;
 import java.io.Serializable;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -18,19 +19,18 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "root")
-public class SopInfos implements Serializable, QueryResult<SopInfo> {
+public class ModelResponsors implements Serializable, QueryResult<ModelResponsor> {
 
-    @XmlElement(name = "QryData", type = SopInfo.class)
-    private List<SopInfo> QryData;
+    @XmlElement(name = "QryData", type = ModelResponsor.class)
+    private List<ModelResponsor> QryData;
 
     @Override
-    public List<SopInfo> getQryData() {
+    public List<ModelResponsor> getQryData() {
         return QryData;
     }
 
     @Override
-    public void setQryData(List<SopInfo> QryData) {
+    public void setQryData(List<ModelResponsor> QryData) {
         this.QryData = QryData;
     }
-
 }

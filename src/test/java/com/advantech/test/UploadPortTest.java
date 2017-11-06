@@ -10,7 +10,7 @@ import com.advantech.model.Worktime;
 import com.advantech.service.WorktimeAutouploadSettingService;
 import com.advantech.service.WorktimeService;
 import com.advantech.webservice.port.MaterialFlowUploadPort;
-import com.advantech.webservice.port.PartMappingUserUploadPort;
+import com.advantech.webservice.port.ModelResponsorUploadPort;
 import com.advantech.webservice.port.SopUploadPort;
 import com.advantech.webservice.port.StandardtimeUploadPort;
 import com.advantech.webservice.port.UploadType;
@@ -33,8 +33,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
  */
 @WebAppConfiguration
 @ContextConfiguration(locations = {
-    "classpath:servlet-context.xml",
-    "classpath:hibernate.cfg.xml"
+    "classpath:servlet-context.xml"
 })
 @RunWith(SpringJUnit4ClassRunner.class)
 @Transactional
@@ -51,7 +50,7 @@ public class UploadPortTest {
     private MaterialFlowUploadPort materialPort;
 
     @Autowired
-    private PartMappingUserUploadPort mappingUserPort;
+    private ModelResponsorUploadPort mappingUserPort;
 
     @Autowired
     private SopUploadPort sopPort;
@@ -77,15 +76,14 @@ public class UploadPortTest {
         assertEquals(4, result.size());
     }
 
-//    @Test
+    @Test
     public void testPartMappingUserUpload() throws Exception {
-        Map result = mappingUserPort.transformData(w);
-        assertEquals(3, result.size());
-        System.out.println(result.get("speOwner").toString());
-        mappingUserPort.upload(w);
+//        Map result = mappingUserPort.transformData(w);
+//        assertEquals(1, result.size());
+//        mappingUserPort.upload(w);
     }
 
-    @Test
+//    @Test
     public void testSopUpload() throws Exception {
 //        List<Worktime> l = worktimeService.findAll();
 //        for (Worktime worktime : l) {

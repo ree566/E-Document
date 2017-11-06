@@ -5,10 +5,13 @@
  */
 package com.advantech.controller;
 
+import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.Worktime;
 import com.advantech.service.AuditService;
 import com.advantech.service.WorktimeService;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.servlet.http.HttpServletResponse;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,6 +91,20 @@ public class TestController {
         mav.addObject("exception", new Exception("This is a testing mavException"));
         mav.setViewName("pages/error");
         return mav;
+    }
+    
+    @ResponseBody
+    @RequestMapping(value = "/lambdaTest", method = {RequestMethod.GET})
+    @Secured("ROLE_ADMIN")
+    protected Set<String> lambdaTest() throws Exception {
+        List<Worktime> l = worktimeService.findAll(new PageInfo());
+        Set<String> s1 = new HashSet();
+        
+        l.forEach((m) -> {
+            s1.add(m.getModelName());
+        });
+        
+        return s1;
     }
 
 }

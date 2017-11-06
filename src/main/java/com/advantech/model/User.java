@@ -235,7 +235,6 @@ public class User implements java.io.Serializable, UserDetails {
         final int prime = 31;
         int result = 1;
         result = prime * result + id;
-        result = prime * result + ((jobnumber == null) ? 0 : jobnumber.hashCode());
         return result;
     }
 
@@ -252,13 +251,6 @@ public class User implements java.io.Serializable, UserDetails {
         }
         User other = (User) obj;
         if (id != other.id) {
-            return false;
-        }
-        if (jobnumber == null) {
-            if (other.jobnumber != null) {
-                return false;
-            }
-        } else if (!jobnumber.equals(other.jobnumber)) {
             return false;
         }
         return true;

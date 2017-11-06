@@ -63,28 +63,23 @@ public class ExcelGenerator {
     private SimpleDateFormat sdf;
 
     public ExcelGenerator() {
+        workbook = new HSSFWorkbook();
         init();
     }
 
     public ExcelGenerator(Workbook workbook) {
-        sheetNum = 1;
         this.workbook = workbook;
+        init();
+    }
+
+    private void init() {
+        sheetNum = 1;
         indexInit();
         floatCell = this.createFloatCell();
         percentCell = this.createPercentCell();
         dateCell = this.createDateCell();
         m = new ObjectMapper();
         sdf = new SimpleDateFormat(dateFormat);
-        log.info("New one workbook");
-    }
-
-    private void init() {
-        sheetNum = 1;
-        indexInit();
-        workbook = new HSSFWorkbook();
-        floatCell = this.createFloatCell();
-        percentCell = this.createPercentCell();
-        dateCell = this.createDateCell();
         log.info("New one workbook");
     }
 
@@ -112,14 +107,14 @@ public class ExcelGenerator {
         this.columnHeaderNames.addAll(Arrays.asList(name));
     }
 
-    public Workbook generateWorkBooks(List<Object>... data) throws JsonProcessingException, IOException {
+    public Workbook generateWorkBooks(List... data) throws JsonProcessingException, IOException {
         for (List<Object> l : data) {
             generateWorkBook(l);
         }
         return workbook;
     }
 
-    private Workbook generateWorkBook(List<Object> data) throws JsonProcessingException, IOException {
+    private Workbook generateWorkBook(List data) throws JsonProcessingException, IOException {
 
         if (spreadsheet == null) {
             createExcelSheet();
