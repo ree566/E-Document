@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-4.3.xsd">
+    
+    <!--job1 setting-->
+    <!--主要工作job，把資料轉換到TXT控制燈號-->
+    <bean name="complexJobDetail" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+        <property name="jobClass" value="com.advantech.quartzJob.DailyJobWorker" />
+        <property name="durability" value="true" />
+    </bean>
+    
+    <bean id="cronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="complexJobDetail" />
+        <property name="cronExpression" value="0/30 * 8-20 ? * MON-SAT *" />
+    </bean>
+
+    <!--schedule jobs-->
+    <bean id="schedulerFactoryBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="applicationContextSchedulerContextKey" value="applicationContext" />
+        
+        <property name="triggers">
+            <list>
+                <ref bean="cronTrigger"/>
+            </list>
+        </property>
+        <property name="schedulerName">
+            <value>jobScheduler</value>
+        </property>
+        
+        <property name="configLocation">
+            <value>classpath:quartz.properties</value>
+        </property>
+    </bean>
+    
+</beans>

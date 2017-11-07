@@ -32,10 +32,6 @@
                 cursor: default;
                 text-align: center;
             }
-            #numLampArea .draggable{
-                padding: 1.0em; 
-                font-size: 25px;
-            }
             #generateArea{
                 height: 20px;
             }
@@ -154,7 +150,6 @@
         <script src="../../js/jquery.fullscreen-min.js"></script>
         <script src="../../js/tooltipster.bundle.min.js"></script>
         <script src="../../js/totalMap-setting/${userSitefloor}f.js"></script>
-        <script src="../../js/numLamp-setting/${userSitefloor}f.js"></script>
         <script src="../../js/cell-setting/${userSitefloor}f.js?"></script>
         <script>
             var maxProductivity = 200;
@@ -164,7 +159,6 @@
                 initTitleGroup();
                 initTestGroup();
                 initBabGroup();
-                initNumLampGroup();
                 initCellGroup();
 
                 var testChildElement = $("#testArea>.testWiget div");
@@ -172,7 +166,6 @@
 
                 testObjectInit();
                 babObjectInit();
-                numLampObjectInit();
                 cellObjectInit();
 
                 $("#titleArea>div").not(".clearWiget").addClass("lineTitle");
@@ -241,21 +234,6 @@
                     }
                 }
 
-                function initNumLampGroup() {
-                    for (var i = 0; i < numLampGroup.length; i++) {
-                        $("#numLampArea").append("<div></div>");
-                        var groupStatus = numLampGroup[i];
-                        for (var j = 0, k = groupStatus.people; j < k; j++) {
-                            $("#numLampArea>div")
-                                    .eq(i)
-                                    .append("<div></div>")
-                                    .addClass("numLampWiget")
-                                    .attr("id", groupStatus.lineName + "_numLamp")
-                                    .css({left: groupStatus.x + pXa, top: groupStatus.y + pYa});
-                        }
-                    }
-                }
-
                 function initCellGroup() {
                     for (var i = 0; i < cellGroup.length; i++) {
                         $("#cellArea").append("<div></div>");
@@ -275,12 +253,6 @@
                     obj.addClass("blub-empty")
                             .removeClass("blub-alarm blub-normal blub-abnormal blub-prepared")
                             .removeAttr("title");
-                }
-
-                function initNumLampWiget() {
-                    var obj = $("#numLampArea>.numLampWiget div");
-                    obj.addClass("blub-empty").removeClass("blub-alarm blub-normal blub-abnormal").html(0);
-                    obj.parent().tooltipster('content', "empty");
                 }
 
                 function testObjectInit() {
@@ -305,22 +277,6 @@
                                     .tooltipster({updateAnimation: null});
                             childAmount--;
                         });
-                    });
-                }
-
-                function numLampObjectInit() {
-                    $(".numLampWiget").each(function () {
-                        var lineName = $(this).attr("id");
-                        var childAmount = $(this).children().length;
-                        $(this).children().each(function () {
-                            $(this).attr({"id": (lineName + "_" + childAmount)})
-                                    .addClass("draggable blub-empty divCustomBg")
-                                    .html(0);
-                            childAmount--;
-                        });
-                        $("#" + lineName)
-                                .attr({title: "empty"})
-                                .tooltipster({trigger: "hover", side: "right", contentAsHTML: true, updateAnimation: null});
                     });
                 }
 
@@ -404,39 +360,6 @@
                     }
                 }
 
-                function numLampDataToWiget(obj) {
-                    initNumLampWiget();
-                    if (obj != null) {
-                        var numLampData = obj;
-                        if (numLampData != null) {
-                            for (var k = 0, l = babGroup.length; k < l; k++) {
-                                var lineName = babGroup[k].lineName;
-                                var details = obj[lineName];
-                                if (details != null) {
-                                    var suggestPeople = details.suggestTestPeople;
-                                    var lineName = lineName.trim() + "_numLamp";
-                                    var childElement = $("#numLampArea #" + lineName + " #" + lineName + "_" + 1);//統一寫到數字燈1
-                                    if (childElement.length) {
-                                        childElement.removeClass("blub-empty")
-                                                .addClass((suggestPeople == null ? "blub-abnormal" : "blub-normal"))
-                                                .html(suggestPeople);
-                                        var messageArray = details.message;
-                                        var message = "PO: " + details.PO + "<br/>ModelName: " + details.model_name + "<br/>";
-                                        if (details.quantity != null) {
-                                            message += "Current piece: " + details.quantity + " pcs<br/>";
-                                        }
-                                        for (var i = 0; i < messageArray.length; i++) {
-                                            message += messageArray[i] + "<br/>";
-                                        }
-                                        message += "<div class='suggestMsg'>" + lineName.trim() + " Suggestion station Action: " + details.suggestTestPeople + "</div>";
-                                        $("#" + lineName.trim()).tooltipster('content', message);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
                 function cellDataToWiget(obj) {
                     initWiget($("#cellArea>.cellWiget div"));
                     if (obj != null) {
@@ -472,7 +395,7 @@
                 //--------------websocket functions
                 //websocket will reconnect by reconnecting-websocket.min.js when client or server is disconnect
 
-                var ws2, ws3, ws4;
+                var ws2, ws4;
 
                 var onopen = function () {
 
@@ -530,17 +453,6 @@
                     };
                 }
 
-                if (numLampGroup.length != 0) {
-                    ws3 = new ReconnectingWebSocket("ws://" + hostname + "/CalculatorWSApplication/echo3");
-                    setWebSocketClient(ws3);
-                    ws3.onmessage = function (message) {
-                        var jsonArray = $.parseJSON(message.data);
-                        if (jsonArray.length != 0) {
-                            numLampDataToWiget(jsonArray);
-                        }
-                    };
-                }
-
                 if (cellGroup.length != 0) {
                     ws4 = new ReconnectingWebSocket("ws://" + hostname + "/CalculatorWSApplication/echo4");
                     setWebSocketClient(ws4);
@@ -564,7 +476,6 @@
 
                 function closeConnect() {
                     ws2.close();
-                    ws3.close();
                     ws4.close();
                     console.log("websocket connection is now end");
                 }
@@ -612,9 +523,6 @@
                 <!--<div class="clearWiget" /></div>-->
 
                 <div id="babArea"></div>
-                <!--<div class="clearWiget"></div>-->
-
-                <div id="numLampArea"></div>
                 <!--<div class="clearWiget"></div>-->
 
                 <div id="cellArea"></div>

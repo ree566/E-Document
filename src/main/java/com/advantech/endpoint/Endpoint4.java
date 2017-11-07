@@ -14,8 +14,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
-import javax.annotation.PostConstruct;
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
 import javax.websocket.OnMessage;
@@ -34,18 +35,16 @@ import org.slf4j.LoggerFactory;
 public class Endpoint4 {
 
     private static final Logger log = LoggerFactory.getLogger(Endpoint4.class);
+//    private static final Queue<Session> queue = new ConcurrentLinkedQueue<>();
     private static final Set<Session> sessions = Collections.synchronizedSet(new HashSet<Session>());
 
-    private static String POLLING_FREQUENCY;
+    private static final String POLLING_FREQUENCY;
     private static final String JOB_NAME = "JOB4";
     
-    private CronTrigMod ctm;
+    private final CronTrigMod ctm = (CronTrigMod) ApplicationContextHelper.getBean("cronTrigMod");
 
-    @PostConstruct
-    protected void init(){
-        System.out.println("New endpoint4");
+    static {
         POLLING_FREQUENCY = PropertiesReader.getInstance().getEndpointQuartzTrigger();
-        ctm = (CronTrigMod)ApplicationContextHelper.getBean("cronTrigMod");
     }
 
     @OnOpen
@@ -54,6 +53,7 @@ public class Endpoint4 {
         try {
             Object obj = new PollingCellResult().getData();
             session.getBasicRemote().sendText(obj.toString());
+//            showUrlParam(session);
         } catch (IOException ex) {
             log.error(ex.toString());
         }
@@ -75,6 +75,7 @@ public class Endpoint4 {
 
     @OnClose
     public void onClose(Session session) {
+//        showUrlParam(session);
         sessions.remove(session);
         //當client端完全沒有連結中的使用者時，把job給關閉(持續執行浪費性能)
         if (sessions.isEmpty()) {
@@ -128,4 +129,12 @@ public class Endpoint4 {
         sessions.clear();
     }
 
+    private void showUrlParam(Session session) {
+        Map map = session.getRequestParameterMap();
+        Iterator it = map.keySet().iterator();
+        while (it.hasNext()) {
+            System.out.println("Receive endpoint param: " + map.get(it.next()));
+        }
+    }
+    
 }

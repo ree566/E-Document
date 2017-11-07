@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import javax.annotation.PostConstruct;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.CronTrigger;
@@ -29,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.quartz.impl.matchers.GroupMatcher;
 import static org.quartz.TriggerKey.triggerKey;
+import org.quartz.impl.StdSchedulerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.stereotype.Component;
@@ -47,8 +49,12 @@ public class CronTrigMod {
     @Autowired
     private SchedulerFactoryBean schedulerFactory;
 
-    private Scheduler getScheduler() {
-        return schedulerFactory.getScheduler();
+    private Scheduler getScheduler() throws SchedulerException {
+        Scheduler scheduler = schedulerFactory.getScheduler();
+        if (scheduler == null || !scheduler.isStarted()) {
+            throw new SchedulerException("Scheduler is not started");
+        }
+        return scheduler;
     }
 
     public List<JobKey> getJobKeys() throws SchedulerException {
@@ -169,7 +175,7 @@ public class CronTrigMod {
         scheduler.rescheduleJob(oldTrigger.getKey(), newTrigger);
     }
 
-    public boolean updateCronExpression(String triggerKey, String cronExpression, Integer executeNow) {
+    public boolean updateCronExpression(String triggerKey, String cronExpression, Integer executeNow) throws SchedulerException {
         Scheduler scheduler = getScheduler();
         if (StringUtils.isBlank(triggerKey) || StringUtils.isBlank(cronExpression)) {
             log.error("参数错误");
@@ -204,6 +210,12 @@ public class CronTrigMod {
     }
 
     public void scheduleJob(Class jobClass, JobKey jobKey, TriggerKey trigKey, String crontrigger) throws SchedulerException {
+
+        System.out.println("jobClass: " + jobClass);
+        System.out.println("jobKey: " + jobKey);
+        System.out.println("trigKey: " + trigKey);
+        System.out.println("crontrigger: " + crontrigger);
+
         if (!isKeyInScheduleExist(jobKey)) {
             JobDetail job = JobBuilder.newJob(jobClass).withIdentity(jobKey).build();
             CronTrigger trigger = TriggerBuilder.newTrigger().withIdentity(trigKey)
@@ -213,6 +225,8 @@ public class CronTrigMod {
         } else {
             log.info("The job with key name " + jobKey + " is exist.");
         }
+
+        System.out.println("ScheduleJob finish");
     }
 
     public void scheduleJob(JobDetail job, TriggerKey trigKey, String crontrigger) throws SchedulerException {

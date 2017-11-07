@@ -7,7 +7,7 @@
 package com.advantech.servlet;
 
 import com.advantech.helper.UserSelectFilter;
-import com.advantech.service.BABService;
+import com.advantech.service.BabService;
 import java.io.*;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public class AllBAB {
 
     @Autowired
-    private BABService babService;
+    private BabService babService;
 
     @RequestMapping(value = "/AllBAB", method = {RequestMethod.POST})
     protected void doPost(HttpServletRequest req, HttpServletResponse res)

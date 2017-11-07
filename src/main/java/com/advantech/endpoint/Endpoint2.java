@@ -10,6 +10,7 @@ import com.advantech.helper.ApplicationContextHelper;
 import com.advantech.helper.CronTrigMod;
 import com.advantech.helper.PropertiesReader;
 import com.advantech.quartzJob.PollingBabAndTestResult;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -32,20 +33,16 @@ import org.slf4j.LoggerFactory;
 public class Endpoint2 {
     
     private static final Logger log = LoggerFactory.getLogger(Endpoint2.class);
+//    private static final Queue<Session> queue = new ConcurrentLinkedQueue<>();
     private static final Set<Session> sessions = Collections.synchronizedSet(new HashSet<Session>());
     
-    private static String POLLING_FREQUENCY;
+    private static final String POLLING_FREQUENCY;
     private static final String JOB_NAME = "JOB2";
     
-    private CronTrigMod ctm;
+    private final CronTrigMod ctm = (CronTrigMod) ApplicationContextHelper.getBean("cronTrigMod");
     
-    private PollingBabAndTestResult ptr;
-    
-    public Endpoint2(){
-        System.out.println("New endpoint2");
+    static {
         POLLING_FREQUENCY = PropertiesReader.getInstance().getEndpointQuartzTrigger();
-        ctm = (CronTrigMod)ApplicationContextHelper.getBean("cronTrigMod");
-        ptr = (PollingBabAndTestResult)ApplicationContextHelper.getBean("pollingBabAndTestResult");
     }
     
     @OnOpen
@@ -53,18 +50,14 @@ public class Endpoint2 {
         
         //Push the current status on client first connect
         try {
-            System.out.println("open");
-            session.getBasicRemote().sendText(ptr.getData());
-            System.out.println("Send Finished");
-        } catch (Exception ex) {
-            System.out.println("Error cause");
-            log.error(ex.getMessage(), ex);
+            session.getBasicRemote().sendText(new PollingBabAndTestResult().getData());
+        } catch (IOException ex) {
+            log.error(ex.toString());
         }
-        System.out.println("Add session");
+        
         sessions.add(session);
         //每次當client連接進來時，去看目前session的數量 當有1個session時把下方quartz job加入到schedule裏頭(只要執行一次，不要重複加入)
         int a = sessions.size();
-        System.out.println(a);
         if (a == 1) {
             System.out.println("Some session exist, begin polling.");
             pollingDBAndBrocast();
@@ -89,8 +82,6 @@ public class Endpoint2 {
     
     @OnError
     public void error(Session session, Throwable t) {
-        System.out.println("Error cause");
-        log.error(t.getMessage(), t);
         sessions.remove(session);
     }
 
@@ -117,7 +108,7 @@ public class Endpoint2 {
         try {
             ctm.scheduleJob(PollingBabAndTestResult.class, JOB_NAME, POLLING_FREQUENCY);
         } catch (SchedulerException ex) {
-            log.error(ex.getMessage(), ex);
+            log.error(ex.toString());
         }
     }
 

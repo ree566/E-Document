@@ -6,9 +6,9 @@
  */
 package com.advantech.servlet;
 
-import com.advantech.entity.BABStatus;
+import com.advantech.entity.BabStatus;
 import com.advantech.helper.ParamChecker;
-import com.advantech.service.BABService;
+import com.advantech.service.BabService;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public class LineBalanceDetail {
 
     @Autowired
-    private BABService babService;
+    private BabService babService;
     
     @Autowired
     private ParamChecker pChecker;
@@ -44,7 +44,7 @@ public class LineBalanceDetail {
         List balnPerGroup;
         if (pChecker.checkInputVals(id)) {
             int i = Integer.parseInt(id);
-            BABStatus status = isused == null ? null : BABStatus.CLOSED;
+            BabStatus status = isused == null ? null : BabStatus.CLOSED;
             balnPerGroup = babService.getLineBalanceDetail(i, status);
         } else {
             balnPerGroup = new ArrayList();

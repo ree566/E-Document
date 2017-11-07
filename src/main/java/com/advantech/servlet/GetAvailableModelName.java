@@ -6,7 +6,7 @@
  */
 package com.advantech.servlet;
 
-import com.advantech.service.BABService;
+import com.advantech.service.BabService;
 import java.io.*;
 import java.util.List;
 import javax.servlet.ServletException;
@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public class GetAvailableModelName {
 
     @Autowired
-    private BABService babService;
+    private BabService babService;
 
     @RequestMapping(value = "/GetAvailableModelName", method = {RequestMethod.POST})
     protected void doPost(HttpServletRequest req, HttpServletResponse res)

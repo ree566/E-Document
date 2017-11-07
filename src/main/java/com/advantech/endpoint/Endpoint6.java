@@ -6,7 +6,9 @@
  */
 package com.advantech.endpoint;
 
-import com.advantech.entity.BAB;
+import com.advantech.entity.Bab;
+import com.advantech.helper.ApplicationContextHelper;
+import com.advantech.service.BabService;
 import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,7 +16,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import javax.annotation.PostConstruct;
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
 import javax.websocket.OnMessage;
@@ -25,7 +26,6 @@ import javax.websocket.server.ServerEndpoint;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 /**
  *
@@ -36,21 +36,19 @@ public class Endpoint6 {
 
     private static final Logger log = LoggerFactory.getLogger(Endpoint6.class);
     private static final Set<Session> sessions = Collections.synchronizedSet(new HashSet<Session>());
-    private Gson gson;
+    private static final Gson gson = new Gson();
 
-    private static final HashMap<Integer, List<BAB>> processingBAB = new HashMap();
-    
-    @PostConstruct
-    protected void init(){
-        gson = new Gson();
+    private static final HashMap<Integer, List<Bab>> processingBAB = new HashMap();
+
+    static {
         syncCurrentBabStatus();
     }
 
-    private static void groupBab(List<BAB> l) {
-        for (BAB b : l) {
+    private static void groupBab(List<Bab> l) {
+        for (Bab b : l) {
             Integer line = b.getLine();
             if (!processingBAB.containsKey(line)) {
-                List<BAB> list = new ArrayList();
+                List<Bab> list = new ArrayList();
                 list.add(b);
                 processingBAB.put(line, list);
             } else {
@@ -60,9 +58,9 @@ public class Endpoint6 {
     }
 
     private static void syncCurrentBabStatus() {
-//        processingBAB.clear();
-//        List l = BasicService.getBabService().getTodayBAB();
-//        groupBab(l);
+        processingBAB.clear();
+        List l = ((BabService) ApplicationContextHelper.getBean("cronTrigMod")).getTodayBAB();
+        groupBab(l);
     }
 
     public static void syncAndEcho() {
@@ -70,7 +68,7 @@ public class Endpoint6 {
         echoStatus();
     }
 
-    public static void addNewBab(BAB b) {
+    public static void addNewBab(Bab b) {
         System.out.println("update bab");
 //        sendAll(new JSONObject().put("action", "update").put("status", gson.toJson(b)).toString());
         processingBAB.get(b.getLine()).add(b);

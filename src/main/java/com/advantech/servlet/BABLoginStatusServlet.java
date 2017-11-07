@@ -7,7 +7,7 @@
 package com.advantech.servlet;
 
 import com.advantech.helper.ParamChecker;
-import com.advantech.service.BABLoginStatusService;
+import com.advantech.service.BabLoginStatusService;
 import java.io.*;
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
@@ -28,7 +28,7 @@ public class BABLoginStatusServlet {
     private static final Logger log = LoggerFactory.getLogger(BABLoginStatusServlet.class);
 
     @Autowired
-    private BABLoginStatusService babLoginService;
+    private BabLoginStatusService babLoginService;
     
     @Autowired
     private ParamChecker pChecker;

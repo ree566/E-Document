@@ -6,9 +6,9 @@
  */
 package com.advantech.servlet;
 
-import com.advantech.entity.BABStatus;
+import com.advantech.entity.BabStatus;
 import com.advantech.helper.ParamChecker;
-import com.advantech.service.BABService;
+import com.advantech.service.BabService;
 import java.io.*;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public class GetSensorChart {
 
     @Autowired
-    private BABService babService;
+    private BabService babService;
     
     @Autowired
     private ParamChecker pChecker;
@@ -43,7 +43,7 @@ public class GetSensorChart {
         JSONObject obj = new JSONObject();
         if (pChecker.checkInputVals(babid)) {
             int id = Integer.parseInt(babid);
-            BABStatus status = isused == null ? null : BABStatus.CLOSED;
+            BabStatus status = isused == null ? null : BabStatus.CLOSED;
             obj.put("data", babService.getSensorDiffChart(id, status));
             obj.put("avg", babService.getTotalAvg(id).intValue());
         }

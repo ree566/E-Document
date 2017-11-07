@@ -5,8 +5,8 @@
  */
 package com.advantech.helper;
 
-import com.advantech.service.BABService;
-import com.advantech.service.FBNService;
+import com.advantech.service.BabService;
+import com.advantech.service.FbnService;
 import java.io.FileOutputStream;
 import static java.lang.System.out;
 import java.math.BigDecimal;
@@ -43,10 +43,10 @@ public class ExcelGenerator {
     private static final Logger log = LoggerFactory.getLogger(ExcelGenerator.class);
     
     @Autowired
-    private FBNService fbnService;
+    private FbnService fbnService;
     
     @Autowired
-    private BABService babService;
+    private BabService babService;
 
     private Workbook workbook;
     private Sheet spreadsheet;

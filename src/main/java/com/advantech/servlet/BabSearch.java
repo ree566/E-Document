@@ -7,7 +7,7 @@
 package com.advantech.servlet;
 
 import com.advantech.helper.ParamChecker;
-import com.advantech.service.BABService;
+import com.advantech.service.BabService;
 import com.advantech.webservice.WebServiceRV;
 import com.google.gson.Gson;
 import java.io.*;
@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public class BabSearch {
 
     @Autowired
-    private BABService babService;
+    private BabService babService;
     
     @Autowired
     private ParamChecker pChecker;

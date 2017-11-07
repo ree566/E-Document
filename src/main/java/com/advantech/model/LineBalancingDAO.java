@@ -5,7 +5,7 @@
  */
 package com.advantech.model;
 
-import com.advantech.entity.BAB;
+import com.advantech.entity.Bab;
 import com.advantech.entity.LineBalancing;
 import java.sql.Connection;
 import java.util.List;
@@ -34,7 +34,7 @@ public class LineBalancingDAO extends BasicDAO {
         return getLineBalanceTableWithQuery("SELECT * FROM Line_Balancing_Main_F WHERE Do_not_stop = ? ORDER BY ID DESC", lineType);
     }
 
-    public LineBalancing getMaxBalance(BAB bab) {
+    public LineBalancing getMaxBalance(Bab bab) {
         List lineBalnGroup = getLineBalanceTableWithQuery("SELECT * FROM LS_getBestLineBalnData(?,?,?)",
                 bab.getModel_name(),
                 bab.getPeople(),

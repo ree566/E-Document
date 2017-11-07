@@ -5,8 +5,8 @@
  */
 package com.advantech.test;
 
-import com.advantech.entity.BAB;
-import com.advantech.service.BABService;
+import com.advantech.entity.Bab;
+import com.advantech.service.BabService;
 import com.google.gson.Gson;
 import javax.transaction.Transactional;
 import org.hibernate.SessionFactory;
@@ -35,7 +35,7 @@ public class TestClass {
     private SessionFactory sessionFactory;
     
     @Autowired
-    private BABService babService;
+    private BabService babService;
     
     @Before
     public void init(){
@@ -46,7 +46,7 @@ public class TestClass {
     @Transactional
     @Rollback(true)
     public void test() {
-        BAB b = babService.getBAB(8493);
+        Bab b = babService.getBAB(8493);
         System.out.println(new Gson().toJson(b));
     }
 }

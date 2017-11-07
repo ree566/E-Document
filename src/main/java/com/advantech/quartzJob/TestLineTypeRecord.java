@@ -8,6 +8,7 @@ package com.advantech.quartzJob;
 
 import com.advantech.entity.Test;
 import com.advantech.entity.TestLineTypeUser;
+import com.advantech.helper.ApplicationContextHelper;
 import com.advantech.webservice.WebServiceRV;
 import com.advantech.service.TestService;
 import java.util.ArrayList;
@@ -17,7 +18,6 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 
 /**
@@ -28,12 +28,15 @@ public class TestLineTypeRecord extends QuartzJobBean {
 
     private static final Logger log = LoggerFactory.getLogger(TestLineTypeRecord.class);
     private final int EXCLUDE_HOUR = 12;
-    
-    @Autowired
-    private TestService tService;
+
+    private final TestService testService;
+
+    public TestLineTypeRecord() {
+        testService = (TestService) ApplicationContextHelper.getBean("testService");
+    }
 
     @Override
-    protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
+    public void executeInternal(JobExecutionContext jec) throws JobExecutionException {
         DateTime d = new DateTime();
         log.info("It's " + d.toString() + " right now, begin record the testLineType...");
         if (d.getHourOfDay() == EXCLUDE_HOUR) {
@@ -41,13 +44,13 @@ public class TestLineTypeRecord extends QuartzJobBean {
         } else {
             //只存下已經刷入的使用者
             List<TestLineTypeUser> testLineTypeStatus = separateOfflineUser(WebServiceRV.getInstance().getTestLineTypeUsers());
-            boolean recordStatus = tService.recordTestLineType(testLineTypeStatus);
+            boolean recordStatus = testService.recordTestLineType(testLineTypeStatus);
             log.info("Record status : " + recordStatus);
         }
     }
 
     private List<TestLineTypeUser> separateOfflineUser(List<TestLineTypeUser> l) {
-        List<Test> tables = tService.getAllTableInfo();
+        List<Test> tables = testService.getAllTableInfo();
         List list = new ArrayList();
         for (TestLineTypeUser user : l) {
             for (Test t : tables) {

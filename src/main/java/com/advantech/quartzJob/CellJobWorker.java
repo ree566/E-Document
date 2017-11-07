@@ -6,30 +6,30 @@
  */
 package com.advantech.quartzJob;
 
+import com.advantech.helper.ApplicationContextHelper;
 import com.advantech.service.CellLineTypeFacade;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.quartz.QuartzJobBean;
-import org.springframework.stereotype.Component;
 
 /**
  *
  * @author Wei.Cheng
  */
-@Component(value = "CellJobWorker")
-public class CellJobWorker {
+public class CellJobWorker extends QuartzJobBean {
 
     private static final Logger log = LoggerFactory.getLogger(CellJobWorker.class);
+    
+    private final CellLineTypeFacade cF;
 
-    @Autowired
-    private CellLineTypeFacade cF;
+    public CellJobWorker() {
+        cF = (CellLineTypeFacade) ApplicationContextHelper.getBean("cellLineTypeFacade");
+    }
 
-    protected void execute() {
+    @Override
+    public void executeInternal(JobExecutionContext jec) throws JobExecutionException {
         //Processing Cells data & output to db or txt
         this.processingCellData();
     }
@@ -38,7 +38,7 @@ public class CellJobWorker {
         try {
             cF.processingDataAndSave();
         } catch (Exception ex) {
-            log.error(ex.getMessage(), ex);
+            log.error(ex.toString());
         }
     }
 }

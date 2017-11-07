@@ -7,13 +7,13 @@
 package com.advantech.quartzJob;
 
 import com.advantech.entity.Cell;
+import com.advantech.helper.ApplicationContextHelper;
 import com.advantech.service.CellService;
 import java.util.List;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 
 /**
@@ -24,11 +24,14 @@ public class CellDataSaver extends QuartzJobBean {
 
     private static final Logger log = LoggerFactory.getLogger(CellDataSaver.class);
     
-    @Autowired
-    private CellService cellService;
+    private final CellService cellService;
+
+    public CellDataSaver() {
+        cellService = (CellService) ApplicationContextHelper.getBean("cellService");
+    }
 
     @Override
-    protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
+    public void executeInternal(JobExecutionContext jec) throws JobExecutionException {
         saveCellData();
     }
 

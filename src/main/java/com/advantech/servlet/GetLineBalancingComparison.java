@@ -6,9 +6,9 @@
  */
 package com.advantech.servlet;
 
-import com.advantech.entity.BABStatus;
+import com.advantech.entity.BabStatus;
 import com.advantech.helper.ParamChecker;
-import com.advantech.service.BABService;
+import com.advantech.service.BabService;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +33,7 @@ public class GetLineBalancingComparison {
     private static final Logger log = LoggerFactory.getLogger(GetLineBalancingComparison.class);
     
     @Autowired
-    private BABService babService;
+    private BabService babService;
     
     @Autowired
     private ParamChecker pChecker;
@@ -74,8 +74,8 @@ public class GetLineBalancingComparison {
             try {
                 if (l != null) {
                     for (Map m : l) {
-                        BABStatus ctrl_status = m.get("ctrl_isused") == null ? null : BABStatus.CLOSED;
-                        BABStatus exp_status = m.get("exp_isused") == null ? null : BABStatus.CLOSED;
+                        BabStatus ctrl_status = m.get("ctrl_isused") == null ? null : BabStatus.CLOSED;
+                        BabStatus exp_status = m.get("exp_isused") == null ? null : BabStatus.CLOSED;
                         int ctrl_id = parseToInt(m.get("ctrl_id"));
                         int exp_id = parseToInt(m.get("exp_id"));
 

@@ -145,7 +145,7 @@
         </mvc:message-converters>
     </mvc:annotation-driven>
     
-    <import resource="classpath:spring-quartz.xml"/>
+    <import resource="classpath:spring-quartz_1.xml"/>
     
     <!-- 輔助類別，幫助在非spring管理下的物件取得spring管理的物件 -->
     <bean id="SpringApplicationContext" class="com.advantech.helper.ApplicationContextHelper">

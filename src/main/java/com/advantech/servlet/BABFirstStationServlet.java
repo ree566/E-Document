@@ -7,11 +7,11 @@
 package com.advantech.servlet;
 
 import com.advantech.endpoint.Endpoint6;
-import com.advantech.entity.BAB;
+import com.advantech.entity.Bab;
 import com.advantech.helper.MailSend;
 import com.advantech.helper.ParamChecker;
 import com.advantech.helper.PropertiesReader;
-import com.advantech.service.BABService;
+import com.advantech.service.BabService;
 import java.io.*;
 import javax.mail.MessagingException;
 import javax.servlet.ServletException;
@@ -36,7 +36,7 @@ public class BABFirstStationServlet {
     private static final Logger log = LoggerFactory.getLogger(BABFirstStationServlet.class);
     
     @Autowired
-    private BABService babService;
+    private BabService babService;
     
     @Autowired
     private ParamChecker pChecker;
@@ -63,7 +63,7 @@ public class BABFirstStationServlet {
         if (pChecker.checkInputVals(po, modelName, line, people, jobnumber, startPosition, ispre)) {
             try {
                 int lineNo = Integer.parseInt(line);
-                BAB bab = new BAB(
+                Bab bab = new Bab(
                         po,
                         modelName,
                         lineNo,
@@ -86,7 +86,7 @@ public class BABFirstStationServlet {
         }
     }
     
-    private void sendMailAfterBABRunIn(BAB bab) throws MessagingException {
+    private void sendMailAfterBABRunIn(Bab bab) throws MessagingException {
         
         String targetMail = PropertiesReader.getInstance().getTestMail();
         if ("".equals(targetMail)) {
@@ -98,7 +98,7 @@ public class BABFirstStationServlet {
         
     }
     
-    private String generateMailBody(BAB bab) {
+    private String generateMailBody(Bab bab) {
         return new StringBuilder()
                 .append("<p>現在時間 <strong>")
                 .append(getToday())

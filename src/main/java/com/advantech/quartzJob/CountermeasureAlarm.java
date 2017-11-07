@@ -5,6 +5,7 @@
  */
 package com.advantech.quartzJob;
 
+import com.advantech.helper.ApplicationContextHelper;
 import com.advantech.helper.DatetimeGenerator;
 import com.advantech.helper.MailSend;
 import com.advantech.helper.StringParser;
@@ -23,7 +24,6 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 
 /**
@@ -31,19 +31,22 @@ import org.springframework.scheduling.quartz.QuartzJobBean;
  * @author Wei.Cheng
  */
 public class CountermeasureAlarm extends QuartzJobBean {
-    
-    @Autowired
-    private LineOwnerMappingService lomService;
-    
-    @Autowired
-    private CountermeasureService countermeasureService;
 
     private static final Logger log = LoggerFactory.getLogger(CountermeasureAlarm.class);
     private final DecimalFormat formatter = new DecimalFormat("#.##%");
     private final DatetimeGenerator dg = new DatetimeGenerator("yyyy-MM-dd HH:mm");
 
+    private final LineOwnerMappingService lineOwnerMappingService;
+
+    private final CountermeasureService countermeasureService;
+
+    public CountermeasureAlarm() {
+        lineOwnerMappingService = (LineOwnerMappingService) ApplicationContextHelper.getBean("lineOwnerMappingService");
+        countermeasureService = (CountermeasureService) ApplicationContextHelper.getBean("countermeasureService");
+    }
+
     @Override
-    protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
+    public void executeInternal(JobExecutionContext jec) throws JobExecutionException {
         try {
             //Link the mailloop to send daily mail
             sendMail();
@@ -53,8 +56,8 @@ public class CountermeasureAlarm extends QuartzJobBean {
     }
 
     public void sendMail() throws Exception {
-        JSONObject responsorPerLine = lomService.getSeparateLineOwnerMapping();
-        JSONObject responsorPerSitefloor = lomService.getSeparateResponsorPerSitefloor();
+        JSONObject responsorPerLine = lineOwnerMappingService.getSeparateLineOwnerMapping();
+        JSONObject responsorPerSitefloor = lineOwnerMappingService.getSeparateResponsorPerSitefloor();
 
         // when user sitefloor is not setting, turn user's mail to mail cc loop
         JSONArray ccMailLoop = responsorPerLine.getJSONArray("null");

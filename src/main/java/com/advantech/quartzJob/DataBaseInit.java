@@ -6,6 +6,7 @@
  */
 package com.advantech.quartzJob;
 
+import com.advantech.helper.ApplicationContextHelper;
 import com.advantech.service.BabLineTypeFacade;
 import com.advantech.service.CellLineService;
 import com.advantech.service.CellLineTypeFacade;
@@ -17,37 +18,34 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.scheduling.quartz.QuartzJobBean;
 
 /**
  *
  * @author Wei.Cheng
  */
-@Component(value = "DataBaseInit")
-public class DataBaseInit {
+public class DataBaseInit extends QuartzJobBean {
 
     private static final Logger log = LoggerFactory.getLogger(DataBaseInit.class);
 
-    @Autowired
-    private TestService testService;
+    private final TestService testService;
+    private final LineService lineService;
+    private final CellLineService cellLineService;
+    private final BabLineTypeFacade bF;
+    private final TestLineTypeFacade tF;
+    private final CellLineTypeFacade cF;
 
-    @Autowired
-    private LineService lineService;
+    public DataBaseInit() {
+        testService = (TestService) ApplicationContextHelper.getBean("testService");
+        lineService = (LineService) ApplicationContextHelper.getBean("lineService");
+        cellLineService = (CellLineService) ApplicationContextHelper.getBean("cellLineService");
+        tF = (TestLineTypeFacade) ApplicationContextHelper.getBean("testLineTypeFacade");
+        bF = (BabLineTypeFacade) ApplicationContextHelper.getBean("babLineTypeFacade");
+        cF = (CellLineTypeFacade) ApplicationContextHelper.getBean("cellLineTypeFacade");
+    }
 
-    @Autowired
-    private CellLineService cellLineService;
-
-    @Autowired
-    private BabLineTypeFacade bf;
-
-    @Autowired
-    private TestLineTypeFacade tf;
-
-    @Autowired
-    private CellLineTypeFacade cf;
-
-    protected void execute() {
+    @Override
+    public void executeInternal(JobExecutionContext jec) throws JobExecutionException {
         dataInitialize();
     }
 
@@ -56,9 +54,9 @@ public class DataBaseInit {
             testService.cleanTestTable();
             lineService.closeAllLine();
             cellLineService.closeAll();
-            bf.resetAlarm();
-            tf.resetAlarm();
-            cf.resetAlarm();
+            bF.resetAlarm();
+            tF.resetAlarm();
+            cF.resetAlarm();
             log.info("Data has been initialized.");
         } catch (IOException ex) {
             log.error("Data initialized fail because: " + ex);

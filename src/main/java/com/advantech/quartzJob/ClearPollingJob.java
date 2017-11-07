@@ -5,13 +5,13 @@
  */
 package com.advantech.quartzJob;
 
+import com.advantech.helper.ApplicationContextHelper;
 import com.advantech.helper.CronTrigMod;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 
 /**
@@ -22,11 +22,14 @@ public class ClearPollingJob extends QuartzJobBean {
 
     private static final Logger log = LoggerFactory.getLogger(ClearPollingJob.class);
     
-    @Autowired
-    private CronTrigMod ctm;
+    private final CronTrigMod mod;
+    
+    public ClearPollingJob(){
+        mod = (CronTrigMod) ApplicationContextHelper.getBean("cronTrigMod");
+    }
 
     @Override
-    protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
+    public void executeInternal(JobExecutionContext jec) throws JobExecutionException {
         try {
             this.clearPollingJob("NumLamp", "Cell", "SensorCheck");
         } catch (SchedulerException ex) {
@@ -36,8 +39,8 @@ public class ClearPollingJob extends QuartzJobBean {
 
     private void clearPollingJob(String... jobGroupNames) throws SchedulerException {
         for (String jobGroupName : jobGroupNames) {
-            ctm.removeTriggers(jobGroupName);
-            ctm.removeJobs(jobGroupName);
+            mod.removeTriggers(jobGroupName);
+            mod.removeJobs(jobGroupName);
         }
     }
 }

@@ -5,9 +5,9 @@
  */
 package com.advantech.servlet;
 
-import com.advantech.entity.BABStatus;
+import com.advantech.entity.BabStatus;
 import com.advantech.helper.ParamChecker;
-import com.advantech.service.BABService;
+import com.advantech.service.BabService;
 import java.io.*;
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public class BABTimeDetail {
 
     @Autowired
-    private BABService babService;
+    private BabService babService;
     
     @Autowired
     private ParamChecker pChecker;
@@ -39,7 +39,7 @@ public class BABTimeDetail {
         String id = req.getParameter("id");
         String isused = req.getParameter("isused");
 
-        BABStatus status = isused == null ? null : BABStatus.CLOSED;
+        BabStatus status = isused == null ? null : BabStatus.CLOSED;
 
         out.print(new JSONObject().put("data", babService.getBABTimeDetail(Integer.parseInt(id), status)));
     }

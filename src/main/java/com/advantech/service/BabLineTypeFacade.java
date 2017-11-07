@@ -6,7 +6,7 @@
 package com.advantech.service;
 
 import com.advantech.entity.AlarmAction;
-import com.advantech.entity.BAB;
+import com.advantech.entity.Bab;
 import com.advantech.entity.Line;
 import com.advantech.helper.PropertiesReader;
 import java.util.List;
@@ -31,7 +31,7 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
     private LineBalanceService lineBalanceService;
     
     @Autowired
-    private BABService babService;
+    private BabService babService;
     
     @Autowired
     private LineService lineService;
@@ -63,13 +63,13 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
     public boolean generateData() {
         boolean isSomeBabUnderStandard = false;
 
-        List<BAB> babGroups = babService.getAllProcessing();
+        List<Bab> babGroups = babService.getAllProcessing();
         if (hasDataInCollection(babGroups)) {
             //把所有有在bab資料表的id集合起來，找到統計值之後依序寫入txt(各線別取當日最早輸入的工單id來亮燈)
             JSONArray transBabData = new JSONArray();
             processingJsonObject = new JSONObject();
 
-            for (BAB bab : babGroups) {
+            for (Bab bab : babGroups) {
                 int BABid = bab.getId();
                 JSONArray sensorDatas = babService.getLastGroupStatusForJson(BABid);
                 int currentGroupSum = sensorDatas.length();//看目前組別人數是否有到達bab裏頭設定的人數

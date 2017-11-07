@@ -7,13 +7,13 @@
 package com.advantech.quartzJob;
 
 import com.advantech.endpoint.Endpoint4;
+import com.advantech.helper.ApplicationContextHelper;
 import com.advantech.service.CellLineTypeFacade;
 import org.json.JSONObject;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 
 /**
@@ -23,12 +23,15 @@ import org.springframework.scheduling.quartz.QuartzJobBean;
 public class PollingCellResult extends QuartzJobBean {
 
     private static final Logger log = LoggerFactory.getLogger(PollingCellResult.class);
-    
-    @Autowired
-    private CellLineTypeFacade cf;
+
+    private static CellLineTypeFacade cF;
+
+    static {
+        cF = (CellLineTypeFacade) ApplicationContextHelper.getBean("cellLineTypeFacade");
+    }
 
     @Override
-    protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
+    public void executeInternal(JobExecutionContext jec) throws JobExecutionException {
         dataBrocast();
     }
 
@@ -47,8 +50,8 @@ public class PollingCellResult extends QuartzJobBean {
         }
     }
 
-    public String getData() {
-        JSONObject data = cf.getJSONObject();
+    public static String getData() {
+        JSONObject data = cF.getJSONObject();
         return (data == null ? new JSONObject() : data).toString();
     }
 }

@@ -5,7 +5,8 @@
  */
 package com.advantech.quartzJob;
 
-import com.advantech.entity.BAB;
+import com.advantech.entity.Bab;
+import com.advantech.helper.ApplicationContextHelper;
 import com.advantech.helper.CronTrigMod;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -21,7 +22,6 @@ import org.quartz.TriggerKey;
 import org.quartz.utils.Key;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 
 /**
@@ -37,40 +37,40 @@ public abstract class ProcessingBabDetector extends QuartzJobBean{
     public static final String STORE_JOB_KEYS = "storeKeys";
 
     private JSONObject processStatus = null;
-    private List<BAB> tempBab = null;
+    private List<Bab> tempBab = null;
     private Map<String, Map<String, Key>> storeKeys = null;
 
-    private String quartzJobNameExt;
-    private String quartzJobGroupName;
-    private String quartzJobCronTrigger;
-    private Class scheduleClass;
+    private final String quartzJobNameExt;
+    private final String quartzJobGroupName;
+    private final String quartzJobCronTrigger;
+    private final Class scheduleClass;
     
-    @Autowired
     private CronTrigMod ctm;
 
-    protected void init(String quartzJobNameExt, String quartzJobGroupName, String quartzJobCronTrigger, Class scheduleClass) {
+    protected ProcessingBabDetector(String quartzJobNameExt, String quartzJobGroupName, String quartzJobCronTrigger, Class scheduleClass) {
         this.quartzJobNameExt = quartzJobNameExt;
         this.quartzJobGroupName = quartzJobGroupName;
         this.quartzJobCronTrigger = quartzJobCronTrigger;
         this.scheduleClass = scheduleClass;
+        ctm = (CronTrigMod) ApplicationContextHelper.getBean("cronTrigMod");
     }
-
+    
     public void setCurrentStatus(JobDataMap jobMap) {
-        tempBab = jobMap.get(TEMP_BAB_KEYS) == null ? null : (List<BAB>) jobMap.get(TEMP_BAB_KEYS);
+        tempBab = jobMap.get(TEMP_BAB_KEYS) == null ? null : (List<Bab>) jobMap.get(TEMP_BAB_KEYS);
         processStatus = jobMap.get(PROCESS_STATUS_KEY) == null ? new JSONObject() : (JSONObject) jobMap.get(PROCESS_STATUS_KEY);
         storeKeys = jobMap.get(STORE_JOB_KEYS) == null ? new HashMap<String, Map<String, Key>>() : (Map<String, Map<String, Key>>) jobMap.get(STORE_JOB_KEYS);
     }
 
-    public abstract List<BAB> getProcessingBab();
+    public abstract List<Bab> getProcessingBab();
 
     public void listeningBab() {
-        List<BAB> processingBab = getProcessingBab();
+        List<Bab> processingBab = getProcessingBab();
         if (tempBab == null) {
             tempBab = processingBab;
             schedulePollingJob(processingBab);
         } else if (processingBab.size() != tempBab.size() || !processingBab.containsAll(tempBab)) {
-            List<BAB> different = (List<BAB>) CollectionUtils.disjunction(processingBab, tempBab);
-            for (BAB b : different) {
+            List<Bab> different = (List<Bab>) CollectionUtils.disjunction(processingBab, tempBab);
+            for (Bab b : different) {
                 if (tempBab.contains(b)) {
                     this.unschedulePollingJob(b.getLineName());
                     removeBabFromTempList(b);
@@ -92,18 +92,18 @@ public abstract class ProcessingBabDetector extends QuartzJobBean{
         jobMap.put(STORE_JOB_KEYS, this.storeKeys);
     }
 
-    private void removeBabFromTempList(BAB bab) {
+    private void removeBabFromTempList(Bab bab) {
         Iterator it = tempBab.iterator();
         while (it.hasNext()) {
-            BAB b = (BAB) it.next();
+            Bab b = (Bab) it.next();
             if (b.equals(bab)) {
                 it.remove();
             }
         }
     }
 
-    private void schedulePollingJob(List<BAB> l) {
-        for (BAB b : l) {
+    private void schedulePollingJob(List<Bab> l) {
+        for (Bab b : l) {
             try {
                 String jobName = b.getLineName() + quartzJobNameExt;
                 JobKey jobKey = ctm.createJobKey(jobName, quartzJobGroupName);
@@ -131,7 +131,7 @@ public abstract class ProcessingBabDetector extends QuartzJobBean{
         }
     }
 
-    public abstract Map createJobDetails(BAB b);
+    public abstract Map createJobDetails(Bab b);
 
     private void unschedulePollingJob(String lineName) {
         try {

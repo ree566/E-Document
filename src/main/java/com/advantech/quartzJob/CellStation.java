@@ -8,6 +8,7 @@
 package com.advantech.quartzJob;
 
 import com.advantech.entity.PassStation;
+import com.advantech.helper.ApplicationContextHelper;
 import com.advantech.service.PassStationService;
 import com.advantech.webservice.WebServiceRV;
 import java.util.Iterator;
@@ -16,7 +17,6 @@ import java.util.Objects;
 import org.apache.commons.collections4.CollectionUtils;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 
 /**
@@ -29,11 +29,14 @@ public class CellStation extends QuartzJobBean {
     private String type;
     private Integer apsLineId;
     
-    @Autowired
-    private PassStationService passStationService;
+    private final PassStationService passStationService;
+    
+    public CellStation(){
+        passStationService = (PassStationService) ApplicationContextHelper.getBean("passStationService");
+    }
 
     @Override
-    protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
+    public void executeInternal(JobExecutionContext jec) throws JobExecutionException {
         syncMesDataToDatabase();
     }
 
@@ -45,13 +48,32 @@ public class CellStation extends QuartzJobBean {
 
         //確認已經開始了
         if (!l.isEmpty()) {
-            passStationService.checkDifferenceAndInsert(PO, type, apsLineId);
+            checkDifferenceAndInsert(PO, type, apsLineId);
         } else {
             System.out.println("Data is empty.");
         }
     }
 
-    
+    private void checkDifferenceAndInsert(String PO, String type, Integer apsLineId) {
+
+        List<PassStation> l = WebServiceRV.getInstance().getPassStationRecords(PO, type);
+        Iterator it = l.iterator();
+        while(it.hasNext()){
+            PassStation p = (PassStation) it.next();
+            if(!Objects.equals(p.getLineId(), apsLineId)){
+                it.remove();
+            }else{
+                p.setType(type);
+            }
+        }
+        
+        List<PassStation> history = passStationService.getPassStation(PO, apsLineId, type);
+        List<PassStation> newData = (List<PassStation>) CollectionUtils.subtract(l, history);
+
+        if (!newData.isEmpty()) {
+            passStationService.insertPassStation(newData);
+        }
+    }
 
     public void setPO(String PO) {
         this.PO = PO;

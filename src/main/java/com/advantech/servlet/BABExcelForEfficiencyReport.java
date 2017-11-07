@@ -9,7 +9,7 @@ package com.advantech.servlet;
 import com.advantech.helper.DatetimeGenerator;
 import com.advantech.helper.ExcelGenerator;
 import com.advantech.helper.UserSelectFilter;
-import com.advantech.service.BABService;
+import com.advantech.service.BabService;
 import com.advantech.service.CountermeasureService;
 import java.io.*;
 import static java.lang.System.out;
@@ -37,7 +37,7 @@ public class BABExcelForEfficiencyReport{
     private CountermeasureService cService;
     
     @Autowired
-    private BABService babService;
+    private BabService babService;
 
     private final int minAllowAmount = 10;
 

@@ -5,7 +5,7 @@
  */
 package com.advantech.service;
 
-import com.advantech.entity.BAB;
+import com.advantech.entity.Bab;
 import com.advantech.entity.Line;
 import com.advantech.entity.LineBalancing;
 import com.advantech.helper.MailSend;
@@ -49,7 +49,7 @@ public class LineBalanceService {
         BALANCE_ROUNDING_DIGIT = p.getBalanceRoundingDigit();
     }
 
-    public LineBalancing getMaxBalance(BAB bab) {
+    public LineBalancing getMaxBalance(Bab bab) {
         return lineBalanceDAO.getMaxBalance(bab);
     }
 
@@ -79,7 +79,7 @@ public class LineBalanceService {
                 .doubleValue();
     }
 
-    public void checkLineBalanceAndSendMail(BAB bab, LineBalancing linebaln, double balance) throws JSONException, MessagingException {
+    public void checkLineBalanceAndSendMail(Bab bab, LineBalancing linebaln, double balance) throws JSONException, MessagingException {
         double balnDiff = PropertiesReader.getInstance().getBalanceDiff();
         //確定資料庫已經插入之後才送信
         int maxbln = parseDoubleToInteger(linebaln == null ? 0 : linebaln.getBalance());
@@ -101,7 +101,7 @@ public class LineBalanceService {
         return (int) Math.round(d * 100);
     }
 
-    private void sendMail(BAB bab, int num1, int num2, int diff) throws JSONException, MessagingException {
+    private void sendMail(Bab bab, int num1, int num2, int diff) throws JSONException, MessagingException {
         Line line = lineService.getLine(bab.getLine());
         String mailto = targetMail; //Get the responsor of linetype.
         if ("".equals(mailto)) {

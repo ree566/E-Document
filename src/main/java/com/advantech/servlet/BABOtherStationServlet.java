@@ -8,10 +8,10 @@
 package com.advantech.servlet;
 
 import com.advantech.endpoint.Endpoint6;
-import com.advantech.entity.BAB;
+import com.advantech.entity.Bab;
 import com.advantech.helper.ParamChecker;
-import com.advantech.service.BABLoginStatusService;
-import com.advantech.service.BABService;
+import com.advantech.service.BabLoginStatusService;
+import com.advantech.service.BabService;
 import java.io.*;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -35,10 +35,10 @@ public class BABOtherStationServlet {
     private static final Logger log = LoggerFactory.getLogger(BABOtherStationServlet.class);
 
     @Autowired
-    private BABLoginStatusService bService;
+    private BabLoginStatusService bService;
     
     @Autowired
-    private BABService babService;
+    private BabService babService;
     
     @Autowired
     private ParamChecker pChecker;
@@ -64,7 +64,7 @@ public class BABOtherStationServlet {
                 int babid = Integer.parseInt(babId);
                 int stationid = Integer.parseInt(station);
 
-                BAB b = babService.getBAB(babid);
+                Bab b = babService.getBAB(babid);
 
                 if (stationid <= b.getPeople()) {
                     switch (action) {

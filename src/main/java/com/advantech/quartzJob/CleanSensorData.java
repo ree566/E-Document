@@ -5,14 +5,14 @@
  */
 package com.advantech.quartzJob;
 
+import com.advantech.helper.ApplicationContextHelper;
 import com.advantech.helper.DatetimeGenerator;
-import com.advantech.service.FBNService;
+import com.advantech.service.FbnService;
 import org.joda.time.DateTime;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 
 /**
@@ -26,11 +26,14 @@ public class CleanSensorData extends QuartzJobBean {
     private final DatetimeGenerator dg = new DatetimeGenerator("yyyy-MM-dd");
     private static final int SPECIFY_DAY = 7;
     
-    @Autowired
-    private FBNService fbnService;
+    private final FbnService fbnService;
+    
+    public CleanSensorData(){
+        fbnService = (FbnService) ApplicationContextHelper.getBean("fbnService");
+    }
 
     @Override
-    protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
+    public void executeInternal(JobExecutionContext jec) throws JobExecutionException {
         DateTime d = new DateTime();
         d = d.minusDays(SPECIFY_DAY);
         String date = dg.dateFormatToString(d);

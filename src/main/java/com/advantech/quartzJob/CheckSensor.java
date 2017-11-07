@@ -6,12 +6,13 @@
  */
 package com.advantech.quartzJob;
 
-import com.advantech.entity.BAB;
-import com.advantech.entity.FBN;
+import com.advantech.entity.Bab;
+import com.advantech.entity.Fbn;
 import com.advantech.entity.Line;
+import com.advantech.helper.ApplicationContextHelper;
 import com.advantech.helper.MailSend;
 import com.advantech.helper.PropertiesReader;
-import com.advantech.service.FBNService;
+import com.advantech.service.FbnService;
 import com.advantech.service.LineOwnerMappingService;
 import com.advantech.service.LineService;
 import java.util.Collections;
@@ -30,7 +31,6 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 
 /**
@@ -41,24 +41,27 @@ public class CheckSensor extends QuartzJobBean {
 
     private static final Logger log = LoggerFactory.getLogger(CheckSensor.class);
 
-    private BAB bab;
+    private Bab bab;
     private final DateTimeFormatter dtf = DateTimeFormat.forPattern("yy/MM/dd HH:mm:ss ");
     private final int excludeHour = 12;
     private int expireTime;
     private int detectPeriod;
     private JSONArray responsors;
 
-    @Autowired
-    private FBNService fbnService;
+    private final FbnService fbnService;
 
-    @Autowired
-    private LineService lineService;
+    private final LineService lineService;
 
-    @Autowired
-    private LineOwnerMappingService lineOwnerMappingService;
+    private final LineOwnerMappingService lineOwnerMappingService;
+
+    public CheckSensor() {
+        fbnService = (FbnService) ApplicationContextHelper.getBean("fbnService");
+        lineService = (LineService) ApplicationContextHelper.getBean("lineService");
+        lineOwnerMappingService = (LineOwnerMappingService) ApplicationContextHelper.getBean("lineOwnerMappingService");
+    }
 
     @Override
-    protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
+    public void executeInternal(JobExecutionContext jec) throws JobExecutionException {
         try {
             checkSensorAndSendMail();
         } catch (MessagingException ex) {
@@ -69,7 +72,7 @@ public class CheckSensor extends QuartzJobBean {
     //定時查看sensor資料是否又暫停or異常
     private void checkSensorAndSendMail() throws MessagingException {
 
-        List<FBN> sensorStatus = fbnService.getSensorStatus(bab.getId());
+        List<Fbn> sensorStatus = fbnService.getSensorStatus(bab.getId());
         DateTime currentTime = new DateTime();
 
         int period;
@@ -91,14 +94,14 @@ public class CheckSensor extends QuartzJobBean {
                 //看看時間距離現在多久了，超過N秒沒動作，回報
 
                 //按照ID排序，取最大值(最後更新時間)
-                Collections.sort(sensorStatus, new Comparator<FBN>() {
+                Collections.sort(sensorStatus, new Comparator<Fbn>() {
                     @Override
-                    public int compare(final FBN object1, final FBN object2) {
+                    public int compare(final Fbn object1, final Fbn object2) {
                         return Integer.compare(object1.getId(), object2.getId());
                     }
                 });
 
-                FBN lastStatus = sensorStatus.get(sensorStatus.size() - 1);
+                Fbn lastStatus = sensorStatus.get(sensorStatus.size() - 1);
                 String date = (String) lastStatus.getLogDate();
                 String time = (String) lastStatus.getLogTime();
 
@@ -172,7 +175,7 @@ public class CheckSensor extends QuartzJobBean {
                 .toString();
     }
 
-    public void setBab(BAB bab) {
+    public void setBab(Bab bab) {
         this.bab = bab;
     }
 

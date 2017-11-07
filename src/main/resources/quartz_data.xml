@@ -28,7 +28,7 @@
     </schedule>
     
     <!--清理資料庫job-->    
-    <schedule>
+<!--    <schedule>
         <job>
             <name>DataBaseInit</name>
             <job-class>com.advantech.quartzJob.DataBaseInit</job-class>
@@ -41,12 +41,12 @@
             </cron>
         </trigger>
     </schedule>
-    
+    -->
     <!--把未完結工單做儲存的job-->    
-    <schedule>
+<!--    <schedule>
         <job>
             <name>SaveBABDataToDB</name>
-            <job-class>com.advantech.quartzJob.BABDataSaver</job-class>
+            <job-class>com.advantech.quartzJob.BabDataSaver</job-class>
         </job>
         <trigger>
             <cron>
@@ -55,10 +55,10 @@
                 <cron-expression>0 10 12,22 ? * MON-SAT *</cron-expression>
             </cron>
         </trigger>
-    </schedule>
+    </schedule>-->
     
     <!--定時查看sensor是否異常，回報-->    
-    <schedule>
+<!--    <schedule>
         <job>
             <name>SensorDetect</name>
             <job-class>com.advantech.quartzJob.SensorDetect</job-class>
@@ -70,10 +70,10 @@
                 <cron-expression>15,45 0/1 8-20 ? * MON-FRI *</cron-expression>
             </cron>
         </trigger>
-    </schedule>
+    </schedule>-->
     
     <!--禮拜三零點固定將Database的sensor unused的資料clean一次-->    
-    <schedule>
+<!--    <schedule>
         <job>
             <name>CleanSensorData</name>
             <job-class>com.advantech.quartzJob.CleanSensorData</job-class>
@@ -86,9 +86,9 @@
             </cron>
         </trigger>
     </schedule>
-    
+    -->
     <!--把測試線別狀態記錄到資料庫-->    
-    <schedule>
+<!--    <schedule>
         <job>
             <name>TestLineTypeRecord</name>
             <job-class>com.advantech.quartzJob.TestLineTypeRecord</job-class>
@@ -100,10 +100,10 @@
                 <cron-expression>0 50 9-16 ? * MON-FRI *</cron-expression>
             </cron>
         </trigger>
-    </schedule>
+    </schedule>-->
     
     <!-- 每日把未回覆異常原因的回覆給幹部-->    
-    <schedule>
+<!--    <schedule>
         <job>
             <name>CountermeasureAlarm</name>
             <job-class>com.advantech.quartzJob.CountermeasureAlarm</job-class>
@@ -115,25 +115,10 @@
                 <cron-expression>0 0 11,16 ? * MON-FRI *</cron-expression>
             </cron>
         </trigger>
-    </schedule>
-    
-    <!--線平衡測試排站人數估算-->    
-    <schedule>
-        <job>
-            <name>NumLamp</name>
-            <job-class>com.advantech.quartzJob.NumLamp</job-class>
-        </job>
-        <trigger>
-            <cron>
-                <name>NumLamp</name>
-                <job-name>NumLamp</job-name>
-                <cron-expression>15,45 0/1 8-20 ? * MON-FRI *</cron-expression>
-            </cron>
-        </trigger>
-    </schedule>
+    </schedule>-->
     
     <!--Clear all subPolling job separate by system-->    
-    <schedule>
+<!--    <schedule>
         <job>
             <name>ClearPollingJob</name>
             <job-class>com.advantech.quartzJob.ClearPollingJob</job-class>
@@ -145,10 +130,10 @@
                 <cron-expression>0 30 21 ? * MON-FRI *</cron-expression>
             </cron>
         </trigger>
-    </schedule>
+    </schedule>-->
     
     <!--把Cell是否合格資訊轉換到資料庫-->
-    <schedule> 
+<!--    <schedule> 
         <job>
             <name>CellJobWorker</name>
             <job-class>com.advantech.quartzJob.CellJobWorker</job-class>
@@ -161,10 +146,10 @@
                 <cron-expression>0/30 * 8-20 ? * MON-SAT *</cron-expression>
             </cron>
         </trigger>
-    </schedule>
+    </schedule>-->
 
     <!--Cell auto close-->    
-    <schedule> 
+<!--    <schedule> 
         <job>
             <name>CellDataSaver</name>
             <job-class>com.advantech.quartzJob.CellDataSaver</job-class>
@@ -176,5 +161,5 @@
                 <cron-expression>0 10 22 ? * MON-SAT *</cron-expression>
             </cron>
         </trigger>
-    </schedule>
+    </schedule>-->
 </job-scheduling-data>

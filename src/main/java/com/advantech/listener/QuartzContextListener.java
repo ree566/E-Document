@@ -7,7 +7,6 @@ package com.advantech.listener;
 
 import com.advantech.endpoint.Endpoint;
 import com.advantech.endpoint.Endpoint2;
-import com.advantech.endpoint.Endpoint3;
 import com.advantech.endpoint.Endpoint4;
 import com.advantech.helper.PropertiesReader;
 import com.advantech.helper.ThreadLocalCleanUtil;
@@ -43,7 +42,6 @@ public class QuartzContextListener implements ServletContextListener {
             
             Endpoint.clearSessions();
             Endpoint2.clearSessions();
-            Endpoint3.clearSessions();
             Endpoint4.clearSessions();
 
             Thread.sleep(3000);

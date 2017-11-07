@@ -7,35 +7,35 @@
 package com.advantech.quartzJob;
 
 import com.advantech.endpoint.Endpoint2;
+import com.advantech.helper.ApplicationContextHelper;
 import com.advantech.service.BabLineTypeFacade;
 import com.advantech.service.TestLineTypeFacade;
 import org.json.JSONArray;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.quartz.QuartzJobBean;
-import org.springframework.stereotype.Component;
 
 /**
  *
  * @author Wei.Cheng
  */
-@Component
-public class PollingBabAndTestResult {
+public class PollingBabAndTestResult extends QuartzJobBean {
 
     private static final Logger log = LoggerFactory.getLogger(PollingBabAndTestResult.class);
 
-    @Autowired
-    private TestLineTypeFacade tF;
+    private static TestLineTypeFacade tF;
 
-    @Autowired
-    private BabLineTypeFacade bF;
+    private static BabLineTypeFacade bF;
 
-    protected void execute() {
+    static {
+        tF = (TestLineTypeFacade) ApplicationContextHelper.getBean("testLineTypeFacade");
+        bF = (BabLineTypeFacade) ApplicationContextHelper.getBean("babLineTypeFacade");
+    }
+
+    @Override
+    public void executeInternal(JobExecutionContext jec) throws JobExecutionException {
         dataBrocast();
     }
 
@@ -48,15 +48,13 @@ public class PollingBabAndTestResult {
          Query: select * from LS_GetSenRealTime Parameters: []
          */
         try {
-
             Endpoint2.sendAll(getData());
         } catch (Exception e) {
-            log.error(e.toString());
+            log.error(e.getMessage(), e);
         }
     }
 
-    public String getData() {
-        System.out.println("Return data");
+    public static String getData() {
         return new JSONArray().put(tF.getJSONObject())
                 .put(bF.getJSONObject()).toString();
     }

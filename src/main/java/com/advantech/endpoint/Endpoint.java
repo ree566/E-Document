@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import javax.annotation.PostConstruct;
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
 import javax.websocket.OnMessage;
@@ -34,21 +33,23 @@ import org.slf4j.LoggerFactory;
  *
  * @author Wei.Cheng
  */
-@ServerEndpoint("/echo")
+@ServerEndpoint(
+        value = "/echo"
+//        , 
+//        configurator = WebSocketConfig.class
+)
 public class Endpoint {
 
     private static final Logger log = LoggerFactory.getLogger(Endpoint.class);
     private static final Set<Session> sessions = Collections.synchronizedSet(new HashSet<Session>());
 
-    private static String POLLING_FREQUENCY;
+    private static final String POLLING_FREQUENCY;
     private static final String JOB_NAME = "JOB1";
+    
+    private final CronTrigMod ctm = (CronTrigMod) ApplicationContextHelper.getBean("cronTrigMod");
 
-    private CronTrigMod ctm;
-
-    @PostConstruct
-    protected void init(){
+    static {
         POLLING_FREQUENCY = PropertiesReader.getInstance().getEndpointQuartzTrigger();
-        ctm = (CronTrigMod)ApplicationContextHelper.getBean("cronTrigMod");
     }
 
     @OnOpen
@@ -59,7 +60,9 @@ public class Endpoint {
         } catch (IOException ex) {
             log.error(ex.toString());
         }
-
+        
+//        HandshakeRequest req = (HandshakeRequest) conf.getUserProperties().get("handshakereq");
+//        Map<String,List<String>> headers = req.getHeaders();
         sessions.add(session);
 //        System.out.println("New session opened: " + session.getId());
 
@@ -131,8 +134,8 @@ public class Endpoint {
             log.error(ex.toString());
         }
     }
-
-    public static void clearSessions() {
+    
+    public static void clearSessions(){
         sessions.clear();
     }
 }
