@@ -5,7 +5,7 @@
  */
 package com.advantech.webservice;
 
-import com.advantech.entity.User;
+import com.advantech.model.User;
 import java.net.URL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

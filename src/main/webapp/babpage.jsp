@@ -307,8 +307,8 @@
             function getLine() {
                 var result;
                 $.ajax({
-                    type: "Post",
-                    url: "GetLine",
+                    type: "GET",
+                    url: "<c:url value="/GetLine" />",
                     data: {
                         sitefloor: $("#userSitefloorSelect").val()
                     },
@@ -458,26 +458,6 @@
                     lineNo: lineNo,
                     jobnumber: jobnumber,
                     station: station
-                });
-            }
-
-            function checkLoginStatusAndSave(userInfo) {
-                $.ajax({
-                    type: "Post",
-                    url: "BabLoginStatusServlet",
-                    data: userInfo,
-                    dataType: "html",
-                    success: function (response) {
-                        //傳回來 success or fail
-                        if (response == "success") {
-                            saveUserInfoToCookie(userInfo);
-                        } else {
-                            showMsg(response);
-                        }
-                    },
-                    error: function (xhr, ajaxOptions, thrownError) {
-                        showMsg(xhr.responseText);
-                    }
                 });
             }
 

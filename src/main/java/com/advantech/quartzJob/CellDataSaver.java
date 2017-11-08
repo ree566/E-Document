@@ -6,7 +6,7 @@
  */
 package com.advantech.quartzJob;
 
-import com.advantech.entity.Cell;
+import com.advantech.model.Cell;
 import com.advantech.helper.ApplicationContextHelper;
 import com.advantech.service.CellService;
 import java.util.List;

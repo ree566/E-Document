@@ -5,9 +5,9 @@
  */
 package com.advantech.webservice;
 
-import com.advantech.entity.PassStation;
-import com.advantech.entity.TestLineTypeUser;
-import com.advantech.entity.User;
+import com.advantech.model.PassStation;
+import com.advantech.model.TestLineTypeUser;
+import com.advantech.model.User;
 import com.google.gson.Gson;
 import static java.lang.System.out;
 import java.util.ArrayList;

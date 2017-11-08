@@ -46,7 +46,7 @@ public class CronTrigMod {
 
     public Map changedJobKey;
 
-    @Autowired
+//    @Autowired
     private SchedulerFactoryBean schedulerFactory;
 
     private Scheduler getScheduler() throws SchedulerException {

@@ -5,9 +5,9 @@
  */
 package com.advantech.service;
 
-import com.advantech.entity.AlarmAction;
-import com.advantech.entity.Cell;
-import com.advantech.model.CellDAO;
+import com.advantech.model.AlarmAction;
+import com.advantech.model.Cell;
+import com.advantech.dao.CellDAO;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

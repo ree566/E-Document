@@ -5,8 +5,8 @@
  */
 package com.advantech.service;
 
-import com.advantech.entity.ActionCodeMapping;
-import com.advantech.model.ActionCodeMappingDAO;
+import com.advantech.model.ActionCodeMapping;
+import com.advantech.dao.ActionCodeMappingDAO;
 import java.util.List;
 import java.util.Map;
 import javax.transaction.Transactional;

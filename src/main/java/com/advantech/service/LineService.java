@@ -5,8 +5,8 @@
  */
 package com.advantech.service;
 
-import com.advantech.entity.Line;
-import com.advantech.model.LineDAO;
+import com.advantech.model.Line;
+import com.advantech.dao.LineDAO;
 import java.util.List;
 import javax.transaction.Transactional;
 import org.json.JSONException;

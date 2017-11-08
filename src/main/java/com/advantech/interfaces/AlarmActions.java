@@ -5,7 +5,7 @@
  */
 package com.advantech.interfaces;
 
-import com.advantech.entity.AlarmAction;
+import com.advantech.model.AlarmAction;
 import java.util.List;
 
 /**

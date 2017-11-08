@@ -5,8 +5,8 @@
  */
 package com.advantech.service;
 
-import com.advantech.entity.Identit;
-import com.advantech.model.IdentitDAO;
+import com.advantech.model.Identit;
+import com.advantech.dao.IdentitDAO;
 import java.util.List;
 import java.util.Map;
 import javax.transaction.Transactional;

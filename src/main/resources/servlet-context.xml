@@ -98,9 +98,9 @@
  
     <!-- 對base-package下及其子資料夾偵測並自動裝配Bean -->
     <context:component-scan base-package="
-        com.advantech.model,
+        com.advantech.dao,
         com.advantech.service,
-        com.advantech.servlet,
+        com.advantech.controller,
         com.advantech.helper,
         com.advantech.quartzJob
     " />
@@ -145,7 +145,7 @@
         </mvc:message-converters>
     </mvc:annotation-driven>
     
-    <import resource="classpath:spring-quartz_1.xml"/>
+    <!--<import resource="classpath:spring-quartz.xml"/>-->
     
     <!-- 輔助類別，幫助在非spring管理下的物件取得spring管理的物件 -->
     <bean id="SpringApplicationContext" class="com.advantech.helper.ApplicationContextHelper">

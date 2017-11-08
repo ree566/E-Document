@@ -75,8 +75,8 @@
 
             function setLineObject() {
                 $.ajax({
-                    type: "Post",
-                    url: "../../GetLine",
+                    type: "GET",
+                    url: "<c:url value="/GetLine" />",
                     data: {
                         sitefloor: $("#userSitefloorSelect").val()
                     },

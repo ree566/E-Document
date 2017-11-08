@@ -5,8 +5,8 @@
  */
 package com.advantech.service;
 
-import com.advantech.entity.CellLine;
-import com.advantech.model.CellLineDAO;
+import com.advantech.model.CellLine;
+import com.advantech.dao.CellLineDAO;
 import java.util.List;
 import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;

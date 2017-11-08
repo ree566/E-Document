@@ -5,8 +5,8 @@
  */
 package com.advantech.service;
 
-import com.advantech.entity.TagNameComparison;
-import com.advantech.model.TagNameComparisonDAO;
+import com.advantech.model.TagNameComparison;
+import com.advantech.dao.TagNameComparisonDAO;
 import java.util.List;
 import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;

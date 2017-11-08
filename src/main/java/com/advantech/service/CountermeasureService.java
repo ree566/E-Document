@@ -1,8 +1,8 @@
 package com.advantech.service;
 
-import com.advantech.entity.Countermeasure;
-import com.advantech.model.BasicDAO;
-import com.advantech.model.CountermeasureDAO;
+import com.advantech.model.Countermeasure;
+import com.advantech.dao.BasicDAO;
+import com.advantech.dao.CountermeasureDAO;
 import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.List;

@@ -5,7 +5,7 @@
  */
 package com.advantech.service;
 
-import com.advantech.model.WorkTimeDAO;
+import com.advantech.dao.WorkTimeDAO;
 import java.util.List;
 import java.util.Map;
 import javax.transaction.Transactional;

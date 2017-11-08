@@ -5,7 +5,7 @@
  */
 package com.advantech.test;
 
-import com.advantech.entity.Bab;
+import com.advantech.model.Bab;
 import com.advantech.service.BabService;
 import com.google.gson.Gson;
 import javax.transaction.Transactional;

@@ -5,8 +5,8 @@
  */
 package com.advantech.service;
 
-import com.advantech.entity.PassStation;
-import com.advantech.model.PassStationDAO;
+import com.advantech.model.PassStation;
+import com.advantech.dao.PassStationDAO;
 import com.advantech.webservice.WebServiceRV;
 import java.util.Iterator;
 import java.util.List;

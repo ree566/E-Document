@@ -5,9 +5,9 @@
  */
 package com.advantech.service;
 
-import com.advantech.entity.LineOwnerMapping;
-import com.advantech.model.BasicDAO;
-import com.advantech.model.LineOwnerMappingDAO;
+import com.advantech.model.LineOwnerMapping;
+import com.advantech.dao.BasicDAO;
+import com.advantech.dao.LineOwnerMappingDAO;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

@@ -167,16 +167,17 @@
                     dataType: "json",
                     async: false,
                     success: function (response) {
-//                        var usersNotLoginMessageArea = $("#Div1");
-//                        usersNotLoginMessageArea.append("<p>");
-//                        var i = 1;
-//                        $.each(response, function(index, value) {
-//                            usersNotLoginMessageArea.append(value);
-//                            if (i++ % 9 == 0) {
-//                                usersNotLoginMessageArea.append("<br />");
-//                            }
-//                        }
-//                        usersNotLoginMessageArea.append("</p>");
+                        var usersNotLoginMessageArea = $("#userNotLoginArea");
+                        usersNotLoginMessageArea.append("<p>");
+                        var i = 1;
+                        Object.keys(response).forEach(function (key, index) {
+                            usersNotLoginMessageArea.append(key);
+                            usersNotLoginMessageArea.append("、");
+                            if (i++ % 9 == 0) {
+                                usersNotLoginMessageArea.append("<br />");
+                            }
+                        });
+                        usersNotLoginMessageArea.append("</p>");
                     },
                     error: function (xhr, ajaxOptions, thrownError) {
                         showMsg(xhr.responseText);
@@ -331,7 +332,7 @@
                 </div>
             </div>
             <div class="Div0">
-                <div class="Div1">未刷入資料庫的使用者:
+                <div id="userNotLoginArea" class="Div1">未刷入資料庫的使用者:
                 </div>
                 <div class="Div2">
                     <p><h3>此處會顯示未刷入資料庫的使用者。</h3>刷入成功者請再次確認您的<code>姓名</code>不在這欄位中。<p/>

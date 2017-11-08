@@ -5,9 +5,9 @@
  */
 package com.advantech.service;
 
-import com.advantech.entity.AlarmAction;
-import com.advantech.entity.Test;
-import com.advantech.entity.TestLineTypeUser;
+import com.advantech.model.AlarmAction;
+import com.advantech.model.Test;
+import com.advantech.model.TestLineTypeUser;
 import com.advantech.helper.PropertiesReader;
 import com.advantech.webservice.WebServiceRV;
 import java.util.HashMap;

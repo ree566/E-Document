@@ -5,12 +5,12 @@
  */
 package com.advantech.webservice;
 
-import com.advantech.entity.CellLineType;
-import com.advantech.entity.PassStation;
-import com.advantech.entity.PassStationRecords;
-import com.advantech.entity.TestLineTypeUser;
-import com.advantech.entity.TestLineTypeUsers;
-import com.advantech.entity.User;
+import com.advantech.model.CellLineType;
+import com.advantech.model.PassStation;
+import com.advantech.model.PassStationRecords;
+import com.advantech.model.TestLineTypeUser;
+import com.advantech.model.TestLineTypeUsers;
+import com.advantech.model.User;
 import java.io.StringWriter;
 import java.net.URL;
 import java.text.SimpleDateFormat;

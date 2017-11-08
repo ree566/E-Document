@@ -7,7 +7,7 @@
  */
 package com.advantech.quartzJob;
 
-import com.advantech.entity.PassStation;
+import com.advantech.model.PassStation;
 import com.advantech.helper.ApplicationContextHelper;
 import com.advantech.service.PassStationService;
 import com.advantech.webservice.WebServiceRV;

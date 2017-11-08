@@ -9,9 +9,11 @@
 <!DOCTYPE html>
 <html>
     <c:set var="userSitefloor" value="${param.sitefloor}" />
+    <%--
     <c:if test="${(userSitefloor == null) || (userSitefloor == '' || userSitefloor < 1 || userSitefloor > 7)}">
-        <c:redirect url="/" />
     </c:if>
+    --%>
+    <c:redirect url="/" />
     <head> 
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Cell ${userSitefloor} 樓 - ${initParam.pageTitle}</title>
@@ -306,10 +308,9 @@
                 }
 
                 function insertCellInfo(data) {
-                    data.action = "insert";
                     $.ajax({
                         type: "Post",
-                        url: "CellScheduleJobServlet",
+                        url: "<c:url value="/CellScheduleJobServlet/insert" />",
                         data: data,
                         dataType: "html",
                         success: function (response) {
@@ -329,11 +330,10 @@
                 function deleteSchedJob() {
                     $.ajax({
                         type: "Post",
-                        url: "CellScheduleJobServlet",
+                        url: "<c:url value="/CellScheduleJobServlet/delete" />",
                         data: {
                             lineId: $("#lineId").val(),
-                            PO: $("#PO").val(),
-                            action: "delete"
+                            PO: $("#PO").val()
                         },
                         dataType: "html",
                         success: function (response) {
@@ -353,11 +353,8 @@
                 function showProcessing() {
                     $("#processingArea").html("");
                     $.ajax({
-                        type: "Post",
-                        url: "CellScheduleJobServlet",
-                        data: {
-                            action: "select"
-                        },
+                        type: "GET",
+                        url: "<c:url value="/CellScheduleJobServlet/select" />",
                         success: function (response, status, xhr) {
                             var ct = xhr.getResponseHeader("content-type") || "";
                             var obj = response;

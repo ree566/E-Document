@@ -5,7 +5,7 @@
  */
 package com.advantech.service;
 
-import com.advantech.entity.AlarmAction;
+import com.advantech.model.AlarmAction;
 import com.advantech.helper.PropertiesReader;
 import java.io.IOException;
 import java.util.ArrayList;

@@ -5,9 +5,9 @@
  */
 package com.advantech.service;
 
-import com.advantech.entity.LineTypeConfig;
+import com.advantech.model.LineTypeConfig;
 import com.advantech.helper.PropertiesReader;
-import com.advantech.model.LineTypeConfigDAO;
+import com.advantech.dao.LineTypeConfigDAO;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.PostConstruct;

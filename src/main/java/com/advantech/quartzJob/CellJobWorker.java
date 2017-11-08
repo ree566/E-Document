@@ -38,7 +38,7 @@ public class CellJobWorker extends QuartzJobBean {
         try {
             cF.processingDataAndSave();
         } catch (Exception ex) {
-            log.error(ex.toString());
+            log.error(ex.getMessage(), ex);
         }
     }
 }

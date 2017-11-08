@@ -41,7 +41,7 @@ public class MailSend {
         String hostaddr = null;
         try {
             String hostSetting = properties.getMailServerLocation();
-            hostaddr = new ParamChecker().checkInputVal(hostSetting) ? hostSetting : getHostAddr();
+            hostaddr = hostSetting == null ? hostSetting : getHostAddr();
         } catch (UnknownHostException | SocketException ex) {
             log.error(ex.toString());
         }
@@ -59,7 +59,7 @@ public class MailSend {
     }
 
     public static MailSend getInstance() {
-        if(instance == null){
+        if (instance == null) {
             instance = new MailSend();
         }
         return instance;

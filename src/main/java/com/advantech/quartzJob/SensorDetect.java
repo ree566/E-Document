@@ -5,8 +5,8 @@
  */
 package com.advantech.quartzJob;
 
-import com.advantech.entity.Bab;
-import com.advantech.entity.LineOwnerMapping;
+import com.advantech.model.Bab;
+import com.advantech.model.LineOwnerMapping;
 import com.advantech.helper.ApplicationContextHelper;
 import com.advantech.helper.PropertiesReader;
 import com.advantech.service.BabService;

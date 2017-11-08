@@ -5,8 +5,8 @@
  */
 package com.advantech.service;
 
-import com.advantech.entity.AlarmAction;
-import com.advantech.entity.CellLine;
+import com.advantech.model.AlarmAction;
+import com.advantech.model.CellLine;
 import com.advantech.helper.PropertiesReader;
 import java.util.List;
 import java.util.Map;

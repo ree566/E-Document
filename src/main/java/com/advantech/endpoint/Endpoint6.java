@@ -6,7 +6,7 @@
  */
 package com.advantech.endpoint;
 
-import com.advantech.entity.Bab;
+import com.advantech.model.Bab;
 import com.advantech.helper.ApplicationContextHelper;
 import com.advantech.service.BabService;
 import com.google.gson.Gson;

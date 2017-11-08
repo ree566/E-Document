@@ -6,9 +6,9 @@
  */
 package com.advantech.quartzJob;
 
-import com.advantech.entity.Bab;
-import com.advantech.entity.Fbn;
-import com.advantech.entity.Line;
+import com.advantech.model.Bab;
+import com.advantech.model.Fbn;
+import com.advantech.model.Line;
 import com.advantech.helper.ApplicationContextHelper;
 import com.advantech.helper.MailSend;
 import com.advantech.helper.PropertiesReader;

@@ -5,11 +5,11 @@
  */
 package com.advantech.service;
 
-import com.advantech.entity.AlarmAction;
-import com.advantech.entity.Desk;
-import com.advantech.entity.Test;
-import com.advantech.entity.TestLineTypeUser;
-import com.advantech.model.TestDAO;
+import com.advantech.model.AlarmAction;
+import com.advantech.model.Desk;
+import com.advantech.model.Test;
+import com.advantech.model.TestLineTypeUser;
+import com.advantech.dao.TestDAO;
 import java.util.List;
 import java.util.Map;
 import javax.transaction.Transactional;

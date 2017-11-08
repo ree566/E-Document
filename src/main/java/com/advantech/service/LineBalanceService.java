@@ -5,12 +5,12 @@
  */
 package com.advantech.service;
 
-import com.advantech.entity.Bab;
-import com.advantech.entity.Line;
-import com.advantech.entity.LineBalancing;
+import com.advantech.model.Bab;
+import com.advantech.model.Line;
+import com.advantech.model.LineBalancing;
 import com.advantech.helper.MailSend;
 import com.advantech.helper.PropertiesReader;
-import com.advantech.model.LineBalancingDAO;
+import com.advantech.dao.LineBalancingDAO;
 import java.math.BigDecimal;
 import java.util.Date;
 import javax.annotation.PostConstruct;
