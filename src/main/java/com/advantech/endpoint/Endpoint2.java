@@ -83,6 +83,7 @@ public class Endpoint2 {
     @OnError
     public void error(Session session, Throwable t) {
         sessions.remove(session);
+        log.error(t.getMessage(), t);
     }
 
     ///Brocast the servermessage to all online users.

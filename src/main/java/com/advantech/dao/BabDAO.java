@@ -13,7 +13,7 @@ import com.advantech.model.LineBalancing;
 import com.advantech.helper.ProcRunner;
 import com.advantech.helper.PropertiesReader;
 import com.advantech.interfaces.AlarmActions;
-import com.advantech.service.LineBalanceService;
+import com.advantech.service.LineBalancingService;
 import java.sql.Array;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -41,9 +41,9 @@ public class BabDAO extends BasicDAO implements AlarmActions {
     private static final Logger log = LoggerFactory.getLogger(BabDAO.class);
 
     private boolean saveToOldDB;
-    
+
     @Autowired
-    private LineBalanceService lineBalanceService;
+    private LineBalancingService lineBalanceService;
 
     @PostConstruct
     public void BABDAO() {
@@ -67,8 +67,8 @@ public class BabDAO extends BasicDAO implements AlarmActions {
         return queryBABTable("SELECT * FROM LS_BAB");
     }
 
-    public Bab getBAB(int BABid) {
-        List l = queryBABTable("SELECT * FROM LS_BAB WHERE id = ?", BABid);
+    public Bab getBAB(int bab_id) {
+        List l = queryBABTable("SELECT * FROM LS_BAB WHERE id = ?", bab_id);
         return !l.isEmpty() ? (Bab) l.get(0) : null;
     }
 
@@ -80,8 +80,8 @@ public class BabDAO extends BasicDAO implements AlarmActions {
         return queryForMapList(getConn(), "SELECT * FROM closedBABView");
     }
 
-    public List<Map> getBABForMap(int BABid) {
-        return queryForMapList(getConn(), "SELECT * FROM closedBABView WHERE id = ?", BABid);
+    public List<Map> getBABForMap(int bab_id) {
+        return queryForMapList(getConn(), "SELECT * FROM closedBABView WHERE id = ?", bab_id);
     }
 
     public List<Map> getBABForMap(String date) {
@@ -117,8 +117,8 @@ public class BabDAO extends BasicDAO implements AlarmActions {
         return queryBABTable("SELECT * FROM LS_BAB_Sort");
     }
 
-    public Bab getProcessingBAB(int BABid) {
-        List l = queryBABTable("SELECT * FROM LS_BAB_Sort WHERE id = ?", BABid);
+    public Bab getProcessingBAB(int bab_id) {
+        List l = queryBABTable("SELECT * FROM LS_BAB_Sort WHERE id = ?", bab_id);
         return !l.isEmpty() ? (Bab) l.get(0) : null;
     }
 
@@ -139,36 +139,36 @@ public class BabDAO extends BasicDAO implements AlarmActions {
         return list.isEmpty() ? null : (Bab) list.get(0);
     }
 
-    public List<Map> getLastGroupStatus(int BABid) {
-        return queryProcForMapList(getConn(), "{CALL LS_lastGroupStatus(?)}", BABid);
+    public List<Map> getLastGroupStatus(int bab_id) {
+        return queryProcForMapList(getConn(), "{CALL LS_lastGroupStatus(?)}", bab_id);
     }
 
-    public List<Map> getBABAvgs(int BABid) {
-        return queryForMapList(getConn(), "SELECT * FROM BABAVG(?)", BABid);
+    public List<Map> getBABAvgs(int bab_id) {
+        return queryForMapList(getConn(), "SELECT * FROM BABAVG(?)", bab_id);
     }
 
-    public List<Map> getBABAvgsInSpecGroup(int BABid, int groupStart, int groupEnd) {
-        return queryProcForMapList(getConn(), "{CALL getbabAvgInSpecGroup(?,?,?)}", BABid, groupStart, groupEnd);
+    public List<Map> getBABAvgsInSpecGroup(int bab_id, int groupStart, int groupEnd) {
+        return queryProcForMapList(getConn(), "{CALL getbabAvgInSpecGroup(?,?,?)}", bab_id, groupStart, groupEnd);
     }
 
-    public List<Map> getClosedBABAVG(int BABid) throws JSONException {
-        return queryForMapList(getConn(), "SELECT * FROM closedBABAVG(?)", BABid);
+    public List<Map> getClosedBABAVG(int bab_id) throws JSONException {
+        return queryForMapList(getConn(), "SELECT * FROM closedBABAVG(?)", bab_id);
     }
 
-    public List<Map> getSensorStatus(int BABid) {
-        return queryForMapList(getConn(), "SELECT * FROM getSensorStatusByBabId(?) order by 1,2", BABid);
+    public List<Map> getSensorStatus(int bab_id) {
+        return queryForMapList(getConn(), "SELECT * FROM getSensorStatusByBabId(?) order by 1,2", bab_id);
     }
 
-    public List<Map> getBABTimeHistoryDetail(int BABid) {
-        return queryForMapList(getConn(), "SELECT * FROM LS_BABTimeHistoryDetail WHERE BABid = ? ORDER BY TagName, groupid", BABid);
+    public List<Map> getBABTimeHistoryDetail(int bab_id) {
+        return queryForMapList(getConn(), "SELECT * FROM LS_BABTimeHistoryDetail WHERE BABid = ? ORDER BY TagName, groupid", bab_id);
     }
 
-    public List<Map> getBalancePerGroup(int BABid) {
-        return queryForMapList(getConn(), "SELECT * FROM LS_balanceDetailPerGroup(?)", BABid);
+    public List<Map> getBalancePerGroup(int bab_id) {
+        return queryForMapList(getConn(), "SELECT * FROM LS_balanceDetailPerGroup(?)", bab_id);
     }
 
-    public List<Map> getClosedBalanceDetail(int BABid) {
-        return queryForMapList(getConn(), "SELECT * FROM LS_BalanceHistory WHERE BABid = ?", BABid);
+    public List<Map> getClosedBalanceDetail(int bab_id) {
+        return queryForMapList(getConn(), "SELECT * FROM LS_BalanceHistory WHERE BABid = ?", bab_id);
     }
 
     public List<Map> getLineBalanceCompare(String Model_name, String lineType) {
@@ -183,8 +183,8 @@ public class BabDAO extends BasicDAO implements AlarmActions {
         return queryForArrayList(getConn(), "SELECT Model_name from LS_availModelName");
     }
 
-    public boolean checkSensorIsClosed(int BABid, int sensorNo) {
-        List historys = getHistoryTable("SELECT * FROM LS_BAB_History WHERE BABid = ? and T_Num = ?", BABid, sensorNo);
+    public boolean checkSensorIsClosed(int bab_id, int sensorNo) {
+        List historys = getHistoryTable("SELECT * FROM LS_BAB_History WHERE BABid = ? and T_Num = ?", bab_id, sensorNo);
         return !historys.isEmpty();//回傳是否有東西 有true 無 false
     }
 
@@ -246,78 +246,26 @@ public class BabDAO extends BasicDAO implements AlarmActions {
      */
     //一連串儲存動作統一commit，不然出問題時會出現A和B資料庫資料不同步問題
     public boolean stopAndSaveBab(Bab bab) {
-        boolean flag = false;
-        Connection conn1;
-        Connection conn2;
-
-        try {
-            //Prevent check Babavg data in database if exists or not multiple times, let ouside check and save value into bab object.
-            JSONArray balances = bab.getBabavgs();
-            if (balances == null) {// check data balance is exist first
-                log.error("The babAvg in bab object is not setting value, saving action suspend.");
-                return false;
-            }
-
-            LineBalancing maxBaln = lineBalanceService.getMaxBalance(bab); //先取得max才insert，不然會抓到自己
-            double baln = lineBalanceService.caculateLineBalance(balances);
-
-            QueryRunner qRunner = new QueryRunner();
-            ProcRunner pRunner = new ProcRunner();
-
-            //--------區間內請勿再開啟tran不然會deadlock----------------------------
-            conn1 = this.getConn();
-
-            if (saveToOldDB) {
-                conn2 = getDBUtilConn(SQL.LineBalancing);
-
-                String columnName = "";
-                String params = ""; //串接sql字串 (待解決Do_not數量與待寫入數量不一之情況)
-
-                for (int i = 0; i < balances.length(); i++) {
-                    Double avg = balances.getJSONObject(i).getDouble("average");
-                    columnName += ("Do_not" + (i + 1) + ", ");
-                    params += (avg + ",");
-                }
-
-                Object[] param2 = {
-                    bab.getPeople(),
-                    bab.getLinetype(),
-                    bab.getPO(),
-                    bab.getModel_name(),
-                    baln,
-                    bab.getLine()
-                };
-                qRunner.update(conn2,
-                        "insert into Line_Balancing_Main(Number_of_poople, Do_not_stop, PO, PN, Balance, "
-                        + columnName + " Line) values (?,?,?,?,?, " + params + " ?)",
-                        param2);
-            }
-
-            Object[] param3 = {bab.getId()};
-            pRunner.updateProc(conn1, "{CALL LS_closeBABWithSaving(?)}", param3);//關閉線別
-
-            if (Objects.equals(BabStatus.UNFINSHED.getValue(), bab.getIsused())) {
-                qRunner.update(conn1,
-                        "UPDATE LS_BAB SET isused = ? WHERE id = ?",
-                        bab.getIsused(),
-                        bab.getId()
-                );
-            }
-
-            //--------區間內請勿再開啟tran不然會deadlock----------------------------
-            lineBalanceService.checkLineBalanceAndSendMail(bab, maxBaln, baln);
-            flag = true;
-        } catch (SQLException e) {
-            log.error(e.getMessage(), e);
-        } catch (MessagingException | JSONException e) {
-            log.error(e.getMessage(), e);
-            flag = true; //即使寄信失敗一樣傳回true給使用者知道(不需要知道寄信fail log有紀錄即可)
+        this.closeBabWithSaving(bab.getId());
+        if (Objects.equals(BabStatus.UNFINSHED.getValue(), bab.getIsused())) {
+            this.updateIsused(bab);
         }
-        return flag;
+        if(saveToOldDB){
+            lineBalanceService.insert(bab);
+        }
+        return true;
     }
 
-    public boolean stopSingleSensor(int sensorId, int BABid) {
-        return updateProc(getConn(), "{CALL LS_Sensor_END(?,?)}", sensorId, BABid);
+    public boolean updateIsused(Bab bab) {
+        return update(getConn(), "UPDATE LS_BAB SET isused = ? WHERE id = ?", bab.getIsused(), bab.getId());
+    }
+
+    public boolean closeBabWithSaving(int bab_id) {
+        return updateProc(getConn(), "{CALL LS_closeBABWithSaving(?)}", bab_id);
+    }
+
+    public boolean stopSingleSensor(int sensorId, int bab_id) {
+        return updateProc(getConn(), "{CALL LS_Sensor_END(?,?)}", sensorId, bab_id);
     }
 
     public boolean closeBABDirectly(Bab bab) {

@@ -55,7 +55,7 @@ public class Endpoint4 {
             session.getBasicRemote().sendText(obj.toString());
 //            showUrlParam(session);
         } catch (IOException ex) {
-            log.error(ex.toString());
+            log.error(ex.getMessage(), ex);
         }
 
         sessions.add(session);
@@ -87,6 +87,7 @@ public class Endpoint4 {
     @OnError
     public void error(Session session, Throwable t) {
         sessions.remove(session);
+        log.error(t.getMessage(), t);
     }
 
     ///Brocast the servermessage to all online users.

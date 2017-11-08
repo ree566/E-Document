@@ -7,8 +7,10 @@ package com.advantech.dao;
 
 import com.advantech.model.Bab;
 import com.advantech.model.LineBalancing;
-import java.sql.Connection;
 import java.util.List;
+import org.hibernate.Query;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -16,30 +18,47 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class LineBalancingDAO extends BasicDAO {
+public class LineBalancingDAO extends AbstractDao<Integer, LineBalancing> implements BasicDAO_1<LineBalancing> {
 
-    private Connection getConn() {
-        return getDBUtilConn(SQL.LineBalancing);
+    private static final Logger log = LoggerFactory.getLogger(LineBalancingDAO.class);
+
+    @Override
+    public List<LineBalancing> findAll() {
+        Query q = super.getSession().createSQLQuery("SELECT * FROM Line_Balancing_Main_F");
+        return q.list();
     }
 
-    private List<LineBalancing> getLineBalanceTableWithQuery(String sql, Object... params) {
-        return queryForBeanList(getConn(), LineBalancing.class, sql, params);
-    }
-
-    public List<LineBalancing> getLineBalance() {
-        return getLineBalanceTableWithQuery("SELECT * FROM Line_Balancing_Main_F");
-    }
-
-    public List<LineBalancing> getLineBalance(String lineType) {
-        return getLineBalanceTableWithQuery("SELECT * FROM Line_Balancing_Main_F WHERE Do_not_stop = ? ORDER BY ID DESC", lineType);
+    @Override
+    public LineBalancing findByPrimaryKey(Object obj_id) {
+        return super.getByKey((int) obj_id);
     }
 
     public LineBalancing getMaxBalance(Bab bab) {
-        List lineBalnGroup = getLineBalanceTableWithQuery("SELECT * FROM LS_getBestLineBalnData(?,?,?)",
-                bab.getModel_name(),
-                bab.getPeople(),
-                bab.getLinetype()
-        );
-        return lineBalnGroup.isEmpty() ? null : (LineBalancing) lineBalnGroup.get(0);
+        Query q = super.getSession().createQuery(
+                "FROM LineBalancing where modelName = :modelName "
+                        + "and people = :people and lineType = :lineType "
+                        + "and balance is not null "
+                        + "and (avg1 is not null or avg1 != 0)");
+        q.setParameter("modelName", bab.getModel_name());
+        q.setParameter("people", bab.getPeople());
+        q.setParameter("lineType", bab.getLinetype());
+        return (LineBalancing) q.uniqueResult();
+    }
+
+    @Override
+    public int insert(LineBalancing pojo) {
+        super.getSession().save(pojo);
+        return 1;
+    }
+
+    @Override
+    public int update(LineBalancing pojo) {
+        super.getSession().update(pojo);
+        return 1;
+    }
+
+    @Override
+    public int delete(LineBalancing pojo) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

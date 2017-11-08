@@ -54,5 +54,6 @@ Contributor(s):
         <property name="hibernate.c3p0.privilegeSpawnedThreads">true</property>
         <property name="hibernate.c3p0.contextClassLoaderSource">library</property>
         
+        <mapping class="com.advantech.model.LineBalancing"/>
     </session-factory>
 </hibernate-configuration>

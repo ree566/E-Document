@@ -11,34 +11,38 @@ import com.advantech.model.LineBalancing;
 import com.advantech.helper.MailSend;
 import com.advantech.helper.PropertiesReader;
 import com.advantech.dao.LineBalancingDAO;
+import com.google.gson.Gson;
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.mail.MessagingException;
-import javax.transaction.Transactional;
+import org.apache.commons.beanutils.BeanUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
  * @author Wei.Cheng
  */
 @Service
-@Transactional
-public class LineBalanceService {
+@Transactional("transactionManager2")
+public class LineBalancingService {
 
     private static final Logger log = LoggerFactory.getLogger(LineBalancingDAO.class);
 
     private String targetMail;
     private int BALANCE_ROUNDING_DIGIT;
-    
+
     @Autowired
     private LineBalancingDAO lineBalanceDAO;
-    
+
     @Autowired
     private LineService lineService;
 
@@ -49,8 +53,60 @@ public class LineBalanceService {
         BALANCE_ROUNDING_DIGIT = p.getBalanceRoundingDigit();
     }
 
+    public List<LineBalancing> findAll() {
+        return lineBalanceDAO.findAll();
+    }
+
+    public LineBalancing findByPrimaryKey(Object obj_id) {
+        return lineBalanceDAO.findByPrimaryKey(obj_id);
+    }
+
     public LineBalancing getMaxBalance(Bab bab) {
         return lineBalanceDAO.getMaxBalance(bab);
+    }
+
+    public int insert(Bab bab) {
+        JSONArray balances = bab.getBabavgs();
+
+        LineBalancing maxBaln = this.getMaxBalance(bab); //先取得max才insert，不然會抓到自己
+        double baln = this.caculateLineBalance(balances);
+
+        System.out.println(new Gson().toJson(bab));
+
+        LineBalancing record = new LineBalancing(
+                bab.getPeople(),
+                bab.getLinetype(),
+                bab.getPO(),
+                bab.getModel_name(),
+                Integer.toString(bab.getLine())
+        );
+
+        record.setBalance(baln);
+
+        try {
+            for (int i = 0; i < balances.length(); i++) {
+                Double avg = balances.getJSONObject(i).getDouble("average");
+                BeanUtils.setProperty(record, ("avg" + i), avg);
+            }
+        } catch (IllegalAccessException | InvocationTargetException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        lineBalanceDAO.insert(record);
+        try {
+            this.checkLineBalanceAndSendMail(bab, maxBaln, baln);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+        return 1;
+    }
+
+    public int update(LineBalancing pojo) {
+        return lineBalanceDAO.update(pojo);
+    }
+
+    public int delete(LineBalancing pojo) {
+        return lineBalanceDAO.delete(pojo);
     }
 
     public Double caculateLineBalance(JSONArray balances) throws JSONException {
@@ -132,4 +188,5 @@ public class LineBalanceService {
                         .append("'>線平衡電子化系統</a> 中的歷史紀錄做查詢</p>")
                         .toString());
     }
+
 }

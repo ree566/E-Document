@@ -28,7 +28,7 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
     private static final Logger log = LoggerFactory.getLogger(BabLineTypeFacade.class);
 
     @Autowired
-    private LineBalanceService lineBalanceService;
+    private LineBalancingService lineBalanceService;
     
     @Autowired
     private BabService babService;

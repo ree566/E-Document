@@ -43,7 +43,7 @@ public class BabService {
     private BabLoginStatusService bs;
     
     @Autowired
-    private LineBalanceService lineBalanceService;
+    private LineBalancingService lineBalanceService;
     
     private int BALANCE_ROUNDING_DIGIT;
 

@@ -5,68 +5,69 @@
  */
 package com.advantech.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.io.Serializable;
 import java.util.Date;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.format.annotation.DateTimeFormat;
 
 /**
  *
  * @author Wei.Cheng
  */
+@Entity
+@Table(name = "Line_Balancing_Main",
+        schema = "dbo",
+        catalog = "Line_Balancing"
+)
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class LineBalancing implements Serializable {
 
     private int id;
-    private int Number_of_poople;
-    private String Do_not_stop;
-    private String PO;
-    private String PN;
-    private double Balance;
-    private double Do_not1;
-    private String SOP1;
-    private double Do_not2;
-    private String SOP2;
-    private double Do_not3;
-    private String SOP3;
-    private double Do_not4;
-    private String SOP4;
-    private double Do_not5;
-    private String SOP5;
-    private double Do_not6;
-    private String SOP6;
-    private String Remark;
-    private String Update_Name;
-    private Date Update_time;
-    private String Line;
-    private Date Current_Save_Time;
-    private String Editor_IP;
+    private int people;
+    private String lineType;
+    private String po;
+    private String modelName;
+    private Double balance;
+    private Double avg1;
+    private String sop1;
+    private Double avg2;
+    private String sop2;
+    private Double avg3;
+    private String sop3;
+    private Double avg4;
+    private String sop4;
+    private Double avg5;
+    private String sop5;
+    private Double avg6;
+    private String sop6;
+    private String line_id;
+    private Date lastUpdateTime;
 
     public LineBalancing() {
-
     }
 
-    public LineBalancing(int Number_of_poople, String Do_not_stop, String PO, String PN, double Balance, double Do_not1, double Do_not2, double Do_not3, double Do_not4, String Line) {
-        this.Number_of_poople = Number_of_poople;
-        this.Do_not_stop = Do_not_stop;
-        this.PO = PO;
-        this.PN = PN;
-        this.Balance = Balance;
-        this.Do_not1 = Do_not1;
-        this.Do_not2 = Do_not2;
-        this.Do_not3 = Do_not3;
-        this.Do_not4 = Do_not4;
-        this.Line = Line;
+    public LineBalancing(int people, String lineType, String po, String modelName, String line_id) {
+        this.people = people;
+        this.lineType = lineType;
+        this.po = po;
+        this.modelName = modelName;
+        this.line_id = line_id;
     }
 
-    public LineBalancing(int id, String SOP1, String SOP2, String SOP3, String SOP4, String Remark, String Update_Name, String Editor_IP) {
-        this.id = id;
-        this.SOP1 = SOP1;
-        this.SOP2 = SOP2;
-        this.SOP3 = SOP3;
-        this.SOP4 = SOP4;
-        this.Remark = Remark;
-        this.Update_Name = Update_Name;
-        this.Editor_IP = Editor_IP;
-    }
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id", unique = true, nullable = false)
     public int getId() {
         return id;
     }
@@ -75,188 +76,179 @@ public class LineBalancing implements Serializable {
         this.id = id;
     }
 
-    public int getNumber_of_poople() {
-        return Number_of_poople;
+    @Column(name = "Number_of_poople", nullable = false)
+    public int getPeople() {
+        return people;
     }
 
-    public void setNumber_of_poople(int Number_of_poople) {
-        this.Number_of_poople = Number_of_poople;
+    public void setPeople(int people) {
+        this.people = people;
     }
 
-    public String getDo_not_stop() {
-        return Do_not_stop;
+    @Column(name = "Do_not_stop", nullable = false, length = 20)
+    public String getLineType() {
+        return lineType;
     }
 
-    public void setDo_not_stop(String Do_not_stop) {
-        this.Do_not_stop = Do_not_stop;
+    public void setLineType(String lineType) {
+        this.lineType = lineType;
     }
 
-    public String getPO() {
-        return PO;
+    @Column(name = "PO", nullable = false, length = 20)
+    public String getPo() {
+        return po;
     }
 
-    public void setPO(String PO) {
-        this.PO = PO;
+    public void setPo(String po) {
+        this.po = po;
     }
 
-    public String getPN() {
-        return PN;
+    @Column(name = "PN", nullable = false, length = 20)
+    public String getModelName() {
+        return modelName;
     }
 
-    public void setPN(String PN) {
-        this.PN = PN;
+    public void setModelName(String modelName) {
+        this.modelName = modelName;
     }
 
-    public double getBalance() {
-        return Balance;
+    @Column(name = "Balance", precision = 10, scale = 4)
+    public Double getBalance() {
+        return balance;
     }
 
-    public void setBalance(double Balance) {
-        this.Balance = Balance;
+    public void setBalance(Double balance) {
+        this.balance = balance;
     }
 
-    public double getDo_not1() {
-        return Do_not1;
+    @Column(name = "Do_not1", precision = 10, scale = 4)
+    public Double getAvg1() {
+        return avg1;
     }
 
-    public void setDo_not1(double Do_not1) {
-        this.Do_not1 = Do_not1;
+    public void setAvg1(Double avg1) {
+        this.avg1 = avg1;
     }
 
-    public String getSOP1() {
-        return SOP1;
+    @Column(name = "SOP1", length = 50)
+    public String getSop1() {
+        return sop1;
     }
 
-    public void setSOP1(String SOP1) {
-        this.SOP1 = SOP1;
+    public void setSop1(String sop1) {
+        this.sop1 = sop1;
     }
 
-    public double getDo_not2() {
-        return Do_not2;
+    @Column(name = "Do_not2", precision = 10, scale = 4)
+    public Double getAvg2() {
+        return avg2;
     }
 
-    public void setDo_not2(double Do_not2) {
-        this.Do_not2 = Do_not2;
+    public void setAvg2(Double avg2) {
+        this.avg2 = avg2;
     }
 
-    public String getSOP2() {
-        return SOP2;
+    @Column(name = "SOP2", length = 50)
+    public String getSop2() {
+        return sop2;
     }
 
-    public void setSOP2(String SOP2) {
-        this.SOP2 = SOP2;
+    public void setSop2(String sop2) {
+        this.sop2 = sop2;
     }
 
-    public double getDo_not3() {
-        return Do_not3;
+    @Column(name = "Do_not3", precision = 10, scale = 4)
+    public Double getAvg3() {
+        return avg3;
     }
 
-    public void setDo_not3(double Do_not3) {
-        this.Do_not3 = Do_not3;
+    public void setAvg3(Double avg3) {
+        this.avg3 = avg3;
     }
 
-    public String getSOP3() {
-        return SOP3;
+    @Column(name = "SOP3", length = 50)
+    public String getSop3() {
+        return sop3;
     }
 
-    public void setSOP3(String SOP3) {
-        this.SOP3 = SOP3;
+    public void setSop3(String sop3) {
+        this.sop3 = sop3;
     }
 
-    public double getDo_not4() {
-        return Do_not4;
+    @Column(name = "Do_not4", precision = 10, scale = 4)
+    public Double getAvg4() {
+        return avg4;
     }
 
-    public void setDo_not4(double Do_not4) {
-        this.Do_not4 = Do_not4;
+    public void setAvg4(Double avg4) {
+        this.avg4 = avg4;
     }
 
-    public String getSOP4() {
-        return SOP4;
+    @Column(name = "SOP4", length = 50)
+    public String getSop4() {
+        return sop4;
     }
 
-    public void setSOP4(String SOP4) {
-        this.SOP4 = SOP4;
+    public void setSop4(String sop4) {
+        this.sop4 = sop4;
     }
 
-    public double getDo_not5() {
-        return Do_not5;
+    @Column(name = "Do_not5", precision = 10, scale = 4)
+    public Double getAvg5() {
+        return avg5;
     }
 
-    public void setDo_not5(double Do_not5) {
-        this.Do_not5 = Do_not5;
+    public void setAvg5(Double avg5) {
+        this.avg5 = avg5;
     }
 
-    public String getSOP5() {
-        return SOP5;
+    @Column(name = "SOP5", length = 50)
+    public String getSop5() {
+        return sop5;
     }
 
-    public void setSOP5(String SOP5) {
-        this.SOP5 = SOP5;
+    public void setSop5(String sop5) {
+        this.sop5 = sop5;
     }
 
-    public double getDo_not6() {
-        return Do_not6;
+    @Column(name = "Do_not6", precision = 10, scale = 4)
+    public Double getAvg6() {
+        return avg6;
     }
 
-    public void setDo_not6(double Do_not6) {
-        this.Do_not6 = Do_not6;
+    public void setAvg6(Double avg6) {
+        this.avg6 = avg6;
     }
 
-    public String getSOP6() {
-        return SOP6;
+    @Column(name = "SOP6", length = 50)
+    public String getSop6() {
+        return sop6;
     }
 
-    public void setSOP6(String SOP6) {
-        this.SOP6 = SOP6;
+    public void setSop6(String sop6) {
+        this.sop6 = sop6;
     }
 
-    public String getRemark() {
-        return Remark;
+    @Column(name = "Line", nullable = false)
+    public String getLine_id() {
+        return line_id;
     }
 
-    public void setRemark(String Remark) {
-        this.Remark = Remark;
+    public void setLine_id(String line_id) {
+        this.line_id = line_id;
     }
 
-    public String getUpdate_Name() {
-        return Update_Name;
+    @UpdateTimestamp
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    @JsonFormat(pattern = "yyyy-MM-dd'T'kk:mm:ss.SSS'Z'", timezone = "GMT+8")
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "Current_Save_Time", length = 23, insertable = false, updatable = false)
+    public Date getLastUpdateTime() {
+        return lastUpdateTime;
     }
 
-    public void setUpdate_Name(String Update_Name) {
-        this.Update_Name = Update_Name;
-    }
-
-    public Date getUpdate_time() {
-        return Update_time;
-    }
-
-    public void setUpdate_time(Date Update_time) {
-        this.Update_time = Update_time;
-    }
-
-    public String getLine() {
-        return Line;
-    }
-
-    public void setLine(String Line) {
-        this.Line = Line;
-    }
-
-    public Date getCurrent_Save_Time() {
-        return Current_Save_Time;
-    }
-
-    public void setCurrent_Save_Time(Date Current_Save_Time) {
-        this.Current_Save_Time = Current_Save_Time;
-    }
-
-    public String getEditor_IP() {
-        return Editor_IP;
-    }
-
-    public void setEditor_IP(String Editor_IP) {
-        this.Editor_IP = Editor_IP;
+    public void setLastUpdateTime(Date lastUpdateTime) {
+        this.lastUpdateTime = lastUpdateTime;
     }
 
 }
