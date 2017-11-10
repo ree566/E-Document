@@ -50,7 +50,7 @@
         <property name="configLocation" value="classpath:hibernate.cfg.xml" />
         
         <!-- 指定ORM物件關聯表映射檔的設定檔位置 -->
-        <property name="packagesToScan" value="com.advantech.entity" />
+        <property name="packagesToScan" value="com.advantech.model" />
         
         <!-- 捨棄原hibernate.cfg.xml檔或
         覆蓋原hibernate.cfg.xml檔的部份設定 -->
@@ -72,6 +72,9 @@
         
         <!--setting in hibernate.cfg.xml-->
         <property name="configLocation" value="classpath:hibernate.cfg_1.xml" />
+        
+        <!-- 指定ORM物件關聯表映射檔的設定檔位置 -->
+        <property name="packagesToScan" value="com.advantech.model" />
 
         <!-- 捨棄原hibernate.cfg.xml檔或
         覆蓋原hibernate.cfg.xml檔的部份設定 -->
@@ -124,6 +127,7 @@
                         <value>text/plain; charset=UTF-8</value>
                         <value>text/html; charset=UTF-8</value>
                         <value>application/json; charset=UTF-8</value>
+                        <value>text/xml; charset=UTF-8</value>
                     </list>
                 </property>
             </bean>

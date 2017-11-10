@@ -21,12 +21,7 @@ function block() {
         }
     });
 }
-$(document).ajaxSend(function () {
-    block();
-});
-$(document).ajaxSuccess(function () {
-    $.unblockUI();
-});
 
-    
+$(document).ajaxStart(block).ajaxStop($.unblockUI);
+
 

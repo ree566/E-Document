@@ -51,7 +51,7 @@ public class DataBaseInit extends QuartzJobBean {
 
     private void dataInitialize() {
         try {
-            testService.cleanTestTable();
+            testService.cleanTests();
             lineService.closeAllLine();
             cellLineService.closeAll();
             bF.resetAlarm();

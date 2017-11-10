@@ -6,7 +6,7 @@
 package com.advantech.webservice;
 
 import com.advantech.model.PassStation;
-import com.advantech.model.TestLineTypeUser;
+import com.advantech.model.TestRecord;
 import com.advantech.model.User;
 import com.google.gson.Gson;
 import static java.lang.System.out;
@@ -137,10 +137,10 @@ public class WebServiceRVTest {
     public void testGetTestLineTypeUsers() {
         System.out.println("getTestLineTypeUsers");
         WebServiceRV instance = WebServiceRV.getInstance();
-        List<TestLineTypeUser> expResult = null;
-        List<TestLineTypeUser> result = instance.getTestLineTypeUsers();
+        List<TestRecord> expResult = null;
+        List<TestRecord> result = instance.getTestLineTypeRecords();
         assertNotEquals(expResult, result);
-        for (TestLineTypeUser t : result) {
+        for (TestRecord t : result) {
             out.println(new Gson().toJson(t));
         }
     }

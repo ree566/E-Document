@@ -43,7 +43,7 @@ Contributor(s):
     <session-factory>
         <property name="hibernate.connection.driver_class">net.sourceforge.jtds.jdbc.Driver</property>
         
-<!--        <property name="hibernate.connection.url">jdbc:jtds:sqlserver://M3-SERVER/WebAccess</property>
+        <!--        <property name="hibernate.connection.url">jdbc:jtds:sqlserver://M3-SERVER/WebAccess</property>
         <property name="hibernate.connection.username">waychien</property>
         <property name="hibernate.connection.password">m3server</property>-->
         
@@ -52,11 +52,17 @@ Contributor(s):
         <property name="hibernate.connection.password">test</property>
     
         <property name="hibernate.dialect">org.hibernate.dialect.SQLServerDialect</property>
+        
         <property name="hibernate.show_sql">true</property>
+        
         <property name="hibernate.current_session_context_class">thread</property>
         <property name="hibernate.transaction.factory_class">org.hibernate.transaction.JDBCTransactionFactory</property>
         <property name="hibernate.c3p0.privilegeSpawnedThreads">true</property>
         <property name="hibernate.c3p0.contextClassLoaderSource">library</property>
         
+        <mapping class="com.advantech.model.Test"/>
+        <mapping class="com.advantech.model.TestTable"/>
+        <mapping class="com.advantech.model.TestRecord"/>
+        <mapping class="com.advantech.model.AlarmTestAction"/>
     </session-factory>
 </hibernate-configuration>

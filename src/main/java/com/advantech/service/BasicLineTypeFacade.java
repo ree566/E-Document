@@ -44,6 +44,7 @@ public abstract class BasicLineTypeFacade {
 
     @PostConstruct
     protected void initValues() {
+        System.out.println("BasicLineTypeFacade init");
         PropertiesReader p = PropertiesReader.getInstance();
         isWriteToDB = p.isWriteToDB();
         resetFlag = true;
@@ -96,19 +97,7 @@ public abstract class BasicLineTypeFacade {
         return setDbAlarmSign(mapToAlarmSign(map));
     }
 
-    protected List<AlarmAction> mapToAlarmSign(Map map) {
-        List l = new ArrayList();
-        if (map != null && !map.isEmpty()) {
-            Iterator it = map.keySet().iterator();
-            while (it.hasNext()) {
-                Object key = it.next();
-                String tableId = key.toString();
-                int action = (int) map.get(key);
-                l.add(new AlarmAction(tableId, action));
-            }
-        }
-        return l;
-    }
+    protected abstract List<AlarmAction> mapToAlarmSign(Map map);
 
     protected abstract boolean initDbAlarmSign();
 

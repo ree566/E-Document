@@ -8,6 +8,9 @@ package com.advantech.service;
 import com.advantech.model.AlarmAction;
 import com.advantech.model.CellLine;
 import com.advantech.helper.PropertiesReader;
+import com.advantech.model.AlarmTestAction;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
@@ -37,7 +40,7 @@ public class CellLineTypeFacade extends BasicLineTypeFacade {
 
     private Double cellStandardMin, cellStandardMax;
 
-    @PostConstruct
+//    @PostConstruct
     protected void init() {
         PropertiesReader p = PropertiesReader.getInstance();
         cellStandardMin = p.getCellStandardMin();
@@ -102,7 +105,7 @@ public class CellLineTypeFacade extends BasicLineTypeFacade {
 
     @Override
     protected boolean initDbAlarmSign() {
-        return cellService.removeAlarmSign() && cellService.insertAlarm(super.mapToAlarmSign(dataMap));
+        return cellService.removeAlarmSign() && cellService.insertAlarm(this.mapToAlarmSign(dataMap));
     }
 
     @Override
@@ -118,6 +121,11 @@ public class CellLineTypeFacade extends BasicLineTypeFacade {
     @Override
     protected boolean resetDbAlarmSign() {
         return cellService.resetAlarm();
+    }
+    
+    @Override
+    protected List mapToAlarmSign(Map map) {
+        return null;
     }
 
 }

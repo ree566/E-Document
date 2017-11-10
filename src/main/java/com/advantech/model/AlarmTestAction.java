@@ -12,12 +12,9 @@ import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -28,61 +25,52 @@ import org.springframework.format.annotation.DateTimeFormat;
  * @author Wei.Cheng
  */
 @Entity
-@Table(name = "LS_Test",
+@Table(name = "Alm_TestAction",
         schema = "dbo",
         catalog = "WebAccess"
 )
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-public class Test implements Serializable {
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "tableId")
+public class AlarmTestAction implements AlarmAction, Serializable {
 
-    private int id;
-    private TestTable testTable;
-    private String userId;
+    private String tableId;
+    private int alarm;
     private Date lastUpdateTime;
 
-    public Test() {
-
+    public AlarmTestAction() {
     }
 
-    public Test(TestTable testTable, String userId) {
-        this.testTable = testTable;
-        this.userId = userId;
+    public AlarmTestAction(String tableId, int alarm) {
+        this.tableId = tableId;
+        this.alarm = alarm;
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id", unique = true, nullable = false)
-    public int getId() {
-        return id;
+    @Column(name = "tableId", unique = true, nullable = false)
+    @Override
+    public String getTableId() {
+        return tableId;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    @Override
+    public void setTableId(String tableId) {
+        this.tableId = tableId;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "table_id")
-    public TestTable getTestTable() {
-        return testTable;
+    @Column(name = "alarm", nullable = false)
+    @Override
+    public int getAlarm() {
+        return alarm;
     }
 
-    public void setTestTable(TestTable testTable) {
-        this.testTable = testTable;
-    }
-
-    @Column(name = "[user_id]", nullable = false)
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
+    @Override
+    public void setAlarm(int alarm) {
+        this.alarm = alarm;
     }
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @JsonFormat(pattern = "yyyy-MM-dd'T'kk:mm:ss.SSS'Z'", timezone = "GMT+8")
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "updatetime", length = 23, insertable = false, updatable = false)
+    @Column(name = "updateTime", length = 23, insertable = false, updatable = false)
     public Date getLastUpdateTime() {
         return lastUpdateTime;
     }

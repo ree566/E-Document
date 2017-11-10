@@ -144,7 +144,7 @@
                 var result;
                 $.ajax({
                     type: "Get",
-                    url: "TestTableStatus/findBySitefloor",
+                    url: "<c:url value="/TestTableController/findBySitefloor" />",
                     data: {
                         sitefloor: $("#userSitefloorSelect").val()
                     },
@@ -163,7 +163,7 @@
             function findAndSetUserNotLogin() {
                 $.ajax({
                     type: "Get",
-                    url: "TestTableStatus/findUserNotLogin",
+                    url: "<c:url value="/TestTableController/findUserNotLogin" />",
                     dataType: "json",
                     async: false,
                     success: function (response) {
@@ -203,31 +203,73 @@
                 }
 
                 data.floor = $("#userSitefloorSelect").val();
-                data.action = action;
 
+                if (action == STATION_LOGIN) {
+                    login(data);
+                } else if (action == STATION_LOGOUT) {
+                    logout(data);
+                } else if (action == CHANGE_DECK) {
+                    changeDesk(data);
+                }
+            }
+
+            function login(data) {
                 $.ajax({
                     type: "Post",
-                    url: "SaveTestInfo",
+                    url: "<c:url value="/TestLineTypeController/login" />",
                     data: data,
                     dataType: "html",
                     success: function (response) {
                         if (response == "success") {
-                            if (action == STATION_LOGIN) {
-                                generateCookie(testLineTypeCookieName, JSON.stringify(data));
-                            } else if (action == STATION_LOGOUT || action == CHANGE_DECK) {
-                                $("#user_number,#table,#begin").removeAttr("disabled");
-                                $(":text").val("");
-                                removeTestLineTypeCookie();
-                            }
+                            generateCookie(testLineTypeCookieName, JSON.stringify(data));
                             showMsg(response);
                             reload();
-                        } else {
-                            showMsg(response);
                         }
                     },
-                    error: function () {
-                        showMsg("error");
-                        reload();
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        showMsg(xhr.responseText);
+                    }
+                });
+            }
+
+            function logout(data) {
+                $.ajax({
+                    type: "Post",
+                    url: "<c:url value="/TestLineTypeController/logout" />",
+                    data: data,
+                    dataType: "html",
+                    success: function (response) {
+                        if (response == "success") {
+                            $("#user_number,#table,#begin").removeAttr("disabled");
+                            $(":text").val("");
+                            removeTestLineTypeCookie();
+                            showMsg(response);
+                            reload();
+                        }
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        showMsg(xhr.responseText);
+                    }
+                });
+            }
+
+            function changeDesk(data) {
+                $.ajax({
+                    type: "Post",
+                    url: "<c:url value="/TestLineTypeController/changeDesk" />",
+                    data: data,
+                    dataType: "html",
+                    success: function (response) {
+                        if (response == "success") {
+                            $("#user_number,#table,#begin").removeAttr("disabled");
+                            $(":text").val("");
+                            removeTestLineTypeCookie();
+                            showMsg(response);
+                            reload();
+                        }
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        showMsg(xhr.responseText);
                     }
                 });
             }
@@ -297,7 +339,6 @@
                 <input type="button" value="開始" id="begin">
                 <input type="button" value="結束" id="end">
                 <input type="button" value="換桌" id="changeDeck">
-                <!--<input type="button" value="清除cookie" onclick="removeTestLineTypeCookie()" id="clearcookies">-->
             </div>
             <div class="Div2">
                 <p><h3>步驟1:</h3>先在此處輸入您的<code>桌次</code>以及<code>工號</code>，確認之後按下開始。</p>

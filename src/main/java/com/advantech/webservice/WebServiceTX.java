@@ -38,20 +38,18 @@ public class WebServiceTX {
     }
 
     //Get data from WebService
-    private String getWebServiceResponse(String data, String action) throws Exception {
+    private String getWebServiceResponse(String data, String action) {
         Service service = new Service(url);
         ServiceSoap port = service.getServiceSoap();
         String result = port.tx(data, action);
         return result;
     }
 
-    public String kanbanUserLogin(String jobnumber) throws Exception {
+    public String kanbanUserLogin(String jobnumber) {
         WebServiceRV rv = WebServiceRV.getInstance();
         User user = rv.getMESUser(jobnumber);
 
-        if (user == null) {
-            return "The user is not exist.";
-        }
+        checkUserIsAvailable(user);
 
         String lineId = "21", stationId = "-1";// 目前暫時寫死，等待有固定查詢來源
 
@@ -82,10 +80,13 @@ public class WebServiceTX {
         return null;
     }
 
-    public String kanbanUserLogout(String jobnumber) throws Exception {
+    public String kanbanUserLogout(String jobnumber) {
         WebServiceRV rv = WebServiceRV.getInstance();
         String workId = rv.getKanbanWorkId(jobnumber);
         User user = rv.getMESUser(jobnumber);
+
+        checkUserIsAvailable(user);
+
         String data = "<root><METHOD ID='WMPSO.TxWorkManPowerCard001'/><WORK_MANPOWER_CARD>"
                 + "<WORK_ID>" + workId + "</WORK_ID>"
                 + "<LINE_ID>-1</LINE_ID>"
@@ -101,7 +102,10 @@ public class WebServiceTX {
         return this.getWebServiceResponse(data, kanbanLogout);
     }
 
-    public static void main(String arg[]) {
-
+    private void checkUserIsAvailable(User user) {
+        if (user == null || user.getUserId() == null || user.getUserNo() == null) {
+            throw new IllegalArgumentException("The user is not exist.");
+        }
     }
+
 }

@@ -18,17 +18,17 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "root")
-public class TestLineTypeUsers implements Serializable{
+public class TestRecords implements Serializable{
 
-    @XmlElement(name = "QryData", type = TestLineTypeUser.class)
-    private List<TestLineTypeUser> QryData;
+    @XmlElement(name = "QryData", type = TestRecord.class)
+    private List<TestRecord> QryData;
 
 
-    public List<TestLineTypeUser> getQryData() {
+    public List<TestRecord> getQryData() {
         return QryData;
     }
 
-    public void setQryData(List<TestLineTypeUser> QryData) {
+    public void setQryData(List<TestRecord> QryData) {
         this.QryData = QryData;
     }
 

@@ -5,38 +5,17 @@
  */
 package com.advantech.model;
 
-import java.io.Serializable;
-
 /**
  *
  * @author Wei.Cheng
  */
-public class AlarmAction implements Serializable {
+public interface AlarmAction {
 
-    private String tableId;
-    private int alarm;
+    public String getTableId();
 
-    public AlarmAction() {
-    }
+    public void setTableId(String tableId);
 
-    public AlarmAction(String tableId, int alarm) {
-        this.tableId = tableId;
-        this.alarm = alarm;
-    }
+    public int getAlarm();
 
-    public String getTableId() {
-        return tableId;
-    }
-
-    public void setTableId(String tableId) {
-        this.tableId = tableId;
-    }
-
-    public int getAlarm() {
-        return alarm;
-    }
-
-    public void setAlarm(int alarm) {
-        this.alarm = alarm;
-    }
+    public void setAlarm(int alarm);
 }

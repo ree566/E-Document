@@ -5,11 +5,14 @@
  */
 package com.advantech.service;
 
-import com.advantech.model.AlarmAction;
 import com.advantech.model.Test;
-import com.advantech.model.TestLineTypeUser;
+import com.advantech.model.TestRecord;
 import com.advantech.helper.PropertiesReader;
+import com.advantech.model.AlarmTestAction;
+import com.advantech.model.TestTable;
 import com.advantech.webservice.WebServiceRV;
+import com.google.gson.Gson;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -30,7 +33,7 @@ import org.springframework.stereotype.Component;
 public class TestLineTypeFacade extends BasicLineTypeFacade {
 
     private static final Logger log = LoggerFactory.getLogger(TestLineTypeFacade.class);
-    
+
     @Autowired
     private TestService ts;
 
@@ -40,7 +43,7 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
     private double TEST_STANDARD;
 
     private WebServiceRV rv;
-    
+
     @Autowired
     private TestService testService;
 
@@ -48,12 +51,13 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
 
     @PostConstruct
     protected void init() {
+        System.out.println("TestLineTypeFacade init");
         PEOPLE_NOT_MATCH = new HashMap();
         PropertiesReader p = PropertiesReader.getInstance();
         TEST_STANDARD = p.getTestStandardMin();
         maxTestTable = p.getMaxTestTable();
         rv = WebServiceRV.getInstance();
-        
+
         this.initMap();
     }
 
@@ -70,37 +74,38 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
     @Override
     protected boolean generateData() {
         boolean isSomeoneUnderStandard = false;
-        List<Test> tables = testService.getAllTableInfo();
+        List<Test> tables = testService.findAll();
         if (hasDataInCollection(tables)) {
             initMap();
             JSONArray userArr = new JSONArray();
 
-            List<TestLineTypeUser> kanbanUsers = rv.getTestLineTypeUsers();
+            List<TestRecord> kanbanUsers = rv.getTestLineTypeRecords();
 
             processingJsonObject = new JSONObject();
             boolean isInTheWebService = false;
 
-            for (TestLineTypeUser user : kanbanUsers) {
+            for (TestRecord user : kanbanUsers) {
 
-                String jobnumber = user.getUserNo();
+                String jobnumber = user.getUserId();
                 String userName = user.getUserName();
                 Double productivity = user.getProductivity();
 
                 for (Iterator it = tables.iterator(); it.hasNext();) {
                     Test ti = (Test) it.next();
-                    if (ti.getUserid().trim().equals(jobnumber)) {
-                        int tableNo = ti.getTableNum();
+                    if (ti.getUserId().trim().equals(jobnumber)) {
+                        TestTable table = ti.getTestTable();
+                        String tableName = table.getName();
                         int status;
 
                         if (productivity < TEST_STANDARD) {
                             status = ALARM_SIGN;
-                            dataMap.put("T" + tableNo, ALARM_SIGN);
+                            dataMap.put(tableName, ALARM_SIGN);
                             isSomeoneUnderStandard = true;
                         } else {
                             status = NORMAL_SIGN;
                         }
 
-                        userArr.put(newTestUser(userName, jobnumber, tableNo, productivity, ti.getSitefloor(), status));
+                        userArr.put(newTestUser(userName, jobnumber, tableName, productivity, table.getSitefloor(), status));
                         it.remove();//把比對過的資料移除，剩下的就是有在本系統XML卻找不到人的使用者
                         isInTheWebService = true;//對到人之後跳出迴圈，換下一個人做比對
                         break;
@@ -124,12 +129,13 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
         String emptyUserName = "n/a";
         Double emptyProductivity = 0.0;
         for (Test ti : l) {
-            j.put(newTestUser(emptyUserName, ti.getUserid(), ti.getTableNum(), emptyProductivity, ti.getSitefloor(), TEST_USER_NOT_IN_XML_SIGN));
+            TestTable table = ti.getTestTable();
+            j.put(newTestUser(emptyUserName, ti.getUserId(), table.getName(), emptyProductivity, table.getSitefloor(), TEST_USER_NOT_IN_XML_SIGN));
         }
         return j;
     }
 
-    private JSONObject newTestUser(String name, String jobnumber, int tableNo, Double productivity, String sitefloor, int status) {
+    private JSONObject newTestUser(String name, String jobnumber, String tableNo, Double productivity, int sitefloor, int status) {
         return new JSONObject()
                 .put("name", name)
                 .put("number", jobnumber)
@@ -141,7 +147,7 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
 
     @Override
     protected boolean initDbAlarmSign() {
-        return ts.removeAlarmSign() && ts.insertAlarm(super.mapToAlarmSign(dataMap));
+        return ts.removeAlarmSign() && ts.insertAlarm(this.mapToAlarmSign(dataMap));
     }
 
     @Override
@@ -150,7 +156,7 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
     }
 
     @Override
-    protected boolean setDbAlarmSign(List<AlarmAction> l) {
+    protected boolean setDbAlarmSign(List l) {
         return testService.updateAlarm(l);
     }
 
@@ -161,6 +167,23 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
 
     public Map getPEOPLE_NOT_MATCH() {
         return PEOPLE_NOT_MATCH;
+    }
+
+    @Override
+    protected List mapToAlarmSign(Map map) {
+        {
+            List l = new ArrayList();
+            if (map != null && !map.isEmpty()) {
+                Iterator it = map.keySet().iterator();
+                while (it.hasNext()) {
+                    Object key = it.next();
+                    String tableId = key.toString();
+                    int action = (int) map.get(key);
+                    l.add(new AlarmTestAction(tableId, action));
+                }
+            }
+            return l;
+        }
     }
 
 }

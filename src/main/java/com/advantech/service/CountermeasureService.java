@@ -1,9 +1,7 @@
 package com.advantech.service;
 
 import com.advantech.model.Countermeasure;
-import com.advantech.dao.BasicDAO;
 import com.advantech.dao.CountermeasureDAO;
-import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -147,18 +145,6 @@ public class CountermeasureService {
             }
         }
         return tList;
-    }
-
-    public List<Map> getErrorCode() {
-        return countermeasureDAO.getErrorCode();
-    }
-
-    public List<Map> getErrorCode(int cm_id) {
-        return countermeasureDAO.getErrorCode(cm_id);
-    }
-
-    public List<Map> getActionCode() {
-        return countermeasureDAO.getActionCode();
     }
 
     public List<Map> getEditor(int cm_id) {

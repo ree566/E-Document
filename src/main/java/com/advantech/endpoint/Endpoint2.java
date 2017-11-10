@@ -50,7 +50,7 @@ public class Endpoint2 {
         
         //Push the current status on client first connect
         try {
-            session.getBasicRemote().sendText(new PollingBabAndTestResult().getData());
+            session.getBasicRemote().sendText(PollingBabAndTestResult.getData());
         } catch (IOException ex) {
             log.error(ex.toString());
         }

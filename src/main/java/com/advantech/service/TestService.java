@@ -5,69 +5,95 @@
  */
 package com.advantech.service;
 
-import com.advantech.model.AlarmAction;
-import com.advantech.model.Desk;
 import com.advantech.model.Test;
-import com.advantech.model.TestLineTypeUser;
 import com.advantech.dao.TestDAO;
+import com.advantech.model.AlarmTestAction;
+import com.advantech.model.TestTable;
+import com.advantech.webservice.WebServiceTX;
 import java.util.List;
-import java.util.Map;
-import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
  * @author Wei.Cheng
  */
 @Service
-@Transactional
+@Transactional(rollbackFor = Exception.class)
 public class TestService {
 
     @Autowired
     private TestDAO testDAO;
 
-    public List<Test> getAllTableInfo() {
-        return testDAO.getAllTableInfo();
+    @Autowired
+    private TestTableService testTableService;
+
+    public List<Test> findAll() {
+        return testDAO.findAll();
     }
 
-    public List<Desk> getDesk() {
-        return testDAO.getDesk();
+    public Test findByPrimaryKey(Object obj_id) {
+        return testDAO.findByPrimaryKey(obj_id);
     }
 
-    public List<Desk> getDesk(String sitefloor) {
-        return testDAO.getDesk(sitefloor);
+    public int insert(Test pojo) {
+        return testDAO.insert(pojo);
     }
 
-    public Test getTableInfo(int tableNo) {
-        return testDAO.getTableInfo(tableNo);
+    public int insert(int table_id, String jobnumber) {
+        TestTable table = testTableService.findByPrimaryKey(table_id);
+        checkDeskIsAvailable(table);
+        checkUserIsAvailable(jobnumber);
+        Test t = new Test(table, jobnumber);
+        this.insert(t);
+        WebServiceTX.getInstance().kanbanUserLogin(jobnumber);
+        return 1;
     }
 
-    public Test getTableInfo(int tableNo, String jobNumber) {
-        return testDAO.getTableInfo(tableNo, jobNumber);
+    public void checkDeskIsAvailable(TestTable t) {
+        if (t.getTests() != null && !t.getTests().isEmpty()) {
+            throw new IllegalArgumentException("此桌次已有使用者");
+        }
     }
 
-    public List<Map> getRecordTestLineType(String startDate, String endDate) {
-        return testDAO.getRecordTestLineType(startDate, endDate);
+    public void checkUserIsAvailable(String jobNumber) {
+        Test t = testDAO.findByJobnumber(jobNumber);
+        if (t != null) {
+            throw new IllegalArgumentException("使用者已在桌次 " + t.getTestTable().getName() + " 使用中");
+        }
     }
 
-    public boolean addTestPeople(int tableNo, String jobNumber) {
-        return testDAO.insertTestPeople(tableNo, jobNumber);
+    public int update(Test pojo) {
+        return testDAO.update(pojo);
     }
 
-    public boolean recordTestLineType(List<TestLineTypeUser> l) {
-        return testDAO.recordTestLineType(l);
+    public int changeDeck(String jobnumber) {
+        Test t = testDAO.findByJobnumber(jobnumber);
+        this.delete(t);
+        return 1;
     }
 
-    public boolean changeDeck(int tableNo, String jobnumber) {
-        return testDAO.changeDeck(tableNo, jobnumber);
+    public int delete(Test pojo) {
+        return testDAO.delete(pojo);
     }
 
-    public boolean insertAlarm(List<AlarmAction> l) {
+    public int delete(String jobnumber) {
+        Test t = testDAO.findByJobnumber(jobnumber);
+        this.delete(t);
+        WebServiceTX.getInstance().kanbanUserLogout(jobnumber);
+        return 1;
+    }
+
+    public int cleanTests() {
+        return testDAO.cleanTests();
+    }
+
+    public boolean insertAlarm(List<AlarmTestAction> l) {
         return testDAO.insertAlarm(l);
     }
 
-    public boolean updateAlarm(List<AlarmAction> l) {
+    public boolean updateAlarm(List<AlarmTestAction> l) {
         return testDAO.updateAlarm(l);
     }
 
@@ -83,35 +109,4 @@ public class TestService {
         return testDAO.setTestAlarmToTestingMode();
     }
 
-    public String checkDeskIsAvailable(int tableNo) {
-        Test t = this.getTableInfo(tableNo);
-        if (t != null) {
-            return "此桌次已有使用者";
-        } else {
-            return null;
-        }
-    }
-
-    public String checkDeskIsAvailable(int tableNo, String userNo) {
-        List<Test> tables = testDAO.getAllTableInfo();
-        if (tables != null && !tables.isEmpty()) {
-            for (Test table : tables) {
-                if (table.getId() == tableNo) {
-                    return "此桌次已有使用者";
-                }
-                if (table.getUserid().equals(userNo)) {
-                    return "您的工號已經在桌次" + table.getId() + "使用中";
-                }
-            }
-        }
-        return null;
-    }
-
-    public boolean removeTestPeople(int tableNo, String jobNumber) {
-        return testDAO.deleteTestPeople(tableNo);
-    }
-
-    public boolean cleanTestTable() {
-        return testDAO.cleanTestTable();
-    }
 }

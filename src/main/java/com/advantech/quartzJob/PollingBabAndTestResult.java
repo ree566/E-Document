@@ -10,6 +10,7 @@ import com.advantech.endpoint.Endpoint2;
 import com.advantech.helper.ApplicationContextHelper;
 import com.advantech.service.BabLineTypeFacade;
 import com.advantech.service.TestLineTypeFacade;
+import com.google.gson.Gson;
 import org.json.JSONArray;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -48,6 +49,7 @@ public class PollingBabAndTestResult extends QuartzJobBean {
          Query: select * from LS_GetSenRealTime Parameters: []
          */
         try {
+            System.out.println("PollingBabAndTestResult");
             Endpoint2.sendAll(getData());
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -55,6 +57,7 @@ public class PollingBabAndTestResult extends QuartzJobBean {
     }
 
     public static String getData() {
+        System.out.println(new Gson().toJson(tF.getJSONObject()));
         return new JSONArray().put(tF.getJSONObject())
                 .put(bF.getJSONObject()).toString();
     }

@@ -6,6 +6,7 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html>
 <html>
     <head>
@@ -105,7 +106,7 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                         headerOffset: 50
                     },
                     "ajax": {
-                        "url": "../../GetClosedInfo",
+                        "url": "<c:url value="/TestRecordController/findByDate" />",
                         "type": "POST",
                         data: {
                             startDate: startDate,

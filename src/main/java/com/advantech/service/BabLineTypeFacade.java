@@ -10,6 +10,7 @@ import com.advantech.model.Bab;
 import com.advantech.model.Line;
 import com.advantech.helper.PropertiesReader;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.PostConstruct;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -38,7 +39,7 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
 
     private double BAB_STANDARD;
 
-    @PostConstruct
+//    @PostConstruct
     protected void init() {
         PropertiesReader p = PropertiesReader.getInstance();
         BAB_STANDARD = p.getAssyStandard();
@@ -147,7 +148,7 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
 
     @Override
     protected boolean initDbAlarmSign() {
-        return babService.removeAlarmSign() && babService.insertAlarm(super.mapToAlarmSign(dataMap));
+        return babService.removeAlarmSign() && babService.insertAlarm(this.mapToAlarmSign(dataMap));
     }
 
     @Override
@@ -163,6 +164,11 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
     @Override
     protected boolean resetDbAlarmSign() {
         return babService.resetAlarm();
+    }
+    
+    @Override
+    protected List mapToAlarmSign(Map map) {
+        return null;
     }
 
 }

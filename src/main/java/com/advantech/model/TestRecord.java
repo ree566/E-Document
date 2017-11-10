@@ -21,6 +21,10 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import org.springframework.format.annotation.DateTimeFormat;
 
 /**
@@ -28,26 +32,29 @@ import org.springframework.format.annotation.DateTimeFormat;
  * @author Wei.Cheng
  */
 @Entity
-@Table(name = "LS_Test",
+@Table(name = "testLineTypeRecord",
         schema = "dbo",
         catalog = "WebAccess"
 )
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-public class Test implements Serializable {
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement(name = "QryData")
+public class TestRecord implements Serializable {
 
     private int id;
-    private TestTable testTable;
+
+    @XmlElement(name = "USER_NO")
     private String userId;
+
+    @XmlElement(name = "USER_NAME")
+    private String userName;
+
+    @XmlElement(name = "PRODUCTIVITY")
+    private Double productivity;
+
+    private TestTable testTable;
+
     private Date lastUpdateTime;
-
-    public Test() {
-
-    }
-
-    public Test(TestTable testTable, String userId) {
-        this.testTable = testTable;
-        this.userId = userId;
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -60,6 +67,33 @@ public class Test implements Serializable {
         this.id = id;
     }
 
+    @Column(name = "[user_id]", nullable = false, length = 20)
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    @Column(name = "user_name", nullable = false, length = 20)
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    @Column(name = "productivity", nullable = false, precision = 10, scale = 2)
+    public Double getProductivity() {
+        return productivity;
+    }
+
+    public void setProductivity(Double productivity) {
+        this.productivity = productivity;
+    }
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "table_id")
     public TestTable getTestTable() {
@@ -70,19 +104,10 @@ public class Test implements Serializable {
         this.testTable = testTable;
     }
 
-    @Column(name = "[user_id]", nullable = false)
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @JsonFormat(pattern = "yyyy-MM-dd'T'kk:mm:ss.SSS'Z'", timezone = "GMT+8")
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "updatetime", length = 23, insertable = false, updatable = false)
+    @Column(name = "saveTime", length = 23, insertable = false, updatable = false)
     public Date getLastUpdateTime() {
         return lastUpdateTime;
     }

@@ -5,15 +5,14 @@
  */
 package com.advantech.dao;
 
-import com.advantech.model.AlarmAction;
-import com.advantech.model.Desk;
 import com.advantech.model.Test;
-import com.advantech.model.TestLineTypeUser;
-import com.advantech.interfaces.AlarmActions;
-import java.sql.Connection;
-import java.util.ArrayList;
+import com.advantech.model.AlarmTestAction;
 import java.util.List;
-import java.util.Map;
+import org.hibernate.Criteria;
+import org.hibernate.FetchMode;
+import org.hibernate.Query;
+import org.hibernate.criterion.Restrictions;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -21,108 +20,83 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class TestDAO extends BasicDAO implements AlarmActions {
+public class TestDAO extends AbstractDao<Integer, Test> implements BasicDAO_1<Test> {
 
-    private Connection getConn() {
-        return getDBUtilConn(SQL.WebAccess);
+    @Autowired
+    private AlarmTestActionDAO alarmTestActionDAO;
+
+    @Override
+    public List<Test> findAll() {
+        Criteria c = super.createEntityCriteria();
+        c.setFetchMode("testTable", FetchMode.JOIN);
+        return c.list();
     }
 
-    public List<Test> getTableInfo() {
-        return getAllTableInfo();
+    @Override
+    public Test findByPrimaryKey(Object obj_id) {
+        return super.getByKey((int) obj_id);
     }
 
-    public Test getTableInfo(int tableNo) {
-        List<Test> l = queryTestTable("SELECT * FROM testTableView WHERE ID = ?", tableNo);
-        return !l.isEmpty() ? l.get(0) : null;
+    public Test findByJobnumber(String jobnumber) {
+        Criteria c = super.createEntityCriteria();
+        c.add(Restrictions.eq("userId", jobnumber));
+        return (Test) c.uniqueResult();
     }
 
-    public Test getTableInfo(int tableNo, String jobnumber) {
-        List<Test> l = queryTestTable("SELECT * FROM testTableView WHERE ID = ? AND userid = ?", tableNo, jobnumber);
-        return !l.isEmpty() ? l.get(0) : null;
+    @Override
+    public int insert(Test pojo) {
+        super.getSession().save(pojo);
+        return 1;
     }
 
-    private List queryTestTable(String sql, Object... params) {
-        return queryForBeanList(getConn(), Test.class, sql, params);
+    @Override
+    public int update(Test pojo) {
+        super.getSession().update(pojo);
+        return 1;
     }
 
-    private List queryDeskTable(String sql, Object... params) {
-        return queryForBeanList(getConn(), Desk.class, sql, params);
+    @Override
+    public int delete(Test pojo) {
+        super.getSession().delete(pojo);
+        return 1;
     }
 
-    public List<Test> getAllTableInfo() {
-        return queryTestTable("SELECT * FROM testTableView ORDER BY ID");
+    public int cleanTests() {
+        Query q = super.getSession().createSQLQuery("truncate table LS_Test");
+        q.executeUpdate();
+        return 1;
     }
 
-    public List<Desk> getDesk() {
-        return queryDeskTable("SELECT * FROM LS_Table");
-    }
-
-    public List<Desk> getDesk(String sitefloor) {
-        if (sitefloor.length() > 3) {
-            return new ArrayList();
+    public boolean insertAlarm(List<AlarmTestAction> l) {
+        for (AlarmTestAction a : l) {
+            alarmTestActionDAO.insert(a);
         }
-        return queryDeskTable("SELECT * FROM LS_Table where sitefloor = ?", sitefloor);
+        return true;
     }
 
-    public List<Map> getRecordTestLineType(String startDate, String endDate) {
-        return queryProcForMapList(getConn(), "{CALL testLineRecord(?,?)}", startDate, endDate);
+    public boolean updateAlarm(List<AlarmTestAction> l) {
+        for (AlarmTestAction a : l) {
+            alarmTestActionDAO.update(a);
+        }
+        return true;
     }
 
-    public boolean insertTestPeople(int tableNo, String jobnumber) {
-        return updateTestTable("INSERT INTO LS_TEST(table_id, user_id) VALUES (?,?)", tableNo, jobnumber);
-    }
-
-    public boolean recordTestLineType(List<TestLineTypeUser> l) {
-        return update(
-                getConn(),
-                "INSERT INTO testLineTypeRecord(user_id, user_name, productivity) VALUES(?,?,?)",
-                l,
-                "userNo", "userName", "productivity"
-        );
-    }
-
-    public boolean changeDeck(int tableNo, String jobnumber) {
-        return updateTestTable("UPDATE LS_TEST SET id = ? WHERE userid = ?", tableNo, jobnumber);
-    }
-
-    @Override
-    public boolean insertAlarm(List<AlarmAction> l) {
-        return updateAlarmTable("INSERT INTO Alm_TestAction(alarm, tableId) VALUES(?, ?)", l);
-    }
-
-    @Override
-    public boolean updateAlarm(List<AlarmAction> l) {
-        return updateAlarmTable("UPDATE Alm_TestAction SET alarm = ? WHERE tableId = ?", l);
-    }
-
-    @Override
     public boolean resetAlarm() {
-        return update(getConn(), "UPDATE Alm_TestAction SET alarm = 0");
+        Query q = super.getSession().createSQLQuery("UPDATE Alm_TestAction SET alarm = 0");
+        q.executeUpdate();
+        return true;
     }
 
-    @Override
     public boolean removeAlarmSign() {
-        return update(getConn(), "TRUNCATE TABLE Alm_TestAction");
+        Query q = super.getSession().createSQLQuery("TRUNCATE TABLE Alm_TestAction");
+        q.executeUpdate();
+        return true;
     }
 
     public boolean setTestAlarmToTestingMode() {
-        return update(getConn(), "UPDATE Alm_TestAction SET alarm = 1");
+        Query q = super.getSession().createSQLQuery("UPDATE Alm_TestAction SET alarm = 1");
+        q.executeUpdate();
+        return true;
     }
 
-    private boolean updateAlarmTable(String sql, List<AlarmAction> l) {
-        return update(getConn(), sql, l, "alarm", "tableId");
-    }
-
-    private boolean updateTestTable(String sql, Object... params) {
-        return update(getConn(), sql, params);
-    }
-
-    public boolean deleteTestPeople(int tableNo) {
-        return updateTestTable("DELETE LS_TEST WHERE id=?", tableNo);
-    }
-
-    public boolean cleanTestTable() {
-        return updateTestTable("TRUNCATE TABLE LS_TEST");
-    }
 }
-

@@ -7,12 +7,13 @@
 package com.advantech.quartzJob;
 
 import com.advantech.model.Test;
-import com.advantech.model.TestLineTypeUser;
 import com.advantech.helper.ApplicationContextHelper;
-import com.advantech.webservice.WebServiceRV;
+import com.advantech.service.TestRecordService;
 import com.advantech.service.TestService;
+import com.advantech.webservice.WebServiceRV;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import org.joda.time.DateTime;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -30,9 +31,11 @@ public class TestLineTypeRecord extends QuartzJobBean {
     private final int EXCLUDE_HOUR = 12;
 
     private final TestService testService;
+    private final TestRecordService testRecordService;
 
     public TestLineTypeRecord() {
         testService = (TestService) ApplicationContextHelper.getBean("testService");
+        testRecordService = (TestRecordService) ApplicationContextHelper.getBean("testRecordService");
     }
 
     @Override
@@ -43,18 +46,18 @@ public class TestLineTypeRecord extends QuartzJobBean {
             log.info("No need to record right now.");
         } else {
             //只存下已經刷入的使用者
-            List<TestLineTypeUser> testLineTypeStatus = separateOfflineUser(WebServiceRV.getInstance().getTestLineTypeUsers());
-            boolean recordStatus = testService.recordTestLineType(testLineTypeStatus);
-            log.info("Record status : " + recordStatus);
+            List<com.advantech.model.TestRecord> testLineTypeStatus = separateOfflineUser(WebServiceRV.getInstance().getTestLineTypeRecords());
+            testRecordService.insert(testLineTypeStatus);
+            log.info("Record success");
         }
     }
 
-    private List<TestLineTypeUser> separateOfflineUser(List<TestLineTypeUser> l) {
-        List<Test> tables = testService.getAllTableInfo();
+    private List<com.advantech.model.TestRecord> separateOfflineUser(List<com.advantech.model.TestRecord> l) {
+        List<Test> tests = testService.findAll();
         List list = new ArrayList();
-        for (TestLineTypeUser user : l) {
-            for (Test t : tables) {
-                if (user.getUserNo().equals(t.getUserid())) {
+        for (com.advantech.model.TestRecord user : l) {
+            for (Test t : tests) {
+                if (Objects.equals(user.getUserId(), t.getUserId())) {
                     list.add(user);
                 }
             }

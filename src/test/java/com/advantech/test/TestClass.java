@@ -9,7 +9,6 @@ import com.advantech.model.LineBalancing;
 import com.google.gson.Gson;
 import java.lang.reflect.InvocationTargetException;
 import org.apache.commons.beanutils.BeanUtils;
-import org.junit.Test;
 
 /**
  *
@@ -17,11 +16,12 @@ import org.junit.Test;
  */
 public class TestClass {
 
-    @Test
+//    @Test
     public void test() throws IllegalAccessException, InvocationTargetException {
         LineBalancing b = new LineBalancing();
         BeanUtils.setProperty(b, "sop4", "test");
         BeanUtils.setProperty(b, "line_id", "20");
         System.out.println(new Gson().toJson(b));
     }
+
 }

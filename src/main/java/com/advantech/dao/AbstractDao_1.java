@@ -19,14 +19,15 @@ import org.springframework.beans.factory.annotation.Qualifier;
  * @param <PK>
  * @param <T>
  */
-public abstract class AbstractDao<PK extends Serializable, T> {
+public abstract class AbstractDao_1<PK extends Serializable, T> {
 
     private final Class<T> persistentClass;
 
     @Autowired
+    @Qualifier("sessionFactory2")
     private SessionFactory sessionFactory;
 
-    public AbstractDao() {
+    public AbstractDao_1() {
         this.persistentClass = (Class<T>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[1];
     }
 

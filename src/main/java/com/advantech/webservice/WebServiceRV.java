@@ -8,9 +8,10 @@ package com.advantech.webservice;
 import com.advantech.model.CellLineType;
 import com.advantech.model.PassStation;
 import com.advantech.model.PassStationRecords;
-import com.advantech.model.TestLineTypeUser;
-import com.advantech.model.TestLineTypeUsers;
+import com.advantech.model.TestRecord;
+import com.advantech.model.TestRecords;
 import com.advantech.model.User;
+import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -22,6 +23,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
@@ -58,19 +60,19 @@ public class WebServiceRV {
     }
 
     //Get data from WebService
-    private List<Object> getWebServiceData(String queryString) throws Exception {
+    private List<Object> getWebServiceData(String queryString) {
         Service service = new Service(url);
         ServiceSoap port = service.getServiceSoap();
         RvResponse.RvResult result = port.rv(queryString);
         return result.getAny();
     }
 
-    private Document getWebServiceDataForDocument(String queryString) throws Exception {
+    private Document getWebServiceDataForDocument(String queryString) {
         List data = getWebServiceData(queryString);
         return ((Node) data.get(1)).getOwnerDocument();
     }
 
-    private List getKanbanUsers() throws Exception {
+    private List getKanbanUsers() {
         String queryString = "<root>"
                 + "<METHOD ID='ETLSO.QryProductionKanban4Test'/>"
                 + "<KANBANTEST>"
@@ -80,7 +82,7 @@ public class WebServiceRV {
         return this.getWebServiceData(queryString);
     }
 
-    public List<String> getKanbanUsersForString() throws Exception {
+    public List<String> getKanbanUsersForString() throws TransformerException, IOException {
         List list = new ArrayList();//ws = WebService
         List data = getKanbanUsers();
         for (Object obj : data) {
@@ -100,7 +102,7 @@ public class WebServiceRV {
         return list;
     }
 
-    public String getKanbanWorkId(String jobnumber) throws Exception {
+    public String getKanbanWorkId(String jobnumber) {
         String today = getToday();
         String queryString = "<root><METHOD ID='WMPSO.QryWorkManPowerCard001'/><WORK_MANPOWER_CARD><WORK_ID>-1</WORK_ID><LINE_ID>-1</LINE_ID><STATION_ID>-1</STATION_ID><FACTORY_NO></FACTORY_NO><UNIT_NO></UNIT_NO>"
                 + "<USER_NO>" + jobnumber + "</USER_NO>"
@@ -116,7 +118,7 @@ public class WebServiceRV {
         return requestQueueName;
     }
 
-    public String getModelnameByPo(String po) throws Exception {
+    public String getModelnameByPo(String po) {
         String queryString = "<root><METHOD ID='WIPSO.QryWipAtt001'/><WIP_ATT><WIP_NO>"
                 + po
                 + "</WIP_NO><ITEM_NO></ITEM_NO></WIP_ATT></root>";
@@ -178,16 +180,16 @@ public class WebServiceRV {
         }
     }
 
-    public List<TestLineTypeUser> getTestLineTypeUsers() {
+    public List<TestRecord> getTestLineTypeRecords() {
         try {
             List l = this.getKanbanUsers();
             Document doc = ((Node) l.get(1)).getOwnerDocument();
             //Skip the <diffgr:diffgram> tag, read QryData tag directly.
             Node node = doc.getFirstChild().getFirstChild();
 
-            Object o = this.unmarshalFromList(node, TestLineTypeUsers.class);
+            Object o = this.unmarshalFromList(node, TestRecords.class);
 
-            return o == null ? new ArrayList() : ((TestLineTypeUsers) o).getQryData();
+            return o == null ? new ArrayList() : ((TestRecords) o).getQryData();
         } catch (Exception ex) {
             log.error(ex.toString());
             return new ArrayList();

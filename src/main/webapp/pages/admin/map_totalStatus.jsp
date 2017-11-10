@@ -259,7 +259,7 @@
                     var object = $("#testArea>.testWiget div");
                     var loopCount = maxTestTableNo;
                     object.each(function () {
-                        $(this).attr({"id": "draggable" + loopCount + "_" + sitefloor + "f"})
+                        $(this).attr({"id": "draggable" + "T" + loopCount + "_" + sitefloor + "f"})
                                 .addClass("draggable blub-empty divCustomBg")
                                 .html(loopCount)
                                 .tooltipster({updateAnimation: null});

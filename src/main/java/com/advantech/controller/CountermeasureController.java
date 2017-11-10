@@ -7,12 +7,11 @@
 package com.advantech.controller;
 
 import com.advantech.model.Countermeasure;
+import com.advantech.service.ActionCodeService;
 import com.advantech.service.CountermeasureService;
+import com.advantech.service.ErrorCodeService;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,19 +27,23 @@ import org.springframework.web.bind.annotation.ResponseBody;
  */
 @Controller
 @RequestMapping("/CountermeasureServlet")
-public class CountermeasureServlet {
-
-    private static final Logger log = LoggerFactory.getLogger(CountermeasureServlet.class);
+public class CountermeasureController {
 
     @Autowired
     private CountermeasureService cService;
+    
+    @Autowired
+    private ErrorCodeService errorCodeService;
+    
+    @Autowired
+    private ActionCodeService actionCodeService;
 
     @RequestMapping(value = "/findOne", method = {RequestMethod.GET})
     @ResponseBody
     protected Countermeasure findOne(@RequestParam int BABid) {
         Countermeasure cm = cService.getCountermeasure(BABid);
         if (cm != null) {
-            cm.setErrorCodes(cService.getErrorCode(cm.getId()));
+            cm.setErrorCodes(errorCodeService.findByCountermeasure(cm.getId()));
             cm.setEditors(cService.getEditor(cm.getId()));
         }
         return cm;
@@ -72,13 +75,13 @@ public class CountermeasureServlet {
     @RequestMapping(value = "/getErrorCode", method = {RequestMethod.GET})
     @ResponseBody
     protected List getErrorCode() {
-        return cService.getErrorCode();
+        return errorCodeService.findAll();
     }
 
     @RequestMapping(value = "/getActionCode", method = {RequestMethod.GET})
     @ResponseBody
     protected List getActionCode() {
-        return cService.getActionCode();
+        return actionCodeService.findAll();
     }
 
 }
