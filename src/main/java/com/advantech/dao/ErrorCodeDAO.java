@@ -5,9 +5,11 @@
  */
 package com.advantech.dao;
 
-import java.sql.Connection;
+import com.advantech.model.ErrorCode;
 import java.util.List;
-import java.util.Map;
+import org.hibernate.Criteria;
+import org.hibernate.FetchMode;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -15,17 +17,37 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class ErrorCodeDAO extends BasicDAO {
+public class ErrorCodeDAO extends AbstractDao<Integer, ErrorCode> implements BasicDAO_1<ErrorCode> {
 
-    private Connection getConn() {
-        return getDBUtilConn(SQL.WebAccess);
+    @Override
+    public List<ErrorCode> findAll() {
+        return super.createEntityCriteria().list();
     }
 
-    public List<Map> findAll() {
-        return queryForMapList(getConn(), "SELECT * FROM errorCode");
+    @Override
+    public ErrorCode findByPrimaryKey(Object obj_id) {
+        return super.getByKey((int) obj_id);
+    }
+    
+    public List<ErrorCode> findByPrimaryKeys(Integer... obj_ids) {
+        Criteria c = super.createEntityCriteria();
+        c.add(Restrictions.in("id", obj_ids));
+        return c.list();
     }
 
-    public List<Map> findByCountermeasure(int cm_id) {
-        return queryForMapList(getConn(), "SELECT * FROM CountermeasureErrorCodeView WHERE cm_id = ?", cm_id);
+    @Override
+    public int insert(ErrorCode pojo) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
+    @Override
+    public int update(ErrorCode pojo) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public int delete(ErrorCode pojo) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }

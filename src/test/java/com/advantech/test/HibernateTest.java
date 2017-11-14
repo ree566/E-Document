@@ -6,19 +6,14 @@
 package com.advantech.test;
 
 import com.advantech.helper.HibernateObjectPrinter;
-import com.advantech.model.AlarmTestAction;
-import com.advantech.model.TestRecord;
-import com.advantech.model.TestTable;
-import com.advantech.service.LineBalancingService;
-import com.advantech.service.TestRecordService;
-import com.advantech.service.TestService;
-import com.advantech.service.TestTableService;
+import com.advantech.service.SystemReportService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import java.util.List;
+import java.util.Map;
 import javax.transaction.Transactional;
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,64 +35,20 @@ public class HibernateTest {
 
     @Autowired
     SessionFactory sessionFactory;
-
-    @Autowired
-    TestTableService testTableService;
-
-    @Autowired
-    TestService testService;
-
-    @Autowired
-    TestRecordService testRecordService;
     
     @Autowired
-    LineBalancingService lineBalancingService;
+    SystemReportService cService;
     
     @Test
     @Transactional
     @Rollback(false)
-    public void testAlarm(){
-        AlarmTestAction at = new AlarmTestAction("T38", 1);
-        sessionFactory.getCurrentSession().update(at);
+    public void testAlarm() throws JsonProcessingException{
+        List l = cService.getPersonalAlmForExcel("2017-08-01", "2017-08-02");
+        HibernateObjectPrinter.print(l);
+        assertTrue(l.get(0) instanceof Map);
+        assertNotEquals(0, l.size());
     }
 
-//    @Test
-    @Transactional
-    @Rollback(true)
-    public void testFindTestRecord() throws JsonProcessingException {
-        assertNotEquals(0, testRecordService.findAll().size());
-    }
-    
-//    @Test
-    @Transactional
-    @Rollback(true)
-    public void testFindTestTable() throws JsonProcessingException{
-        assertNotNull(testTableService.findByPrimaryKey(1));
-    }
-    
-//    @Test
-    @Transactional
-    @Rollback(true)
-    public void testFindTest() throws JsonProcessingException{
-        assertNotNull(testService.findByPrimaryKey(1));
-    }
 
-//    @Test
-    @Transactional
-    @Rollback(true)
-    public void test1() throws JsonProcessingException {
-        Session session = sessionFactory.getCurrentSession();
-        HibernateObjectPrinter.print(session.get(TestTable.class, 1));
-        HibernateObjectPrinter.print(session.get(com.advantech.model.Test.class, 1));
-        HibernateObjectPrinter.print(session.get(TestRecord.class, 1));
-    }
-    
-//    @Test
-    @Transactional
-    @Rollback(true)
-    public void test3() throws JsonProcessingException {
-        HibernateObjectPrinter.print(lineBalancingService.findByPrimaryKey(3997));
-        
-    }
 
 }

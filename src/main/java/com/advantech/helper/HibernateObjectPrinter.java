@@ -7,6 +7,7 @@ package com.advantech.helper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
 
 /**
@@ -20,6 +21,7 @@ public class HibernateObjectPrinter {
         Hibernate4Module hbm = new Hibernate4Module();
         hbm.enable(Hibernate4Module.Feature.SERIALIZE_IDENTIFIER_FOR_LAZY_NOT_LOADED_OBJECTS);
         mapper.registerModule(hbm);
+        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         System.out.println(mapper.writeValueAsString(obj));
     }
 }

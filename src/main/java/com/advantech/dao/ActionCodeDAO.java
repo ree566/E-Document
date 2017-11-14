@@ -5,9 +5,10 @@
  */
 package com.advantech.dao;
 
-import java.sql.Connection;
+import com.advantech.model.ActionCode;
 import java.util.List;
-import java.util.Map;
+import org.hibernate.Criteria;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -15,26 +16,37 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class ActionCodeDAO extends BasicDAO {
+public class ActionCodeDAO extends AbstractDao<Integer, ActionCode> implements BasicDAO_1<ActionCode> {
 
-    private Connection getConn() {
-        return getDBUtilConn(SQL.WebAccess);
+    @Override
+    public List<ActionCode> findAll() {
+        return super.createEntityCriteria().list();
     }
 
-    public List<Map> findAll() {
-        return queryForMapList(getConn(), "SELECT * FROM actionCode");
+    @Override
+    public ActionCode findByPrimaryKey(Object obj_id) {
+        return super.getByKey((int) obj_id);
     }
 
-    public boolean insert(int cm_id, List<String> actionCodes) {
-        Connection conn = this.getConn();
-        String query = "INSERT INTO CountermeasureDetail(cm_id, ac_id) values(?,?)";
-        for (String actionCode : actionCodes) {
-            update(conn, query, cm_id, actionCode);
-        }
-        return true;
+    public List<ActionCode> findByPrimaryKeys(Integer... obj_ids) {
+        Criteria c = super.createEntityCriteria();
+        c.add(Restrictions.in("id", obj_ids));
+        return c.list();
     }
 
-    public boolean delete(int cm_id) {
-        return update(getConn(), "DELETE FROM CountermeasureDetail WHERE cm_id = ?", cm_id);
+    @Override
+    public int insert(ActionCode pojo) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
+    @Override
+    public int update(ActionCode pojo) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public int delete(ActionCode pojo) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }

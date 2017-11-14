@@ -186,10 +186,6 @@ public class BabDAO extends BasicDAO implements AlarmActions {
         return l.isEmpty() ? null : (Integer) l.get(0).get("qty");
     }
 
-    public List<Map> getEmptyRecordDownExcel(String startDate, String endDate) {
-        return queryProcForMapList(this.getConn(), "{CALL babEmptyRecordDownExcel(?,?)}", startDate, endDate);
-    }
-
     @Override
     public boolean insertAlarm(List<AlarmAction> l) {
         return updateAlarmTable("INSERT INTO Alm_BABAction(alarm, tableId) VALUES(?, ?)", l);
@@ -243,7 +239,7 @@ public class BabDAO extends BasicDAO implements AlarmActions {
         if (Objects.equals(BabStatus.UNFINSHED.getValue(), bab.getIsused())) {
             this.updateIsused(bab);
         }
-        if(saveToOldDB){
+        if (saveToOldDB) {
             lineBalanceService.insert(bab);
         }
         return true;

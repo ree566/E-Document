@@ -9,8 +9,8 @@ import com.advantech.helper.ApplicationContextHelper;
 import com.advantech.helper.DatetimeGenerator;
 import com.advantech.helper.MailSend;
 import com.advantech.helper.StringParser;
-import com.advantech.service.CountermeasureService;
 import com.advantech.service.LineOwnerMappingService;
+import com.advantech.service.SystemReportService;
 import java.sql.Clob;
 import java.text.DecimalFormat;
 import java.util.HashMap;
@@ -38,11 +38,11 @@ public class CountermeasureAlarm extends QuartzJobBean {
 
     private final LineOwnerMappingService lineOwnerMappingService;
 
-    private final CountermeasureService countermeasureService;
+    private final SystemReportService systemReportService;
 
     public CountermeasureAlarm() {
         lineOwnerMappingService = (LineOwnerMappingService) ApplicationContextHelper.getBean("lineOwnerMappingService");
-        countermeasureService = (CountermeasureService) ApplicationContextHelper.getBean("countermeasureService");
+        systemReportService = (SystemReportService) ApplicationContextHelper.getBean("systemReportService");
     }
 
     @Override
@@ -72,7 +72,7 @@ public class CountermeasureAlarm extends QuartzJobBean {
     }
 
     public String generateMailBody(String sitefloor) {
-        List<Map> l = countermeasureService.getUnFillCountermeasureBabs(sitefloor);
+        List<Map> l = systemReportService.getUnFillCountermeasureBabs(sitefloor);
         if (l.isEmpty()) {
             return "";
         } else {

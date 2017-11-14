@@ -691,7 +691,7 @@
                 initCountermeasureDialog();
 
                 $.ajax({
-                    url: "<c:url value="/CountermeasureServlet/findOne" />",
+                    url: "<c:url value="/CountermeasureController/findByBab" />",
                     data: {
                         BABid: BABid
                     },
@@ -702,11 +702,14 @@
                         $(".modal-body #errorCon").html(jsonData.solution.replace(/(?:\r\n|\r|\n)/g, '<br />'));
 
                         var errorCodes = msg.errorCodes;
+                        var actionCodes = msg.actionCodes;
 
                         for (var i = 0; i < errorCodes.length; i++) {
-                            var obj = errorCodes[i];
-                            checkedErrorCodes.push(obj.ec_id);
-                            checkedActionCodes.push(obj.ac_id);
+                            checkedErrorCodes.push(errorCodes[i].id);
+                        }
+
+                        for (var i = 0; i < actionCodes.length; i++) {
+                            checkedActionCodes.push(actionCodes[i].id);
                         }
 
                         setErrorCodeCheckBox(checkedErrorCodes);
@@ -715,11 +718,8 @@
 
                         $(".modal-body :checkbox").attr("disabled", true);
 
-                        var editors = jsonData.editors;
-                        for (var i = 0; i < editors.length; i++) {
-                            var editor = editors[i].editor;
-                            $(".modal-body #responseUser").append("<span class='label label-default'>#" + (editor == null ? 'N/A' : editor) + "</span> ");
-                        }
+                        var lastEditor = jsonData.lastEditor;
+                        $(".modal-body #responseUser").append("<span class='label label-default'>#" + (lastEditor == null ? 'N/A' : lastEditor) + "</span> ");
                         $("#editCountermeasure").attr("disabled", jsonData.lock == 1);
                     },
                     error: function (xhr, ajaxOptions, thrownError) {
@@ -739,7 +739,7 @@
                 for (var i = 0, j = array.length; i < j; i++) {
                     var id = array[i];
                     for (var k = 0, l = data.length; k < l; k++) {
-                        if (data[k].ec_id == id) {
+                        if (data[k].errorCode.id == id) {
                             var checkboxObj = checkBoxs.clone();
                             checkboxObj.addClass("ec" + id);
                             checkboxObj.find(":checkbox").attr("value", data[k].id).after(data[k].name);
@@ -752,7 +752,7 @@
             function getActionCode() {
                 var result;
                 $.ajax({
-                    url: "<c:url value="/CountermeasureServlet/getActionCode" />",
+                    url: "<c:url value="/CountermeasureController/getActionCodeOptions" />",
                     type: "GET",
                     dataType: "json",
                     async: false,
@@ -769,7 +769,7 @@
             function getErrorCode() {
                 var result;
                 $.ajax({
-                    url: "<c:url value="/CountermeasureServlet/getErrorCode" />",
+                    url: "<c:url value="/CountermeasureController/getErrorCodeOptions" />",
                     type: "GET",
                     dataType: "json",
                     async: false,
@@ -840,7 +840,7 @@
 
             function saveCountermeasure(data) {
                 $.ajax({
-                    url: "<c:url value="/CountermeasureServlet/update" />",
+                    url: "<c:url value="/CountermeasureController/update" />",
                     data: data,
                     type: "POST",
                     dataType: 'json',
@@ -1225,7 +1225,7 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td class="lab">填寫人</td>
+                                        <td class="lab">最後修改人員</td>
                                         <td id="responseUser">
                                         </td>
                                     </tr>

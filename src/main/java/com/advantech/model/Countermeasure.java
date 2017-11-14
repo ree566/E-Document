@@ -5,40 +5,50 @@
  */
 package com.advantech.model;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.io.Serializable;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 /**
  *
  * @author Wei.Cheng
  */
-//@Entity
+@Entity
+@Table(name = "Countermeasure",
+        schema = "dbo",
+        catalog = "WebAccess"
+)
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Countermeasure implements Serializable {
-
-    private static final long serialVersionUID = 1L;
 
     private int id;
     private int BABid;
-    private int errorCode_id;
-    private String reason;
     private String solution;
-    private String editor;
-    private String editTime;
+    private String lastEditor;
     private int lock;
 
-    private List errorCodes;
-    private List editors;
+    private Set<ErrorCode> errorCodes = new HashSet<ErrorCode>(0);
 
-    public Countermeasure() {
-    }
+    private Set<ActionCode> actionCodes = new HashSet<ActionCode>(0);
 
-    public Countermeasure(int BABid, String reason, String solution, String editor) {
-        this.BABid = BABid;
-        this.reason = reason;
-        this.solution = solution;
-        this.editor = editor;
-    }
+    private Set<CountermeasureEvent> countermeasureEvents = new HashSet<CountermeasureEvent>(0);
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id", unique = true, nullable = false)
     public int getId() {
         return id;
     }
@@ -47,6 +57,7 @@ public class Countermeasure implements Serializable {
         this.id = id;
     }
 
+    @Column(name = "BABid", nullable = false)
     public int getBABid() {
         return BABid;
     }
@@ -55,22 +66,7 @@ public class Countermeasure implements Serializable {
         this.BABid = BABid;
     }
 
-    public int getErrorCode_id() {
-        return errorCode_id;
-    }
-
-    public void setErrorCode_id(int errorCode_id) {
-        this.errorCode_id = errorCode_id;
-    }
-
-    public String getReason() {
-        return reason;
-    }
-
-    public void setReason(String reason) {
-        this.reason = reason;
-    }
-
+    @Column(name = "solution", nullable = false, length = 500)
     public String getSolution() {
         return solution;
     }
@@ -79,22 +75,16 @@ public class Countermeasure implements Serializable {
         this.solution = solution;
     }
 
-    public String getEditor() {
-        return editor;
+    @Column(name = "lastEditor", nullable = false, length = 50)
+    public String getLastEditor() {
+        return lastEditor;
     }
 
-    public void setEditor(String editor) {
-        this.editor = editor;
+    public void setLastEditor(String lastEditor) {
+        this.lastEditor = lastEditor;
     }
 
-    public String getEditTime() {
-        return editTime;
-    }
-
-    public void setEditTime(String editTime) {
-        this.editTime = editTime;
-    }
-
+    @Column(name = "lock", nullable = false)
     public int getLock() {
         return lock;
     }
@@ -103,20 +93,37 @@ public class Countermeasure implements Serializable {
         this.lock = lock;
     }
 
-    public List getErrorCodes() {
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "Countermeasure_ErrorCode_REF", schema = "dbo", catalog = "WebAccess", joinColumns = {
+        @JoinColumn(name = "cm_id", nullable = false, insertable = false, updatable = false)}, inverseJoinColumns = {
+        @JoinColumn(name = "ec_id", nullable = false, insertable = false, updatable = false)})
+    public Set<ErrorCode> getErrorCodes() {
         return errorCodes;
     }
 
-    public void setErrorCodes(List errorCodes) {
+    public void setErrorCodes(Set<ErrorCode> errorCodes) {
         this.errorCodes = errorCodes;
     }
 
-    public List getEditors() {
-        return editors;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "Countermeasure_ActionCode_REF", schema = "dbo", catalog = "WebAccess", joinColumns = {
+        @JoinColumn(name = "cm_id", nullable = false, insertable = false, updatable = false)}, inverseJoinColumns = {
+        @JoinColumn(name = "ac_id", nullable = false, insertable = false, updatable = false)})
+    public Set<ActionCode> getActionCodes() {
+        return actionCodes;
     }
 
-    public void setEditors(List editors) {
-        this.editors = editors;
+    public void setActionCodes(Set<ActionCode> actionCodes) {
+        this.actionCodes = actionCodes;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "countermeasure")
+    public Set<CountermeasureEvent> getCountermeasureEvents() {
+        return countermeasureEvents;
+    }
+
+    public void setCountermeasureEvents(Set<CountermeasureEvent> countermeasureEvents) {
+        this.countermeasureEvents = countermeasureEvents;
     }
 
 }

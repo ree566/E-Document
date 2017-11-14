@@ -6,14 +6,14 @@
  */
 package com.advantech.controller;
 
+import com.advantech.model.ActionCode;
 import com.advantech.model.Countermeasure;
+import com.advantech.model.ErrorCode;
 import com.advantech.service.ActionCodeService;
 import com.advantech.service.CountermeasureService;
 import com.advantech.service.ErrorCodeService;
-import java.util.Arrays;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.hibernate.validator.internal.util.CollectionHelper.newHashSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,59 +26,60 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @author Wei.Cheng
  */
 @Controller
-@RequestMapping("/CountermeasureServlet")
+@RequestMapping("/CountermeasureController")
 public class CountermeasureController {
 
     @Autowired
     private CountermeasureService cService;
-    
+
     @Autowired
     private ErrorCodeService errorCodeService;
-    
+
     @Autowired
     private ActionCodeService actionCodeService;
 
-    @RequestMapping(value = "/findOne", method = {RequestMethod.GET})
+    @RequestMapping(value = "/findByBab", method = {RequestMethod.GET})
     @ResponseBody
-    protected Countermeasure findOne(@RequestParam int BABid) {
-        Countermeasure cm = cService.getCountermeasure(BABid);
-        if (cm != null) {
-            cm.setErrorCodes(errorCodeService.findByCountermeasure(cm.getId()));
-            cm.setEditors(cService.getEditor(cm.getId()));
-        }
-        return cm;
-    }
-
-    @RequestMapping(value = "/findAll", method = {RequestMethod.GET})
-    @ResponseBody
-    protected List<Countermeasure> findAll() {
-        return cService.getCountermeasure();
+    protected Countermeasure findByBab(@RequestParam(value = "BABid") int bab_id) {
+        return cService.findByBab(bab_id);
     }
 
     @RequestMapping(value = "/update", method = {RequestMethod.POST})
     @ResponseBody
     protected boolean update(
-            @RequestParam int BABid,
-            @RequestParam(value = "actionCodes[]") String[] actionCodes,
+            @RequestParam(value = "BABid") int bab_id,
+            @RequestParam(value = "errorCodes[]") Integer[] errorCodes,
+            @RequestParam(value = "actionCodes[]") Integer[] actionCodes,
             @RequestParam String solution,
             @RequestParam String editor
     ) {
-        return cService.updateCountermeasure(BABid, Arrays.asList(actionCodes), solution, editor);
+        Countermeasure c = cService.findByBab(bab_id);
+        boolean isCreate = (c == null);
+        if (isCreate) {
+            c = new Countermeasure();
+            c.setBABid(bab_id);
+        }
+        List<ErrorCode> errorCode = errorCodeService.findByPrimaryKeys(errorCodes);
+        List<ActionCode> actionCode = actionCodeService.findByPrimaryKeys(actionCodes);
+        c.setErrorCodes(newHashSet(errorCode));
+        c.setActionCodes(newHashSet(actionCode));
+        c.setLastEditor(editor);
+        c.setSolution(solution);
+        if (isCreate) {
+            cService.insert(c);
+        } else {
+            cService.update(c);
+        }
+        return true;
     }
 
-    @RequestMapping(value = "/delete", method = {RequestMethod.POST})
-    @ResponseBody
-    protected boolean delete(@RequestParam int id) {
-        return cService.deleteCountermeasure(id);
-    }
-
-    @RequestMapping(value = "/getErrorCode", method = {RequestMethod.GET})
+    @RequestMapping(value = "/getErrorCodeOptions", method = {RequestMethod.GET})
     @ResponseBody
     protected List getErrorCode() {
         return errorCodeService.findAll();
     }
 
-    @RequestMapping(value = "/getActionCode", method = {RequestMethod.GET})
+    @RequestMapping(value = "/getActionCodeOptions", method = {RequestMethod.GET})
     @ResponseBody
     protected List getActionCode() {
         return actionCodeService.findAll();

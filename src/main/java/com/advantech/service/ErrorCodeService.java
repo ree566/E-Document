@@ -6,8 +6,9 @@
 package com.advantech.service;
 
 import com.advantech.dao.ErrorCodeDAO;
+import com.advantech.model.ActionCode;
+import com.advantech.model.ErrorCode;
 import java.util.List;
-import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,12 +24,28 @@ public class ErrorCodeService {
     @Autowired
     private ErrorCodeDAO errorCodeDAO;
 
-    public List<Map> findAll() {
+    public List<ErrorCode> findAll() {
         return errorCodeDAO.findAll();
     }
 
-    public List<Map> findByCountermeasure(int cm_id) {
-        return errorCodeDAO.findByCountermeasure(cm_id);
+    public ErrorCode findByPrimaryKey(Object obj_id) {
+        return errorCodeDAO.findByPrimaryKey(obj_id);
+    }
+    
+    public List<ErrorCode> findByPrimaryKeys(Integer... obj_ids) {
+        return errorCodeDAO.findByPrimaryKeys(obj_ids);
+    }
+
+    public int insert(ErrorCode pojo) {
+        return errorCodeDAO.insert(pojo);
+    }
+
+    public int update(ErrorCode pojo) {
+        return errorCodeDAO.update(pojo);
+    }
+
+    public int delete(ErrorCode pojo) {
+        return errorCodeDAO.delete(pojo);
     }
 
 }

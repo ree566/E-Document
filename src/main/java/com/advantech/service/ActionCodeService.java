@@ -6,8 +6,8 @@
 package com.advantech.service;
 
 import com.advantech.dao.ActionCodeDAO;
+import com.advantech.model.ActionCode;
 import java.util.List;
-import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,16 +23,28 @@ public class ActionCodeService {
     @Autowired
     private ActionCodeDAO actionCodeDAO;
 
-    public List<Map> findAll() {
+    public List<ActionCode> findAll() {
         return actionCodeDAO.findAll();
     }
 
-    public boolean insert(int cm_id, List<String> actionCodes) {
-        return actionCodeDAO.insert(cm_id, actionCodes);
+    public ActionCode findByPrimaryKey(Object obj_id) {
+        return actionCodeDAO.findByPrimaryKey(obj_id);
     }
 
-    public boolean delete(int cm_id) {
-        return actionCodeDAO.delete(cm_id);
+    public List<ActionCode> findByPrimaryKeys(Integer... obj_ids) {
+        return actionCodeDAO.findByPrimaryKeys(obj_ids);
+    }
+
+    public int insert(ActionCode pojo) {
+        return actionCodeDAO.insert(pojo);
+    }
+
+    public int update(ActionCode pojo) {
+        return actionCodeDAO.update(pojo);
+    }
+
+    public int delete(ActionCode pojo) {
+        return actionCodeDAO.delete(pojo);
     }
 
 }

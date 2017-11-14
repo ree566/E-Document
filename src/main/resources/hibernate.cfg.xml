@@ -40,29 +40,30 @@ made subject to such option by the copyright holder.
 Contributor(s):
 -->
 <hibernate-configuration>
-    <session-factory>
-        <property name="hibernate.connection.driver_class">net.sourceforge.jtds.jdbc.Driver</property>
-        
-        <!--        <property name="hibernate.connection.url">jdbc:jtds:sqlserver://M3-SERVER/WebAccess</property>
+  <session-factory>
+    <property name="hibernate.connection.driver_class">net.sourceforge.jtds.jdbc.Driver</property>
+    <!--        <property name="hibernate.connection.url">jdbc:jtds:sqlserver://M3-SERVER/WebAccess</property>
         <property name="hibernate.connection.username">waychien</property>
         <property name="hibernate.connection.password">m3server</property>-->
-        
-        <property name="hibernate.connection.url">jdbc:jtds:sqlserver://localhost:57936/WebAccess</property>
-        <property name="hibernate.connection.username">test.user</property>
-        <property name="hibernate.connection.password">test</property>
+    <property name="hibernate.connection.url">jdbc:jtds:sqlserver://localhost:57936/WebAccess</property>
+    <property name="hibernate.connection.username">test.user</property>
+    <property name="hibernate.connection.password">test</property>
     
-        <property name="hibernate.dialect">org.hibernate.dialect.SQLServerDialect</property>
-        
-        <property name="hibernate.show_sql">true</property>
-        
-        <property name="hibernate.current_session_context_class">thread</property>
-        <property name="hibernate.transaction.factory_class">org.hibernate.transaction.JDBCTransactionFactory</property>
-        <property name="hibernate.c3p0.privilegeSpawnedThreads">true</property>
-        <property name="hibernate.c3p0.contextClassLoaderSource">library</property>
-        
-        <mapping class="com.advantech.model.Test"/>
-        <mapping class="com.advantech.model.TestTable"/>
-        <mapping class="com.advantech.model.TestRecord"/>
-        <mapping class="com.advantech.model.AlarmTestAction"/>
-    </session-factory>
+    <property name="hibernate.dialect">org.hibernate.dialect.SQLServerDialect</property>
+    <property name="hibernate.show_sql">true</property>
+    <property name="hibernate.current_session_context_class">thread</property>
+    <property name="hibernate.transaction.factory_class">org.hibernate.transaction.JDBCTransactionFactory</property>
+    <property name="hibernate.c3p0.privilegeSpawnedThreads">true</property>
+    <property name="hibernate.c3p0.contextClassLoaderSource">library</property>
+    
+    <mapping class="com.advantech.model.Test"/>
+    <mapping class="com.advantech.model.TestTable"/>
+    <mapping class="com.advantech.model.TestRecord"/>
+    <mapping class="com.advantech.model.AlarmTestAction"/>
+    <mapping class="com.advantech.model.ErrorCode"/>
+    <mapping class="com.advantech.model.ActionCode"/>
+    <mapping class="com.advantech.model.ActionCodeMapping"/>
+    <mapping class="com.advantech.model.Countermeasure"/>
+    <mapping class="com.advantech.model.CountermeasureEvent"/>
+  </session-factory>
 </hibernate-configuration>

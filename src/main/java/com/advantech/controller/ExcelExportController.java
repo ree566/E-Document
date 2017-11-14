@@ -8,26 +8,21 @@ package com.advantech.controller;
 import com.advantech.helper.DatetimeGenerator;
 import com.advantech.helper.ExcelGenerator;
 import com.advantech.helper.UserSelectFilter;
-import com.advantech.service.BabService;
-import com.advantech.service.CountermeasureService;
+import com.advantech.service.SystemReportService;
 import java.io.IOException;
-import static java.lang.System.out;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.joda.time.DateTime;
-import org.joda.time.Seconds;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  *
@@ -35,18 +30,16 @@ import org.springframework.web.bind.annotation.RequestParam;
  */
 @Controller
 public class ExcelExportController {
-
+    
     @Autowired
-    private CountermeasureService cService;
-
-    @Autowired
-    private BabService babService;
+    private SystemReportService reportService;
 
     private final int minAllowAmount = 10;
 
     private String lineType, sitefloor;
 
     @RequestMapping(value = "/BABExcelForEfficiencyReport", method = {RequestMethod.GET})
+    @ResponseBody
     protected void babExcelForEfficiencyReport(
             @RequestParam String lineType,
             @RequestParam String sitefloor,
@@ -59,10 +52,10 @@ public class ExcelExportController {
         this.lineType = lineType;
         this.sitefloor = sitefloor;
 
-        List<Map> data = fitData(cService.getCountermeasureAndPersonalAlm(startDate, endDate));
-        List<Map> emptyRecords = fitData(babService.getEmptyRecordDownExcel(startDate, endDate));
+        List<Map> data = fitData(reportService.getCountermeasureAndPersonalAlm(startDate, endDate));
+        List<Map> emptyRecords = fitData(reportService.getEmptyRecordDownExcel(startDate, endDate));
 
-        List list2 = cService.transformEfficiencyReportPattern(data);//把各站亮燈頻率合併為橫式(類似 sql 的 Group by格式)
+        List list2 = transformEfficiencyReportPattern(data);//把各站亮燈頻率合併為橫式(類似 sql 的 Group by格式)
         List list3 = emptyRecords;
 
         if (data.isEmpty()) {
@@ -82,6 +75,7 @@ public class ExcelExportController {
     }
 
     @RequestMapping(value = "/BABExcelGenerate", method = {RequestMethod.GET})
+    @ResponseBody
     protected void babExcelGenerate(
             @RequestParam String lineType,
             @RequestParam String sitefloor,
@@ -89,18 +83,18 @@ public class ExcelExportController {
             @RequestParam String endDate,
             @RequestParam boolean aboveStandard,
             HttpServletResponse res) throws IOException {
-        
+
         this.lineType = lineType;
         this.sitefloor = sitefloor;
 
         //http://stackoverflow.com/questions/13853300/jquery-file-download-filedownload
         //personalAlm記得轉格式才能special Excel generate
-        List<Map> countermeasures = fitData(cService.getCountermeasureForExcel(startDate, endDate));
-        List<Map> personalAlarms = fitData(cService.getPersonalAlmForExcel(startDate, endDate));
-        List<Map> emptyRecords = fitData(babService.getEmptyRecordDownExcel(startDate, endDate));
+        List<Map> countermeasures = fitData(reportService.getCountermeasureForExcel(startDate, endDate));
+        List<Map> personalAlarms = fitData(reportService.getPersonalAlmForExcel(startDate, endDate));
+        List<Map> emptyRecords = fitData(reportService.getEmptyRecordDownExcel(startDate, endDate));
 
         List list = countermeasures;
-        List list2 = cService.transformPersonalAlmDataPattern(personalAlarms);//把各站亮燈頻率合併為橫式(類似 sql 的 Group by格式)
+        List list2 = transformPersonalAlmDataPattern(personalAlarms);//把各站亮燈頻率合併為橫式(類似 sql 的 Group by格式)
         List list3 = emptyRecords;
 
         if (list.isEmpty() || (list.isEmpty() && list2.isEmpty())) {
@@ -220,6 +214,86 @@ public class ExcelExportController {
         generator.generateWorkBooks(lastSheetData);
 
         return generator.getWorkbook();
+    }
+
+    public List<Map> transformPersonalAlmDataPattern(List<Map> l) {
+        List<Map> tList = new ArrayList();
+        Map baseMap = null;
+        int baseId = 0;
+        String userIdFieldName = "USER_ID";
+        String stationFieldName = "station";
+        String failPercentFieldName = "failPercent(Personal)";
+        String idFieldName = "id";
+        String failPercentFieldNameCH = "亮燈頻率";
+
+        for (int i = 0; i < l.size(); i++) {
+            Map m = l.get(i);
+            if (i == 0) {
+                baseMap = m;
+                baseId = (int) m.get(idFieldName);
+                baseMap.put(userIdFieldName + m.get(stationFieldName), m.get(userIdFieldName));
+                baseMap.put(failPercentFieldNameCH + m.get(stationFieldName), m.get(failPercentFieldName));
+                removeUnusedKeyInMap(baseMap, userIdFieldName, stationFieldName, failPercentFieldName);
+            } else if ((int) m.get("id") != baseId) {
+                tList.add(baseMap);
+                baseMap = m;
+                baseMap.put(userIdFieldName + m.get(stationFieldName), m.get(userIdFieldName));
+                baseMap.put(failPercentFieldNameCH + m.get(stationFieldName), m.get(failPercentFieldName));
+                removeUnusedKeyInMap(baseMap, userIdFieldName, stationFieldName, failPercentFieldName);
+                baseId = (int) m.get(idFieldName);
+            } else if (baseMap != null && (int) m.get(idFieldName) == baseId) {
+                baseMap.put(userIdFieldName + m.get(stationFieldName), m.get(userIdFieldName));
+                baseMap.put(failPercentFieldNameCH + m.get(stationFieldName), m.get(failPercentFieldName));
+                if (i == (l.size() - 1)) {
+                    tList.add(baseMap);
+                }
+            }
+        }
+        return tList;
+    }
+
+    private Map removeUnusedKeyInMap(Map m, String... keys) {
+        for (String st : keys) {
+            m.remove(st);
+        }
+        return m;
+    }
+    //--------效率報表------------------------------
+
+    public List<Map> transformEfficiencyReportPattern(List<Map> l) {
+        List<Map> tList = new ArrayList();
+        Map baseMap = null;
+        int baseId = 0;
+        String userIdFieldName = "USER_ID";
+        String stationFieldName = "station";
+        String failPercentFieldName = "failPcs";
+        String idFieldName = "id";
+        String failPercentFieldNameCH = "亮燈次數";
+
+        for (int i = 0; i < l.size(); i++) {
+            Map m = l.get(i);
+            if (i == 0) {
+                baseMap = m;
+                baseId = (int) m.get(idFieldName);
+                baseMap.put(userIdFieldName + m.get(stationFieldName), m.get(userIdFieldName));
+                baseMap.put(failPercentFieldNameCH + m.get(stationFieldName), m.get(failPercentFieldName));
+                removeUnusedKeyInMap(baseMap, userIdFieldName, stationFieldName, failPercentFieldName);
+            } else if ((int) m.get("id") != baseId) {
+                tList.add(baseMap);
+                baseMap = m;
+                baseMap.put(userIdFieldName + m.get(stationFieldName), m.get(userIdFieldName));
+                baseMap.put(failPercentFieldNameCH + m.get(stationFieldName), m.get(failPercentFieldName));
+                removeUnusedKeyInMap(baseMap, userIdFieldName, stationFieldName, failPercentFieldName);
+                baseId = (int) m.get(idFieldName);
+            } else if (baseMap != null && (int) m.get(idFieldName) == baseId) {
+                baseMap.put(userIdFieldName + m.get(stationFieldName), m.get(userIdFieldName));
+                baseMap.put(failPercentFieldNameCH + m.get(stationFieldName), m.get(failPercentFieldName));
+                if (i == (l.size() - 1)) {
+                    tList.add(baseMap);
+                }
+            }
+        }
+        return tList;
     }
 
 }
