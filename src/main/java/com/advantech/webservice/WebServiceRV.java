@@ -10,7 +10,7 @@ import com.advantech.model.PassStation;
 import com.advantech.model.PassStationRecords;
 import com.advantech.model.TestRecord;
 import com.advantech.model.TestRecords;
-import com.advantech.model.User;
+import com.advantech.model.UserOnMes;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URL;
@@ -129,7 +129,7 @@ public class WebServiceRV {
         return requestQueueName;
     }
 
-    public User getMESUser(String jobnumber) {
+    public UserOnMes getMESUser(String jobnumber) {
         try {
             String queryString = "<root><METHOD ID='PLBSO.QryLogion'/><USER_INFO><USER_NO>"
                     + jobnumber
@@ -140,9 +140,9 @@ public class WebServiceRV {
             //Skip the <diffgr:diffgram> tag, read QryData tag directly.
             Node node = doc.getFirstChild().getFirstChild().getFirstChild();
 
-            Object o = this.unmarshalFromList(node, User.class);
+            Object o = this.unmarshalFromList(node, UserOnMes.class);
 
-            return o == null ? null : (User) o;
+            return o == null ? null : (UserOnMes) o;
         } catch (Exception ex) {
             log.error(ex.toString());
             return null;

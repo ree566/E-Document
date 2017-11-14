@@ -17,6 +17,8 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -34,7 +36,7 @@ public class TestTable implements Serializable {
 
     private int id;
     private String name;
-    private int sitefloor;
+    private Floor floor;
 
     @JsonIgnore
     private Set<Test> tests = new HashSet<Test>(0);
@@ -62,13 +64,14 @@ public class TestTable implements Serializable {
         this.name = name;
     }
 
-    @Column(name = "sitefloor", nullable = false)
-    public int getSitefloor() {
-        return sitefloor;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "floor_id", nullable = false)
+    public Floor getFloor() {
+        return floor;
     }
 
-    public void setSitefloor(int sitefloor) {
-        this.sitefloor = sitefloor;
+    public void setFloor(Floor floor) {
+        this.floor = floor;
     }
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "testTable")

@@ -7,7 +7,7 @@ package com.advantech.webservice;
 
 import com.advantech.model.PassStation;
 import com.advantech.model.TestRecord;
-import com.advantech.model.User;
+import com.advantech.model.UserOnMes;
 import com.google.gson.Gson;
 import static java.lang.System.out;
 import java.util.ArrayList;
@@ -107,8 +107,8 @@ public class WebServiceRVTest {
         System.out.println("getMESUser");
         String jobnumber = "A-7275";
         WebServiceRV instance = WebServiceRV.getInstance();
-        User expResult = null;
-        User result = instance.getMESUser(jobnumber);
+        UserOnMes expResult = null;
+        UserOnMes result = instance.getMESUser(jobnumber);
         assertNotEquals(expResult, result);
         out.println(new Gson().toJson(result));
     }

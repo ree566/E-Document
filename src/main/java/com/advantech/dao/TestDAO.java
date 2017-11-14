@@ -29,6 +29,7 @@ public class TestDAO extends AbstractDao<Integer, Test> implements BasicDAO_1<Te
     public List<Test> findAll() {
         Criteria c = super.createEntityCriteria();
         c.setFetchMode("testTable", FetchMode.JOIN);
+        c.setFetchMode("floor", FetchMode.JOIN);
         return c.list();
     }
 

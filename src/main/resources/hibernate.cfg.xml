@@ -56,6 +56,9 @@ Contributor(s):
     <property name="hibernate.c3p0.privilegeSpawnedThreads">true</property>
     <property name="hibernate.c3p0.contextClassLoaderSource">library</property>
     
+    <mapping class="com.advantech.model.Floor"/>
+    <mapping class="com.advantech.model.User"/>
+    <mapping class="com.advantech.model.Unit"/>
     <mapping class="com.advantech.model.Test"/>
     <mapping class="com.advantech.model.TestTable"/>
     <mapping class="com.advantech.model.TestRecord"/>

@@ -11,7 +11,6 @@ import com.advantech.helper.PropertiesReader;
 import com.advantech.model.AlarmTestAction;
 import com.advantech.model.TestTable;
 import com.advantech.webservice.WebServiceRV;
-import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -105,7 +104,7 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
                             status = NORMAL_SIGN;
                         }
 
-                        userArr.put(newTestUser(userName, jobnumber, tableName, productivity, table.getSitefloor(), status));
+                        userArr.put(newTestUser(userName, jobnumber, tableName, productivity, table.getFloor().getName(), status));
                         it.remove();//把比對過的資料移除，剩下的就是有在本系統XML卻找不到人的使用者
                         isInTheWebService = true;//對到人之後跳出迴圈，換下一個人做比對
                         break;
@@ -130,12 +129,12 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
         Double emptyProductivity = 0.0;
         for (Test ti : l) {
             TestTable table = ti.getTestTable();
-            j.put(newTestUser(emptyUserName, ti.getUserId(), table.getName(), emptyProductivity, table.getSitefloor(), TEST_USER_NOT_IN_XML_SIGN));
+            j.put(newTestUser(emptyUserName, ti.getUserId(), table.getName(), emptyProductivity, table.getFloor().getName(), TEST_USER_NOT_IN_XML_SIGN));
         }
         return j;
     }
 
-    private JSONObject newTestUser(String name, String jobnumber, String tableNo, Double productivity, int sitefloor, int status) {
+    private JSONObject newTestUser(String name, String jobnumber, String tableNo, Double productivity, String sitefloor, int status) {
         return new JSONObject()
                 .put("name", name)
                 .put("number", jobnumber)

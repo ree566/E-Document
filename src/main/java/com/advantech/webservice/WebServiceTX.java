@@ -5,7 +5,7 @@
  */
 package com.advantech.webservice;
 
-import com.advantech.model.User;
+import com.advantech.model.UserOnMes;
 import java.net.URL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +47,7 @@ public class WebServiceTX {
 
     public String kanbanUserLogin(String jobnumber) {
         WebServiceRV rv = WebServiceRV.getInstance();
-        User user = rv.getMESUser(jobnumber);
+        UserOnMes user = rv.getMESUser(jobnumber);
 
         checkUserIsAvailable(user);
 
@@ -83,7 +83,7 @@ public class WebServiceTX {
     public String kanbanUserLogout(String jobnumber) {
         WebServiceRV rv = WebServiceRV.getInstance();
         String workId = rv.getKanbanWorkId(jobnumber);
-        User user = rv.getMESUser(jobnumber);
+        UserOnMes user = rv.getMESUser(jobnumber);
 
         checkUserIsAvailable(user);
 
@@ -102,7 +102,7 @@ public class WebServiceTX {
         return this.getWebServiceResponse(data, kanbanLogout);
     }
 
-    private void checkUserIsAvailable(User user) {
+    private void checkUserIsAvailable(UserOnMes user) {
         if (user == null || user.getUserId() == null || user.getUserNo() == null) {
             throw new IllegalArgumentException("The user is not exist.");
         }

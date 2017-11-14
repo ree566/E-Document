@@ -6,14 +6,11 @@
 package com.advantech.test;
 
 import com.advantech.helper.HibernateObjectPrinter;
-import com.advantech.service.SystemReportService;
+import com.advantech.model.User;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import java.util.List;
-import java.util.Map;
 import javax.transaction.Transactional;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,23 +29,17 @@ import org.springframework.test.context.web.WebAppConfiguration;
 })
 @RunWith(SpringJUnit4ClassRunner.class)
 public class HibernateTest {
-
+    
     @Autowired
     SessionFactory sessionFactory;
     
-    @Autowired
-    SystemReportService cService;
-    
     @Test
     @Transactional
-    @Rollback(false)
-    public void testAlarm() throws JsonProcessingException{
-        List l = cService.getPersonalAlmForExcel("2017-08-01", "2017-08-02");
-        HibernateObjectPrinter.print(l);
-        assertTrue(l.get(0) instanceof Map);
-        assertNotEquals(0, l.size());
+    @Rollback(true)
+    public void test() throws JsonProcessingException {
+        Session session = sessionFactory.getCurrentSession();
+        User t = (User) session.get(User.class, 2);
+        HibernateObjectPrinter.print(t);
     }
-
-
-
+    
 }
