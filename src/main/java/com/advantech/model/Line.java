@@ -5,36 +5,56 @@
  */
 package com.advantech.model;
 
+import com.advantech.converter.LineStatusConverter;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
+import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 /**
  *
  * @author Wei.Cheng
  */
-//@Entity
+@Entity
+@Table(name = "LS_Line",
+        schema = "dbo",
+        catalog = "WebAccess"
+)
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Line implements Serializable {
 
-    private static final long serialVersionUID = 1L;
     private int id;
     private String name;
-    private int isused;
-    private String linetype;
-    private int people;
     private int lock;
-    private int sitefloor;
+    private int people;
+    private LineType lineType;
+    private Floor floor;
+    private LineStatus lineStatus;
+
+    @JsonIgnore
+    public Set<User> users = new HashSet<User>(0);
 
     public Line() {
 
     }
 
-    public Line(int id, String name, int isused, String linetype, int lock) {
-        this.id = id;
-        this.name = name;
-        this.isused = isused;
-        this.linetype = linetype;
-        this.lock = lock;
-    }
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id", unique = true, nullable = false)
     public int getId() {
         return id;
     }
@@ -43,6 +63,7 @@ public class Line implements Serializable {
         this.id = id;
     }
 
+    @Column(name = "name", nullable = false, length = 50)
     public String getName() {
         return name;
     }
@@ -51,22 +72,7 @@ public class Line implements Serializable {
         this.name = name;
     }
 
-    public int getIsused() {
-        return isused;
-    }
-
-    public void setIsused(int isused) {
-        this.isused = isused;
-    }
-
-    public String getLinetype() {
-        return linetype;
-    }
-
-    public void setLinetype(String linetype) {
-        this.linetype = linetype;
-    }
-
+    @Column(name = "people", nullable = false)
     public int getPeople() {
         return people;
     }
@@ -75,6 +81,37 @@ public class Line implements Serializable {
         this.people = people;
     }
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "lineType_id")
+    public LineType getLineType() {
+        return lineType;
+    }
+
+    public void setLineType(LineType lineType) {
+        this.lineType = lineType;
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "floor_id")
+    public Floor getFloor() {
+        return floor;
+    }
+
+    public void setFloor(Floor floor) {
+        this.floor = floor;
+    }
+
+    @Column(name = "isused", nullable = false)
+    @Convert(converter = LineStatusConverter.class)
+    public LineStatus getLineStatus() {
+        return lineStatus;
+    }
+
+    public void setLineStatus(LineStatus lineStatus) {
+        this.lineStatus = lineStatus;
+    }
+
+    @Column(name = "lock", nullable = false)
     public int getLock() {
         return lock;
     }
@@ -83,16 +120,16 @@ public class Line implements Serializable {
         this.lock = lock;
     }
 
-    public boolean isOpened() {
-        return this.isused == 1;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "User_Line_REF", schema = "dbo", catalog = "WebAccess", joinColumns = {
+        @JoinColumn(name = "line_id", nullable = false, updatable = false)}, inverseJoinColumns = {
+        @JoinColumn(name = "[user_id]", nullable = false, updatable = false)})
+    public Set<User> getUsers() {
+        return users;
     }
 
-    public int getSitefloor() {
-        return sitefloor;
-    }
-
-    public void setSitefloor(int sitefloor) {
-        this.sitefloor = sitefloor;
+    public void setUsers(Set<User> users) {
+        this.users = users;
     }
 
 }

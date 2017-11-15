@@ -21,21 +21,23 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "[Floor]",
-         schema = "dbo",
-         catalog = "WebAccess"
+        schema = "dbo",
+        catalog = "WebAccess"
 )
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-public class Floor implements java.io.Serializable { 
+public class Floor implements java.io.Serializable {
 
     private int id;
     private String name;
-    
+
     @JsonIgnore
     private Set<User> users = new HashSet<>(0);
-    
+
     @JsonIgnore
     private Set<TestTable> testTables = new HashSet<>(0);
-    
+
+    @JsonIgnore
+    private Set<Line> lines = new HashSet<>(0);
 
     public Floor() {
     }
@@ -81,6 +83,15 @@ public class Floor implements java.io.Serializable {
 
     public void setTestTables(Set<TestTable> testTables) {
         this.testTables = testTables;
+    }
+    
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "floor")
+    public Set<Line> getLines() {
+        return lines;
+    }
+
+    public void setLines(Set<Line> lines) {
+        this.lines = lines;
     }
 
 }

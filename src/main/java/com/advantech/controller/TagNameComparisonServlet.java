@@ -7,6 +7,7 @@
 package com.advantech.controller;
 
 import com.advantech.model.Line;
+import com.advantech.model.LineStatus;
 import com.advantech.model.TagNameComparison;
 import com.advantech.service.LineService;
 import com.advantech.service.TagNameComparisonService;
@@ -46,7 +47,7 @@ public class TagNameComparisonServlet {
 
         Line line = lineService.getLine(line_id);
 
-        if (line == null || !line.isOpened()) {
+        if (line == null || line.getLineStatus() != LineStatus.OPEN) {
             throw new IllegalArgumentException("line is not exist or line is not opened");
         }
 

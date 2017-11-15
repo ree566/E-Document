@@ -6,48 +6,50 @@
 package com.advantech.dao;
 
 import com.advantech.model.LineTypeConfig;
-import java.sql.Connection;
 import java.util.List;
+import org.hibernate.Criteria;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
 /**
  *
- * @author Wei.Cheng
+ * @author Wei.Cheng Read the config from db and put in static variable
  */
 @Repository
-public class LineTypeConfigDAO extends BasicDAO {
+public class LineTypeConfigDAO extends AbstractDao<Integer, LineTypeConfig> implements BasicDAO_1<LineTypeConfig> {
 
-    private Connection getConn() {
-        return getDBUtilConn(SQL.WebAccess);
+    @Override
+    public List<LineTypeConfig> findAll() {
+        return super.createEntityCriteria().list();
     }
 
-    private List<LineTypeConfig> query(String sql, Object... params) {
-        return queryForBeanList(getConn(), LineTypeConfig.class, sql, params);
+    @Override
+    public LineTypeConfig findByPrimaryKey(Object obj_id) {
+        return super.getByKey((int) obj_id);
     }
 
-    public List<LineTypeConfig> getAll() {
-        return query("SELECT * FROM LineTypeConfig");
+    public List<LineTypeConfig> findByLineType(int lineType_id) {
+        Criteria c = super.createEntityCriteria();
+        c.add(Restrictions.eq("lineType.id", lineType_id));
+        return c.list();
     }
 
-    public LineTypeConfig getOne(int id) {
-        List l = query("SELECT * FROM LineTypeConfig WHERE id = ?", id);
-        return !l.isEmpty() ? (LineTypeConfig) l.get(0) : null;
+    @Override
+    public int insert(LineTypeConfig pojo) {
+        super.getSession().save(pojo);
+        return 1;
     }
 
-    public boolean insert(List<LineTypeConfig> l) {
-        return update(getConn(), "INSERT INTO LineTypeConfig(linetype_name, variable_name, variable_value) VALUES(?,?,?)", l, "linetype_name", "variable_name", "variable_value");
+    @Override
+    public int update(LineTypeConfig pojo) {
+        super.getSession().update(pojo);
+        return 1;
     }
 
-    public boolean update(List<LineTypeConfig> l) {
-        return update(getConn(), "UPDATE LineTypeConfig SET linetype_name = ?, variable_name = ?, variable_value = ? WHERE id = ?", l, "linetype_name", "variable_name", "variable_value", "id");
-    }
-
-    public boolean updateValue(List<LineTypeConfig> l) {
-        return update(getConn(), "UPDATE LineTypeConfig SET variable_value = ? WHERE linetype_name = ? AND variable_name = ?", l, "variable_value", "linetype_name", "variable_name");
-    }
-
-    public boolean delete(LineTypeConfig lineTypeConfig) {
-        return update(getConn(), "DELETE FROM LineTypeConfig WHERE id = ?", lineTypeConfig.getId());
+    @Override
+    public int delete(LineTypeConfig pojo) {
+        super.getSession().delete(pojo);
+        return 1;
     }
 
 }

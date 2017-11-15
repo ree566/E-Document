@@ -7,6 +7,7 @@ import com.advantech.model.BabStatus;
 import com.advantech.model.Line;
 import com.advantech.helper.PropertiesReader;
 import com.advantech.dao.BabDAO;
+import com.advantech.model.LineStatus;
 import com.google.gson.Gson;
 import java.math.BigDecimal;
 import java.sql.Array;
@@ -183,7 +184,7 @@ public class BabService {
 
         Line line = lineService.getLine(bab.getLine());
 
-        if (line.isOpened()) {
+        if (line.getLineStatus() == LineStatus.OPEN) {
             if (babDAO.insertBAB(bab)) {
                 if (needToClosePrev) {
                     babDAO.closeBABDirectly(prevBab);

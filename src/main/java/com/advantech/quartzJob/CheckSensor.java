@@ -8,18 +8,16 @@ package com.advantech.quartzJob;
 
 import com.advantech.model.Bab;
 import com.advantech.model.Fbn;
-import com.advantech.model.Line;
 import com.advantech.helper.ApplicationContextHelper;
 import com.advantech.helper.MailSend;
 import com.advantech.helper.PropertiesReader;
+import com.advantech.model.User;
 import com.advantech.service.FbnService;
-import com.advantech.service.LineOwnerMappingService;
-import com.advantech.service.LineService;
+import com.advantech.service.UserService;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import javax.mail.MessagingException;
 import org.joda.time.DateTime;
 import org.joda.time.Minutes;
@@ -50,14 +48,13 @@ public class CheckSensor extends QuartzJobBean {
 
     private final FbnService fbnService;
 
-    private final LineService lineService;
+    private final UserService userService;
 
-    private final LineOwnerMappingService lineOwnerMappingService;
+    private final String notificationName = "sensor_alarm";
 
     public CheckSensor() {
         fbnService = (FbnService) ApplicationContextHelper.getBean("fbnService");
-        lineService = (LineService) ApplicationContextHelper.getBean("lineService");
-        lineOwnerMappingService = (LineOwnerMappingService) ApplicationContextHelper.getBean("lineOwnerMappingService");
+        userService = (UserService) ApplicationContextHelper.getBean("userService");
     }
 
     @Override
@@ -139,21 +136,9 @@ public class CheckSensor extends QuartzJobBean {
 
     //Add the mail which want sensor_alarm and lineId is not setting per sitefloor
     private void addExtraMailToCCLoop(JSONArray arr) {
-        Line line = lineService.getLine(bab.getLine());
-
-        List<Map> l = lineOwnerMappingService.getLineNotSetting();
-
-        for (Map m : l) {
-            if (m.containsKey("sitefloor") && m.containsKey("sensor_alarm") && m.containsKey("user_name")) {
-                Integer line_id = (Integer) m.get("line_id");
-                Integer sitefloor = (Integer) m.get("sitefloor");
-                Integer sensor_alarm = (Integer) m.get("sensor_alarm");
-                String user_name = (String) m.get("user_name");
-
-                if ((line_id != null && line_id == line.getId()) || (line_id == null && sensor_alarm == 1 && (sitefloor == null || sitefloor == line.getSitefloor()))) {
-                    arr.put(user_name);
-                }
-            }
+        List<User> l = userService.findByUserNotificationAndNotLineOwner(, notificationName); //bab.getLine.getFloor.getid
+        for (User u : l) {
+            arr.put(u.getUsername());
         }
     }
 

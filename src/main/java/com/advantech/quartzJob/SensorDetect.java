@@ -6,11 +6,11 @@
 package com.advantech.quartzJob;
 
 import com.advantech.model.Bab;
-import com.advantech.model.LineOwnerMapping;
 import com.advantech.helper.ApplicationContextHelper;
 import com.advantech.helper.PropertiesReader;
+import com.advantech.model.User;
 import com.advantech.service.BabService;
-import com.advantech.service.LineOwnerMappingService;
+import com.advantech.service.UserService;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -19,7 +19,6 @@ import org.joda.time.DateTime;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.quartz.DisallowConcurrentExecution;
-import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -38,9 +37,8 @@ public class SensorDetect extends ProcessingBabDetector {
     private static final Integer SENSOR_EXPIRE_TIME;
     private static final Integer SENSOR_DETECT_PERIOD;
 
-    private final LineOwnerMappingService lineOwnerMappingService;
-
     private final BabService babService;
+    private final UserService userService;
 
     static {
         PropertiesReader p = PropertiesReader.getInstance();
@@ -55,8 +53,8 @@ public class SensorDetect extends ProcessingBabDetector {
                 "0 " + getMinutePeriodTime() + "/" + SENSOR_DETECT_PERIOD + " 8-11,13-20 ? * MON-SAT *",
                 CheckSensor.class
         );
-        lineOwnerMappingService = (LineOwnerMappingService) ApplicationContextHelper.getBean("lineOwnerMappingService");
         babService = (BabService) ApplicationContextHelper.getBean("babService");
+        userService = (UserService) ApplicationContextHelper.getBean("userService");
     }
 
     private static Integer getMinutePeriodTime() {
@@ -75,9 +73,9 @@ public class SensorDetect extends ProcessingBabDetector {
 
     private JSONArray getResponsors(Bab b) {
         JSONArray arr = new JSONArray();
-        List<LineOwnerMapping> responsors = lineOwnerMappingService.getByLine(b.getLine());
-        for (LineOwnerMapping owner : responsors) {
-            arr.put(owner.getUser_name());
+        List<User> responsors = userService.findLineOwner(b.getLine());
+        for (User owner : responsors) {
+            arr.put(owner.getUsername());
         }
         return arr;
     }

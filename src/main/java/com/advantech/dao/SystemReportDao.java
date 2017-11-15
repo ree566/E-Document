@@ -22,8 +22,8 @@ public class SystemReportDao extends BasicDAO {
     }
 
     //未填寫異常回覆列表
-    public List<Map> getUnFillCountermeasureBabs(String sitefloor) {
-        return queryForMapList(getConn(), "SELECT * FROM unFillCountermeasureView WHERE sitefloor = ? ORDER BY btime DESC", sitefloor);
+    public List<Map> getUnFillCountermeasureBabs(int floor_id) {
+        return queryForMapList(getConn(), "SELECT * FROM unFillCountermeasureView WHERE floor_id = ? ORDER BY btime DESC", floor_id);
     }
 
     //Bab各工單回復狀況以及詳細

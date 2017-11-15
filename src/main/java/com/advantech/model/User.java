@@ -18,7 +18,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
@@ -47,11 +46,20 @@ public class User implements java.io.Serializable, UserDetails {
     private String email;
     private String state = State.ACTIVE.getState();
 
+    @JsonIgnore
+    private Set<UserProfile> userProfiles = new HashSet<UserProfile>(0);
+
+    @JsonIgnore
+    private Set<UserNotification> userNotifications = new HashSet<UserNotification>(0);
+
     private boolean enabled;
     private boolean accountNonExpired;
     private boolean credentialsNonExpired;
     private boolean accountNonLocked;
     private Collection<? extends GrantedAuthority> authorities;
+
+    @JsonIgnore
+    public Set<Line> lines = new HashSet<Line>(0);
 
     public User() {
     }
@@ -157,6 +165,42 @@ public class User implements java.io.Serializable, UserDetails {
 
     public void setState(String state) {
         this.state = state;
+    }
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "User_Line_REF", schema = "dbo", catalog = "WebAccess", joinColumns = {
+        @JoinColumn(name = "[user_id]", nullable = false, updatable = false)}, inverseJoinColumns = {
+        @JoinColumn(name = "line_id", nullable = false, updatable = false)})
+    public Set<Line> getLines() {
+        return lines;
+    }
+
+    public void setLines(Set<Line> lines) {
+        this.lines = lines;
+    }
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "User_Profile_REF", schema = "dbo", catalog = "WebAccess", joinColumns = {
+        @JoinColumn(name = "user_id", nullable = false, insertable = false, updatable = false)}, inverseJoinColumns = {
+        @JoinColumn(name = "user_profile_id", nullable = false, insertable = false, updatable = false)})
+    public Set<UserProfile> getUserProfiles() {
+        return this.userProfiles;
+    }
+
+    public void setUserProfiles(Set<UserProfile> userProfiles) {
+        this.userProfiles = userProfiles;
+    }
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "User_Notification_REF", schema = "dbo", catalog = "WebAccess", joinColumns = {
+        @JoinColumn(name = "user_id", nullable = false, insertable = false, updatable = false)}, inverseJoinColumns = {
+        @JoinColumn(name = "user_notification_id", nullable = false, insertable = false, updatable = false)})
+    public Set<UserNotification> getUserNotifications() {
+        return this.userNotifications;
+    }
+
+    public void setUserNotifications(Set<UserNotification> userNotifications) {
+        this.userNotifications = userNotifications;
     }
 
     @Override

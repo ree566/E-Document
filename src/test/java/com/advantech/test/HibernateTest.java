@@ -7,10 +7,15 @@ package com.advantech.test;
 
 import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.model.User;
+import com.advantech.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import java.util.List;
 import javax.transaction.Transactional;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,17 +34,31 @@ import org.springframework.test.context.web.WebAppConfiguration;
 })
 @RunWith(SpringJUnit4ClassRunner.class)
 public class HibernateTest {
-    
+
     @Autowired
     SessionFactory sessionFactory;
-    
-    @Test
+
+    @Autowired
+    UserService userService;
+
+//    @Test
     @Transactional
     @Rollback(true)
     public void test() throws JsonProcessingException {
         Session session = sessionFactory.getCurrentSession();
-        User t = (User) session.get(User.class, 2);
-        HibernateObjectPrinter.print(t);
+        Query q = session.createQuery("select u from User u join u.userNotifications notifi where notifi.id = 1");
+        List l = q.list();
+        assertTrue(l.get(0) instanceof User);
+        assertEquals(13, l.size());
+        HibernateObjectPrinter.print(l);
     }
-    
+
+    @Test
+    @Transactional
+    @Rollback(true)
+    public void test2() throws JsonProcessingException {
+        List l = userService.findLineOwnerBySitefloor(2);
+        HibernateObjectPrinter.print(l);
+    }
+
 }

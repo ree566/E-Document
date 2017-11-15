@@ -9,8 +9,11 @@ import com.advantech.helper.ApplicationContextHelper;
 import com.advantech.helper.DatetimeGenerator;
 import com.advantech.helper.MailSend;
 import com.advantech.helper.StringParser;
-import com.advantech.service.LineOwnerMappingService;
+import com.advantech.model.Floor;
+import com.advantech.model.User;
+import com.advantech.service.FloorService;
 import com.advantech.service.SystemReportService;
+import com.advantech.service.UserService;
 import java.sql.Clob;
 import java.text.DecimalFormat;
 import java.util.HashMap;
@@ -19,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.json.JSONArray;
-import org.json.JSONObject;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
@@ -36,13 +38,17 @@ public class CountermeasureAlarm extends QuartzJobBean {
     private final DecimalFormat formatter = new DecimalFormat("#.##%");
     private final DatetimeGenerator dg = new DatetimeGenerator("yyyy-MM-dd HH:mm");
 
-    private final LineOwnerMappingService lineOwnerMappingService;
-
     private final SystemReportService systemReportService;
+    private final UserService userService;
+    private final FloorService floorService;
+
+    private final String notificationName = "abnormal_unfill_alarm";
+    private final String subject = "[藍燈系統]未填寫異常回覆工單列表 ";
 
     public CountermeasureAlarm() {
-        lineOwnerMappingService = (LineOwnerMappingService) ApplicationContextHelper.getBean("lineOwnerMappingService");
         systemReportService = (SystemReportService) ApplicationContextHelper.getBean("systemReportService");
+        userService = (UserService) ApplicationContextHelper.getBean("userService");
+        floorService = (FloorService) ApplicationContextHelper.getBean("floorService");
     }
 
     @Override
@@ -56,23 +62,22 @@ public class CountermeasureAlarm extends QuartzJobBean {
     }
 
     public void sendMail() throws Exception {
-        JSONObject responsorPerLine = lineOwnerMappingService.getSeparateLineOwnerMapping();
-        JSONObject responsorPerSitefloor = lineOwnerMappingService.getSeparateResponsorPerSitefloor();
-
-        // when user sitefloor is not setting, turn user's mail to mail cc loop
-        JSONArray ccMailLoop = responsorPerLine.getJSONArray("null");
-        String subject = "[藍燈系統]未填寫異常回覆工單列表 ";
-        for (String key : responsorPerSitefloor.keySet()) {
-            JSONArray mailLoop = responsorPerSitefloor.getJSONArray(key);
-            String mailBody = this.generateMailBody(key);
-            if (!"".equals(mailBody)) { //有資料再寄信
-                MailSend.getInstance().sendMail(mailLoop, ccMailLoop, subject + key + "F", mailBody);
-            }
+        JSONArray ccMailLoop = conbineUsers(userService.findByUserNotificationAndNotLineOwner(notificationName));
+        List<Floor> floors = floorService.findAll();
+        for (Floor f : floors) {
+            JSONArray mailLoop = conbineUsers(userService.findLineOwnerBySitefloor(f.getId()));
+            // when user sitefloor is not setting, turn user's mail to mail cc loop
+            
+                String mailBody = this.generateMailBody(f.getId());
+                if (!"".equals(mailBody)) { //有資料再寄信
+                    MailSend.getInstance().sendMail(mailLoop, ccMailLoop, subject + f.getName() + "F", mailBody);
+                }
+            
         }
     }
 
-    public String generateMailBody(String sitefloor) {
-        List<Map> l = systemReportService.getUnFillCountermeasureBabs(sitefloor);
+    public String generateMailBody(int floor_id) {
+        List<Map> l = systemReportService.getUnFillCountermeasureBabs(floor_id);
         if (l.isEmpty()) {
             return "";
         } else {
@@ -128,5 +133,15 @@ public class CountermeasureAlarm extends QuartzJobBean {
             sb.append(" 筆</p>");
             return sb.toString();
         }
+
     }
+
+    private JSONArray conbineUsers(List<User> l) {
+        JSONArray arr = new JSONArray();
+        for (User u : l) {
+            arr.put(u.getUsername());
+        }
+        return arr;
+    }
+
 }

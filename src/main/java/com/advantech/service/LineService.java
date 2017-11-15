@@ -7,6 +7,7 @@ package com.advantech.service;
 
 import com.advantech.model.Line;
 import com.advantech.dao.LineDAO;
+import com.advantech.model.LineStatus;
 import java.util.List;
 import javax.transaction.Transactional;
 import org.json.JSONException;
@@ -46,7 +47,7 @@ public class LineService {
 
     private boolean isLineOpened(int lineNo) {
         Line line = lineDAO.getLine(lineNo);
-        return line.isOpened();
+        return line.getLineStatus() == LineStatus.OPEN;
     }
 
     private boolean isLineClosed(int lineNo) {

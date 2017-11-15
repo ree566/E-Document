@@ -6,9 +6,8 @@
  */
 package com.advantech.controller;
 
-import com.advantech.model.Identit;
-import com.advantech.service.IdentitService;
-import java.io.PrintWriter;
+import com.advantech.model.User;
+import com.advantech.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,7 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class UserController {
 
     @Autowired
-    private IdentitService identitService;
+    private UserService userService;
 
     @RequestMapping(value = "/CheckUser", method = {RequestMethod.POST})
     @ResponseBody
@@ -34,7 +33,7 @@ public class UserController {
 
     private boolean isUserExist(String jobnumber) {
         //change the sql query(password not check)
-        Identit i = identitService.getIdentit(jobnumber);
+        User i = userService.findByJobnumber(jobnumber);
         return !(i == null);
     }
 

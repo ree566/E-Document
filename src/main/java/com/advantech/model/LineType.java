@@ -6,17 +6,18 @@
 package com.advantech.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.io.Serializable;
-import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 /**
@@ -24,26 +25,22 @@ import javax.persistence.Table;
  * @author Wei.Cheng
  */
 @Entity
-@Table(name = "LineTypeConfig",
+@Table(name = "LineType",
         schema = "dbo",
         catalog = "WebAccess"
 )
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-public class LineTypeConfig implements Serializable {
+public class LineType implements Serializable {
 
     private int id;
-    private LineType lineType;
+
     private String name;
-    private BigDecimal value;
 
-    public LineTypeConfig() {
-    }
+    @JsonIgnore
+    private Set<Line> lines = new HashSet<>(0);
 
-    public LineTypeConfig(LineType lineType, String name, BigDecimal value) {
-        this.lineType = lineType;
-        this.name = name;
-        this.value = value;
-    }
+    @JsonIgnore
+    private Set<LineTypeConfig> lineTypeConfigs = new HashSet<>(0);
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -56,17 +53,7 @@ public class LineTypeConfig implements Serializable {
         this.id = id;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "lineType_id")
-    public LineType getLineType() {
-        return lineType;
-    }
-
-    public void setLineType(LineType lineType) {
-        this.lineType = lineType;
-    }
-
-    @Column(name = "variable_name", nullable = false, length = 50)
+    @Column(name = "name", nullable = false, length = 50)
     public String getName() {
         return name;
     }
@@ -75,13 +62,22 @@ public class LineTypeConfig implements Serializable {
         this.name = name;
     }
 
-    @Column(name = "variable_value", nullable = false, precision = 10, scale = 4)
-    public BigDecimal getValue() {
-        return value;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "lineType")
+    public Set<Line> getLines() {
+        return lines;
     }
 
-    public void setValue(BigDecimal value) {
-        this.value = value;
+    public void setLines(Set<Line> lines) {
+        this.lines = lines;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "lineType")
+    public Set<LineTypeConfig> getLineTypeConfigs() {
+        return lineTypeConfigs;
+    }
+
+    public void setLineTypeConfigs(Set<LineTypeConfig> lineTypeConfigs) {
+        this.lineTypeConfigs = lineTypeConfigs;
     }
 
 }
