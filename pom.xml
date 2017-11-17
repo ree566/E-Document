@@ -410,7 +410,7 @@
         <dependency>
             <groupId>org.jxls</groupId>
             <artifactId>jxls</artifactId>
-            <version>2.4.0</version>
+            <version>2.4.2</version>
         </dependency>
         
         <!-- https://mvnrepository.com/artifact/org.jxls/jxls-reader -->
@@ -635,7 +635,7 @@
                 <version>2.15</version>
                 <configuration>
                     <argLine>-Dfile.encoding=UTF-8</argLine>
-                    <skipTests>true</skipTests>
+                    <skipTests>false</skipTests>
                 </configuration>
             </plugin>
         </plugins>

@@ -11,7 +11,6 @@ import com.advantech.service.UserService;
 import com.advantech.webservice.root.MesUserInfoQueryRoot;
 import com.advantech.webservice.unmarshallclass.MesUserInfo;
 import com.advantech.webservice.unmarshallclass.MesUserInfos;
-import com.google.gson.Gson;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

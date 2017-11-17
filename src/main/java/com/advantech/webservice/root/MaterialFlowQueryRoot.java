@@ -2,7 +2,7 @@
 // 此檔案是由 JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.8-b130911.1802 所產生 
 // 請參閱 <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // 一旦重新編譯來源綱要, 對此檔案所做的任何修改都將會遺失. 
-// 產生時間: 2017.09.04 於 11:23:15 AM CST 
+// 產生時間: 2017.11.17 於 11:25:50 AM CST 
 //
 package com.advantech.webservice.root;
 
@@ -40,13 +40,12 @@ import javax.xml.bind.annotation.XmlValue;
  *             &lt;complexContent>
  *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *                 &lt;sequence>
- *                   &lt;element name="MF_ID" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *                   &lt;element name="ITEM_NO" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *                   &lt;element name="FLOW_RULE_ID" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *                   &lt;element name="FLOW_SEQ" type="{http://www.w3.org/2001/XMLSchema}Integer"/>
- *                   &lt;element name="ITEM_ID" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *                   &lt;element name="UNIT_NO" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *                   &lt;element name="UPDATE_FLOW_FLAG" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *                   &lt;element name="MF_ID" type="{http://www.w3.org/2001/XMLSchema}byte"/>
+ *                   &lt;element name="ITEM_ID" type="{http://www.w3.org/2001/XMLSchema}byte"/>
+ *                   &lt;element name="ITEM_NO" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *                   &lt;element name="FLOW_RULE_ID" type="{http://www.w3.org/2001/XMLSchema}byte"/>
+ *                   &lt;element name="STATUS" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *                 &lt;/sequence>
  *               &lt;/restriction>
  *             &lt;/complexContent>
@@ -66,16 +65,21 @@ import javax.xml.bind.annotation.XmlValue;
     "materialflow"
 })
 @XmlRootElement(name = "root")
-public class MaterialFlowRoot {
+public class MaterialFlowQueryRoot {
 
     @XmlElement(name = "METHOD", required = true)
-    protected MaterialFlowRoot.METHOD method;
+    protected MaterialFlowQueryRoot.METHOD method;
     @XmlElement(name = "MATERIAL_FLOW", required = true)
-    protected MaterialFlowRoot.MATERIALFLOW materialflow;
+    protected MaterialFlowQueryRoot.MATERIALFLOW materialflow;
 
-    public MaterialFlowRoot() {
-        this.method = new MaterialFlowRoot.METHOD();
-        this.materialflow = new MaterialFlowRoot.MATERIALFLOW();
+    public MaterialFlowQueryRoot() {
+        this.method = new MaterialFlowQueryRoot.METHOD();
+        this.materialflow = new MaterialFlowQueryRoot.MATERIALFLOW();
+    }
+
+    public MaterialFlowQueryRoot(String unitno, String itemno) {
+        this.method = new MaterialFlowQueryRoot.METHOD();
+        this.materialflow = new MaterialFlowQueryRoot.MATERIALFLOW(unitno, itemno);
     }
 
     /**
@@ -84,7 +88,7 @@ public class MaterialFlowRoot {
      * @return possible object is {@link Root.METHOD }
      *
      */
-    public MaterialFlowRoot.METHOD getMETHOD() {
+    public MaterialFlowQueryRoot.METHOD getMETHOD() {
         return method;
     }
 
@@ -94,7 +98,7 @@ public class MaterialFlowRoot {
      * @param value allowed object is {@link Root.METHOD }
      *
      */
-    public void setMETHOD(MaterialFlowRoot.METHOD value) {
+    public void setMETHOD(MaterialFlowQueryRoot.METHOD value) {
         this.method = value;
     }
 
@@ -104,7 +108,7 @@ public class MaterialFlowRoot {
      * @return possible object is {@link Root.MATERIALFLOW }
      *
      */
-    public MaterialFlowRoot.MATERIALFLOW getMATERIALFLOW() {
+    public MaterialFlowQueryRoot.MATERIALFLOW getMATERIALFLOW() {
         return materialflow;
     }
 
@@ -114,7 +118,7 @@ public class MaterialFlowRoot {
      * @param value allowed object is {@link Root.MATERIALFLOW }
      *
      */
-    public void setMATERIALFLOW(MaterialFlowRoot.MATERIALFLOW value) {
+    public void setMATERIALFLOW(MaterialFlowQueryRoot.MATERIALFLOW value) {
         this.materialflow = value;
     }
 
@@ -130,13 +134,12 @@ public class MaterialFlowRoot {
      *   &lt;complexContent>
      *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
      *       &lt;sequence>
-     *         &lt;element name="MF_ID" type="{http://www.w3.org/2001/XMLSchema}string"/>
-     *         &lt;element name="ITEM_NO" type="{http://www.w3.org/2001/XMLSchema}string"/>
-     *         &lt;element name="FLOW_RULE_ID" type="{http://www.w3.org/2001/XMLSchema}string"/>
-     *         &lt;element name="FLOW_SEQ" type="{http://www.w3.org/2001/XMLSchema}Integer"/>
-     *         &lt;element name="ITEM_ID" type="{http://www.w3.org/2001/XMLSchema}string"/>
      *         &lt;element name="UNIT_NO" type="{http://www.w3.org/2001/XMLSchema}string"/>
-     *         &lt;element name="UPDATE_FLOW_FLAG" type="{http://www.w3.org/2001/XMLSchema}string"/>
+     *         &lt;element name="MF_ID" type="{http://www.w3.org/2001/XMLSchema}byte"/>
+     *         &lt;element name="ITEM_ID" type="{http://www.w3.org/2001/XMLSchema}byte"/>
+     *         &lt;element name="ITEM_NO" type="{http://www.w3.org/2001/XMLSchema}string"/>
+     *         &lt;element name="FLOW_RULE_ID" type="{http://www.w3.org/2001/XMLSchema}byte"/>
+     *         &lt;element name="STATUS" type="{http://www.w3.org/2001/XMLSchema}string"/>
      *       &lt;/sequence>
      *     &lt;/restriction>
      *   &lt;/complexContent>
@@ -147,49 +150,86 @@ public class MaterialFlowRoot {
      */
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "", propOrder = {
+        "unitno",
         "mfid",
+        "itemid",
         "itemno",
         "flowruleid",
-        "flowseq",
-        "itemid",
-        "unitno",
-        "updateflowflag"
+        "status"
     })
     public static class MATERIALFLOW {
 
-        @XmlElement(name = "MF_ID", required = true)
-        protected String mfid;
-        @XmlElement(name = "ITEM_NO", required = true)
-        protected String itemno;
-        @XmlElement(name = "FLOW_RULE_ID", required = true)
-        protected String flowruleid;
-        @XmlElement(name = "FLOW_SEQ")
-        protected Integer flowseq;
-        @XmlElement(name = "ITEM_ID", required = true)
-        protected String itemid;
-        @XmlElement(name = "UNIT_NO", required = true)
+        @XmlElement(name = "UNIT_NO", required = true, nillable = true)
         protected String unitno;
-        @XmlElement(name = "UPDATE_FLOW_FLAG", required = true)
-        protected String updateflowflag;
+        @XmlElement(name = "MF_ID", nillable = true)
+        protected byte mfid = -1;
+        @XmlElement(name = "ITEM_ID", nillable = true)
+        protected byte itemid = -1;
+        @XmlElement(name = "ITEM_NO", required = true, nillable = true)
+        protected String itemno;
+        @XmlElement(name = "FLOW_RULE_ID", nillable = true)
+        protected byte flowruleid = -1;
+        @XmlElement(name = "STATUS", required = true)
+        protected String status = "";
+
+        public MATERIALFLOW() {
+        }
+
+        public MATERIALFLOW(String unitno, String itemno) {
+            this.unitno = unitno;
+            this.itemno = itemno;
+        }
 
         /**
-         * 取得 mfid 特性的值.
+         * 取得 unitno 特性的值.
          *
          * @return possible object is {@link String }
          *
          */
-        public String getMFID() {
+        public String getUNITNO() {
+            return unitno;
+        }
+
+        /**
+         * 設定 unitno 特性的值.
+         *
+         * @param value allowed object is {@link String }
+         *
+         */
+        public void setUNITNO(String value) {
+            this.unitno = value;
+        }
+
+        /**
+         * 取得 mfid 特性的值.
+         *
+         */
+        public byte getMFID() {
             return mfid;
         }
 
         /**
          * 設定 mfid 特性的值.
          *
-         * @param value allowed object is {@link String }
+         */
+        public void setMFID(byte value) {
+            this.mfid = value;
+        }
+
+        /**
+         * 取得 itemid 特性的值.
          *
          */
-        public void setMFID(String value) {
-            this.mfid = value;
+        public byte getITEMID() {
+            return itemid;
+        }
+
+        /**
+         * 設定 itemid 特性的值.
+         *
+         */
+        public void setITEMID(byte value) {
+            this.itemid = value;
         }
 
         /**
@@ -215,97 +255,37 @@ public class MaterialFlowRoot {
         /**
          * 取得 flowruleid 特性的值.
          *
-         * @return possible object is {@link String }
-         *
          */
-        public String getFLOWRULEID() {
+        public byte getFLOWRULEID() {
             return flowruleid;
         }
 
         /**
          * 設定 flowruleid 特性的值.
          *
-         * @param value allowed object is {@link String }
-         *
          */
-        public void setFLOWRULEID(String value) {
+        public void setFLOWRULEID(byte value) {
             this.flowruleid = value;
         }
 
         /**
-         * 取得 flowseq 特性的值.
-         *
-         */
-        public Integer getFLOWSEQ() {
-            return flowseq;
-        }
-
-        /**
-         * 設定 flowseq 特性的值.
-         *
-         */
-        public void setFLOWSEQ(Integer value) {
-            this.flowseq = value;
-        }
-
-        /**
-         * 取得 itemid 特性的值.
+         * 取得 status 特性的值.
          *
          * @return possible object is {@link String }
          *
          */
-        public String getITEMID() {
-            return itemid;
+        public String getSTATUS() {
+            return status;
         }
 
         /**
-         * 設定 itemid 特性的值.
+         * 設定 status 特性的值.
          *
          * @param value allowed object is {@link String }
          *
          */
-        public void setITEMID(String value) {
-            this.itemid = value;
-        }
-
-        /**
-         * 取得 unitno 特性的值.
-         *
-         * @return possible object is {@link String }
-         *
-         */
-        public String getUNITNO() {
-            return unitno;
-        }
-
-        /**
-         * 設定 unitno 特性的值.
-         *
-         * @param value allowed object is {@link String }
-         *
-         */
-        public void setUNITNO(String value) {
-            this.unitno = value;
-        }
-
-        /**
-         * 取得 updateflowflag 特性的值.
-         *
-         * @return possible object is {@link String }
-         *
-         */
-        public String getUPDATEFLOWFLAG() {
-            return updateflowflag;
-        }
-
-        /**
-         * 設定 updateflowflag 特性的值.
-         *
-         * @param value allowed object is {@link String }
-         *
-         */
-        public void setUPDATEFLOWFLAG(String value) {
-            this.updateflowflag = value;
+        public void setSTATUS(String value) {
+            this.status = value;
         }
 
     }
@@ -338,7 +318,7 @@ public class MaterialFlowRoot {
         @XmlValue
         protected String value;
         @XmlAttribute(name = "ID")
-        protected String id;
+        protected String id = "INITSO.QryMaterialFlow";
 
         /**
          * 取得 value 特性的值.

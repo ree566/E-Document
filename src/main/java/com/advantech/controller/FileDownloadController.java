@@ -18,11 +18,11 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.jexl2.JexlEngine;
 import org.jxls.common.Context;
 import org.jxls.expression.JexlExpressionEvaluator;
 import org.jxls.transform.Transformer;
 import org.jxls.util.JxlsHelper;
-import org.jxls.util.TransformerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -108,10 +108,7 @@ public class FileDownloadController {
             try (OutputStream os = response.getOutputStream()) {
                 this.outputFile(l, is, os);
             }
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            throw e;
-        }
+        } 
     }
 
     private void outputFile(List data, InputStream is, OutputStream os) throws IOException {
@@ -124,14 +121,14 @@ public class FileDownloadController {
         context.putVar("dateFormat", dateFormat);
         context.putVar("revision", revisionInfo);
 
-        Transformer transformer = TransformerFactory.createTransformer(is, os);
-//        transformer.getTransformationConfig().setExpressionEvaluator(new JexlExpressionEvaluatorNoThreadLocal());
+        JxlsHelper helper = JxlsHelper.getInstance();
+        Transformer transformer = helper.createTransformer(is, os);
         JexlExpressionEvaluator evaluator = (JexlExpressionEvaluator) transformer.getTransformationConfig().getExpressionEvaluator();
 
         //避免Jexl2在javabean值為null時會log
-        evaluator.getJexlEngine().setSilent(true);
+        JexlEngine engine = evaluator.getJexlEngine();
+        engine.setSilent(true);
 
-        JxlsHelper helper = JxlsHelper.getInstance();
         helper.processTemplate(context, transformer);
     }
 

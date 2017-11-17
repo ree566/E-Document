@@ -44,12 +44,12 @@ Contributor(s):
         <!--connection setting-->
         <property name="hibernate.connection.driver_class">net.sourceforge.jtds.jdbc.Driver</property>
      
-        <!--        <property name="hibernate.connection.url">jdbc:jtds:sqlserver://localhost:57936/E_Document</property>
+        <property name="hibernate.connection.url">jdbc:jtds:sqlserver://localhost:57936/E_Document</property>
         <property name="hibernate.connection.username">test.user</property>
-        <property name="hibernate.connection.password">test</property>-->
-        <property name="hibernate.connection.url">jdbc:jtds:sqlserver://M3-SERVER:1433/E_Document</property>
+        <property name="hibernate.connection.password">test</property>
+        <!--        <property name="hibernate.connection.url">jdbc:jtds:sqlserver://M3-SERVER:1433/E_Document</property>
         <property name="hibernate.connection.username">waychien</property>
-        <property name="hibernate.connection.password">m3server</property>
+        <property name="hibernate.connection.password">m3server</property>-->
     
         <!--other setting-->
         <property name="hibernate.dialect">org.hibernate.dialect.SQLServerDialect</property>

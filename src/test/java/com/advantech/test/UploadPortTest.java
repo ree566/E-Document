@@ -9,11 +9,10 @@ import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.Worktime;
 import com.advantech.service.WorktimeAutouploadSettingService;
 import com.advantech.service.WorktimeService;
-import com.advantech.webservice.port.MaterialFlowUploadPort;
+import com.advantech.webservice.port.FlowUploadPort;
 import com.advantech.webservice.port.ModelResponsorUploadPort;
 import com.advantech.webservice.port.SopUploadPort;
 import com.advantech.webservice.port.StandardtimeUploadPort;
-import com.advantech.webservice.port.UploadType;
 import static com.google.common.collect.Lists.newArrayList;
 import java.util.List;
 import java.util.Map;
@@ -47,7 +46,7 @@ public class UploadPortTest {
 
     //Port for spe
     @Autowired
-    private MaterialFlowUploadPort materialPort;
+    private FlowUploadPort materialPort;
 
     @Autowired
     private ModelResponsorUploadPort mappingUserPort;
@@ -108,13 +107,13 @@ public class UploadPortTest {
 
         standardtimePort.initSettings(newArrayList(worktimeAutouploadSettingService.findByPrimaryKey(16)));
 
-        for (Worktime worktime : l) {
+        l.forEach((worktime) -> {
             try {
                 System.out.println("Upload model: " + worktime.getModelName());
                 standardtimePort.upload(worktime);
             } catch (Exception ex) {
                 System.out.println(ex);
             }
-        }
+        });
     }
 }

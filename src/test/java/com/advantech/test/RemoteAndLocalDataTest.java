@@ -6,10 +6,12 @@
 package com.advantech.test;
 
 import com.advantech.excel.ExcelGenerator;
-import com.advantech.jqgrid.PageInfo;
+import com.advantech.model.Flow;
 import com.advantech.model.User;
 import com.advantech.model.Worktime;
+import com.advantech.service.FlowService;
 import com.advantech.service.WorktimeService;
+import com.advantech.webservice.port.FlowRuleQueryPort;
 import com.advantech.webservice.port.ModelResponsorQueryPort;
 import com.advantech.webservice.unmarshallclass.ModelResponsor;
 import com.google.common.base.Predicate;
@@ -20,6 +22,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.transaction.Transactional;
 import org.hibernate.SessionFactory;
 import org.junit.Before;
@@ -57,6 +61,12 @@ public class RemoteAndLocalDataTest {
 
     private List<Worktime> l;
 
+    @Autowired
+    private FlowService flowService;
+
+    @Autowired
+    private FlowRuleQueryPort flowRuleQueryPort;
+
     @Before
     public void init() {
 //        Criteria c = sessionFactory.getCurrentSession().createCriteria(Worktime.class);
@@ -64,10 +74,10 @@ public class RemoteAndLocalDataTest {
 //        c.setFetchMode("userByQcOwnerId", FetchMode.EAGER);
 //        c.setFetchMode("userBySpeOwnerId", FetchMode.EAGER);
 //        l = c.list();
-        l = worktimeService.findAll();
+//        l = worktimeService.findAll();
     }
 
-    @Test
+//    @Test
     public void test() throws Exception {
         ExcelGenerator generator = new ExcelGenerator();
         List<Map> errors = new ArrayList();
@@ -116,6 +126,33 @@ public class RemoteAndLocalDataTest {
         });
 
         return s1.containsAll(s2);
+    }
+
+    @Test
+    public void testFlow() throws Exception {
+        List<Flow> flows = flowService.findAll();
+        flows.forEach((f) -> {
+            System.out.println("Test flow: " + f.getName());
+            try {
+                Worktime w = new Worktime();
+                switch (f.getFlowGroup().getName()) {
+                    case "BAB":
+                        w.setFlowByBabFlowId(f);
+                        break;
+                    case "TEST":
+                        w.setFlowByTestFlowId(f);
+                        break;
+                    case "PKG":
+                        w.setFlowByPackingFlowId(f);
+                        break;
+                    default:
+                        break;
+                }
+                List result = flowRuleQueryPort.query(w);
+            } catch (Exception ex) {
+                System.out.println(ex);
+            }
+        });
     }
 
 }
