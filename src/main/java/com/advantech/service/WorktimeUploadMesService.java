@@ -7,6 +7,7 @@ package com.advantech.service;
 
 import com.advantech.dao.AuditDAO;
 import com.advantech.model.Worktime;
+import com.advantech.webservice.port.FlowUploadPort;
 import com.advantech.webservice.port.ModelResponsorUploadPort;
 import com.advantech.webservice.port.SopUploadPort;
 import java.util.Objects;
@@ -31,55 +32,62 @@ public class WorktimeUploadMesService {
     @Autowired
     private ModelResponsorUploadPort responsorUploadPort;
 
-    public void uploadToMes(Worktime w, boolean checkRevision) throws Exception {
-        if (checkRevision) {
-            this.uploadWithCheckRevision(w);
-        } else {
-            this.uploadWithoutCheckRevision(w);
-        }
-    }
+    @Autowired
+    private FlowUploadPort flowUploadPort;
 
-    public void deleteOnMes(Worktime w) throws Exception {
-        sopUploadPort.delete(w);
-        responsorUploadPort.delete(w);
-    }
-
-    private void uploadWithCheckRevision(Worktime w) throws Exception {
-        Worktime rowLastStatus = (Worktime) auditDAO.findLastStatusBeforeUpdate(Worktime.class, w.getId());
-        if (isSopFieldsChanged(rowLastStatus, w)) {
-            this.uploadSop(w);
-        }
-        if (isModelResponsorChanged(rowLastStatus, w)) {
-            this.uploadModelResponsor(w);
-        }
-    }
-
-    private void uploadWithoutCheckRevision(Worktime w) throws Exception {
-        this.uploadSop(w);
-        this.uploadModelResponsor(w);
-    }
-
-    private void uploadSop(Worktime w) throws Exception {
+    public void insert(Worktime w) throws Exception {
         try {
             sopUploadPort.update(w);
         } catch (Exception e) {
-            throw new Exception("SOP同步至MES失敗<br />" + e.getMessage());
+            throw new Exception("SOP新增至MES失敗<br />" + e.getMessage());
         }
-    }
-
-    private void uploadModelResponsor(Worktime w) throws Exception {
+        
         try {
             responsorUploadPort.update(w);
         } catch (Exception e) {
-            throw new Exception("機種負責人同步至MES失敗<br />" + e.getMessage());
+            throw new Exception("機種負責人新增至MES失敗<br />" + e.getMessage());
         }
+        
+        try {
+            flowUploadPort.insert(w);
+        } catch (Exception e) {
+            throw new Exception("徒程新增至MES失敗<br />" + e.getMessage());
+        }
+    }
+
+    public void update(Worktime w) throws Exception {
+        Worktime rowLastStatus = (Worktime) auditDAO.findLastStatusBeforeUpdate(Worktime.class, w.getId());
+        if (isSopChanged(rowLastStatus, w)) {
+            try {
+                sopUploadPort.update(w);
+            } catch (Exception e) {
+                throw new Exception("SOP更新至MES失敗<br />" + e.getMessage());
+            }
+        }
+
+        if (isModelResponsorChanged(rowLastStatus, w)) {
+            try {
+                responsorUploadPort.update(w);
+            } catch (Exception e) {
+                throw new Exception("機種負責人更新至MES失敗<br />" + e.getMessage());
+            }
+        }
+
+        if (isFlowChanged(rowLastStatus, w)) {
+            try {
+                flowUploadPort.update(w);
+            } catch (Exception e) {
+                throw new Exception("徒程更新至MES失敗<br />" + e.getMessage());
+            }
+        } 
+
     }
 
     private boolean isModelNameChanged(Worktime prev, Worktime current) {
         return !prev.getModelName().equals(current.getModelName());
     }
 
-    private boolean isSopFieldsChanged(Worktime prev, Worktime current) {
+    private boolean isSopChanged(Worktime prev, Worktime current) {
         return isModelNameChanged(prev, current)
                 || !Objects.equals(prev.getAssyPackingSop(), current.getAssyPackingSop())
                 || !Objects.equals(prev.getTestSop(), current.getTestSop());
@@ -91,5 +99,35 @@ public class WorktimeUploadMesService {
                 || !Objects.equals(prev.getUserBySpeOwnerId(), current.getUserBySpeOwnerId())
                 || !Objects.equals(prev.getUserByEeOwnerId(), current.getUserByEeOwnerId())
                 || !Objects.equals(prev.getUserByQcOwnerId(), current.getUserByQcOwnerId());
+    }
+
+    //Revision entity relation object are lasy loading.
+    private boolean isFlowChanged(Worktime prev, Worktime current) {
+        return isModelNameChanged(prev, current)
+                || !Objects.equals(prev.getPreAssy(), current.getPreAssy())
+                || !Objects.equals(prev.getFlowByBabFlowId(), current.getFlowByBabFlowId())
+                || !Objects.equals(prev.getFlowByTestFlowId(), current.getFlowByTestFlowId())
+                || !Objects.equals(prev.getFlowByPackingFlowId(), current.getFlowByPackingFlowId());
+    }
+
+    public void delete(Worktime w) throws Exception {
+        try {
+            sopUploadPort.delete(w);
+        } catch (Exception e) {
+            throw new Exception("徒程刪除至MES失敗<br />" + e.getMessage());
+        }
+        
+        try {
+            responsorUploadPort.delete(w);
+        } catch (Exception e) {
+            throw new Exception("徒程刪除至MES失敗<br />" + e.getMessage());
+        }
+        
+        try {
+            flowUploadPort.delete(w);
+        } catch (Exception e) {
+            throw new Exception("徒程刪除至MES失敗<br />" + e.getMessage());
+        }
+
     }
 }

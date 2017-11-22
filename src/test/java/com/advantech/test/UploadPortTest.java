@@ -5,8 +5,13 @@
  */
 package com.advantech.test;
 
+import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.jqgrid.PageInfo;
+import com.advantech.model.Flow;
+import com.advantech.model.PreAssy;
 import com.advantech.model.Worktime;
+import com.advantech.service.FlowService;
+import com.advantech.service.PreAssyService;
 import com.advantech.service.WorktimeAutouploadSettingService;
 import com.advantech.service.WorktimeService;
 import com.advantech.webservice.port.FlowUploadPort;
@@ -22,6 +27,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -46,7 +52,7 @@ public class UploadPortTest {
 
     //Port for spe
     @Autowired
-    private FlowUploadPort materialPort;
+    private FlowUploadPort flowUploadPort;
 
     @Autowired
     private ModelResponsorUploadPort mappingUserPort;
@@ -56,6 +62,12 @@ public class UploadPortTest {
 
     @Autowired
     private WorktimeService worktimeService;
+
+    @Autowired
+    private FlowService flowService;
+
+    @Autowired
+    private PreAssyService preAssyService;
 
     @Before
     public void initTestData() {
@@ -69,13 +81,13 @@ public class UploadPortTest {
         assertEquals(17, result.size());
     }
 
-//    @Test
-    public void testMaterialFlowUpload() throws Exception {
-        Map result = materialPort.transformData(w);
-        assertEquals(4, result.size());
+    @Test
+    @Rollback(true)
+    public void testFlowUpload() throws Exception {
+
     }
 
-    @Test
+//    @Test
     public void testPartMappingUserUpload() throws Exception {
 //        Map result = mappingUserPort.transformData(w);
 //        assertEquals(1, result.size());

@@ -76,7 +76,7 @@ public class WorktimeService {
 
     public int insert(Worktime worktime) throws Exception {
         worktimeDAO.insert(worktime);
-        uploadMesService.uploadToMes(worktime, false);
+        uploadMesService.insert(worktime);
         return 1;
     }
 
@@ -98,7 +98,6 @@ public class WorktimeService {
         this.insert(worktime);
         setting.setWorktime(worktime);
         worktimeFormulaSettingDAO.insert(setting);
-        uploadMesService.uploadToMes(worktime, false);
         return 1;
     }
 
@@ -115,7 +114,7 @@ public class WorktimeService {
         initUnfilledFormulaColumn(worktime);
         worktimeFormulaSettingDAO.update(worktime.getWorktimeFormulaSettings().get(0));
         worktimeDAO.update(worktime);
-        uploadMesService.uploadToMes(worktime, true);
+        uploadMesService.update(worktime);
         return 1;
     }
 
@@ -132,7 +131,7 @@ public class WorktimeService {
         initUnfilledFormulaColumn(worktime);
         worktimeFormulaSettingDAO.update(worktime.getWorktimeFormulaSettings().get(0));
         worktimeDAO.merge(worktime);
-        uploadMesService.uploadToMes(worktime, true);
+        uploadMesService.update(worktime);
         return 1;
     }
 
@@ -228,7 +227,7 @@ public class WorktimeService {
     public int delete(int id) throws Exception {
         Worktime worktime = this.findByPrimaryKey(id);
         worktimeDAO.delete(worktime);
-        uploadMesService.deleteOnMes(worktime);
+        uploadMesService.delete(worktime);
         return 1;
     }
 

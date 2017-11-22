@@ -25,8 +25,17 @@ public class MaterialFlow implements Serializable {
     @XmlElement(name = "ITEM_ID")
     private int itemId;
 
+    @XmlElement(name = "ITEM_NO")
+    private String itemNo;
+
     @XmlElement(name = "FLOW_RULE_ID")
     private int flowRuleId;
+
+    @XmlElement(name = "FLOW_RULE_NAME")
+    private String flowRuleName;
+
+    @XmlElement(name = "UNIT_NO")
+    private String unitNo;
 
     public int getId() {
         return id;
@@ -44,12 +53,36 @@ public class MaterialFlow implements Serializable {
         this.itemId = itemId;
     }
 
+    public String getItemNo() {
+        return itemNo;
+    }
+
+    public void setItemNo(String itemNo) {
+        this.itemNo = itemNo;
+    }
+
     public int getFlowRuleId() {
         return flowRuleId;
     }
 
     public void setFlowRuleId(int flowRuleId) {
         this.flowRuleId = flowRuleId;
+    }
+
+    public String getFlowRuleName() {
+        return flowRuleName;
+    }
+
+    public void setFlowRuleName(String flowRuleName) {
+        this.flowRuleName = flowRuleName;
+    }
+
+    public String getUnitNo() {
+        return unitNo;
+    }
+
+    public void setUnitNo(String unitNo) {
+        this.unitNo = unitNo;
     }
 
 }

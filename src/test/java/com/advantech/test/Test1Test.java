@@ -5,6 +5,7 @@
  */
 package com.advantech.test;
 
+import com.advantech.webservice.root.Section;
 import org.junit.Test;
 
 /**
@@ -13,29 +14,13 @@ import org.junit.Test;
  */
 public class Test1Test {
 
-    private enum Section {
-        A("PREASSY"),
-        B("BAB"),
-        T("TEST"),
-        P("PACKAGE");
-
-        private final String state;
-
-        private Section(final String state) {
-            this.state = state;
-        }
-        
-        public String getState(){
-            return this.state;
-        }
-
-    }
-
     @Test
     public void test() {
-        Section bab = Section.B;
-        System.out.println(bab.getState());
-        System.out.println(bab.toString());
+        for (Section sec : Section.values()) {
+            System.out.print(sec.toString());
+            System.out.print(" ");
+            System.out.println(sec.getCode());
+        }
     }
 
 }

@@ -46,6 +46,14 @@ public abstract class BasicQueryPort {
         jaxbUnmarshaller = jaxbContext2.createUnmarshaller();
     }
 
+    public List query(Object jaxbElement) throws Exception {
+        String xmlString = this.generateXmlString(jaxbElement);
+        RvResponse response = client.simpleRvSendAndReceive(xmlString);
+        Object o = unmarshalResult(response);
+        QueryResult queryResult = (QueryResult) o;
+        return queryResult.getQryData();
+    }
+
     public List query(Worktime w) throws Exception {
         List totalQueryResult = new ArrayList();
         Map<String, String> xmlResults = transformData(w);

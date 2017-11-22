@@ -24,4 +24,13 @@ public enum Section {
     public String getCode() {
         return this.code;
     }
+
+    public static Section getByCode(String code) {
+        for (Section v : values()) {
+            if (v.getCode().equals(code)) {
+                return v;
+            }
+        }
+        return null;
+    }
 }

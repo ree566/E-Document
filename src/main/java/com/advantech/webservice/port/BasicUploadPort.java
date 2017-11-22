@@ -31,12 +31,28 @@ public abstract class BasicUploadPort {
     @PostConstruct
     protected abstract void initJaxbMarshaller();
 
+    /**
+     * PersistClass is for marshaller, marshall list of object generate in
+     * method transformData Class type is same as class inside method
+     * transformData
+     *
+     * @param persistClass
+     * @throws JAXBException
+     */
     protected void initJaxbMarshaller(Class persistClass) throws JAXBException {
         JAXBContext jaxbContext = JAXBContext.newInstance(persistClass);
         jaxbMarshaller = jaxbContext.createMarshaller();
     }
 
     public abstract void upload(Worktime w) throws Exception;
+
+    protected void upload(Object jaxbElement, UploadType type) throws Exception {
+        String xmlString = this.generateXmlString(jaxbElement);
+        TxResponse response = client.simpleTxSendAndReceive(xmlString, type);
+        if (!"OK".equals(response.getTxResult())) {
+            throw new Exception(response.getTxResult());
+        }
+    }
 
     protected void upload(Worktime w, UploadType type) throws Exception {
         Map<String, String> xmlResults = transformData(w);

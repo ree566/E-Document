@@ -162,13 +162,13 @@ public class MaterialFlowQueryRoot {
         @XmlElement(name = "UNIT_NO", required = true, nillable = true)
         protected String unitno;
         @XmlElement(name = "MF_ID", nillable = true)
-        protected byte mfid = -1;
+        protected Integer mfid = -1;
         @XmlElement(name = "ITEM_ID", nillable = true)
-        protected byte itemid = -1;
+        protected Integer itemid = -1;
         @XmlElement(name = "ITEM_NO", required = true, nillable = true)
         protected String itemno;
         @XmlElement(name = "FLOW_RULE_ID", nillable = true)
-        protected byte flowruleid = -1;
+        protected Integer flowruleid = -1;
         @XmlElement(name = "STATUS", required = true)
         protected String status = "";
 
@@ -204,7 +204,7 @@ public class MaterialFlowQueryRoot {
          * 取得 mfid 特性的值.
          *
          */
-        public byte getMFID() {
+        public Integer getMFID() {
             return mfid;
         }
 
@@ -212,7 +212,7 @@ public class MaterialFlowQueryRoot {
          * 設定 mfid 特性的值.
          *
          */
-        public void setMFID(byte value) {
+        public void setMFID(Integer value) {
             this.mfid = value;
         }
 
@@ -220,7 +220,7 @@ public class MaterialFlowQueryRoot {
          * 取得 itemid 特性的值.
          *
          */
-        public byte getITEMID() {
+        public Integer getITEMID() {
             return itemid;
         }
 
@@ -228,7 +228,7 @@ public class MaterialFlowQueryRoot {
          * 設定 itemid 特性的值.
          *
          */
-        public void setITEMID(byte value) {
+        public void setITEMID(Integer value) {
             this.itemid = value;
         }
 
@@ -256,7 +256,7 @@ public class MaterialFlowQueryRoot {
          * 取得 flowruleid 特性的值.
          *
          */
-        public byte getFLOWRULEID() {
+        public Integer getFLOWRULEID() {
             return flowruleid;
         }
 
@@ -264,7 +264,7 @@ public class MaterialFlowQueryRoot {
          * 設定 flowruleid 特性的值.
          *
          */
-        public void setFLOWRULEID(byte value) {
+        public void setFLOWRULEID(Integer value) {
             this.flowruleid = value;
         }
 

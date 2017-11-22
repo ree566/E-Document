@@ -94,24 +94,14 @@ public class QueryPortTest {
 //        HibernateObjectPrinter.print(m);
     }
 
-//    @Test
+    @Test
     public void testFlowRuleQueryPort() throws Exception {
-        Map m = flowRuleQueryPort.transformData(w);
-        assertEquals(4, m.size());
-        HibernateObjectPrinter.print(m);
-
-        List<FlowRule> l = flowRuleQueryPort.query(w);
-        HibernateObjectPrinter.print(l);
-        assertEquals(4, l.size());
-        assertEquals("PRE_ASSY-", l.get(0).getName());
-        assertEquals("BAB_ASSY-VB-H1-LK-T1-BI", l.get(1).getName());
-        assertEquals("TEST_T2-T3(T1-BI)", l.get(2).getName());
-        assertEquals("PI-PKG", l.get(3).getName());
-
-        HibernateObjectPrinter.print(l);
+        FlowRule rule = flowRuleQueryPort.query("B", "empty");
+        assertNull(rule);
+        HibernateObjectPrinter.print(rule);
     }
 
-    @Test
+//    @Test
     public void testMateriaFlowQueryPort() throws Exception {
         Map m = materialFlowQueryPort.transformData(w);
         assertEquals(4, m.size());
