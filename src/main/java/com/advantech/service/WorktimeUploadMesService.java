@@ -6,6 +6,7 @@
 package com.advantech.service;
 
 import com.advantech.dao.AuditDAO;
+import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.model.Worktime;
 import com.advantech.webservice.port.FlowUploadPort;
 import com.advantech.webservice.port.ModelResponsorUploadPort;
@@ -41,13 +42,13 @@ public class WorktimeUploadMesService {
         } catch (Exception e) {
             throw new Exception("SOP新增至MES失敗<br />" + e.getMessage());
         }
-        
+
         try {
             responsorUploadPort.update(w);
         } catch (Exception e) {
             throw new Exception("機種負責人新增至MES失敗<br />" + e.getMessage());
         }
-        
+
         try {
             flowUploadPort.insert(w);
         } catch (Exception e) {
@@ -79,7 +80,7 @@ public class WorktimeUploadMesService {
             } catch (Exception e) {
                 throw new Exception("徒程更新至MES失敗<br />" + e.getMessage());
             }
-        } 
+        }
 
     }
 
@@ -116,13 +117,13 @@ public class WorktimeUploadMesService {
         } catch (Exception e) {
             throw new Exception("徒程刪除至MES失敗<br />" + e.getMessage());
         }
-        
+
         try {
             responsorUploadPort.delete(w);
         } catch (Exception e) {
             throw new Exception("徒程刪除至MES失敗<br />" + e.getMessage());
         }
-        
+
         try {
             flowUploadPort.delete(w);
         } catch (Exception e) {

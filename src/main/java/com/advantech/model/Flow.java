@@ -170,6 +170,9 @@ public class Flow implements java.io.Serializable {
             return false;
         }
         final Flow other = (Flow) obj;
+        if (Objects.equals(this.id, other.id)) {
+            return true;
+        }
         if (!Objects.equals(this.name, other.name)) {
             return false;
         }

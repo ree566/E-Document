@@ -5,22 +5,15 @@
  */
 package com.advantech.webservice.port;
 
-import com.advantech.model.Flow;
-import com.advantech.model.PreAssy;
 import com.advantech.model.Worktime;
-import com.advantech.service.FlowService;
-import com.advantech.service.PreAssyService;
 import com.advantech.webservice.root.FlowRuleQueryRoot;
-import com.advantech.webservice.root.Section;
 import com.advantech.webservice.unmarshallclass.FlowRule;
 import com.advantech.webservice.unmarshallclass.FlowRules;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.xml.bind.JAXBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
