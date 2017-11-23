@@ -72,7 +72,7 @@ public class FlowUploadPort extends BasicUploadPort {
                         break;
                     case BAB:
                         Flow babFlow = w.getFlowByBabFlowId();
-                        if (babFlow != null) {
+                        if (babFlow != null && "empty".equals(babFlow.getName())) {
                             rule = this.getFlowRule(section, flowService.findByPrimaryKey(babFlow.getId()).getName());
                         }
                         break;
