@@ -5,6 +5,7 @@
  */
 package com.advantech.webservice.port;
 
+import com.advantech.helper.SpringExpressionUtils;
 import com.advantech.model.Worktime;
 import com.advantech.model.WorktimeAutouploadSetting;
 import com.advantech.service.WorktimeAutouploadSettingService;
@@ -16,21 +17,21 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.expression.Expression;
-import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.stereotype.Component;
 
 /**
  *
- * @author Wei.Cheng
+ * @author Wei.Cheng CRUD都用同個XML & 相同 UploadType "A"
  */
 @Component
-public class StandardtimeUploadPort extends BasicUploadPort {
+public class StandardtimeUploadPort extends BasicUploadPort implements UploadPort {
 
     private static final Logger logger = LoggerFactory.getLogger(StandardtimeUploadPort.class);
-    private ExpressionParser parser;
     private List<WorktimeAutouploadSetting> settings;
+
+    @Autowired
+    private SpringExpressionUtils expressionUtils;
 
     @Autowired
     private WorktimeAutouploadSettingService settingService;
@@ -39,7 +40,6 @@ public class StandardtimeUploadPort extends BasicUploadPort {
     protected void initJaxbMarshaller() {
         try {
             super.initJaxbMarshaller(StandardtimeRoot.class); //To change body of generated methods, choose Tools | Templates.
-            parser = new SpelExpressionParser();
         } catch (Exception e) {
             logger.error(e.toString());
         }
@@ -55,53 +55,56 @@ public class StandardtimeUploadPort extends BasicUploadPort {
     }
 
     @Override
-    public void upload(Worktime w) throws Exception {
-        super.upload(w, UploadType.INSERT);
+    public void insert(Worktime w) throws Exception {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Map<String, String> transformData(Worktime w) throws Exception {
-        Map<String, String> xmlResults = new HashMap();
+    public void update(Worktime w) throws Exception {
+        Map<String, String> errorFields = new HashMap();
         for (WorktimeAutouploadSetting setting : settings) {
-            String columnUnit = setting.getColumnUnit();
-            String columnName = setting.getColumnName();
             try {
-                BigDecimal totalCt = getValueFromFormula(w, setting.getFormula());
-                StandardtimeRoot root = new StandardtimeRoot();
-                StandardtimeRoot.STANDARDWORKTIME swt = root.getSTANDARDWORKTIME();
-                swt.setUNITNO(columnUnit);
-                swt.setSTATIONID(setting.getStationId());
-                swt.setLINEID(setting.getLineId());
-                swt.setITEMNO(w.getModelName());
-                swt.setTOTALCT(totalCt);
-                swt.setFIRSTTIME(BigDecimal.ZERO);
-                swt.setCT(setting.getCt());
-                swt.setSIDE(5010);
-                swt.setMIXCT(totalCt); //Temporarily set this column equal to totalCt
-
-                if ("B".equals(columnUnit) && setting.getStationId() != null) {
-                    swt.setMACHINECNT(w.getAssyStation());
-                    swt.setOPCNT(w.getAssyStation());
-                } else if ("P".equals(columnUnit) && setting.getStationId() != null) {
-                    swt.setMACHINECNT(w.getPackingStation());
-                    swt.setOPCNT(2);
-                } else {
-                    swt.setMACHINECNT(0);
-                    swt.setOPCNT(1);
-                }
-                xmlResults.put(columnName, this.generateXmlString(root));
+                this.generateRootAndUpload(setting, w);
             } catch (Exception e) {
-                logger.error(e.toString());
-                throw new Exception("Error on create xml at column name " + columnName);
+                errorFields.put(setting.getColumnName(), e.getMessage());
             }
         }
-        return xmlResults;
+        if (!errorFields.isEmpty()) {
+            throw new Exception(errorFields.toString());
+        }
     }
 
-    private BigDecimal getValueFromFormula(Worktime w, String formula) {
-        Expression exp = parser.parseExpression(formula);
-        BigDecimal result = (BigDecimal) exp.getValue(w);
-        return result;
+    @Override
+    public void delete(Worktime w) throws Exception {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    private void generateRootAndUpload(WorktimeAutouploadSetting setting, Worktime w) throws Exception {
+        String columnUnit = setting.getColumnUnit();
+        BigDecimal totalCt = (BigDecimal) expressionUtils.getValueFromFormula(w, setting.getFormula());
+        StandardtimeRoot root = new StandardtimeRoot();
+        StandardtimeRoot.STANDARDWORKTIME swt = root.getSTANDARDWORKTIME();
+        swt.setUNITNO(columnUnit);
+        swt.setSTATIONID(setting.getStationId());
+        swt.setLINEID(setting.getLineId());
+        swt.setITEMNO(w.getModelName());
+        swt.setTOTALCT(totalCt);
+        swt.setFIRSTTIME(BigDecimal.ZERO);
+        swt.setCT(setting.getCt());
+        swt.setSIDE(5010);
+        swt.setMIXCT(totalCt); //Temporarily set this column equal to totalCt
+
+        if ("B".equals(columnUnit) && setting.getStationId() != null) {
+            swt.setMACHINECNT(w.getAssyStation());
+            swt.setOPCNT(w.getAssyStation());
+        } else if ("P".equals(columnUnit) && setting.getStationId() != null) {
+            swt.setMACHINECNT(w.getPackingStation());
+            swt.setOPCNT(2);
+        } else {
+            swt.setMACHINECNT(0);
+            swt.setOPCNT(1);
+        }
+        super.upload(root, UploadType.INSERT);
     }
 
 }

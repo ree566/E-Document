@@ -29,7 +29,7 @@ import org.springframework.stereotype.Component;
  * @author Wei.Cheng
  */
 @Component
-public class MaterialPropertyUploadPort extends BasicUploadPort {
+public class MaterialPropertyUploadPort extends BasicUploadPort implements UploadPort {
 
     private static final Logger logger = LoggerFactory.getLogger(MaterialPropertyUploadPort.class);
 
@@ -55,14 +55,16 @@ public class MaterialPropertyUploadPort extends BasicUploadPort {
     }
 
     @Override
-    public void upload(Worktime w) throws Exception {
+    public void insert(Worktime w) throws Exception {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Map<String, String> transformData(Worktime w) throws Exception {
-        Map<String, String> xmlResults = new HashMap();
+    public void update(Worktime w) throws Exception {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 
+    public MaterialPropertyUploadRoot checkDifferenceAndGenerateRoot(Worktime w) throws Exception {
         List<MaterialProperty> remotePropSettings = materialPropertyQueryPort.query(w);
 
         //Foreach the database upload setting.
@@ -104,8 +106,7 @@ public class MaterialPropertyUploadPort extends BasicUploadPort {
         }
         MaterialPropertyUploadRoot root = this.toJaxbElement(remotePropSettings);
         root.getMATVALUE().setITEMNO(w.getModelName());
-        xmlResults.put("materialPropertyUpload", super.generateXmlString(root));
-        return xmlResults;
+        return root;
     }
 
     private MaterialPropertyUploadRoot toJaxbElement(List<MaterialProperty> l) {
@@ -123,6 +124,11 @@ public class MaterialPropertyUploadPort extends BasicUploadPort {
         }
         matvalue.setMATVALUEDETAIL(details);
         return root;
+    }
+
+    @Override
+    public void delete(Worktime w) throws Exception {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

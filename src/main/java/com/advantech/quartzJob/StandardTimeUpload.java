@@ -67,7 +67,7 @@ public class StandardTimeUpload {
         
         for (Worktime w : modifiedWorktimes) {
             try {
-                port.upload(w);
+                port.update(w);
             } catch (Exception e) {
                 errorMessages.add(e.getMessage());
                 log.error(e.toString());

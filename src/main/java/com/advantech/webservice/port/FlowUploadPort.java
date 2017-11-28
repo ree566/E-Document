@@ -27,9 +27,10 @@ import org.springframework.stereotype.Component;
 /**
  *
  * @author Wei.Cheng 徒程上傳
+ * CRUD xml相同
  */
 @Component
-public class FlowUploadPort extends BasicUploadPort {
+public class FlowUploadPort extends BasicUploadPort implements UploadPort {
 
     private static final Logger logger = LoggerFactory.getLogger(FlowUploadPort.class);
 
@@ -54,6 +55,7 @@ public class FlowUploadPort extends BasicUploadPort {
         }
     }
 
+    @Override
     public void insert(Worktime w) throws Exception {
         Map<String, String> errorFields = new HashMap();
         List<MaterialFlow> l = materialFlowQueryPort.query(w);
@@ -97,7 +99,7 @@ public class FlowUploadPort extends BasicUploadPort {
                     flow.setITEMNO(w.getModelName());
                     flow.setFLOWRULEID(rule.getId());
                     flow.setUNITNO(section.getCode());
-                    this.insert(root);
+                    super.upload(root, UploadType.INSERT);
                 }
             } catch (Exception e) {
                 errorFields.put(section + "_Flow", e.getMessage());
@@ -108,6 +110,7 @@ public class FlowUploadPort extends BasicUploadPort {
         }
     }
 
+    @Override
     public void update(Worktime w) throws Exception {
         List<MaterialFlow> l = materialFlowQueryPort.query(w);
         Map<String, String> errorFields = new HashMap();
@@ -157,7 +160,7 @@ public class FlowUploadPort extends BasicUploadPort {
             flow.setITEMNO(modelName);
             flow.setFLOWRULEID(rule.getId());
             flow.setUNITNO(section.getCode());
-            this.insert(root);
+            super.upload(root, UploadType.INSERT);
         } else if (mf != null && flowName != null) {
             if (!Objects.equals(flowName, mf.getFlowRuleName())) {
                 //update
@@ -169,7 +172,7 @@ public class FlowUploadPort extends BasicUploadPort {
                 flow.setFLOWRULEID(rule.getId());
                 flow.setITEMID(mf.getItemId());
                 flow.setUNITNO(mf.getUnitNo());
-                this.update(root);
+                super.upload(root, UploadType.UPDATE);
             }
         } else if (mf != null && flowName == null) {
             //delete
@@ -180,7 +183,7 @@ public class FlowUploadPort extends BasicUploadPort {
             flow.setFLOWRULEID(mf.getFlowRuleId());
             flow.setITEMID(mf.getItemId());
             flow.setUNITNO(mf.getUnitNo());
-            this.delete(root);
+            super.upload(root, UploadType.DELETE);
         }
     }
 
@@ -192,6 +195,7 @@ public class FlowUploadPort extends BasicUploadPort {
         return rule;
     }
 
+    @Override
     public void delete(Worktime w) throws Exception {
         Map<String, String> errorFields = new HashMap();
 
@@ -205,7 +209,7 @@ public class FlowUploadPort extends BasicUploadPort {
             flow.setITEMID(mf.getItemId());
             flow.setUNITNO(mf.getUnitNo());
             try {
-                this.delete(root);
+                super.upload(root, UploadType.DELETE);
             } catch (Exception e) {
                 errorFields.put(Section.getByCode(mf.getUnitNo()) + "_Flow", e.getMessage());
             }
@@ -214,28 +218,6 @@ public class FlowUploadPort extends BasicUploadPort {
         if (!errorFields.isEmpty()) {
             throw new Exception(w.getModelName() + " 徒程刪除至MES失敗: " + errorFields.toString());
         }
-    }
-
-    private void insert(FlowUploadRoot root) throws Exception {
-        super.upload(root, UploadType.INSERT);
-    }
-
-    private void update(FlowUploadRoot root) throws Exception {
-        super.upload(root, UploadType.UPDATE);
-    }
-
-    private void delete(FlowUploadRoot root) throws Exception {
-        super.upload(root, UploadType.DELETE);
-    }
-
-    @Override
-    public void upload(Worktime w) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Map<String, String> transformData(Worktime w) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

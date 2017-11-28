@@ -5,7 +5,6 @@
  */
 package com.advantech.test;
 
-import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.Worktime;
 import com.advantech.service.FlowService;
@@ -17,10 +16,8 @@ import com.advantech.webservice.port.MaterialPropertyUploadPort;
 import com.advantech.webservice.port.ModelResponsorUploadPort;
 import com.advantech.webservice.port.SopUploadPort;
 import com.advantech.webservice.port.StandardtimeUploadPort;
-import com.advantech.webservice.root.MaterialPropertyUploadRoot;
 import static com.google.common.collect.Lists.newArrayList;
 import java.util.List;
-import java.util.Map;
 import javax.transaction.Transactional;
 import static junit.framework.Assert.*;
 import org.junit.Before;
@@ -74,14 +71,15 @@ public class UploadPortTest {
 
     @Before
     public void initTestData() {
-        w = worktimeService.findByModel("ACP-4000-DL7");
+        w = worktimeService.findByModel("TEST-MODEL-2");
     }
 
-//    @Test
+    @Test
+    @Rollback(true)
     public void testStandardtimeUpload() throws Exception {
+        assertNotNull(w);
         standardtimePort.initSettings();
-        Map result = standardtimePort.transformData(w);
-        assertEquals(17, result.size());
+        standardtimePort.update(w);
     }
 
 //    @Test
@@ -125,19 +123,16 @@ public class UploadPortTest {
         l.forEach((worktime) -> {
             try {
                 System.out.println("Upload model: " + worktime.getModelName());
-                standardtimePort.upload(worktime);
+                standardtimePort.update(worktime);
             } catch (Exception ex) {
                 System.out.println(ex);
             }
         });
     }
 
-    @Test
-    @Rollback(true)
+//    @Test
+//    @Rollback(true)
     public void testMaterialPropertyUploadPort() throws Exception {
-        Map m = materialPropertyUploadPort.transformData(w);
-        String root = (String) m.get("materialPropertyUpload");
-        assertNotNull(root);
-        HibernateObjectPrinter.print(m);
+
     }
 }

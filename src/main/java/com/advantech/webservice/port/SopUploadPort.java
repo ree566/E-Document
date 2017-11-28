@@ -27,10 +27,10 @@ import org.springframework.stereotype.Component;
 
 /**
  *
- * @author Wei.Cheng SOP資料設定
+ * @author Wei.Cheng SOP資料設定 因insert & delete所用的xml不同，固用subclass處理
  */
 @Component
-public class SopUploadPort {
+public class SopUploadPort implements UploadPort {
 
     private static final Logger logger = LoggerFactory.getLogger(SopUploadPort.class);
 
@@ -48,31 +48,28 @@ public class SopUploadPort {
     @Autowired
     private SopUploadPort.DeletePort deletePort;
 
+    @Override
+    public void insert(Worktime w) throws Exception {
+        insertPort.upload(w);
+    }
+
+    @Override
     public void update(Worktime w) throws Exception {
-        try {
-            /*
+        /*
                 請先刪除後新增
                 因MES空白SOP卡在製程段時，該製成只能維持單一SOP
                 故先刪除時，可先將空白SOP刪除
                 先新增的話，就會因上述原因產生exception
-             */
-            deletePort.upload(w);
-            insertPort.upload(w);
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            throw e;
-        }
+         */
+        deletePort.upload(w);
+        insertPort.upload(w);
     }
 
+    @Override
     public void delete(Worktime w) throws Exception {
-        try {
-            w.setAssyPackingSop("");
-            w.setTestSop("");
-            this.deletePort.upload(w);
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            throw e;
-        }
+        w.setAssyPackingSop("");
+        w.setTestSop("");
+        this.deletePort.upload(w);
     }
 
     private Map<String, String> serializeSops(Worktime w) {
@@ -95,9 +92,9 @@ public class SopUploadPort {
 
     private Set<String> toSops(List<SopInfo> l) {
         Set s = new HashSet();
-        for (SopInfo info : l) {
+        l.forEach((info) -> {
             s.add(info.getSopName());
-        }
+        });
         return s;
     }
 
@@ -129,14 +126,7 @@ public class SopUploadPort {
             }
         }
 
-        @Override
         public void upload(Worktime w) throws Exception {
-            super.upload(w, UploadType.INSERT);
-        }
-
-        @Override
-        public Map<String, String> transformData(Worktime w) throws Exception {
-            Map<String, String> xmlStrings = new HashMap();
             Map<String, String> serializeSops = outer.serializeSops(w);
 
             for (Map.Entry<String, String> entry : serializeSops.entrySet()) {
@@ -153,30 +143,31 @@ public class SopUploadPort {
                 Set mesSops = outer.toSops(outer.sopQueryPort.query(w));
                 Set<String> insertedSops = outer.findDifference(sops, mesSops);
 
-                if (!insertedSops.isEmpty()) {
-                    SopBatchInsertRoot root = new SopBatchInsertRoot();
-                    SopBatchInsertRoot.SOPINFO sopInfo = root.getSOPINFO();
-                    sopInfo.setTYPENO(type);
-                    sopInfo.setITEMNO(w.getModelName());
-                    SopBatchInsertRoot.SOPINFO.PARTNO partNo = new SopBatchInsertRoot.SOPINFO.PARTNO();
-                    List<SopBatchInsertRoot.SOPINFO.PARTNO.KEYNO> l = new ArrayList();
-
-                    for (String sop : insertedSops) {
-                        SopBatchInsertRoot.SOPINFO.PARTNO.KEYNO keyNo = new SopBatchInsertRoot.SOPINFO.PARTNO.KEYNO();
-                        keyNo.setITEMNO(w.getModelName());
-                        keyNo.setTYPENO(type);
-                        keyNo.setSOPNAME(sop);
-                        l.add(keyNo);
-                    }
-                    partNo.setKEYNO(l);
-                    sopInfo.setPARTNO(partNo);
-
-                    xmlStrings.put(type, this.generateXmlString(root));
-                }
+                generateRootAndUpload(w, type, insertedSops);
             }
-            return xmlStrings;
         }
 
+        private void generateRootAndUpload(Worktime w, String lineType, Set<String> insertedSops) throws Exception {
+            if (!insertedSops.isEmpty()) {
+                SopBatchInsertRoot root = new SopBatchInsertRoot();
+                SopBatchInsertRoot.SOPINFO sopInfo = root.getSOPINFO();
+                sopInfo.setTYPENO(lineType);
+                sopInfo.setITEMNO(w.getModelName());
+                SopBatchInsertRoot.SOPINFO.PARTNO partNo = new SopBatchInsertRoot.SOPINFO.PARTNO();
+                List<SopBatchInsertRoot.SOPINFO.PARTNO.KEYNO> l = new ArrayList();
+
+                for (String sop : insertedSops) {
+                    SopBatchInsertRoot.SOPINFO.PARTNO.KEYNO keyNo = new SopBatchInsertRoot.SOPINFO.PARTNO.KEYNO();
+                    keyNo.setITEMNO(w.getModelName());
+                    keyNo.setTYPENO(lineType);
+                    keyNo.setSOPNAME(sop);
+                    l.add(keyNo);
+                }
+                partNo.setKEYNO(l);
+                sopInfo.setPARTNO(partNo);
+                super.upload(root, UploadType.INSERT);
+            }
+        }
     }
 
     @Component
@@ -194,50 +185,37 @@ public class SopUploadPort {
             }
         }
 
-        @Override
-        public void upload(Worktime w) throws Exception {
-            super.upload(w, UploadType.DELETE);
-        }
-
         /**
-         * 
+         *
          * @param w
-         * @return
-         * @throws Exception 
-         * 考慮減少與接口溝通的次數未撰寫刪除all功能
+         * @throws Exception 考慮減少與接口溝通的次數未撰寫刪除all功能
          * 故刪除前須將Worktime的sop字串設為""，將空值upload至MES中即等於刪除
          */
-        @Override
-        public Map<String, String> transformData(Worktime w) throws Exception {
-            Map<String, String> xmlStrings = new HashMap();
+        public void upload(Worktime w) throws Exception {
             Map<String, String> serializeSops = outer.serializeSops(w);
-
             for (Map.Entry<String, String> entry : serializeSops.entrySet()) {
-
                 String type = entry.getKey();
                 String sopInLocal = entry.getValue();
-
                 Set<String> sops = outer.toSops(sopInLocal);
-
                 outer.sopQueryPort.setTypes(type);
                 Set mesSops = outer.toSops(outer.sopQueryPort.query(w));
-
                 Set<String> deletedSops = outer.findDifference(mesSops, sops);
-
-                int i = 1;
-                for (String sop : deletedSops) {
-                    SopRoot root = new SopRoot();
-                    SopRoot.SOPINFO info = root.getSOPINFO();
-                    info.setTYPENO(type); //站別
-                    info.setITEMNO(w.getModelName()); //機種
-                    info.setSOPNAME(sop); //SOP文號
-                    info.setTYPENOOLD(type); //上一次站別
-                    info.setITEMNOOLD(w.getModelName()); //上一次機種
-                    info.setSOPNAMEOLD(sop); //上一次SOP文號
-                    xmlStrings.put(type + i++, this.generateXmlString(root));
-                }
+                generateRootAndUpload(w, type, deletedSops);
             }
-            return xmlStrings;
+        }
+
+        private void generateRootAndUpload(Worktime w, String lineType, Set<String> deletedSops) throws Exception {
+            for (String sop : deletedSops) {
+                SopRoot root = new SopRoot();
+                SopRoot.SOPINFO info = root.getSOPINFO();
+                info.setTYPENO(lineType); //站別
+                info.setITEMNO(w.getModelName()); //機種
+                info.setSOPNAME(sop); //SOP文號
+                info.setTYPENOOLD(lineType); //上一次站別
+                info.setITEMNOOLD(w.getModelName()); //上一次機種
+                info.setSOPNAMEOLD(sop); //上一次SOP文號
+                super.upload(root, UploadType.DELETE);
+            }
         }
 
     }

@@ -5,11 +5,8 @@
  */
 package com.advantech.webservice.port;
 
-import com.advantech.model.Worktime;
 import com.advantech.webservice.WsClient;
 import java.io.StringWriter;
-import java.util.HashMap;
-import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -44,8 +41,13 @@ public abstract class BasicUploadPort {
         jaxbMarshaller = jaxbContext.createMarshaller();
     }
 
-    public abstract void upload(Worktime w) throws Exception;
-
+    /**
+     * 單筆object更新
+     *
+     * @param jaxbElement
+     * @param type
+     * @throws Exception
+     */
     protected void upload(Object jaxbElement, UploadType type) throws Exception {
         String xmlString = this.generateXmlString(jaxbElement);
         TxResponse response = client.simpleTxSendAndReceive(xmlString, type);
@@ -53,30 +55,6 @@ public abstract class BasicUploadPort {
             throw new Exception(response.getTxResult());
         }
     }
-
-    protected void upload(Worktime w, UploadType type) throws Exception {
-        Map<String, String> xmlResults = transformData(w);
-        Map<String, String> errorFields = new HashMap();
-        for (Map.Entry<String, String> entry : xmlResults.entrySet()) {
-            String field = entry.getKey();
-            String xmlString = entry.getValue();
-            TxResponse response = client.simpleTxSendAndReceive(xmlString, type);
-            if (!"OK".equals(response.getTxResult())) {
-                errorFields.put(field, response.getTxResult());
-            }
-        }
-        if (!errorFields.isEmpty()) {
-            throw new Exception(w.getModelName() + ": Error on saving xml result to MES on field " + errorFields.toString());
-        }
-    }
-
-    /**
-     *
-     * @param w
-     * @return Field name as key and xml generate result as value.
-     * @throws java.lang.Exception
-     */
-    public abstract Map<String, String> transformData(Worktime w) throws Exception;
 
     protected String generateXmlString(Object jaxbElement) throws JAXBException {
         StringWriter sw = new StringWriter();

@@ -38,13 +38,13 @@ public class WorktimeUploadMesService {
 
     public void insert(Worktime w) throws Exception {
         try {
-            sopUploadPort.update(w);
+            sopUploadPort.insert(w);
         } catch (Exception e) {
             throw new Exception("SOP新增至MES失敗<br />" + e.getMessage());
         }
 
         try {
-            responsorUploadPort.update(w);
+            responsorUploadPort.insert(w);
         } catch (Exception e) {
             throw new Exception("機種負責人新增至MES失敗<br />" + e.getMessage());
         }
@@ -115,13 +115,13 @@ public class WorktimeUploadMesService {
         try {
             sopUploadPort.delete(w);
         } catch (Exception e) {
-            throw new Exception("徒程刪除至MES失敗<br />" + e.getMessage());
+            throw new Exception("SOP刪除至MES失敗<br />" + e.getMessage());
         }
 
         try {
             responsorUploadPort.delete(w);
         } catch (Exception e) {
-            throw new Exception("徒程刪除至MES失敗<br />" + e.getMessage());
+            throw new Exception("機種負責人刪除至MES失敗<br />" + e.getMessage());
         }
 
         try {
