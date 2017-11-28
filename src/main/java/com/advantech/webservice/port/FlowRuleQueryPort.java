@@ -34,11 +34,6 @@ public class FlowRuleQueryPort extends BasicQueryPort {
         }
     }
 
-    @Override
-    public List query(Object jaxbElement) throws Exception {
-        return super.query(jaxbElement); //To change body of generated methods, choose Tools | Templates.
-    }
-
     public FlowRule query(String unitNo, String flowName) throws Exception {
         List<FlowRule> l = this.query(new FlowRuleQueryRoot(unitNo, flowName));
         return l.isEmpty() ? null : l.get(0);

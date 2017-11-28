@@ -7,6 +7,7 @@ package com.advantech.test;
 
 import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.model.Worktime;
+import com.advantech.model.WorktimeMaterialPropertyUploadSetting;
 import com.advantech.service.AuditService;
 import com.advantech.service.WorktimeService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -17,7 +18,7 @@ import javax.transaction.Transactional;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
-import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.*;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.envers.AuditReader;
@@ -86,9 +87,9 @@ public class HibernateTest {
     }
 
 //    CRUD testing.
-    @Test
-    @Transactional
-    @Rollback(true)
+//    @Test
+//    @Transactional
+//    @Rollback(true)
     public void test() throws Exception {
         this.testUpdate();
     }
@@ -121,6 +122,16 @@ public class HibernateTest {
         StringBuilder sb = new StringBuilder(st);
         sb.setCharAt(0, Character.toLowerCase(sb.charAt(0)));
         return sb.toString();
+    }
+    
+    @Test
+    @Transactional
+    @Rollback(true)
+    public void testWorktimeMaterialPropertyUploadSetting(){
+        Session session = sessionFactory.getCurrentSession();
+        WorktimeMaterialPropertyUploadSetting setting = (WorktimeMaterialPropertyUploadSetting) session.get(WorktimeMaterialPropertyUploadSetting.class, 1);
+        assertNotNull(setting);
+        assertEquals("B1", setting.getMatPropNo());
     }
 
 }

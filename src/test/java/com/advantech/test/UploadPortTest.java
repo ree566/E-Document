@@ -7,22 +7,22 @@ package com.advantech.test;
 
 import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.jqgrid.PageInfo;
-import com.advantech.model.Flow;
-import com.advantech.model.PreAssy;
 import com.advantech.model.Worktime;
 import com.advantech.service.FlowService;
 import com.advantech.service.PreAssyService;
 import com.advantech.service.WorktimeAutouploadSettingService;
 import com.advantech.service.WorktimeService;
 import com.advantech.webservice.port.FlowUploadPort;
+import com.advantech.webservice.port.MaterialPropertyUploadPort;
 import com.advantech.webservice.port.ModelResponsorUploadPort;
 import com.advantech.webservice.port.SopUploadPort;
 import com.advantech.webservice.port.StandardtimeUploadPort;
+import com.advantech.webservice.root.MaterialPropertyUploadRoot;
 import static com.google.common.collect.Lists.newArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.transaction.Transactional;
-import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -69,9 +69,12 @@ public class UploadPortTest {
     @Autowired
     private PreAssyService preAssyService;
 
+    @Autowired
+    private MaterialPropertyUploadPort materialPropertyUploadPort;
+
     @Before
     public void initTestData() {
-        w = worktimeService.findByModel("HIT-W121-AWM1E");
+        w = worktimeService.findByModel("ACP-4000-DL7");
     }
 
 //    @Test
@@ -81,8 +84,8 @@ public class UploadPortTest {
         assertEquals(17, result.size());
     }
 
-    @Test
-    @Rollback(true)
+//    @Test
+//    @Rollback(true)
     public void testFlowUpload() throws Exception {
 
     }
@@ -127,5 +130,14 @@ public class UploadPortTest {
                 System.out.println(ex);
             }
         });
+    }
+
+    @Test
+    @Rollback(true)
+    public void testMaterialPropertyUploadPort() throws Exception {
+        Map m = materialPropertyUploadPort.transformData(w);
+        String root = (String) m.get("materialPropertyUpload");
+        assertNotNull(root);
+        HibernateObjectPrinter.print(m);
     }
 }

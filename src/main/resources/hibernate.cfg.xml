@@ -87,6 +87,7 @@ Contributor(s):
         <mapping class="com.advantech.model.WorktimeColumnGroup"/>
         <mapping class="com.advantech.model.WorktimeFormulaSetting"/>
         <mapping class="com.advantech.model.WorktimeAutouploadSetting"/>
+        <mapping class="com.advantech.model.WorktimeMaterialPropertyUploadSetting"/>
         <mapping class="com.advantech.model.BwField"/>
         <!--mapping pojos(view)-->
         <mapping class="com.advantech.model.SheetView"/>

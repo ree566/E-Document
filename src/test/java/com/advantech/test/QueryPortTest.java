@@ -10,11 +10,15 @@ import com.advantech.model.Worktime;
 import com.advantech.service.WorktimeService;
 import com.advantech.webservice.port.FlowRuleQueryPort;
 import com.advantech.webservice.port.MaterialFlowQueryPort;
+import com.advantech.webservice.port.MaterialPropertyQueryPort;
+import com.advantech.webservice.port.MaterialPropertyUserPermissionQueryPort;
 import com.advantech.webservice.port.MesUserInfoQueryPort;
 import com.advantech.webservice.port.ModelResponsorQueryPort;
 import com.advantech.webservice.port.SopQueryPort;
 import com.advantech.webservice.unmarshallclass.FlowRule;
 import com.advantech.webservice.unmarshallclass.MaterialFlow;
+import com.advantech.webservice.unmarshallclass.MaterialProperty;
+import com.advantech.webservice.unmarshallclass.MaterialPropertyUserPermission;
 import java.util.List;
 import java.util.Map;
 import javax.transaction.Transactional;
@@ -58,6 +62,12 @@ public class QueryPortTest {
     private MaterialFlowQueryPort materialFlowQueryPort;
 
     @Autowired
+    private MaterialPropertyUserPermissionQueryPort materialPropertyUserPermissionQueryPort;
+    
+    @Autowired
+    private MaterialPropertyQueryPort materialPropertyQueryPort;
+
+    @Autowired
     private WorktimeService worktimeService;
 
     private Worktime w;
@@ -94,7 +104,7 @@ public class QueryPortTest {
 //        HibernateObjectPrinter.print(m);
     }
 
-    @Test
+//    @Test
     public void testFlowRuleQueryPort() throws Exception {
         FlowRule rule = flowRuleQueryPort.query("B", "empty");
         assertNull(rule);
@@ -106,13 +116,28 @@ public class QueryPortTest {
         Map m = materialFlowQueryPort.transformData(w);
         assertEquals(4, m.size());
         HibernateObjectPrinter.print(m);
-        
+
         List<MaterialFlow> l = materialFlowQueryPort.query(w);
         assertEquals(4, l.size());
         HibernateObjectPrinter.print(l);
-        
+
         assertEquals(34200, l.get(0).getId());
         assertEquals(14360, l.get(0).getItemId());
         assertEquals(719, l.get(0).getFlowRuleId());
+    }
+
+//    @Test
+    public void testMaterialPropertyUserPermissionQueryPort() throws Exception {
+        List<MaterialPropertyUserPermission> l = materialPropertyUserPermissionQueryPort.query("A-7060");
+        assertEquals(81, l.size());
+        assertEquals("01", l.get(0).getMaterialPropertyNo());
+    }
+
+    @Test
+    public void testMaterialPropertyQueryPort() throws Exception {
+        List<MaterialProperty> l = materialPropertyQueryPort.query(w);
+        assertEquals(12, l.size());
+        assertEquals("FC", l.get(0).getMatPropertyNo());
+        assertEquals("0", l.get(2).getValue());
     }
 }

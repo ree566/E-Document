@@ -93,7 +93,8 @@
             com.advantech.customException, 
             com.advantech.security, 
             com.advantech.quartzJob,
-            com.advantech.webservice
+            com.advantech.webservice,
+            com.advantech.helper
     " />
     
     <!-- 要使用 @Transactional 時需要 -->
@@ -158,9 +159,6 @@
         <property name="mailSender" ref="mailSender"/>
     </bean>
     
-    <bean id="worktimeMailManager" class="com.advantech.helper.WorktimeMailManager"></bean>
-    
-
     <!--other import-->
 
     <oxm:jaxb2-marshaller id="marshaller" context-path="org.tempuri"/>
