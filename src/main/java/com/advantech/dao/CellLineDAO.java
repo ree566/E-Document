@@ -14,7 +14,6 @@ import org.springframework.stereotype.Repository;
  *
  * @author Wei.Cheng
  */
-@Repository
 public class CellLineDAO extends BasicDAO {
 
     private Connection getConn() {

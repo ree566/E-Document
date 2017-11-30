@@ -6,9 +6,9 @@
 package com.advantech.dao;
 
 import com.advantech.model.ActionCodeMapping;
-import java.sql.Connection;
 import java.util.List;
-import java.util.Map;
+import org.hibernate.Criteria;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -16,30 +16,37 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class ActionCodeMappingDAO extends BasicDAO {
+public class ActionCodeMappingDAO extends AbstractDao<Integer, ActionCodeMapping> implements BasicDAO_1<ActionCodeMapping> {
 
-    private Connection getConn() {
-        return getDBUtilConn(SQL.WebAccess);
+    @Override
+    public List<ActionCodeMapping> findAll() {
+        return super.createEntityCriteria().list();
     }
 
-    private List<ActionCodeMapping> queryActionCodeMappingTable(String sql, Object... params) {
-        return queryForBeanList(getConn(), ActionCodeMapping.class, sql, params);
+    @Override
+    public ActionCodeMapping findByPrimaryKey(Object obj_id) {
+        return super.getByKey((int) obj_id);
     }
 
-    public List<ActionCodeMapping> getActionCodeMapping() {
-        return queryActionCodeMappingTable("SELECT * FROM ActionCodeMapping");
+    public List<ActionCodeMapping> findByActionCode(int ac_id) {
+        Criteria c = super.createEntityCriteria();
+        c.add(Restrictions.eq("actionCode.id", ac_id));
+        return c.list();
     }
 
-    public List<Map> getActionCodeMapping1() {
-        return queryForMapList(this.getConn(), "SELECT * FROM ActionCodeMapping");
+    @Override
+    public int insert(ActionCodeMapping pojo) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public List<ActionCodeMapping> getActionCodeMapping(int id) {
-        return queryActionCodeMappingTable("SELECT * FROM ActionCodeMapping WHERE id = ?", id);
+    @Override
+    public int update(ActionCodeMapping pojo) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public List<ActionCodeMapping> getActionCodeMappingByActionCode(int ac_id) {
-        return queryActionCodeMappingTable("SELECT * FROM ActionCodeMapping WHERE ac_id = ?", ac_id);
+    @Override
+    public int delete(ActionCodeMapping pojo) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

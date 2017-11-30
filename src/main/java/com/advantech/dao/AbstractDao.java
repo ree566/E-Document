@@ -26,7 +26,7 @@ public abstract class AbstractDao<PK extends Serializable, T> {
     private SessionFactory sessionFactory;
 
     public AbstractDao() {
-        this.persistentClass = (Class<T>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[1];
+        this.persistentClass = (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[1];
     }
 
     protected Session getSession() {

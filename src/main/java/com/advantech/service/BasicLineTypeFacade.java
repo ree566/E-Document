@@ -5,13 +5,10 @@
  */
 package com.advantech.service;
 
-import com.advantech.model.AlarmAction;
 import com.advantech.helper.PropertiesReader;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
@@ -25,7 +22,7 @@ import org.springframework.stereotype.Component;
  * @author Wei.Cheng
  */
 @Component
-public abstract class BasicLineTypeFacade {
+public abstract class BasicLineTypeFacade implements com.advantech.service.AlarmAction{
 
     private static final Logger log = LoggerFactory.getLogger(BasicLineTypeFacade.class);
 
@@ -86,36 +83,22 @@ public abstract class BasicLineTypeFacade {
             if (resetFlag == true) {
                 initMap();
                 if (isWriteToDB) {
-                    resetDbAlarmSign();
+                    resetAlarmSign();
                 }
                 resetFlag = false;
             }
         }
     }
 
-    private boolean saveAlarmSignToDb(Map map) {
-        return setDbAlarmSign(mapToAlarmSign(map));
+    private void saveAlarmSignToDb(Map map) {
+        setAlarmSign(mapToAlarmSign(map));
     }
 
-    protected abstract List<AlarmAction> mapToAlarmSign(Map map);
-
-    protected abstract boolean initDbAlarmSign();
-
-    public abstract boolean setDbAlarmSignToTestMode();
-
-    /**
-     * Set the data into database signal into database.
-     *
-     * @param l
-     * @return
-     */
-    protected abstract boolean setDbAlarmSign(List<AlarmAction> l);
-
-    protected abstract boolean resetDbAlarmSign();
+    protected abstract List<com.advantech.model.AlarmAction> mapToAlarmSign(Map map);
 
     public void resetAlarm() throws IOException {
         if (isWriteToDB) {
-            resetDbAlarmSign();
+            resetAlarmSign();
         }
         initInnerObjs();
     }

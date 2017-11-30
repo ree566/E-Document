@@ -5,10 +5,8 @@
  */
 package com.advantech.dao;
 
-import com.advantech.model.Line;
+import com.advantech.model.AlarmBabAction;
 import java.util.List;
-import org.hibernate.Criteria;
-import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -16,38 +14,32 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class LineDAO extends AbstractDao<Integer, Line> implements BasicDAO_1<Line> {
+public class AlarmBabActionDAO extends AbstractDao<String, AlarmBabAction> implements BasicDAO_1<AlarmBabAction> {
 
     @Override
-    public List<Line> findAll() {
+    public List<AlarmBabAction> findAll() {
         return super.createEntityCriteria().list();
     }
 
     @Override
-    public Line findByPrimaryKey(Object obj_id) {
-        return super.getByKey((int) obj_id);
-    }
-
-    public List<Line> findBySitefloor(int floor_id) {
-        Criteria c = super.createEntityCriteria();
-        c.add(Restrictions.eq("floor.id", floor_id));
-        return c.list();
+    public AlarmBabAction findByPrimaryKey(Object obj_id) {
+        return super.getByKey((String) obj_id);
     }
 
     @Override
-    public int insert(Line pojo) {
+    public int insert(AlarmBabAction pojo) {
         super.getSession().save(pojo);
         return 1;
     }
 
     @Override
-    public int update(Line pojo) {
+    public int update(AlarmBabAction pojo) {
         super.getSession().update(pojo);
         return 1;
     }
 
     @Override
-    public int delete(Line pojo) {
+    public int delete(AlarmBabAction pojo) {
         super.getSession().delete(pojo);
         return 1;
     }

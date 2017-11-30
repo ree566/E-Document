@@ -32,10 +32,7 @@ import org.springframework.format.annotation.DateTimeFormat;
  * @author Wei.Cheng
  */
 @Entity
-@Table(name = "testLineTypeRecord",
-        schema = "dbo",
-        catalog = "WebAccess"
-)
+@Table(name = "TestLineTypeRecord")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "QryData")

@@ -7,16 +7,14 @@ package com.advantech.model;
 
 import java.io.Serializable;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
  * @author Wei.Cheng
+ * CPK issue
  */
-@XmlRootElement
-public class TagNameComparison implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+public class TagNameComparison implements Serializable {
 
     private String orginTagName;
 

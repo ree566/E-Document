@@ -8,7 +8,6 @@ package com.advantech.service;
 import com.advantech.model.ActionCodeMapping;
 import com.advantech.dao.ActionCodeMappingDAO;
 import java.util.List;
-import java.util.Map;
 import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,19 +23,28 @@ public class ActionCodeMappingService {
     @Autowired
     private ActionCodeMappingDAO actionCodeMappingDAO;
 
-    public List<ActionCodeMapping> getActionCodeMapping() {
-        return actionCodeMappingDAO.getActionCodeMapping();
+    public List<ActionCodeMapping> findAll() {
+        return actionCodeMappingDAO.findAll();
     }
 
-    public List<Map> getActionCodeMapping1() {
-        return actionCodeMappingDAO.getActionCodeMapping1();
+    public ActionCodeMapping findByPrimaryKey(Object obj_id) {
+        return actionCodeMappingDAO.findByPrimaryKey(obj_id);
     }
 
-    public List<ActionCodeMapping> getActionCodeMapping(int id) {
-        return actionCodeMappingDAO.getActionCodeMapping(id);
+    public List<ActionCodeMapping> findByActionCode(int ac_id) {
+        return actionCodeMappingDAO.findByActionCode(ac_id);
     }
 
-    public List<ActionCodeMapping> getActionCodeMappingByActionCode(int ac_id) {
-        return actionCodeMappingDAO.getActionCodeMappingByActionCode(ac_id);
+    public int insert(ActionCodeMapping pojo) {
+        return actionCodeMappingDAO.insert(pojo);
     }
+
+    public int update(ActionCodeMapping pojo) {
+        return actionCodeMappingDAO.update(pojo);
+    }
+
+    public int delete(ActionCodeMapping pojo) {
+        return actionCodeMappingDAO.delete(pojo);
+    }
+
 }

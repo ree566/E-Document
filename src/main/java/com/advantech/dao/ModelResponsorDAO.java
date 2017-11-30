@@ -5,7 +5,7 @@
  */
 package com.advantech.dao;
 
-import com.advantech.model.ModelResponsor;
+import com.advantech.model.view.ModelResponsor;
 import java.sql.Connection;
 import java.util.List;
 import java.util.Map;

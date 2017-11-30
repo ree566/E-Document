@@ -34,7 +34,10 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
     private static final Logger log = LoggerFactory.getLogger(TestLineTypeFacade.class);
 
     @Autowired
-    private TestService ts;
+    private TestService testService;
+
+    @Autowired
+    private AlarmTestActionService almService;
 
     private int maxTestTable;
     private Map PEOPLE_NOT_MATCH;
@@ -42,9 +45,6 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
     private double TEST_STANDARD;
 
     private WebServiceRV rv;
-
-    @Autowired
-    private TestService testService;
 
     private final int TEST_USER_NOT_IN_SYSTEM_SIGN = -1, TEST_USER_NOT_IN_XML_SIGN = 2;
 
@@ -145,23 +145,25 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
     }
 
     @Override
-    protected boolean initDbAlarmSign() {
-        return ts.removeAlarmSign() && ts.insertAlarm(this.mapToAlarmSign(dataMap));
+    public void initAlarmSign() {
+        List l = almService.findAll();
+        almService.delete(l);
+        almService.insert(this.mapToAlarmSign(dataMap));
     }
 
     @Override
-    public boolean setDbAlarmSignToTestMode() {
-        return testService.setTestAlarmToTestingMode();
+    public void setAlarmSign(List l) {
+        almService.update(l);
     }
 
     @Override
-    protected boolean setDbAlarmSign(List l) {
-        return testService.updateAlarm(l);
+    public void resetAlarmSign() {
+        almService.reset();
     }
 
     @Override
-    protected boolean resetDbAlarmSign() {
-        return testService.resetAlarm();
+    public void setAlarmSignToTestingMode() {
+        almService.AlarmToTestingMode();
     }
 
     public Map getPEOPLE_NOT_MATCH() {
@@ -170,19 +172,17 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
 
     @Override
     protected List mapToAlarmSign(Map map) {
-        {
-            List l = new ArrayList();
-            if (map != null && !map.isEmpty()) {
-                Iterator it = map.keySet().iterator();
-                while (it.hasNext()) {
-                    Object key = it.next();
-                    String tableId = key.toString();
-                    int action = (int) map.get(key);
-                    l.add(new AlarmTestAction(tableId, action));
-                }
+        List l = new ArrayList();
+        if (map != null && !map.isEmpty()) {
+            Iterator it = map.keySet().iterator();
+            while (it.hasNext()) {
+                Object key = it.next();
+                String tableId = key.toString();
+                int action = (int) map.get(key);
+                l.add(new AlarmTestAction(tableId, action));
             }
-            return l;
         }
+        return l;
     }
 
 }

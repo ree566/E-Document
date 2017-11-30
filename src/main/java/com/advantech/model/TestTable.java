@@ -27,10 +27,7 @@ import javax.persistence.Table;
  * @author Wei.Cheng
  */
 @Entity
-@Table(name = "LS_Table",
-        schema = "dbo",
-        catalog = "WebAccess"
-)
+@Table(name = "LS_Table")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class TestTable implements Serializable {
 

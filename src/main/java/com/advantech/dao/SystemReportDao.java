@@ -13,6 +13,8 @@ import org.springframework.stereotype.Repository;
 /**
  *
  * @author Wei.Cheng
+ * Procedure object can't be normally generate by hibernate 
+ * Result map order disrupted by hibernate
  */
 @Repository
 public class SystemReportDao extends BasicDAO {

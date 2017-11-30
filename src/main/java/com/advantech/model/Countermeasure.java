@@ -19,6 +19,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -27,15 +28,12 @@ import javax.persistence.Table;
  * @author Wei.Cheng
  */
 @Entity
-@Table(name = "Countermeasure",
-        schema = "dbo",
-        catalog = "WebAccess"
-)
+@Table(name = "Countermeasure")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Countermeasure implements Serializable {
 
     private int id;
-    private int BABid;
+    private Bab bab;
     private String solution;
     private String lastEditor;
     private int lock;
@@ -57,13 +55,14 @@ public class Countermeasure implements Serializable {
         this.id = id;
     }
 
-    @Column(name = "BABid", nullable = false)
-    public int getBABid() {
-        return BABid;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "bab_id", nullable = false)
+    public Bab getBab() {
+        return bab;
     }
 
-    public void setBABid(int BABid) {
-        this.BABid = BABid;
+    public void setBab(Bab bab) {
+        this.bab = bab;
     }
 
     @Column(name = "solution", nullable = false, length = 500)
@@ -94,7 +93,7 @@ public class Countermeasure implements Serializable {
     }
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "Countermeasure_ErrorCode_REF", schema = "dbo", catalog = "WebAccess", joinColumns = {
+    @JoinTable(name = "Countermeasure_ErrorCode_REF", joinColumns = {
         @JoinColumn(name = "cm_id", nullable = false, insertable = false, updatable = false)}, inverseJoinColumns = {
         @JoinColumn(name = "ec_id", nullable = false, insertable = false, updatable = false)})
     public Set<ErrorCode> getErrorCodes() {
@@ -106,7 +105,7 @@ public class Countermeasure implements Serializable {
     }
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "Countermeasure_ActionCode_REF", schema = "dbo", catalog = "WebAccess", joinColumns = {
+    @JoinTable(name = "Countermeasure_ActionCode_REF", joinColumns = {
         @JoinColumn(name = "cm_id", nullable = false, insertable = false, updatable = false)}, inverseJoinColumns = {
         @JoinColumn(name = "ac_id", nullable = false, insertable = false, updatable = false)})
     public Set<ActionCode> getActionCodes() {

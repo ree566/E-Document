@@ -5,7 +5,7 @@
  */
 package com.advantech.service;
 
-import com.advantech.model.ModelResponsor;
+import com.advantech.model.view.ModelResponsor;
 import com.advantech.dao.ModelResponsorDAO;
 import java.util.List;
 import java.util.Map;

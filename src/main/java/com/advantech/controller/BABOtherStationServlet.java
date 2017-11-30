@@ -8,7 +8,7 @@
 package com.advantech.controller;
 
 import com.advantech.model.Bab;
-import com.advantech.service.BabLoginStatusService;
+import com.advantech.service.BabSettingHistoryService;
 import com.advantech.service.BabService;
 import java.io.*;
 import javax.servlet.http.*;
@@ -31,7 +31,7 @@ public class BABOtherStationServlet {
     private static final Logger log = LoggerFactory.getLogger(BABOtherStationServlet.class);
 
     @Autowired
-    private BabLoginStatusService bService;
+    private BabSettingHistoryService bService;
 
     @Autowired
     private BabService babService;

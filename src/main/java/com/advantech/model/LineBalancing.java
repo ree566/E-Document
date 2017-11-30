@@ -26,10 +26,7 @@ import org.springframework.format.annotation.DateTimeFormat;
  * @author Wei.Cheng
  */
 @Entity
-@Table(name = "Line_Balancing_Main",
-        schema = "dbo",
-        catalog = "Line_Balancing"
-)
+@Table(name = "Line_Balancing_Main")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class LineBalancing implements Serializable {
 

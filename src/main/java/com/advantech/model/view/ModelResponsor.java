@@ -3,13 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.advantech.model;
+package com.advantech.model.view;
 
 import java.io.Serializable;
 
 /**
  *
  * @author Wei.Cheng
+ * View object in db
  */
 //@Entity
 public class ModelResponsor implements Serializable {

@@ -5,17 +5,19 @@
  */
 package com.advantech.test;
 
+import com.advantech.dao.AlarmTestActionDAO;
+import com.advantech.dao.BabDAO;
 import com.advantech.helper.HibernateObjectPrinter;
+import com.advantech.model.Bab;
 import com.advantech.model.User;
-import com.advantech.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.List;
 import javax.transaction.Transactional;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import org.hibernate.transform.Transformers;
+import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +41,10 @@ public class HibernateTest {
     SessionFactory sessionFactory;
 
     @Autowired
-    UserService userService;
+    private AlarmTestActionDAO alarmTestActionDAO;
+
+    @Autowired
+    private BabDAO babDAO;
 
 //    @Test
     @Transactional
@@ -53,12 +58,44 @@ public class HibernateTest {
         HibernateObjectPrinter.print(l);
     }
 
-    @Test
+//    @Test
     @Transactional
     @Rollback(true)
     public void test2() throws JsonProcessingException {
-        List l = userService.findLineOwnerBySitefloor(2);
-        HibernateObjectPrinter.print(l);
+        Object o = alarmTestActionDAO.findByPrimaryKey("T1");
+        assertNotNull(o);
+        HibernateObjectPrinter.print(o);
+    }
+
+//    @Test
+    @Transactional
+    @Rollback(true)
+    public void test3() throws JsonProcessingException {
+        Object o = babDAO.findByPrimaryKey(11035);
+        assertNotNull(o);
+        HibernateObjectPrinter.print(o);
+    }
+
+    @Test
+    @Transactional
+    @Rollback(true)
+    public void testSqlQuery() {
+        Query q = sessionFactory.getCurrentSession().createSQLQuery("select t.* from testView t");
+        q.setResultTransformer(Transformers.aliasToBean(Bab.class));
+        List l = q.list();
+        assertEquals(10, l.size());
+        assertTrue(l.get(0) instanceof Bab);
+    }
+    
+    @Test
+    @Transactional
+    @Rollback(true)
+    public void testQuery() {
+        Query q = sessionFactory.getCurrentSession().createQuery("from Bab");
+        q.setMaxResults(10);
+        List l = q.list();
+        assertEquals(10, l.size());
+        assertTrue(l.get(0) instanceof Bab);
     }
 
 }

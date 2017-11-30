@@ -43,9 +43,6 @@ public class LineBalancingService {
     @Autowired
     private LineBalancingDAO lineBalanceDAO;
 
-    @Autowired
-    private LineService lineService;
-
     @PostConstruct
     protected void init() {
         PropertiesReader p = PropertiesReader.getInstance();
@@ -71,14 +68,12 @@ public class LineBalancingService {
         LineBalancing maxBaln = this.getMaxBalance(bab); //先取得max才insert，不然會抓到自己
         double baln = this.caculateLineBalance(balances);
 
-        System.out.println(new Gson().toJson(bab));
-
         LineBalancing record = new LineBalancing(
                 bab.getPeople(),
-                bab.getLinetype(),
-                bab.getPO(),
-                bab.getModel_name(),
-                Integer.toString(bab.getLine())
+                bab.getLine().getLineType().getName(),
+                bab.getPo(),
+                bab.getModelName(),
+                Integer.toString(bab.getLine().getId())
         );
 
         record.setBalance(baln);
@@ -158,7 +153,7 @@ public class LineBalancingService {
     }
 
     private void sendMail(Bab bab, int num1, int num2, int diff) throws JSONException, MessagingException {
-        Line line = lineService.getLine(bab.getLine());
+        Line line = bab.getLine();
         String mailto = targetMail; //Get the responsor of linetype.
         if ("".equals(mailto)) {
             return;
@@ -178,9 +173,9 @@ public class LineBalancingService {
                         .append(num2)
                         .append("</font>%</p>")
                         .append("<p>工單號碼: ")
-                        .append(bab.getPO())
+                        .append(bab.getPo())
                         .append("</p><p>生產機種: ")
-                        .append(bab.getModel_name())
+                        .append(bab.getModelName())
                         .append("</p><p>生產人數: ")
                         .append(bab.getPeople())
                         .append("</p><p>詳細歷史資料請上 <a href='")

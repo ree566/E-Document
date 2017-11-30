@@ -68,36 +68,4 @@ public class TestDAO extends AbstractDao<Integer, Test> implements BasicDAO_1<Te
         return 1;
     }
 
-    public boolean insertAlarm(List<AlarmTestAction> l) {
-        for (AlarmTestAction a : l) {
-            alarmTestActionDAO.insert(a);
-        }
-        return true;
-    }
-
-    public boolean updateAlarm(List<AlarmTestAction> l) {
-        for (AlarmTestAction a : l) {
-            alarmTestActionDAO.update(a);
-        }
-        return true;
-    }
-
-    public boolean resetAlarm() {
-        Query q = super.getSession().createSQLQuery("UPDATE Alm_TestAction SET alarm = 0");
-        q.executeUpdate();
-        return true;
-    }
-
-    public boolean removeAlarmSign() {
-        Query q = super.getSession().createSQLQuery("TRUNCATE TABLE Alm_TestAction");
-        q.executeUpdate();
-        return true;
-    }
-
-    public boolean setTestAlarmToTestingMode() {
-        Query q = super.getSession().createSQLQuery("UPDATE Alm_TestAction SET alarm = 1");
-        q.executeUpdate();
-        return true;
-    }
-
 }

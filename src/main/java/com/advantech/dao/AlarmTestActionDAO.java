@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class AlarmTestActionDAO extends AbstractDao_1<String, AlarmTestAction> implements BasicDAO_1<AlarmTestAction>{
+public class AlarmTestActionDAO extends AbstractDao<String, AlarmTestAction> implements BasicDAO_1<AlarmTestAction> {
 
     @Override
     public List<AlarmTestAction> findAll() {
@@ -23,7 +23,7 @@ public class AlarmTestActionDAO extends AbstractDao_1<String, AlarmTestAction> i
 
     @Override
     public AlarmTestAction findByPrimaryKey(Object obj_id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return super.getByKey((String) obj_id);
     }
 
     @Override
@@ -43,5 +43,5 @@ public class AlarmTestActionDAO extends AbstractDao_1<String, AlarmTestAction> i
         super.getSession().delete(pojo);
         return 1;
     }
-    
+
 }

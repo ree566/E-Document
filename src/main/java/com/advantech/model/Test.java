@@ -28,10 +28,7 @@ import org.springframework.format.annotation.DateTimeFormat;
  * @author Wei.Cheng
  */
 @Entity
-@Table(name = "LS_Test",
-        schema = "dbo",
-        catalog = "WebAccess"
-)
+@Table(name = "LS_Test")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Test implements Serializable {
 
@@ -82,7 +79,7 @@ public class Test implements Serializable {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @JsonFormat(pattern = "yyyy-MM-dd'T'kk:mm:ss.SSS'Z'", timezone = "GMT+8")
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "updatetime", length = 23, insertable = false, updatable = false)
+    @Column(name = "lastUpdateTime", length = 23, insertable = false, updatable = false)
     public Date getLastUpdateTime() {
         return lastUpdateTime;
     }

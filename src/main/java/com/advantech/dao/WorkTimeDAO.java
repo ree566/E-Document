@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 /**
  *
  * @author Wei.Cheng
+ * View object from sql
  */
 @Repository
 public class WorkTimeDAO extends BasicDAO {

@@ -5,92 +5,42 @@
  */
 package com.advantech.model;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.io.Serializable;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 /**
  *
  * @author Wei.Cheng
  */
-//@Entity
+@Entity
+@Table(name = "FBN")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Fbn implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-
-    private String TagName;
-    private String LogDate;
-    private String LogTime;
-    private String LogMilliSecond;
-    private int LogValue;
-    private int groupid;
     private int id;
-    private int isused;
-    private int diff;
-    private int BABid;
+    private String tagName;
+    private String logDate;
+    private String logTime;
+    private int logMilliSecond;
+    private int logValue;
+    private Integer group;
+    private Integer isused;
+    private Integer diff;
+    private Bab bab;
 
-    public Fbn() {
-
-    }
-
-    public Fbn(String TagName, String LogDate, String LogTime, String LogMilliSecond, int LogValue, int groupid, int id, int isused, int diff) {
-        this.TagName = TagName;
-        this.LogDate = LogDate;
-        this.LogTime = LogTime;
-        this.LogMilliSecond = LogMilliSecond;
-        this.LogValue = LogValue;
-        this.groupid = groupid;
-        this.id = id;
-        this.isused = isused;
-        this.diff = diff;
-    }
-
-    public String getTagName() {
-        return TagName;
-    }
-
-    public void setTagName(String TagName) {
-        this.TagName = TagName;
-    }
-
-    public String getLogDate() {
-        return LogDate;
-    }
-
-    public void setLogDate(String LogDate) {
-        this.LogDate = LogDate;
-    }
-
-    public String getLogTime() {
-        return LogTime;
-    }
-
-    public void setLogTime(String LogTime) {
-        this.LogTime = LogTime;
-    }
-
-    public String getLogMilliSecond() {
-        return LogMilliSecond;
-    }
-
-    public void setLogMilliSecond(String LogMilliSecond) {
-        this.LogMilliSecond = LogMilliSecond;
-    }
-
-    public int getLogValue() {
-        return LogValue;
-    }
-
-    public void setLogValue(int LogValue) {
-        this.LogValue = LogValue;
-    }
-
-    public int getGroupid() {
-        return groupid;
-    }
-
-    public void setGroupid(int groupid) {
-        this.groupid = groupid;
-    }
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id", unique = true, nullable = false)
     public int getId() {
         return id;
     }
@@ -99,29 +49,86 @@ public class Fbn implements Serializable {
         this.id = id;
     }
 
-    public int getIsused() {
+    @Column(name = "TagName", length = 50, nullable = false)
+    public String getTagName() {
+        return tagName;
+    }
+
+    public void setTagName(String tagName) {
+        this.tagName = tagName;
+    }
+
+    @Column(name = "LogDate", length = 12, nullable = false)
+    public String getLogDate() {
+        return logDate;
+    }
+
+    public void setLogDate(String logDate) {
+        this.logDate = logDate;
+    }
+
+    @Column(name = "LogTime", length = 12, nullable = false)
+    public String getLogTime() {
+        return logTime;
+    }
+
+    public void setLogTime(String logTime) {
+        this.logTime = logTime;
+    }
+
+    @Column(name = "LogMilliSecond", nullable = false)
+    public int getLogMilliSecond() {
+        return logMilliSecond;
+    }
+
+    public void setLogMilliSecond(int logMilliSecond) {
+        this.logMilliSecond = logMilliSecond;
+    }
+
+    @Column(name = "LogValue", nullable = false)
+    public int getLogValue() {
+        return logValue;
+    }
+
+    public void setLogValue(int logValue) {
+        this.logValue = logValue;
+    }
+
+    @Column(name = "groupid")
+    public Integer getGroup() {
+        return group;
+    }
+
+    public void setGroup(Integer group) {
+        this.group = group;
+    }
+
+    @Column(name = "isused")
+    public Integer getIsused() {
         return isused;
     }
 
-    public void setIsused(int isused) {
+    public void setIsused(Integer isused) {
         this.isused = isused;
     }
 
-    public int getDiff() {
+    @Column(name = "diff")
+    public Integer getDiff() {
         return diff;
     }
 
-    public void setDiff(int diff) {
+    public void setDiff(Integer diff) {
         this.diff = diff;
     }
 
-    public int getBABid() {
-        return BABid;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "bab_id")
+    public Bab getBab() {
+        return bab;
     }
 
-    public void setBABid(int BABid) {
-        this.BABid = BABid;
+    public void setBab(Bab bab) {
+        this.bab = bab;
     }
 
-    
 }

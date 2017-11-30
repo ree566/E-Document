@@ -23,8 +23,6 @@ import javax.persistence.UniqueConstraint;
  */
 @Entity
 @Table(name = "User_Notification",
-        schema = "dbo",
-        catalog = "WebAccess",
         uniqueConstraints = @UniqueConstraint(columnNames = "name")
 )
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
@@ -75,7 +73,7 @@ public class UserNotification implements java.io.Serializable {
         this.name = name;
     }
 
-    @Column(name = "description", length = 200)
+    @Column(name = "[description]", length = 200)
     public String getDescription() {
         return this.description;
     }
@@ -94,7 +92,7 @@ public class UserNotification implements java.io.Serializable {
     }
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "User_Notification_REF", schema = "dbo", catalog = "WebAccess", joinColumns = {
+    @JoinTable(name = "User_Notification_REF", joinColumns = {
         @JoinColumn(name = "user_notification_id", nullable = false, insertable = false, updatable = false)}, inverseJoinColumns = {
         @JoinColumn(name = "user_id", nullable = false, insertable = false, updatable = false)})
     public Set<User> getUsers() {

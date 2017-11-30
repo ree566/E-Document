@@ -23,6 +23,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 /**
@@ -30,10 +31,7 @@ import javax.persistence.Table;
  * @author Wei.Cheng
  */
 @Entity
-@Table(name = "LS_Line",
-        schema = "dbo",
-        catalog = "WebAccess"
-)
+@Table(name = "LS_Line")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Line implements Serializable {
 
@@ -48,9 +46,8 @@ public class Line implements Serializable {
     @JsonIgnore
     public Set<User> users = new HashSet<User>(0);
 
-    public Line() {
-
-    }
+    @JsonIgnore
+    public Set<Bab> babs = new HashSet<Bab>(0);
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -121,7 +118,7 @@ public class Line implements Serializable {
     }
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "User_Line_REF", schema = "dbo", catalog = "WebAccess", joinColumns = {
+    @JoinTable(name = "User_Line_REF", joinColumns = {
         @JoinColumn(name = "line_id", nullable = false, updatable = false)}, inverseJoinColumns = {
         @JoinColumn(name = "[user_id]", nullable = false, updatable = false)})
     public Set<User> getUsers() {
@@ -130,6 +127,15 @@ public class Line implements Serializable {
 
     public void setUsers(Set<User> users) {
         this.users = users;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "line")
+    public Set<Bab> getBabs() {
+        return babs;
+    }
+
+    public void setBabs(Set<Bab> babs) {
+        this.babs = babs;
     }
 
 }

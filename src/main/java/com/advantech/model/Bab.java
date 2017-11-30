@@ -5,51 +5,71 @@
  */
 package com.advantech.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.io.Serializable;
-import org.json.JSONArray;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.format.annotation.DateTimeFormat;
 
 /**
  *
  * @author Wei.Cheng
  */
-//@Entity
+@Entity
+@Table(name = "Bab")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Bab implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-
     private int id;
-    private String PO;
-    private String Model_name;
-    private int line;
+    private String po;
+    private String modelName;
+    private Line line;
     private int people;
     private int startPosition;
-    private int isused;
-    private String name;
-    private String lineName;
-    private String linetype;
-    private String btime;
-    private String lastUpdateTime;
+    private Integer isused;
+    private Date beginTime;
+    private Date lastUpdateTime;
     private int ispre = 0;
 
-    // check countermeasure is exist or not
-    private Integer cm_id; 
+    @JsonIgnore
+    public Set<Fbn> fbns = new HashSet<Fbn>(0);
 
-    //for saving line balance data, not exist in the database
-    private JSONArray babavgs;
+    @JsonIgnore
+    public Set<Countermeasure> countermeasures = new HashSet<Countermeasure>(0);
 
-    public Bab() {
+    @JsonIgnore
+    public Set<BabPcsDetailHistory> babPcsDetailHistorys = new HashSet<BabPcsDetailHistory>(0);
 
-    }
+    @JsonIgnore
+    public Set<BabSettingHistory> babSettingHistorys = new HashSet<BabSettingHistory>(0);
 
-    public Bab(String PO, String Model_name, int line, int people, int startPosition, int ispre) {
-        this.PO = PO;
-        this.Model_name = Model_name;
-        this.line = line;
-        this.people = people;
-        this.startPosition = startPosition;
-        this.ispre = ispre;
-    }
+    @JsonIgnore
+    public Set<BabAlarmHistory> babAlarmHistorys = new HashSet<BabAlarmHistory>(0);
 
+    @JsonIgnore
+    public Set<BabBalanceHistory> babBalanceHistorys = new HashSet<BabBalanceHistory>(0);
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id", unique = true, nullable = false)
     public int getId() {
         return id;
     }
@@ -58,30 +78,35 @@ public class Bab implements Serializable {
         this.id = id;
     }
 
-    public String getPO() {
-        return PO;
+    @Column(name = "po", length = 50, nullable = false)
+    public String getPo() {
+        return po;
     }
 
-    public void setPO(String PO) {
-        this.PO = PO;
+    public void setPo(String po) {
+        this.po = po;
     }
 
-    public String getModel_name() {
-        return Model_name;
+    @Column(name = "modelName", length = 50, nullable = false)
+    public String getModelName() {
+        return modelName;
     }
 
-    public void setModel_name(String Model_name) {
-        this.Model_name = Model_name;
+    public void setModelName(String modelName) {
+        this.modelName = modelName;
     }
 
-    public int getLine() {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "line_id", nullable = false)
+    public Line getLine() {
         return line;
     }
 
-    public void setLine(int line) {
+    public void setLine(Line line) {
         this.line = line;
     }
 
+    @Column(name = "people", nullable = false)
     public int getPeople() {
         return people;
     }
@@ -90,6 +115,7 @@ public class Bab implements Serializable {
         this.people = people;
     }
 
+    @Column(name = "startPosition", nullable = false)
     public int getStartPosition() {
         return startPosition;
     }
@@ -98,54 +124,42 @@ public class Bab implements Serializable {
         this.startPosition = startPosition;
     }
 
-    public int getIsused() {
+    @Column(name = "isused")
+    public Integer getIsused() {
         return isused;
     }
 
-    public void setIsused(int isused) {
+    public void setIsused(Integer isused) {
         this.isused = isused;
     }
 
-    public String getName() {
-        return name;
+    @CreationTimestamp
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    @JsonFormat(pattern = "yyyy-MM-dd'T'kk:mm:ss.SSS'Z'", timezone = "GMT+8")
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "btime", length = 23, insertable = false, updatable = false)
+    public Date getBeginTime() {
+        return beginTime;
     }
 
-    public String getLineName() {
-        return lineName;
+    public void setBeginTime(Date beginTime) {
+        this.beginTime = beginTime;
     }
 
-    public void setLineName(String lineName) {
-        this.lineName = lineName;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getLinetype() {
-        return linetype;
-    }
-
-    public void setLinetype(String linetype) {
-        this.linetype = linetype;
-    }
-
-    public String getBtime() {
-        return btime;
-    }
-
-    public void setBtime(String btime) {
-        this.btime = btime;
-    }
-
-    public String getLastUpdateTime() {
+    @UpdateTimestamp
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    @JsonFormat(pattern = "yyyy-MM-dd'T'kk:mm:ss.SSS'Z'", timezone = "GMT+8")
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "lastUpdateTime", length = 23, insertable = false, updatable = false)
+    public Date getLastUpdateTime() {
         return lastUpdateTime;
     }
 
-    public void setLastUpdateTime(String lastUpdateTime) {
+    public void setLastUpdateTime(Date lastUpdateTime) {
         this.lastUpdateTime = lastUpdateTime;
     }
 
+    @Column(name = "ispre", nullable = false)
     public int getIspre() {
         return ispre;
     }
@@ -154,24 +168,58 @@ public class Bab implements Serializable {
         this.ispre = ispre;
     }
 
-    public JSONArray getBabavgs() {
-        return babavgs;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "bab")
+    public Set<Fbn> getFbns() {
+        return fbns;
     }
 
-    public void setBabavgs(JSONArray babavgs) {
-        this.babavgs = babavgs;
+    public void setFbns(Set<Fbn> fbns) {
+        this.fbns = fbns;
     }
 
-    public Integer getCm_id() {
-        return cm_id;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "bab")
+    public Set<Countermeasure> getCountermeasures() {
+        return countermeasures;
     }
 
-    public void setCm_id(Integer cm_id) {
-        this.cm_id = cm_id;
+    public void setCountermeasures(Set<Countermeasure> countermeasures) {
+        this.countermeasures = countermeasures;
     }
 
-    public boolean isIsBabClosed() {
-        return this.isused != 0;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "bab")
+    public Set<BabPcsDetailHistory> getBabPcsDetailHistorys() {
+        return babPcsDetailHistorys;
+    }
+
+    public void setBabPcsDetailHistorys(Set<BabPcsDetailHistory> babPcsDetailHistorys) {
+        this.babPcsDetailHistorys = babPcsDetailHistorys;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "bab")
+    public Set<BabSettingHistory> getBabSettingHistorys() {
+        return babSettingHistorys;
+    }
+
+    public void setBabSettingHistorys(Set<BabSettingHistory> babSettingHistorys) {
+        this.babSettingHistorys = babSettingHistorys;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "bab")
+    public Set<BabAlarmHistory> getBabAlarmHistorys() {
+        return babAlarmHistorys;
+    }
+
+    public void setBabAlarmHistorys(Set<BabAlarmHistory> babAlarmHistorys) {
+        this.babAlarmHistorys = babAlarmHistorys;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "bab")
+    public Set<BabBalanceHistory> getBabBalanceHistorys() {
+        return babBalanceHistorys;
+    }
+
+    public void setBabBalanceHistorys(Set<BabBalanceHistory> babBalanceHistorys) {
+        this.babBalanceHistorys = babBalanceHistorys;
     }
 
     @Override
@@ -193,9 +241,6 @@ public class Bab implements Serializable {
             return false;
         }
         final Bab other = (Bab) obj;
-        if (this.id != other.id) {
-            return false;
-        }
-        return true;
+        return this.id == other.id;
     }
 }

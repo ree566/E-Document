@@ -5,13 +5,14 @@
  */
 package com.advantech.service;
 
-import com.advantech.model.AlarmAction;
 import com.advantech.model.Bab;
 import com.advantech.model.Line;
 import com.advantech.helper.PropertiesReader;
+import com.advantech.model.AlarmBabAction;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.PostConstruct;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -30,10 +31,13 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
 
     @Autowired
     private LineBalancingService lineBalanceService;
-    
+
     @Autowired
     private BabService babService;
-    
+
+    @Autowired
+    private AlarmBabActionService almService;
+
     @Autowired
     private LineService lineService;
 
@@ -43,14 +47,13 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
     protected void init() {
         PropertiesReader p = PropertiesReader.getInstance();
         BAB_STANDARD = p.getAssyStandard();
-        
         this.initMap();
     }
 
     @Override
     protected void initMap() {
         dataMap.clear();
-        List<Line> babLineStatus = lineService.getLine();
+        List<Line> babLineStatus = lineService.findAll();
         for (Line line : babLineStatus) {
             String lineName = line.getName().trim();
             for (int i = 1, length = line.getPeople(); i <= length; i++) {
@@ -64,7 +67,7 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
     public boolean generateData() {
         boolean isSomeBabUnderStandard = false;
 
-        List<Bab> babGroups = babService.getAllProcessing();
+        List<Bab> babGroups = babService.findProcessing();
         if (hasDataInCollection(babGroups)) {
             //把所有有在bab資料表的id集合起來，找到統計值之後依序寫入txt(各線別取當日最早輸入的工單id來亮燈)
             JSONArray transBabData = new JSONArray();
@@ -76,19 +79,19 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
                 int currentGroupSum = sensorDatas.length();//看目前組別人數是否有到達bab裏頭設定的人數
                 int peoples = bab.getPeople();
                 if (sensorDatas.length() == 0 || currentGroupSum != peoples) {
-                    
+
                     //Insert an empty status 
                     for (int i = bab.getStartPosition(), length = bab.getStartPosition() + bab.getPeople() - 1; i <= length; i++) {
                         JSONObject obj = new JSONObject();
-                        obj.put("TagName", bab.getLineName());
-                        obj.put("lineName", bab.getLineName());
+                        obj.put("TagName", bab.getLine().getName());
+                        obj.put("lineName", bab.getLine().getName());
                         obj.put("stationId", i - bab.getStartPosition() + 1);
-                        obj.put("linetype", bab.getLinetype());
+                        obj.put("linetype", bab.getLine().getLineType().getName());
                         obj.put("T_Num", i);
                         transBabData.put(obj);
                     }
                     isSomeBabUnderStandard = true;
-                    
+
                 } else {
                     double maxTimeDiff = -1;
                     double sumTimeDiff = -1;
@@ -147,28 +150,40 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
     }
 
     @Override
-    protected boolean initDbAlarmSign() {
-        return babService.removeAlarmSign() && babService.insertAlarm(this.mapToAlarmSign(dataMap));
+    public void initAlarmSign() {
+        List l = almService.findAll();
+        almService.delete(l);
+        almService.insert(this.mapToAlarmSign(dataMap));
     }
 
     @Override
-    public boolean setDbAlarmSignToTestMode() {
-        return babService.setBABAlarmToTestingMode();
+    public void setAlarmSign(List l) {
+        almService.update(l);
     }
 
     @Override
-    protected boolean setDbAlarmSign(List<AlarmAction> l) {
-        return babService.updateAlarm(l);
+    public void resetAlarmSign() {
+        almService.reset();
     }
 
     @Override
-    protected boolean resetDbAlarmSign() {
-        return babService.resetAlarm();
+    public void setAlarmSignToTestingMode() {
+        almService.AlarmToTestingMode();
     }
-    
+
     @Override
     protected List mapToAlarmSign(Map map) {
-        return null;
+        List l = new ArrayList();
+        if (map != null && !map.isEmpty()) {
+            Iterator it = map.keySet().iterator();
+            while (it.hasNext()) {
+                Object key = it.next();
+                String tableId = key.toString();
+                int action = (int) map.get(key);
+                l.add(new AlarmBabAction(tableId, action));
+            }
+        }
+        return l;
     }
 
 }

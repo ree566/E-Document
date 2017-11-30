@@ -23,18 +23,18 @@ import org.springframework.format.annotation.DateTimeFormat;
  * @author Wei.Cheng
  */
 @Entity
-@Table(name = "Alm_TestAction")
+@Table(name = "Alm_BabAction")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "tableId")
-public class AlarmTestAction implements AlarmAction, Serializable {
+public class AlarmBabAction implements AlarmAction, Serializable {
 
     private String tableId;
     private int alarm;
     private Date lastUpdateTime;
 
-    public AlarmTestAction() {
+    public AlarmBabAction() {
     }
 
-    public AlarmTestAction(String tableId, int alarm) {
+    public AlarmBabAction(String tableId, int alarm) {
         this.tableId = tableId;
         this.alarm = alarm;
     }

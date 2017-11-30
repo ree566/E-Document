@@ -10,6 +10,7 @@ import com.advantech.dao.TestDAO;
 import com.advantech.model.AlarmTestAction;
 import com.advantech.model.TestTable;
 import com.advantech.webservice.WebServiceTX;
+import static com.google.common.base.Preconditions.*;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -52,16 +53,12 @@ public class TestService {
     }
 
     public void checkDeskIsAvailable(TestTable t) {
-        if (t.getTests() != null && !t.getTests().isEmpty()) {
-            throw new IllegalArgumentException("此桌次已有使用者");
-        }
+        checkArgument(t.getTests() != null && !t.getTests().isEmpty(), "此桌次已有使用者");
     }
 
     public void checkUserIsAvailable(String jobNumber) {
         Test t = testDAO.findByJobnumber(jobNumber);
-        if (t != null) {
-            throw new IllegalArgumentException("使用者已在桌次 " + t.getTestTable().getName() + " 使用中");
-        }
+        checkArgument(t != null, "使用者已在桌次 " + t.getTestTable().getName() + " 使用中");
     }
 
     public int update(Test pojo) {
@@ -87,26 +84,6 @@ public class TestService {
 
     public int cleanTests() {
         return testDAO.cleanTests();
-    }
-
-    public boolean insertAlarm(List<AlarmTestAction> l) {
-        return testDAO.insertAlarm(l);
-    }
-
-    public boolean updateAlarm(List<AlarmTestAction> l) {
-        return testDAO.updateAlarm(l);
-    }
-
-    public boolean resetAlarm() {
-        return testDAO.resetAlarm();
-    }
-
-    public boolean removeAlarmSign() {
-        return testDAO.removeAlarmSign();
-    }
-
-    public boolean setTestAlarmToTestingMode() {
-        return testDAO.setTestAlarmToTestingMode();
     }
 
 }

@@ -99,13 +99,14 @@
         <qualifier value="tx2" />
     </bean>
  
+    <!--        com.advantech.dao,
+    com.advantech.service,
+    com.advantech.controller,
+    com.advantech.helper,
+    com.advantech.quartzJob-->
     <!-- 對base-package下及其子資料夾偵測並自動裝配Bean -->
     <context:component-scan base-package="
-        com.advantech.dao,
-        com.advantech.service,
-        com.advantech.controller,
-        com.advantech.helper,
-        com.advantech.quartzJob
+        com.advantech.dao
     " />
     
     <!-- 要使用 @Transactional 時需要 -->

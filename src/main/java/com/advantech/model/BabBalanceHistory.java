@@ -6,18 +6,17 @@
 package com.advantech.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
+import java.math.BigDecimal;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 /**
@@ -25,19 +24,15 @@ import javax.persistence.Table;
  * @author Wei.Cheng
  */
 @Entity
-@Table(name = "LineType")
+@Table(name = "BabBalanceHistory")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-public class LineType implements Serializable {
+public class BabBalanceHistory implements Serializable {
 
     private int id;
-
-    private String name;
-
-    @JsonIgnore
-    private Set<Line> lines = new HashSet<>(0);
-
-    @JsonIgnore
-    private Set<LineTypeConfig> lineTypeConfigs = new HashSet<>(0);
+    private Bab bab;
+    private int groupid;
+    private BigDecimal balance;
+    private int pass;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -50,31 +45,41 @@ public class LineType implements Serializable {
         this.id = id;
     }
 
-    @Column(name = "name", nullable = false, length = 50)
-    public String getName() {
-        return name;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "bab_id", nullable = false)
+    public Bab getBab() {
+        return bab;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setBab(Bab bab) {
+        this.bab = bab;
     }
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "lineType")
-    public Set<Line> getLines() {
-        return lines;
+    @Column(name = "groupid", nullable = false)
+    public int getGroupid() {
+        return groupid;
     }
 
-    public void setLines(Set<Line> lines) {
-        this.lines = lines;
+    public void setGroupid(int groupid) {
+        this.groupid = groupid;
     }
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "lineType")
-    public Set<LineTypeConfig> getLineTypeConfigs() {
-        return lineTypeConfigs;
+    @Column(name = "balance", precision = 10, scale = 0, nullable = false)
+    public BigDecimal getBalance() {
+        return balance;
     }
 
-    public void setLineTypeConfigs(Set<LineTypeConfig> lineTypeConfigs) {
-        this.lineTypeConfigs = lineTypeConfigs;
+    public void setBalance(BigDecimal balance) {
+        this.balance = balance;
+    }
+
+    @Column(name = "pass", nullable = false)
+    public int getPass() {
+        return pass;
+    }
+
+    public void setPass(int pass) {
+        this.pass = pass;
     }
 
 }

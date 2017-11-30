@@ -11,8 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tempuri.Service;
 import org.tempuri.ServiceSoap;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
+import static com.google.common.base.Preconditions.*;
 
 /**
  *
@@ -20,7 +19,6 @@ import org.w3c.dom.NodeList;
  */
 public class WebServiceTX {
 
-    private final String kanbanLogin = "A", kanbanLogout = "U";
     private final URL url;//webservice位置(放在專案中，因為url無法讀取，裏頭標籤衝突)
     private static final Logger log = LoggerFactory.getLogger(WebServiceTX.class);
 
@@ -38,14 +36,19 @@ public class WebServiceTX {
     }
 
     //Get data from WebService
-    private String getWebServiceResponse(String data, String action) {
+    private String simpleTxSendAndReceive(String data, String action) {
         Service service = new Service(url);
         ServiceSoap port = service.getServiceSoap();
         String result = port.tx(data, action);
         return result;
     }
 
-    public String kanbanUserLogin(String jobnumber) {
+    private void sendData(String data, UploadType uploadType) {
+        String st = this.simpleTxSendAndReceive(data, uploadType.toString());
+        checkState(!"OK".equals(st), st);
+    }
+
+    public void kanbanUserLogin(String jobnumber) {
         WebServiceRV rv = WebServiceRV.getInstance();
         UserOnMes user = rv.getMESUser(jobnumber);
 
@@ -65,22 +68,10 @@ public class WebServiceTX {
                 + "<CARD_FLAG>1</CARD_FLAG>"
                 + "<USER_ID>" + user.getUserId() + "</USER_ID>"
                 + "</WORK_MANPOWER_CARD></root>";
-        return this.getWebServiceResponse(data, kanbanLogin);
+        sendData(data, UploadType.INSERT);
     }
 
-    protected String getString(String tagName, Element element) {
-        NodeList list = element.getElementsByTagName(tagName);
-        if (list != null && list.getLength() > 0) {
-            NodeList subList = list.item(0).getChildNodes();
-
-            if (subList != null && subList.getLength() > 0) {
-                return subList.item(0).getNodeValue();
-            }
-        }
-        return null;
-    }
-
-    public String kanbanUserLogout(String jobnumber) {
+    public void kanbanUserLogout(String jobnumber) {
         WebServiceRV rv = WebServiceRV.getInstance();
         String workId = rv.getKanbanWorkId(jobnumber);
         UserOnMes user = rv.getMESUser(jobnumber);
@@ -99,13 +90,11 @@ public class WebServiceTX {
                 + "<CARD_FLAG>-1</CARD_FLAG>"
                 + "<USER_ID>" + user.getUserId() + "</USER_ID>" //get userid from second xml
                 + "</WORK_MANPOWER_CARD></root>";
-        return this.getWebServiceResponse(data, kanbanLogout);
+        sendData(data, UploadType.UPDATE);
     }
 
     private void checkUserIsAvailable(UserOnMes user) {
-        if (user == null || user.getUserId() == null || user.getUserNo() == null) {
-            throw new IllegalArgumentException("The user is not exist.");
-        }
+        checkArgument(user == null || user.getUserId() == null || user.getUserNo() == null, "The user is not exist.");
     }
 
 }

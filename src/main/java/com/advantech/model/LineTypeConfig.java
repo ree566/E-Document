@@ -24,10 +24,7 @@ import javax.persistence.Table;
  * @author Wei.Cheng
  */
 @Entity
-@Table(name = "LineTypeConfig",
-        schema = "dbo",
-        catalog = "WebAccess"
-)
+@Table(name = "LineTypeConfig")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class LineTypeConfig implements Serializable {
 

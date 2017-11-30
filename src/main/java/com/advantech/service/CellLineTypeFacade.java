@@ -5,15 +5,10 @@
  */
 package com.advantech.service;
 
-import com.advantech.model.AlarmAction;
 import com.advantech.model.CellLine;
 import com.advantech.helper.PropertiesReader;
-import com.advantech.model.AlarmTestAction;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.PostConstruct;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,12 +42,6 @@ public class CellLineTypeFacade extends BasicLineTypeFacade {
         cellStandardMax = p.getCellStandardMax();
 
         this.initMap();
-        if (isWriteToDB) {
-            boolean initStatus = this.initDbAlarmSign();
-            if (initStatus == false) {
-                log.error("Init db output fail.");
-            }
-        }
     }
 
     @Override
@@ -104,25 +93,27 @@ public class CellLineTypeFacade extends BasicLineTypeFacade {
     }
 
     @Override
-    protected boolean initDbAlarmSign() {
-        return cellService.removeAlarmSign() && cellService.insertAlarm(this.mapToAlarmSign(dataMap));
+    public void initAlarmSign() {
+//        List l = almService.findAll();
+//        almService.delete(l);
+//        almService.insert(this.mapToAlarmSign(dataMap));
     }
 
     @Override
-    public boolean setDbAlarmSignToTestMode() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void setAlarmSign(List l) {
+//        almService.update(l);
     }
 
     @Override
-    protected boolean setDbAlarmSign(List<AlarmAction> l) {
-        return cellService.updateAlarm(l);
+    public void resetAlarmSign() {
+//        almService.reset();
     }
 
     @Override
-    protected boolean resetDbAlarmSign() {
-        return cellService.resetAlarm();
+    public void setAlarmSignToTestingMode() {
+//        almService.AlarmToTestingMode();
     }
-    
+
     @Override
     protected List mapToAlarmSign(Map map) {
         return null;

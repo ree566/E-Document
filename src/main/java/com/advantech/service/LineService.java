@@ -7,10 +7,8 @@ package com.advantech.service;
 
 import com.advantech.model.Line;
 import com.advantech.dao.LineDAO;
-import com.advantech.model.LineStatus;
 import java.util.List;
 import javax.transaction.Transactional;
-import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,37 +23,28 @@ public class LineService {
     @Autowired
     private LineDAO lineDAO;
 
-    public List<Line> getLine() {
-        return lineDAO.getOpenedLine();
+    public List<Line> findAll() {
+        return lineDAO.findAll();
     }
 
-    public Line getLine(int lineNo) {
-        return lineDAO.getLine(lineNo);
-    }
-    
-     public List<Line> getLine(String sitefloor) {
-        return lineDAO.getLine(sitefloor);
+    public Line findByPrimaryKey(Object obj_id) {
+        return lineDAO.findByPrimaryKey(obj_id);
     }
 
-    public String loginBAB(int lineNo) throws JSONException {
-        return isLineOpened(lineNo) ? "此線別尚未結束或者已使用中。" : (lineDAO.openSingleLine(lineNo) ? "success" : "fail");
+    public List<Line> findBySitefloor(int floor_id) {
+        return lineDAO.findBySitefloor(floor_id);
     }
 
-    public String logoutBAB(int lineNo) throws JSONException {
-        return isLineClosed(lineNo) ? "站別尚未開始，無法結束。" : (lineDAO.closeSingleLine(lineNo) ? "success" : "fail");
+    public int insert(Line pojo) {
+        return lineDAO.insert(pojo);
     }
 
-    private boolean isLineOpened(int lineNo) {
-        Line line = lineDAO.getLine(lineNo);
-        return line.getLineStatus() == LineStatus.OPEN;
+    public int update(Line pojo) {
+        return lineDAO.update(pojo);
     }
 
-    private boolean isLineClosed(int lineNo) {
-        return !this.isLineOpened(lineNo);
-    }
-
-    public boolean closeAllLine() {
-        return lineDAO.allLineEnd();
+    public int delete(Line pojo) {
+        return lineDAO.delete(pojo);
     }
 
 }

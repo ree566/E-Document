@@ -29,8 +29,6 @@ import org.springframework.security.core.userdetails.UserDetails;
  */
 @Entity
 @Table(name = "[User]",
-        schema = "dbo",
-        catalog = "WebAccess",
         uniqueConstraints = @UniqueConstraint(columnNames = "jobnumber")
 )
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = User.class)
@@ -168,7 +166,7 @@ public class User implements java.io.Serializable, UserDetails {
     }
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "User_Line_REF", schema = "dbo", catalog = "WebAccess", joinColumns = {
+    @JoinTable(name = "User_Line_REF", joinColumns = {
         @JoinColumn(name = "[user_id]", nullable = false, updatable = false)}, inverseJoinColumns = {
         @JoinColumn(name = "line_id", nullable = false, updatable = false)})
     public Set<Line> getLines() {
@@ -180,7 +178,7 @@ public class User implements java.io.Serializable, UserDetails {
     }
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "User_Profile_REF", schema = "dbo", catalog = "WebAccess", joinColumns = {
+    @JoinTable(name = "User_Profile_REF", joinColumns = {
         @JoinColumn(name = "user_id", nullable = false, insertable = false, updatable = false)}, inverseJoinColumns = {
         @JoinColumn(name = "user_profile_id", nullable = false, insertable = false, updatable = false)})
     public Set<UserProfile> getUserProfiles() {
@@ -192,7 +190,7 @@ public class User implements java.io.Serializable, UserDetails {
     }
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "User_Notification_REF", schema = "dbo", catalog = "WebAccess", joinColumns = {
+    @JoinTable(name = "User_Notification_REF", joinColumns = {
         @JoinColumn(name = "user_id", nullable = false, insertable = false, updatable = false)}, inverseJoinColumns = {
         @JoinColumn(name = "user_notification_id", nullable = false, insertable = false, updatable = false)})
     public Set<UserNotification> getUserNotifications() {

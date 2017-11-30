@@ -5,7 +5,8 @@
  */
 package com.advantech.dao;
 
-import com.advantech.model.Line;
+import com.advantech.model.Bab;
+import com.advantech.model.BabSettingHistory;
 import java.util.List;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
@@ -16,38 +17,39 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class LineDAO extends AbstractDao<Integer, Line> implements BasicDAO_1<Line> {
+public class BabSettingHistoryDAO extends AbstractDao<Integer, BabSettingHistory> implements BasicDAO_1<BabSettingHistory> {
 
     @Override
-    public List<Line> findAll() {
+    public List<BabSettingHistory> findAll() {
         return super.createEntityCriteria().list();
     }
 
     @Override
-    public Line findByPrimaryKey(Object obj_id) {
+    public BabSettingHistory findByPrimaryKey(Object obj_id) {
         return super.getByKey((int) obj_id);
     }
 
-    public List<Line> findBySitefloor(int floor_id) {
+    public BabSettingHistory findByBabAndStation(Bab b, int station) {
         Criteria c = super.createEntityCriteria();
-        c.add(Restrictions.eq("floor.id", floor_id));
-        return c.list();
+        c.add(Restrictions.eq("bab.id", b.getId()));
+        c.add(Restrictions.eq("station", station));
+        return (BabSettingHistory) c.uniqueResult();
     }
 
     @Override
-    public int insert(Line pojo) {
+    public int insert(BabSettingHistory pojo) {
         super.getSession().save(pojo);
         return 1;
     }
 
     @Override
-    public int update(Line pojo) {
+    public int update(BabSettingHistory pojo) {
         super.getSession().update(pojo);
         return 1;
     }
 
     @Override
-    public int delete(Line pojo) {
+    public int delete(BabSettingHistory pojo) {
         super.getSession().delete(pojo);
         return 1;
     }

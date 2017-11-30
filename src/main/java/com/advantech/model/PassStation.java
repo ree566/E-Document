@@ -15,6 +15,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 /**
  *
  * @author Wei.Cheng
+ * Cell passstation record
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "QryData")

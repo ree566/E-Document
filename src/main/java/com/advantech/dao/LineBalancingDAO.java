@@ -9,8 +9,6 @@ import com.advantech.model.Bab;
 import com.advantech.model.LineBalancing;
 import java.util.List;
 import org.hibernate.Query;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -19,8 +17,6 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public class LineBalancingDAO extends AbstractDao_1<Integer, LineBalancing> implements BasicDAO_1<LineBalancing> {
-
-    private static final Logger log = LoggerFactory.getLogger(LineBalancingDAO.class);
 
     @Override
     public List<LineBalancing> findAll() {
@@ -39,9 +35,9 @@ public class LineBalancingDAO extends AbstractDao_1<Integer, LineBalancing> impl
                         + "and people = :people and lineType = :lineType "
                         + "and balance is not null "
                         + "and (avg1 is not null or avg1 != 0)");
-        q.setParameter("modelName", bab.getModel_name());
+        q.setParameter("modelName", bab.getModelName());
         q.setParameter("people", bab.getPeople());
-        q.setParameter("lineType", bab.getLinetype());
+        q.setParameter("lineType", bab.getLine().getLineType().getName());
         return (LineBalancing) q.uniqueResult();
     }
 
