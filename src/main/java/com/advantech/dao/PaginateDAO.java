@@ -9,6 +9,7 @@ import com.advantech.jqgrid.PageInfo;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
@@ -49,7 +50,7 @@ public class PaginateDAO {
         }
 
         criteria.setFirstResult((info.getPage() - 1) * info.getRows());
-        
+
         if (info.getRows() > 0) {
             criteria.setMaxResults(info.getRows());
         }
@@ -59,7 +60,7 @@ public class PaginateDAO {
 
     private Object autoCaseSearchParam(Class clz, String searchField, String searchParam) {
         if (searchField.contains(".id")) {
-            return Integer.parseInt(searchParam);
+            return Objects.equals("0", searchParam) ? null : Integer.parseInt(searchParam);
         }
         try {
             Field field = clz.getDeclaredField(searchField);
@@ -96,10 +97,10 @@ public class PaginateDAO {
                 criteria.add(Restrictions.in(searchField, param));
                 break;
             case "eq":
-                criteria.add(Restrictions.eq(searchField, searchParam));
+                criteria.add(searchParam == null ? Restrictions.isNull(searchField) : Restrictions.eq(searchField, searchParam));
                 break;
             case "ne":
-                criteria.add(Restrictions.ne(searchField, searchParam));
+                criteria.add(searchParam == null ? Restrictions.isNotNull(searchField) : Restrictions.ne(searchField, searchParam));
                 break;
             case "bw":
                 criteria.add(Restrictions.like(searchField, searchParam.toString(), MatchMode.START));

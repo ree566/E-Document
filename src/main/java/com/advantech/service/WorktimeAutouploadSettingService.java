@@ -31,6 +31,10 @@ public class WorktimeAutouploadSettingService {
         return worktimeAutouploadSettingDAO.findByPrimaryKey(obj_id);
     }
 
+    public List<WorktimeAutouploadSetting> findByPrimaryKeys(Integer... id) {
+        return worktimeAutouploadSettingDAO.findByPrimaryKeys(id);
+    }
+
     public int insert(WorktimeAutouploadSetting pojo) {
         return worktimeAutouploadSettingDAO.insert(pojo);
     }

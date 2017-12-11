@@ -9,11 +9,13 @@ import com.advantech.helper.MailManager;
 import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.User;
 import com.advantech.model.Worktime;
+import com.advantech.service.AuditService;
 import com.advantech.service.UserNotificationService;
 import com.advantech.service.WorktimeService;
 import com.advantech.webservice.port.StandardtimeUploadPort;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import javax.annotation.PostConstruct;
 import javax.mail.MessagingException;
 import org.joda.time.DateTime;
@@ -30,6 +32,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class StandardTimeUpload {
 
     private static final Logger log = LoggerFactory.getLogger(StandardTimeUpload.class);
+
+    @Autowired
+    private AuditService auditService;
 
     @Autowired
     private UserNotificationService userNotificationService;
@@ -64,19 +69,42 @@ public class StandardTimeUpload {
         log.info("Begin upload standardtime to mes: " + modifiedWorktimes.size() + " datas.");
 
         port.initSettings();
-        
+
         for (Worktime w : modifiedWorktimes) {
             try {
-                port.update(w);
+                Worktime rowLastStatus = (Worktime) auditService.findLastStatusBeforeUpdate(Worktime.class, w.getId());
+                if (isStandardTimeChanged(rowLastStatus, w)) {
+                    port.update(w);
+                }
             } catch (Exception e) {
-                errorMessages.add(e.getMessage());
-                log.error(e.toString());
+                String errorMessage = w.getModelName() + " upload fail: " + e.getMessage();
+                errorMessages.add(errorMessage);
+                log.error(errorMessage);
             }
         }
 
         this.notifyUser(errorMessages);
 
         log.info("Upload standardtime job finished.");
+    }
+
+    private boolean isStandardTimeChanged(Worktime prev, Worktime current) {
+        return !Objects.equals(prev.getTotalModule(), current.getTotalModule())
+                || !Objects.equals(prev.getCleanPanel(), current.getCleanPanel())
+                || !Objects.equals(prev.getAssy(), current.getAssy())
+                || !Objects.equals(prev.getT1(), current.getT1())
+                || !Objects.equals(prev.getT2(), current.getT2())
+                || !Objects.equals(prev.getT3(), current.getT3())
+                || !Objects.equals(prev.getT4(), current.getT4())
+                || !Objects.equals(prev.getHiPotLeakage(), current.getHiPotLeakage())
+                || !Objects.equals(prev.getColdBoot(), current.getColdBoot())
+                || !Objects.equals(prev.getWarmBoot(), current.getWarmBoot())
+                || !Objects.equals(prev.getVibration(), current.getVibration())
+                || !Objects.equals(prev.getUpBiRi(), current.getUpBiRi())
+                || !Objects.equals(prev.getDownBiRi(), current.getDownBiRi())
+                || !Objects.equals(prev.getPacking(), current.getPacking())
+                || !Objects.equals(prev.getAssyStation(), current.getAssyStation())
+                || !Objects.equals(prev.getPackingStation(), current.getPackingStation());
     }
 
     public void updatePageInfo() {

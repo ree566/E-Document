@@ -7,6 +7,8 @@ package com.advantech.dao;
 
 import com.advantech.model.WorktimeAutouploadSetting;
 import java.util.List;
+import org.hibernate.Criteria;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -24,6 +26,12 @@ public class WorktimeAutouploadSettingDAO extends AbstractDao<Integer, WorktimeA
     @Override
     public WorktimeAutouploadSetting findByPrimaryKey(Object obj_id) {
         return super.getByKey((int) obj_id);
+    }
+
+    public List<WorktimeAutouploadSetting> findByPrimaryKeys(Integer... id) {
+        Criteria c = super.createEntityCriteria();
+        c.add(Restrictions.in("id", id));
+        return c.list();
     }
 
     @Override

@@ -7,6 +7,7 @@ package com.advantech.test;
 
 import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.Worktime;
+import com.advantech.model.WorktimeAutouploadSetting;
 import com.advantech.service.FlowService;
 import com.advantech.service.PreAssyService;
 import com.advantech.service.WorktimeAutouploadSettingService;
@@ -24,6 +25,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -69,17 +71,63 @@ public class UploadPortTest {
     @Autowired
     private MaterialPropertyUploadPort materialPropertyUploadPort;
 
+    @Autowired
+    private WorktimeAutouploadSettingService worktimeAutouploadSettingService;
+
     @Before
     public void initTestData() {
-        w = worktimeService.findByModel("TEST-MODEL-2");
+//        w = worktimeService.findByModel("TEST-MODEL-2");
+    }
+
+    @Value("${WORKTIME.UPLOAD.INSERT: true}")
+    private boolean isInserted;
+
+    @Value("${WORKTIME.UPLOAD.UPDATE: true}")
+    private boolean isUpdated;
+
+    @Value("${WORKTIME.UPLOAD.DELETE: true}")
+    private boolean isDeleted;
+
+    @Value("${WORKTIME.UPLOAD.SOP: true}")
+    private boolean isUploadSop;
+
+    @Value("${WORKTIME.UPLOAD.RESPONSOR: true}")
+    private boolean isUploadResponsor;
+
+    @Value("${WORKTIME.UPLOAD.FLOW: true}")
+    private boolean isUploadFlow;
+
+    @Value("${WORKTIME.UPLOAD.MATPROPERTY: true}")
+    private boolean isUploadMatProp;
+
+//    @Test
+//    @Rollback(true)
+    public void uploadParamTest() {
+        assertTrue(isInserted);
+        assertTrue(isUpdated);
+        assertFalse(isDeleted);
+        assertTrue(isUploadSop);
+        assertTrue(isUploadResponsor);
+        assertTrue(isUploadFlow);
+        assertFalse(isUploadMatProp);
     }
 
     @Test
     @Rollback(true)
     public void testStandardtimeUpload() throws Exception {
-        assertNotNull(w);
+        List<Worktime> l = worktimeService.findByPrimaryKeys(8768);
+        assertNotNull(l.get(0));
+//        List<WorktimeAutouploadSetting> settings = worktimeAutouploadSettingService.findByPrimaryKeys(19, 20, 21, 22);
         standardtimePort.initSettings();
-        standardtimePort.update(w);
+
+        l.forEach((worktime) -> {
+            try {
+                System.out.println("Upload model: " + worktime.getModelName());
+                standardtimePort.update(worktime);
+            } catch (Exception ex) {
+                System.out.println(ex);
+            }
+        });
     }
 
 //    @Test
@@ -104,30 +152,22 @@ public class UploadPortTest {
 //        }
     }
 
-    @Autowired
-    private WorktimeAutouploadSettingService worktimeAutouploadSettingService;
-
     //暫時用
 //    @Test
-    public void testStandardtimeUpload2() {
+    public void testStandardtimeUpload2() throws Exception {
         PageInfo info = new PageInfo();
         info.setSearchField("modifiedDate");
         info.setSearchOper("gt");
-        info.setSearchString("2017-09-03");
+        info.setSearchString("2017-11-26");
         info.setRows(Integer.MAX_VALUE);
         List<Worktime> l = worktimeService.findAll(info);
-        assertEquals(124, l.size());
 
-        standardtimePort.initSettings(newArrayList(worktimeAutouploadSettingService.findByPrimaryKey(16)));
+        standardtimePort.initSettings();
 
-        l.forEach((worktime) -> {
-            try {
-                System.out.println("Upload model: " + worktime.getModelName());
-                standardtimePort.update(worktime);
-            } catch (Exception ex) {
-                System.out.println(ex);
-            }
-        });
+        for (Worktime worktime : l) {
+            System.out.println(worktime.getModelName());
+            standardtimePort.update(worktime);
+        }
     }
 
 //    @Test
