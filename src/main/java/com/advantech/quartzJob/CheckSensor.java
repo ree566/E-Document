@@ -12,10 +12,10 @@ import com.advantech.helper.ApplicationContextHelper;
 import com.advantech.helper.MailSend;
 import com.advantech.helper.PropertiesReader;
 import com.advantech.model.User;
-import com.advantech.service.FbnService;
+import com.advantech.model.view.SensorCurrentGroupStatus;
+import com.advantech.service.SqlViewService;
 import com.advantech.service.UserService;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import javax.mail.MessagingException;
@@ -46,14 +46,14 @@ public class CheckSensor extends QuartzJobBean {
     private int detectPeriod;
     private JSONArray responsors;
 
-    private final FbnService fbnService;
+    private final SqlViewService sqlViewService;
 
     private final UserService userService;
 
     private final String notificationName = "sensor_alarm";
 
     public CheckSensor() {
-        fbnService = (FbnService) ApplicationContextHelper.getBean("fbnService");
+        sqlViewService = (SqlViewService) ApplicationContextHelper.getBean("sqlViewService");
         userService = (UserService) ApplicationContextHelper.getBean("userService");
     }
 
@@ -69,16 +69,16 @@ public class CheckSensor extends QuartzJobBean {
     //定時查看sensor資料是否又暫停or異常
     private void checkSensorAndSendMail() throws MessagingException {
 
-        List<Fbn> sensorStatus = fbnService.getSensorStatus(bab.getId());
+        List<SensorCurrentGroupStatus> sensorStatus = sqlViewService.findSensorCurrentGroupStatus(bab.getId());
         DateTime currentTime = new DateTime();
 
         int period;
 
         //所有13點開始，且13:30以前的感應器都去看與12:00相差多久，避開中午休息時間
         if (currentTime.getHourOfDay() == 13 && currentTime.getMinuteOfHour() < 30) {
-            period = new Period(DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.SSS").parseDateTime(bab.getBtime()), new DateTime().withTime(12, 00, 0, 0)).toStandardMinutes().getMinutes();
+            period = new Period(new DateTime(bab.getBeginTime()), new DateTime().withTime(12, 00, 0, 0)).toStandardMinutes().getMinutes();
         } else {
-            period = periodToNow(DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.SSS").parseDateTime(bab.getBtime()));
+            period = periodToNow(new DateTime(bab.getBeginTime()));
         }
 
         //開線後N分鐘開始監聽
@@ -86,25 +86,24 @@ public class CheckSensor extends QuartzJobBean {
             if (bab.getPeople() != sensorStatus.size()) {
                 //看是第幾站沒有資料，回報
                 Integer lostStation = sensorStatus.size() + 1;
-                sendMail(bab.getLineName(), "訊號遺失於站別 " + lostStation);
+                sendMail(bab.getLine().getName(), "訊號遺失於站別 " + lostStation);
             } else {
                 //看看時間距離現在多久了，超過N秒沒動作，回報
 
                 //按照ID排序，取最大值(最後更新時間)
-                Collections.sort(sensorStatus, new Comparator<Fbn>() {
-                    @Override
-                    public int compare(final Fbn object1, final Fbn object2) {
-                        return Integer.compare(object1.getId(), object2.getId());
-                    }
-                });
+                Collections.sort(
+                        sensorStatus,
+                        (final SensorCurrentGroupStatus object1, final SensorCurrentGroupStatus object2)
+                        -> Integer.compare(object1.getId(), object2.getId())
+                );
 
-                Fbn lastStatus = sensorStatus.get(sensorStatus.size() - 1);
-                String date = (String) lastStatus.getLogDate();
-                String time = (String) lastStatus.getLogTime();
+                SensorCurrentGroupStatus lastStatus = sensorStatus.get(sensorStatus.size() - 1);
+                String date = lastStatus.getLogDate();
+                String time = lastStatus.getLogTime();
 
                 int periodTime = periodToNow(date + time);
                 if (isExpire(periodTime)) {
-                    sendMail(bab.getLineName(), "Sensor已經超過 " + periodTime + " 分鐘沒有動作，最後一次感應在TagName " + lastStatus.getTagName());
+                    sendMail(bab.getLine().getName(), "Sensor已經超過 " + periodTime + " 分鐘沒有動作，最後一次感應在TagName " + lastStatus.getTagName());
                 }
             }
         }
@@ -136,10 +135,10 @@ public class CheckSensor extends QuartzJobBean {
 
     //Add the mail which want sensor_alarm and lineId is not setting per sitefloor
     private void addExtraMailToCCLoop(JSONArray arr) {
-        List<User> l = userService.findByUserNotificationAndNotLineOwner(, notificationName); //bab.getLine.getFloor.getid
-        for (User u : l) {
+        List<User> l = userService.findByUserNotificationAndNotLineOwner(notificationName); //bab.getLine.getFloor.getid
+        l.forEach((u) -> {
             arr.put(u.getUsername());
-        }
+        });
     }
 
     private String generateMailBody(String tagName, String message) {

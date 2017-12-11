@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
  *
  * @author Wei.Cheng
  */
-@Component
+//@Component
 public class CellLineTypeFacade extends BasicLineTypeFacade {
 
     private static final Logger log = LoggerFactory.getLogger(CellLineTypeFacade.class);

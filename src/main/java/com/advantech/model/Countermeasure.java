@@ -35,7 +35,7 @@ public class Countermeasure implements Serializable {
     private int id;
     private Bab bab;
     private String solution;
-    private String lastEditor;
+    private User lastEditor;
     private int lock;
 
     private Set<ErrorCode> errorCodes = new HashSet<ErrorCode>(0);
@@ -74,12 +74,13 @@ public class Countermeasure implements Serializable {
         this.solution = solution;
     }
 
-    @Column(name = "lastEditor", nullable = false, length = 50)
-    public String getLastEditor() {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "lastEditor_id", nullable = false)
+    public User getLastEditor() {
         return lastEditor;
     }
 
-    public void setLastEditor(String lastEditor) {
+    public void setLastEditor(User lastEditor) {
         this.lastEditor = lastEditor;
     }
 

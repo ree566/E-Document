@@ -37,7 +37,7 @@
     
     <bean id="HandleUnclosedBab-Trig" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
         <property name="jobDetail" ref="HandleUnclosedBab" />
-        <property name="cronExpression" value="0 10 12,22 ? * MON-SAT *" />
+        <property name="cronExpression" value="0 10 22 ? * MON-SAT *" />
     </bean>
     
     <!--job4 setting-->

@@ -6,9 +6,16 @@
 package com.advantech.dao;
 
 import com.advantech.model.Fbn;
-import java.sql.Connection;
 import java.util.List;
 import java.util.Map;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Property;
+import org.hibernate.criterion.Restrictions;
+import org.hibernate.transform.Transformers;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -16,48 +23,53 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class FbnDAO extends BasicDAO {
+public class FbnDAO extends AbstractDao<Integer, Fbn> {
 
-    private Connection getConn() {
-        return getDBUtilConn(SQL.WebAccess);
-    }
-
-    private List<Fbn> queryFBNTable(String sql, Object... params) {
-        return queryForBeanList(getConn(), Fbn.class, sql, params);
-    }
-
-    public List<Fbn> getSensorDataInDay() {
-        return queryFBNTable("SELECT * FROM LS_FBN_Sort");
+    public List<Fbn> findToday() {
+        DateTimeFormatter dtf = DateTimeFormat.forPattern("YY/MM/dd");
+        return super.createEntityCriteria()
+                .add(Restrictions.eq("LogDate", dtf.print(new DateTime())))
+                .list();
     }
 
     public Fbn getLastInputData() {
-        List l = queryFBNTable("SELECT TOP 1 * FROM LS_FBN_Sort ORDER BY ID DESC");
-        return !l.isEmpty() ? (Fbn) l.get(0) : null;
+        DetachedCriteria maxId = DetachedCriteria.forClass(Fbn.class)
+                .setProjection(Projections.max("id"));
+        return (Fbn) super.createEntityCriteria()
+                .add(Property.forName("id").eq(maxId))
+                .uniqueResult();
     }
 
     //利用檢視表(過濾後FBN資料表資訊)得到當前sensor時間 websocket用 
     public List<Map> getSensorCurrentStatus() {
-        return queryForMapList(getConn(), "SELECT * FROM LS_GetSenRealTime");
+        return super.getSession()
+                .createSQLQuery("SELECT * FROM LS_GetSenRealTime")
+                .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
+                .list();
     }
 
-    public List<Fbn> getSensorStatus(int BABid) {
-        return queryFBNTable("{CALL sp_sensorStatus(?)}", BABid);
+    public List<Map> getTotalAbnormalData(int bab_id) {
+        return super.getSession()
+                .createSQLQuery("{CALL sensorTotalAbnormalCheck(:bab_id)}")
+                .setParameter("bab_id", bab_id)
+                .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
+                .list();
     }
 
-    public Fbn getBABFinalStationSensorStatus(int BABid) {
-        List l = queryProcForBeanList(getConn(), Fbn.class, "{CALL LS_babFinalStationSensorStatus(?)}", BABid);
-        return l.isEmpty() ? null : (Fbn) l.get(0);
-    }
-
-    public List<Map> getTotalAbnormalData(int BABid) {
-        return queryProcForMapList(getConn(), "{CALL sensorTotalAbnormalCheck(?)}", BABid);
-    }
-
-    public List<Map> getAbnormalData(int BABid) {
-        return queryProcForMapList(getConn(), "{CALL sensorAbnormalCheck(?)}", BABid);
+    public List<Map> getAbnormalData(int bab_id) {
+        return super.getSession()
+                .createSQLQuery("{CALL sensorAbnormalCheck(?)}")
+                .setParameter("bab_id", bab_id)
+                .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
+                .list();
     }
 
     public boolean sensorDataClean(String date) {
-        return updateProc(this.getConn(), "{CALL sensorDataCleanProc(?)}", date);
+        super.getSession()
+                .createSQLQuery("{CALL sensorDataCleanProc(:date)}")
+                .setParameter("date", date)
+                .executeUpdate();
+        return true;
     }
+
 }

@@ -19,27 +19,22 @@ public class ActionCodeMapping implements java.io.Serializable {
 
     private int id;
     private ActionCode actionCode;
-    private String manager;
-    private String sitefloor;
+    private Unit unit;
+    private Floor floor;
     private String userName;
 
     public ActionCodeMapping() {
     }
 
-    public ActionCodeMapping(String manager) {
-        this.manager = manager;
-    }
-
-    public ActionCodeMapping(ActionCode actionCode, String manager, String sitefloor, String userName) {
+    public ActionCodeMapping(ActionCode actionCode, Unit unit, Floor floor, String userName) {
         this.actionCode = actionCode;
-        this.manager = manager;
-        this.sitefloor = sitefloor;
+        this.unit = unit;
+        this.floor = floor;
         this.userName = userName;
     }
 
     @Id
     @GeneratedValue
-
     @Column(name = "id", unique = true, nullable = false)
     public int getId() {
         return this.id;
@@ -59,22 +54,24 @@ public class ActionCodeMapping implements java.io.Serializable {
         this.actionCode = actionCode;
     }
 
-    @Column(name = "manager", nullable = false, length = 10)
-    public String getManager() {
-        return this.manager;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "unit_id")
+    public Unit getUnit() {
+        return this.unit;
     }
 
-    public void setManager(String manager) {
-        this.manager = manager;
+    public void setUnit(Unit unit) {
+        this.unit = unit;
     }
 
-    @Column(name = "sitefloor", length = 10)
-    public String getSitefloor() {
-        return this.sitefloor;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "floor_id")
+    public Floor getFloor() {
+        return this.floor;
     }
 
-    public void setSitefloor(String sitefloor) {
-        this.sitefloor = sitefloor;
+    public void setFloor(Floor floor) {
+        this.floor = floor;
     }
 
     @Column(name = "user_name", length = 20)

@@ -5,8 +5,10 @@
  */
 package com.advantech.helper;
 
+import com.advantech.model.Bab;
 import com.advantech.service.BabService;
 import com.advantech.service.FbnService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.FileOutputStream;
 import static java.lang.System.out;
 import java.math.BigDecimal;
@@ -28,6 +30,7 @@ import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,10 +43,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class ExcelGenerator {
 
     private static final Logger log = LoggerFactory.getLogger(ExcelGenerator.class);
-    
+
     @Autowired
     private FbnService fbnService;
-    
+
     @Autowired
     private BabService babService;
 
@@ -64,6 +67,8 @@ public class ExcelGenerator {
 
     private CellStyle floatCell, percentCell, dateCell;
 
+    private ObjectMapper oMapper;
+
     public ExcelGenerator() {
         init();
     }
@@ -75,6 +80,7 @@ public class ExcelGenerator {
         floatCell = this.createFloatCell();
         percentCell = this.createPercentCell();
         dateCell = this.createDateCell();
+        oMapper = new ObjectMapper();
         log.info("New one workbook");
     }
 
@@ -275,32 +281,33 @@ public class ExcelGenerator {
      * @param date
      */
     private void generateSensorAbnormalData(String date) {
-        List<Map> babList = babService.getBABForMap(date);
+        DateTime d = new DateTime(date);
+        List<Bab> babs = babService.findByDate(d, d);
         workbook = new HSSFWorkbook();
 
         spreadsheet = workbook.createSheet("test");
 
         int dataCount = 0;
 
-        for (Map bab : babList) {
-            int BABid = (int) bab.get("id");
-            List<Map> abnormalDataTotal = fbnService.getTotalAbnormalData(BABid);
-            List<Map> abnormalData = fbnService.getAbnormalData(BABid);
+        for (Bab bab : babs) {
+            int bab_id = bab.getId();
+            List<Map> abnormalDataTotal = fbnService.getTotalAbnormalData(bab_id);
+            List<Map> abnormalData = fbnService.getAbnormalData(bab_id);
 
             //Make sure the data if empty or not(deadLock always happen).
             if (abnormalDataTotal.isEmpty()) {
-                abnormalDataTotal = fbnService.getTotalAbnormalData(BABid);
+                abnormalDataTotal = fbnService.getTotalAbnormalData(bab_id);
             }
 
             if (abnormalData.isEmpty()) {
-                abnormalData = fbnService.getAbnormalData(BABid);
+                abnormalData = fbnService.getAbnormalData(bab_id);
             }
 
             CellStyle style = workbook.createCellStyle();
             style.setFillForegroundColor(dataCount++ % 2 == 0 ? HSSFColor.LIGHT_TURQUOISE.index : HSSFColor.LIGHT_GREEN.index);
             style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
-            setData(spreadsheet, style, bab);
+            setData(spreadsheet, style, oMapper.convertValue(bab, Map.class));
             spreadsheet.createRow(++yIndex);
 
             setData(spreadsheet, style, abnormalDataTotal);

@@ -50,22 +50,22 @@ public class Bab implements Serializable {
     private int ispre = 0;
 
     @JsonIgnore
-    public Set<Fbn> fbns = new HashSet<Fbn>(0);
+    private Set<Fbn> fbns = new HashSet<Fbn>(0);
 
     @JsonIgnore
-    public Set<Countermeasure> countermeasures = new HashSet<Countermeasure>(0);
+    private Set<Countermeasure> countermeasures = new HashSet<Countermeasure>(0);
 
     @JsonIgnore
-    public Set<BabPcsDetailHistory> babPcsDetailHistorys = new HashSet<BabPcsDetailHistory>(0);
+    private Set<BabPcsDetailHistory> babPcsDetailHistorys = new HashSet<BabPcsDetailHistory>(0);
 
     @JsonIgnore
-    public Set<BabSettingHistory> babSettingHistorys = new HashSet<BabSettingHistory>(0);
+    private Set<BabSettingHistory> babSettingHistorys = new HashSet<BabSettingHistory>(0);
 
     @JsonIgnore
-    public Set<BabAlarmHistory> babAlarmHistorys = new HashSet<BabAlarmHistory>(0);
+    private Set<BabAlarmHistory> babAlarmHistorys = new HashSet<BabAlarmHistory>(0);
 
     @JsonIgnore
-    public Set<BabBalanceHistory> babBalanceHistorys = new HashSet<BabBalanceHistory>(0);
+    private Set<BabBalanceHistory> babBalanceHistorys = new HashSet<BabBalanceHistory>(0);
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

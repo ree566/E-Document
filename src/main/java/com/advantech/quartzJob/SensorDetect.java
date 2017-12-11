@@ -73,10 +73,10 @@ public class SensorDetect extends ProcessingBabDetector {
 
     private JSONArray getResponsors(Bab b) {
         JSONArray arr = new JSONArray();
-        List<User> responsors = userService.findLineOwner(b.getLine());
-        for (User owner : responsors) {
+        List<User> responsors = userService.findLineOwner(b.getLine().getId());
+        responsors.forEach((owner) -> {
             arr.put(owner.getUsername());
-        }
+        });
         return arr;
     }
 
@@ -96,7 +96,7 @@ public class SensorDetect extends ProcessingBabDetector {
 
     @Override
     public List<Bab> getProcessingBab() {
-        List<Bab> l = babService.getAllProcessing();
+        List<Bab> l = babService.findProcessing();
         return removePreBab(l);
     }
 

@@ -46,7 +46,7 @@ public class Endpoint6 {
 
     private static void groupBab(List<Bab> l) {
         for (Bab b : l) {
-            Integer line = b.getLine();
+            Integer line = b.getLine().getId();
             if (!processingBAB.containsKey(line)) {
                 List<Bab> list = new ArrayList();
                 list.add(b);
@@ -59,7 +59,7 @@ public class Endpoint6 {
 
     private static void syncCurrentBabStatus() {
         processingBAB.clear();
-        List l = ((BabService) ApplicationContextHelper.getBean("cronTrigMod")).getTodayBAB();
+        List l = ((BabService) ApplicationContextHelper.getBean("cronTrigMod")).findTodays();
         groupBab(l);
     }
 

@@ -98,8 +98,16 @@ public class BabService {
         return babDAO.update(pojo);
     }
 
+    public int closeBabDirectly(Bab b) {
+        return babDAO.closeBabDirectly(b);
+    }
+
+    public int closeBabWithSaving(Bab b) {
+        return babDAO.closeBabWithSaving(b);
+    }
+
     public int delete(Bab pojo) {
         return babDAO.delete(pojo);
     }
-    
+
 }

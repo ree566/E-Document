@@ -9,6 +9,8 @@ import com.advantech.model.Bab;
 import com.advantech.model.Line;
 import com.advantech.helper.PropertiesReader;
 import com.advantech.model.AlarmBabAction;
+import com.advantech.model.view.BabLastGroupStatus;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -18,13 +20,12 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 /**
  *
  * @author Wei.Cheng
  */
-@Component
+//@Component
 public class BabLineTypeFacade extends BasicLineTypeFacade {
 
     private static final Logger log = LoggerFactory.getLogger(BabLineTypeFacade.class);
@@ -40,6 +41,9 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
 
     @Autowired
     private LineService lineService;
+
+    @Autowired
+    private SqlViewService sqlViewService;
 
     private double BAB_STANDARD;
 
@@ -74,12 +78,10 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
             processingJsonObject = new JSONObject();
 
             for (Bab bab : babGroups) {
-                int BABid = bab.getId();
-                JSONArray sensorDatas = babService.getLastGroupStatusForJson(BABid);
-                int currentGroupSum = sensorDatas.length();//看目前組別人數是否有到達bab裏頭設定的人數
+                List<BabLastGroupStatus> status = sqlViewService.findBabLastGroupStatus(bab.getId());
+                int currentGroupSum = status.size();//看目前組別人數是否有到達bab裏頭設定的人數
                 int peoples = bab.getPeople();
-                if (sensorDatas.length() == 0 || currentGroupSum != peoples) {
-
+                if (currentGroupSum == 0 || currentGroupSum != peoples) {
                     //Insert an empty status 
                     for (int i = bab.getStartPosition(), length = bab.getStartPosition() + bab.getPeople() - 1; i <= length; i++) {
                         JSONObject obj = new JSONObject();
@@ -96,9 +98,9 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
                     double maxTimeDiff = -1;
                     double sumTimeDiff = -1;
                     int dataindex = -1;
-                    for (int i = 0, length = sensorDatas.length(); i < length; i++) {//for loop find the maxium number
+                    for (int i = 0, length = currentGroupSum; i < length; i++) {//for loop find the maxium number
                         //jsonObject的getInt所用參數不一樣，假使是取單台要getInt(diff)，整套則是getInt(average)
-                        double timeDiff = sensorDatas.getJSONObject(i).getInt("diff");
+                        Double timeDiff = status.get(i).getDiff() * 1.0;
                         if (maxTimeDiff < timeDiff) {
                             maxTimeDiff = timeDiff;
                             dataindex = i;
@@ -114,8 +116,10 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
                     if (isUnderBalance) {
                         isSomeBabUnderStandard = true;
                     }
-                    for (int i = 0, length = sensorDatas.length(); i < length; i++) {
-                        transBabData.put(sensorDatas.getJSONObject(i).put("ismax", isUnderBalance ? (dataindex == i) : false));
+                    for (int i = 0; i < currentGroupSum; i++) {
+                        BabLastGroupStatus bgs = status.get(i);
+                        bgs.setIsmax(isUnderBalance ? (dataindex == i) : false);
+                        transBabData.put(bgs);
                     }
                 }
             }

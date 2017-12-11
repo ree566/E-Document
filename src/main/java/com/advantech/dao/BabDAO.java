@@ -7,11 +7,13 @@ package com.advantech.dao;
 
 import com.advantech.model.Bab;
 import com.advantech.helper.PropertiesReader;
+import com.advantech.model.view.UserInfoRemote;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.transform.Transformers;
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Repository;
 
@@ -89,6 +91,22 @@ public class BabDAO extends AbstractDao<Integer, Bab> implements BasicDAO_1<Bab>
     @Override
     public int update(Bab pojo) {
         this.getSession().update(pojo);
+        return 1;
+    }
+
+    public int closeBabDirectly(Bab b) {
+        super.getSession()
+                .createSQLQuery("{CALL usp_CloseBabDirectly(:bab_id)}")
+                .setParameter("bab_id", b.getId())
+                .executeUpdate();
+        return 1;
+    }
+
+    public int closeBabWithSaving(Bab b) {
+        super.getSession()
+                .createSQLQuery("{CALL usp_CloseBabWithSaving(:bab_id)}")
+                .setParameter("bab_id", b.getId())
+                .executeUpdate();
         return 1;
     }
 

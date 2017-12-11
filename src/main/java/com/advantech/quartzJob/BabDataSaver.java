@@ -8,14 +8,10 @@ package com.advantech.quartzJob;
 
 import com.advantech.model.Bab;
 import com.advantech.model.BabStatus;
-import com.advantech.model.Fbn;
 import com.advantech.helper.ApplicationContextHelper;
 import com.advantech.service.BabService;
-import com.advantech.service.FbnService;
 import com.google.gson.Gson;
-import java.util.ArrayList;
 import java.util.List;
-import org.joda.time.DateTime;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
@@ -25,20 +21,17 @@ import org.springframework.scheduling.quartz.QuartzJobBean;
 /**
  *
  * @author Wei.Cheng
+ * Auto close bab and set to abnormal sign on bab isused
+ * 避免Auto close on working time, 使用者無法得知系統已經自動關閉逾期未關閉工單
  */
 public class BabDataSaver extends QuartzJobBean {
 
     private static final Logger log = LoggerFactory.getLogger(BabDataSaver.class);
-    private final int LAST_HOUR_OF_DAY = 22;
-    private final int MAX_WAIT_HOURS = 2;
 
     private final BabService babService;
 
-    private final FbnService fbnService;
-
     public BabDataSaver() {
         babService = (BabService) ApplicationContextHelper.getBean("babService");
-        fbnService = (FbnService) ApplicationContextHelper.getBean("fbnService");
     }
 
     @Override
@@ -55,34 +48,14 @@ public class BabDataSaver extends QuartzJobBean {
         for (Bab bab : unClosedBabs) {
             bab.setIsused(BabStatus.UNFINSHED.getValue());
             log.info("Begin save unclose bab " + new Gson().toJson(bab));
-            log.info("Close bab status :" + (babService.closeBABWithoutCheckPrevSensor(bab) ? "success" : "fail"));
+            babService.closeBabDirectly(bab);
+            log.info("Close bab status success");
         }
 
     }
 
     private List getUnclosedBabs() {
-        DateTime dt = new DateTime();
-        int currentHour = dt.getHourOfDay();
-        List<Bab> unClosedBabs;
-        if (currentHour != LAST_HOUR_OF_DAY) {
-            List<Bab> l = babService.getTimeOutBAB();
-            unClosedBabs = new ArrayList();
-            for (Bab bab : l) {
-                Fbn fbn = fbnService.getBABFinalStationSensorStatus(bab.getId());
-                if (fbn == null) {
-                    continue;
-                }
-                int diffHours = fbnService.checkHoursDiff(fbn);
-                if (diffHours >= MAX_WAIT_HOURS) {
-                    unClosedBabs.add(bab);
-                    log.info("Unclosed babList add " + new Gson().toJson(bab));
-                }
-            }
-        } else {
-            unClosedBabs = babService.getProcessingBAB();
-        }
-
-        return unClosedBabs;
+        return babService.findProcessing();
     }
 
 }

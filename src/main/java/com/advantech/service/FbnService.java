@@ -34,21 +34,13 @@ public class FbnService {
     }
 
     public List<Fbn> getSensorDataInDay() {
-        return fbnDAO.getSensorDataInDay();
+        return fbnDAO.findToday();
     }
 
     public List<Map> getSensorCurrentStatus() {
         return fbnDAO.getSensorCurrentStatus();
     }
     
-    public List<Fbn> getSensorStatus(int BABid) {
-        return fbnDAO.getSensorStatus(BABid);
-    }
-
-    public Fbn getBABFinalStationSensorStatus(int BABid) {
-        return fbnDAO.getBABFinalStationSensorStatus(BABid);
-    }
-
     public Integer checkLastFBNMinuteDiff() {
         DateTime now = new DateTime();
         Fbn f = this.getLastInputData();

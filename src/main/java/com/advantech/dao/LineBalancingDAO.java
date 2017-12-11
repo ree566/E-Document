@@ -32,10 +32,12 @@ public class LineBalancingDAO extends AbstractDao_1<Integer, LineBalancing> impl
     public LineBalancing getMaxBalance(Bab bab) {
         Query q = super.getSession().createQuery(
                 "FROM LineBalancing where modelName = :modelName "
+                        + "and po = :po "
                         + "and people = :people and lineType = :lineType "
                         + "and balance is not null "
                         + "and (avg1 is not null or avg1 != 0)");
         q.setParameter("modelName", bab.getModelName());
+        q.setParameter("po", bab.getPo());
         q.setParameter("people", bab.getPeople());
         q.setParameter("lineType", bab.getLine().getLineType().getName());
         return (LineBalancing) q.uniqueResult();

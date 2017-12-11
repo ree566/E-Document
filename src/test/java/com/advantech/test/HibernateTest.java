@@ -7,9 +7,13 @@ package com.advantech.test;
 
 import com.advantech.dao.AlarmTestActionDAO;
 import com.advantech.dao.BabDAO;
+import com.advantech.dao.SqlViewDAO;
 import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.model.Bab;
+import com.advantech.model.CountermeasureEvent;
 import com.advantech.model.User;
+import com.advantech.model.view.UserInfoRemote;
+import com.advantech.model.view.Worktime;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.List;
 import javax.transaction.Transactional;
@@ -76,7 +80,7 @@ public class HibernateTest {
         HibernateObjectPrinter.print(o);
     }
 
-    @Test
+//    @Test
     @Transactional
     @Rollback(true)
     public void testSqlQuery() {
@@ -86,16 +90,71 @@ public class HibernateTest {
         assertEquals(10, l.size());
         assertTrue(l.get(0) instanceof Bab);
     }
+
+//    @Test
+    @Transactional
+    @Rollback(true)
+    public void testQuery() throws JsonProcessingException {
+        testObject(
+//                Floor.class,
+                User.class,
+//                UserProfile.class,
+//                UserNotification.class,
+//                Unit.class,
+//                TestTable.class,
+//                com.advantech.model.Test.class,
+//                TestRecord.class,
+//                AlarmTestAction.class,
+//                AlarmBabAction.class,
+//                Line.class,
+//                LineType.class,
+//                LineTypeConfig.class,
+//                Bab.class,
+//                Fbn.class,
+//                BabPcsDetailHistory.class,
+//                BabSettingHistory.class,
+//                BabBalanceHistory.class,
+//                BabAlarmHistory.class,
+//                Countermeasure.class,
+//                CountermeasureEvent.class,
+//                ActionCode.class,
+//                ErrorCode.class,
+                CountermeasureEvent.class
+        );
+
+    }
+
+    private void testObject(Class... cls) {
+        Session session = sessionFactory.getCurrentSession();
+        for (Class c : cls) {
+            System.out.println(c);
+            Object o = session.createCriteria(c).setMaxResults(1).uniqueResult();
+            assertNotNull(o);
+//            assertEquals(o.getClass(), c);
+            System.out.println(c + " Test pass");
+        }
+    }
     
+    @Autowired
+    private SqlViewDAO sqlViewDAO;
+    
+//    @Test
+    @Transactional
+    @Rollback(true)
+    public void testSqlFunction() throws JsonProcessingException{
+        Object o = sqlViewDAO.findBabAvg(10870);
+        assertNotNull(o);
+        HibernateObjectPrinter.print(o);
+    }
+
     @Test
     @Transactional
     @Rollback(true)
-    public void testQuery() {
-        Query q = sessionFactory.getCurrentSession().createQuery("from Bab");
-        q.setMaxResults(10);
-        List l = q.list();
-        assertEquals(10, l.size());
-        assertTrue(l.get(0) instanceof Bab);
+    public void testFbn() throws JsonProcessingException{
+        Session session = sessionFactory.getCurrentSession();
+        Query q = session
+                .createQuery("from Fbn f where f.bab.id = 11240 order by id desc")
+                .setMaxResults(1);
+        HibernateObjectPrinter.print(q.list());
     }
-
 }

@@ -11,7 +11,8 @@ import com.advantech.model.LineBalancing;
 import com.advantech.helper.MailSend;
 import com.advantech.helper.PropertiesReader;
 import com.advantech.dao.LineBalancingDAO;
-import com.google.gson.Gson;
+import com.advantech.dao.SqlViewDAO;
+import com.advantech.model.view.BabAvg;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -19,7 +20,6 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.mail.MessagingException;
 import org.apache.commons.beanutils.BeanUtils;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +43,9 @@ public class LineBalancingService {
     @Autowired
     private LineBalancingDAO lineBalanceDAO;
 
+    @Autowired
+    private SqlViewDAO sqlViewDAO;
+
     @PostConstruct
     protected void init() {
         PropertiesReader p = PropertiesReader.getInstance();
@@ -63,7 +66,7 @@ public class LineBalancingService {
     }
 
     public int insert(Bab bab) {
-        JSONArray balances = bab.getBabavgs();
+        List<BabAvg> balances = sqlViewDAO.findBabAvg(bab.getId());
 
         LineBalancing maxBaln = this.getMaxBalance(bab); //先取得max才insert，不然會抓到自己
         double baln = this.caculateLineBalance(balances);
@@ -79,15 +82,17 @@ public class LineBalancingService {
         record.setBalance(baln);
 
         try {
-            for (int i = 0; i < balances.length(); i++) {
-                Double avg = balances.getJSONObject(i).getDouble("average");
-                BeanUtils.setProperty(record, ("avg" + i), avg);
+            for (int i = 0; i < balances.size(); i++) {
+                Double avg = balances.get(i).getAverage();
+                BeanUtils.setProperty(record, ("avg" + (i + 1)), avg);
             }
         } catch (IllegalAccessException | InvocationTargetException ex) {
             throw new RuntimeException(ex);
         }
 
         lineBalanceDAO.insert(record);
+        
+        //Don't throw exception when mail send fail
         try {
             this.checkLineBalanceAndSendMail(bab, maxBaln, baln);
         } catch (Exception e) {
@@ -104,16 +109,16 @@ public class LineBalancingService {
         return lineBalanceDAO.delete(pojo);
     }
 
-    public Double caculateLineBalance(JSONArray balances) throws JSONException {
+    public Double caculateLineBalance(List<BabAvg> balances) throws JSONException {
 
         double max = 0.0;
         double sum = 0.0;
         double balancing = -1;
 
-        if (balances != null) {
-            int babPeople = balances.length();
+        if (balances != null && !balances.isEmpty()) {
+            int babPeople = balances.size();
             for (int a = 0; a < babPeople; a++) {//Find the max avg and sum the avgs.
-                double avg = balances.getJSONObject(a).getInt("average");
+                double avg = balances.get(a).getAverage();
                 if (max < avg) {
                     max = avg;
                 }
@@ -152,7 +157,7 @@ public class LineBalancingService {
         return (int) Math.round(d * 100);
     }
 
-    private void sendMail(Bab bab, int num1, int num2, int diff) throws JSONException, MessagingException {
+    private void sendMail(Bab bab, int maxbln, int currentbln, int diff) throws JSONException, MessagingException {
         Line line = bab.getLine();
         String mailto = targetMail; //Get the responsor of linetype.
         if ("".equals(mailto)) {
@@ -168,9 +173,9 @@ public class LineBalancingService {
                         .append("百分之 ")
                         .append(diff)
                         .append(" </p><p>")
-                        .append(num1)
+                        .append(maxbln)
                         .append("% ----> <font style='color:red'>")
-                        .append(num2)
+                        .append(currentbln)
                         .append("</font>%</p>")
                         .append("<p>工單號碼: ")
                         .append(bab.getPo())

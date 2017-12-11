@@ -7,6 +7,7 @@ package com.advantech.service;
 
 import com.advantech.model.Line;
 import com.advantech.dao.LineDAO;
+import com.advantech.model.LineStatus;
 import java.util.List;
 import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,14 @@ public class LineService {
 
     public int update(Line pojo) {
         return lineDAO.update(pojo);
+    }
+    
+    public void closeAll(){
+        List<Line> l = lineDAO.findAll();
+        l.forEach((line) -> {
+            line.setLineStatus(LineStatus.CLOSE);
+            this.update(line);
+        });
     }
 
     public int delete(Line pojo) {

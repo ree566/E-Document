@@ -72,10 +72,11 @@ public abstract class ProcessingBabDetector extends QuartzJobBean{
             List<Bab> different = (List<Bab>) CollectionUtils.disjunction(processingBab, tempBab);
             for (Bab b : different) {
                 if (tempBab.contains(b)) {
-                    this.unschedulePollingJob(b.getLineName());
+                    String lineName = b.getLine().getName();
+                    this.unschedulePollingJob(lineName);
                     removeBabFromTempList(b);
-                    processStatus.remove(b.getLineName());
-                    storeKeys.remove(b.getLineName());
+                    processStatus.remove(lineName);
+                    storeKeys.remove(lineName);
                 } else if (processingBab.contains(b)) {
                     tempBab.add(b);
                 }
@@ -105,7 +106,8 @@ public abstract class ProcessingBabDetector extends QuartzJobBean{
     private void schedulePollingJob(List<Bab> l) {
         for (Bab b : l) {
             try {
-                String jobName = b.getLineName() + quartzJobNameExt;
+                String lineName = b.getLine().getName();
+                String jobName = lineName + quartzJobNameExt;
                 JobKey jobKey = ctm.createJobKey(jobName, quartzJobGroupName);
 
                 if (!ctm.isJobInScheduleExist(jobKey)) {
@@ -123,7 +125,7 @@ public abstract class ProcessingBabDetector extends QuartzJobBean{
                     Map keyMap = new HashMap();
                     keyMap.put("job", jobKey);
                     keyMap.put("trigger", triggerKey);
-                    storeKeys.put(b.getLineName(), keyMap);
+                    storeKeys.put(lineName, keyMap);
                 }
             } catch (SchedulerException ex) {
                 log.error(ex.toString());

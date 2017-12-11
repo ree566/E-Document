@@ -13,6 +13,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.format.annotation.DateTimeFormat;
 
 /**
@@ -24,24 +25,17 @@ public class CountermeasureEvent implements java.io.Serializable {
 
     private int id;
     private Countermeasure countermeasure;
-    private String editor;
+    private User user;
     private String event;
     private Date lastUpdateTime;
 
     public CountermeasureEvent() {
     }
 
-    public CountermeasureEvent(Countermeasure countermeasure, String editor, String event) {
+    public CountermeasureEvent(Countermeasure countermeasure, User user, String event) {
         this.countermeasure = countermeasure;
-        this.editor = editor;
+        this.user = user;
         this.event = event;
-    }
-
-    public CountermeasureEvent(Countermeasure countermeasure, String editor, String event, Date lastUpdateTime) {
-        this.countermeasure = countermeasure;
-        this.editor = editor;
-        this.event = event;
-        this.lastUpdateTime = lastUpdateTime;
     }
 
     @Id
@@ -65,13 +59,14 @@ public class CountermeasureEvent implements java.io.Serializable {
         this.countermeasure = countermeasure;
     }
 
-    @Column(name = "editor", nullable = false, length = 30)
-    public String getEditor() {
-        return this.editor;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    public User getUser() {
+        return this.user;
     }
 
-    public void setEditor(String editor) {
-        this.editor = editor;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     @Column(name = "event", nullable = false, length = 30)
@@ -83,6 +78,7 @@ public class CountermeasureEvent implements java.io.Serializable {
         this.event = event;
     }
 
+    @CreationTimestamp
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @JsonFormat(pattern = "yyyy-MM-dd'T'kk:mm:ss.SSS'Z'", timezone = "GMT+8")
     @Temporal(TemporalType.TIMESTAMP)

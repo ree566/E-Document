@@ -106,7 +106,8 @@
     com.advantech.quartzJob-->
     <!-- 對base-package下及其子資料夾偵測並自動裝配Bean -->
     <context:component-scan base-package="
-        com.advantech.dao
+        com.advantech.dao,
+        com.advantech.service
     " />
     
     <!-- 要使用 @Transactional 時需要 -->
@@ -156,5 +157,5 @@
     <!-- 輔助類別，幫助在非spring管理下的物件取得spring管理的物件 -->
     <bean id="SpringApplicationContext" class="com.advantech.helper.ApplicationContextHelper">
     </bean>
-    
+
 </beans>

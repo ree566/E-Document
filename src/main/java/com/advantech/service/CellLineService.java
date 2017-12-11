@@ -16,8 +16,8 @@ import org.springframework.stereotype.Service;
  *
  * @author Wei.Cheng
  */
-@Service
-@Transactional
+//@Service
+//@Transactional
 public class CellLineService {
 
     @Autowired

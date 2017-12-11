@@ -25,10 +25,13 @@ public class Unit implements java.io.Serializable {
 
     private int id;
     private String name;
-    
+
     @JsonIgnore
     private Set<User> users = new HashSet<User>(0);
-    
+
+    @JsonIgnore
+    private Set<ActionCodeMapping> actionCodeMappings = new HashSet<ActionCodeMapping>(0);
+
     public Unit() {
     }
 
@@ -70,6 +73,15 @@ public class Unit implements java.io.Serializable {
 
     public void setUsers(Set<User> users) {
         this.users = users;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "unit")
+    public Set<ActionCodeMapping> getActionCodeMappings() {
+        return actionCodeMappings;
+    }
+
+    public void setActionCodeMappings(Set<ActionCodeMapping> actionCodeMappings) {
+        this.actionCodeMappings = actionCodeMappings;
     }
 
 }

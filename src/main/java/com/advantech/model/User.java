@@ -18,6 +18,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
@@ -40,6 +41,7 @@ public class User implements java.io.Serializable, UserDetails {
     private String jobnumber;
     private String password;
     private String username;
+    private String usernameCh;
     private Integer permission = 0;
     private String email;
     private String state = State.ACTIVE.getState();
@@ -57,7 +59,13 @@ public class User implements java.io.Serializable, UserDetails {
     private Collection<? extends GrantedAuthority> authorities;
 
     @JsonIgnore
-    public Set<Line> lines = new HashSet<Line>(0);
+    private Set<Line> lines = new HashSet<Line>(0);
+
+    @JsonIgnore
+    private Set<Countermeasure> countermeasures = new HashSet<Countermeasure>(0);
+
+    @JsonIgnore
+    private Set<CountermeasureEvent> countermeasureEvents = new HashSet<CountermeasureEvent>(0);
 
     public User() {
     }
@@ -138,6 +146,15 @@ public class User implements java.io.Serializable, UserDetails {
         this.username = username;
     }
 
+    @Column(name = "name_ch", length = 50)
+    public String getUsernameCh() {
+        return this.usernameCh;
+    }
+
+    public void setUsernameCh(String usernameCh) {
+        this.usernameCh = usernameCh;
+    }
+
     @Column(name = "permission")
     public Integer getPermission() {
         return this.permission;
@@ -175,6 +192,24 @@ public class User implements java.io.Serializable, UserDetails {
 
     public void setLines(Set<Line> lines) {
         this.lines = lines;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "lastEditor")
+    public Set<Countermeasure> getCountermeasures() {
+        return countermeasures;
+    }
+
+    public void setCountermeasures(Set<Countermeasure> countermeasures) {
+        this.countermeasures = countermeasures;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    public Set<CountermeasureEvent> getCountermeasureEvents() {
+        return countermeasureEvents;
+    }
+
+    public void setCountermeasureEvents(Set<CountermeasureEvent> countermeasureEvents) {
+        this.countermeasureEvents = countermeasureEvents;
     }
 
     @ManyToMany(fetch = FetchType.LAZY)

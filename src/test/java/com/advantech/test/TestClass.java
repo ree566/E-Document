@@ -5,10 +5,11 @@
  */
 package com.advantech.test;
 
-import com.advantech.model.LineBalancing;
-import com.google.gson.Gson;
 import java.lang.reflect.InvocationTargetException;
-import org.apache.commons.beanutils.BeanUtils;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+import org.junit.Test;
 
 /**
  *
@@ -16,12 +17,10 @@ import org.apache.commons.beanutils.BeanUtils;
  */
 public class TestClass {
 
-//    @Test
+    @Test
     public void test() throws IllegalAccessException, InvocationTargetException {
-        LineBalancing b = new LineBalancing();
-        BeanUtils.setProperty(b, "sop4", "test");
-        BeanUtils.setProperty(b, "line_id", "20");
-        System.out.println(new Gson().toJson(b));
+        DateTimeFormatter dtf = DateTimeFormat.forPattern("YY/MM/dd");
+        System.out.println(dtf.print(new DateTime()));
     }
 
 }
