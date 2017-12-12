@@ -10,7 +10,6 @@ import com.advantech.model.Line;
 import com.advantech.helper.PropertiesReader;
 import com.advantech.model.AlarmBabAction;
 import com.advantech.model.view.BabLastGroupStatus;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -20,12 +19,13 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  *
  * @author Wei.Cheng
  */
-//@Component
+@Component
 public class BabLineTypeFacade extends BasicLineTypeFacade {
 
     private static final Logger log = LoggerFactory.getLogger(BabLineTypeFacade.class);

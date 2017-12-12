@@ -12,6 +12,7 @@ import com.advantech.model.view.SensorCurrentGroupStatus;
 import com.advantech.model.view.UserInfoRemote;
 import com.advantech.model.view.Worktime;
 import java.util.List;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +32,10 @@ public class SqlViewService {
         return sqlViewDAO.findBabAvg(bab_id);
     }
 
+    public List<BabAvg> findBabAvgInHistory(int bab_id) {
+        return sqlViewDAO.findBabAvgInHistory(bab_id);
+    }
+
     public Worktime findWorktimeByModelName(String modelName) {
         return sqlViewDAO.findWorktimeByModelName(modelName);
     }
@@ -45,6 +50,14 @@ public class SqlViewService {
 
     public List<SensorCurrentGroupStatus> findSensorCurrentGroupStatus(int bab_id) {
         return sqlViewDAO.findSensorCurrentGroupStatus(bab_id);
+    }
+
+    public List<Map> findSensorStatus(int bab_id) {
+        return sqlViewDAO.findSensorStatus(bab_id);
+    }
+
+    public List<Map> findBalanceDetail(int bab_id) {
+        return sqlViewDAO.findBalanceDetail(bab_id);
     }
 
 }

@@ -5,10 +5,11 @@
  */
 package com.advantech.test;
 
+import static com.google.common.collect.Lists.newArrayList;
 import java.lang.reflect.InvocationTargetException;
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.stream.Collectors;
+import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 /**
@@ -19,8 +20,12 @@ public class TestClass {
 
     @Test
     public void test() throws IllegalAccessException, InvocationTargetException {
-        DateTimeFormatter dtf = DateTimeFormat.forPattern("YY/MM/dd");
-        System.out.println(dtf.print(new DateTime()));
+        List<String> l = newArrayList("test", "bab", "gg", "312", "YY", "tTTa");
+        l = l.stream().filter(str -> str.contains("t")).collect(Collectors.toList());
+        assertEquals(2, l.size());
+        l = l.stream().filter(str -> str.equals("tTTa")).collect(Collectors.toList());
+        assertEquals(1, l.size());
+        System.out.println(l);
     }
 
 }

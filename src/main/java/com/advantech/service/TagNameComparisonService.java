@@ -23,36 +23,32 @@ public class TagNameComparisonService {
     @Autowired
     private TagNameComparisonDAO tagNameComparisonDAO;
 
-    public List<TagNameComparison> getAll() {
-        return tagNameComparisonDAO.getAll();
+    public List<TagNameComparison> findAll() {
+        return tagNameComparisonDAO.findAll();
     }
 
-    public List<TagNameComparison> getOne(String orginTagName) {
-        return tagNameComparisonDAO.getOne(orginTagName);
+    public TagNameComparison findByPrimaryKey(Object obj_id) {
+        return tagNameComparisonDAO.findByPrimaryKey(obj_id);
     }
 
-    public List<TagNameComparison> getByLine(int lineId) {
-        return tagNameComparisonDAO.getByLine(lineId);
+    public TagNameComparison findByLampSysTagName(String tagName) {
+        return tagNameComparisonDAO.findByLampSysTagName(tagName);
     }
 
-    public boolean insert(List<TagNameComparison> l) {
-        return tagNameComparisonDAO.insert(l);
+    public TagNameComparison findByLineAndStation(int line_id, int station) {
+        return tagNameComparisonDAO.findByLineAndStation(line_id, station);
     }
 
-    public boolean update(List<TagNameComparison> l) {
-        return tagNameComparisonDAO.update(l);
+    public int insert(TagNameComparison pojo) {
+        return tagNameComparisonDAO.insert(pojo);
     }
 
-    public boolean delete(List<TagNameComparison> l) {
-        return tagNameComparisonDAO.delete(l);
+    public int update(TagNameComparison pojo) {
+        return tagNameComparisonDAO.update(pojo);
     }
 
-    public boolean deleteOne(TagNameComparison tagNameComparison) {
-        return tagNameComparisonDAO.deleteOne(tagNameComparison);
+    public int delete(TagNameComparison pojo) {
+        return tagNameComparisonDAO.delete(pojo);
     }
-    
-    public boolean sensorStationInit(){
-        return tagNameComparisonDAO.sensorStationInit();
-    }
-    
+
 }

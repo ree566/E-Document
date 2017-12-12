@@ -22,47 +22,19 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  *
- * @author Wei.Cheng
+ * @author Wei.Cheng Line login and logout function are Deprecated
  */
 @Controller
+@RequestMapping(value = "/BabLineController")
 public class BabLineController {
-
-    private static final Logger log = LoggerFactory.getLogger(BabLineController.class);
 
     @Autowired
     private LineService lineService;
 
-    private final String LOGIN = "LOGIN";
-    private final String LOGOUT = "LOGOUT";
-
-    @RequestMapping(value = "/GetLine", method = {RequestMethod.GET})
+    @RequestMapping(value = "/findAll", method = {RequestMethod.GET})
     @ResponseBody
-    protected List<Line> getLine(@RequestParam(required = false) String sitefloor) {
-        return sitefloor != null ? lineService.getLine(sitefloor) : lineService.getLine();
+    protected List<Line> findAll(@RequestParam(required = false) Integer sitefloor) {
+        return sitefloor != null ? lineService.findBySitefloor(sitefloor) : lineService.findAll();
     }
 
-    @RequestMapping(value = "/LineServlet", method = {RequestMethod.POST})
-    protected void doPost(
-            @RequestParam int lineNo,
-            @RequestParam String action,
-            HttpServletResponse res
-    ) throws IOException {
-        res.setContentType("text/plain");
-        PrintWriter out = res.getWriter();
-
-        String msg;
-        switch (action) {
-            case LOGIN:
-                msg = lineService.loginBAB(lineNo);
-                break;
-            case LOGOUT:
-                msg = lineService.logoutBAB(lineNo);
-                break;
-            default:
-                msg = "未知的動作。";
-                break;
-        }
-        out.print(msg);
-
-    }
 }

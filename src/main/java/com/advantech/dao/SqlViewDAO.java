@@ -11,6 +11,7 @@ import com.advantech.model.view.SensorCurrentGroupStatus;
 import com.advantech.model.view.UserInfoRemote;
 import com.advantech.model.view.Worktime;
 import java.util.List;
+import java.util.Map;
 import org.hibernate.transform.Transformers;
 import org.hibernate.type.StandardBasicTypes;
 import org.springframework.stereotype.Repository;
@@ -25,6 +26,17 @@ public class SqlViewDAO extends AbstractDao<Integer, Object> {
     public List<BabAvg> findBabAvg(int bab_id) {
         return super.getSession()
                 .createSQLQuery("select * from tbfn_BabAvg(:bab_id)")
+                .addScalar("bab_id", StandardBasicTypes.INTEGER)
+                .addScalar("station", StandardBasicTypes.INTEGER)
+                .addScalar("average", StandardBasicTypes.DOUBLE)
+                .setParameter("bab_id", bab_id)
+                .setResultTransformer(Transformers.aliasToBean(BabAvg.class))
+                .list();
+    }
+    
+    public List<BabAvg> findBabAvgInHistory(int bab_id) {
+        return super.getSession()
+                .createSQLQuery("select * from tbfn_BabAvg_history(:bab_id)")
                 .addScalar("bab_id", StandardBasicTypes.INTEGER)
                 .addScalar("station", StandardBasicTypes.INTEGER)
                 .addScalar("average", StandardBasicTypes.DOUBLE)
@@ -62,6 +74,22 @@ public class SqlViewDAO extends AbstractDao<Integer, Object> {
                 .createSQLQuery("{CALL usp_GetSensorCurrentGroupStatus(:bab_id)}")
                 .setParameter("bab_id", bab_id)
                 .setResultTransformer(Transformers.aliasToBean(SensorCurrentGroupStatus.class))
+                .list();
+    }
+    
+    public List<Map> findSensorStatus(int bab_id){
+        return super.getSession()
+                .createSQLQuery("select * from tbfn_GetSensorStatus(:bab_id)")
+                .setParameter("bab_id", bab_id)
+                .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
+                .list();
+    }
+    
+    public List<Map> findBalanceDetail(int bab_id){
+        return super.getSession()
+                .createSQLQuery("select * from tbfn_BabBalanceDetail(:bab_id)")
+                .setParameter("bab_id", bab_id)
+                .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
                 .list();
     }
 }

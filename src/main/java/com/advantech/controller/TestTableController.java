@@ -34,7 +34,7 @@ public class TestTableController {
 
     @RequestMapping(value = "/findBySitefloor", method = {RequestMethod.GET})
     @ResponseBody
-    protected List<TestTable> findBySitefloor(@RequestParam(required = true) int sitefloor) {
+    protected List<TestTable> findBySitefloor(@RequestParam int sitefloor) {
         return testTableService.findBySitefloor(sitefloor);
     }
     

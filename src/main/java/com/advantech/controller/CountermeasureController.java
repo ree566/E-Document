@@ -7,19 +7,24 @@
 package com.advantech.controller;
 
 import com.advantech.model.ActionCode;
+import com.advantech.model.Bab;
 import com.advantech.model.Countermeasure;
 import com.advantech.model.ErrorCode;
+import com.advantech.model.User;
 import com.advantech.service.ActionCodeService;
+import com.advantech.service.BabService;
 import com.advantech.service.CountermeasureService;
 import com.advantech.service.ErrorCodeService;
+import com.advantech.service.UserService;
+import static com.google.common.collect.Sets.newHashSet;
 import java.util.List;
-import static org.hibernate.validator.internal.util.CollectionHelper.newHashSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import static com.google.common.base.Preconditions.*;
 
 /**
  *
@@ -30,6 +35,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class CountermeasureController {
 
     @Autowired
+    private BabService babService;
+
+    @Autowired
     private CountermeasureService cService;
 
     @Autowired
@@ -37,6 +45,9 @@ public class CountermeasureController {
 
     @Autowired
     private ActionCodeService actionCodeService;
+
+    @Autowired
+    private UserService userService;
 
     @RequestMapping(value = "/findByBab", method = {RequestMethod.GET})
     @ResponseBody
@@ -53,19 +64,22 @@ public class CountermeasureController {
             @RequestParam String solution,
             @RequestParam String editor
     ) {
+        User user = userService.findByJobnumber(editor.toUpperCase());
+        checkNotNull(user, "查無此使用者");
+
         Countermeasure c = cService.findByBab(bab_id);
-        boolean isCreate = (c == null);
-        if (isCreate) {
+        if (c == null) {
+            Bab b = babService.findByPrimaryKey(bab_id);
             c = new Countermeasure();
-            c.setBABid(bab_id);
+            c.setBab(b);
         }
         List<ErrorCode> errorCode = errorCodeService.findByPrimaryKeys(errorCodes);
         List<ActionCode> actionCode = actionCodeService.findByPrimaryKeys(actionCodes);
         c.setErrorCodes(newHashSet(errorCode));
         c.setActionCodes(newHashSet(actionCode));
-        c.setLastEditor(editor);
+        c.setLastEditor(user);
         c.setSolution(solution);
-        if (isCreate) {
+        if (c.getId() == 0) {
             cService.insert(c);
         } else {
             cService.update(c);

@@ -5,11 +5,12 @@
  */
 package com.advantech.test;
 
-import com.advantech.model.Bab;
+import com.advantech.quartzJob.BabDataSaver;
 import com.advantech.service.BabService;
 import com.advantech.service.LineBalancingService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
@@ -36,10 +37,9 @@ public class TestService {
     
     @Test
     @Transactional
-    @Rollback(true)
-    public void testLineBalancingService(){
-        Bab b = babService.findByPrimaryKey(10870);
-        lineBalancingService.insert(b);
+    @Rollback(false)
+    public void testLineBalancingService() throws JobExecutionException {
+        new BabDataSaver().executeInternal(null);
     }
     
 }

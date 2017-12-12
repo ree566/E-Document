@@ -20,6 +20,10 @@ import java.util.Set;
 public class UserSelectFilter {
 
     private List<Map> list;
+    
+    public UserSelectFilter(boolean b){
+        throw new UnsupportedOperationException("This object is unsupported now.");
+    }
 
     public UserSelectFilter setList(List l) {
         list = l;

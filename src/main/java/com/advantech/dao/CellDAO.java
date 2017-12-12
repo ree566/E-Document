@@ -17,6 +17,7 @@ import org.springframework.stereotype.Repository;
  *
  * @author Wei.Cheng
  */
+@Repository
 public class CellDAO extends BasicDAO implements AlarmActions {
 
     private Connection getConn() {

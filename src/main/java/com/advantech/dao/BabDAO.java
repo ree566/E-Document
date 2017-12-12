@@ -7,13 +7,11 @@ package com.advantech.dao;
 
 import com.advantech.model.Bab;
 import com.advantech.helper.PropertiesReader;
-import com.advantech.model.view.UserInfoRemote;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
-import org.hibernate.transform.Transformers;
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Repository;
 
@@ -24,12 +22,9 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class BabDAO extends AbstractDao<Integer, Bab> implements BasicDAO_1<Bab> {
 
-    private boolean saveToOldDB;
-
     @PostConstruct
     public void BABDAO() {
-        PropertiesReader p = PropertiesReader.getInstance();
-        saveToOldDB = p.isSaveToOldDB();
+
     }
 
     @Override
@@ -56,6 +51,25 @@ public class BabDAO extends AbstractDao<Integer, Bab> implements BasicDAO_1<Bab>
         eD = eD.withHourOfDay(23);
         Criteria c = super.createEntityCriteria();
         c.add(Restrictions.between("beginTime", sD.toDate(), eD.toDate()));
+        return c.list();
+    }
+
+    public List<Bab> findByMultipleClause(DateTime sD, DateTime eD, int lineType_id, int floor_id, boolean isAboveTenPcs) {
+        sD = sD.withHourOfDay(0);
+        eD = eD.withHourOfDay(23);
+        Criteria c = super.createEntityCriteria();
+        c.add(Restrictions.between("beginTime", sD.toDate(), eD.toDate()));
+        c.createAlias("line", "l");
+        if (lineType_id != -1) {
+            c.add(Restrictions.eq("l.lineType.id", lineType_id));
+        }
+        if (floor_id != -1) {
+            c.add(Restrictions.eq("l.floor.id", floor_id));
+        }
+        if(isAboveTenPcs){
+            c.createAlias("babAlarmHistorys", "bah");
+            c.add(Restrictions.gt("bah.totalPcs", 10 - 1));
+        }
         return c.list();
     }
 

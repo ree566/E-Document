@@ -46,8 +46,8 @@ public class BabDataSaver extends QuartzJobBean {
         log.info("Unclosed babList size = " + unClosedBabs.size());
 
         for (Bab bab : unClosedBabs) {
-            bab.setIsused(BabStatus.UNFINSHED.getValue());
-            log.info("Begin save unclose bab " + new Gson().toJson(bab));
+            bab.setBabStatus(BabStatus.UNFINSHED);
+            log.info("Begin save unclose bab " + bab.getId());
             babService.closeBabDirectly(bab);
             log.info("Close bab status success");
         }

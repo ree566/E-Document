@@ -30,4 +30,10 @@ public class TestController {
     public String test2() throws Exception {
         throw new Exception("ex1");
     }
+
+    @RequestMapping(value = "/testException3", method = {RequestMethod.GET})
+    @ResponseBody
+    public String test3() throws Exception {
+        throw new Exception("ex3");
+    }
 }

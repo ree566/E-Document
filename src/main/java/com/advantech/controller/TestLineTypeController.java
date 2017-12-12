@@ -28,8 +28,8 @@ public class TestLineTypeController {
     @RequestMapping(value = "/login", method = {RequestMethod.POST})
     @ResponseBody
     public String login(
-            @RequestParam("userNo") String jobnumber,
-            @RequestParam("tableNo") int tableNo
+            @RequestParam String jobnumber,
+            @RequestParam int tableNo
     ) {
         testService.insert(tableNo, jobnumber);
         return "success";
@@ -37,7 +37,7 @@ public class TestLineTypeController {
 
     @RequestMapping(value = "/logout", method = {RequestMethod.POST})
     @ResponseBody
-    public String logout(@RequestParam("userNo") String jobnumber) {
+    public String logout(@RequestParam String jobnumber) {
         testService.delete(jobnumber);
         return "success";
     }
@@ -45,8 +45,8 @@ public class TestLineTypeController {
     @RequestMapping(value = "/changeDesk", method = {RequestMethod.POST})
     @ResponseBody
     public String changeDesk(
-            @RequestParam("userNo") String jobnumber,
-            @RequestParam("tableNo") int tableNo
+            @RequestParam String jobnumber,
+            @RequestParam int tableNo
     ) {
         testService.changeDeck(jobnumber);
         return "success";

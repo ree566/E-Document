@@ -32,8 +32,8 @@ public class BabSettingHistoryService {
         return babSettingHistoryDAO.findByPrimaryKey(obj_id);
     }
 
-    public BabSettingHistory findByBab(Bab b) {
-        return null;
+    public List<BabSettingHistory> findByBab(Bab b) {
+        return babSettingHistoryDAO.findByBab(b);
     }
 
     public BabSettingHistory findByBabAndStation(Bab b, int station) {

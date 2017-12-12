@@ -5,15 +5,20 @@
  */
 package com.advantech.model;
 
+import com.advantech.converter.BabStatusConverter;
+import com.advantech.model.view.BabAvg;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -25,6 +30,9 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -44,7 +52,7 @@ public class Bab implements Serializable {
     private Line line;
     private int people;
     private int startPosition;
-    private Integer isused;
+    private BabStatus babStatus;
     private Date beginTime;
     private Date lastUpdateTime;
     private int ispre = 0;
@@ -67,6 +75,21 @@ public class Bab implements Serializable {
     @JsonIgnore
     private Set<BabBalanceHistory> babBalanceHistorys = new HashSet<BabBalanceHistory>(0);
 
+    @JsonIgnore
+    private List<BabAvg> babAvgs = new ArrayList();
+
+    public Bab() {
+    }
+
+    public Bab(String po, String modelName, Line line, int people, int startPosition, int ispre) {
+        this.po = po;
+        this.modelName = modelName;
+        this.line = line;
+        this.people = people;
+        this.startPosition = startPosition;
+        this.ispre = ispre;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", unique = true, nullable = false)
@@ -78,6 +101,8 @@ public class Bab implements Serializable {
         this.id = id;
     }
 
+    @NotNull
+    @Size(min = 0, max = 50)
     @Column(name = "po", length = 50, nullable = false)
     public String getPo() {
         return po;
@@ -87,6 +112,8 @@ public class Bab implements Serializable {
         this.po = po;
     }
 
+    @NotNull
+    @Size(min = 0, max = 50)
     @Column(name = "modelName", length = 50, nullable = false)
     public String getModelName() {
         return modelName;
@@ -96,6 +123,7 @@ public class Bab implements Serializable {
         this.modelName = modelName;
     }
 
+    @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "line_id", nullable = false)
     public Line getLine() {
@@ -106,6 +134,7 @@ public class Bab implements Serializable {
         this.line = line;
     }
 
+    @NotNull
     @Column(name = "people", nullable = false)
     public int getPeople() {
         return people;
@@ -115,6 +144,7 @@ public class Bab implements Serializable {
         this.people = people;
     }
 
+    @NotNull
     @Column(name = "startPosition", nullable = false)
     public int getStartPosition() {
         return startPosition;
@@ -125,12 +155,13 @@ public class Bab implements Serializable {
     }
 
     @Column(name = "isused")
-    public Integer getIsused() {
-        return isused;
+    @Convert(converter = BabStatusConverter.class)
+    public BabStatus getBabStatus() {
+        return babStatus;
     }
 
-    public void setIsused(Integer isused) {
-        this.isused = isused;
+    public void setBabStatus(BabStatus babStatus) {
+        this.babStatus = babStatus;
     }
 
     @CreationTimestamp
@@ -159,6 +190,7 @@ public class Bab implements Serializable {
         this.lastUpdateTime = lastUpdateTime;
     }
 
+    @NotNull
     @Column(name = "ispre", nullable = false)
     public int getIspre() {
         return ispre;
@@ -220,6 +252,15 @@ public class Bab implements Serializable {
 
     public void setBabBalanceHistorys(Set<BabBalanceHistory> babBalanceHistorys) {
         this.babBalanceHistorys = babBalanceHistorys;
+    }
+
+    @Transient
+    public List<BabAvg> getBabAvgs() {
+        return babAvgs;
+    }
+
+    public void setBabAvgs(List<BabAvg> babAvgs) {
+        this.babAvgs = babAvgs;
     }
 
     @Override

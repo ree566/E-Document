@@ -153,7 +153,7 @@ public class HibernateTest {
     public void testFbn() throws JsonProcessingException{
         Session session = sessionFactory.getCurrentSession();
         Query q = session
-                .createQuery("from Fbn f where f.bab.id = 11240 order by id desc")
+                .createQuery("from TagNameComparison t where t.id.lampSysTagName = 'LA-S-1'")
                 .setMaxResults(1);
         HibernateObjectPrinter.print(q.list());
     }

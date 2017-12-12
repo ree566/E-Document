@@ -7,7 +7,6 @@ package com.advantech.controller;
 
 import com.advantech.helper.DatetimeGenerator;
 import com.advantech.helper.ExcelGenerator;
-import com.advantech.helper.UserSelectFilter;
 import com.advantech.service.SystemReportService;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -15,6 +14,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  */
 @Controller
 public class ExcelExportController {
-    
+
     @Autowired
     private SystemReportService reportService;
 
@@ -113,18 +113,15 @@ public class ExcelExportController {
         }
     }
 
-    private List<Map> fitData(List data) {
-        UserSelectFilter usf = new UserSelectFilter().setList(data);
-
+    private List<Map> fitData(List<Map> data) {
         if (!"-1".equals(lineType)) {
-            usf.filterData("lineType", lineType);
+            data = data.stream().filter(m -> Objects.equals(m.get("lineType"), lineType)).collect(Collectors.toList());
         }
-
         if (!"-1".equals(sitefloor)) {
-            usf.filterData("sitefloor", Integer.parseInt(sitefloor));
+            data = data.stream().filter(m -> Objects.equals(m.get("sitefloor"), sitefloor)).collect(Collectors.toList());
         }
 
-        return usf.getList();
+        return data;
     }
 
     private Workbook generateBabDetailIntoExcel(List<Map> data, List<Map> emptyRecords, boolean showAboveOnly) {

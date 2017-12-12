@@ -5,9 +5,12 @@
  */
 package com.advantech.dao;
 
+import com.advantech.dao.BasicDAO.SQL;
 import com.advantech.model.TagNameComparison;
+import com.advantech.model.TagNameComparisonId;
 import java.sql.Connection;
 import java.util.List;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -15,54 +18,44 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class TagNameComparisonDAO extends BasicDAO {
+public class TagNameComparisonDAO extends AbstractDao<TagNameComparisonId, TagNameComparison> implements BasicDAO_1<TagNameComparison> {
 
-    private Connection getConn() {
-        return getDBUtilConn(SQL.WebAccess);
+    @Override
+    public List<TagNameComparison> findAll() {
+        return super.createEntityCriteria().list();
     }
 
-    private List<TagNameComparison> query(String sql, Object... params) {
-        return queryForBeanList(getConn(), TagNameComparison.class, sql, params);
-    }
-
-    public List<TagNameComparison> getAll() {
-        return query("SELECT * FROM LS_TagNameComparison");
-    }
-
-    public List<TagNameComparison> getOne(String orginTagName) {
-        return query("SELECT * FROM LS_TagNameComparison WHERE orginTagName = ?", orginTagName);
+    @Override
+    public TagNameComparison findByPrimaryKey(Object obj_id) {
+        return super.getByKey((TagNameComparisonId) obj_id);
     }
     
-    public List<TagNameComparison> getByLine(int lineId) {
-        return query("SELECT * FROM LS_TagNameComparison WHERE lineId = ?", lineId);
+    public TagNameComparison findByLampSysTagName(String tagName){
+        return (TagNameComparison) super.createEntityCriteria()
+                .add(Restrictions.eq("id.lampSysTagName", tagName))
+                .uniqueResult();
+    }
+    
+    public TagNameComparison findByLineAndStation(int line_id, int station){
+        return (TagNameComparison) super.createEntityCriteria()
+                .add(Restrictions.eq("line.id", line_id))
+                .add(Restrictions.eq("position", station))
+                .uniqueResult();
     }
 
-    public boolean insert(List<TagNameComparison> l) {
-        return update(
-                getConn(),
-                "INSERT INTO LS_TagNameComparison(orginTagName, lampSysTagName, lineId, stationId) VALUES(?,?,?,?)",
-                l,
-                "orginTagName", "lampSysTagName", "lineId", "stationId");
+    @Override
+    public int insert(TagNameComparison pojo) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public boolean update(List<TagNameComparison> l) {
-        return update(
-                getConn(),
-                "UPDATE LS_TagNameComparison SET defaultStationId = ?, stationId = ? WHERE orginTagName = ?",
-                l,
-                "defaultStationId", "stationId", "orginTagName");
+    @Override
+    public int update(TagNameComparison pojo) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public boolean delete(List<TagNameComparison> l) {
-        return update(getConn(), "DELETE LS_TagNameComparison WHERE orginTagName = ?", l, "orginTagName");
-    }
-
-    public boolean deleteOne(TagNameComparison tagNameComparison) {
-        return update(getConn(), "DELETE LS_TagNameComparison WHERE orginTagName = ?", tagNameComparison.getOrginTagName());
-    }
-
-    public boolean sensorStationInit(){
-        return updateProc(getConn(), "{CALL sp_SensorStationInit}");
+    @Override
+    public int delete(TagNameComparison pojo) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
 }

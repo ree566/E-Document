@@ -17,39 +17,32 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  *
  * @author Wei.Cheng
  */
 @Controller
-public class GetTotal {
+@RequestMapping(value = "/LineTypeFacadeController")
+public class LineTypeFacadeController {
 
     @Autowired
     private TestLineTypeFacade ts;
     
     @Autowired
     private BabLineTypeFacade bs;
-
-    @RequestMapping(value = "/GetTotal", method = {RequestMethod.POST})
-    protected void doPost(HttpServletRequest req, HttpServletResponse res)
-            throws ServletException, IOException {
-
-        res.setContentType("application/json");
-        PrintWriter out = res.getWriter();
-        String type = req.getParameter("type");
-        JSONObject dataObj = null;
-        switch (type) {
-            case "type1":
-                dataObj = ts.getJSONObject();
-                break;
-            case "type2":
-                dataObj = bs.getJSONObject();
-                break;
-            default:
-                break;
-        }
-        out.print(dataObj == null ? new JSONObject().put("data", new ArrayList()) : dataObj);
+    
+    @RequestMapping(value = "/findBabProcessResult", method = {RequestMethod.GET})
+    @ResponseBody
+    protected String findBabProcessResult(){
+        return bs.getJSONObject().toString();
+    }
+    
+    @RequestMapping(value = "/findTestProcessResult", method = {RequestMethod.GET})
+    @ResponseBody
+    protected String findTestProcessResult(){
+        return ts.getJSONObject().toString();
     }
 
 }

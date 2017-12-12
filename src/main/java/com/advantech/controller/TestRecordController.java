@@ -29,7 +29,7 @@ public class TestRecordController {
     @Autowired
     private TestRecordService testRecordService;
 
-    @RequestMapping(value = "/findByDate", method = {RequestMethod.POST})
+    @RequestMapping(value = "/findByDate", method = {RequestMethod.GET})
     protected List<TestRecord> findByDate(
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime startDate,
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime endDate

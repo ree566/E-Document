@@ -15,7 +15,7 @@ import org.springframework.stereotype.Repository;
  *
  * @author Wei.Cheng
  */
-//@Repository
+@Repository
 public class PassStationDAO extends BasicDAO {
 
     private Connection getConn() {

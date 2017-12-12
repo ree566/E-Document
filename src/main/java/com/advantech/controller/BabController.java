@@ -5,88 +5,73 @@
  */
 package com.advantech.controller;
 
-import com.advantech.helper.UserSelectFilter;
+import com.advantech.model.Bab;
 import com.advantech.model.BabStatus;
+import com.advantech.model.view.BabAvg;
+import com.advantech.service.BabBalanceHistoryService;
+import com.advantech.service.BabPcsDetailHistoryService;
 import com.advantech.service.BabService;
+import com.advantech.service.SqlViewService;
 import com.advantech.webservice.WebServiceRV;
-import com.google.gson.Gson;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletResponse;
+import org.joda.time.DateTime;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  *
  * @author Wei.Cheng
  */
 @Controller
+@RequestMapping(value = "/BabController")
 public class BabController {
 
     @Autowired
     private BabService babService;
 
-    @RequestMapping(value = "/AllBAB", method = {RequestMethod.POST})
-    protected void findAll(
-            @RequestParam String lineType,
-            @RequestParam String sitefloor,
-            @RequestParam String startDate,
-            @RequestParam String endDate,
-            @RequestParam boolean aboveStandard,
-            HttpServletResponse res
-    ) throws IOException {
+    @Autowired
+    private SqlViewService sqlViewService;
 
-        res.setContentType("application/json");
-        PrintWriter out = res.getWriter();
+    @Autowired
+    private BabPcsDetailHistoryService babPcsDetailHistoryService;
 
-        List<Map> l = babService.getBABInfo(startDate, endDate);
-        UserSelectFilter usf = new UserSelectFilter();
-        usf.setList(l);
-        if (!"-1".equals(lineType)) {
-            usf.filterData("lineType", lineType);
-        }
-        if (!"-1".equals(sitefloor)) {
-            usf.filterData("sitefloor", Integer.parseInt(sitefloor));
-        }
-        if (aboveStandard) {
-            usf.greaterThan("total", 10 - 1);
-        }
-        out.print(new JSONObject().put("data", usf.getList()));
+    @Autowired
+    private BabBalanceHistoryService babBalanceHistoryService;
+
+    @RequestMapping(value = "/findByMultipleClause", method = {RequestMethod.GET})
+    @ResponseBody
+    protected List<Bab> findByMultipleClause(
+            @RequestParam int lineType_id,
+            @RequestParam int sitefloor_id,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime startDate,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime endDate,
+            @RequestParam boolean aboveStandard) {
+        return babService.findByMultipleClause(startDate, endDate, lineType_id, sitefloor_id, aboveStandard);
     }
 
-    @RequestMapping(value = "/BabSearch", method = {RequestMethod.POST})
-    protected void babSearch(
-            @RequestParam(required = false) String po,
-            @RequestParam(required = false, value = "saveline") String saveLine,
-            @RequestParam(required = false, value = "po_getBAB") String poGetBab,
-            @RequestParam(required = false, value = "po_saveline") String poSaveLine,
-            HttpServletResponse res
-    ) throws ServletException, IOException {
+    @RequestMapping(value = "/findModelNameByPo", method = {RequestMethod.GET})
+    @ResponseBody
+    protected String findModelNameByPo(@RequestParam String po) {
+        String modelname = WebServiceRV.getInstance().getModelnameByPo(po);
+        return (modelname == null ? "data not found" : convertString(modelname));
+    }
 
-        res.setContentType("application/json");
-        PrintWriter out = res.getWriter();
-
-        if (po != null) {
-            try {
-                String modelname = WebServiceRV.getInstance().getModelnameByPo(po);
-                out.print(modelname == null ? "data not found" : convertString(modelname));
-            } catch (Exception e) {
-                out.print("data not found");
-            }
-        } else if (saveLine != null) {
-            out.print(new Gson().toJson(babService.getProcessingBABByLine(Integer.parseInt(saveLine))));
-        } else if (poGetBab != null && poSaveLine != null) {
-            out.print(babService.getBABInfoWithSensorState(poGetBab, poSaveLine));
-        }
+    @RequestMapping(value = "/findProcessingByLine", method = {RequestMethod.GET})
+    @ResponseBody
+    protected List<Bab> findProcessingByLine(@RequestParam int line_id) {
+        return babService.findProcessingByLine(line_id);
     }
 
     private String convertString(String input) {
@@ -99,19 +84,111 @@ public class BabController {
         return converstring;
     }
 
-    @RequestMapping(value = "/BABTimeDetail", method = {RequestMethod.POST})
-    protected void babTimeDetail(
-            @RequestParam int id,
-            @RequestParam Integer isused,
-            HttpServletResponse res
-    ) throws ServletException, IOException {
+    //Find history info and transform data into chart info
+    @RequestMapping(value = "/getSensorDiffChart", method = {RequestMethod.GET})
+    @ResponseBody
+    protected String getSensorDiffChart(@ModelAttribute Bab bab) {
+        BabStatus status = bab.getBabStatus();
+        List l;
+        if (null == status) {
+            l = sqlViewService.findSensorStatus(bab.getId());
+        } else {
+            switch (status) {
+                case CLOSED:
+                    l = babPcsDetailHistoryService.findByBab(bab.getId());
+                default:
+                    l = new ArrayList();
+            }
+        }
 
-        res.setContentType("text/plain");
-        PrintWriter out = res.getWriter();
+        return this.toChartForm(l).toString();
+    }
 
-        BabStatus status = isused == null ? null : BabStatus.CLOSED;
+    private JSONArray toChartForm(List<Map> l) {
+        JSONArray totalArrObj = new JSONArray();
+        JSONObject innerObj = new JSONObject();
+        JSONArray arr = new JSONArray();
+        String tName = "";
+        int loopCount = 1;
+        int listSize = l.size();
+        for (Map m : l) {
+            boolean isLast = loopCount == listSize;
+            String st = (String) m.get("TagName");
+            int groupid = (int) m.get("groupid");
+            if ("".equals(tName)) {
+                tName = st;
+            }
+            if (!st.equals(tName) || isLast) {
+                innerObj.put("name", tName);
+                innerObj.put("dataPoints", arr);
+                totalArrObj.put(innerObj);
+                if (!isLast) {
+                    innerObj = new JSONObject();
+                    arr = new JSONArray();
+                }
+                tName = st;
+            }
+            arr.put(new JSONObject().put("x", groupid).put("y", m.get("diff")));
+            loopCount++;
+            //Bug when data group only have one
+        }
+        return totalArrObj;
+    }
 
-        out.print(new JSONObject().put("data", babService.getBABTimeDetail(id, status)));
+    //Find history info and transform data into chart info
+    @RequestMapping(value = "/findBabTotalAvg", method = {RequestMethod.GET})
+    @ResponseBody
+    protected Double findBabTotalAvg(@ModelAttribute Bab bab) {
+        BabStatus status = bab.getBabStatus();
+        List<BabAvg> l;
+        if (null == status) {
+            l = sqlViewService.findBabAvg(bab.getId());
+        } else switch (status) {
+            case CLOSED:
+                l = sqlViewService.findBabAvgInHistory(bab.getId());
+                break;
+            default:
+                l = new ArrayList();
+                break;
+        }
+        return this.calcTotalAvg(l);
+    }
+
+    public Double calcTotalAvg(List<BabAvg> l) {
+        Double total = 0.0;
+        int people = l.size();
+        total = l.stream().map((b) -> b.getAverage()).reduce(total, (accumulator, _item) -> accumulator + _item);
+        return total / people;
+    }
+
+    @RequestMapping(value = "/findByModelAndDate", method = {RequestMethod.GET})
+    @ResponseBody
+    public List<Bab> findByModelAndDate(
+            @RequestParam String modelName,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime startDate,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime endDate) {
+        return babService.findByModelAndDate(modelName, startDate, endDate);
+    }
+
+    @RequestMapping(value = "/findAllModelName", method = {RequestMethod.GET})
+    @ResponseBody
+    public List<String> findAllModelName() {
+        return babService.findAllModelName();
+    }
+
+    @RequestMapping(value = "/findLineBalanceDetail", method = {RequestMethod.GET})
+    @ResponseBody
+    public List findLineBalanceDetail(@ModelAttribute Bab bab) {
+        if (null == bab.getBabStatus()) { //Processing
+            return sqlViewService.findBalanceDetail(bab.getId());
+        } else {
+            switch (bab.getBabStatus()) {
+                case CLOSED:
+                    return babPcsDetailHistoryService.findByBab(bab.getId());
+                default:
+                    return new ArrayList();
+            }
+        }
     }
 
 }

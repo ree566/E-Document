@@ -56,7 +56,7 @@ public class CellScheduleJobServlet {
     @Autowired
     private CronTrigMod ctm;
 
-    @PostConstruct
+//    @PostConstruct
     public void init() {
         schedJobs = new HashMap();
         this.initProcessingCells();
