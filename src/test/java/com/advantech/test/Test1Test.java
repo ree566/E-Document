@@ -5,7 +5,8 @@
  */
 package com.advantech.test;
 
-import com.advantech.webservice.root.Section;
+import com.advantech.model.PreAssy;
+import org.apache.commons.lang3.ObjectUtils;
 import org.junit.Test;
 
 /**
@@ -16,11 +17,10 @@ public class Test1Test {
 
     @Test
     public void test() {
-        for (Section sec : Section.values()) {
-            System.out.print(sec.toString());
-            System.out.print(" ");
-            System.out.println(sec.getCode());
-        }
+        PreAssy p1 = new PreAssy();
+        PreAssy p2 = new PreAssy();
+        
+        System.out.println(ObjectUtils.compare(p1, p2));
     }
 
 }

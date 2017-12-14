@@ -21,6 +21,7 @@
                 }
             },
             beforeSend: function () {
+                $(".form-control").attr("disabled", true);
                 $("#progressbox").show();
                 // clear everything
                 $("#progressbar").width('0%');
@@ -64,6 +65,7 @@
                     $("#message").append("<p>" + text + "</p>");
                 }
                 $("#sync-img").hide();
+                $(".form-control").attr("disabled", false);
             },
             error: function () {
                 $("#message").html("<font color='red'> ERROR: unable to upload files</font>");

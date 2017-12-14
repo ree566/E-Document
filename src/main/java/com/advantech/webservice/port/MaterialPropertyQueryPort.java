@@ -7,8 +7,10 @@ package com.advantech.webservice.port;
 
 import com.advantech.model.Worktime;
 import com.advantech.webservice.root.MaterialPropertyQueryRoot;
+import com.advantech.webservice.unmarshallclass.MaterialProperty;
 import com.advantech.webservice.unmarshallclass.MaterialPropertys;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.xml.bind.JAXBException;
 import org.slf4j.Logger;
@@ -32,14 +34,13 @@ public class MaterialPropertyQueryPort extends BasicQueryPort {
             logger.error(e.toString());
         }
     }
+    
+    public List<MaterialProperty> query(String matPropNo) throws Exception{
+        return this.query(new MaterialPropertyQueryRoot(matPropNo));
+    }
 
     @Override
     public Map<String, String> transformData(Worktime w) throws Exception {
-        Map<String, String> xmlResults = new HashMap();
-        MaterialPropertyQueryRoot root = new MaterialPropertyQueryRoot();
-        MaterialPropertyQueryRoot.MATPROPERTYVALUE prop = root.getMATPROPERTYVALUE();
-        prop.setITEMNO(w.getModelName());
-        xmlResults.put("materialPropertyQuery", super.generateXmlString(root));
-        return xmlResults;
+        throw new UnsupportedOperationException();
     }
 }

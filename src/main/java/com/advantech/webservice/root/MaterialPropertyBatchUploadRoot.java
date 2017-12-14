@@ -77,16 +77,16 @@ import javax.xml.bind.annotation.XmlValue;
     "matvalue"
 })
 @XmlRootElement(name = "root")
-public class MaterialPropertyUploadRoot {
+public class MaterialPropertyBatchUploadRoot {
 
     @XmlElement(name = "METHOD", required = true)
-    protected MaterialPropertyUploadRoot.METHOD method;
+    protected MaterialPropertyBatchUploadRoot.METHOD method;
     @XmlElement(name = "MAT_VALUE", required = true)
-    protected MaterialPropertyUploadRoot.MATVALUE matvalue;
+    protected MaterialPropertyBatchUploadRoot.MATVALUE matvalue;
 
-    public MaterialPropertyUploadRoot() {
-        this.method = new MaterialPropertyUploadRoot.METHOD();
-        this.matvalue = new MaterialPropertyUploadRoot.MATVALUE();
+    public MaterialPropertyBatchUploadRoot() {
+        this.method = new MaterialPropertyBatchUploadRoot.METHOD();
+        this.matvalue = new MaterialPropertyBatchUploadRoot.MATVALUE();
     }
 
     /**
@@ -95,7 +95,7 @@ public class MaterialPropertyUploadRoot {
      * @return possible object is {@link Root.METHOD }
      *
      */
-    public MaterialPropertyUploadRoot.METHOD getMETHOD() {
+    public MaterialPropertyBatchUploadRoot.METHOD getMETHOD() {
         return method;
     }
 
@@ -105,7 +105,7 @@ public class MaterialPropertyUploadRoot {
      * @param value allowed object is {@link Root.METHOD }
      *
      */
-    public void setMETHOD(MaterialPropertyUploadRoot.METHOD value) {
+    public void setMETHOD(MaterialPropertyBatchUploadRoot.METHOD value) {
         this.method = value;
     }
 
@@ -115,7 +115,7 @@ public class MaterialPropertyUploadRoot {
      * @return possible object is {@link Root.MATVALUE }
      *
      */
-    public MaterialPropertyUploadRoot.MATVALUE getMATVALUE() {
+    public MaterialPropertyBatchUploadRoot.MATVALUE getMATVALUE() {
         return matvalue;
     }
 
@@ -125,7 +125,7 @@ public class MaterialPropertyUploadRoot {
      * @param value allowed object is {@link Root.MATVALUE }
      *
      */
-    public void setMATVALUE(MaterialPropertyUploadRoot.MATVALUE value) {
+    public void setMATVALUE(MaterialPropertyBatchUploadRoot.MATVALUE value) {
         this.matvalue = value;
     }
 
@@ -175,7 +175,7 @@ public class MaterialPropertyUploadRoot {
         @XmlElement(name = "ITEM_NO", required = true)
         protected String itemno;
         @XmlElement(name = "MAT_VALUE_DETAIL")
-        protected List<MaterialPropertyUploadRoot.MATVALUE.MATVALUEDETAIL> matvaluedetail;
+        protected List<MaterialPropertyBatchUploadRoot.MATVALUE.MATVALUEDETAIL> matvaluedetail;
 
         /**
          * 取得 itemno 特性的值.
@@ -219,14 +219,14 @@ public class MaterialPropertyUploadRoot {
          *
          *
          */
-        public List<MaterialPropertyUploadRoot.MATVALUE.MATVALUEDETAIL> getMATVALUEDETAIL() {
+        public List<MaterialPropertyBatchUploadRoot.MATVALUE.MATVALUEDETAIL> getMATVALUEDETAIL() {
             if (matvaluedetail == null) {
-                matvaluedetail = new ArrayList<MaterialPropertyUploadRoot.MATVALUE.MATVALUEDETAIL>();
+                matvaluedetail = new ArrayList<MaterialPropertyBatchUploadRoot.MATVALUE.MATVALUEDETAIL>();
             }
             return this.matvaluedetail;
         }
 
-        public void setMATVALUEDETAIL(List<MaterialPropertyUploadRoot.MATVALUE.MATVALUEDETAIL> matvaluedetail) {
+        public void setMATVALUEDETAIL(List<MaterialPropertyBatchUploadRoot.MATVALUE.MATVALUEDETAIL> matvaluedetail) {
             this.matvaluedetail = matvaluedetail;
         }
 

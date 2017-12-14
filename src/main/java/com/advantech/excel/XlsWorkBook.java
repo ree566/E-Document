@@ -53,7 +53,7 @@ public class XlsWorkBook implements AutoCloseable {
             workbook.close();
             System.out.println("Close excel.");
         }
-
+ 
         if (_sheets != null) {
             _sheets.clear();
             System.out.println("Clear sheets map.");

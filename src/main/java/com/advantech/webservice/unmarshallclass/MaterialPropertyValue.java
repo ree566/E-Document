@@ -16,7 +16,10 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "QryData")
-public class MaterialProperty {
+public class MaterialPropertyValue {
+
+    @XmlElement(name = "ITEM_NO")
+    private String itemNo;
 
     @XmlElement(name = "MAT_PROPERTY_NO")
     private String matPropertyNo;
@@ -24,8 +27,22 @@ public class MaterialProperty {
     @XmlElement(name = "MAT_PROPERTY_DESC")
     private String matPropertyName;
 
+    @XmlElement(name = "VALUE")
+    private String value;
+
     @XmlElement(name = "AFF_PRO_TYPE")
     private String affPropertyType;
+
+    @XmlElement(name = "AFF_VALUE")
+    private String affPropertyValue;
+
+    public String getItemNo() {
+        return itemNo;
+    }
+
+    public void setItemNo(String itemNo) {
+        this.itemNo = itemNo;
+    }
 
     public String getMatPropertyNo() {
         return matPropertyNo;
@@ -43,12 +60,28 @@ public class MaterialProperty {
         this.matPropertyName = matPropertyName;
     }
 
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+
     public String getAffPropertyType() {
         return affPropertyType;
     }
 
     public void setAffPropertyType(String affPropertyType) {
         this.affPropertyType = affPropertyType;
+    }
+
+    public String getAffPropertyValue() {
+        return affPropertyValue;
+    }
+
+    public void setAffPropertyValue(String affPropertyValue) {
+        this.affPropertyValue = affPropertyValue;
     }
 
 }

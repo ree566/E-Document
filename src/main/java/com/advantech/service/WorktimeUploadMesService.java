@@ -11,7 +11,7 @@ import com.advantech.webservice.port.FlowUploadPort;
 import com.advantech.webservice.port.MaterialPropertyUploadPort;
 import com.advantech.webservice.port.ModelResponsorUploadPort;
 import com.advantech.webservice.port.SopUploadPort;
-import java.util.Objects;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -60,6 +60,12 @@ public class WorktimeUploadMesService {
 
     @Value("${WORKTIME.UPLOAD.MATPROPERTY: true}")
     private boolean isUploadMatProp;
+
+    public void portParamInit() throws Exception {
+        if (isUploadMatProp) {
+            materialPropertyUploadPort.initSetting();
+        }
+    }
 
     public void insert(Worktime w) throws Exception {
         if (isInserted) {
@@ -137,46 +143,54 @@ public class WorktimeUploadMesService {
 
     private boolean isSopChanged(Worktime prev, Worktime current) {
         return isModelNameChanged(prev, current)
-                || !Objects.equals(prev.getAssyPackingSop(), current.getAssyPackingSop())
-                || !Objects.equals(prev.getTestSop(), current.getTestSop());
+                || !isEquals(prev.getAssyPackingSop(), current.getAssyPackingSop())
+                || !isEquals(prev.getTestSop(), current.getTestSop());
     }
 
     //Revision entity relation object are lasy loading.
     private boolean isModelResponsorChanged(Worktime prev, Worktime current) {
         return isModelNameChanged(prev, current)
-                || !Objects.equals(prev.getUserBySpeOwnerId(), current.getUserBySpeOwnerId())
-                || !Objects.equals(prev.getUserByEeOwnerId(), current.getUserByEeOwnerId())
-                || !Objects.equals(prev.getUserByQcOwnerId(), current.getUserByQcOwnerId());
+                || !isEquals(prev.getUserBySpeOwnerId(), current.getUserBySpeOwnerId())
+                || !isEquals(prev.getUserByEeOwnerId(), current.getUserByEeOwnerId())
+                || !isEquals(prev.getUserByQcOwnerId(), current.getUserByQcOwnerId());
     }
 
     //Revision entity relation object are lasy loading.
     private boolean isFlowChanged(Worktime prev, Worktime current) {
         return isModelNameChanged(prev, current)
-                || !Objects.equals(prev.getPreAssy(), current.getPreAssy())
-                || !Objects.equals(prev.getFlowByBabFlowId(), current.getFlowByBabFlowId())
-                || !Objects.equals(prev.getFlowByTestFlowId(), current.getFlowByTestFlowId())
-                || !Objects.equals(prev.getFlowByPackingFlowId(), current.getFlowByPackingFlowId());
+                || !isEquals(prev.getPreAssy(), current.getPreAssy())
+                || !isEquals(prev.getFlowByBabFlowId(), current.getFlowByBabFlowId())
+                || !isEquals(prev.getFlowByTestFlowId(), current.getFlowByTestFlowId())
+                || !isEquals(prev.getFlowByPackingFlowId(), current.getFlowByPackingFlowId());
     }
 
     private boolean isMatPropertyChanged(Worktime prev, Worktime current) {
-        return isModelNameChanged(prev, current)
-                || !Objects.equals(prev.getPending(), current.getPending())
-                || !Objects.equals(prev.getPendingTime(), current.getPendingTime())
-                || !Objects.equals(prev.getBurnIn(), current.getBurnIn())
-                || !Objects.equals(prev.getBiTime(), current.getBiTime())
-                || !Objects.equals(prev.getBiTemperature(), current.getBiTemperature())
-                || !Objects.equals(prev.getKeypartA(), current.getKeypartA())
-                || !Objects.equals(prev.getKeypartB(), current.getKeypartB())
-                || !Objects.equals(prev.getCe(), current.getCe())
-                || !Objects.equals(prev.getCe(), current.getCe())
-                || !Objects.equals(prev.getUl(), current.getUl())
-                || !Objects.equals(prev.getRohs(), current.getRohs())
-                || !Objects.equals(prev.getWeee(), current.getWeee())
-                || !Objects.equals(prev.getMadeInTaiwan(), current.getMadeInTaiwan())
-                || !Objects.equals(prev.getFcc(), current.getFcc())
-                || !Objects.equals(prev.getEac(), current.getEac())
-                || !Objects.equals(prev.getNsInOneCollectionBox(), current.getNsInOneCollectionBox())
-                || !Objects.equals(prev.getPartNoAttributeMaintain(), current.getPartNoAttributeMaintain());
+        boolean b = isModelNameChanged(prev, current)
+                || !isEquals(prev.getPending(), current.getPending())
+                || !isEquals(prev.getPendingTime(), current.getPendingTime())
+                || !isEquals(prev.getBurnIn(), current.getBurnIn())
+                || !isEquals(prev.getBiTime(), current.getBiTime())
+                || !isEquals(prev.getBiTemperature(), current.getBiTemperature())
+                || !isEquals(prev.getKeypartA(), current.getKeypartA())
+                || !isEquals(prev.getKeypartB(), current.getKeypartB())
+                || !isEquals(prev.getCe(), current.getCe())
+                || !isEquals(prev.getCe(), current.getCe())
+                || !isEquals(prev.getUl(), current.getUl())
+                || !isEquals(prev.getRohs(), current.getRohs())
+                || !isEquals(prev.getWeee(), current.getWeee())
+                || !isEquals(prev.getMadeInTaiwan(), current.getMadeInTaiwan())
+                || !isEquals(prev.getFcc(), current.getFcc())
+                || !isEquals(prev.getEac(), current.getEac())
+                || !isEquals(prev.getKc(), current.getKc())
+                || !isEquals(prev.getNsInOneCollectionBox(), current.getNsInOneCollectionBox())
+                || !isEquals(prev.getPartNoAttributeMaintain(), current.getPartNoAttributeMaintain())
+                || !isEquals(prev.getPartLink(), current.getPartLink());
+
+        return b;
+    }
+
+    private <T extends Comparable> boolean isEquals(T o1, T o2) {
+        return ObjectUtils.compare(o1, o2) == 0;
     }
 
     public void delete(Worktime w) throws Exception {

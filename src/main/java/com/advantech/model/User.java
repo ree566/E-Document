@@ -22,6 +22,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -30,12 +31,10 @@ import org.springframework.security.core.userdetails.UserDetails;
  */
 @Entity
 @Table(name = "[User]",
-        schema = "dbo",
-        catalog = "E_Document",
         uniqueConstraints = @UniqueConstraint(columnNames = "jobnumber")
 )
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = User.class)
-public class User implements java.io.Serializable, UserDetails {
+public class User implements UserDetails, Comparable<User> {
 
     private int id;
     private Floor floor;
@@ -299,5 +298,10 @@ public class User implements java.io.Serializable, UserDetails {
     @Override
     public boolean isEnabled() {
         return this.enabled;
+    }
+
+    @Override
+    public int compareTo(User o) {
+        return ObjectUtils.compare(this.id, o.getId()); 
     }
 }

@@ -9,11 +9,11 @@ import com.advantech.dao.*;
 import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.Worktime;
 import com.advantech.model.WorktimeFormulaSetting;
+import static com.google.common.base.Preconditions.*;
 import static com.google.common.collect.Lists.newArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -48,9 +48,7 @@ public class WorktimeService {
     }
 
     public Worktime findByPrimaryKey(Object obj_id) {
-        Worktime w = worktimeDAO.findByPrimaryKey(obj_id);
-        Hibernate.initialize(w.getWorktimeFormulaSettings());
-        return w;
+        return worktimeDAO.findByPrimaryKey(obj_id);
     }
 
     public List<Worktime> findByPrimaryKeys(Integer... ids) {
@@ -66,15 +64,18 @@ public class WorktimeService {
     }
 
     public int insert(List<Worktime> l) throws Exception {
+        uploadMesService.portParamInit();
         int i = 1;
         for (Worktime w : l) {
-            this.insert(w);
+            worktimeDAO.insert(w);
+            uploadMesService.insert(w);
             flushIfReachFetchSize(i++);
         }
         return 1;
     }
 
     public int insert(Worktime worktime) throws Exception {
+        uploadMesService.portParamInit();
         worktimeDAO.insert(worktime);
         uploadMesService.insert(worktime);
         return 1;
@@ -82,9 +83,16 @@ public class WorktimeService {
 
     //For batch modify.
     public int insertWithFormulaSetting(List<Worktime> l) throws Exception {
+        uploadMesService.portParamInit();
         int i = 0;
         for (Worktime w : l) {
-            this.insertWithFormulaSetting(w);
+            initUnfilledFormulaColumn(w);
+            WorktimeFormulaSetting setting = w.getWorktimeFormulaSettings().get(0);
+            w.setWorktimeFormulaSettings(null);
+            worktimeDAO.insert(w);
+            setting.setWorktime(w);
+            worktimeFormulaSettingDAO.insert(setting);
+            uploadMesService.insert(w);
             flushIfReachFetchSize(i++);
         }
         return 1;
@@ -95,16 +103,22 @@ public class WorktimeService {
         initUnfilledFormulaColumn(worktime);
         WorktimeFormulaSetting setting = worktime.getWorktimeFormulaSettings().get(0);
         worktime.setWorktimeFormulaSettings(null);
-        this.insert(worktime);
+        worktimeDAO.insert(worktime);
         setting.setWorktime(worktime);
         worktimeFormulaSettingDAO.insert(setting);
+        uploadMesService.portParamInit();
+        uploadMesService.insert(worktime);
         return 1;
     }
 
     public int update(List<Worktime> l) throws Exception {
+        uploadMesService.portParamInit();
         int i = 1;
         for (Worktime w : l) {
-            this.update(w);
+            initUnfilledFormulaColumn(w);
+            worktimeDAO.update(w);
+            worktimeFormulaSettingDAO.update(w.getWorktimeFormulaSettings().get(0));
+            uploadMesService.update(w);
             flushIfReachFetchSize(i++);
         }
         return 1;
@@ -112,16 +126,21 @@ public class WorktimeService {
 
     public int update(Worktime worktime) throws Exception {
         initUnfilledFormulaColumn(worktime);
-        worktimeFormulaSettingDAO.update(worktime.getWorktimeFormulaSettings().get(0));
         worktimeDAO.update(worktime);
+        worktimeFormulaSettingDAO.update(worktime.getWorktimeFormulaSettings().get(0));
+        uploadMesService.portParamInit();
         uploadMesService.update(worktime);
         return 1;
     }
 
     public int merge(List<Worktime> l) throws Exception {
+        uploadMesService.portParamInit();
         int i = 1;
         for (Worktime w : l) {
-            this.merge(w);
+            initUnfilledFormulaColumn(w);
+            worktimeDAO.merge(w);
+            worktimeFormulaSettingDAO.update(w.getWorktimeFormulaSettings().get(0));
+            uploadMesService.update(w);
             flushIfReachFetchSize(i++);
         }
         return 1;
@@ -131,17 +150,16 @@ public class WorktimeService {
         initUnfilledFormulaColumn(worktime);
         worktimeFormulaSettingDAO.update(worktime.getWorktimeFormulaSettings().get(0));
         worktimeDAO.merge(worktime);
+        uploadMesService.portParamInit();
         uploadMesService.update(worktime);
         return 1;
     }
 
     public int insertByExcel(List<Worktime> l) throws Exception {
-        int i = 1;
-        for (Worktime w : l) {
+        l.forEach(w -> {
             w.setWorktimeFormulaSettings(newArrayList(new WorktimeFormulaSetting()));
-            this.insertWithFormulaSetting(w);
-            flushIfReachFetchSize(i++);
-        }
+        });
+        this.insertWithFormulaSetting(l);
         return 1;
     }
 
@@ -152,13 +170,11 @@ public class WorktimeService {
             settingMap.put(setting.getWorktime().getId(), setting);
         });
 
-        int i = 1;
-        for (Worktime w : l) {
+        l.forEach((w) -> {
             w.setWorktimeFormulaSettings(newArrayList(settingMap.get(w.getId())));
-            initUnfilledFormulaColumn(w);
-            worktimeDAO.merge(w);
-            flushIfReachFetchSize(i++);
-        }
+        });
+
+        this.merge(l);
         return 1;
     }
 
@@ -199,10 +215,10 @@ public class WorktimeService {
         return i == 1;
     }
 
+    //For sysop batch insert data into database.
     public int saveOrUpdate(List<Worktime> l) throws Exception {
         for (int i = 0; i < l.size(); i++) {
             Worktime w = l.get(i);
-            System.out.println("insert row: " + i + " \\Model: " + w.getModelName());
             Worktime existW = this.findByModel(w.getModelName());
             if (existW == null) {
                 this.insertWithFormulaSetting(w);
@@ -214,11 +230,13 @@ public class WorktimeService {
         return 1;
     }
 
-    public int delete(Integer... ids) {
+    public int delete(Integer... ids) throws Exception {
         List<Worktime> worktimes = worktimeDAO.findByPrimaryKeys(ids);
+        uploadMesService.portParamInit();
         int i = 1;
         for (Worktime w : worktimes) {
             worktimeDAO.delete(w);
+            uploadMesService.delete(w);
             flushIfReachFetchSize(i++);
         }
         return 1;
@@ -227,6 +245,7 @@ public class WorktimeService {
     public int delete(int id) throws Exception {
         Worktime worktime = this.findByPrimaryKey(id);
         worktimeDAO.delete(worktime);
+        uploadMesService.portParamInit();
         uploadMesService.delete(worktime);
         return 1;
     }
@@ -242,17 +261,15 @@ public class WorktimeService {
         }
     }
 
-    public void checkModelExists(Worktime worktime) throws Exception {
+    public void checkModelExists(Worktime worktime) {
         Worktime existW = worktimeDAO.findByModel(worktime.getModelName());
-        boolean checkFlag;
+        boolean existFlag;
         if (worktime.getId() == 0) {
-            checkFlag = existW != null;
+            existFlag = existW != null;
         } else {
-            checkFlag = existW != null && existW.getId() != worktime.getId();
+            existFlag = existW != null && existW.getId() != worktime.getId();
         }
-        if (checkFlag == true) {
-            throw new Exception("This modelName &lt;" + worktime.getModelName() + "&gt; is already exist.");
-        }
+        checkArgument(existFlag == false, "This modelName &lt;" + worktime.getModelName() + "&gt; is already exist.");
     }
 
     public void checkModelExists(List<Worktime> worktimes) throws Exception {
@@ -262,18 +279,16 @@ public class WorktimeService {
             modelMap.put(w.getModelName(), w.getId());
         });
 
-        for (Worktime w : worktimes) {
-            boolean checkFlag;
+        worktimes.forEach((w) -> {
+            boolean existFlag;
             Integer worktimeId = modelMap.get(w.getModelName());
             if (w.getId() == 0) {
-                checkFlag = worktimeId != null;
+                existFlag = worktimeId != null;
             } else {
-                checkFlag = worktimeId != null && worktimeId != w.getId();
+                existFlag = worktimeId != null && worktimeId != w.getId();
             }
-            if (checkFlag == true) {
-                throw new Exception("This modelName &lt;" + w.getModelName() + "&gt; is already exist.");
-            }
-        }
+            checkArgument(existFlag == false, "This modelName &lt;" + w.getModelName() + "&gt; is already exist.");
+        });
     }
 
 }

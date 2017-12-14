@@ -7,7 +7,6 @@ package com.advantech.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import java.math.BigDecimal;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -21,9 +20,7 @@ import javax.persistence.UniqueConstraint;
  * @author Wei.Cheng
  */
 @Entity
-@Table(name = "Worktime_MaterialPropertyUploadSetting",
-        schema = "dbo",
-        catalog = "E_Document",
+@Table(name = "Worktime_MaterialPropertyUpload_Setting",
         uniqueConstraints = @UniqueConstraint(columnNames = "mat_prop_no")
 )
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")

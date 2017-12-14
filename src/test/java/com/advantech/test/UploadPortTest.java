@@ -6,9 +6,10 @@
 package com.advantech.test;
 
 import com.advantech.jqgrid.PageInfo;
+import com.advantech.model.Pending;
 import com.advantech.model.Worktime;
-import com.advantech.model.WorktimeAutouploadSetting;
 import com.advantech.service.FlowService;
+import com.advantech.service.PendingService;
 import com.advantech.service.PreAssyService;
 import com.advantech.service.WorktimeAutouploadSettingService;
 import com.advantech.service.WorktimeService;
@@ -17,7 +18,6 @@ import com.advantech.webservice.port.MaterialPropertyUploadPort;
 import com.advantech.webservice.port.ModelResponsorUploadPort;
 import com.advantech.webservice.port.SopUploadPort;
 import com.advantech.webservice.port.StandardtimeUploadPort;
-import static com.google.common.collect.Lists.newArrayList;
 import java.util.List;
 import javax.transaction.Transactional;
 import static junit.framework.Assert.*;
@@ -42,7 +42,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 @RunWith(SpringJUnit4ClassRunner.class)
 @Transactional
 public class UploadPortTest {
-
+    
     private Worktime w;
 
     //Port for ie
@@ -52,51 +52,54 @@ public class UploadPortTest {
     //Port for spe
     @Autowired
     private FlowUploadPort flowUploadPort;
-
+    
     @Autowired
     private ModelResponsorUploadPort mappingUserPort;
-
+    
     @Autowired
     private SopUploadPort sopPort;
-
+    
     @Autowired
     private WorktimeService worktimeService;
-
+    
     @Autowired
     private FlowService flowService;
-
+    
     @Autowired
     private PreAssyService preAssyService;
-
+    
     @Autowired
     private MaterialPropertyUploadPort materialPropertyUploadPort;
-
+    
     @Autowired
     private WorktimeAutouploadSettingService worktimeAutouploadSettingService;
-
+    
+    @Autowired
+    private PendingService pendingService;
+    
     @Before
     public void initTestData() {
 //        w = worktimeService.findByModel("TEST-MODEL-2");
     }
-
+    
     @Value("${WORKTIME.UPLOAD.INSERT: true}")
     private boolean isInserted;
-
+    
     @Value("${WORKTIME.UPLOAD.UPDATE: true}")
     private boolean isUpdated;
-
+    
     @Value("${WORKTIME.UPLOAD.DELETE: true}")
     private boolean isDeleted;
-
+    
     @Value("${WORKTIME.UPLOAD.SOP: true}")
     private boolean isUploadSop;
-
+    
     @Value("${WORKTIME.UPLOAD.RESPONSOR: true}")
     private boolean isUploadResponsor;
-
+    
     @Value("${WORKTIME.UPLOAD.FLOW: true}")
     private boolean isUploadFlow;
-
+    
     @Value("${WORKTIME.UPLOAD.MATPROPERTY: true}")
     private boolean isUploadMatProp;
 
@@ -112,14 +115,14 @@ public class UploadPortTest {
         assertFalse(isUploadMatProp);
     }
 
-    @Test
+//    @Test
     @Rollback(true)
     public void testStandardtimeUpload() throws Exception {
         List<Worktime> l = worktimeService.findByPrimaryKeys(8768);
         assertNotNull(l.get(0));
 //        List<WorktimeAutouploadSetting> settings = worktimeAutouploadSettingService.findByPrimaryKeys(19, 20, 21, 22);
         standardtimePort.initSettings();
-
+        
         l.forEach((worktime) -> {
             try {
                 System.out.println("Upload model: " + worktime.getModelName());
@@ -133,7 +136,7 @@ public class UploadPortTest {
 //    @Test
 //    @Rollback(true)
     public void testFlowUpload() throws Exception {
-
+        
     }
 
 //    @Test
@@ -161,18 +164,26 @@ public class UploadPortTest {
         info.setSearchString("2017-11-26");
         info.setRows(Integer.MAX_VALUE);
         List<Worktime> l = worktimeService.findAll(info);
-
+        
         standardtimePort.initSettings();
-
+        
         for (Worktime worktime : l) {
             System.out.println(worktime.getModelName());
             standardtimePort.update(worktime);
         }
     }
-
-//    @Test
-//    @Rollback(true)
+    
+    @Test
+    @Rollback(true)
     public void testMaterialPropertyUploadPort() throws Exception {
-
+        Worktime worktime = new Worktime();
+        worktime.setModelName("TEST-MODEL-2");
+        Pending pending = new Pending();
+        pending.setId(2);
+        worktime.setPending(pending);
+        materialPropertyUploadPort.initSetting();
+        materialPropertyUploadPort.insert(worktime);
+//        materialPropertyUploadPort.update(worktime);
+//        materialPropertyUploadPort.delete(worktime);
     }
 }

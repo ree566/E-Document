@@ -11,6 +11,7 @@ import com.advantech.service.WorktimeService;
 import com.advantech.webservice.port.FlowRuleQueryPort;
 import com.advantech.webservice.port.MaterialFlowQueryPort;
 import com.advantech.webservice.port.MaterialPropertyQueryPort;
+import com.advantech.webservice.port.MaterialPropertyValueQueryPort;
 import com.advantech.webservice.port.MaterialPropertyUserPermissionQueryPort;
 import com.advantech.webservice.port.MesUserInfoQueryPort;
 import com.advantech.webservice.port.ModelResponsorQueryPort;
@@ -66,6 +67,9 @@ public class QueryPortTest {
     
     @Autowired
     private MaterialPropertyQueryPort materialPropertyQueryPort;
+    
+    @Autowired
+    private MaterialPropertyValueQueryPort materialPropertyValueQueryPort;
 
     @Autowired
     private WorktimeService worktimeService;
@@ -135,9 +139,9 @@ public class QueryPortTest {
 
     @Test
     public void testMaterialPropertyQueryPort() throws Exception {
-        List<MaterialProperty> l = materialPropertyQueryPort.query(w);
-        assertEquals(12, l.size());
+        List<MaterialProperty> l = materialPropertyQueryPort.query("FC");
+        assertEquals(1, l.size());
         assertEquals("FC", l.get(0).getMatPropertyNo());
-        assertEquals("0", l.get(2).getValue());
+        System.out.println(l.get(0).getAffPropertyType());
     }
 }

@@ -38,7 +38,6 @@ public class MaterialPropertyUserPermissionQueryPort extends BasicQueryPort {
         MaterialPropertyUserPermissionQueryRoot root = new MaterialPropertyUserPermissionQueryRoot();
         MaterialPropertyUserPermissionQueryRoot.MATPROPERTYUSER prop = root.getMATPROPERTYUSER();
         prop.setUSERNO(jobnumber);
-        HibernateObjectPrinter.print(this.generateXmlString(root));
         return this.query(root);
     }
 
