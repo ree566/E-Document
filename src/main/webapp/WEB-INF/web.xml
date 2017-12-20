@@ -18,6 +18,11 @@
         <param-value>E-Document</param-value>
     </context-param>
     
+    <context-param>
+        <param-name>betaMode</param-name>
+        <param-value>0</param-value>
+    </context-param>
+    
     <!--filter mapping--> 
     
     <filter>  

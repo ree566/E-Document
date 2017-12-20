@@ -7,18 +7,22 @@ package com.advantech.test;
 
 import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.model.Worktime;
-import com.advantech.model.WorktimeMaterialPropertyUploadSetting;
+import com.advantech.model.WorktimeFormulaSetting;
 import com.advantech.service.AuditService;
 import com.advantech.service.WorktimeService;
+import com.advantech.service.WorktimeUploadMesService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import static java.util.stream.Collectors.toList;
 import javax.transaction.Transactional;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import static junit.framework.Assert.*;
+import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang3.SerializationUtils;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.envers.AuditReader;
@@ -56,6 +60,9 @@ public class HibernateTest {
     private AuditService auditService;
 
     private static Validator validator;
+    
+    @Autowired
+    private WorktimeUploadMesService worktimeUploadMesService;
 
     @Before
     public void setUp() {
@@ -124,11 +131,48 @@ public class HibernateTest {
         return sb.toString();
     }
 
+//    @Test
+    @Transactional
+    @Rollback(false)
+    public void testClone() throws Exception {
+        Worktime w = worktimeService.findByPrimaryKey(8614);
+        assertNotNull(w);
+
+        String modelName = w.getModelName();
+
+        List<String> modelNames = new ArrayList();
+
+        for (int i = 0; i <= 10; i++) {
+            modelNames.add(modelName + "-CLONE-" + i);
+        }
+
+        worktimeService.insertSeries(modelName, modelNames);
+    }
+
+//    @Test
+    @Transactional
+    @Rollback(false)
+    public void deleteClone() throws Exception {
+        List<Worktime> l = sessionFactory.getCurrentSession().createQuery("from Worktime w where upper(w.modelName) like '%CLONE%'").list();
+        assertEquals(13, l.size());
+        l.forEach((w) -> {
+            try {
+                worktimeService.delete(w);
+            } catch (Exception e) {
+                System.out.println(w.getModelName() + " delete fail.");
+                System.out.println(e);
+            }
+        });
+    }
+
     @Test
     @Transactional
     @Rollback(true)
-    public void testWorktimeMaterialPropertyUploadSetting() {
-        
+    public void testJava8() throws Exception {
+        Worktime w = (Worktime) sessionFactory.getCurrentSession().createQuery("from Worktime w where w.id = 17982").uniqueResult();
+        assertNotNull(w);
+        worktimeUploadMesService.portParamInit();
+        worktimeUploadMesService.delete(w);
     }
 
 }

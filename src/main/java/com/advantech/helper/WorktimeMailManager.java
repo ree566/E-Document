@@ -11,6 +11,7 @@ import com.advantech.model.User;
 import com.advantech.model.Worktime;
 import com.advantech.service.UserNotificationService;
 import java.util.List;
+import static java.util.stream.Collectors.toList;
 import javax.mail.MessagingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,6 +48,20 @@ public class WorktimeMailManager {
         }
     }
 
+    public void notifyUser2(List<String> modelNames, String action) {
+        String[] to = getMailByNotification("worktime_alarm");
+        String[] cc = getMailByNotification("worktime_alarm_cc");
+
+        String subject = "【系統訊息】大表異動";
+        String text = generateTextBody2(modelNames, action);
+
+        try {
+            mailManager.sendMail(to, cc, subject, text);
+        } catch (MessagingException ex) {
+            log.error("Send mail fail at action " + action + ":" + ex.toString());
+        }
+    }
+
     private String[] getMailByNotification(String notification) {
         List<User> users = userNotificationService.findUsersByNotification(notification);
         String[] mails = new String[users.size()];
@@ -60,7 +75,12 @@ public class WorktimeMailManager {
     }
 
     private String generateTextBody(List<Worktime> l, final String action) {
-        User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        List<String> modelNames = l.stream().map(w -> w.getModelName()).collect(toList());
+        return this.generateTextBody2(modelNames, action);
+    }
+
+    private String generateTextBody2(List<String> l, final String action) {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         StringBuilder sb = new StringBuilder();
         sb.append("<p>Dear All:</p>");
         sb.append("<p>使用者 ");
@@ -68,9 +88,9 @@ public class WorktimeMailManager {
         sb.append(" 異動了大表( Action:");
         sb.append(action);
         sb.append(" )相關機種清單如下</p>");
-        for (Worktime w : l) {
+        for (String modelName : l) {
             sb.append("<p>");
-            sb.append(w.getModelName());
+            sb.append(modelName);
             sb.append("</p>");
         }
         if (action.equals(CrudAction.ADD.toString())) {

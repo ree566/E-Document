@@ -5,14 +5,17 @@
  */
 package com.advantech.controller;
 
-import com.advantech.service.WorktimeUploadMesService;
 import com.advantech.helper.WorktimeMailManager;
 import static com.advantech.helper.JqGridResponseUtils.toJqGridResponse;
 import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.Worktime;
 import com.advantech.jqgrid.JqGridResponse;
 import com.advantech.service.WorktimeService;
+import static com.google.common.base.Preconditions.*;
 import static com.google.common.collect.Lists.newArrayList;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +24,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
@@ -58,6 +62,25 @@ public class WorktimeController extends CrudController<Worktime> {
         modifyMessage = worktimeService.insertWithFormulaSetting(worktime) == 1 ? this.SUCCESS_MESSAGE : FAIL_MESSAGE;
         if (SUCCESS_MESSAGE.equals(modifyMessage)) {
             worktimeMailManager.notifyUser(newArrayList(worktime), ADD);
+        }
+
+        return serverResponse(modifyMessage);
+    }
+
+    @RequestMapping(value = "createSeries", method = {RequestMethod.POST})
+    protected ResponseEntity createSeries(
+            @RequestParam String baseModelName,
+            @RequestParam(value = "seriesModelNames[]") String[] seriesModelNames
+    ) throws Exception {
+        checkArgument(baseModelName != null && !"".equals(baseModelName), "BaseModelName illegal");
+        checkArgument(seriesModelNames != null && seriesModelNames.length != 0, "SeriesModelNames illegal");
+
+        String modifyMessage;
+
+        List<String> l = new ArrayList<>(Arrays.asList(seriesModelNames));
+        modifyMessage = worktimeService.insertSeries(baseModelName, l) == 1 ? this.SUCCESS_MESSAGE : FAIL_MESSAGE;
+        if (SUCCESS_MESSAGE.equals(modifyMessage)) {
+            worktimeMailManager.notifyUser2(l, ADD);
         }
 
         return serverResponse(modifyMessage);
@@ -112,7 +135,7 @@ public class WorktimeController extends CrudController<Worktime> {
         if (worktime.getUserByEeOwnerId().getId() == 0) {
             worktime.setUserByEeOwnerId(null);
         }
-        
+
     }
 
 }

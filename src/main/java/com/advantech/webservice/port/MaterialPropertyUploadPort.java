@@ -28,6 +28,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
@@ -72,8 +73,13 @@ public class MaterialPropertyUploadPort extends BasicUploadPort implements Uploa
 
     public void initSetting() throws Exception {
         temp_MaterialPropertys = materialPropertyQueryPort.query("");
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        temp_MaterialPropertyUserPermissions = permissionQueryPort.query(user.getJobnumber());
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null) {
+            temp_MaterialPropertyUserPermissions = permissionQueryPort.query("A-7568");
+        } else {
+            User user = (User) auth.getPrincipal();
+            temp_MaterialPropertyUserPermissions = permissionQueryPort.query(user.getJobnumber());
+        }
     }
 
     @Override
@@ -135,6 +141,7 @@ public class MaterialPropertyUploadPort extends BasicUploadPort implements Uploa
                         .filter(r -> Objects.equals(w.getModelName(), r.getItemNo()) && Objects.equals(setting.getMatPropNo(), r.getMatPropertyNo()))
                         .findFirst().orElse(null);
 
+                //屬性值不在MES
                 if (mp == null) {
                     mp = new MaterialPropertyValue();
                     mp.setMatPropertyNo(setting.getMatPropNo());
@@ -173,7 +180,7 @@ public class MaterialPropertyUploadPort extends BasicUploadPort implements Uploa
             detail.setVALUE(prop.getValue());
             detail.setAFFPROTYPE(prop.getAffPropertyType());
             detail.setAFFVALUE(prop.getAffPropertyValue());
-            detail.setMEMO("");
+            detail.setMEMO(prop.getMemo());
             details.add(detail);
         }
         matvalue.setMATVALUEDETAIL(details);

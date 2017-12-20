@@ -42,8 +42,6 @@ import org.springframework.util.AutoPopulatingList;
  */
 @Entity
 @Table(name = "Worktime",
-        schema = "dbo",
-        catalog = "E_Document",
         uniqueConstraints = @UniqueConstraint(columnNames = "model_name")
 )
 @DynamicInsert(true)

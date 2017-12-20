@@ -36,6 +36,20 @@
                     });
                     return false;
                 });
+
+                $("#test1").click(function () {
+                    $.ajax({
+                        type: "GET",
+                        url: "<c:url value="/testCtrl/test" />",
+                        dataType: "json",
+                        success: function (response) {
+                            console.log(response);
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            console.log(xhr.responseText);
+                        }
+                    });
+                });
             });
         </script>
     </head>
@@ -62,5 +76,6 @@
                 </a>
             </h3>
         </div>
+        <input type="button" id="test1" value="test" />
     </body>
 </html>

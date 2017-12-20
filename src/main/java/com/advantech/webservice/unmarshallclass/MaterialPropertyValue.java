@@ -36,6 +36,9 @@ public class MaterialPropertyValue {
     @XmlElement(name = "AFF_VALUE")
     private String affPropertyValue;
 
+    @XmlElement(name = "MEMO")
+    private String memo;
+
     public String getItemNo() {
         return itemNo;
     }
@@ -82,6 +85,14 @@ public class MaterialPropertyValue {
 
     public void setAffPropertyValue(String affPropertyValue) {
         this.affPropertyValue = affPropertyValue;
+    }
+
+    public String getMemo() {
+        return memo;
+    }
+
+    public void setMemo(String memo) {
+        this.memo = memo;
     }
 
 }

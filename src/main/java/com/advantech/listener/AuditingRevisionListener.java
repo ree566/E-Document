@@ -10,6 +10,7 @@ import org.hibernate.envers.RevisionListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
@@ -24,7 +25,13 @@ public class AuditingRevisionListener implements RevisionListener {
     public void newRevision(Object revisionEntity) {
         AuditedRevisionEntity revEntity = (AuditedRevisionEntity) revisionEntity;
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String userName = auth.getName();
-        revEntity.setUsername(userName);
+
+        //Prevent NullPointerException on testing CRUD data 
+        if (auth == null) {
+            revEntity.setUsername("sysop");
+        } else {
+            String userName = auth.getName();
+            revEntity.setUsername(userName);
+        }
     }
 }

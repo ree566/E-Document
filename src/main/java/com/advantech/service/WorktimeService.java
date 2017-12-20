@@ -11,9 +11,11 @@ import com.advantech.model.Worktime;
 import com.advantech.model.WorktimeFormulaSetting;
 import static com.google.common.base.Preconditions.*;
 import static com.google.common.collect.Lists.newArrayList;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -75,10 +77,7 @@ public class WorktimeService {
     }
 
     public int insert(Worktime worktime) throws Exception {
-        uploadMesService.portParamInit();
-        worktimeDAO.insert(worktime);
-        uploadMesService.insert(worktime);
-        return 1;
+        return this.insert(newArrayList(worktime));
     }
 
     //For batch modify.
@@ -100,14 +99,34 @@ public class WorktimeService {
 
     //For jqgrid edit(single row CRUD)
     public int insertWithFormulaSetting(Worktime worktime) throws Exception {
-        initUnfilledFormulaColumn(worktime);
-        WorktimeFormulaSetting setting = worktime.getWorktimeFormulaSettings().get(0);
-        worktime.setWorktimeFormulaSettings(null);
-        worktimeDAO.insert(worktime);
-        setting.setWorktime(worktime);
-        worktimeFormulaSettingDAO.insert(setting);
-        uploadMesService.portParamInit();
-        uploadMesService.insert(worktime);
+        return this.insertWithFormulaSetting(newArrayList(worktime));
+    }
+
+    public int insertSeries(String baseModelName, List<String> seriesModelNames) throws Exception {
+        Worktime baseW = this.findByModel(baseModelName);
+        checkArgument(baseW != null, "Can't find modelName: " + baseModelName);
+        List<Worktime> l = new ArrayList();
+
+        for (String seriesModelName : seriesModelNames) {
+            Worktime cloneW = (Worktime) BeanUtils.cloneBean(baseW);
+            cloneW.setId(0); //CloneW is a new row, reset id.
+            cloneW.setModelName(seriesModelName);
+            cloneW.setWorktimeFormulaSettings(null);
+            cloneW.setBwFields(null);
+            l.add(cloneW);
+        }
+
+        this.checkModelExists(l);
+        this.insert(l);
+
+        WorktimeFormulaSetting baseWSetting = baseW.getWorktimeFormulaSettings().get(0);
+        checkState(baseWSetting != null, "Can't find formulaSetting on: " + baseModelName);
+        for (Worktime w : l) {
+            WorktimeFormulaSetting cloneSetting = (WorktimeFormulaSetting) BeanUtils.cloneBean(baseWSetting);
+            cloneSetting.setWorktime(w);
+            worktimeFormulaSettingDAO.insert(cloneSetting);
+        }
+
         return 1;
     }
 
@@ -125,12 +144,7 @@ public class WorktimeService {
     }
 
     public int update(Worktime worktime) throws Exception {
-        initUnfilledFormulaColumn(worktime);
-        worktimeDAO.update(worktime);
-        worktimeFormulaSettingDAO.update(worktime.getWorktimeFormulaSettings().get(0));
-        uploadMesService.portParamInit();
-        uploadMesService.update(worktime);
-        return 1;
+        return this.update(newArrayList(worktime));
     }
 
     public int merge(List<Worktime> l) throws Exception {
@@ -138,8 +152,8 @@ public class WorktimeService {
         int i = 1;
         for (Worktime w : l) {
             initUnfilledFormulaColumn(w);
-            worktimeDAO.merge(w);
             worktimeFormulaSettingDAO.update(w.getWorktimeFormulaSettings().get(0));
+            worktimeDAO.merge(w);
             uploadMesService.update(w);
             flushIfReachFetchSize(i++);
         }
@@ -147,12 +161,7 @@ public class WorktimeService {
     }
 
     public int merge(Worktime worktime) throws Exception {
-        initUnfilledFormulaColumn(worktime);
-        worktimeFormulaSettingDAO.update(worktime.getWorktimeFormulaSettings().get(0));
-        worktimeDAO.merge(worktime);
-        uploadMesService.portParamInit();
-        uploadMesService.update(worktime);
-        return 1;
+        return this.merge(newArrayList(worktime));
     }
 
     public int insertByExcel(List<Worktime> l) throws Exception {
@@ -230,16 +239,24 @@ public class WorktimeService {
         return 1;
     }
 
-    public int delete(Integer... ids) throws Exception {
-        List<Worktime> worktimes = worktimeDAO.findByPrimaryKeys(ids);
+    public int delete(List<Worktime> l) throws Exception {
         uploadMesService.portParamInit();
         int i = 1;
-        for (Worktime w : worktimes) {
+        for (Worktime w : l) {
             worktimeDAO.delete(w);
             uploadMesService.delete(w);
             flushIfReachFetchSize(i++);
         }
         return 1;
+    }
+
+    public int delete(Worktime w) throws Exception {
+        return this.delete(newArrayList(w));
+    }
+
+    public int delete(Integer... ids) throws Exception {
+        List<Worktime> worktimes = worktimeDAO.findByPrimaryKeys(ids);
+        return this.delete(worktimes);
     }
 
     public int delete(int id) throws Exception {

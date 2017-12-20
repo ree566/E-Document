@@ -26,8 +26,7 @@ import org.springframework.stereotype.Component;
 
 /**
  *
- * @author Wei.Cheng 徒程上傳
- * CRUD xml相同
+ * @author Wei.Cheng 徒程上傳 CRUD xml相同
  */
 @Component
 public class FlowUploadPort extends BasicUploadPort implements UploadPort {
@@ -69,25 +68,31 @@ public class FlowUploadPort extends BasicUploadPort implements UploadPort {
                     case PREASSY:
                         PreAssy preAssy = w.getPreAssy();
                         if (preAssy != null) {
-                            rule = this.getFlowRule(section, preAssyService.findByPrimaryKey(preAssy.getId()).getName());
+                            preAssy = preAssyService.findByPrimaryKey(preAssy.getId());
+                            rule = this.getFlowRule(section, preAssy.getName());
                         }
                         break;
                     case BAB:
                         Flow babFlow = w.getFlowByBabFlowId();
-                        if (babFlow != null && "empty".equals(babFlow.getName())) {
-                            rule = this.getFlowRule(section, flowService.findByPrimaryKey(babFlow.getId()).getName());
+                        if (babFlow != null) {
+                            babFlow = flowService.findByPrimaryKey(babFlow.getId());
+                            if (!"empty".equals(babFlow.getName())) {
+                                rule = this.getFlowRule(section, babFlow.getName());
+                            }
                         }
                         break;
                     case TEST:
                         Flow testFlow = w.getFlowByTestFlowId();
                         if (testFlow != null) {
-                            rule = this.getFlowRule(section, flowService.findByPrimaryKey(testFlow.getId()).getName());
+                            testFlow = flowService.findByPrimaryKey(testFlow.getId());
+                            rule = this.getFlowRule(section, testFlow.getName());
                         }
                         break;
                     case PACKAGE:
                         Flow packingFlow = w.getFlowByPackingFlowId();
                         if (packingFlow != null) {
-                            rule = this.getFlowRule(section, flowService.findByPrimaryKey(packingFlow.getId()).getName());
+                            packingFlow = flowService.findByPrimaryKey(packingFlow.getId());
+                            rule = this.getFlowRule(section, packingFlow.getName());
                         }
                         break;
                     default:

@@ -12,8 +12,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <meta name="_csrf" content="${_csrf.token}"/>
-        <meta name="_csrf_header" content="${_csrf.headerName}"/>
+        <sec:csrfMetaTags/>
         <title>${initParam.pageTitle}</title>
         <link rel="shortcut icon" href="<c:url value="/images/favicon.ico" />"/>
 
@@ -28,6 +27,7 @@
         <link href="<c:url value="/css/sb-admin-2.min.css" />" rel="stylesheet">
         <link href="<c:url value="/css/metisMenu.min.css" />" rel="stylesheet">
         <link href="<c:url value="/css/sbadmin2-sidebar-toggle.css" />" rel="stylesheet">
+        <link href="<c:url value="/css/sys-beta.css" />" rel="stylesheet">
 
         <script src="<c:url value="/webjars/jquery/1.12.4/jquery.min.js" />"></script>
 
@@ -50,6 +50,7 @@
         <script src="<c:url value="/js/sessionExpiredDetect.js" />"></script>
         <script src="<c:url value="/js/jquery.blockUI.js" />"></script>
 
+        <c:set var="isBeta" value="${initParam.betaMode == 1}" />
         <script>
             var current_include_page_name = "";
             $(function () {
@@ -111,6 +112,11 @@
                                                 </button>
                                             </li>
                                         </ul>-->
+                    <c:if test="${isBeta}">
+                        <a href="#" class="navbar-left">
+                            <img src="<c:url value="/images/beta_icon.png" />" id='beta-sign'/>
+                        </a>
+                    </c:if>
                     <a class="navbar-brand" href="<c:url value="/" />">${initParam.pageTitle}</a>
                 </div>
                 <!-- /.navbar-header -->
@@ -182,7 +188,11 @@
                                         <li>
                                             <a class="redirect-link" id="preload_page" href="worktime.jsp">工時大表</a>
                                         </li>
-
+                                        <sec:authorize access="hasAnyRole('ADMIN', 'OPER', 'AUTHOR')">
+                                            <li>
+                                                <a class="redirect-link" href="mod/worktime_insert_series.jsp">系列機種批次新增</a>
+                                            </li>
+                                        </sec:authorize>
                                         <li>
                                             <a class="redirect-link" href="conversion.jsp">工時對照表</a>
                                         </li>
@@ -219,7 +229,7 @@
                                                 <a class="redirect-link" href="fileupload.jsp">Excel文件上傳</a>
                                             </li>
                                             <li>
-                                                <a class="redirect-link" href="worktime-permission.jsp">欄位權限設定</a>
+                                                <a class="redirect-link" href="worktime_permission.jsp">欄位權限設定</a>
                                             </li>
                                             <li>
                                                 <a class="redirect-link" href="wowface.jsp">Not exist page</a>
@@ -258,5 +268,8 @@
             </div>
             <!-- /#page-wrapper -->
         </div>
+        <c:if test="${isBeta}">
+            <jsp:include page="footer_beta_remind.jsp" />
+        </c:if>
     </body>
 </html>

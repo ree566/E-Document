@@ -9,6 +9,7 @@ import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.Worktime;
 import com.advantech.service.AuditService;
 import com.advantech.service.WorktimeService;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -18,9 +19,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -75,7 +78,7 @@ public class TestController {
     protected void runtimeExceptionTest(HttpServletResponse resp) throws Exception {
         throw new RuntimeException("This is a testing runtimeException");
     }
-    
+
     @ResponseBody
     @RequestMapping(value = "/exceptionTestInChinese", method = {RequestMethod.GET, RequestMethod.POST})
     @Secured("ROLE_ADMIN")
@@ -92,19 +95,34 @@ public class TestController {
         mav.setViewName("pages/error");
         return mav;
     }
-    
+
     @ResponseBody
     @RequestMapping(value = "/lambdaTest", method = {RequestMethod.GET})
     @Secured("ROLE_ADMIN")
     protected Set<String> lambdaTest() throws Exception {
         List<Worktime> l = worktimeService.findAll(new PageInfo());
         Set<String> s1 = new HashSet();
-        
+
         l.forEach((m) -> {
             s1.add(m.getModelName());
         });
-        
+
         return s1;
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/paramTest", method = {RequestMethod.POST})
+    @Secured("ROLE_ADMIN")
+    protected String getParam(
+            @RequestParam String baseModelName,
+            @RequestParam(value = "seriesModelNames[]") String[] seriesModelNames
+    ) throws Exception {
+        System.out.print("Base model to clone: ");
+        System.out.println(baseModelName);
+        System.out.print("Series models: ");
+        System.out.println(Arrays.toString(seriesModelNames));
+        
+        return "get data";
     }
 
 }
