@@ -20,6 +20,7 @@ import com.advantech.webservice.unmarshallclass.FlowRule;
 import com.advantech.webservice.unmarshallclass.MaterialFlow;
 import com.advantech.webservice.unmarshallclass.MaterialProperty;
 import com.advantech.webservice.unmarshallclass.MaterialPropertyUserPermission;
+import com.advantech.webservice.unmarshallclass.MaterialPropertyValue;
 import java.util.List;
 import java.util.Map;
 import javax.transaction.Transactional;
@@ -64,10 +65,10 @@ public class QueryPortTest {
 
     @Autowired
     private MaterialPropertyUserPermissionQueryPort materialPropertyUserPermissionQueryPort;
-    
+
     @Autowired
     private MaterialPropertyQueryPort materialPropertyQueryPort;
-    
+
     @Autowired
     private MaterialPropertyValueQueryPort materialPropertyValueQueryPort;
 
@@ -137,11 +138,24 @@ public class QueryPortTest {
         assertEquals("01", l.get(0).getMaterialPropertyNo());
     }
 
-    @Test
+//    @Test
     public void testMaterialPropertyQueryPort() throws Exception {
         List<MaterialProperty> l = materialPropertyQueryPort.query("FC");
         assertEquals(1, l.size());
         assertEquals("FC", l.get(0).getMatPropertyNo());
         System.out.println(l.get(0).getAffPropertyType());
+    }
+
+    @Test
+    public void testMaterialPropertValueyQueryPort() throws Exception {
+        Worktime w1 = worktimeService.findByModel("2063002307");
+        assertNotNull(w1);
+        List<MaterialPropertyValue> l = materialPropertyValueQueryPort.query(w1);
+        assertEquals(5, l.size());
+        MaterialPropertyValue value = l.stream()
+                .filter(v -> "KB".equals(v.getMatPropertyNo())).findFirst().orElse(null);
+        assertNotNull(value);
+        assertEquals(null, value.getAffPropertyValue());
+        assertEquals("N", value.getValue());
     }
 }

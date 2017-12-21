@@ -13,6 +13,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 
 /**
@@ -32,6 +33,7 @@ public class WorktimeMaterialPropertyUploadSetting implements java.io.Serializab
     private String affFormula;
     private String matPropNo;
     private String defaultValue;
+    private String defaultAffValue;
     private int uploadWhenDefault;
 
     @Id
@@ -88,6 +90,16 @@ public class WorktimeMaterialPropertyUploadSetting implements java.io.Serializab
 
     public void setDefaultValue(String defaultValue) {
         this.defaultValue = defaultValue;
+    }
+
+    @Transient
+//    @Column(name = "default_aff_value", length = 50)
+    public String getDefaultAffValue() {
+        return defaultAffValue;
+    }
+
+    public void setDefaultAffValue(String defaultAffValue) {
+        this.defaultAffValue = defaultAffValue;
     }
 
     @Column(name = "upload_when_default")

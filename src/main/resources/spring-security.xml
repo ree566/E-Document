@@ -33,7 +33,9 @@
         <!--Global system access setting-->
         <intercept-url pattern="/login.jsp" access="permitAll" />
         <intercept-url pattern="/pages/admin/**" access="hasRole('ADMIN')" />
+        <intercept-url pattern="/pages/test/**" access="hasRole('ADMIN')" />
         <intercept-url pattern="/pages/mod/**" access="hasAnyRole('OPER', 'ADMIN')" />
+        <intercept-url pattern="/pages/author/**" access="hasAnyRole('OPER', 'ADMIN', 'AUTHOR')" />
         <intercept-url pattern="/pages/**" access="isAuthenticated()" />
         <intercept-url pattern="/socket/**" access="isAuthenticated()" />
         

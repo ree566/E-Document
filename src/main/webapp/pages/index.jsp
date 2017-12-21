@@ -190,7 +190,7 @@
                                         </li>
                                         <sec:authorize access="hasAnyRole('ADMIN', 'OPER', 'AUTHOR')">
                                             <li>
-                                                <a class="redirect-link" href="mod/worktime_insert_series.jsp">系列機種批次新增</a>
+                                                <a class="redirect-link" href="author/worktime_insert_series.jsp">系列機種批次新增</a>
                                             </li>
                                         </sec:authorize>
                                         <li>
@@ -226,16 +226,16 @@
                                         </li>
                                         <sec:authorize access="hasRole('ADMIN')">
                                             <li>
-                                                <a class="redirect-link" href="fileupload.jsp">Excel文件上傳</a>
+                                                <a class="redirect-link" href="admin/fileupload.jsp">Excel文件上傳</a>
                                             </li>
                                             <li>
-                                                <a class="redirect-link" href="worktime_permission.jsp">欄位權限設定</a>
+                                                <a class="redirect-link" href="admin/worktime_permission.jsp">欄位權限設定</a>
                                             </li>
                                             <li>
-                                                <a class="redirect-link" href="wowface.jsp">Not exist page</a>
+                                                <a class="redirect-link" href="admin/wowface.jsp">Not exist page</a>
                                             </li>
                                             <li>
-                                                <a href="admin/test.jsp" onclick="">測試區</a>
+                                                <a href="test/test.jsp" onclick="">測試區</a>
                                             </li>
                                         </sec:authorize>
                                     </ul>

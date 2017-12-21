@@ -5,7 +5,6 @@
  */
 package com.advantech.test;
 
-import com.advantech.model.PreAssy;
 import org.apache.commons.lang3.ObjectUtils;
 import org.junit.Test;
 
@@ -17,10 +16,9 @@ public class Test1Test {
 
     @Test
     public void test() {
-        PreAssy p1 = new PreAssy();
-        PreAssy p2 = new PreAssy();
-        
-        System.out.println(ObjectUtils.compare(p1, p2));
+        Character n = 'N';
+        String sN = "N";
+        System.out.println(ObjectUtils.compare(n.toString(), sN));
     }
 
 }

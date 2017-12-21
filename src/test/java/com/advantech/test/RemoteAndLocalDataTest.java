@@ -6,31 +6,37 @@
 package com.advantech.test;
 
 import com.advantech.excel.ExcelGenerator;
-import com.advantech.helper.HibernateObjectPrinter;
+import com.advantech.helper.SpringExpressionUtils;
 import com.advantech.model.User;
 import com.advantech.model.Worktime;
+import com.advantech.model.WorktimeMaterialPropertyUploadSetting;
 import com.advantech.service.FlowService;
+import com.advantech.service.WorktimeMaterialPropertyUploadSettingService;
 import com.advantech.service.WorktimeService;
 import com.advantech.webservice.port.MaterialFlowQueryPort;
+import com.advantech.webservice.port.MaterialPropertyValueQueryPort;
 import com.advantech.webservice.port.ModelResponsorQueryPort;
 import com.advantech.webservice.root.Section;
 import com.advantech.webservice.unmarshallclass.MaterialFlow;
+import com.advantech.webservice.unmarshallclass.MaterialPropertyValue;
 import com.advantech.webservice.unmarshallclass.ModelResponsor;
 import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import javax.transaction.Transactional;
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Restrictions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -72,6 +78,15 @@ public class RemoteAndLocalDataTest {
     @Autowired
     private MaterialFlowQueryPort materialFlowQueryPort;
 
+    @Autowired
+    private MaterialPropertyValueQueryPort materialPropertyValueQueryPort;
+
+    @Autowired
+    private WorktimeMaterialPropertyUploadSettingService worktimeMaterialPropertyUploadSettingService;
+
+    @Autowired
+    private SpringExpressionUtils expressionUtils;
+
     @Before
     public void init() {
         Criteria c = sessionFactory.getCurrentSession().createCriteria(Worktime.class);
@@ -82,12 +97,13 @@ public class RemoteAndLocalDataTest {
         c.setFetchMode("flowByBabFlowId", FetchMode.EAGER);
         c.setFetchMode("flowByTestFlowId", FetchMode.EAGER);
         c.setFetchMode("flowByPackingFlowId", FetchMode.EAGER);
-//        c.add(Restrictions.eq("id", 8724));
+//        c.setMaxResults(500);
         l = c.list();
     }
 
+    //*************************************
 //    @Test
-    public void test() throws Exception {
+    public void testResponsor() throws Exception {
         ExcelGenerator generator = new ExcelGenerator();
         List<Map> errors = new ArrayList();
         for (Worktime w : l) {
@@ -141,7 +157,7 @@ public class RemoteAndLocalDataTest {
         return s1.containsAll(s2);
     }
 
-    @Test
+//    @Test
     public void testFlow() throws Exception {
         ExcelGenerator generator = new ExcelGenerator();
         List<Map> errors = new ArrayList();
@@ -169,7 +185,7 @@ public class RemoteAndLocalDataTest {
                 m.put("packingFlow_remote", m_packageFlow == null ? na : m_packageFlow.getFlowRuleName());
 
                 errors.add(m);
-            } 
+            }
         }
         if (!errors.isEmpty()) {
             generator.generateWorkBooks(errors);
@@ -222,5 +238,81 @@ public class RemoteAndLocalDataTest {
             return true;
         }
         return false;
+    }
+
+    //*************************************
+    @Test
+    public void testMaterialProperty() throws Exception {
+        List<WorktimeMaterialPropertyUploadSetting> matSettingLocal = worktimeMaterialPropertyUploadSettingService.findAll();
+        List<Map> errors = new ArrayList();
+        ExcelGenerator generator = new ExcelGenerator();
+        for (Worktime worktime : l) {
+            System.out.println("Testing " + worktime.getModelName());
+            List<MaterialPropertyValue> props = materialPropertyValueQueryPort.query(worktime);
+
+            Map m = new LinkedHashMap();
+            m.put("modelName", worktime.getModelName());
+            boolean diff = false;
+
+            for (WorktimeMaterialPropertyUploadSetting setting : matSettingLocal) {
+
+                MaterialPropertyValue prop = props
+                        .stream()
+                        .filter(s -> ObjectUtils.compare(setting.getMatPropNo(), s.getMatPropertyNo()) == 0)
+                        .findFirst()
+                        .orElse(null);
+
+                String mainFormulaValue = getValueFromFormula(worktime, setting.getFormula());
+                String affFormulaValue = getValueFromFormula(worktime, setting.getAffFormula());
+
+                m.put(setting.getColumnName() + "_mainValue_local",
+                        ObjectUtils.compare(mainFormulaValue, setting.getDefaultValue()) == 0 && setting.getUploadWhenDefault() == 0 ? null : mainFormulaValue);
+                m.put(setting.getColumnName() + "_mainValue_remote", prop == null ? null : prop.getValue());
+
+                if (setting.getAffFormula() != null) {
+                    m.put(setting.getColumnName() + "_affValue_local", "0".equals(affFormulaValue) ? null : affFormulaValue);
+                    m.put(setting.getColumnName() + "_affValue_remote", prop == null ? null : prop.getAffPropertyValue());
+                }
+                
+                /*
+                    remote == null 且 local != default
+                    remote != local 且 local != default (remote 可能為 null)
+                */
+
+                if (prop == null && ObjectUtils.compare(mainFormulaValue, setting.getDefaultValue()) != 0) {
+                    diff = true;
+                } else if (prop != null && (ObjectUtils.compare(mainFormulaValue, prop.getValue()) != 0
+                        || ObjectUtils.compare(affFormulaValue, prop.getAffPropertyValue()) != 0)) {
+                    diff = true;
+                }
+            }
+
+            if (diff) {
+                System.out.println("Diff add");
+                errors.add(m);
+            } else {
+                m.clear();
+                m = null;
+            }
+        }
+        if (!errors.isEmpty()) {
+            generator.generateWorkBooks(errors);
+            generator.outputExcel("conflict");
+        }
+    }
+
+    private String getValueFromFormula(Worktime w, String formula) {
+        Object o = expressionUtils.getValueFromFormula(w, formula);
+
+        if (o != null) {
+            if (o instanceof BigDecimal && ((BigDecimal) o).signum() == 0) {
+                return "0";
+            } else if ((o instanceof Character || o instanceof String) && "".equals(o.toString().trim())) {
+                return "";
+            } else {
+                return o.toString();
+            }
+        }
+        return null;
     }
 }
