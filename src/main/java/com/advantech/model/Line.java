@@ -44,10 +44,10 @@ public class Line implements Serializable {
     private LineStatus lineStatus;
 
     @JsonIgnore
-    public Set<User> users = new HashSet<User>(0);
+    private Set<User> users = new HashSet<User>(0);
 
     @JsonIgnore
-    public Set<Bab> babs = new HashSet<Bab>(0);
+    private Set<Bab> babs = new HashSet<Bab>(0);
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

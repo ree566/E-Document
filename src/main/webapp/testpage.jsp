@@ -119,11 +119,11 @@
                 if (testLineTypeCookie != null) {
                     var cookieInfo = $.parseJSON(testLineTypeCookie);
                     if (cookieInfo.floor == $("#userSitefloorSelect").val()) {
-                        $("#user_number").val(cookieInfo.userNo);
+                        $("#user_number").val(cookieInfo.jobnumber);
                         $("#table").val(cookieInfo.tableNo);
                         lockWhenUserIsLogin();
                         $("#cookieinfo").html("測試 cookie 已經儲存");
-                        $("#userInfo").html("<td>" + $("#table option:selected").text() + "</td>" + "<td>" + cookieInfo.userNo + "</td>");
+                        $("#userInfo").html("<td>" + $("#table option:selected").text() + "</td>" + "<td>" + cookieInfo.jobnumber + "</td>");
                         return true;
                     } else {
                         lockAllUserInput();
@@ -190,14 +190,14 @@
             }
 
             function modifyTestTable(action) {
-                var userNo = $("#user_number").val();
+                var jobnumber = $("#user_number").val();
                 var tableNo = $("#table").val();
                 var data = {
-                    userNo: userNo,
+                    jobnumber: jobnumber,
                     tableNo: tableNo
                 };
 
-                if (!checkVal(data.tableNo) || !data.userNo.match(tabreg)) {
+                if (!checkVal(data.tableNo) || !data.jobnumber.match(tabreg)) {
                     showMsg("error input value");
                     return false;
                 }
@@ -308,6 +308,7 @@
             }
 
             function showMsg(msg) {
+//                alert(msg);
                 $("#servermsg").html(msg);
             }
         </script>

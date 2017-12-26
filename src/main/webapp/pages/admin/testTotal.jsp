@@ -6,6 +6,7 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html>
 <html>
     <head>
@@ -77,8 +78,8 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                     "processing": false,
                     "serverSide": false,
                     "ajax": {
-                        "url": "../../GetTotal",
-                        "type": "POST",
+                        "url": "<c:url value="/LineTypeFacadeController/findTestProcessResult" />",
+                        "type": "GET",
                         "data": {"type": "type1"}
                     },
                     "columns": [

@@ -8,6 +8,8 @@ package com.advantech.service;
 import com.advantech.model.BabSettingHistory;
 import com.advantech.dao.BabSettingHistoryDAO;
 import com.advantech.model.Bab;
+import static com.google.common.base.Preconditions.*;
+import java.util.Date;
 import java.util.List;
 import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Service;
 /**
  *
  * @author Wei.Cheng
+ * Please keep one setting per bab and station
  */
 @Service
 @Transactional
@@ -36,15 +39,27 @@ public class BabSettingHistoryService {
         return babSettingHistoryDAO.findByBab(b);
     }
 
-    public BabSettingHistory findByBabAndStation(Bab b, int station) {
+    public List<BabSettingHistory> findByBabAndStation(Bab b, int station) {
         return babSettingHistoryDAO.findByBabAndStation(b, station);
     }
 
     public int insert(BabSettingHistory pojo) {
+        pojo.setCreateTime(new Date());
         return babSettingHistoryDAO.insert(pojo);
     }
 
+    //Record jobnumber by "Hibernate Audit" audit jobnumber change event in sql.
+    public int changeUser(Bab b, String jobnumber, int station) throws Exception {
+        BabSettingHistory setting = babSettingHistoryDAO.findProcessByBabAndStation(b, station);
+        checkArgument(setting != null, "Prev user setting in this station not found");
+        checkArgument(!jobnumber.equals(setting.getJobnumber()), "Jobnumber is the same");
+        setting.setJobnumber(jobnumber);
+        babSettingHistoryDAO.update(setting);
+        return 1;
+    }
+
     public int update(BabSettingHistory pojo) {
+        pojo.setLastUpdateTime(new Date());
         return babSettingHistoryDAO.update(pojo);
     }
 

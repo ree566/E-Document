@@ -10,6 +10,7 @@ import com.advantech.helper.PropertiesReader;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import org.hibernate.Criteria;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.joda.time.DateTime;
@@ -76,7 +77,7 @@ public class BabDAO extends AbstractDao<Integer, Bab> implements BasicDAO_1<Bab>
     public List<Bab> findProcessing() {
         DateTime d = new DateTime();
         Criteria c = super.createEntityCriteria();
-        c.add(Restrictions.isNull("isused"));
+        c.add(Restrictions.isNull("babStatus"));
         c.add(Restrictions.between("beginTime", d.withHourOfDay(0).toDate(), d.withHourOfDay(23).toDate()));
         return c.list();
     }
@@ -85,8 +86,9 @@ public class BabDAO extends AbstractDao<Integer, Bab> implements BasicDAO_1<Bab>
         DateTime d = new DateTime();
         Criteria c = super.createEntityCriteria();
         c.add(Restrictions.eq("line.id", line_id));
-        c.add(Restrictions.isNull("isused"));
+        c.add(Restrictions.isNull("babStatus"));
         c.add(Restrictions.between("beginTime", d.withHourOfDay(0).toDate(), d.withHourOfDay(23).toDate()));
+        c.addOrder(Order.asc("id"));
         return c.list();
     }
 

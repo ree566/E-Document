@@ -6,15 +6,15 @@
  */
 package com.advantech.controller;
 
+import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.model.Line;
+import com.advantech.model.LineStatus;
 import com.advantech.service.LineService;
-import java.io.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.List;
-import javax.servlet.http.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -33,8 +33,26 @@ public class BabLineController {
 
     @RequestMapping(value = "/findAll", method = {RequestMethod.GET})
     @ResponseBody
-    protected List<Line> findAll(@RequestParam(required = false) Integer sitefloor) {
+    protected List<Line> findAll(@RequestParam(required = false) String sitefloor) {
         return sitefloor != null ? lineService.findBySitefloor(sitefloor) : lineService.findAll();
+    }
+
+    @RequestMapping(value = "/login", method = {RequestMethod.POST})
+    @ResponseBody
+    protected String login(@RequestParam(value = "line.id") int line_id) throws JsonProcessingException {
+        Line line = lineService.findByPrimaryKey(line_id);
+        line.setLineStatus(LineStatus.OPEN);
+        lineService.update(line);
+        return "success";
+    }
+
+    @RequestMapping(value = "/logout", method = {RequestMethod.POST})
+    @ResponseBody
+    protected String logout(@RequestParam(value = "line.id") int line_id) {
+        Line line = lineService.findByPrimaryKey(line_id);
+        line.setLineStatus(LineStatus.CLOSE);
+        lineService.update(line);
+        return "success";
     }
 
 }

@@ -30,7 +30,8 @@ public class TestTableDAO extends AbstractDao<Integer, TestTable> implements Bas
 
     public List<TestTable> findBySitefloor(int sitefloor) {
         Criteria c = super.createEntityCriteria();
-        c.add(Restrictions.eq("sitefloor", sitefloor));
+        c.createAlias("floor", "f");
+        c.add(Restrictions.eq("f.name", Integer.toString(sitefloor)));
         return c.list();
     }
 

@@ -7,7 +7,9 @@ package com.advantech.service;
 
 import com.advantech.dao.AlarmTestActionDAO;
 import com.advantech.model.AlarmTestAction;
+import java.util.Date;
 import java.util.List;
+import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,8 +17,9 @@ import org.springframework.stereotype.Service;
  *
  * @author Wei.Cheng
  */
-@Service
-public class AlarmTestActionService implements AlarmTest {
+@Service(value = "alarmTestActionService")
+@Transactional
+public class AlarmTestActionService {
 
     @Autowired
     private AlarmTestActionDAO alarmTestActionDAO;
@@ -45,7 +48,9 @@ public class AlarmTestActionService implements AlarmTest {
     }
 
     public boolean update(List<AlarmTestAction> l) {
+        Date d = new Date();
         for (AlarmTestAction a : l) {
+            a.setLastUpdateTime(d);
             this.update(a);
         }
         return true;
@@ -71,7 +76,6 @@ public class AlarmTestActionService implements AlarmTest {
         return 1;
     }
 
-    @Override
     public void AlarmToTestingMode() {
         List<AlarmTestAction> l = this.findAll();
         for (AlarmTestAction a : l) {

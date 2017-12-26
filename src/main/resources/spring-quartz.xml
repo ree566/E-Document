@@ -130,7 +130,7 @@
         
         <property name="triggers">
             <list>
-                <!--<ref bean="DailyJobWorker-Trig"/>-->
+                <ref bean="DailyJobWorker-Trig"/>
                 <!--<ref bean="DataBaseInit-Trig"/>-->
                 <!--<ref bean="HandleUnclosedBab-Trig"/>-->
                 <!--<ref bean="SensorDetect-Trig"/>-->

@@ -68,7 +68,7 @@ public class AlarmTestAction implements AlarmAction, Serializable {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @JsonFormat(pattern = "yyyy-MM-dd'T'kk:mm:ss.SSS'Z'", timezone = "GMT+8")
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "updateTime", length = 23, insertable = false, updatable = false)
+    @Column(name = "updateTime", length = 23, insertable = true, updatable = true)
     public Date getLastUpdateTime() {
         return lastUpdateTime;
     }

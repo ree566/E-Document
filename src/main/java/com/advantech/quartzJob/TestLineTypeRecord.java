@@ -12,6 +12,7 @@ import com.advantech.service.TestRecordService;
 import com.advantech.service.TestService;
 import com.advantech.webservice.WebServiceRV;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import org.joda.time.DateTime;
@@ -55,13 +56,14 @@ public class TestLineTypeRecord extends QuartzJobBean {
     private List<com.advantech.model.TestRecord> separateOfflineUser(List<com.advantech.model.TestRecord> l) {
         List<Test> tests = testService.findAll();
         List list = new ArrayList();
-        for (com.advantech.model.TestRecord user : l) {
-            for (Test t : tests) {
-                if (Objects.equals(user.getUserId(), t.getUserId())) {
-                    list.add(user);
-                }
-            }
-        }
+        Date d = new Date();
+        l.forEach((user) -> {
+            tests.stream().filter((t) -> (Objects.equals(user.getUserId(), t.getUserId()))).forEachOrdered((_item) -> {
+                user.setLastUpdateTime(d);
+                user.setTestTable(_item.getTestTable());
+                list.add(user);
+            });
+        });
         return list;
     }
 

@@ -199,16 +199,7 @@
         <servlet-name>SysDoc</servlet-name>
         <url-pattern>/pages/admin/SysDoc</url-pattern>  
     </servlet-mapping>
-    
-    <servlet>
-        <servlet-name>Countermeasure</servlet-name>
-        <jsp-file>/pages/admin/modify/countermeasure.jsp</jsp-file>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>Countermeasure</servlet-name>
-        <url-pattern>/pages/admin/modify/Countermeasure</url-pattern>  
-    </servlet-mapping>
-    
+ 
     <!--若要停用quartz請從此開始註解-->
 <!--    <servlet>
         <servlet-name>QuartzInitializer</servlet-name>

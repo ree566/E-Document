@@ -21,6 +21,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.format.annotation.DateTimeFormat;
 
 /**
@@ -76,10 +78,11 @@ public class Test implements Serializable {
         this.userId = userId;
     }
 
+    @UpdateTimestamp
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @JsonFormat(pattern = "yyyy-MM-dd'T'kk:mm:ss.SSS'Z'", timezone = "GMT+8")
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "lastUpdateTime", length = 23, insertable = false, updatable = false)
+    @Column(name = "lastUpdateTime", length = 23, insertable = true, updatable = true)
     public Date getLastUpdateTime() {
         return lastUpdateTime;
     }

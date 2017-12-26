@@ -11,7 +11,8 @@ import com.advantech.model.LineBalancing;
 import com.advantech.helper.MailSend;
 import com.advantech.helper.PropertiesReader;
 import com.advantech.dao.LineBalancingDAO;
-import com.advantech.dao.SqlViewDAO;
+import com.advantech.dao.LineDAO;
+import com.advantech.model.LineType;
 import com.advantech.model.view.BabAvg;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
@@ -44,7 +45,7 @@ public class LineBalancingService {
     private LineBalancingDAO lineBalanceDAO;
 
     @Autowired
-    private SqlViewDAO sqlViewDAO;
+    private LineDAO lineDAO;
 
     @PostConstruct
     protected void init() {
@@ -61,19 +62,22 @@ public class LineBalancingService {
         return lineBalanceDAO.findByPrimaryKey(obj_id);
     }
 
-    public LineBalancing getMaxBalance(Bab bab) {
-        return lineBalanceDAO.getMaxBalance(bab);
+    public LineBalancing getMaxBalance(Bab bab, LineType lineType) {
+        return lineBalanceDAO.getMaxBalance(bab, lineType);
     }
 
     public int insert(Bab bab) {
-        List<BabAvg> balances = sqlViewDAO.findBabAvg(bab.getId());
+        List<BabAvg> balances = bab.getBabAvgs();
 
-        LineBalancing maxBaln = this.getMaxBalance(bab); //先取得max才insert，不然會抓到自己
+        LineType lineType = lineDAO.findLineType(bab.getLine().getId());
+        
+        LineBalancing maxBaln = this.getMaxBalance(bab, lineType); //先取得max才insert，不然會抓到自己
         double baln = this.caculateLineBalance(balances);
+        
 
         LineBalancing record = new LineBalancing(
                 bab.getPeople(),
-                bab.getLine().getLineType().getName(),
+                lineType.getName(),
                 bab.getPo(),
                 bab.getModelName(),
                 Integer.toString(bab.getLine().getId())

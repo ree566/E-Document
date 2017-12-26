@@ -51,11 +51,10 @@ public class BabOtherStationController {
             @RequestParam String jobnumber,
             @RequestParam int bab_id,
             @RequestParam int station
-    ) {
+    ) throws Exception {
         Bab b = babService.findByPrimaryKey(bab_id);
-        checkStation(b, station);
-        TagNameComparison tag = tagNameComparisonService.findByLineAndStation(b.getLine().getId(), station);
-        babSettingHistoryService.insert(new BabSettingHistory(b, station, tag.getId().getLampSysTagName(), jobnumber));
+        checkArgument(b != null, "Bab not found");
+        babSettingHistoryService.changeUser(b, jobnumber, station);
         return "success";
     }
 

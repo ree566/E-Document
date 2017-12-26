@@ -97,8 +97,8 @@
                     paramNotVaildMessage = "輸入資料有誤，請重新再確認。";
 
             var userInfoCookieName = "userInfo", testLineTypeCookieName = "testLineTypeCookieName", cellCookieName = "cellCookieName";
-            var STATION_LOGIN = "LOGIN", STATION_LOGOUT = "LOGOUT", CHANGE_USER = "CHANGE_USER";
-            var BAB_END = "BAB_END";
+            var STATION_LOGIN = "LOGIN", STATION_LOGOUT = "LOGOUT", CHANGE_USER = "changeUser";
+            var BAB_END = "stationComplete";
 
             var serverMsgTimeout;
 
@@ -161,7 +161,7 @@
                 $("#saveInfo").attr("disabled", isUserInfoExist);
                 $("#clearInfo").attr("disabled", !isUserInfoExist);
 
-                $("#lineNo").change(function () {
+                $("#lineId").change(function () {
                     setStationOptions();
                 });
 
@@ -175,7 +175,7 @@
                 //Step 1 event
                 //儲存使用者資訊
                 $("#saveInfo").click(function () {
-                    var selectLine = $("#lineNo option:selected");
+                    var selectLine = $("#lineId option:selected");
                     var jobnumber = $("#jobnumber").val();
                     var station = $("#station").val();
 
@@ -207,7 +207,7 @@
 
                 //Step 2 event
                 $("#po").on("keyup", function () {
-                    getModel($(this).val(), $("#modelname"));
+                    getModel($(this).val(), $("#modelName"));
                 });
 
                 $("#searchProcessing").click(function () {
@@ -226,16 +226,16 @@
                 //站別一操作工單投入
                 $("#babBegin").click(function () {
                     var po = $("#po").val();
-                    var modelname = $("#modelname").val();
+                    var modelName = $("#modelName").val();
                     var people = $("#people").val();
 
-                    if (checkVal(po, modelname, people) == false || modelname == "data not found") {
+                    if (checkVal(po, modelName, people) == false || modelName == "data not found") {
                         showMsg(paramNotVaildMessage);
                         return false;
                     }
 
-                    if (confirm("確定開始工單?\n" + "工單:" + po + "\n機種:" + modelname + "\n人數:" + people)) {
-                        startBab(po, modelname, people);
+                    if (confirm("確定開始工單?\n" + "工單:" + po + "\n機種:" + modelName + "\n人數:" + people)) {
+                        startBab(po, modelName, people);
                     }
                 });
 
@@ -255,13 +255,13 @@
                     } else {
                         if (confirm(
                                 "站別 " + userInfo.station + " 確定儲存?\n" +
-                                "工單: " + searchResult.PO + "\n" +
-                                "機種: " + searchResult.Model_name + "\n" +
+                                "工單: " + searchResult.po + "\n" +
+                                "機種: " + searchResult.modelName + "\n" +
                                 "人數: " + searchResult.people
                                 )) {
 
                             otherStationUpdate({
-                                babId: searchResult.id,
+                                bab_id: searchResult.id,
                                 station: userInfo.station,
                                 jobnumber: userInfo.jobnumber,
                                 action: BAB_END
@@ -308,7 +308,7 @@
                 var result;
                 $.ajax({
                     type: "GET",
-                    url: "<c:url value="/GetLine" />",
+                    url: "<c:url value="/BabLineController/findAll" />",
                     data: {
                         sitefloor: $("#userSitefloorSelect").val()
                     },
@@ -340,7 +340,7 @@
 
                 if (babLineTypeCookie != null) {
                     var cookieMsg = $.parseJSON(babLineTypeCookie);
-                    if (cookieMsg.floor != null && cookieMsg.floor != $("#userSitefloorSelect").val()) {
+                    if (cookieMsg["floor.name"] != null && cookieMsg["floor.name"] != $("#userSitefloorSelect").val()) {
                         lockAllUserInput();
                         alert("您已經登入其他樓層");
                         showMsg("您已經登入其他樓層");
@@ -354,12 +354,13 @@
                 initLineMap();
 
                 var userInfoCookie = $.cookie(userInfoCookieName);
+                console.log(userInfoCookie);
 
                 $("#searchProcessing").attr("disabled", userInfoCookie == null);
 
                 if (userInfoCookie != null) {
                     var obj = $.parseJSON(userInfoCookie);
-                    $("#lineNo").val(obj.lineNo);
+                    $("#lineId").val(obj["line.id"]);
                     $("#jobnumber").val(obj.jobnumber);
                     setStationOptions();
                     $("#station").val(obj.station);
@@ -367,7 +368,7 @@
                     showProcessing();
 
                     if (obj.station == firstStation) {
-                        var line = totalLineStatus.get($("#lineNo option:selected").text());
+                        var line = totalLineStatus.get($("#lineId option:selected").text());
                         if (line.isused == 0) { //isused == 0, The line in database is closed.
                             removeCookie(userInfoCookieName);
                             initUserInputWiget();
@@ -409,12 +410,12 @@
 
             function setLineOptions(line) {
                 if (line.lock != 1) {
-                    $("#lineNo").append("<option value=" + line.id + " >" + line.name + "</option>");
+                    $("#lineId").append("<option value=" + line.id + " >" + line.name + "</option>");
                 }
             }
 
             function setStationOptions() {
-                var selectedLineName = $("#lineNo option:selected").text();
+                var selectedLineName = $("#lineId option:selected").text();
                 $("#station").html("");
                 var line = totalLineStatus.get(selectedLineName);
                 if (line != null) {
@@ -426,7 +427,7 @@
 
             function setPeopleOptions() {
                 var miniumPeople = 2;
-                var selectedLineName = $("#lineNo option:selected").text();
+                var selectedLineName = $("#lineId option:selected").text();
                 var line = totalLineStatus.get(selectedLineName);
                 for (var i = 1; i <= line.people; i++) {
                     if (i >= miniumPeople) {
@@ -442,9 +443,9 @@
                 $(":input,select").not("#redirectBtn, #directlyClose").attr("disabled", "disabled");
             }
 
-            function saveUserStatus(lineNo, jobnumber, station) {
+            function saveUserStatus(lineId, jobnumber, station) {
 
-                if (checkVal(lineNo, jobnumber, station) == false || !jobnumber.match(tabreg)) {
+                if (checkVal(lineId, jobnumber, station) == false || !jobnumber.match(tabreg)) {
                     showMsg(paramNotVaildMessage);
                     return false;
                 }
@@ -455,7 +456,7 @@
                 }
 
                 saveUserInfoToCookie({
-                    lineNo: lineNo,
+                    "line.id": lineId,
                     jobnumber: jobnumber,
                     station: station
                 });
@@ -463,7 +464,7 @@
 
             //步驟一儲存使用者資訊
             function saveUserInfoToCookie(userInfo) {
-                userInfo.floor = $("#userSitefloorSelect").val();
+                userInfo["floor.name"] = $("#userSitefloorSelect").val();
 
                 if (userInfo.station == firstStation) {
                     lineStatusUpdate(userInfo, STATION_LOGIN);
@@ -481,7 +482,7 @@
                 }
                 var bab = babs[0];
                 var data = $.parseJSON($.cookie(userInfoCookieName));
-                data.babId = bab.id;
+                data["bab_id"] = bab.id;
                 data.jobnumber = newJobnumber;
                 data.action = CHANGE_USER;
                 otherStationUpdate(data);
@@ -523,8 +524,8 @@
                     window.clearTimeout(hnd);
                     hnd = window.setTimeout(function () {
                         $.ajax({
-                            type: "Post",
-                            url: "BabSearch",
+                            type: "GET",
+                            url: "BabController/findModelNameByPo",
                             data: {
                                 po: text.trim()
                             },
@@ -547,10 +548,10 @@
             function searchProcessing() {
                 var data;
                 $.ajax({
-                    type: "Post",
-                    url: "BabSearch",
+                    type: "GET",
+                    url: "BabController/findProcessingByLine",
                     data: {
-                        saveline: $("#lineNo").val()
+                        line_id: $("#lineId").val()
                     },
                     dataType: "html",
                     async: false,
@@ -572,10 +573,11 @@
                     for (var i = 0; i < data.length; i++) {
                         var processingBab = data[i];
                         $("#processingBab").append(
-                                "<p" + (i == 0 ? " class='alarm'" : "") + ">工單: " + processingBab.PO +
-                                " / 機種: " + processingBab.Model_name +
+                                "<p" + (i == 0 ? " class='alarm'" : "") + ">工單: " + processingBab.po +
+                                " / 機種: " + processingBab.modelName +
                                 " / 人數: " + processingBab.people +
                                 " / 起始站別: " + processingBab.startPosition +
+                                (processingBab.ispre == 1 ? " / 前置" : "") +
                                 "</p>");
                     }
                 } else {
@@ -585,10 +587,9 @@
 
             //第一站綁定線別開啟關閉，保持唯一一個能投入工單的電腦
             function lineStatusUpdate(data, action) {
-                data.action = action;
                 $.ajax({
                     type: "Post",
-                    url: "LineServlet",
+                    url: "BabLineController/" + action.toLowerCase(),
                     data: data,
                     dataType: "html",
                     success: function (response) {
@@ -611,7 +612,7 @@
             }
 
             //
-            function startBab(po, modelname, people) {
+            function startBab(po, modelName, people) {
                 if ($.cookie(userInfoCookieName) == null) {
                     showMsg(userNotFoundMessage);
                     return false;
@@ -635,25 +636,10 @@
 
                 saveBabInfo({
                     po: po,
-                    modelname: modelname,
+                    modelName: modelName,
                     people: people,
                     startPosition: startStation,
                     ispre: ispre
-                });
-            }
-
-            function updateStationConfig(data) {
-                $.ajax({
-                    type: "Post",
-                    url: "TagNameComparisonServlet",
-                    data: data,
-                    dataType: "json",
-                    success: function (response) {
-                        reload();
-                    },
-                    error: function (xhr, ajaxOptions, thrownError) {
-                        showMsg(xhr.responseText);
-                    }
                 });
             }
 
@@ -662,21 +648,12 @@
                 var totalUserInfo = $.extend($.parseJSON($.cookie(userInfoCookieName)), data);
                 $.ajax({
                     type: "Post",
-                    url: "BABFirstStationServlet",
+                    url: "BabFirstStationController/insert",
                     data: totalUserInfo,
                     dataType: "html",
                     success: function (response) {
-                        if (response == "success") {
-
-                            updateStationConfig({
-                                lineId: $("#lineNo").val(),
-                                startPosition: $("#startStation").val(),
-                                people: $("#people").val()
-                            });
-
-                        } else {
-                            showMsg(response);
-                        }
+                        $("#searchProcessing").trigger("click");
+                        showMsg(response);
                     },
                     error: function (xhr, ajaxOptions, thrownError) {
                         showMsg(xhr.responseText);
@@ -688,7 +665,7 @@
             function otherStationUpdate(data) {
                 $.ajax({
                     type: "Post",
-                    url: "BABOtherStationServlet",
+                    url: "BabOtherStationController/" + data.action,
                     data: data,
                     dataType: "html",
                     success: function (response) {
@@ -773,7 +750,7 @@
         <div class="container">
             <div id="step1" class="step">
                 <div class="userWiget form-inline">
-                    <select id="lineNo" name="lineNo">
+                    <select id="lineId" name="lineId">
                         <option value="-1">---請選擇線別---</option>
                     </select>
                     <input type="text" id="jobnumber" placeholder="請輸入工號" autocomplete="off" maxlength="10"/>
@@ -797,7 +774,7 @@
                                     <td>輸入工單</td>
                                     <td>
                                         <input type="text" name="po" id="po" placeholder="請輸入工單號碼" autocomplete="off" maxlength="50">  
-                                        <input type="text" name="modelname" id="modelname" placeholder="機種" readonly style="background: #CCC">
+                                        <input type="text" name="modelName" id="modelName" placeholder="機種" readonly style="background: #CCC">
                                         <button class='btn btn-default' id='reSearch'>重新查詢</button>
                                     </td>
                                 </tr>

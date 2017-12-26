@@ -10,7 +10,15 @@ package com.advantech.model;
  * @author Wei.Cheng
  */
 public enum LineStatus {
+    
+    /**
+     * 1 for open sign
+     */
     OPEN(1),
+    
+    /**
+     * 0 for close sign
+     */
     CLOSE(0);
  
     private final Integer value;

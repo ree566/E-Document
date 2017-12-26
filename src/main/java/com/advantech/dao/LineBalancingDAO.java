@@ -7,6 +7,7 @@ package com.advantech.dao;
 
 import com.advantech.model.Bab;
 import com.advantech.model.LineBalancing;
+import com.advantech.model.LineType;
 import java.util.List;
 import org.hibernate.Query;
 import org.springframework.stereotype.Repository;
@@ -29,7 +30,7 @@ public class LineBalancingDAO extends AbstractDao_1<Integer, LineBalancing> impl
         return super.getByKey((int) obj_id);
     }
 
-    public LineBalancing getMaxBalance(Bab bab) {
+    public LineBalancing getMaxBalance(Bab bab, LineType lineType) {
         Query q = super.getSession().createQuery(
                 "FROM LineBalancing where modelName = :modelName "
                 + "and po = :po "
@@ -40,7 +41,7 @@ public class LineBalancingDAO extends AbstractDao_1<Integer, LineBalancing> impl
         q.setParameter("modelName", bab.getModelName());
         q.setParameter("po", bab.getPo());
         q.setParameter("people", bab.getPeople());
-        q.setParameter("lineType", bab.getLine().getLineType().getName());
+        q.setParameter("lineType", lineType.getName());
         q.setMaxResults(1);
         return (LineBalancing) q.uniqueResult();
     }

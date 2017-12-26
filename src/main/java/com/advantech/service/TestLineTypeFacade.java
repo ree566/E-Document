@@ -22,6 +22,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 /**
@@ -37,6 +38,7 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
     private TestService testService;
 
     @Autowired
+    @Qualifier("alarmTestActionService")
     private AlarmTestActionService almService;
 
     private int maxTestTable;
@@ -73,8 +75,8 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
     @Override
     protected boolean generateData() {
         boolean isSomeoneUnderStandard = false;
-        List<Test> tables = testService.findAll();
-        if (hasDataInCollection(tables)) {
+        List<Test> tests = testService.findAll();
+        if (hasDataInCollection(tests)) {
             initMap();
             JSONArray userArr = new JSONArray();
 
@@ -89,7 +91,7 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
                 String userName = user.getUserName();
                 Double productivity = user.getProductivity();
 
-                for (Iterator it = tables.iterator(); it.hasNext();) {
+                for (Iterator it = tests.iterator(); it.hasNext();) {
                     Test ti = (Test) it.next();
                     if (ti.getUserId().trim().equals(jobnumber)) {
                         TestTable table = ti.getTestTable();
@@ -104,7 +106,7 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
                             status = NORMAL_SIGN;
                         }
 
-                        userArr.put(newTestUser(userName, jobnumber, tableName, productivity, table.getFloor().getName(), status));
+                        userArr.put(newTestUser(userName, jobnumber, tableName.replace("T", ""), productivity, table.getFloor().getName(), status));
                         it.remove();//把比對過的資料移除，剩下的就是有在本系統XML卻找不到人的使用者
                         isInTheWebService = true;//對到人之後跳出迴圈，換下一個人做比對
                         break;
@@ -116,7 +118,7 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
                     PEOPLE_NOT_MATCH.put(userName, TEST_USER_NOT_IN_SYSTEM_SIGN); //沒核對到資料庫的人員傳回m2給前端
                 }
             }
-            userArr = separateAbnormalUser(tables, userArr);//把剩下的人以異常訊號回報給前端
+            userArr = separateAbnormalUser(tests, userArr);//把剩下的人以異常訊號回報給前端
             processingJsonObject.put("data", userArr);
         } else {
             processingJsonObject = null;
@@ -129,7 +131,7 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
         Double emptyProductivity = 0.0;
         for (Test ti : l) {
             TestTable table = ti.getTestTable();
-            j.put(newTestUser(emptyUserName, ti.getUserId(), table.getName(), emptyProductivity, table.getFloor().getName(), TEST_USER_NOT_IN_XML_SIGN));
+            j.put(newTestUser(emptyUserName, ti.getUserId(), table.getName().replace("T", ""), emptyProductivity, table.getFloor().getName(), TEST_USER_NOT_IN_XML_SIGN));
         }
         return j;
     }

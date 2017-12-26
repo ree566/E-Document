@@ -8,10 +8,9 @@ package com.advantech.controller;
 
 import com.advantech.service.BabLineTypeFacade;
 import com.advantech.service.TestLineTypeFacade;
-import java.io.*;
 import java.util.ArrayList;
-import javax.servlet.ServletException;
-import javax.servlet.http.*;
+import java.util.HashMap;
+import java.util.Map;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -29,20 +28,25 @@ public class LineTypeFacadeController {
 
     @Autowired
     private TestLineTypeFacade ts;
-    
+
     @Autowired
     private BabLineTypeFacade bs;
-    
+
     @RequestMapping(value = "/findBabProcessResult", method = {RequestMethod.GET})
     @ResponseBody
-    protected String findBabProcessResult(){
+    protected String findBabProcessResult() {
         return bs.getJSONObject().toString();
     }
-    
+
     @RequestMapping(value = "/findTestProcessResult", method = {RequestMethod.GET})
     @ResponseBody
-    protected String findTestProcessResult(){
-        return ts.getJSONObject().toString();
+    protected String findTestProcessResult() {
+        JSONObject obj = ts.getJSONObject();
+        if (obj == null) {
+            return new JSONObject().put("data",  new ArrayList()).toString();
+        } else {
+            return obj.toString();
+        }
     }
 
 }

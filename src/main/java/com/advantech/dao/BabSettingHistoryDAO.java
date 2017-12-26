@@ -28,17 +28,25 @@ public class BabSettingHistoryDAO extends AbstractDao<Integer, BabSettingHistory
     public BabSettingHistory findByPrimaryKey(Object obj_id) {
         return super.getByKey((int) obj_id);
     }
-    
+
     public List<BabSettingHistory> findByBab(Bab b) {
         return super.createEntityCriteria()
                 .add(Restrictions.eq("bab.id", b.getId()))
                 .list();
     }
 
-    public BabSettingHistory findByBabAndStation(Bab b, int station) {
+    public List<BabSettingHistory> findByBabAndStation(Bab b, int station) {
         Criteria c = super.createEntityCriteria();
         c.add(Restrictions.eq("bab.id", b.getId()));
         c.add(Restrictions.eq("station", station));
+        return c.list();
+    }
+
+    public BabSettingHistory findProcessByBabAndStation(Bab b, int station) {
+        Criteria c = super.createEntityCriteria();
+        c.add(Restrictions.eq("bab.id", b.getId()));
+        c.add(Restrictions.eq("station", station));
+        c.add(Restrictions.isNull("lastUpdateTime"));
         return (BabSettingHistory) c.uniqueResult();
     }
 

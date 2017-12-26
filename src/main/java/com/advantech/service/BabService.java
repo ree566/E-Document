@@ -2,9 +2,11 @@ package com.advantech.service;
 
 import com.advantech.model.Bab;
 import com.advantech.dao.BabDAO;
+import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.model.BabSettingHistory;
 import com.advantech.model.TagNameComparison;
 import com.advantech.model.view.BabAvg;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
@@ -12,6 +14,9 @@ import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import static com.google.common.base.Preconditions.*;
+import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -93,12 +98,12 @@ public class BabService {
     public int checkAndInsert(Bab b, String jobnumber) {
         List<Bab> processes = babDAO.findProcessingByLine(b.getLine().getId());
         Bab duplicate = processes.stream().filter(bab -> bab.getPo().equals(b.getPo())).findFirst().orElse(null);
-        checkArgument(duplicate != null, "工單號碼已經存在");
+        checkArgument(duplicate == null, "工單號碼已經存在");
 
         Bab prevBab = processes.stream().findFirst().orElse(null);
 
         checkArgument(
-                prevBab != null && prevBab.getStartPosition() != b.getStartPosition(),
+                prevBab == null || prevBab.getStartPosition() == b.getStartPosition(),
                 "上一套工單與本次工單的起始站別不符，請等待上套工單完成再做投入"
         );
 
@@ -116,22 +121,35 @@ public class BabService {
     public int stationComplete(Bab bab, int station) {
         List<BabSettingHistory> babSettings = babSettingHistoryService.findByBab(bab);
 
-        if (bab.getIspre() == 0) {
-            checkArgument(babSettings.size() == bab.getPeople(), "人員資料數量與人數不符");
-        }
+        BabSettingHistory setting = babSettings.stream()
+                .filter(b -> b.getStation() == station)
+                .reduce((first, second) -> second).orElse(null);
 
-        BabSettingHistory setting = babSettings.stream().filter(b -> b.getStation() == station).findFirst().orElse(null);
-
-        checkArgument(setting.getLastUpdateTime() != null, "感應器已經關閉");
+        checkArgument(setting != null, "找不到該站使用者");
+        checkArgument(setting.getLastUpdateTime() == null, "感應器已經關閉");
 
         //沒有babavg，直接回傳success，等第三站關閉
         List<BabAvg> l = sqlViewService.findBabAvg(bab.getId());
         checkArgument(!l.isEmpty(), "查無統計數據，若要關閉工單請從最後一站直接做關閉動作");
 
-        BabSettingHistory prev = babSettings.stream().filter(b -> b.getStation() == bab.getPeople() - 1).findFirst().orElse(null);
-        checkArgument(prev.getLastUpdateTime() != null, "關閉失敗，請檢查上一站是否關閉");
+        BabSettingHistory prev = babSettings.stream()
+                .filter(b -> b.getStation() == station - 1)
+                .reduce((first, second) -> second).orElse(null);
 
-        setting.setLastUpdateTime(new DateTime().toDate());
+        try {
+            HibernateObjectPrinter.print(prev);
+        } catch (JsonProcessingException ex) {
+
+        }
+
+        if (station == 2 && bab.getPeople() != 2 && prev.getLastUpdateTime() == null) {
+            prev.setLastUpdateTime(new Date());
+            babSettingHistoryService.update(prev);
+        } else {
+            checkArgument(prev.getLastUpdateTime() != null, "關閉失敗，請檢查上一站是否關閉");
+        }
+
+        setting.setLastUpdateTime(new Date());
         babSettingHistoryService.update(setting);
 
         return 1;
@@ -152,8 +170,10 @@ public class BabService {
             bab.setBabAvgs(babAvgs);
             if (bab.getPeople() != 2) {
                 List<BabSettingHistory> babSettings = babSettingHistoryService.findByBab(bab);
-                BabSettingHistory prev = babSettings.stream().filter(b -> b.getStation() == bab.getPeople() - 1).findFirst().orElse(null);
-                checkArgument(prev.getLastUpdateTime() == null, "關閉失敗，請檢查上一站是否關閉");
+                BabSettingHistory prev = babSettings.stream()
+                        .filter(b -> b.getStation() == bab.getPeople() - 1)
+                        .reduce((first, second) -> second).orElse(null);
+                checkArgument(prev.getLastUpdateTime() != null, "關閉失敗，請檢查上一站是否關閉");
             }
             needToSave = prevSensorCloseFlag;
         }

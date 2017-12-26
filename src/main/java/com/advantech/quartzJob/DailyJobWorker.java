@@ -35,7 +35,7 @@ public class DailyJobWorker extends QuartzJobBean {
     @Override
     public void executeInternal(JobExecutionContext jec) {
         //處理測試和組包裝線別資料，並依照設定output to db or txt
-        this.processingBabData();
+//        this.processingBabData();
         this.processingTestData();
     }
 

@@ -5,9 +5,11 @@
  */
 package com.advantech.webservice;
 
+import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.model.PassStation;
 import com.advantech.model.TestRecord;
 import com.advantech.model.UserOnMes;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.gson.Gson;
 import static java.lang.System.out;
 import java.util.ArrayList;
@@ -47,7 +49,7 @@ public class WebServiceRVTest {
     /**
      * Test of getInstance method, of class WebServiceRV.
      */
-    @Test
+//    @Test
     public void testGetInstance() {
         System.out.println("getInstance");
         WebServiceRV expResult = null;
@@ -58,7 +60,7 @@ public class WebServiceRVTest {
     /**
      * Test of getKanbanUsersForString method, of class WebServiceRV.
      */
-    @Test
+//    @Test
     public void testGetKanbanUsersForString() throws Exception {
         System.out.println("getKanbanUsersForString");
         WebServiceRV instance = WebServiceRV.getInstance();
@@ -74,7 +76,7 @@ public class WebServiceRVTest {
     /**
      * Test of getKanbanWorkId method, of class WebServiceRV.
      */
-    @Test
+//    @Test
     public void testGetKanbanWorkId() throws Exception {
         System.out.println("getKanbanWorkId");
         String jobnumber = "A-7275";
@@ -88,7 +90,7 @@ public class WebServiceRVTest {
     /**
      * Test of getModelnameByPo method, of class WebServiceRV.
      */
-    @Test
+//    @Test
     public void testGetModelnameByPo() throws Exception {
         System.out.println("getModelnameByPo");
         String po = "PAGB079ZA";
@@ -102,7 +104,7 @@ public class WebServiceRVTest {
     /**
      * Test of getMESUser method, of class WebServiceRV.
      */
-    @Test
+//    @Test
     public void testGetMESUser() {
         System.out.println("getMESUser");
         String jobnumber = "A-7275";
@@ -116,7 +118,7 @@ public class WebServiceRVTest {
     /**
      * Test of getPassStationRecords method, of class WebServiceRV.
      */
-    @Test
+//    @Test
     public void testGetPassStationRecords() {
         System.out.println("getPassStationRecords");
         String po = "PNGC030ZA";
@@ -133,7 +135,7 @@ public class WebServiceRVTest {
     /**
      * Test of getTestLineTypeUsers method, of class WebServiceRV.
      */
-    @Test
+//    @Test
     public void testGetTestLineTypeUsers() {
         System.out.println("getTestLineTypeUsers");
         WebServiceRV instance = WebServiceRV.getInstance();
@@ -145,4 +147,10 @@ public class WebServiceRVTest {
         }
     }
 
+    @Test
+    public void testGetTestLineTypeRecord() throws JsonProcessingException{
+        List<TestRecord> l = WebServiceRV.getInstance().getTestLineTypeRecords();
+        assertNotEquals(0, l.size());
+        HibernateObjectPrinter.print(l);
+    }
 }

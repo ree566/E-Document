@@ -7,11 +7,10 @@ package com.advantech.service;
 
 import com.advantech.model.Test;
 import com.advantech.dao.TestDAO;
-import com.advantech.model.AlarmTestAction;
 import com.advantech.model.TestTable;
-import com.advantech.webservice.WebServiceTX;
 import static com.google.common.base.Preconditions.*;
 import java.util.List;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,18 +46,19 @@ public class TestService {
         checkDeskIsAvailable(table);
         checkUserIsAvailable(jobnumber);
         Test t = new Test(table, jobnumber);
+        t.setLastUpdateTime(new DateTime().toDate());
         this.insert(t);
-        WebServiceTX.getInstance().kanbanUserLogin(jobnumber);
+//        WebServiceTX.getInstance().kanbanUserLogin(jobnumber);
         return 1;
     }
 
     public void checkDeskIsAvailable(TestTable t) {
-        checkArgument(t.getTests() != null && !t.getTests().isEmpty(), "此桌次已有使用者");
+        checkArgument(t.getTests() == null || t.getTests().isEmpty(), "此桌次已有使用者");
     }
 
     public void checkUserIsAvailable(String jobNumber) {
         Test t = testDAO.findByJobnumber(jobNumber);
-        checkArgument(t != null, "使用者已在桌次 " + t.getTestTable().getName() + " 使用中");
+        checkArgument(t == null, "使用者已在桌次 " + 8 + " 使用中");
     }
 
     public int update(Test pojo) {
@@ -78,7 +78,7 @@ public class TestService {
     public int delete(String jobnumber) {
         Test t = testDAO.findByJobnumber(jobnumber);
         this.delete(t);
-        WebServiceTX.getInstance().kanbanUserLogout(jobnumber);
+//        WebServiceTX.getInstance().kanbanUserLogout(jobnumber);
         return 1;
     }
 

@@ -112,6 +112,10 @@ public abstract class BasicLineTypeFacade implements com.advantech.service.Alarm
         this.processingJsonObject = null;
     }
 
+    /**
+     * This JSONObject is already DataTable form.
+     * @return 
+     */
     public JSONObject getJSONObject() {
         return this.processingJsonObject;
     }
