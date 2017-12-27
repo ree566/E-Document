@@ -55,13 +55,13 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                     format: momentFormatString,
                     extraFormats: [momentFormatString]
                 };
-                
+
                 //以免把時間區間定在六日沒有資料，此狀況會在moment是禮拜一時發生
                 var prevDay = moment().add(-2, "days");
                 if (prevDay.day() == 6 || prevDay.day() == 7) {
                     prevDay.add(-2, "days");
                 }
-                
+
                 options.defaultDate = prevDay;
                 $('#fini').datetimepicker(options);
                 options.defaultDate = moment();
@@ -107,7 +107,7 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                     },
                     "ajax": {
                         "url": "<c:url value="/TestRecordController/findByDate" />",
-                        "type": "POST",
+                        "type": "GET",
                         data: {
                             startDate: startDate,
                             endDate: endDate,
@@ -116,11 +116,15 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                     },
                     "columns": [
                         {data: "id", visible: false},
-                        {data: "user_id"},
-                        {data: "user_name"},
+                        {data: "userId"},
+                        {data: "userName"},
                         {data: "productivity"},
-                        {data: "table_id"},
-                        {data: "saveTime"}
+                        {data: "testTable", 
+                            "render": function (data, type, row) {
+                                return data == null ? "n/a" : data.name;
+                            }
+                        },
+                        {data: "lastUpdateTime"}
                     ],
                     "columnDefs": [
                         {

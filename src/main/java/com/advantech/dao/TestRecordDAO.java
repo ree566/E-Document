@@ -8,6 +8,7 @@ package com.advantech.dao;
 import com.advantech.model.TestRecord;
 import java.util.List;
 import org.hibernate.Criteria;
+import org.hibernate.FetchMode;
 import org.hibernate.criterion.Restrictions;
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Repository;
@@ -33,6 +34,7 @@ public class TestRecordDAO extends AbstractDao<Integer, TestRecord> implements B
         sD = sD.withHourOfDay(0);
         eD = eD.withHourOfDay(23);
         Criteria c = super.createEntityCriteria();
+        c.setFetchMode("testTable", FetchMode.JOIN);
         c.add(Restrictions.between("lastUpdateTime", sD.toDate(), eD.toDate()));
         return c.list();
     }

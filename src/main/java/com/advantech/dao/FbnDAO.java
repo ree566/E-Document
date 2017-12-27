@@ -43,7 +43,7 @@ public class FbnDAO extends AbstractDao<Integer, Fbn> {
     //利用檢視表(過濾後FBN資料表資訊)得到當前sensor時間 websocket用 
     public List<Map> getSensorCurrentStatus() {
         return super.getSession()
-                .createSQLQuery("SELECT * FROM LS_GetSenRealTime")
+                .createSQLQuery("SELECT * FROM vw_SensorStatusPerStationToday")
                 .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
                 .list();
     }

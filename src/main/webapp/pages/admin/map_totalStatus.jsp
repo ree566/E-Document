@@ -320,7 +320,8 @@
                                         break;
                                 }
                                 var productivity = Math.floor(people.PRODUCTIVITY * 100);
-                                $(".testWiget #draggable" + people.table + "_" + people.sitefloor + "f")
+                                console.log(2);
+                                $(".testWiget #draggableT" + people.table + "_" + people.sitefloor + "f")
                                         .removeClass("blub-empty")
                                         .addClass(signalClass)
                                         .attr({"onClick": "window.open( 'TestTotal?jobnumber=" + people.number + "','_blank' ); return false;"})

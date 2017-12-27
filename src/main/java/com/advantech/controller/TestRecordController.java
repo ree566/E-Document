@@ -6,10 +6,9 @@
  */
 package com.advantech.controller;
 
-import com.advantech.model.TestRecord;
+import com.advantech.datatable.DataTableResponse;
 import com.advantech.service.TestRecordService;
 import java.io.*;
-import java.util.List;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -17,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  *
@@ -30,10 +30,11 @@ public class TestRecordController {
     private TestRecordService testRecordService;
 
     @RequestMapping(value = "/findByDate", method = {RequestMethod.GET})
-    protected List<TestRecord> findByDate(
+    @ResponseBody
+    protected DataTableResponse findByDate(
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime startDate,
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime endDate
     ) throws IOException {
-        return testRecordService.findByDate(startDate, endDate);
+        return new DataTableResponse(testRecordService.findByDate(startDate, endDate));
     }
 }
