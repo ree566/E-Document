@@ -8,6 +8,7 @@ package com.advantech.test;
 import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.Pending;
 import com.advantech.model.Worktime;
+import com.advantech.quartzJob.StandardTimeUpload;
 import com.advantech.service.FlowService;
 import com.advantech.service.PendingService;
 import com.advantech.service.PreAssyService;
@@ -173,7 +174,7 @@ public class UploadPortTest {
         }
     }
     
-    @Test
+//    @Test
     @Rollback(true)
     public void testMaterialPropertyUploadPort() throws Exception {
         Worktime worktime = new Worktime();
@@ -185,5 +186,14 @@ public class UploadPortTest {
         materialPropertyUploadPort.insert(worktime);
 //        materialPropertyUploadPort.update(worktime);
 //        materialPropertyUploadPort.delete(worktime);
+    }
+    
+    @Autowired
+    private StandardTimeUpload standardTimeUpload;
+    
+    @Test
+    @Rollback(true)
+    public void testStandardTimeUploadJob(){
+        standardTimeUpload.uploadToMes();
     }
 }

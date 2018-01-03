@@ -18,6 +18,7 @@ import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
 import org.hibernate.envers.query.AuditEntity;
 import org.hibernate.envers.query.AuditQuery;
+import org.hibernate.envers.query.criteria.AuditDisjunction;
 import org.hibernate.envers.query.criteria.AuditProperty;
 import org.hibernate.envers.query.internal.property.EntityPropertyName;
 import org.hibernate.envers.query.internal.property.ModifiedFlagPropertyName;
@@ -176,6 +177,24 @@ public class AuditDAO implements AuditAction {
                 .add(AuditEntity.id().eq(id))
                 .add(AuditEntity.revisionNumber().maximize().computeAggregationInInstanceContext());
         return q.getSingleResult();
+    }
+
+    public boolean isFieldChangedInTime(Class clz, Object id, List<String> fieldNames, Date startDate, Date endDate) {
+        AuditQuery q = getReader().createQuery()
+                .forRevisionsOfEntity(clz, true, false)
+                .add(AuditEntity.id().eq(id))
+                .add(AuditEntity.revisionProperty("REVTSTMP").between(startDate.getTime(), endDate.getTime()));
+
+        AuditDisjunction disjunction = AuditEntity.disjunction();
+        fieldNames.forEach((fieldName) -> {
+            disjunction.add(AuditEntity.property(fieldName).hasChanged());
+        });
+        
+        q.add(disjunction);
+
+        List l = q.getResultList();
+
+        return !l.isEmpty();
     }
 
 }

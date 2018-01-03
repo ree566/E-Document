@@ -130,7 +130,7 @@ public class MaterialPropertyUploadPort extends BasicUploadPort implements Uploa
 
         settings.forEach((setting) -> {
             boolean isUpdated = false;
-            //先計算，沒有等於初始值得先跳開
+            //先計算，等於初始值者跳過
             //省去找MaterialPropertyValue的時間
             String mainValue = getValueFromFormula(w, setting.getFormula());
             String secondValue = getValueFromFormula(w, setting.getAffFormula());

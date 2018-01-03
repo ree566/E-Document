@@ -13,9 +13,10 @@ import com.advantech.service.AuditService;
 import com.advantech.service.UserNotificationService;
 import com.advantech.service.WorktimeService;
 import com.advantech.webservice.port.StandardtimeUploadPort;
+import static com.google.common.collect.Lists.newArrayList;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 import javax.annotation.PostConstruct;
 import javax.mail.MessagingException;
 import org.joda.time.DateTime;
@@ -24,11 +25,13 @@ import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  *
  * @author Wei.Cheng Upload standard time to mes
  */
+@Component
 public class StandardTimeUpload {
 
     private static final Logger log = LoggerFactory.getLogger(StandardTimeUpload.class);
@@ -52,6 +55,8 @@ public class StandardTimeUpload {
 
     private PageInfo tempInfo;
 
+    private List<String> checkField;
+
     @PostConstruct
     public void init() {
         df = DateTimeFormat.forPattern("yyyy-MM-dd");
@@ -59,6 +64,16 @@ public class StandardTimeUpload {
         tempInfo.setRows(-1);
         tempInfo.setSearchField("modifiedDate");
         tempInfo.setSearchOper("gt");
+        initCheckFieldNames();
+    }
+
+    private void initCheckFieldNames() {
+        checkField = newArrayList(
+                "totalModule", "cleanPanel", "assy", "t1", "t2",
+                "t3", "t4", "hiPotLeakage", "coldBoot", "warmBoot",
+                "vibration", "upBiRi", "downBiRi", "packing", "assyStation",
+                "packingStation"
+        );
     }
 
     public void uploadToMes() {
@@ -70,12 +85,17 @@ public class StandardTimeUpload {
 
         port.initSettings();
 
+        DateTime today = new DateTime();
+
+        Date startDate = today.minusWeeks(1).toDate();
+        Date endDate = today.toDate();
+
         for (Worktime w : modifiedWorktimes) {
             try {
-                Worktime rowLastStatus = (Worktime) auditService.findLastStatusBeforeUpdate(Worktime.class, w.getId());
-                if (isStandardTimeChanged(rowLastStatus, w)) {
+                boolean isFieldChanged = auditService.isFieldChangedInTime(Worktime.class, w.getId(), checkField, startDate, endDate);
+                if (isFieldChanged) {
                     port.update(w);
-                }
+                } 
             } catch (Exception e) {
                 String errorMessage = w.getModelName() + " upload fail: " + e.getMessage();
                 errorMessages.add(errorMessage);
@@ -86,25 +106,6 @@ public class StandardTimeUpload {
         this.notifyUser(errorMessages);
 
         log.info("Upload standardtime job finished.");
-    }
-
-    private boolean isStandardTimeChanged(Worktime prev, Worktime current) {
-        return !Objects.equals(prev.getTotalModule(), current.getTotalModule())
-                || !Objects.equals(prev.getCleanPanel(), current.getCleanPanel())
-                || !Objects.equals(prev.getAssy(), current.getAssy())
-                || !Objects.equals(prev.getT1(), current.getT1())
-                || !Objects.equals(prev.getT2(), current.getT2())
-                || !Objects.equals(prev.getT3(), current.getT3())
-                || !Objects.equals(prev.getT4(), current.getT4())
-                || !Objects.equals(prev.getHiPotLeakage(), current.getHiPotLeakage())
-                || !Objects.equals(prev.getColdBoot(), current.getColdBoot())
-                || !Objects.equals(prev.getWarmBoot(), current.getWarmBoot())
-                || !Objects.equals(prev.getVibration(), current.getVibration())
-                || !Objects.equals(prev.getUpBiRi(), current.getUpBiRi())
-                || !Objects.equals(prev.getDownBiRi(), current.getDownBiRi())
-                || !Objects.equals(prev.getPacking(), current.getPacking())
-                || !Objects.equals(prev.getAssyStation(), current.getAssyStation())
-                || !Objects.equals(prev.getPackingStation(), current.getPackingStation());
     }
 
     public void updatePageInfo() {

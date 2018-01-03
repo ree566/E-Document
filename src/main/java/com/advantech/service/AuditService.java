@@ -82,4 +82,8 @@ public class AuditService implements AuditAction {
         return auditDAO.findLastStatusBeforeUpdate(clz, id);
     }
 
+    public boolean isFieldChangedInTime(Class clz, Object id, List<String> fieldNames, Date startDate, Date endDate) {
+        return auditDAO.isFieldChangedInTime(clz, id, fieldNames, startDate, endDate);
+    }
+
 }
