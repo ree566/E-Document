@@ -16,9 +16,8 @@ public class Test1Test {
 
     @Test
     public void test() {
-        Character n = 'N';
-        String sN = "N";
-        System.out.println(ObjectUtils.compare(n.toString(), sN));
+
+        
     }
 
 }

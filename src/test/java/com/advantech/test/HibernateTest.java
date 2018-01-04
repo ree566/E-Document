@@ -15,6 +15,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import static java.util.stream.Collectors.toList;
 import javax.transaction.Transactional;
 import javax.validation.Validation;
@@ -60,7 +61,7 @@ public class HibernateTest {
     private AuditService auditService;
 
     private static Validator validator;
-    
+
     @Autowired
     private WorktimeUploadMesService worktimeUploadMesService;
 
@@ -165,7 +166,7 @@ public class HibernateTest {
         });
     }
 
-    @Test
+//    @Test
     @Transactional
     @Rollback(true)
     public void testJava8() throws Exception {
@@ -173,6 +174,20 @@ public class HibernateTest {
         assertNotNull(w);
         worktimeUploadMesService.portParamInit();
         worktimeUploadMesService.delete(w);
+    }
+
+    @Test
+    @Transactional
+    @Rollback(true)
+    public void testLastStatus() {
+        Worktime w = worktimeService.findByPrimaryKey(8066);
+        Worktime rowLastStatus = (Worktime) auditService.findLastStatusBeforeUpdate(Worktime.class, w.getId());
+        System.out.println((int) w.getPartNoAttributeMaintain());
+        System.out.println((int) rowLastStatus.getPartNoAttributeMaintain());
+        System.out.println((int) '5');
+        System.out.println(Objects.equals(w.getPartNoAttributeMaintain(), rowLastStatus.getPartNoAttributeMaintain()));
+        System.out.println(Objects.equals((int) w.getPartNoAttributeMaintain(), (int) rowLastStatus.getPartNoAttributeMaintain()));
+
     }
 
 }
