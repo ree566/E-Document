@@ -10,6 +10,7 @@ import com.advantech.helper.PropertiesReader;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import org.hibernate.Criteria;
+import org.hibernate.FetchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
@@ -38,12 +39,21 @@ public class BabDAO extends AbstractDao<Integer, Bab> implements BasicDAO_1<Bab>
         return super.getByKey((int) obj_id);
     }
 
+    public Bab findWithLineInfo(int bab_id) {
+        Criteria c = super.createEntityCriteria();
+        c.add(Restrictions.eq("id", bab_id));
+        c.createAlias("line", "l");
+        c.createAlias("l.lineType", "lt");
+        return (Bab) c.uniqueResult();
+    }
+
     public List<Bab> findByModelAndDate(String modelName, DateTime sD, DateTime eD) {
         sD = sD.withHourOfDay(0);
         eD = eD.withHourOfDay(23);
         Criteria c = super.createEntityCriteria();
         c.add(Restrictions.eq("modelName", modelName));
         c.add(Restrictions.between("beginTime", sD.toDate(), eD.toDate()));
+        c.setFetchMode("line", FetchMode.JOIN);
         return c.list();
     }
 
@@ -67,7 +77,7 @@ public class BabDAO extends AbstractDao<Integer, Bab> implements BasicDAO_1<Bab>
         if (floor_id != -1) {
             c.add(Restrictions.eq("l.floor.id", floor_id));
         }
-        if(isAboveTenPcs){
+        if (isAboveTenPcs) {
             c.createAlias("babAlarmHistorys", "bah");
             c.add(Restrictions.gt("bah.totalPcs", 10 - 1));
         }

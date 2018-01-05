@@ -62,6 +62,10 @@ public class BabService {
         return babDAO.findByPrimaryKey(obj_id);
     }
 
+    public Bab findWithLineInfo(int bab_id) {
+        return babDAO.findWithLineInfo(bab_id);
+    }
+
     public List<Bab> findByDate(DateTime sD, DateTime eD) {
         return babDAO.findByDate(sD, eD);
     }

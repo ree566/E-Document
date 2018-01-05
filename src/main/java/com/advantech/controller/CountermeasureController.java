@@ -51,14 +51,14 @@ public class CountermeasureController {
 
     @RequestMapping(value = "/findByBab", method = {RequestMethod.GET})
     @ResponseBody
-    protected Countermeasure findByBab(@RequestParam(value = "BABid") int bab_id) {
+    protected Countermeasure findByBab(@RequestParam(value = "bab_id") int bab_id) {
         return cService.findByBab(bab_id);
     }
 
     @RequestMapping(value = "/update", method = {RequestMethod.POST})
     @ResponseBody
     protected boolean update(
-            @RequestParam(value = "BABid") int bab_id,
+            @RequestParam(value = "bab_id") int bab_id,
             @RequestParam(value = "errorCodes[]") Integer[] errorCodes,
             @RequestParam(value = "actionCodes[]") Integer[] actionCodes,
             @RequestParam String solution,

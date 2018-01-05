@@ -5,6 +5,7 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html>
     <head>
@@ -38,6 +39,7 @@
         <script src="../../js/bootstrap-datetimepicker.min.js"></script>
         <script src="../../js/jquery.dataTables.min.js"></script>
         <script src="../../js/dataTables.fixedHeader.min.js"></script>
+        <script src="../../js/JSOG.js"></script>
         <script src="../../js/jquery-datatable-button/dataTables.buttons.min.js"></script>
         <script src="../../js/jquery-datatable-button/buttons.flash.min.js"></script>
         <script src="../../js/jquery-datatable-button/jszip.min.js"></script>
@@ -77,28 +79,34 @@
                         "processing": false,
                         "serverSide": false,
                         "ajax": {
-                            "url": "../../GetAvailBabDetail",
-                            "type": "POST",
+                            "url": "<c:url value="/BabController/findByModelAndDate" />",
+                            "type": "Get",
                             data: {
                                 modelName: Model_name,
-                                dateFrom: startDate,
-                                dateTo: endDate
+                                startDate: startDate,
+                                endDate: endDate
+                            },
+                            "dataSrc": function (json) {
+                                var cyclicGraph = JSOG.decode(json);
+                                console.log(cyclicGraph);
+                                return cyclicGraph.data;
                             }
                         },
+
                         "columns": [
                             {data: "id", visible: false},
-                            {data: "PO", width: "50px"},
-                            {data: "lineName", width: "50px"},
+                            {data: "po", width: "50px"},
+                            {data: "line.name", width: "50px"},
                             {data: "people", width: "50px"},
-                            {data: "isused", width: "50px"},
-                            {data: "btime", width: "50px"}
+                            {data: "babStatus", width: "50px"},
+                            {data: "beginTime", width: "50px"}
                         ],
                         "columnDefs": [
                             {
                                 "type": "html",
                                 "targets": 4,
                                 'render': function (data, type, full, meta) {
-                                    return data == 1 ? "已完結" : "進行中";
+                                    return data == null ? "PROCESSING" : data;
                                 }
                             },
                             {
@@ -131,10 +139,10 @@
                 $("body").on('dblclick', '#table1 tbody tr', function () {
                     var selectData = table.row(this).data();
                     var BABid = selectData.id;
-                    var ModelName = selectData.model_name;
-                    var isused = selectData.isused;
+                    var ModelName = selectData.modelName;
+                    var babStatus = selectData.babStatus;
 
-                    if (isused == -1) {
+                    if (babStatus == "NO_RECORD") {
                         alert("此筆記錄無統計數據。");
                         return;
                     }
@@ -143,7 +151,7 @@
 
                     $("#Model_name").val(ModelName);
 
-                    getDetail(BABid, isused);
+                    getDetail(BABid, babStatus);
 
                     if ($(this).hasClass('selected')) {
                         $(this).removeClass('selected');
@@ -154,8 +162,8 @@
                 });
 
                 $.ajax({
-                    type: "Post",
-                    url: "../../GetAvailableModelName",
+                    type: "Get",
+                    url: "<c:url value="/BabController/findAllModelName" />",
                     dataType: "json",
                     success: function (data) {
                         $("input#Model_name").autocomplete({
@@ -186,7 +194,7 @@
                 });
             });
 
-            function getDetail(BABid, isused) {
+            function getDetail(BABid, babStatus) {
                 $("#BabDetail").DataTable({
                     dom: 'Bfrtip',
                     buttons: [
@@ -198,20 +206,19 @@
                         headerOffset: 50
                     },
                     "ajax": {
-                        "url": "../../BABTimeDetail",
-                        "type": "POST",
+                        "url": "<c:url value="/BabController/findPcsDetail" />",
+                        "type": "Get",
                         data: {
                             id: BABid,
-                            isused: isused,
-                            action: "getDetail"
+                            babStatus: babStatus
                         }
                     },
                     "columns": [
-                        {data: "BABid", visible: false},
-                        {data: "TagName"},
+                        {data: "bab.id", visible: false},
+                        {data: "tagName"},
                         {data: "groupid"},
                         {data: "diff"},
-                        {data: "endtime"}
+                        {data: "lastUpdateTime"}
                     ],
                     "columnDefs": [
                         {
@@ -242,7 +249,7 @@
             }
 
             function formatDate(dateString) {
-                return dateString.substring(0, 16);
+                return moment(dateString).format('YYYY-MM-DD hh:mm');
             }
         </script>
     </head>

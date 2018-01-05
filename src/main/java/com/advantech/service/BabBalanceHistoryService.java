@@ -6,8 +6,8 @@
 package com.advantech.service;
 
 import com.advantech.dao.BabBalanceHistoryDAO;
+import com.advantech.model.BabBalanceHistory;
 import java.util.List;
-import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +23,7 @@ public class BabBalanceHistoryService {
     @Autowired
     private BabBalanceHistoryDAO babBalanceHistoryDAO;
 
-    public List<Map> findByBab(int bab_id) {
+    public List<BabBalanceHistory> findByBab(int bab_id) {
         return babBalanceHistoryDAO.findByBab(bab_id);
     }
 

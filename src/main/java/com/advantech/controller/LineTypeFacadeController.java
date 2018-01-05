@@ -35,7 +35,12 @@ public class LineTypeFacadeController {
     @RequestMapping(value = "/findBabProcessResult", method = {RequestMethod.GET})
     @ResponseBody
     protected String findBabProcessResult() {
-        return bs.getJSONObject().toString();
+        JSONObject obj = bs.getJSONObject();
+        if (obj == null) {
+            return new JSONObject().put("data", new ArrayList()).toString();
+        } else {
+            return obj.toString();
+        }
     }
 
     @RequestMapping(value = "/findTestProcessResult", method = {RequestMethod.GET})
@@ -43,7 +48,7 @@ public class LineTypeFacadeController {
     protected String findTestProcessResult() {
         JSONObject obj = ts.getJSONObject();
         if (obj == null) {
-            return new JSONObject().put("data",  new ArrayList()).toString();
+            return new JSONObject().put("data", new ArrayList()).toString();
         } else {
             return obj.toString();
         }

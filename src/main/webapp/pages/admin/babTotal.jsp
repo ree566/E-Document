@@ -76,7 +76,7 @@
             function setLineObject() {
                 $.ajax({
                     type: "GET",
-                    url: "<c:url value="/GetLine" />",
+                    url: "<c:url value="/BabLineController/findAll" />",
                     data: {
                         sitefloor: $("#userSitefloorSelect").val()
                     },
@@ -118,8 +118,8 @@
                     "processing": false,
                     "serverSide": false,
                     "ajax": {
-                        "url": "../../GetTotal",
-                        "type": "POST",
+                        "url": "<c:url value="/LineTypeFacadeController/findBabProcessResult" />",
+                        "type": "GET",
                         "data": {"type": "type2"}
                     },
                     "columns": [

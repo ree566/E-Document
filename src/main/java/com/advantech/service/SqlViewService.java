@@ -13,6 +13,7 @@ import com.advantech.model.view.UserInfoRemote;
 import com.advantech.model.view.Worktime;
 import java.util.List;
 import java.util.Map;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,6 +59,14 @@ public class SqlViewService {
 
     public List<Map> findBalanceDetail(int bab_id) {
         return sqlViewDAO.findBalanceDetail(bab_id);
+    }
+
+    public List<Map> findBabDetail(String lineTypeName, String sitefloorName, DateTime sD, DateTime eD, boolean isAboveStandard) {
+        return sqlViewDAO.findBabDetail(lineTypeName, sitefloorName, sD, eD, isAboveStandard);
+    }
+
+    public List<Map> findLineBalanceCompare(String modelName, String lineTypeName) {
+        return sqlViewDAO.findLineBalanceCompare(modelName, lineTypeName);
     }
 
 }

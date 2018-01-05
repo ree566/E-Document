@@ -5,11 +5,8 @@
  */
 package com.advantech.test;
 
-import static com.google.common.collect.Lists.newArrayList;
 import java.lang.reflect.InvocationTargetException;
-import java.util.List;
-import java.util.stream.Collectors;
-import static org.junit.Assert.assertEquals;
+import java.math.BigDecimal;
 import org.junit.Test;
 
 /**
@@ -20,12 +17,16 @@ public class TestClass {
 
     @Test
     public void test() throws IllegalAccessException, InvocationTargetException {
-        List<String> l = newArrayList("test", "bab", "gg", "312", "YY", "tTTa");
-        l = l.stream().filter(str -> str.contains("t")).collect(Collectors.toList());
-        assertEquals(2, l.size());
-        l = l.stream().filter(str -> str.equals("tTTa")).collect(Collectors.toList());
-        assertEquals(1, l.size());
-        System.out.println(l);
+        BigDecimal b = new BigDecimal("12.5");
+        BigDecimal b2 = new BigDecimal("12.0");
+        BigDecimal b3 = new BigDecimal("12");
+        System.out.println(isIntegerValue(b));
+        System.out.println(isIntegerValue(b2));
+        System.out.println(isIntegerValue(b3));
+    }
+
+    private boolean isIntegerValue(BigDecimal bd) {
+        return bd.signum() == 0 || bd.scale() <= 0 || bd.stripTrailingZeros().scale() <= 0;
     }
 
 }

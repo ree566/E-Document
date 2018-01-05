@@ -35,7 +35,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  *
  * @author Wei.Cheng 前端給予PO, servlet 負責 sched the new polling job.
  */
-@Controller
+//@Controller
 @RequestMapping("/CellScheduleJobServlet")
 public class CellScheduleJobServlet {
 

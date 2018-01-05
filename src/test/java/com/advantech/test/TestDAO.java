@@ -6,6 +6,7 @@
 package com.advantech.test;
 
 import com.advantech.dao.BabDAO;
+import com.advantech.dao.BabPcsDetailHistoryDAO;
 import com.advantech.dao.BabSettingHistoryDAO;
 import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.model.Bab;
@@ -14,6 +15,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import javax.transaction.Transactional;
 import org.hibernate.SessionFactory;
 import static org.junit.Assert.*;
@@ -45,7 +48,10 @@ public class TestDAO {
     @Autowired
     private SessionFactory sessionFactory;
 
-    @Test
+    @Autowired
+    private BabPcsDetailHistoryDAO babPcsDetailHistoryDAO;
+
+//    @Test
     @Transactional
     @Rollback(true)
     public void testBabDAO() throws JsonProcessingException {
@@ -70,6 +76,17 @@ public class TestDAO {
         assertNotNull(setting.getLastUpdateTime());
         assertTrue(setting.getLastUpdateTime().after(today));
         HibernateObjectPrinter.print(setting);
+    }
+
+    @Test
+    @Transactional
+    @Rollback(true)
+    public void testBabPcsDetailHistoryDAO() throws JsonProcessingException, ParseException {
+        List<Map> l = babPcsDetailHistoryDAO.findByBabForMap(12597);
+        assertNotEquals(0, l.size());
+        Map m = l.get(0);
+        assertNotNull(m.get("id"));
+        HibernateObjectPrinter.print(l);
     }
 
 }

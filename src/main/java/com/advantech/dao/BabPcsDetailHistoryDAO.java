@@ -9,7 +9,6 @@ import com.advantech.model.BabPcsDetailHistory;
 import java.util.List;
 import java.util.Map;
 import org.hibernate.criterion.Restrictions;
-import org.hibernate.transform.Transformers;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -19,10 +18,18 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class BabPcsDetailHistoryDAO extends AbstractDao<Integer, BabPcsDetailHistory> {
 
-    public List<Map> findByBab(int bab_id) {
-        return super.createEntityCriteria()
-                .add(Restrictions.eq("bab.id", bab_id))
-                .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
+    public List<BabPcsDetailHistory> findByBab(int bab_id) {
+        return super.createEntityCriteria().add(Restrictions.eq("bab.id", bab_id)).list();
+    }
+
+    /*Use for chart generate*/
+    public List<Map> findByBabForMap(int bab_id) {
+        return super.getSession().createQuery(
+                "select new Map(id as id, bab.id as bab_id, tagName as tagName, "
+                + "station as station, groupid as groupid, diff as diff, "
+                + "lastUpdateTime as lastUpdateTime) "
+                + "from BabPcsDetailHistory where bab.id = :bab_id")
+                .setParameter("bab_id", bab_id)
                 .list();
     }
 

@@ -1,6 +1,8 @@
 package com.advantech.model;
 // Generated 2017/11/13 下午 01:41:36 by Hibernate Tools 4.3.1
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.voodoodyne.jackson.jsog.JSOGGenerator;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -15,6 +17,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "ActionCodeMapping")
+@JsonIdentityInfo(generator = JSOGGenerator.class, property = "id")
 public class ActionCodeMapping implements java.io.Serializable {
 
     private int id;

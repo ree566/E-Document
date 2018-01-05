@@ -39,7 +39,7 @@ import org.springframework.stereotype.Component;
  *
  * @author Wei.Cheng
  */
-@Component
+//@Component
 public class CronTrigMod {
 
     private static final Logger log = LoggerFactory.getLogger(CronTrigMod.class);

@@ -12,8 +12,12 @@ import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.model.Bab;
 import com.advantech.model.CountermeasureEvent;
 import com.advantech.model.User;
+import com.advantech.service.BabPcsDetailHistoryService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.transaction.Transactional;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -47,9 +51,12 @@ public class HibernateTest {
 
     @Autowired
     private BabDAO babDAO;
-    
+
     @Autowired
     private com.advantech.dao.TestDAO testDAO;
+
+    @Autowired
+    private BabPcsDetailHistoryService pcsHistoryService;
 
 //    @Test
     @Transactional
@@ -159,7 +166,7 @@ public class HibernateTest {
         HibernateObjectPrinter.print(q.list());
     }
 
-    @Test
+//    @Test
     @Transactional
     @Rollback(true)
     public void testClone() throws Exception {
@@ -167,4 +174,65 @@ public class HibernateTest {
         HibernateObjectPrinter.print(l);
     }
 
+//    @Test
+    @Transactional
+    @Rollback(true)
+    public void testHql() throws JsonProcessingException {
+        String hql = "select new Map(b.id as id, b.po as po, b.modelName as modelName, "
+                + "l.name as lineName, f.name as floorName) "
+                + "from Bab b left join b.line l left join l.floor f";
+        Query q = sessionFactory.getCurrentSession().createQuery(hql);
+        q.setMaxResults(10);
+        List l = q.list();
+        HibernateObjectPrinter.print(l);
+    }
+
+    @Test
+    @Transactional
+    @Rollback(true)
+    public void chartTest() throws JsonProcessingException {
+        List l = pcsHistoryService.findByBabForMap(12595);
+        HibernateObjectPrinter.print(this.toChartForm(l));
+    }
+
+    private Map toChartForm(List<Map> l) {
+        List<Map<String, Object>> total = new ArrayList();
+        int diffSum = 0;
+        int maxGroup = 0;
+        for (Map m : l) {
+            String tagName = (String) m.get("tagName");
+            Integer groupid = (Integer) m.get("groupid");
+            Integer diff = (Integer) m.get("diff");
+            Map filter = total.stream()
+                    .filter(i -> i.containsKey("name") && i.get("name").equals(tagName))
+                    .findFirst().orElse(null);
+            if (filter == null) {
+                Map tagInfo = new HashMap();
+                tagInfo.put("name", tagName);
+                List dataPoints = new ArrayList();
+                Map dataPoint = new HashMap();
+                dataPoint.put("x", groupid);
+                dataPoint.put("y", diff);
+                tagInfo.put("dataPoints", dataPoints);
+                total.add(tagInfo);
+            } else {
+                List dataPoints = (List) filter.get("dataPoints");
+                Map dataPoint = new HashMap();
+                dataPoint.put("x", groupid);
+                dataPoint.put("y", m.get("diff"));
+                dataPoints.add(dataPoint);
+            }
+            diffSum += diff;
+            if (maxGroup < groupid) {
+                maxGroup = groupid;
+            }
+        }
+
+        int people = total.size();
+
+        Map infoWithAvg = new HashMap();
+        infoWithAvg.put("avg", (diffSum / people / maxGroup));
+        infoWithAvg.put("data", total);
+        return infoWithAvg;
+    }
 }

@@ -5,6 +5,9 @@
  */
 package com.advantech.model;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  *
  * @author Wei.Cheng
@@ -15,9 +18,20 @@ public enum BabStatus {
     UNFINSHED(-2);
  
     private final Integer value;
+    private static final Map map = new HashMap<>();
  
     private BabStatus(Integer value) {
         this.value = value;
+    }
+    
+    static {
+        for (BabStatus b : BabStatus.values()) {
+            map.put(b.value, b);
+        }
+    }
+
+    public static BabStatus valueOf(int pageType) {
+        return (BabStatus) map.get(pageType);
     }
  
     public Integer getValue() {

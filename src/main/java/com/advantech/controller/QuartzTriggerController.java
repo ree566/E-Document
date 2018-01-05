@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  *
  * @author Wei.Cheng
  */
-@Controller
+//@Controller
 @RequestMapping(value = "/QuartzTriggerController")
 public class QuartzTriggerController {
 

@@ -130,7 +130,7 @@
             function setLineObject() {
                 $.ajax({
                     type: "GET",
-                    url: "<c:url value="/GetLine" />",
+                    url: "<c:url value="/BabLineController/findAll" />",
                     data: {
                         sitefloor: $("#userSitefloorSelect").val()
                     },
@@ -168,21 +168,27 @@
             }
 
             function getDetail(tableId, id, isused) {
+                var data;
+                if (id == null) {
+                    data = {};
+                } else {
+                    data = {
+                        id: id,
+                        babStatus: isused
+                    };
+                }
                 $(tableId).DataTable({
                     dom: 'Bfrtip',
                     buttons: [
                         'copy', 'excel', 'print'
                     ],
                     "ajax": {
-                        "url": "../../LineBalanceDetail",
-                        "type": "POST",
-                        "data": {
-                            id: id,
-                            isused: isused
-                        }
+                        "url": "<c:url value="/BabChartController/findLineBalanceDetail" />",
+                        "type": "GET",
+                        "data": data
                     },
                     "columns": [
-                        {data: "BABid", visible: false},
+                        {data: "bab.id", visible: false},
                         {data: "groupid"},
                         {data: "balance"},
                         {data: "pass"}
@@ -265,12 +271,12 @@
 
             function getChartData(id, isused, chartId) {
                 $.ajax({
-                    url: "../../GetSensorChart",
-                    method: 'POST',
+                    url: "<c:url value="/BabChartController/getSensorDiffChart" />",
+                    method: 'GET',
                     dataType: 'json',
                     data: {
                         id: id,
-                        isused: isused
+                        babStatus: isused
                     },
                     success: function (d) {
                         var arr = d.data;
@@ -366,7 +372,7 @@
                 }
             }
 
-            function getHistoryBAB() {
+            function getHistoryBab() {
                 var lineType = $("#lineType2").val();
                 var sitefloor = $("#sitefloor").val();
                 var startDate = $('#fini').val();
@@ -377,20 +383,20 @@
                     dom: 'lfrtip',
                     "serverSide": false,
                     "ajax": {
-                        "url": "../../AllBAB",
-                        "type": "POST",
+                        "url": "<c:url value="/BabController/findBabDetail" />",
+                        "type": "GET",
                         "data": {
-                            lineType: lineType,
-                            sitefloor: sitefloor,
+                            lineTypeName: lineType,
+                            floorName: sitefloor,
                             startDate: startDate,
                             endDate: endDate,
-                            aboveStandard: aboveStandard
+                            isAboveStandard: aboveStandard
                         }
                     },
                     "columns": [
-                        {data: "id", visible: false},
-                        {data: "PO"},
-                        {data: "Model_name"},
+                        {data: "id"},
+                        {data: "po"},
+                        {data: "modelName"},
                         {data: "lineName"},
                         {data: "sitefloor"},
                         {data: "people"},
@@ -512,24 +518,37 @@
                 });
             }
 
-            function getBABCompare(BABid, Model_name, lineType, type) {
-                if (Model_name != null) {
-                    Model_name = Model_name.trim();
+            function getBabCompare(bab_id, modelName, lineType) {
+                if (modelName != null) {
+                    modelName = modelName.trim();
                 }
+
+                var postObj;
+
+                if (bab_id == null) {
+                    postObj = {
+                        "url": "<c:url value="/BabController/findLineBalanceCompare" />",
+                        "type": "GET",
+                        "data": {
+                            "modelName": modelName,
+                            "lineTypeName": lineType
+                        }
+                    };
+                } else {
+                    postObj = {
+                        "url": "<c:url value="/BabController/findLineBalanceCompareByBab" />",
+                        "type": "GET",
+                        "data": {
+                            "bab_id": bab_id
+                        }
+                    };
+                }
+
                 $("#lineBalnHistory").show();
                 $("#lineBalnHistory").DataTable({
-                    "ajax": {
-                        "url": "../../GetLineBalancingComparison",
-                        "type": "POST",
-                        "data": {
-                            "BABid": BABid,
-                            "Model_name": Model_name,
-                            "lineType": lineType,
-                            "type": type
-                        }
-                    },
+                    "ajax": postObj,
                     "columns": [
-                        {data: "Model_name", width: "150px"},
+                        {data: "modelName", width: "150px"},
 //                          已完結工單資訊(對照組)  
                         {data: "ctrl_id", visible: false},
                         {data: "ctrl_PO", width: "140px"},
@@ -596,8 +615,8 @@
                     "createdRow": function (row, data, dataIndex) {
                         var closedAlarmPercent = data.ctrl_alarmPercent;
                         var lastAlarmPercent = data.exp_alarmPercent;
-                        var lastBABid = data.ctrl_id;
-                        if (closedAlarmPercent < lastAlarmPercent && lastBABid != null) {
+                        var lastbab_id = data.ctrl_id;
+                        if (closedAlarmPercent < lastAlarmPercent && lastbab_id != null) {
                             $(row).addClass('alarm');
                         }
 
@@ -687,13 +706,13 @@
                 showDialogMsg("");
             }
 
-            function getContermeasure(BABid) {
+            function getContermeasure(bab_id) {
                 initCountermeasureDialog();
 
                 $.ajax({
                     url: "<c:url value="/CountermeasureController/findByBab" />",
                     data: {
-                        BABid: BABid
+                        bab_id: bab_id
                     },
                     type: "GET",
                     dataType: 'json',
@@ -719,7 +738,7 @@
                         $(".modal-body :checkbox").attr("disabled", true);
 
                         var lastEditor = jsonData.lastEditor;
-                        $(".modal-body #responseUser").append("<span class='label label-default'>#" + (lastEditor == null ? 'N/A' : lastEditor) + "</span> ");
+                        $(".modal-body #responseUser").append("<span class='label label-default'>#" + (lastEditor == null ? 'N/A' : lastEditor.usernameCh) + "</span> ");
                         $("#editCountermeasure").attr("disabled", jsonData.lock == 1);
                     },
                     error: function (xhr, ajaxOptions, thrownError) {
@@ -847,8 +866,8 @@
                     success: function (msg) {
                         if (msg == true) {
                             counterMeasureModeUndo();
-                            getContermeasure(data.BABid);
-                            $("#searchAvailableBAB").trigger("click");
+                            getContermeasure(data.bab_id);
+                            $("#searchAvailableBab").trigger("click");
                             showDialogMsg("success");
                         } else {
                             showDialogMsg(msg.data);
@@ -890,7 +909,7 @@
                 var saveModelName = $.cookie('lastPOInsert');
                 var saveLineType = $.cookie('lastLineTypeSelect');
                 if (saveModelName != null) {
-                    $("#Model_name").val(saveModelName);
+                    $("#modelName").val(saveModelName);
                     $("#lineType").val(saveLineType);
                 }
 
@@ -903,11 +922,11 @@
 
                 //http://stackoverflow.com/questions/14493250/ajax-jquery-autocomplete-with-json-data
                 $.ajax({
-                    type: "Post",
-                    url: "../../GetAvailableModelName",
+                    type: "GET",
+                    url: "<c:url value="/BabController/findAllModelName" />",
                     dataType: "json",
                     success: function (data) {
-                        $("input#Model_name").autocomplete({
+                        $("input#modelName").autocomplete({
                             width: 300,
                             max: 10,
                             delay: 100,
@@ -935,16 +954,14 @@
                 });
 
 
-                $("#searchAvailableBAB").click(function () {
-                    historyTable = getHistoryBAB();
+                $("#searchAvailableBab").click(function () {
+                    historyTable = getHistoryBab();
                 });
 
-                var type;
                 $("body").on('dblclick', '#babHistory tbody tr', function () {
-                    type = "type2";
                     var selectData = historyTable.row(this).data();
-                    var BABid = selectData.id;
-                    var ModelName = selectData.Model_name;
+                    var bab_id = selectData.id;
+                    var ModelName = selectData.modelName;
                     var isused = selectData.isused;
                     var lineType = $("#lineType2").val();
 
@@ -955,10 +972,10 @@
 
                     block();
 
-                    $("#Model_name").val(ModelName);
+                    $("#modelName").val(ModelName);
                     $("#lineType").val(lineType);
 
-                    getBABCompare(BABid, ModelName, lineType, type);
+                    getBabCompare(bab_id, ModelName, lineType);
 
                     if ($(this).hasClass('selected')) {
                         $(this).removeClass('selected');
@@ -970,8 +987,7 @@
                 });
 
                 $("#send").on("click", function () {
-                    type = "type1";
-                    var modelName = $("#Model_name").val();
+                    var modelName = $("#modelName").val();
                     var lineType = $("#lineType").val();
 
                     if (modelName == null || modelName == "" || lineType == -1) {
@@ -981,7 +997,7 @@
                     $.cookie('lastPOInsert', modelName);
                     $.cookie('lastLineTypeSelect', lineType);
 
-                    getBABCompare(null, modelName, lineType, type);
+                    getBabCompare(null, modelName, lineType);
                 });
 
                 //edit counterMeasure 
@@ -993,8 +1009,8 @@
                     editId = selectData.id;
                     $("#myModal #titleMessage").html(
                             "號碼: " + editId +
-                            " / 工單: " + selectData.PO +
-                            " / 機種: " + selectData.Model_name +
+                            " / 工單: " + selectData.po +
+                            " / 機種: " + selectData.modelName +
                             " / 線別: " + selectData.lineName +
                             " / 時間: " + formatDate(selectData.btime)
                             );
@@ -1067,7 +1083,7 @@
                             showDialogMsg("");
                         }
                         saveCountermeasure({
-                            BABid: editId,
+                            bab_id: editId,
                             solution: solution,
                             errorCodes: errorCodes,
                             actionCodes: actionCodes,
@@ -1109,7 +1125,7 @@
 
                 var excelExport = function () {
                     var id = $(this).attr("id");
-                    var url = id == "generateExcel" ? "BABExcelGenerate" : "BABExcelForEfficiencyReport";
+                    var url = id == "generateExcel" ? "BabExcelGenerate" : "BabExcelForEfficiencyReport";
 
                     var lineType = $('#lineType2').val();
                     var sitefloor = $('#sitefloor').val();
@@ -1135,8 +1151,8 @@
 
                 var babId = getQueryVariable("babId");
                 if (babId != null) {
-                    $("#Model_name").val("");
-                    getBABCompare(babId, null, null, "type2");
+                    $("#modelName").val("");
+                    getBabCompare(babId, null, null);
 
                     block();
                     setTimeout(function () {
@@ -1159,7 +1175,7 @@
                     $("#lineType, #lineType2").val(lineType);
                     beginTimeObj.data("DateTimePicker").date(startDate);
                     endTimeObj.data("DateTimePicker").date(endDate);
-                    $("#searchAvailableBAB").trigger("click");
+                    $("#searchAvailableBab").trigger("click");
                     historyTable.draw();
                 } else if (lineType != null) {
                     $("#lineType, #lineType2").val(lineType);
@@ -1174,7 +1190,7 @@
                     clearInterval(autoReloadInterval);
                 });
 
-                $("body").on("click", "#searchAvailableBAB, #send", function () {
+                $("body").on("click", "#searchAvailableBab, #send", function () {
                     block();
                 });
 
@@ -1266,7 +1282,7 @@
                                 <input type="text" id="ffin" placeholder="請選擇結束時間"> 
                             </div>
                             <label for="aboveStandard"><input type="checkbox" id="aboveStandard">只顯示數量大於十台</label>
-                            <input type="button" id="searchAvailableBAB" value="查詢">
+                            <input type="button" id="searchAvailableBab" value="查詢">
                             <input type="button" id="generateExcel" class="excel_export" value="產出excel">
                             <input type="button" id="excelForEfficiencyReport" class="excel_export" value="效率報表用">
                         </div>
@@ -1299,8 +1315,8 @@
                 <h3 id="babDetailSearch">機種平衡率紀錄查詢</h3>
                 <div class="search-container">
                     <div class="ui-widget">
-                        <label for="Model_name">請輸入機種號碼: </label>
-                        <input type="text" id="Model_name" />
+                        <label for="modelName">請輸入機種號碼: </label>
+                        <input type="text" id="modelName" />
                         <select id="lineType">
                             <option value=-1>請選擇線別</option>
                         </select>
@@ -1341,7 +1357,7 @@
                             <table id="ctrlDetail" class="table table-bordered">
                                 <thead>
                                     <tr>
-                                        <th>BABid</th>
+                                        <th>bab_id</th>
                                         <th>組別</th>
                                         <th>平衡率</th>
                                         <th>是否合格</th>
@@ -1367,7 +1383,7 @@
                             <table id="expDetail" class="table table-bordered">
                                 <thead>
                                     <tr>
-                                        <th>BABid</th>
+                                        <th>bab_id</th>
                                         <th>組別</th>
                                         <th>平衡率</th>
                                         <th>是否合格</th>

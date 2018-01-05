@@ -2,6 +2,8 @@ package com.advantech.model;
 // Generated 2017/11/13 下午 01:41:36 by Hibernate Tools 4.3.1
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.voodoodyne.jackson.jsog.JSOGGenerator;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -21,6 +23,7 @@ import org.springframework.format.annotation.DateTimeFormat;
  */
 @Entity
 @Table(name = "CountermeasureEvent")
+@JsonIdentityInfo(generator = JSOGGenerator.class, property = "id")
 public class CountermeasureEvent implements java.io.Serializable {
 
     private int id;

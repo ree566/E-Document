@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import org.hibernate.transform.Transformers;
 import org.hibernate.type.StandardBasicTypes;
+import org.joda.time.DateTime;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -33,7 +34,7 @@ public class SqlViewDAO extends AbstractDao<Integer, Object> {
                 .setResultTransformer(Transformers.aliasToBean(BabAvg.class))
                 .list();
     }
-    
+
     public List<BabAvg> findBabAvgInHistory(int bab_id) {
         return super.getSession()
                 .createSQLQuery("select * from tbfn_BabAvg_history(:bab_id)")
@@ -76,19 +77,42 @@ public class SqlViewDAO extends AbstractDao<Integer, Object> {
                 .setResultTransformer(Transformers.aliasToBean(SensorCurrentGroupStatus.class))
                 .list();
     }
-    
-    public List<Map> findSensorStatus(int bab_id){
+
+    public List<Map> findSensorStatus(int bab_id) {
         return super.getSession()
                 .createSQLQuery("select * from tbfn_GetSensorStatus(:bab_id)")
                 .setParameter("bab_id", bab_id)
                 .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
                 .list();
     }
-    
-    public List<Map> findBalanceDetail(int bab_id){
+
+    public List<Map> findBalanceDetail(int bab_id) {
         return super.getSession()
                 .createSQLQuery("select * from tbfn_BabBalanceDetail(:bab_id)")
                 .setParameter("bab_id", bab_id)
+                .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
+                .list();
+    }
+
+    //Join detail with alarmPercent in /pages/admin/BabTotal page
+    public List<Map> findBabDetail(String lineTypeName, String sitefloorName, DateTime sD, DateTime eD, boolean isAboveStandard) {
+        return super.getSession()
+                .createSQLQuery("{CALL usp_GetBabDetail(:lineTypeName, :sitefloorName, :sD, :eD, :minPcs)}")
+                .setParameter("lineTypeName", lineTypeName)
+                .setParameter("sitefloorName", sitefloorName)
+                .setParameter("sD", sD.withHourOfDay(0).toDate())
+                .setParameter("eD", eD.withHourOfDay(23).toDate())
+                .setParameter("minPcs", isAboveStandard ? 10 : "-1")
+                .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
+                .list();
+    }
+    
+    //Get bananceCompare with alarmPercent in /pages/admin/BabTotal page
+    public List<Map> findLineBalanceCompare(String modelName, String lineTypeName) {
+        return super.getSession()
+                .createSQLQuery("{CALL usp_GetLineBalanceCompare(:modelName, :lineTypeName)}")
+                .setParameter("modelName", modelName)
+                .setParameter("lineTypeName", lineTypeName)
                 .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
                 .list();
     }

@@ -9,6 +9,7 @@ import com.advantech.dao.SqlViewDAO;
 import com.advantech.helper.HibernateObjectPrinter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.List;
+import org.joda.time.DateTime;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,16 +30,27 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @RunWith(SpringJUnit4ClassRunner.class)
 public class TestSqlView {
-    
+
     @Autowired
     private SqlViewDAO sqlViewDAO;
 
-    @Test
+//    @Test
     @Transactional
     @Rollback(true)
     public void testFindBabLastGroupStatus() throws JsonProcessingException {
         List l = sqlViewDAO.findSensorCurrentGroupStatus(11240);
         assertEquals(2, l.size());
         HibernateObjectPrinter.print(l);
+    }
+
+    @Test
+    @Transactional
+    @Rollback(true)
+    public void testGetBabDetail() {
+        DateTime sD = new DateTime(2017, 12, 01, 0, 0, 0, 0);
+        DateTime eD = new DateTime(2017, 12, 31, 0, 0, 0, 0);
+        List l = sqlViewDAO.findBabDetail("ASSY", "5", sD, eD, false);
+        assertNotEquals(0, l.size());
+        System.out.println(l.size());
     }
 }

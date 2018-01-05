@@ -1,10 +1,8 @@
 package com.advantech.model;
 // Generated 2017/5/25 上午 10:45:32 by Hibernate Tools 4.3.1
 
-import com.advantech.model.Line;
-import com.advantech.model.TagNameComparisonId;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.voodoodyne.jackson.jsog.JSOGGenerator;
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
@@ -20,7 +18,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "LS_TagNameComparison")
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+@JsonIdentityInfo(generator = JSOGGenerator.class, property = "id")
 public class TagNameComparison implements java.io.Serializable {
 
     private TagNameComparisonId id;

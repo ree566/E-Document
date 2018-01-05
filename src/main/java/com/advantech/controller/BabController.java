@@ -5,22 +5,18 @@
  */
 package com.advantech.controller;
 
+import com.advantech.datatable.DataTableResponse;
 import com.advantech.model.Bab;
 import com.advantech.model.BabStatus;
-import com.advantech.model.view.BabAvg;
-import com.advantech.service.BabBalanceHistoryService;
 import com.advantech.service.BabPcsDetailHistoryService;
 import com.advantech.service.BabService;
 import com.advantech.service.SqlViewService;
 import com.advantech.webservice.WebServiceRV;
-import java.util.ArrayList;
+import static com.google.common.base.Preconditions.*;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.joda.time.DateTime;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
@@ -46,9 +42,6 @@ public class BabController {
 
     @Autowired
     private BabPcsDetailHistoryService babPcsDetailHistoryService;
-
-    @Autowired
-    private BabBalanceHistoryService babBalanceHistoryService;
 
     @RequestMapping(value = "/findByMultipleClause", method = {RequestMethod.GET})
     @ResponseBody
@@ -84,90 +77,13 @@ public class BabController {
         return converstring;
     }
 
-    //Find history info and transform data into chart info
-    @RequestMapping(value = "/getSensorDiffChart", method = {RequestMethod.GET})
-    @ResponseBody
-    protected String getSensorDiffChart(@ModelAttribute Bab bab) {
-        BabStatus status = bab.getBabStatus();
-        List l;
-        if (null == status) {
-            l = sqlViewService.findSensorStatus(bab.getId());
-        } else {
-            switch (status) {
-                case CLOSED:
-                    l = babPcsDetailHistoryService.findByBab(bab.getId());
-                default:
-                    l = new ArrayList();
-            }
-        }
-
-        return this.toChartForm(l).toString();
-    }
-
-    private JSONArray toChartForm(List<Map> l) {
-        JSONArray totalArrObj = new JSONArray();
-        JSONObject innerObj = new JSONObject();
-        JSONArray arr = new JSONArray();
-        String tName = "";
-        int loopCount = 1;
-        int listSize = l.size();
-        for (Map m : l) {
-            boolean isLast = loopCount == listSize;
-            String st = (String) m.get("TagName");
-            int groupid = (int) m.get("groupid");
-            if ("".equals(tName)) {
-                tName = st;
-            }
-            if (!st.equals(tName) || isLast) {
-                innerObj.put("name", tName);
-                innerObj.put("dataPoints", arr);
-                totalArrObj.put(innerObj);
-                if (!isLast) {
-                    innerObj = new JSONObject();
-                    arr = new JSONArray();
-                }
-                tName = st;
-            }
-            arr.put(new JSONObject().put("x", groupid).put("y", m.get("diff")));
-            loopCount++;
-            //Bug when data group only have one
-        }
-        return totalArrObj;
-    }
-
-    //Find history info and transform data into chart info
-    @RequestMapping(value = "/findBabTotalAvg", method = {RequestMethod.GET})
-    @ResponseBody
-    protected Double findBabTotalAvg(@ModelAttribute Bab bab) {
-        BabStatus status = bab.getBabStatus();
-        List<BabAvg> l;
-        if (null == status) {
-            l = sqlViewService.findBabAvg(bab.getId());
-        } else switch (status) {
-            case CLOSED:
-                l = sqlViewService.findBabAvgInHistory(bab.getId());
-                break;
-            default:
-                l = new ArrayList();
-                break;
-        }
-        return this.calcTotalAvg(l);
-    }
-
-    public Double calcTotalAvg(List<BabAvg> l) {
-        Double total = 0.0;
-        int people = l.size();
-        total = l.stream().map((b) -> b.getAverage()).reduce(total, (accumulator, _item) -> accumulator + _item);
-        return total / people;
-    }
-
     @RequestMapping(value = "/findByModelAndDate", method = {RequestMethod.GET})
     @ResponseBody
-    public List<Bab> findByModelAndDate(
+    public DataTableResponse findByModelAndDate(
             @RequestParam String modelName,
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime startDate,
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime endDate) {
-        return babService.findByModelAndDate(modelName, startDate, endDate);
+        return new DataTableResponse(babService.findByModelAndDate(modelName, startDate, endDate));
     }
 
     @RequestMapping(value = "/findAllModelName", method = {RequestMethod.GET})
@@ -176,18 +92,49 @@ public class BabController {
         return babService.findAllModelName();
     }
 
-    @RequestMapping(value = "/findLineBalanceDetail", method = {RequestMethod.GET})
+    @RequestMapping(value = "/findBabDetail", method = {RequestMethod.GET})
     @ResponseBody
-    public List findLineBalanceDetail(@ModelAttribute Bab bab) {
-        if (null == bab.getBabStatus()) { //Processing
-            return sqlViewService.findBalanceDetail(bab.getId());
+    public DataTableResponse findBabDetail(
+            @RequestParam String lineTypeName,
+            @RequestParam String floorName,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime startDate,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime endDate,
+            @RequestParam boolean isAboveStandard
+    ) {
+        List l = sqlViewService.findBabDetail(lineTypeName, floorName, startDate, endDate, isAboveStandard);
+        return new DataTableResponse(l);
+    }
+
+    @RequestMapping(value = "/findLineBalanceCompareByBab", method = {RequestMethod.GET})
+    @ResponseBody
+    public DataTableResponse findLineBalanceCompare(
+            @RequestParam int bab_id
+    ) {
+        Bab b = babService.findWithLineInfo(bab_id);
+        checkArgument(b != null, "Can't find bab_id " + bab_id);
+        List l = sqlViewService.findLineBalanceCompare(b.getModelName(), b.getLine().getLineType().getName());
+        return new DataTableResponse(l);
+    }
+
+    @RequestMapping(value = "/findLineBalanceCompare", method = {RequestMethod.GET})
+    @ResponseBody
+    public DataTableResponse findLineBalanceCompare(
+            @RequestParam String modelName,
+            @RequestParam String lineTypeName
+    ) {
+        List l = sqlViewService.findLineBalanceCompare(modelName, lineTypeName);
+        return new DataTableResponse(l);
+    }
+
+    @RequestMapping(value = "/findPcsDetail", method = {RequestMethod.GET})
+    @ResponseBody
+    public DataTableResponse findPcsDetail(@ModelAttribute Bab bab) {
+        checkArgument(bab != null);
+        BabStatus status = bab.getBabStatus();
+        if (status == null) {
+            return new DataTableResponse(sqlViewService.findSensorStatus(bab.getId()));
         } else {
-            switch (bab.getBabStatus()) {
-                case CLOSED:
-                    return babPcsDetailHistoryService.findByBab(bab.getId());
-                default:
-                    return new ArrayList();
-            }
+            return new DataTableResponse(babPcsDetailHistoryService.findByBab(bab.getId()));
         }
     }
 
