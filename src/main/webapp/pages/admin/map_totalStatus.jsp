@@ -272,7 +272,7 @@
                         var lineName = $(this).attr("id");
                         var childAmount = $(this).children().length;
                         $(this).children().each(function () {
-                            $(this).attr({"id": (lineName + "_" + childAmount)})
+                            $(this).attr({"id": (lineName + "-S-" + childAmount)})
                                     .addClass("draggable blub-empty divCustomBg")
                                     .tooltipster({updateAnimation: null});
                             childAmount--;
@@ -340,20 +340,17 @@
                             for (var k = 0, l = babData.length; k < l; k++) {
                                 var people = babData[k];
 
-                                var childElement = $("#babArea #" + people.TagName + " #" + people.TagName + "_" + people.T_Num);
+                                var childElement = $("#" + people.tagName);
                                 if (childElement.length) {
                                     childElement.removeClass("blub-empty blub-prepared");
 
                                     if ("ismax" in people) {
                                         childElement.addClass((people.ismax ? "blub-alarm" : "blub-normal"))
-                                                .html(people.stationId)
+                                                .html(people.station)
                                                 .tooltipster('content', "Time:" + people.diff + "秒");
                                     } else {
                                         childElement.addClass("blub-prepared")
-                                                .html(people.stationId);
-                                    }
-                                    if (people.T_Num == 1) {
-                                        $("#titleArea #" + people.TagName + "_title").attr("onClick", "window.open( 'BabTotal?babId=" + people.BABid + "','_blank' ); return false;");
+                                                .html(people.station);
                                     }
                                 }
                             }

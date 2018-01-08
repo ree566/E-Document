@@ -7,7 +7,9 @@ package com.advantech.service;
 
 import com.advantech.dao.AlarmBabActionDAO;
 import com.advantech.model.AlarmBabAction;
+import java.util.Date;
 import java.util.List;
+import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +18,8 @@ import org.springframework.stereotype.Service;
  * @author Wei.Cheng
  */
 @Service
-public class AlarmBabActionService implements AlarmTest {
+@Transactional
+public class AlarmBabActionService {
 
     @Autowired
     private AlarmBabActionDAO alarmBabActionDAO;
@@ -34,9 +37,9 @@ public class AlarmBabActionService implements AlarmTest {
     }
 
     public boolean insert(List<AlarmBabAction> l) {
-        for (AlarmBabAction a : l) {
+        l.forEach((a) -> {
             this.insert(a);
-        }
+        });
         return true;
     }
 
@@ -45,18 +48,24 @@ public class AlarmBabActionService implements AlarmTest {
     }
 
     public boolean update(List<AlarmBabAction> l) {
-        for (AlarmBabAction a : l) {
+        Date d = new Date();
+        l.stream().map((a) -> {
             this.update(a);
-        }
+            return a;
+        }).forEachOrdered((a) -> {
+            a.setLastUpdateTime(d);
+        });
         return true;
     }
 
     public boolean reset() {
         List<AlarmBabAction> l = this.findAll();
-        for (AlarmBabAction a : l) {
+        l.stream().map((a) -> {
             a.setAlarm(0);
+            return a;
+        }).forEachOrdered((a) -> {
             this.update(a);
-        }
+        });
         return true;
     }
 
@@ -65,19 +74,20 @@ public class AlarmBabActionService implements AlarmTest {
     }
 
     public int delete(List<AlarmBabAction> l) {
-        for (AlarmBabAction a : l) {
+        l.forEach((a) -> {
             this.delete(a);
-        }
+        });
         return 1;
     }
 
-    @Override
     public void AlarmToTestingMode() {
         List<AlarmBabAction> l = this.findAll();
-        for (AlarmBabAction a : l) {
+        l.stream().map((a) -> {
             a.setAlarm(1);
+            return a;
+        }).forEachOrdered((a) -> {
             this.update(a);
-        }
+        });
     }
 
 }

@@ -84,13 +84,10 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
                 int peoples = bab.getPeople();
                 if (currentGroupSum == 0 || currentGroupSum != peoples) {
                     //Insert an empty status 
-                    for (int i = bab.getStartPosition(), length = bab.getStartPosition() + bab.getPeople() - 1; i <= length; i++) {
+                    for (int station = 1, people = bab.getPeople(), startPosition = bab.getStartPosition(); station <= people; station++) {
                         JSONObject obj = new JSONObject();
-                        obj.put("TagName", bab.getLine().getName());
-                        obj.put("lineName", bab.getLine().getName());
-                        obj.put("stationId", i - bab.getStartPosition() + 1);
-                        obj.put("linetype", bab.getLine().getLineType().getName());
-                        obj.put("T_Num", i);
+                        obj.put("tagName", bab.getLine().getName() + "-S-" + (station + startPosition - 1));
+                        obj.put("station", station);
                         transBabData.put(obj);
                     }
                     isSomeBabUnderStandard = true;
@@ -137,22 +134,20 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
     private void babDataToMap(JSONObject avgs) {
         System.out.println(avgs);
         if (avgs != null) {
-            StringBuilder alarmSensor = new StringBuilder(50);
             JSONArray sensorDatas = avgs.getJSONArray("data");
             if (sensorDatas.length() != 0) {
                 initMap();
                 for (int i = 0, length = sensorDatas.length(); i < length; i++) {
                     JSONObject sensorData = sensorDatas.getJSONObject(i);
                     if (sensorData.has("ismax") && sensorData.getBoolean("ismax")) {
-                        alarmSensor.append(sensorData.getString("TagName"));
-                        alarmSensor.append("-L-");
-                        alarmSensor.append(sensorData.getInt("T_Num"));
-                        dataMap.put(alarmSensor.toString(), super.ALARM_SIGN); //0的資料不覆蓋節省效率
-                        alarmSensor.setLength(0);
+                        String tagName = sensorData.getString("tagName");
+                        tagName = tagName.replace("-S-", "-L-");
+                        dataMap.put(tagName, super.ALARM_SIGN); //0的資料不覆蓋節省效率
                     }
                 }
             }
         }
+        System.out.println(dataMap);
     }
 
     @Override

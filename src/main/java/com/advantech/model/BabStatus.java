@@ -5,6 +5,7 @@
  */
 package com.advantech.model;
 
+import com.advantech.converter.Encodeable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,7 +13,7 @@ import java.util.Map;
  *
  * @author Wei.Cheng
  */
-public enum BabStatus {
+public enum BabStatus implements Encodeable{
     CLOSED(1),
     NO_RECORD(-1),
     UNFINSHED(-2);
@@ -33,8 +34,9 @@ public enum BabStatus {
     public static BabStatus valueOf(int pageType) {
         return (BabStatus) map.get(pageType);
     }
- 
-    public Integer getValue() {
+
+    @Override
+    public Integer token() {
         return this.value;
     }
 }

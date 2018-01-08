@@ -6,11 +6,10 @@
 package com.advantech.model;
 
 import com.advantech.converter.BabStatusConverter;
+import com.advantech.converter.ReplyStatusConverter;
 import com.advantech.model.view.BabAvg;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.voodoodyne.jackson.jsog.JSOGGenerator;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -55,6 +54,7 @@ public class Bab implements Serializable {
     private Date beginTime;
     private Date lastUpdateTime;
     private int ispre = 0;
+    private ReplyStatus replyStatus;
 
     @JsonIgnore
     private Set<Fbn> fbns = new HashSet<Fbn>(0);
@@ -197,6 +197,17 @@ public class Bab implements Serializable {
 
     public void setIspre(int ispre) {
         this.ispre = ispre;
+    }
+
+    @NotNull
+    @Column(name = "replyFlag")
+    @Convert(converter = ReplyStatusConverter.class)
+    public ReplyStatus getReplyStatus() {
+        return replyStatus;
+    }
+
+    public void setReplyStatus(ReplyStatus replyStatus) {
+        this.replyStatus = replyStatus;
     }
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "bab")

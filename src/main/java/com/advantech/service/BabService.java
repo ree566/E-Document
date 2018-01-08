@@ -181,6 +181,9 @@ public class BabService {
             }
             needToSave = prevSensorCloseFlag;
         }
+        if(needToSave){
+//            bab.set
+        }
         return (needToSave ? this.closeBabWithSaving(bab) : this.closeBabDirectly(bab));
     }
 

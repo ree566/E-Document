@@ -10,7 +10,9 @@ import com.advantech.dao.BabDAO;
 import com.advantech.dao.SqlViewDAO;
 import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.model.Bab;
+import com.advantech.model.BabStatus;
 import com.advantech.model.CountermeasureEvent;
+import com.advantech.model.ReplyStatus;
 import com.advantech.model.User;
 import com.advantech.service.BabPcsDetailHistoryService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -187,7 +189,7 @@ public class HibernateTest {
         HibernateObjectPrinter.print(l);
     }
 
-    @Test
+//    @Test
     @Transactional
     @Rollback(true)
     public void chartTest() throws JsonProcessingException {
@@ -234,5 +236,17 @@ public class HibernateTest {
         infoWithAvg.put("avg", (diffSum / people / maxGroup));
         infoWithAvg.put("data", total);
         return infoWithAvg;
+    }
+    
+    @Test
+    @Transactional
+    @Rollback(true)
+    public void testConverter(){
+        Bab bab = (Bab) sessionFactory.getCurrentSession().get(Bab.class, 12730);
+        assertNotNull(bab);
+        assertNotNull(bab.getBabStatus());
+        assertEquals(bab.getBabStatus(), BabStatus.NO_RECORD);
+        assertNotNull(bab.getReplyStatus());
+        assertEquals(bab.getReplyStatus(), ReplyStatus.NO_NEED_TO_REPLY);
     }
 }

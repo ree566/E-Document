@@ -5,23 +5,26 @@
  */
 package com.advantech.model;
 
+import com.advantech.converter.Encodeable;
+
 /**
  *
  * @author Wei.Cheng
  */
-public enum ReplyStatus {
-    
+public enum ReplyStatus implements Encodeable {
+
     REPLIED(1),
     UNREPLIED(-1),
     NO_NEED_TO_REPLY(0);
- 
-    private final Integer status;
- 
+
+    private final Integer e_token;
+
     private ReplyStatus(Integer status) {
-        this.status = status;
+        this.e_token = status;
     }
- 
-    public Integer getStatus() {
-        return this.status;
+
+    @Override
+    public Integer token() {
+        return this.e_token;
     }
 }
