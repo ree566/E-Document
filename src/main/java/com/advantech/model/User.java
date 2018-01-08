@@ -32,7 +32,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Table(name = "[User]",
         uniqueConstraints = @UniqueConstraint(columnNames = "jobnumber")
 )
-@JsonIdentityInfo(generator = JSOGGenerator.class, property = "id", scope = User.class)
 public class User implements java.io.Serializable, UserDetails {
 
     private int id;

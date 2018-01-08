@@ -25,7 +25,6 @@ import org.springframework.format.annotation.DateTimeFormat;
  */
 @Entity
 @Table(name = "Alm_BabAction")
-@JsonIdentityInfo(generator = JSOGGenerator.class, property = "tableId")
 public class AlarmBabAction implements AlarmAction, Serializable {
 
     private String tableId;

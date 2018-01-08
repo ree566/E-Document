@@ -39,7 +39,6 @@
         <script src="../../js/bootstrap-datetimepicker.min.js"></script>
         <script src="../../js/jquery.dataTables.min.js"></script>
         <script src="../../js/dataTables.fixedHeader.min.js"></script>
-        <script src="../../js/JSOG.js"></script>
         <script src="../../js/jquery-datatable-button/dataTables.buttons.min.js"></script>
         <script src="../../js/jquery-datatable-button/buttons.flash.min.js"></script>
         <script src="../../js/jquery-datatable-button/jszip.min.js"></script>
@@ -85,11 +84,6 @@
                                 modelName: Model_name,
                                 startDate: startDate,
                                 endDate: endDate
-                            },
-                            "dataSrc": function (json) {
-                                var cyclicGraph = JSOG.decode(json);
-                                console.log(cyclicGraph);
-                                return cyclicGraph.data;
                             }
                         },
 

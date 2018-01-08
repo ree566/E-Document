@@ -17,7 +17,6 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "ActionCodeMapping")
-@JsonIdentityInfo(generator = JSOGGenerator.class, property = "id")
 public class ActionCodeMapping implements java.io.Serializable {
 
     private int id;

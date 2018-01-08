@@ -20,7 +20,6 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "Unit")
-@JsonIdentityInfo(generator = JSOGGenerator.class, property = "id")
 public class Unit implements java.io.Serializable {
 
     private int id;

@@ -33,7 +33,6 @@ import org.springframework.format.annotation.DateTimeFormat;
  */
 @Entity
 @Table(name = "TestLineTypeRecord")
-@JsonIdentityInfo(generator = JSOGGenerator.class, property = "id")
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "QryData")
 public class TestRecord implements Serializable {

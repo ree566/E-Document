@@ -23,7 +23,6 @@ import org.springframework.format.annotation.DateTimeFormat;
  */
 @Entity
 @Table(name = "CountermeasureEvent")
-@JsonIdentityInfo(generator = JSOGGenerator.class, property = "id")
 public class CountermeasureEvent implements java.io.Serializable {
 
     private int id;

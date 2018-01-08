@@ -37,6 +37,12 @@ public class BabLineController {
         return sitefloor != null ? lineService.findBySitefloor(sitefloor) : lineService.findAll();
     }
 
+    @RequestMapping(value = "/findWithLineType", method = {RequestMethod.GET})
+    @ResponseBody
+    protected List<Line> findWithLineType() {
+        return lineService.findWithLineType();
+    }
+
     @RequestMapping(value = "/login", method = {RequestMethod.POST})
     @ResponseBody
     protected String login(@RequestParam(value = "line.id") int line_id) throws JsonProcessingException {

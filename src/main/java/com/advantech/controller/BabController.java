@@ -13,7 +13,9 @@ import com.advantech.service.BabService;
 import com.advantech.service.SqlViewService;
 import com.advantech.webservice.WebServiceRV;
 import static com.google.common.base.Preconditions.*;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.joda.time.DateTime;
@@ -107,13 +109,17 @@ public class BabController {
 
     @RequestMapping(value = "/findLineBalanceCompareByBab", method = {RequestMethod.GET})
     @ResponseBody
-    public DataTableResponse findLineBalanceCompare(
+    public Map findLineBalanceCompare(
             @RequestParam int bab_id
     ) {
         Bab b = babService.findWithLineInfo(bab_id);
         checkArgument(b != null, "Can't find bab_id " + bab_id);
-        List l = sqlViewService.findLineBalanceCompare(b.getModelName(), b.getLine().getLineType().getName());
-        return new DataTableResponse(l);
+        List<Map> l = sqlViewService.findLineBalanceCompare(b.getModelName(), b.getLine().getLineType().getName());
+        Map m = new HashMap();
+        m.put("ctrlAvgs", 0);
+        m.put("expAvgs", 0);
+        m.put("data", l);
+        return m;
     }
 
     @RequestMapping(value = "/findLineBalanceCompare", method = {RequestMethod.GET})

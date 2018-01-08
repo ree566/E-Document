@@ -5,8 +5,7 @@
  */
 package com.advantech.model;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.voodoodyne.jackson.jsog.JSOGGenerator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -29,7 +28,6 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "Countermeasure")
-@JsonIdentityInfo(generator = JSOGGenerator.class, property = "id")
 public class Countermeasure implements Serializable {
 
     private int id;
@@ -42,6 +40,7 @@ public class Countermeasure implements Serializable {
 
     private Set<ActionCode> actionCodes = new HashSet<ActionCode>(0);
 
+    @JsonIgnore
     private Set<CountermeasureEvent> countermeasureEvents = new HashSet<CountermeasureEvent>(0);
 
     @Id

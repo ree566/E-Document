@@ -30,7 +30,6 @@ import org.springframework.format.annotation.DateTimeFormat;
  */
 @Entity
 @Table(name = "BabPcsDetailHistory")
-@JsonIdentityInfo(generator = JSOGGenerator.class, property = "id")
 public class BabPcsDetailHistory implements Serializable {
 
     private int id;

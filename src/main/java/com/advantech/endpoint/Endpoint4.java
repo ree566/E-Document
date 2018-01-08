@@ -51,9 +51,10 @@ public class Endpoint4 {
     public void onOpen(final Session session) {
         //Push the current status on client first connect
         try {
-            Object obj = new PollingCellResult().getData();
-            session.getBasicRemote().sendText(obj.toString());
+//            Object obj = new PollingCellResult().getData();
+//            session.getBasicRemote().sendText(obj.toString());
 //            showUrlParam(session);
+            throw new IOException("Not finish yet");
         } catch (IOException ex) {
             log.error(ex.getMessage(), ex);
         }
@@ -63,7 +64,7 @@ public class Endpoint4 {
         int a = sessions.size();
         if (a == 1) {
             System.out.println("Some session exist, begin polling.");
-            pollingDBAndBrocast();
+//            pollingDBAndBrocast();
         }
     }
 
@@ -79,7 +80,7 @@ public class Endpoint4 {
         sessions.remove(session);
         //當client端完全沒有連結中的使用者時，把job給關閉(持續執行浪費性能)
         if (sessions.isEmpty()) {
-            unPollingDB();
+//            unPollingDB();
             System.out.println("All session closed");
         }
     }

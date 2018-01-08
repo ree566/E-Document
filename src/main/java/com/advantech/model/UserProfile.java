@@ -31,7 +31,6 @@ import javax.persistence.UniqueConstraint;
         name = "User_Profile",
         uniqueConstraints = @UniqueConstraint(columnNames = "type")
 )
-@JsonIdentityInfo(generator = JSOGGenerator.class, property = "id")
 public class UserProfile implements java.io.Serializable {
 
     private int id;

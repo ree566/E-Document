@@ -27,7 +27,6 @@ import org.springframework.format.annotation.DateTimeFormat;
  */
 @Entity
 @Table(name = "Line_Balancing_Main")
-@JsonIdentityInfo(generator = JSOGGenerator.class, property = "id")
 public class LineBalancing implements Serializable {
 
     private int id;

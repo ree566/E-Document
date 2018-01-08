@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.PostConstruct;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -47,7 +48,7 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
 
     private double BAB_STANDARD;
 
-//    @PostConstruct
+    @PostConstruct
     protected void init() {
         PropertiesReader p = PropertiesReader.getInstance();
         BAB_STANDARD = p.getAssyStandard();
@@ -119,7 +120,7 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
                     for (int i = 0; i < currentGroupSum; i++) {
                         BabLastGroupStatus bgs = status.get(i);
                         bgs.setIsmax(isUnderBalance ? (dataindex == i) : false);
-                        transBabData.put(bgs);
+                        transBabData.put(new JSONObject(bgs));
                     }
                 }
             }
@@ -134,6 +135,7 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
     }
 
     private void babDataToMap(JSONObject avgs) {
+        System.out.println(avgs);
         if (avgs != null) {
             StringBuilder alarmSensor = new StringBuilder(50);
             JSONArray sensorDatas = avgs.getJSONArray("data");

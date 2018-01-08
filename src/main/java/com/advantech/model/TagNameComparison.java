@@ -18,7 +18,6 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "LS_TagNameComparison")
-@JsonIdentityInfo(generator = JSOGGenerator.class, property = "id")
 public class TagNameComparison implements java.io.Serializable {
 
     private TagNameComparisonId id;

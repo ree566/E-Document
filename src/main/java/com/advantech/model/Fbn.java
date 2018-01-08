@@ -24,7 +24,6 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "FBN")
-@JsonIdentityInfo(generator = JSOGGenerator.class, property = "id")
 public class Fbn implements Serializable {
 
     private int id;

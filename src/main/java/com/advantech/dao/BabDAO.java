@@ -89,6 +89,8 @@ public class BabDAO extends AbstractDao<Integer, Bab> implements BasicDAO_1<Bab>
         Criteria c = super.createEntityCriteria();
         c.add(Restrictions.isNull("babStatus"));
         c.add(Restrictions.between("beginTime", d.withHourOfDay(0).toDate(), d.withHourOfDay(23).toDate()));
+        c.createAlias("line", "l");
+        c.createAlias("l.lineType", "lineType");
         return c.list();
     }
 

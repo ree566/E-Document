@@ -25,7 +25,6 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "LineTypeConfig")
-@JsonIdentityInfo(generator = JSOGGenerator.class, property = "id")
 public class LineTypeConfig implements Serializable {
 
     private int id;

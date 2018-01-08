@@ -25,7 +25,6 @@ import javax.persistence.UniqueConstraint;
 @Table(name = "User_Notification",
         uniqueConstraints = @UniqueConstraint(columnNames = "name")
 )
-@JsonIdentityInfo(generator = JSOGGenerator.class, property = "id")
 public class UserNotification implements java.io.Serializable {
 
     private int id;

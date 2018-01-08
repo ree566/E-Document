@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.lang3.math.NumberUtils;
+import static org.apache.commons.lang3.math.NumberUtils.toInt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
@@ -33,7 +35,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 @RequestMapping(value = "/BabChartController")
 public class BabChartController {
-    
+
     @Autowired
     private BabService babService;
 
@@ -42,7 +44,7 @@ public class BabChartController {
 
     @Autowired
     private BabPcsDetailHistoryService babPcsDetailHistoryService;
-    
+
     @Autowired
     private BabBalanceHistoryService babBalanceHistoryService;
 
@@ -103,8 +105,8 @@ public class BabChartController {
         int maxGroup = 0;
         for (Map m : l) {
             String tagName = (String) m.get("tagName");
-            Integer groupid = (Integer) m.get("groupid");
-            Integer diff = (Integer) m.get("diff");
+            Integer groupid = toInt(m.get("groupid").toString());
+            Integer diff = toInt(m.get("diff").toString());
             Map filter = total.stream()
                     .filter(i -> i.containsKey("name") && i.get("name").equals(tagName))
                     .findFirst().orElse(null);

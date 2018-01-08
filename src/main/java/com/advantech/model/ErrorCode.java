@@ -3,7 +3,7 @@ package com.advantech.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.voodoodyne.jackson.jsog.JSOGGenerator;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.Column;
@@ -22,15 +22,15 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "ErrorCode")
-@JsonIdentityInfo(generator = JSOGGenerator.class, property = "id")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class ErrorCode implements java.io.Serializable {
 
     private int id;
     private String name;
-    
+
     @JsonIgnore
     private Set<ActionCode> actionCodes = new HashSet<ActionCode>(0);
-    
+
     @JsonIgnore
     private Set<Countermeasure> countermeasures = new HashSet<Countermeasure>(0);
 

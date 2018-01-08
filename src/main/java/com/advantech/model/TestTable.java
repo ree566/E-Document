@@ -28,7 +28,6 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "LS_Table")
-@JsonIdentityInfo(generator = JSOGGenerator.class, property = "id")
 public class TestTable implements Serializable {
 
     private int id;

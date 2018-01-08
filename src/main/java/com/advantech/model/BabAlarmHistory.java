@@ -24,7 +24,6 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "BabAlarmHistory")
-@JsonIdentityInfo(generator = JSOGGenerator.class, property = "id")
 public class BabAlarmHistory implements Serializable {
 
     private int id;

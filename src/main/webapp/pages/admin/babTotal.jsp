@@ -76,7 +76,7 @@
             function setLineObject() {
                 $.ajax({
                     type: "GET",
-                    url: "<c:url value="/BabLineController/findAll" />",
+                    url: "<c:url value="/BabLineController/findWithLineType" />",
                     data: {
                         sitefloor: $("#userSitefloorSelect").val()
                     },
@@ -87,7 +87,7 @@
                         for (var i = 0; i < lines.length; i++) {
                             var line = lines[i];
                             var lineName = line.name;
-                            var lineType = line.linetype;
+                            var lineType = line.lineType.name;
                             lineType == 'ASSY' ? lineObject.ASSY.push(lineName) : lineObject.Packing.push(lineName);
                         }
                     },
@@ -119,8 +119,7 @@
                     "serverSide": false,
                     "ajax": {
                         "url": "<c:url value="/LineTypeFacadeController/findBabProcessResult" />",
-                        "type": "GET",
-                        "data": {"type": "type2"}
+                        "type": "GET"
                     },
                     "columns": [
                         {},
@@ -368,6 +367,8 @@
                 }, 500);
 
                 $("#frame1").attr("src", iframeUrl);
+                
+                console.log(lineObject);
                 
             });
 
