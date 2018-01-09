@@ -9,7 +9,7 @@ import com.advantech.model.LineTypeConfig;
 import com.advantech.dao.LineTypeConfigDAO;
 import java.util.List;
 import javax.annotation.PostConstruct;
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

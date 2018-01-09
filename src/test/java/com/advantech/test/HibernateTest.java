@@ -12,6 +12,7 @@ import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.model.Bab;
 import com.advantech.model.BabStatus;
 import com.advantech.model.CountermeasureEvent;
+import com.advantech.model.Line;
 import com.advantech.model.ReplyStatus;
 import com.advantech.model.User;
 import com.advantech.service.BabPcsDetailHistoryService;
@@ -20,7 +21,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.transaction.Transactional;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -33,6 +33,7 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
@@ -237,16 +238,25 @@ public class HibernateTest {
         infoWithAvg.put("data", total);
         return infoWithAvg;
     }
-    
-    @Test
+
+//    @Test
     @Transactional
     @Rollback(true)
-    public void testConverter(){
+    public void testConverter() {
         Bab bab = (Bab) sessionFactory.getCurrentSession().get(Bab.class, 12730);
         assertNotNull(bab);
         assertNotNull(bab.getBabStatus());
         assertEquals(bab.getBabStatus(), BabStatus.NO_RECORD);
         assertNotNull(bab.getReplyStatus());
         assertEquals(bab.getReplyStatus(), ReplyStatus.NO_NEED_TO_REPLY);
+    }
+
+//    @Test
+    @Transactional
+    @Rollback(false)
+    public void testTagNameCompar() throws JsonProcessingException {
+        Session session = sessionFactory.getCurrentSession();
+        Line line = session.get(Line.class, 1);
+        session.save(new Bab("test", "test", line, 2, 1, 1));
     }
 }

@@ -9,7 +9,7 @@ import com.advantech.model.view.ModelResponsor;
 import com.advantech.dao.ModelResponsorDAO;
 import java.util.List;
 import java.util.Map;
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

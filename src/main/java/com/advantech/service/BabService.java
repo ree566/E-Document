@@ -3,20 +3,19 @@ package com.advantech.service;
 import com.advantech.model.Bab;
 import com.advantech.dao.BabDAO;
 import com.advantech.helper.HibernateObjectPrinter;
+import com.advantech.model.BabAlarmHistory;
 import com.advantech.model.BabSettingHistory;
+import com.advantech.model.ReplyStatus;
 import com.advantech.model.TagNameComparison;
 import com.advantech.model.view.BabAvg;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.List;
-import javax.annotation.PostConstruct;
-import javax.transaction.Transactional;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import static com.google.common.base.Preconditions.*;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.springframework.transaction.annotation.Transactional;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -46,9 +45,8 @@ public class BabService {
     @Autowired
     private SqlViewService sqlViewService;
 
-    @PostConstruct
-    protected void BABService() {
-    }
+    @Autowired
+    private BabAlarmHistoryService babAlarmHistoryService;
 
     public void BABDAO() {
         babDAO.BABDAO();
@@ -140,12 +138,6 @@ public class BabService {
                 .filter(b -> b.getStation() == station - 1)
                 .reduce((first, second) -> second).orElse(null);
 
-        try {
-            HibernateObjectPrinter.print(prev);
-        } catch (JsonProcessingException ex) {
-
-        }
-
         if (station == 2 && bab.getPeople() != 2 && prev.getLastUpdateTime() == null) {
             prev.setLastUpdateTime(new Date());
             babSettingHistoryService.update(prev);
@@ -170,7 +162,6 @@ public class BabService {
         List<BabAvg> babAvgs = sqlViewService.findBabAvg(bab.getId()); //先各站別取平衡率再算平均
         boolean needToSave = false;
         if (babAvgs != null && !babAvgs.isEmpty()) {
-            boolean prevSensorCloseFlag = true;
             bab.setBabAvgs(babAvgs);
             if (bab.getPeople() != 2) {
                 List<BabSettingHistory> babSettings = babSettingHistoryService.findByBab(bab);
@@ -179,12 +170,24 @@ public class BabService {
                         .reduce((first, second) -> second).orElse(null);
                 checkArgument(prev.getLastUpdateTime() != null, "關閉失敗，請檢查上一站是否關閉");
             }
-            needToSave = prevSensorCloseFlag;
+            needToSave = true;
         }
-        if(needToSave){
-//            bab.set
+
+        if (needToSave) {
+            this.closeBabWithSaving(bab);
+            bab.setReplyStatus(isBalanceAboveAvg(bab) ? ReplyStatus.NO_NEED_TO_REPLY : ReplyStatus.UNREPLIED);
+            this.update(bab);
+        } else {
+            this.closeBabDirectly(bab);
         }
-        return (needToSave ? this.closeBabWithSaving(bab) : this.closeBabDirectly(bab));
+
+        return 1;
+    }
+
+    private boolean isBalanceAboveAvg(Bab b) {
+        BabAlarmHistory alarmHistory = babAlarmHistoryService.findByBab(b.getId());
+        checkArgument(alarmHistory != null, "Alarm history not found");
+        return alarmHistory.getIspass() == 1;
     }
 
     public int closeBabDirectly(Bab b) {

@@ -7,7 +7,7 @@ package com.advantech.converter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
+import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
 import javax.annotation.PostConstruct;
 
 /**
@@ -17,8 +17,8 @@ import javax.annotation.PostConstruct;
 public class HibernateAwareObjectMapper extends ObjectMapper {
 
     public HibernateAwareObjectMapper() {
-        Hibernate4Module hbm = new Hibernate4Module();
-        hbm.enable(Hibernate4Module.Feature.SERIALIZE_IDENTIFIER_FOR_LAZY_NOT_LOADED_OBJECTS);
+        Hibernate5Module hbm = new Hibernate5Module();
+        hbm.enable(Hibernate5Module.Feature.SERIALIZE_IDENTIFIER_FOR_LAZY_NOT_LOADED_OBJECTS);
         configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         registerModule(hbm);
     }

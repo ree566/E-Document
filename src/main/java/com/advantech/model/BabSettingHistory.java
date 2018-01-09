@@ -112,7 +112,6 @@ public class BabSettingHistory implements Serializable {
         this.createTime = createTime;
     }
 
-    @UpdateTimestamp
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @JsonFormat(pattern = "yyyy-MM-dd'T'kk:mm:ss.SSS'Z'", timezone = "GMT+8")
     @Temporal(TemporalType.TIMESTAMP)

@@ -54,7 +54,7 @@ public class Bab implements Serializable {
     private Date beginTime;
     private Date lastUpdateTime;
     private int ispre = 0;
-    private ReplyStatus replyStatus;
+    private ReplyStatus replyStatus = ReplyStatus.NO_NEED_TO_REPLY;
 
     @JsonIgnore
     private Set<Fbn> fbns = new HashSet<Fbn>(0);
@@ -91,7 +91,7 @@ public class Bab implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id", unique = true, nullable = false)
+    @Column(name = "id", unique = true, nullable = false, updatable = false)
     public int getId() {
         return id;
     }
@@ -167,7 +167,7 @@ public class Bab implements Serializable {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @JsonFormat(pattern = "yyyy-MM-dd'T'kk:mm:ss.SSS'Z'", timezone = "GMT+8")
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "btime", length = 23, insertable = false, updatable = false)
+    @Column(name = "btime", length = 23, insertable = true, updatable = false)
     public Date getBeginTime() {
         return beginTime;
     }
@@ -180,7 +180,7 @@ public class Bab implements Serializable {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @JsonFormat(pattern = "yyyy-MM-dd'T'kk:mm:ss.SSS'Z'", timezone = "GMT+8")
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "lastUpdateTime", length = 23, insertable = false, updatable = false)
+    @Column(name = "lastUpdateTime", length = 23)
     public Date getLastUpdateTime() {
         return lastUpdateTime;
     }

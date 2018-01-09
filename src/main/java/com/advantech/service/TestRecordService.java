@@ -8,7 +8,7 @@ package com.advantech.service;
 import com.advantech.dao.TestRecordDAO;
 import com.advantech.model.TestRecord;
 import java.util.List;
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

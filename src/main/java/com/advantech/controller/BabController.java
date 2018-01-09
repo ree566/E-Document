@@ -143,5 +143,11 @@ public class BabController {
             return new DataTableResponse(babPcsDetailHistoryService.findByBab(bab.getId()));
         }
     }
+    
+    @RequestMapping(value = "/findSensorStatusPerStationToday", method = {RequestMethod.GET})
+    @ResponseBody
+    public DataTableResponse findSensorStatusPerStationToday(){
+        return new DataTableResponse(sqlViewService.findSensorStatusPerStationToday());
+    }
 
 }

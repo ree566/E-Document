@@ -69,4 +69,8 @@ public class SqlViewService {
         return sqlViewDAO.findLineBalanceCompare(modelName, lineTypeName);
     }
 
+    public List<Map> findSensorStatusPerStationToday() {
+        return sqlViewDAO.findSensorStatusPerStationToday();
+    }
+
 }

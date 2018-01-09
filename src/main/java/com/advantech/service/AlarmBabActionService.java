@@ -9,9 +9,9 @@ import com.advantech.dao.AlarmBabActionDAO;
 import com.advantech.model.AlarmBabAction;
 import java.util.Date;
 import java.util.List;
-import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
@@ -48,12 +48,9 @@ public class AlarmBabActionService {
     }
 
     public boolean update(List<AlarmBabAction> l) {
-        Date d = new Date();
         l.stream().map((a) -> {
             this.update(a);
             return a;
-        }).forEachOrdered((a) -> {
-            a.setLastUpdateTime(d);
         });
         return true;
     }

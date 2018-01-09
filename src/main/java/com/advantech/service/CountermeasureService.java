@@ -3,7 +3,7 @@ package com.advantech.service;
 import com.advantech.model.Countermeasure;
 import com.advantech.dao.CountermeasureDAO;
 import java.util.List;
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

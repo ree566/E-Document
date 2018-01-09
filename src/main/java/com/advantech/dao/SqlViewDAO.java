@@ -106,13 +106,20 @@ public class SqlViewDAO extends AbstractDao<Integer, Object> {
                 .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
                 .list();
     }
-    
+
     //Get bananceCompare with alarmPercent in /pages/admin/BabTotal page
     public List<Map> findLineBalanceCompare(String modelName, String lineTypeName) {
         return super.getSession()
                 .createSQLQuery("{CALL usp_GetLineBalanceCompare(:modelName, :lineTypeName)}")
                 .setParameter("modelName", modelName)
                 .setParameter("lineTypeName", lineTypeName)
+                .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
+                .list();
+    }
+
+    public List<Map> findSensorStatusPerStationToday() {
+        return super.getSession()
+                .createSQLQuery("select * from vw_SensorStatusPerStationToday")
                 .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
                 .list();
     }

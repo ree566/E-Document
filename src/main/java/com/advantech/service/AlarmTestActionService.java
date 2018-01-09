@@ -9,9 +9,9 @@ import com.advantech.dao.AlarmTestActionDAO;
 import com.advantech.model.AlarmTestAction;
 import java.util.Date;
 import java.util.List;
-import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
@@ -48,11 +48,9 @@ public class AlarmTestActionService {
     }
 
     public boolean update(List<AlarmTestAction> l) {
-        Date d = new Date();
-        for (AlarmTestAction a : l) {
-            a.setLastUpdateTime(d);
+        l.forEach((a) -> {
             this.update(a);
-        }
+        });
         return true;
     }
 

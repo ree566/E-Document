@@ -13,7 +13,7 @@ import javax.persistence.Converter;
  * @author Wei.Cheng
  */
 @Converter(autoApply = true)
-public class BabStatusConverter extends AbstractEnumConverter<BabStatus>{
+public class BabStatusConverter extends AbstractEnumConverter<BabStatus> {
 
     @Override
     public Integer convertToDatabaseColumn(BabStatus x) {
@@ -24,5 +24,5 @@ public class BabStatusConverter extends AbstractEnumConverter<BabStatus>{
     public BabStatus convertToEntityAttribute(Integer y) {
         return this.toEntityAttribute(BabStatus.class, y);
     }
-    
+
 }

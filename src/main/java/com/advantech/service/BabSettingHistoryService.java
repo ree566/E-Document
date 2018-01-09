@@ -11,14 +11,13 @@ import com.advantech.model.Bab;
 import static com.google.common.base.Preconditions.*;
 import java.util.Date;
 import java.util.List;
-import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
- * @author Wei.Cheng
- * Please keep one setting per bab and station
+ * @author Wei.Cheng Please keep one setting per bab and station
  */
 @Service
 @Transactional
@@ -39,10 +38,6 @@ public class BabSettingHistoryService {
         return babSettingHistoryDAO.findByBab(b);
     }
 
-    public List<BabSettingHistory> findByBabAndStation(Bab b, int station) {
-        return babSettingHistoryDAO.findByBabAndStation(b, station);
-    }
-
     public int insert(BabSettingHistory pojo) {
         pojo.setCreateTime(new Date());
         return babSettingHistoryDAO.insert(pojo);
@@ -50,8 +45,9 @@ public class BabSettingHistoryService {
 
     //Record jobnumber by "Hibernate Audit" audit jobnumber change event in sql.
     public int changeUser(Bab b, String jobnumber, int station) throws Exception {
-        BabSettingHistory setting = babSettingHistoryDAO.findProcessByBabAndStation(b, station);
+        BabSettingHistory setting = babSettingHistoryDAO.findByBabAndStation(b, station);
         checkArgument(setting != null, "Prev user setting in this station not found");
+        checkArgument(setting.getLastUpdateTime() == null, "This station is already finished");
         checkArgument(!jobnumber.equals(setting.getJobnumber()), "Jobnumber is the same");
         setting.setJobnumber(jobnumber);
         babSettingHistoryDAO.update(setting);
@@ -59,7 +55,6 @@ public class BabSettingHistoryService {
     }
 
     public int update(BabSettingHistory pojo) {
-        pojo.setLastUpdateTime(new Date());
         return babSettingHistoryDAO.update(pojo);
     }
 
@@ -67,14 +62,4 @@ public class BabSettingHistoryService {
         return babSettingHistoryDAO.delete(pojo);
     }
 
-//    public boolean recordBABPeople(int BABid, int station, String jobnumber) {
-//        BabPeopleRecord bRecord = this.getLastBABPeopleRecord(BABid, station);
-//        if (bRecord == null || !bRecord.getUser_id().equals(jobnumber)) {
-//            List l = new ArrayList();
-//            l.add(new BabPeopleRecord(BABid, station, jobnumber));
-//            return babLoginStatusDAO.recordBABPeople(l);
-//        } else {
-//            return true; //If the user is already exist, don't do anything.
-//        }
-//    }
 }

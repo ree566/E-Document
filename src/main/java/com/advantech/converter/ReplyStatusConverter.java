@@ -13,7 +13,7 @@ import javax.persistence.Converter;
  * @author Wei.Cheng
  */
 @Converter(autoApply = true)
-public class ReplyStatusConverter extends AbstractEnumConverter<ReplyStatus>{
+public class ReplyStatusConverter extends AbstractEnumConverter<ReplyStatus> {
 
     @Override
     public Integer convertToDatabaseColumn(ReplyStatus x) {
@@ -24,5 +24,5 @@ public class ReplyStatusConverter extends AbstractEnumConverter<ReplyStatus>{
     public ReplyStatus convertToEntityAttribute(Integer y) {
         return this.toEntityAttribute(ReplyStatus.class, y);
     }
-    
+
 }

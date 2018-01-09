@@ -42,19 +42,21 @@ Contributor(s):
 <hibernate-configuration>
     <session-factory>
         <property name="hibernate.connection.driver_class">net.sourceforge.jtds.jdbc.Driver</property>
-<!--                <property name="hibernate.connection.url">jdbc:jtds:sqlserver://M3-SERVER/WebAccess</property>
+        <!--                <property name="hibernate.connection.url">jdbc:jtds:sqlserver://M3-SERVER/WebAccess</property>
         <property name="hibernate.connection.username">waychien</property>
         <property name="hibernate.connection.password">m3server</property>-->
-                <property name="hibernate.connection.url">jdbc:jtds:sqlserver://M3-SERVER/WebAccess_1</property>
+        <property name="hibernate.connection.url">jdbc:jtds:sqlserver://M3-SERVER/WebAccess_1</property>
         <property name="hibernate.connection.username">waychien</property>
         <property name="hibernate.connection.password">m3server</property>
-<!--        <property name="hibernate.connection.url">jdbc:jtds:sqlserver://localhost:57936/WebAccess</property>
-        <property name="hibernate.connection.username">test.user</property>
-        <property name="hibernate.connection.password">test</property>
-    -->
+        
+        <property name="hibernate.id.new_generator_mappings" >false</property>
+        <!--        <property name="hibernate.connection.url">jdbc:jtds:sqlserver://localhost:57936/WebAccess</property>
+            <property name="hibernate.connection.username">test.user</property>
+            <property name="hibernate.connection.password">test</property>
+        -->
         <property name="hibernate.dialect">org.hibernate.dialect.SQLServerDialect</property>
         <property name="hibernate.show_sql">true</property>
-<!--        <property name="hibernate.format_sql">true</property>
+        <!--        <property name="hibernate.format_sql">true</property>
         <property name="hibernate.use_sql_comments">true</property>-->
         <property name="hibernate.current_session_context_class">thread</property>
         <property name="hibernate.transaction.factory_class">org.hibernate.transaction.JDBCTransactionFactory</property>

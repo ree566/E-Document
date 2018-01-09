@@ -9,7 +9,7 @@ import com.advantech.model.Fbn;
 import com.advantech.dao.FbnDAO;
 import java.util.List;
 import java.util.Map;
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import org.joda.time.DateTime;
 import org.joda.time.Hours;
 import org.joda.time.Minutes;

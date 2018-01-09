@@ -6,15 +6,16 @@
  */
 package com.advantech.controller;
 
-import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.model.Line;
 import com.advantech.model.LineStatus;
+import com.advantech.model.view.UserInfoRemote;
 import com.advantech.service.LineService;
+import com.advantech.service.SqlViewService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import static com.google.common.base.Preconditions.*;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -45,7 +46,7 @@ public class BabLineController {
 
     @RequestMapping(value = "/login", method = {RequestMethod.POST})
     @ResponseBody
-    protected String login(@RequestParam(value = "line.id") int line_id) throws JsonProcessingException {
+    protected String login(@RequestParam(value = "line.id") int line_id, @RequestParam String jobnumber) throws JsonProcessingException {
         Line line = lineService.findByPrimaryKey(line_id);
         line.setLineStatus(LineStatus.OPEN);
         lineService.update(line);

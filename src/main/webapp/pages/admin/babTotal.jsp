@@ -73,6 +73,8 @@
 
             var iframeUrl = "babMainSearch.jsp?t=1";
 
+            var tagNameReg = /[-S-]+[0-9]{1,2}/g;
+
             function setLineObject() {
                 $.ajax({
                     type: "GET",
@@ -123,8 +125,8 @@
                     },
                     "columns": [
                         {},
-                        {data: "TagName"},
-                        {data: "T_Num"},
+                        {data: "tagName"},
+                        {data: "station"},
                         {data: "groupid"},
                         {data: "diff"},
                         {data: "ismax"}
@@ -133,11 +135,12 @@
                         {
                             "type": "html",
                             "targets": 0,
-                            "data": "TagName",
+                            "data": "tagName",
                             'render': function (data, type, row) {
                                 var ASSY = lineObject.ASSY;
                                 var Packing = lineObject.Packing;
-                                return $.inArray(data, ASSY) !== -1 ? 'ASSY' : ($.inArray(data, Packing) !== -1 ? 'Packing' : 'N/A');
+                                var lineName = data.replace(tagNameReg, "");
+                                return $.inArray(lineName, ASSY) !== -1 ? 'ASSY' : ($.inArray(lineName, Packing) !== -1 ? 'Packing' : 'N/A');
                             }
                         },
                         {
@@ -201,6 +204,7 @@
             }
 
             function generateOnlineBabDetail(filter) {
+
                 $("#balanceCount").html("");
                 var arr = table2.rows().data().toArray();
                 if (arr == null || arr.length == 0) {
@@ -208,28 +212,28 @@
                 }
                 var res;
                 if (filter.constructor === Array) {
-                    res = alasql('SELECT PO, TagName, Model_name,\
+                    res = alasql('SELECT  bab_id, lineName, \
                                           SUM(diff) / (COUNT(diff) * MAX(diff)) AS balance \
-                                          FROM ? \
-                                          WHERE TagName IN @(?)\
-                                          GROUP BY PO, TagName, Model_name \
-                                          ORDER BY TagName', [arr, filter]);
+                                          FROM (SELECT bab_id, replacestr(tagName) AS lineName, diff FROM ?) \
+                                          WHERE lineName IN @(?)\
+                                          GROUP BY bab_id, lineName\
+                                          ORDER BY lineName', [arr, filter]);
                 } else {
-                    res = alasql('SELECT PO, TagName, Model_name,\
+                    res = alasql('SELECT  bab_id, lineName, \
                                           SUM(diff) / (COUNT(diff) * MAX(diff)) AS balance \
-                                          FROM ? \
-                                          GROUP BY PO, TagName, Model_name \
-                                          ORDER BY TagName', [arr]);
+                                          FROM (SELECT bab_id, replacestr(tagName) AS lineName, diff FROM ?) \
+                                          GROUP BY bab_id, lineName\
+                                          ORDER BY lineName', [arr]);
                 }
 
                 //balance節省麻煩由alasql做前端計算
-
+               
                 for (var i = 0; i < res.length; i++) {
                     $("#balanceCount").append(
-                            '<p>線別: ' + res[i].TagName +
-                            ' 工單號碼: ' + res[i].PO +
-                            ' 機種: ' + res[i].Model_name +
-                            ' 最後一台平衡率: ' + getPercent(res[i].balance, round_digit) +
+                            '<p>線別: ' + res[i].lineName +
+//                            ' 工單號碼: ' + res[i].PO +
+//                            ' 機種: ' + res[i].Model_name +
+                            ' 最後一台平衡率: ' + (res[i].balance == null ? "N/A" :getPercent(res[i].balance, round_digit)) +
                             "</p>");
                 }
             }
@@ -308,6 +312,10 @@
             }
 
             $(document).ready(function () {
+                alasql.fn.replacestr = function (str) {
+                    return (str || '').replace(tagNameReg, "");
+                };
+
                 $('[data-toggle="tooltip"]').tooltip();
                 var interval = null;
                 var countdownnumber = 30 * 60;
@@ -367,9 +375,7 @@
                 }, 500);
 
                 $("#frame1").attr("src", iframeUrl);
-                
-                console.log(lineObject);
-                
+
             });
 
         </script>
@@ -392,7 +398,7 @@
                                 <thead>
                                     <tr>
                                         <th>製程</th>
-                                        <th>線別</th>
+                                        <th>感應器</th>
                                         <th>站別</th>
                                         <th>組別</th>
                                         <th>秒數</th>

@@ -12,8 +12,7 @@ import javax.persistence.AttributeConverter;
  * @author Wei.Cheng
  * @param <E>
  */
-public abstract class AbstractEnumConverter<E extends Enum<E> & Encodeable>
-            implements AttributeConverter<E, Integer> {
+public abstract class AbstractEnumConverter<E extends Enum<E> & Encodeable> implements AttributeConverter<E, Integer> {
 
     public Integer toDatabaseColumn(E attr) {
         return (attr == null)

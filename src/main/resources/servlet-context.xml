@@ -40,7 +40,7 @@
     </bean>
     
     <!-- 設定sessionFactory -->
-    <bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean" destroy-method="destroy"> 
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean" destroy-method="destroy"> 
         <!-- 指定數據源，此處是C3P0連接池 -->
         
         <!--setting in spring xml--> 
@@ -57,14 +57,14 @@
         <property name="hibernateProperties"> 
             <props> 
                 <!-- 不要用 <prop key="hibernate.current_session_context_class">thread</prop> -->
-                <prop key="hibernate.current_session_context_class">org.springframework.orm.hibernate4.SpringSessionContext</prop>                
+                <prop key="hibernate.current_session_context_class">org.springframework.orm.hibernate5.SpringSessionContext</prop>                
                 <prop key="hibernate.query.factory_class">org.hibernate.hql.internal.ast.ASTQueryTranslatorFactory</prop>
             </props> 
         </property> 
     </bean>
     
     <!-- 設定sessionFactory -->
-    <bean id="sessionFactory2" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean" destroy-method="destroy"> 
+    <bean id="sessionFactory2" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean" destroy-method="destroy"> 
         <!-- 指定數據源，此處是C3P0連接池 -->
         
         <!--setting in spring xml--> 
@@ -81,20 +81,20 @@
         <property name="hibernateProperties"> 
             <props> 
                 <!-- 不要用 <prop key="hibernate.current_session_context_class">thread</prop> -->
-                <prop key="hibernate.current_session_context_class">org.springframework.orm.hibernate4.SpringSessionContext</prop>                
-                <prop key="hibernate.query.factory_class">org.hibernate.hql.internal.ast.ASTQueryTranslatorFactory</prop>
+                <prop key="hibernate.current_session_context_class">org.springframework.orm.hibernate5.SpringSessionContext</prop>                
+                <prop key="hibernate.query.factory_class">org.hibernate.hql.internal.ast.ASTQueryTranslatorFactory</prop>              
             </props> 
         </property> 
     </bean>
     
     <!-- 設定交易管理員transactionManager -->
-    <bean name="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+    <bean name="transactionManager" class="org.springframework.orm.hibernate5.HibernateTransactionManager">
         <property name="sessionFactory" ref="sessionFactory" />
         <qualifier value="tx1" />
     </bean>
     
     <!-- 設定交易管理員transactionManager -->
-    <bean name="transactionManager2" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+    <bean name="transactionManager2" class="org.springframework.orm.hibernate5.HibernateTransactionManager">
         <property name="sessionFactory" ref="sessionFactory2" />
         <qualifier value="tx2" />
     </bean>
