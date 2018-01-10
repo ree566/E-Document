@@ -500,7 +500,7 @@
             function checkUserExist(jobnumber) {
                 var result;
                 $.ajax({
-                    type: "Post",
+                    type: "GET",
                     url: "CheckUser",
                     data: {
                         jobnumber: jobnumber

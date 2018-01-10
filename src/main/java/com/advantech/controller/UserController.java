@@ -26,7 +26,7 @@ public class UserController {
     @Autowired
     private SqlViewService sqlViewService;
 
-    @RequestMapping(value = "/CheckUser", method = {RequestMethod.POST})
+    @RequestMapping(value = "/CheckUser", method = {RequestMethod.GET})
     @ResponseBody
     public boolean checkUser(@RequestParam String jobnumber) {
         return isUserExist(jobnumber);
