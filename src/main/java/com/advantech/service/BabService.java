@@ -108,11 +108,7 @@ public class BabService {
                 prevBab == null || prevBab.getStartPosition() == b.getStartPosition(),
                 "上一套工單與本次工單的起始站別不符，請等待上套工單完成再做投入"
         );
-
         babDAO.insert(b);
-        TagNameComparison tagName = tagNameComparisonService.findByLineAndStation(b.getLine().getId(), 1);
-        babSettingHistoryService.insert(new BabSettingHistory(b, 1, tagName.getId().getLampSysTagName(), jobnumber));
-
         return 1;
     }
 
