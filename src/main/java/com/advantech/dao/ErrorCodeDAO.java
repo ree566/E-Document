@@ -8,7 +8,6 @@ package com.advantech.dao;
 import com.advantech.model.ErrorCode;
 import java.util.List;
 import org.hibernate.Criteria;
-import org.hibernate.FetchMode;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 

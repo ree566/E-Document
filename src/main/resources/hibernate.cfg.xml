@@ -49,15 +49,13 @@ Contributor(s):
         <property name="hibernate.connection.username">waychien</property>
         <property name="hibernate.connection.password">m3server</property>
         
+        <!--Hibernate 5 auto generate id part will cause error when not add this config-->
         <property name="hibernate.id.new_generator_mappings" >false</property>
-        <!--        <property name="hibernate.connection.url">jdbc:jtds:sqlserver://localhost:57936/WebAccess</property>
-            <property name="hibernate.connection.username">test.user</property>
-            <property name="hibernate.connection.password">test</property>
-        -->
-        <property name="hibernate.dialect">org.hibernate.dialect.SQLServerDialect</property>
+        
+        <property name="hibernate.dialect">org.hibernate.dialect.SQLServer2008Dialect</property>
         <property name="hibernate.show_sql">true</property>
-        <!--        <property name="hibernate.format_sql">true</property>
-        <property name="hibernate.use_sql_comments">true</property>-->
+        <property name="hibernate.format_sql">true</property>
+        <property name="hibernate.use_sql_comments">true</property>
         <property name="hibernate.current_session_context_class">thread</property>
         <property name="hibernate.transaction.factory_class">org.hibernate.transaction.JDBCTransactionFactory</property>
         <property name="hibernate.c3p0.privilegeSpawnedThreads">true</property>
@@ -83,6 +81,7 @@ Contributor(s):
         <mapping class="com.advantech.model.BabSettingHistory"/>
         <mapping class="com.advantech.model.BabBalanceHistory"/>
         <mapping class="com.advantech.model.BabAlarmHistory"/>
+        <mapping class="com.advantech.model.BabSensorLoginRecord"/>
         <mapping class="com.advantech.model.Line"/>
         <mapping class="com.advantech.model.LineType"/>
         <mapping class="com.advantech.model.LineTypeConfig"/>
@@ -93,5 +92,7 @@ Contributor(s):
         <mapping class="com.advantech.model.CountermeasureEvent"/>
         <mapping class="com.advantech.model.TagNameComparison"/>
         <mapping class="com.advantech.model.TagNameComparisonId"/>
+        <mapping class="com.advantech.model.Sensor"/>
+        <mapping class="com.advantech.model.SensorTransform"/>
     </session-factory>
 </hibernate-configuration>

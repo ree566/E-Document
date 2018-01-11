@@ -10,10 +10,12 @@ import com.advantech.dao.BabDAO;
 import com.advantech.dao.SqlViewDAO;
 import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.model.Bab;
+import com.advantech.model.BabSensorLoginRecord;
 import com.advantech.model.BabStatus;
 import com.advantech.model.CountermeasureEvent;
-import com.advantech.model.Line;
 import com.advantech.model.ReplyStatus;
+import com.advantech.model.SensorTransform;
+import com.advantech.model.TagNameComparison;
 import com.advantech.model.User;
 import com.advantech.service.BabPcsDetailHistoryService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -45,19 +47,19 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @RunWith(SpringJUnit4ClassRunner.class)
 public class HibernateTest {
-
+    
     @Autowired
     SessionFactory sessionFactory;
-
+    
     @Autowired
     private AlarmTestActionDAO alarmTestActionDAO;
-
+    
     @Autowired
     private BabDAO babDAO;
-
+    
     @Autowired
     private com.advantech.dao.TestDAO testDAO;
-
+    
     @Autowired
     private BabPcsDetailHistoryService pcsHistoryService;
 
@@ -132,9 +134,9 @@ public class HibernateTest {
                 //                ErrorCode.class,
                 CountermeasureEvent.class
         );
-
+        
     }
-
+    
     private void testObject(Class... cls) {
         Session session = sessionFactory.getCurrentSession();
         for (Class c : cls) {
@@ -145,7 +147,7 @@ public class HibernateTest {
             System.out.println(c + " Test pass");
         }
     }
-
+    
     @Autowired
     private SqlViewDAO sqlViewDAO;
 
@@ -197,7 +199,7 @@ public class HibernateTest {
         List l = pcsHistoryService.findByBabForMap(12595);
         HibernateObjectPrinter.print(this.toChartForm(l));
     }
-
+    
     private Map toChartForm(List<Map> l) {
         List<Map<String, Object>> total = new ArrayList();
         int diffSum = 0;
@@ -230,9 +232,9 @@ public class HibernateTest {
                 maxGroup = groupid;
             }
         }
-
+        
         int people = total.size();
-
+        
         Map infoWithAvg = new HashMap();
         infoWithAvg.put("avg", (diffSum / people / maxGroup));
         infoWithAvg.put("data", total);
@@ -253,10 +255,25 @@ public class HibernateTest {
 
 //    @Test
     @Transactional
-    @Rollback(false)
+    @Rollback(true)
     public void testTagNameCompar() throws JsonProcessingException {
         Session session = sessionFactory.getCurrentSession();
-        Line line = session.get(Line.class, 1);
-        session.save(new Bab("test", "test", line, 2, 1, 1));
+        List l = session.createCriteria(TagNameComparison.class).list();
+        HibernateObjectPrinter.print(l);
+    }
+    
+    @Test
+    @Transactional
+    @Rollback(false)
+    public void testBabSettingHistory() throws JsonProcessingException {
+        Session session = sessionFactory.getCurrentSession();
+        SensorTransform sensor = session.get(SensorTransform.class, "L1-S-1");
+        assertNotNull(sensor);
+        BabSensorLoginRecord loginRec = new BabSensorLoginRecord(sensor, "A-7568");
+        session.save(loginRec);
+        assertNotEquals(0, loginRec.getId());
+        assertNotNull(loginRec.getBeginTime());
+        HibernateObjectPrinter.print(loginRec);
+        
     }
 }

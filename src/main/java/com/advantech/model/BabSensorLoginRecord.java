@@ -27,23 +27,18 @@ import org.springframework.format.annotation.DateTimeFormat;
  * @author Wei.Cheng
  */
 @Entity
-@Table(name = "BabSettingHistory")
-public class BabSettingHistory implements Serializable {
+@Table(name = "BabSensorLoginRecord")
+public class BabSensorLoginRecord implements Serializable {
 
     private int id;
-    private Bab bab;
-    private int station;
     private SensorTransform tagName;
     private String jobnumber;
-    private Date createTime;
-    private Date lastUpdateTime;
+    private Date beginTime;
 
-    public BabSettingHistory() {
+    public BabSensorLoginRecord() {
     }
 
-    public BabSettingHistory(Bab bab, int station, SensorTransform tagName, String jobnumber) {
-        this.bab = bab;
-        this.station = station;
+    public BabSensorLoginRecord(SensorTransform tagName, String jobnumber) {
         this.tagName = tagName;
         this.jobnumber = jobnumber;
     }
@@ -60,26 +55,7 @@ public class BabSettingHistory implements Serializable {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "bab_id", nullable = false)
-    public Bab getBab() {
-        return bab;
-    }
-
-    public void setBab(Bab bab) {
-        this.bab = bab;
-    }
-
-    @Column(name = "station", nullable = false)
-    public int getStation() {
-        return station;
-    }
-
-    public void setStation(int station) {
-        this.station = station;
-    }
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "tagName", nullable = false)
+    @JoinColumn(name = "tagName", nullable = false, unique = true)
     public SensorTransform getTagName() {
         return tagName;
     }
@@ -102,24 +78,12 @@ public class BabSettingHistory implements Serializable {
     @JsonFormat(pattern = "yyyy-MM-dd'T'kk:mm:ss.SSS'Z'", timezone = "GMT+8")
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "btime", length = 23, insertable = true, updatable = false)
-    public Date getCreateTime() {
-        return createTime;
+    public Date getBeginTime() {
+        return beginTime;
     }
 
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-    @JsonFormat(pattern = "yyyy-MM-dd'T'kk:mm:ss.SSS'Z'", timezone = "GMT+8")
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "lastUpdateTime", length = 23, insertable = false, updatable = true)
-    public Date getLastUpdateTime() {
-        return lastUpdateTime;
-    }
-
-    public void setLastUpdateTime(Date lastUpdateTime) {
-        this.lastUpdateTime = lastUpdateTime;
+    public void setBeginTime(Date beginTime) {
+        this.beginTime = beginTime;
     }
 
 }

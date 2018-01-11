@@ -55,12 +55,12 @@ public class TestDAO {
     @Transactional
     @Rollback(true)
     public void testBabDAO() throws JsonProcessingException {
-        Bab b = babDAO.findByPrimaryKey(11262);
-        assertNotNull(b);
-        BabSettingHistory setting = new BabSettingHistory(b, 2, b.getLine().getName() + "-S-" + 2, "A-TEST");
-        babSettingHistoryDAO.insert(setting);
-        assertNotNull(setting.getCreateTime());
-        HibernateObjectPrinter.print(setting);
+//        Bab b = babDAO.findByPrimaryKey(11262);
+//        assertNotNull(b);
+//        BabSettingHistory setting = new BabSettingHistory(b, 2, b.getLine().getName() + "-S-" + 2, "A-TEST");
+//        babSettingHistoryDAO.insert(setting);
+//        assertNotNull(setting.getCreateTime());
+//        HibernateObjectPrinter.print(setting);
     }
 
 //    @Test
