@@ -5,6 +5,7 @@ import com.advantech.dao.BabDAO;
 import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.model.BabAlarmHistory;
 import com.advantech.model.BabSettingHistory;
+import com.advantech.model.BabStatus;
 import com.advantech.model.ReplyStatus;
 import com.advantech.model.TagNameComparison;
 import com.advantech.model.view.BabAvg;
@@ -89,6 +90,10 @@ public class BabService {
         return babDAO.findProcessingByLine(line_id);
     }
 
+    public List<Bab> findProcessingByTagName(String tagName) {
+        return babDAO.findProcessingByTagName(tagName);
+    }
+
     public List<String> findAllModelName() {
         return babDAO.findAllModelName();
     }
@@ -97,18 +102,12 @@ public class BabService {
         return babDAO.insert(pojo);
     }
 
-    public int checkAndInsert(Bab b, String jobnumber) {
+    public int checkAndInsert(Bab b, String jobnumber, TagNameComparison tag) {
         List<Bab> processes = babDAO.findProcessingByLine(b.getLine().getId());
         Bab duplicate = processes.stream().filter(bab -> bab.getPo().equals(b.getPo())).findFirst().orElse(null);
         checkArgument(duplicate == null, "工單號碼已經存在");
-
-        Bab prevBab = processes.stream().findFirst().orElse(null);
-
-        checkArgument(
-                prevBab == null || prevBab.getStartPosition() == b.getStartPosition(),
-                "上一套工單與本次工單的起始站別不符，請等待上套工單完成再做投入"
-        );
         babDAO.insert(b);
+        babSettingHistoryService.insertByBab(b, tag);
         return 1;
     }
 
@@ -116,25 +115,15 @@ public class BabService {
         return babDAO.update(pojo);
     }
 
-    public int stationComplete(Bab bab, int station) {
+    public int stationComplete(Bab bab, BabSettingHistory setting) {
+        checkArgument(bab.getIspre() == 1, "前置工單請直接從最後一站關閉");
+        
         List<BabSettingHistory> babSettings = babSettingHistoryService.findByBab(bab);
-
-        BabSettingHistory setting = babSettings.stream()
-                .filter(b -> b.getStation() == station)
-                .reduce((first, second) -> second).orElse(null);
-
-        checkArgument(setting != null, "找不到該站使用者");
-        checkArgument(setting.getLastUpdateTime() == null, "感應器已經關閉");
-
-        //沒有babavg，直接回傳success，等第三站關閉
-        List<BabAvg> l = sqlViewService.findBabAvg(bab.getId());
-        checkArgument(!l.isEmpty(), "查無統計數據，若要關閉工單請從最後一站直接做關閉動作");
-
         BabSettingHistory prev = babSettings.stream()
-                .filter(b -> b.getStation() == station - 1)
+                .filter(b -> b.getStation() == setting.getStation() - 1)
                 .reduce((first, second) -> second).orElse(null);
 
-        if (station == 2 && bab.getPeople() != 2 && prev.getLastUpdateTime() == null) {
+        if (setting.getStation() == 2 && prev.getLastUpdateTime() == null) {
             prev.setLastUpdateTime(new Date());
             babSettingHistoryService.update(prev);
         } else {
@@ -156,11 +145,11 @@ public class BabService {
      */
     public int closeBab(Bab bab) {
         List<BabAvg> babAvgs = sqlViewService.findBabAvg(bab.getId()); //先各站別取平衡率再算平均
+        List<BabSettingHistory> babSettings = babSettingHistoryService.findByBab(bab);
         boolean needToSave = false;
         if (babAvgs != null && !babAvgs.isEmpty()) {
             bab.setBabAvgs(babAvgs);
             if (bab.getPeople() != 2) {
-                List<BabSettingHistory> babSettings = babSettingHistoryService.findByBab(bab);
                 BabSettingHistory prev = babSettings.stream()
                         .filter(b -> b.getStation() == bab.getPeople() - 1)
                         .reduce((first, second) -> second).orElse(null);
@@ -171,11 +160,19 @@ public class BabService {
 
         if (needToSave) {
             this.closeBabWithSaving(bab);
+            bab.setBabStatus(BabStatus.CLOSED);
             bab.setReplyStatus(isBalanceAboveAvg(bab) ? ReplyStatus.NO_NEED_TO_REPLY : ReplyStatus.UNREPLIED);
-            this.update(bab);
         } else {
             this.closeBabDirectly(bab);
+            bab.setBabStatus(BabStatus.NO_RECORD);
         }
+        //Update Status flag
+        this.update(bab);
+
+        BabSettingHistory setting = babSettings.stream()
+                .filter(b -> b.getStation() == bab.getPeople())
+                .reduce((first, second) -> second).orElse(null);
+        this.stationComplete(bab, setting);
 
         return 1;
     }

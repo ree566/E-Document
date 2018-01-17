@@ -49,7 +49,6 @@ public class Bab implements Serializable {
     private String modelName;
     private Line line;
     private int people;
-    private int startPosition;
     private BabStatus babStatus;
     private Date beginTime;
     private Date lastUpdateTime;
@@ -80,12 +79,11 @@ public class Bab implements Serializable {
     public Bab() {
     }
 
-    public Bab(String po, String modelName, Line line, int people, int startPosition, int ispre) {
+    public Bab(String po, String modelName, Line line, int people, int ispre) {
         this.po = po;
         this.modelName = modelName;
         this.line = line;
         this.people = people;
-        this.startPosition = startPosition;
         this.ispre = ispre;
     }
 
@@ -122,7 +120,6 @@ public class Bab implements Serializable {
         this.modelName = modelName;
     }
 
-    @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "line_id", nullable = false)
     public Line getLine() {
@@ -141,16 +138,6 @@ public class Bab implements Serializable {
 
     public void setPeople(int people) {
         this.people = people;
-    }
-
-    @NotNull
-    @Column(name = "startPosition", nullable = false)
-    public int getStartPosition() {
-        return startPosition;
-    }
-
-    public void setStartPosition(int startPosition) {
-        this.startPosition = startPosition;
     }
 
     @Column(name = "isused")

@@ -9,11 +9,14 @@ import com.advantech.model.Bab;
 import com.advantech.model.Line;
 import com.advantech.helper.PropertiesReader;
 import com.advantech.model.AlarmBabAction;
+import com.advantech.model.BabSettingHistory;
 import com.advantech.model.view.BabLastGroupStatus;
+import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import static java.util.stream.Collectors.toList;
 import javax.annotation.PostConstruct;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -46,6 +49,9 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
     @Autowired
     private SqlViewService sqlViewService;
 
+    @Autowired
+    private BabSettingHistoryService babSettingHistoryService;
+
     private double BAB_STANDARD;
 
     @PostConstruct
@@ -53,18 +59,19 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
         PropertiesReader p = PropertiesReader.getInstance();
         BAB_STANDARD = p.getAssyStandard();
         this.initMap();
+        this.initAlarmSign();
     }
 
     @Override
     protected void initMap() {
         dataMap.clear();
         List<Line> babLineStatus = lineService.findAll();
-        for (Line line : babLineStatus) {
+        babLineStatus.forEach((line) -> {
             String lineName = line.getName().trim();
             for (int i = 1, length = line.getPeople(); i <= length; i++) {
                 dataMap.put(lineName + "-L-" + i, super.NORMAL_SIGN);
             }
-        }
+        });
     }
 
     //組測亮燈邏輯type 2(目前使用)
@@ -73,23 +80,35 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
         boolean isSomeBabUnderStandard = false;
 
         List<Bab> babGroups = babService.findProcessing();
-        if (hasDataInCollection(babGroups)) {
+        List<BabSettingHistory> allSettings = babSettingHistoryService.findProcessing();
+
+        if (hasDataInCollection(allSettings) && hasDataInCollection(babGroups)) {
             //把所有有在bab資料表的id集合起來，找到統計值之後依序寫入txt(各線別取當日最早輸入的工單id來亮燈)
             JSONArray transBabData = new JSONArray();
             processingJsonObject = new JSONObject();
 
             for (Bab bab : babGroups) {
+                List<BabSettingHistory> babSettings = allSettings.stream()
+                        .filter(rec -> rec.getBab().getId() == bab.getId()).collect(toList());
+
+                if (babSettings.isEmpty()) {
+                    continue;
+                }
+
                 List<BabLastGroupStatus> status = sqlViewService.findBabLastGroupStatus(bab.getId());
                 int currentGroupSum = status.size();//看目前組別人數是否有到達bab裏頭設定的人數
                 int peoples = bab.getPeople();
                 if (currentGroupSum == 0 || currentGroupSum != peoples) {
-                    //Insert an empty status 
-                    for (int station = 1, people = bab.getPeople(), startPosition = bab.getStartPosition(); station <= people; station++) {
+                    //Insert an empty status
+                    //BabSettingHistory in allSettings are proxy object generate by hibernate
+                    //Can't transform to json by google.Gson directly
+                    babSettings.forEach((setting) -> {
                         JSONObject obj = new JSONObject();
-                        obj.put("tagName", bab.getLine().getName() + "-S-" + (station + startPosition - 1));
-                        obj.put("station", station);
+                        obj.put("tagName", setting.getTagName().getName());
+                        obj.put("station", setting.getStation());
                         transBabData.put(obj);
-                    }
+                    });
+
                     isSomeBabUnderStandard = true;
 
                 } else {
@@ -132,7 +151,6 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
     }
 
     private void babDataToMap(JSONObject avgs) {
-        System.out.println(avgs);
         if (avgs != null) {
             JSONArray sensorDatas = avgs.getJSONArray("data");
             if (sensorDatas.length() != 0) {
@@ -147,7 +165,6 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
                 }
             }
         }
-        System.out.println(dataMap);
     }
 
     @Override

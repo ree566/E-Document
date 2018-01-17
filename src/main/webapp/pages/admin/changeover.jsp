@@ -238,7 +238,6 @@
                             "<p>ModelName: " + target.model_name + "</p>" +
                             "<p>line: " + target.lineName + "</p>" +
                             "<p>people: " + target.people + "</p>" +
-                            "<p>startPosition: " + target.startPosition + "</p>" +
                             "<p>startTime: " + target.btime + "</p>" +
                             "<p>endTime: " + target.lastUpdateTime + "</p>";
                     return str;

@@ -8,9 +8,8 @@ package com.advantech.quartzJob;
 
 import com.advantech.helper.ApplicationContextHelper;
 import com.advantech.service.BabLineTypeFacade;
-import com.advantech.service.CellLineService;
-import com.advantech.service.CellLineTypeFacade;
-import com.advantech.service.LineService;
+import com.advantech.service.BabSensorLoginRecordService;
+import com.advantech.service.BabSettingHistoryService;
 import com.advantech.service.TestLineTypeFacade;
 import com.advantech.service.TestService;
 import java.io.IOException;
@@ -28,20 +27,19 @@ public class DataBaseInit extends QuartzJobBean {
 
     private static final Logger log = LoggerFactory.getLogger(DataBaseInit.class);
 
+    private final BabSettingHistoryService babSettingHistoryService;
+    private final BabSensorLoginRecordService babSensorLoginRecordService;
     private final TestService testService;
-    private final LineService lineService;
-    private final CellLineService cellLineService;
+    
     private final BabLineTypeFacade bF;
     private final TestLineTypeFacade tF;
-    private final CellLineTypeFacade cF;
 
     public DataBaseInit() {
+        babSettingHistoryService = (BabSettingHistoryService) ApplicationContextHelper.getBean("babSettingHistoryService");
+        babSensorLoginRecordService = (BabSensorLoginRecordService) ApplicationContextHelper.getBean("babSensorLoginRecordService");
         testService = (TestService) ApplicationContextHelper.getBean("testService");
-        lineService = (LineService) ApplicationContextHelper.getBean("lineService");
-        cellLineService = (CellLineService) ApplicationContextHelper.getBean("cellLineService");
         tF = (TestLineTypeFacade) ApplicationContextHelper.getBean("testLineTypeFacade");
         bF = (BabLineTypeFacade) ApplicationContextHelper.getBean("babLineTypeFacade");
-        cF = (CellLineTypeFacade) ApplicationContextHelper.getBean("cellLineTypeFacade");
     }
 
     @Override
@@ -51,12 +49,11 @@ public class DataBaseInit extends QuartzJobBean {
 
     private void dataInitialize() {
         try {
+            babSettingHistoryService.init();
+            babSensorLoginRecordService.init();
             testService.cleanTests();
-            lineService.closeAll();
-            cellLineService.closeAll();
             bF.resetAlarm();
             tF.resetAlarm();
-            cF.resetAlarm();
             log.info("Data has been initialized.");
         } catch (IOException ex) {
             log.error("Data initialized fail because: " + ex);

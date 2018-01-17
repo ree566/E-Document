@@ -10,6 +10,7 @@ package com.advantech.controller;
 import com.advantech.model.Bab;
 import com.advantech.model.BabSettingHistory;
 import com.advantech.model.TagNameComparison;
+import com.advantech.service.BabSensorLoginRecordService;
 import com.advantech.service.BabSettingHistoryService;
 import com.advantech.service.BabService;
 import com.advantech.service.TagNameComparisonService;
@@ -38,6 +39,9 @@ public class BabOtherStationController {
 
     @Autowired
     private BabSettingHistoryService babSettingHistoryService;
+    
+    @Autowired
+    private BabSensorLoginRecordService babSensorLoginRecordService;
 
     @Autowired
     private TagNameComparisonService tagNameComparisonService;
@@ -49,30 +53,30 @@ public class BabOtherStationController {
     @ResponseBody
     protected String changeUser(
             @RequestParam String jobnumber,
-            @RequestParam int bab_id,
-            @RequestParam int station
+            @RequestParam String tagName
     ) throws Exception {
-        Bab b = babService.findByPrimaryKey(bab_id);
-        checkArgument(b != null, "Bab not found");
-        babSettingHistoryService.changeUser(b, jobnumber, station);
+        babSensorLoginRecordService.changeUser(jobnumber, tagName);
         return "success";
     }
 
     @RequestMapping(value = "/stationComplete", method = {RequestMethod.POST})
     @ResponseBody
     protected String stationComplete(
-            @RequestParam String jobnumber,
             @RequestParam int bab_id,
-            @RequestParam int station
+            @RequestParam String tagName,
+            @RequestParam String jobnumber
     ) {
         Bab b = babService.findByPrimaryKey(bab_id);
-        checkStation(b, station);
+        BabSettingHistory setting = babSettingHistoryService.findProcessingByTagName(tagName);
+        checkArgument(setting != null, "找不到該站使用者");
+        checkArgument(setting.getLastUpdateTime() == null, "感應器已經關閉");
+        checkStation(b, setting.getStation());
 
-        if (station == b.getPeople()) { // if the station is the last station
+        if (setting.getStation() == b.getPeople()) { // if the station is the last station
             babService.closeBab(b);
 //                            Endpoint6.syncAndEcho();
         } else {
-            babService.stationComplete(b, station);
+            babService.stationComplete(b, setting);
         }
         
         return "success";

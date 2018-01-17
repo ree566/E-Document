@@ -9,6 +9,7 @@ import com.advantech.dao.AlarmTestActionDAO;
 import com.advantech.dao.BabDAO;
 import com.advantech.dao.SqlViewDAO;
 import com.advantech.helper.HibernateObjectPrinter;
+import com.advantech.model.AlarmBabAction;
 import com.advantech.model.Bab;
 import com.advantech.model.BabSensorLoginRecord;
 import com.advantech.model.BabStatus;
@@ -23,10 +24,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Restrictions;
 import org.hibernate.transform.Transformers;
+import org.joda.time.DateTime;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -160,23 +164,14 @@ public class HibernateTest {
         HibernateObjectPrinter.print(o);
     }
 
-//    @Test
+    @Test
     @Transactional
     @Rollback(true)
     public void testFbn() throws JsonProcessingException {
         Session session = sessionFactory.getCurrentSession();
-        Query q = session
-                .createQuery("from TagNameComparison t where t.id.lampSysTagName = 'LA-S-1'")
-                .setMaxResults(1);
-        HibernateObjectPrinter.print(q.list());
-    }
-
-//    @Test
-    @Transactional
-    @Rollback(true)
-    public void testClone() throws Exception {
-        List<Bab> l = babDAO.findProcessingByLine(7);
-        HibernateObjectPrinter.print(l);
+        Criteria c = session.createCriteria(TagNameComparison.class);
+        c.add(Restrictions.eq("id.lampSysTagName.name", "L4-S-1"));
+        HibernateObjectPrinter.print(c.list());
     }
 
 //    @Test
@@ -262,9 +257,9 @@ public class HibernateTest {
         HibernateObjectPrinter.print(l);
     }
     
-    @Test
+//    @Test
     @Transactional
-    @Rollback(false)
+    @Rollback(true)
     public void testBabSettingHistory() throws JsonProcessingException {
         Session session = sessionFactory.getCurrentSession();
         SensorTransform sensor = session.get(SensorTransform.class, "L1-S-1");
@@ -275,5 +270,16 @@ public class HibernateTest {
         assertNotNull(loginRec.getBeginTime());
         HibernateObjectPrinter.print(loginRec);
         
+    }
+    
+    @Test
+    @Transactional
+    @Rollback(false)
+    public void testBabProcessing() throws JsonProcessingException {
+        Session session = sessionFactory.getCurrentSession();
+        AlarmBabAction a = session.get(AlarmBabAction.class, "LD-L-4");
+        assertNotNull(a);
+        a.setAlarm(1);
+        session.save(a);
     }
 }

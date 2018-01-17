@@ -117,6 +117,7 @@ public class BabChartController {
                 Map dataPoint = new HashMap();
                 dataPoint.put("x", groupid);
                 dataPoint.put("y", diff);
+                dataPoints.add(dataPoint);
                 tagInfo.put("dataPoints", dataPoints);
                 total.add(tagInfo);
             } else {

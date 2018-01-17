@@ -7,6 +7,8 @@ package com.advantech.service;
 
 import com.advantech.model.TagNameComparison;
 import com.advantech.dao.TagNameComparisonDAO;
+import com.advantech.model.Floor;
+import com.advantech.model.SensorTransform;
 import java.util.List;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +39,18 @@ public class TagNameComparisonService {
 
     public TagNameComparison findByLineAndStation(int line_id, int station) {
         return tagNameComparisonDAO.findByLineAndStation(line_id, station);
+    }
+
+    public List<TagNameComparison> findInRange(SensorTransform startPosition, int maxiumStation) {
+        return tagNameComparisonDAO.findInRange(startPosition, maxiumStation);
+    }
+
+    public List<TagNameComparison> findInRange(TagNameComparison startPosition, int maxiumStation) {
+        return tagNameComparisonDAO.findInRange(startPosition, maxiumStation);
+    }
+
+    public List<TagNameComparison> findByFloorName(String floorName) {
+        return tagNameComparisonDAO.findByFloorName(floorName);
     }
 
     public int insert(TagNameComparison pojo) {

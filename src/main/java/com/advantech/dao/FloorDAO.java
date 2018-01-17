@@ -7,6 +7,8 @@ package com.advantech.dao;
 
 import com.advantech.model.Floor;
 import java.util.List;
+import org.hibernate.Criteria;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -14,7 +16,7 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class FloorDAO extends AbstractDao<Integer, Floor> implements BasicDAO_1<Floor>{
+public class FloorDAO extends AbstractDao<Integer, Floor> implements BasicDAO_1<Floor> {
 
     @Override
     public List<Floor> findAll() {
@@ -24,6 +26,12 @@ public class FloorDAO extends AbstractDao<Integer, Floor> implements BasicDAO_1<
     @Override
     public Floor findByPrimaryKey(Object obj_id) {
         return super.getByKey((int) obj_id);
+    }
+
+    public Floor findByName(String floorName) {
+        Criteria c = super.createEntityCriteria();
+        c.add(Restrictions.eq("name", floorName));
+        return (Floor) c.uniqueResult();
     }
 
     @Override
@@ -40,5 +48,5 @@ public class FloorDAO extends AbstractDao<Integer, Floor> implements BasicDAO_1<
     public int delete(Floor pojo) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
+
 }

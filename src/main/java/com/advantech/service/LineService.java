@@ -57,14 +57,6 @@ public class LineService {
         return lineDAO.update(pojo);
     }
 
-    public void closeAll() {
-        List<Line> l = lineDAO.findAll();
-        l.forEach((line) -> {
-            line.setLineStatus(LineStatus.CLOSE);
-            this.update(line);
-        });
-    }
-
     public int delete(Line pojo) {
         return lineDAO.delete(pojo);
     }

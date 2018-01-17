@@ -6,6 +6,7 @@
 package com.advantech.service;
 
 import com.advantech.dao.AlarmBabActionDAO;
+import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.model.AlarmBabAction;
 import java.util.Date;
 import java.util.List;
@@ -48,9 +49,8 @@ public class AlarmBabActionService {
     }
 
     public boolean update(List<AlarmBabAction> l) {
-        l.stream().map((a) -> {
-            this.update(a);
-            return a;
+        l.forEach((a) -> {
+            alarmBabActionDAO.update(a);
         });
         return true;
     }

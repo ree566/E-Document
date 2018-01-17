@@ -5,6 +5,7 @@
  */
 package com.advantech.test;
 
+import com.advantech.dao.BabPcsDetailHistoryDAO;
 import com.advantech.dao.SqlViewDAO;
 import com.advantech.helper.HibernateObjectPrinter;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -33,6 +34,9 @@ public class TestSqlView {
 
     @Autowired
     private SqlViewDAO sqlViewDAO;
+    
+    @Autowired
+    private BabPcsDetailHistoryDAO babPcsDetailHistoryDAO;
 
 //    @Test
     @Transactional
@@ -43,7 +47,7 @@ public class TestSqlView {
         HibernateObjectPrinter.print(l);
     }
 
-    @Test
+//    @Test
     @Transactional
     @Rollback(true)
     public void testGetBabDetail() {
@@ -52,5 +56,13 @@ public class TestSqlView {
         List l = sqlViewDAO.findBabDetail("ASSY", "5", sD, eD, false);
         assertNotEquals(0, l.size());
         System.out.println(l.size());
+    }
+    
+    @Test
+    @Transactional
+    @Rollback(true)
+    public void testBabPcsDetailHistory() {
+        List l = babPcsDetailHistoryDAO.findByBabForMap(13044);
+        HibernateObjectPrinter.print(l);
     }
 }

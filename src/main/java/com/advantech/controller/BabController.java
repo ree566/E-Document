@@ -63,10 +63,10 @@ public class BabController {
         return (modelname == null ? "data not found" : convertString(modelname));
     }
 
-    @RequestMapping(value = "/findProcessingByLine", method = {RequestMethod.GET})
+    @RequestMapping(value = "/findProcessingByTagName", method = {RequestMethod.GET})
     @ResponseBody
-    protected List<Bab> findProcessingByLine(@RequestParam int line_id) {
-        return babService.findProcessingByLine(line_id);
+    protected List<Bab> findProcessingByTagName(@RequestParam String tagName) {
+        return babService.findProcessingByTagName(tagName);
     }
 
     private String convertString(String input) {

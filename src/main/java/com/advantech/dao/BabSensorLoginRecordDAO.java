@@ -33,6 +33,21 @@ public class BabSensorLoginRecordDAO extends AbstractDao<String, BabSensorLoginR
         c.add(Restrictions.eq("tagName.name", tagName));
         return (BabSensorLoginRecord) c.uniqueResult();
     }
+    
+    public List<BabSensorLoginRecord> findByLine(int line_id){
+        Criteria c = super.createEntityCriteria();
+        c.createAlias("tagName", "tagName");
+        c.createAlias("tagName.tagNameComparisons", "tagNameComparison");
+        c.createAlias("tagNameComparison.line", "line");
+        c.add(Restrictions.eq("line.id", line_id));
+        return c.list();
+    }
+    
+    public List<BabSensorLoginRecord> findByJobnumber(String jobnumber){
+        Criteria c = super.createEntityCriteria();
+        c.add(Restrictions.eq("jobnumber", jobnumber));
+        return c.list();
+    }
 
     @Override
     public int insert(BabSensorLoginRecord pojo) {

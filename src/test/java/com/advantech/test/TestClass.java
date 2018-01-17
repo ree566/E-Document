@@ -17,12 +17,7 @@ public class TestClass {
 
     @Test
     public void test() throws IllegalAccessException, InvocationTargetException {
-        BigDecimal b = new BigDecimal("12.5");
-        BigDecimal b2 = new BigDecimal("12.0");
-        BigDecimal b3 = new BigDecimal("12");
-        System.out.println(isIntegerValue(b));
-        System.out.println(isIntegerValue(b2));
-        System.out.println(isIntegerValue(b3));
+        System.out.println(Double.compare(0.85, 0.8));
     }
 
     private boolean isIntegerValue(BigDecimal bd) {

@@ -44,22 +44,4 @@ public class BabLineController {
         return lineService.findWithLineType();
     }
 
-    @RequestMapping(value = "/login", method = {RequestMethod.POST})
-    @ResponseBody
-    protected String login(@RequestParam(value = "line.id") int line_id, @RequestParam String jobnumber) throws JsonProcessingException {
-        Line line = lineService.findByPrimaryKey(line_id);
-        line.setLineStatus(LineStatus.OPEN);
-        lineService.update(line);
-        return "success";
-    }
-
-    @RequestMapping(value = "/logout", method = {RequestMethod.POST})
-    @ResponseBody
-    protected String logout(@RequestParam(value = "line.id") int line_id) {
-        Line line = lineService.findByPrimaryKey(line_id);
-        line.setLineStatus(LineStatus.CLOSE);
-        lineService.update(line);
-        return "success";
-    }
-
 }

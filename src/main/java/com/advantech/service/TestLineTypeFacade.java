@@ -60,6 +60,7 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
         rv = WebServiceRV.getInstance();
 
         this.initMap();
+        this.initAlarmSign();
     }
 
     @Override

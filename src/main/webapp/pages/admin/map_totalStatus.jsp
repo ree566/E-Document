@@ -320,7 +320,6 @@
                                         break;
                                 }
                                 var productivity = Math.floor(people.PRODUCTIVITY * 100);
-                                console.log(2);
                                 $(".testWiget #draggableT" + people.table + "_" + people.sitefloor + "f")
                                         .removeClass("blub-empty")
                                         .addClass(signalClass)

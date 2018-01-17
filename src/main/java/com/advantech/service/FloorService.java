@@ -31,6 +31,10 @@ public class FloorService {
         return floorDAO.findByPrimaryKey(obj_id);
     }
 
+    public Floor findByName(String floorName) {
+        return floorDAO.findByName(floorName);
+    }
+
     public int insert(Floor pojo) {
         return floorDAO.insert(pojo);
     }

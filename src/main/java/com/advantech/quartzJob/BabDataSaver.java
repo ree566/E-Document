@@ -10,7 +10,6 @@ import com.advantech.model.Bab;
 import com.advantech.model.BabStatus;
 import com.advantech.helper.ApplicationContextHelper;
 import com.advantech.service.BabService;
-import com.google.gson.Gson;
 import java.util.List;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -20,8 +19,7 @@ import org.springframework.scheduling.quartz.QuartzJobBean;
 
 /**
  *
- * @author Wei.Cheng
- * Auto close bab and set to abnormal sign on bab isused
+ * @author Wei.Cheng Auto close bab and set to abnormal sign on bab isused
  * 避免Auto close on working time, 使用者無法得知系統已經自動關閉逾期未關閉工單
  */
 public class BabDataSaver extends QuartzJobBean {
@@ -46,9 +44,10 @@ public class BabDataSaver extends QuartzJobBean {
         log.info("Unclosed babList size = " + unClosedBabs.size());
 
         for (Bab bab : unClosedBabs) {
-            bab.setBabStatus(BabStatus.UNFINSHED);
             log.info("Begin save unclose bab " + bab.getId());
             babService.closeBabDirectly(bab);
+            bab.setBabStatus(BabStatus.UNFINSHED);
+            babService.update(bab);
             log.info("Close bab status success");
         }
 

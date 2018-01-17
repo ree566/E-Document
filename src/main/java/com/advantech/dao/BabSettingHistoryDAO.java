@@ -7,9 +7,11 @@ package com.advantech.dao;
 
 import com.advantech.model.Bab;
 import com.advantech.model.BabSettingHistory;
+import com.advantech.model.SensorTransform;
 import java.util.List;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
+import org.joda.time.DateTime;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -39,6 +41,21 @@ public class BabSettingHistoryDAO extends AbstractDao<Integer, BabSettingHistory
         Criteria c = super.createEntityCriteria();
         c.add(Restrictions.eq("bab.id", b.getId()));
         c.add(Restrictions.eq("station", station));
+        return (BabSettingHistory) c.uniqueResult();
+    }
+    
+    public List<BabSettingHistory> findProcessing(){
+        Criteria c = super.createEntityCriteria();
+        c.add(Restrictions.isNull("lastUpdateTime"));
+        return c.list();
+    }
+    
+    public BabSettingHistory findProcessingByTagName(SensorTransform tagName){
+        Criteria c = super.createEntityCriteria();
+        c.add(Restrictions.eq("tagName", tagName));
+        c.add(Restrictions.isNull("lastUpdateTime"));
+        c.add(Restrictions.gt("createTime", new DateTime().withHourOfDay(0).toDate()));
+        c.setMaxResults(1);
         return (BabSettingHistory) c.uniqueResult();
     }
 

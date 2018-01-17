@@ -5,7 +5,8 @@
  */
 package com.advantech.test;
 
-import com.advantech.helper.HibernateObjectPrinter;
+import com.advantech.quartzJob.BabDataSaver;
+import com.advantech.quartzJob.DataBaseInit;
 import com.advantech.quartzJob.TestLineTypeRecord;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,9 +26,21 @@ import org.springframework.test.context.web.WebAppConfiguration;
 @RunWith(SpringJUnit4ClassRunner.class)
 public class TestQuartzJobs {
 
-    @Test
+//    @Test
     public void testTestLineTypeRecord() throws JobExecutionException {
         TestLineTypeRecord tr = new TestLineTypeRecord();
         tr.executeInternal(null);
+    }
+    
+//    @Test
+    public void testDbInit() throws JobExecutionException {
+        DataBaseInit d = new DataBaseInit();
+        d.executeInternal(null);
+    }
+    
+    @Test
+    public void testBabDataSaver() throws JobExecutionException{
+        BabDataSaver b = new BabDataSaver();
+        b.executeInternal(null);
     }
 }

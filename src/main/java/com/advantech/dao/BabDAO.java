@@ -85,10 +85,9 @@ public class BabDAO extends AbstractDao<Integer, Bab> implements BasicDAO_1<Bab>
     }
 
     public List<Bab> findProcessing() {
-        DateTime d = new DateTime();
         Criteria c = super.createEntityCriteria();
         c.add(Restrictions.isNull("babStatus"));
-        c.add(Restrictions.between("beginTime", d.withHourOfDay(0).toDate(), d.withHourOfDay(23).toDate()));
+        c.add(Restrictions.gt("beginTime", new DateTime().withHourOfDay(0).toDate()));
         c.createAlias("line", "l");
         c.createAlias("l.lineType", "lineType");
         return c.list();
@@ -101,6 +100,15 @@ public class BabDAO extends AbstractDao<Integer, Bab> implements BasicDAO_1<Bab>
         c.add(Restrictions.isNull("babStatus"));
         c.add(Restrictions.between("beginTime", d.withHourOfDay(0).toDate(), d.withHourOfDay(23).toDate()));
         c.addOrder(Order.asc("id"));
+        return c.list();
+    }
+    
+    public List<Bab> findProcessingByTagName(String tagName) {
+        Criteria c = super.createEntityCriteria();
+        c.createAlias("babSettingHistorys", "setting");
+        c.add(Restrictions.eq("setting.tagName.name", tagName));
+        c.add(Restrictions.gt("setting.createTime", new DateTime().withHourOfDay(0).toDate()));
+        c.add(Restrictions.isNull("setting.lastUpdateTime"));
         return c.list();
     }
 

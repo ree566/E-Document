@@ -40,7 +40,6 @@ public class Line implements Serializable {
     private int people;
     private LineType lineType;
     private Floor floor;
-    private LineStatus lineStatus;
 
     @JsonIgnore
     private Set<User> users = new HashSet<User>(0);
@@ -95,16 +94,6 @@ public class Line implements Serializable {
 
     public void setFloor(Floor floor) {
         this.floor = floor;
-    }
-
-    @Column(name = "isused", nullable = false)
-    @Convert(converter = LineStatusConverter.class)
-    public LineStatus getLineStatus() {
-        return lineStatus;
-    }
-
-    public void setLineStatus(LineStatus lineStatus) {
-        this.lineStatus = lineStatus;
     }
 
     @Column(name = "lock", nullable = false)

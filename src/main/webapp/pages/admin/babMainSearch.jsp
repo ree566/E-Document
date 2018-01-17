@@ -444,7 +444,7 @@
                             "targets": 9,
                             'render': function (data, type, row) {
                                 var isCmReply = row.cm_id != null;
-                                var isNeedToReply = (row.needToReply == 1);
+                                var isNeedToReply = (row.needToReply == -1);
                                 var isBabAvail = row.isused != -1;
 
                                 if (!isBabAvail) {

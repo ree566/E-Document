@@ -7,6 +7,8 @@ package com.advantech.service;
 
 import com.advantech.dao.BabSensorLoginRecordDAO;
 import com.advantech.model.BabSensorLoginRecord;
+import com.advantech.model.BabSettingHistory;
+import static com.google.common.base.Preconditions.checkArgument;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,9 @@ public class BabSensorLoginRecordService {
     @Autowired
     private BabSensorLoginRecordDAO babSensorLoginRecordDAO;
 
+    @Autowired
+    private BabSettingHistoryService babSettingHistoryService;
+
     public List<BabSensorLoginRecord> findAll() {
         return babSensorLoginRecordDAO.findAll();
     }
@@ -35,7 +40,14 @@ public class BabSensorLoginRecordService {
         return babSensorLoginRecordDAO.findBySensor(tagName);
     }
 
+    public List<BabSensorLoginRecord> findByLine(int line_id) {
+        return babSensorLoginRecordDAO.findByLine(line_id);
+    }
+
     public int insert(BabSensorLoginRecord pojo) {
+        BabSensorLoginRecord recCheck1 = this.findBySensor(pojo.getTagName().getName());
+        checkArgument(recCheck1 == null, "This sensor is already logged in by other user");
+        checkJobnumberIsExist(pojo.getJobnumber());
         return babSensorLoginRecordDAO.insert(pojo);
     }
 
@@ -43,8 +55,37 @@ public class BabSensorLoginRecordService {
         return babSensorLoginRecordDAO.update(pojo);
     }
 
+    public int changeUser(String jobnumber, String tagName) {
+        BabSensorLoginRecord loginRec = this.findBySensor(tagName);
+        checkArgument(loginRec != null, "Can't find login record on tagName " + tagName);
+        checkJobnumberIsExist(jobnumber);
+        loginRec.setJobnumber(jobnumber);
+        this.update(loginRec);
+
+        BabSettingHistory setting = babSettingHistoryService.findProcessingByTagName(tagName);
+
+        if (setting != null) {
+            setting.setJobnumber(jobnumber);
+            babSettingHistoryService.update(setting);
+        }
+        return 1;
+    }
+
+    private void checkJobnumberIsExist(String jobnumber) {
+        List<BabSensorLoginRecord> rec = this.babSensorLoginRecordDAO.findByJobnumber(jobnumber);
+        checkArgument(rec.isEmpty(), "This user is already logged in on other position");
+    }
+
     public int delete(BabSensorLoginRecord pojo) {
         return babSensorLoginRecordDAO.delete(pojo);
+    }
+
+    public int init() {
+        List<BabSensorLoginRecord> l = babSensorLoginRecordDAO.findAll();
+        l.forEach(b -> {
+            babSensorLoginRecordDAO.delete(b);
+        });
+        return 1;
     }
 
 }

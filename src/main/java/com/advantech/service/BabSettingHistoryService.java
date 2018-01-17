@@ -8,6 +8,9 @@ package com.advantech.service;
 import com.advantech.model.BabSettingHistory;
 import com.advantech.dao.BabSettingHistoryDAO;
 import com.advantech.model.Bab;
+import com.advantech.model.BabSensorLoginRecord;
+import com.advantech.model.SensorTransform;
+import com.advantech.model.TagNameComparison;
 import static com.google.common.base.Preconditions.*;
 import java.util.Date;
 import java.util.List;
@@ -26,6 +29,15 @@ public class BabSettingHistoryService {
     @Autowired
     private BabSettingHistoryDAO babSettingHistoryDAO;
 
+    @Autowired
+    private SensorTransformService sensorTransformService;
+
+    @Autowired
+    private BabSensorLoginRecordService babSensorLoginRecordService;
+
+    @Autowired
+    private TagNameComparisonService tagNameComparisonService;
+
     public List<BabSettingHistory> findAll() {
         return babSettingHistoryDAO.findAll();
     }
@@ -38,9 +50,36 @@ public class BabSettingHistoryService {
         return babSettingHistoryDAO.findByBab(b);
     }
 
+    public List<BabSettingHistory> findProcessing() {
+        return babSettingHistoryDAO.findProcessing();
+    }
+
+    public BabSettingHistory findProcessingByTagName(String tagName) {
+        SensorTransform sensor = sensorTransformService.findByPrimaryKey(tagName);
+        checkArgument(sensor != null, "Can't find sensor named " + tagName);
+        return babSettingHistoryDAO.findProcessingByTagName(sensor);
+    }
+
     public int insert(BabSettingHistory pojo) {
-        pojo.setCreateTime(new Date());
         return babSettingHistoryDAO.insert(pojo);
+    }
+
+    public int insertByBab(Bab b, TagNameComparison tag) {
+        List<BabSensorLoginRecord> babLogins = babSensorLoginRecordService.findByLine(b.getLine().getId());
+
+        //Find setting in setting and check users in lists are login or not
+        List<TagNameComparison> tagNameSetting = tagNameComparisonService.findInRange(tag, b.getPeople());
+        int i = 1;
+        for (TagNameComparison tagNameComp : tagNameSetting) {
+            SensorTransform sensor = tagNameComp.getId().getLampSysTagName();
+            BabSensorLoginRecord rec = babLogins.stream()
+                    .filter(r -> r.getTagName().equals(sensor))
+                    .findFirst().orElse(null);
+            checkArgument(rec != null, "Can't find user login in tagName " + sensor.getName());
+            BabSettingHistory setting = new BabSettingHistory(b, i++, sensor, rec.getJobnumber());
+            this.insert(setting);
+        }
+        return 1;
     }
 
     //Record jobnumber by "Hibernate Audit" audit jobnumber change event in sql.
@@ -60,6 +99,16 @@ public class BabSettingHistoryService {
 
     public int delete(BabSettingHistory pojo) {
         return babSettingHistoryDAO.delete(pojo);
+    }
+
+    public int init() {
+        List<BabSettingHistory> l = babSettingHistoryDAO.findProcessing();
+        Date d = new Date();
+        for (BabSettingHistory b : l) {
+            b.setLastUpdateTime(d);
+            babSettingHistoryDAO.update(b);
+        }
+        return 1;
     }
 
 }
