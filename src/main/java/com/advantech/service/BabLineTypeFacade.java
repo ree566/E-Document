@@ -54,7 +54,7 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
 
     private double BAB_STANDARD;
 
-    @PostConstruct
+//    @PostConstruct
     protected void init() {
         PropertiesReader p = PropertiesReader.getInstance();
         BAB_STANDARD = p.getAssyStandard();

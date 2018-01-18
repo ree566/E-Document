@@ -33,20 +33,20 @@
         <csrf disabled="true"/>
         
         <!--Global system access setting-->
-        <intercept-url pattern="/pages/admin/**" access="permitAll" />
+        <!--<intercept-url pattern="/pages/admin/**" access="permitAll" />-->
+        <intercept-url pattern="/pages/admin/SensorAdjust" access="isAuthenticated()" />
         <!--<intercept-url pattern="/socket/**" access="isAuthenticated()" />-->
         
         <!--Controller security role setting-->
         
-        <form-login  
+<!--        <form-login  
             login-page="/login.jsp"
             default-target-url="/pages/"
             always-use-default-target="true"                    
             authentication-failure-url="/login.jsp?error=true" 
             username-parameter="jobnumber"
             password-parameter="password"
-        />
-        <csrf/>
+        />-->
 
         <logout invalidate-session="true"
                 logout-success-url="/login?logout"

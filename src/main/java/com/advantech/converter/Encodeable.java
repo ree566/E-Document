@@ -5,6 +5,7 @@
  */
 package com.advantech.converter;
 
+import java.util.Objects;
 import java.util.stream.Stream;
 
 /**
@@ -13,11 +14,11 @@ import java.util.stream.Stream;
  */
 public interface Encodeable {
 
-    Integer token();
+    Object token();
 
-    public static <E extends Enum<E> & Encodeable> E forToken(Class<E> cls, Integer tok) {
+    public static <E extends Enum<E> & Encodeable> E forToken(Class<E> cls, Object tok) {
         return Stream.of(cls.getEnumConstants())
-                .filter(e -> e.token().equals(tok))
+                .filter(e -> Objects.equals(e.token(), tok))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Unknown token '"
                 + tok + "' for enum " + cls.getName()));

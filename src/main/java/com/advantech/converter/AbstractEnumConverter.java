@@ -11,16 +11,17 @@ import javax.persistence.AttributeConverter;
  *
  * @author Wei.Cheng
  * @param <E>
+ * @param <K>
  */
-public abstract class AbstractEnumConverter<E extends Enum<E> & Encodeable> implements AttributeConverter<E, Integer> {
+public abstract class AbstractEnumConverter<E extends Enum<E> & Encodeable, K extends Object> implements AttributeConverter<E, K> {
 
-    public Integer toDatabaseColumn(E attr) {
+    public K toDatabaseColumn(E attr) {
         return (attr == null)
                 ? null
-                : attr.token();
+                : (K) attr.token();
     }
 
-    public E toEntityAttribute(Class<E> cls, Integer dbCol) {
+    public E toEntityAttribute(Class<E> cls, K dbCol) {
         return (dbCol == null)
                 ? null
                 : Encodeable.forToken(cls, dbCol);

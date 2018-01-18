@@ -5,32 +5,26 @@
  */
 package com.advantech.security;
 
+import com.advantech.converter.Encodeable;
+
 /**
  *
  * @author Wei.Cheng
  */
-public enum State {
+public enum State implements Encodeable {
     ACTIVE("Active"),
     INACTIVE("Inactive"),
     DELETED("Deleted"),
     LOCKED("Locked");
 
-    private final String state;
+    private final String value;
 
-    private State(final String state) {
-        this.state = state;
-    }
-
-    public String getState() {
-        return this.state;
+    private State(final String value) {
+        this.value = value;
     }
 
     @Override
-    public String toString() {
-        return this.state;
-    }
-
-    public String getName() {
-        return this.name();
+    public String token() {
+        return this.value;
     }
 }

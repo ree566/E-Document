@@ -8,6 +8,7 @@ package com.advantech.test;
 import com.advantech.dao.AlarmTestActionDAO;
 import com.advantech.dao.BabDAO;
 import com.advantech.dao.SqlViewDAO;
+import com.advantech.helper.CustomPasswordEncoder;
 import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.model.AlarmBabAction;
 import com.advantech.model.Bab;
@@ -18,6 +19,7 @@ import com.advantech.model.ReplyStatus;
 import com.advantech.model.SensorTransform;
 import com.advantech.model.TagNameComparison;
 import com.advantech.model.User;
+import com.advantech.security.State;
 import com.advantech.service.BabPcsDetailHistoryService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.ArrayList;
@@ -30,7 +32,6 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.transform.Transformers;
-import org.joda.time.DateTime;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -51,19 +52,19 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @RunWith(SpringJUnit4ClassRunner.class)
 public class HibernateTest {
-    
+
     @Autowired
     SessionFactory sessionFactory;
-    
+
     @Autowired
     private AlarmTestActionDAO alarmTestActionDAO;
-    
+
     @Autowired
     private BabDAO babDAO;
-    
+
     @Autowired
     private com.advantech.dao.TestDAO testDAO;
-    
+
     @Autowired
     private BabPcsDetailHistoryService pcsHistoryService;
 
@@ -138,9 +139,9 @@ public class HibernateTest {
                 //                ErrorCode.class,
                 CountermeasureEvent.class
         );
-        
+
     }
-    
+
     private void testObject(Class... cls) {
         Session session = sessionFactory.getCurrentSession();
         for (Class c : cls) {
@@ -151,7 +152,7 @@ public class HibernateTest {
             System.out.println(c + " Test pass");
         }
     }
-    
+
     @Autowired
     private SqlViewDAO sqlViewDAO;
 
@@ -164,7 +165,7 @@ public class HibernateTest {
         HibernateObjectPrinter.print(o);
     }
 
-    @Test
+//    @Test
     @Transactional
     @Rollback(true)
     public void testFbn() throws JsonProcessingException {
@@ -194,7 +195,7 @@ public class HibernateTest {
         List l = pcsHistoryService.findByBabForMap(12595);
         HibernateObjectPrinter.print(this.toChartForm(l));
     }
-    
+
     private Map toChartForm(List<Map> l) {
         List<Map<String, Object>> total = new ArrayList();
         int diffSum = 0;
@@ -227,9 +228,9 @@ public class HibernateTest {
                 maxGroup = groupid;
             }
         }
-        
+
         int people = total.size();
-        
+
         Map infoWithAvg = new HashMap();
         infoWithAvg.put("avg", (diffSum / people / maxGroup));
         infoWithAvg.put("data", total);
@@ -238,14 +239,22 @@ public class HibernateTest {
 
 //    @Test
     @Transactional
-    @Rollback(true)
+    @Rollback(false)
     public void testConverter() {
-        Bab bab = (Bab) sessionFactory.getCurrentSession().get(Bab.class, 12730);
+        Session session = sessionFactory.getCurrentSession();
+        Bab bab = (Bab) session.get(Bab.class, 12730);
         assertNotNull(bab);
         assertNotNull(bab.getBabStatus());
-        assertEquals(bab.getBabStatus(), BabStatus.NO_RECORD);
+        assertEquals(bab.getBabStatus(), BabStatus.UNFINSHED);
         assertNotNull(bab.getReplyStatus());
-        assertEquals(bab.getReplyStatus(), ReplyStatus.NO_NEED_TO_REPLY);
+        assertEquals(bab.getReplyStatus(), ReplyStatus.UNREPLIED);
+        
+        bab.setBabStatus(BabStatus.CLOSED);
+        bab.setReplyStatus(ReplyStatus.NO_NEED_TO_REPLY);
+        
+        session.update(bab);
+        
+        HibernateObjectPrinter.print(bab);
     }
 
 //    @Test
@@ -256,7 +265,7 @@ public class HibernateTest {
         List l = session.createCriteria(TagNameComparison.class).list();
         HibernateObjectPrinter.print(l);
     }
-    
+
 //    @Test
     @Transactional
     @Rollback(true)
@@ -269,17 +278,32 @@ public class HibernateTest {
         assertNotEquals(0, loginRec.getId());
         assertNotNull(loginRec.getBeginTime());
         HibernateObjectPrinter.print(loginRec);
-        
+
     }
-    
-    @Test
+
+//    @Test
     @Transactional
-    @Rollback(false)
+    @Rollback(true)
     public void testBabProcessing() throws JsonProcessingException {
         Session session = sessionFactory.getCurrentSession();
         AlarmBabAction a = session.get(AlarmBabAction.class, "LD-L-4");
         assertNotNull(a);
         a.setAlarm(1);
         session.save(a);
+    }
+
+    @Test
+    @Transactional
+    @Rollback(false)
+    public void userPswRefractor() {
+        Session session = sessionFactory.getCurrentSession();
+        List<User> l = session.createCriteria(User.class).list();
+        assertTrue(!l.isEmpty());
+        l.stream().map((u) -> {
+            u.setState(State.ACTIVE);
+            return u;
+        }).forEachOrdered((u) -> {
+            session.update(u);
+        });
     }
 }

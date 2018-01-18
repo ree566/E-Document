@@ -5,7 +5,7 @@
  */
 package com.advantech.converter;
 
-import com.advantech.model.BabStatus;
+import com.advantech.security.State;
 import javax.persistence.Converter;
 
 /**
@@ -13,16 +13,16 @@ import javax.persistence.Converter;
  * @author Wei.Cheng
  */
 @Converter(autoApply = true)
-public class BabStatusConverter extends AbstractEnumConverter<BabStatus, Integer> {
+public class UserStatusConverter extends AbstractEnumConverter<State, String> {
 
     @Override
-    public Integer convertToDatabaseColumn(BabStatus x) {
+    public String convertToDatabaseColumn(State x) {
         return this.toDatabaseColumn(x);
     }
 
     @Override
-    public BabStatus convertToEntityAttribute(Integer y) {
-        return this.toEntityAttribute(BabStatus.class, y);
+    public State convertToEntityAttribute(String y) {
+        return this.toEntityAttribute(State.class, y);
     }
 
 }

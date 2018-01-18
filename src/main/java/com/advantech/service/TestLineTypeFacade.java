@@ -50,7 +50,7 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
 
     private final int TEST_USER_NOT_IN_SYSTEM_SIGN = -1, TEST_USER_NOT_IN_XML_SIGN = 2;
 
-    @PostConstruct
+//    @PostConstruct
     protected void init() {
         System.out.println("TestLineTypeFacade init");
         PEOPLE_NOT_MATCH = new HashMap();

@@ -1,14 +1,14 @@
 package com.advantech.model;
 // Generated 2017/4/7 下午 02:26:06 by Hibernate Tools 4.3.1
 
+import com.advantech.converter.UserStatusConverter;
 import com.advantech.security.State;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.voodoodyne.jackson.jsog.JSOGGenerator;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -43,7 +43,7 @@ public class User implements java.io.Serializable, UserDetails {
     private String usernameCh;
     private Integer permission = 0;
     private String email;
-    private String state = State.ACTIVE.getState();
+    private State state = State.ACTIVE;
 
     @JsonIgnore
     private Set<UserProfile> userProfiles = new HashSet<UserProfile>(0);
@@ -73,7 +73,7 @@ public class User implements java.io.Serializable, UserDetails {
         this.id = id;
     }
 
-    public User(int id, Floor floor, Unit unit, String email, String jobnumber, String password, Integer permission, String username, String state) {
+    public User(int id, Floor floor, Unit unit, String email, String jobnumber, String password, Integer permission, String username, State state) {
         this.id = id;
         this.floor = floor;
         this.unit = unit;
@@ -172,12 +172,13 @@ public class User implements java.io.Serializable, UserDetails {
         this.email = email;
     }
 
-    @Column(name = "[state]", length = 50)
-    public String getState() {
+    @Column(name = "[state]")
+    @Convert(converter = UserStatusConverter.class)
+    public State getState() {
         return state;
     }
 
-    public void setState(String state) {
+    public void setState(State state) {
         this.state = state;
     }
 

@@ -13,7 +13,7 @@ import javax.persistence.Converter;
  * @author Wei.Cheng
  */
 @Converter(autoApply = true)
-public class ReplyStatusConverter extends AbstractEnumConverter<ReplyStatus> {
+public class ReplyStatusConverter extends AbstractEnumConverter<ReplyStatus, Integer> {
 
     @Override
     public Integer convertToDatabaseColumn(ReplyStatus x) {

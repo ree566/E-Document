@@ -6,6 +6,9 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+<sec:authentication var="user" property="principal" />
+<sec:authorize access="isAuthenticated()"  var="isAuthenticated" />
 <!DOCTYPE html>
 <html>
     <head>
@@ -739,7 +742,6 @@
 
                         var lastEditor = jsonData.lastEditor;
                         $(".modal-body #responseUser").append("<span class='label label-default'>#" + (lastEditor == null ? 'N/A' : lastEditor.usernameCh) + "</span> ");
-                        $("#editCountermeasure").attr("disabled", jsonData.lock == 1);
                     },
                     error: function (xhr, ajaxOptions, thrownError) {
                         showDialogMsg(xhr.responseText);
@@ -1042,7 +1044,10 @@
                     originResponseUser = $("#responseUser").html();
 
                     $("#errorCon").html("<textarea id='errorConText' maxlength='500'>" + (originErrorCon == "N/A" ? "" : originErrorCon) + "</textarea>");
-                    $("#responseUser").html("<input type='text' id='responseUserText' maxlength='30'>");
+
+                    
+
+                    $("#responseUser").html("<input type='text' id='responseUserText' maxlength='30' value='" + '${isAuthenticated ? user.jobnumber : null}' + "' readonly disabled>");
                 });
 
                 $("#undoContent").click(function () {
@@ -1182,8 +1187,8 @@
                 }
 
                 var readonly = getQueryVariable("readonly") == null ? false : (getQueryVariable("readonly").toUpperCase() == "TRUE");
-                if (readonly) {
-                    $("#editCountermeasure").attr("disabled", true).off("click");
+                if (readonly || ${!isAuthenticated}) {
+                    $("#editCountermeasure").off("click").attr("disabled", true);
                 }
 
                 $(window).on("blur", function () {

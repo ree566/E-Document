@@ -5,8 +5,10 @@
  */
 package com.advantech.test;
 
+import com.advantech.converter.Encodeable;
+import com.advantech.model.BabStatus;
+import com.advantech.security.State;
 import java.lang.reflect.InvocationTargetException;
-import java.math.BigDecimal;
 import org.junit.Test;
 
 /**
@@ -17,11 +19,9 @@ public class TestClass {
 
     @Test
     public void test() throws IllegalAccessException, InvocationTargetException {
-        System.out.println(Double.compare(0.85, 0.8));
+        Object a = "1";
+        System.out.println(Encodeable.forToken(BabStatus.class, 1));
     }
 
-    private boolean isIntegerValue(BigDecimal bd) {
-        return bd.signum() == 0 || bd.scale() <= 0 || bd.stripTrailingZeros().scale() <= 0;
-    }
 
 }

@@ -149,7 +149,7 @@
     </mvc:annotation-driven>
     
     <!--Other file import-->
-    <!--<import resource="classpath:spring-security.xml"/>-->
+    <import resource="classpath:spring-security.xml"/>
     <import resource="classpath:spring-quartz.xml"/>
     <!--<bean id="schedulerFactoryBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean" />-->
 

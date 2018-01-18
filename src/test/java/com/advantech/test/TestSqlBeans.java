@@ -5,6 +5,7 @@
  */
 package com.advantech.test;
 
+import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.model.Bab;
 import com.advantech.model.BabAlarmHistory;
 import com.advantech.model.Countermeasure;
@@ -76,7 +77,7 @@ public class TestSqlBeans {
         assertEquals(1482, table.getTestLineTypeRecords().size());
     }
 
-    @Test
+//    @Test
     public void testBabLine() {
         Line line = (Line) session.get(Line.class, 1);
         assertNotNull(line);
@@ -100,5 +101,15 @@ public class TestSqlBeans {
         assertEquals(1, cm.getCountermeasureEvents().size());
         assertEquals(1, cm.getErrorCodes().size());
         assertEquals(1, cm.getActionCodes().size());
+    }
+
+    @Test
+    public void testConverter() {
+        User user = session.get(User.class, 1);
+        assertNotNull(user);
+        HibernateObjectPrinter.print(user);
+        Bab b = session.get(Bab.class, 13091);
+        assertNotNull(b);
+        HibernateObjectPrinter.print(b);
     }
 }

@@ -8,6 +8,7 @@ package com.advantech.service;
 import com.advantech.dao.UserDAO;
 import com.advantech.model.User;
 import java.util.List;
+import org.hibernate.Hibernate;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,7 +33,17 @@ public class UserService {
     }
 
     public User findByJobnumber(String jobnumber) {
-        return userDAO.findByJobnumber(jobnumber);
+        User i = userDAO.findByJobnumber(jobnumber);
+
+        if (i == null) {
+            return null;
+        }
+        
+         //Initialize the lazy loading relative object
+        Hibernate.initialize(i.getUnit());
+        Hibernate.initialize(i.getFloor());
+        Hibernate.initialize(i.getUserProfiles());
+        return i;
     }
 
     public List<User> findLineOwner(int line_id) {
