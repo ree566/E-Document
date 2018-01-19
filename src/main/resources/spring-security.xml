@@ -35,6 +35,9 @@
         <!--Global system access setting-->
         <!--<intercept-url pattern="/pages/admin/**" access="permitAll" />-->
         <intercept-url pattern="/pages/admin/SensorAdjust" access="isAuthenticated()" />
+        <intercept-url pattern="/pages/testPages/**" access="hasRole('ADMIN')" />
+        <intercept-url pattern="/pages/admin/modify/**" access="hasRole('ADMIN')" />
+        <intercept-url pattern="/pages/admin/setting/**" access="hasRole('ADMIN')" />
         <!--<intercept-url pattern="/socket/**" access="isAuthenticated()" />-->
         
         <!--Controller security role setting-->
