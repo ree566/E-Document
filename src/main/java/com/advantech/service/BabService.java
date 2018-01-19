@@ -116,18 +116,21 @@ public class BabService {
     }
 
     public int stationComplete(Bab bab, BabSettingHistory setting) {
-        checkArgument(bab.getIspre() == 1, "前置工單請直接從最後一站關閉");
-        
-        List<BabSettingHistory> babSettings = babSettingHistoryService.findByBab(bab);
-        BabSettingHistory prev = babSettings.stream()
-                .filter(b -> b.getStation() == setting.getStation() - 1)
-                .reduce((first, second) -> second).orElse(null);
+        return this.stationComplete(bab, setting, true);
+    }
 
-        if (setting.getStation() == 2 && prev.getLastUpdateTime() == null) {
-            prev.setLastUpdateTime(new Date());
-            babSettingHistoryService.update(prev);
-        } else {
-            checkArgument(prev.getLastUpdateTime() != null, "關閉失敗，請檢查上一站是否關閉");
+    public int stationComplete(Bab bab, BabSettingHistory setting, boolean isNeedCheckPrev) {
+        checkArgument(bab.getIspre() != 1, "前置工單請直接從最後一站關閉");
+
+        if (isNeedCheckPrev) {
+            BabSettingHistory prev = babSettingHistoryService.findByBabAndStation(bab, setting.getStation() - 1);
+
+            if (setting.getStation() == 2 && prev.getLastUpdateTime() == null) {
+                prev.setLastUpdateTime(new Date());
+                babSettingHistoryService.update(prev);
+            } else {
+                checkArgument(prev.getLastUpdateTime() != null, "關閉失敗，請檢查上一站是否關閉");
+            }
         }
 
         setting.setLastUpdateTime(new Date());
@@ -161,7 +164,9 @@ public class BabService {
         if (needToSave) {
             this.closeBabWithSaving(bab);
             bab.setBabStatus(BabStatus.CLOSED);
-            bab.setReplyStatus(isBalanceAboveAvg(bab) ? ReplyStatus.NO_NEED_TO_REPLY : ReplyStatus.UNREPLIED);
+            if (bab.getReplyStatus() == ReplyStatus.NO_NEED_TO_REPLY && isBalanceAboveAvg(bab)) {
+                bab.setReplyStatus(ReplyStatus.UNREPLIED);
+            }
         } else {
             this.closeBabDirectly(bab);
             bab.setBabStatus(BabStatus.NO_RECORD);
@@ -172,7 +177,7 @@ public class BabService {
         BabSettingHistory setting = babSettings.stream()
                 .filter(b -> b.getStation() == bab.getPeople())
                 .reduce((first, second) -> second).orElse(null);
-        this.stationComplete(bab, setting);
+        this.stationComplete(bab, setting, needToSave == true);
 
         return 1;
     }

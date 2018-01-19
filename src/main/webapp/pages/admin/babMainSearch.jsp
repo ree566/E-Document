@@ -452,11 +452,11 @@
 
                                 if (!isBabAvail) {
                                     return "無紀錄";
-                                } else if (!isNeedToReply && row.alarmPercent != null) {
+                                } else if (!isNeedToReply && row.alarmPercent != null && !isCmReply) {
                                     return "達到標準";
                                 } else if ((!isCmReply && isNeedToReply)) {
                                     return "<input type='button' class='btn btn-danger btn-sm' data-toggle= 'modal' data-target='#myModal' value='檢視詳細' />";
-                                } else if (isCmReply && isNeedToReply) {
+                                } else if (isCmReply) {
                                     return "<input type='button' class='btn btn-info btn-sm' data-toggle= 'modal' data-target='#myModal' value='檢視詳細' />";
                                 }
                             }

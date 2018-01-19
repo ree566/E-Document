@@ -231,8 +231,7 @@
                 for (var i = 0; i < res.length; i++) {
                     $("#balanceCount").append(
                             '<p>線別: ' + res[i].lineName +
-//                            ' 工單號碼: ' + res[i].PO +
-//                            ' 機種: ' + res[i].Model_name +
+                            '(' + (res[i].bab_id != null ? res[i].bab_id : '未投入工單') + ')' +
                             ' 最後一台平衡率: ' + (res[i].balance == null ? "N/A" :getPercent(res[i].balance, round_digit)) +
                             "</p>");
                 }

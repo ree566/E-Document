@@ -60,6 +60,10 @@ public class BabSettingHistoryService {
         return babSettingHistoryDAO.findProcessingByTagName(sensor);
     }
 
+    public BabSettingHistory findByBabAndStation(Bab b, int station) {
+        return babSettingHistoryDAO.findByBabAndStation(b, station);
+    }
+
     public int insert(BabSettingHistory pojo) {
         return babSettingHistoryDAO.insert(pojo);
     }

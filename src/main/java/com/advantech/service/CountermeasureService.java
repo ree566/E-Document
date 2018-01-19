@@ -2,6 +2,8 @@ package com.advantech.service;
 
 import com.advantech.model.Countermeasure;
 import com.advantech.dao.CountermeasureDAO;
+import com.advantech.model.Bab;
+import com.advantech.model.ReplyStatus;
 import java.util.List;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,9 @@ public class CountermeasureService {
     @Autowired
     private CountermeasureDAO countermeasureDAO;
 
+    @Autowired
+    private BabService babService;
+
     public List<Countermeasure> findAll() {
         return countermeasureDAO.findAll();
     }
@@ -36,7 +41,11 @@ public class CountermeasureService {
     }
 
     public int insert(Countermeasure pojo) {
-        return countermeasureDAO.insert(pojo);
+        countermeasureDAO.insert(pojo);
+        Bab b = pojo.getBab();
+        b.setReplyStatus(ReplyStatus.REPLIED);
+        babService.update(b);
+        return 1;
     }
 
     public int update(Countermeasure pojo) {
