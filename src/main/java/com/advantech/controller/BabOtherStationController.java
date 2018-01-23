@@ -76,7 +76,7 @@ public class BabOtherStationController {
             babService.closeBab(b);
 //                            Endpoint6.syncAndEcho();
         } else {
-            babService.stationComplete(b, setting);
+            babService.stationComplete(b, setting); 
         }
         
         return "success";

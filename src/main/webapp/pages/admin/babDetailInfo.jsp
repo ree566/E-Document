@@ -251,7 +251,7 @@
         <jsp:include page="header.jsp" />
         <div class="container form-inline">
             <div style="width:100%">
-                <h3>工單明細查詢</h3>
+                <h3>機種明細查詢</h3>
                 <table id="leaveRequest" class="table">
                     <tr>
                         <td>

@@ -111,6 +111,8 @@
         <script src="../../js/param.check.js"></script>
         <script src="../../js/urlParamGetter.js"></script>
         <script src="../../js/jquery.fileDownload.js"></script>
+        <script src="../../js/ajax-option-select-loader/babLine.loader.js"></script>
+        <script src="../../js/ajax-option-select-loader/floor.loader.js"></script>
         <script>
             var round_digit = 2;
             var historyTable;
@@ -121,53 +123,14 @@
 
             var autoReloadInterval;
 
-            var lineTypeOptions = ["ASSY", "Packing"];
-
-            var lineObject = {
-                ASSY: [],
-                Packing: []
-            };
+            lineLoaderUrl = "<c:url value="/BabLineController/findWithLineType" />";
+            floorLoaderUrl = "<c:url value="/FloorController/findAll" />";
 
             var beginTimeObj, endTimeObj;
 
-            function setLineObject() {
-                $.ajax({
-                    type: "GET",
-                    url: "<c:url value="/BabLineController/findAll" />",
-                    data: {
-                        sitefloor: $("#userSitefloorSelect").val()
-                    },
-                    dataType: "json",
-                    async: false,
-                    success: function (response) {
-                        var lines = response;
-                        for (var i = 0; i < lines.length; i++) {
-                            var line = lines[i];
-                            var lineName = line.name;
-                            var lineType = line.linetype;
-                            lineType == 'ASSY' ? lineObject.ASSY.push(lineName) : lineObject.Packing.push(lineName);
-                        }
-                    },
-                    error: function (xhr, ajaxOptions, thrownError) {
-                        showMsg(xhr.responseText);
-                    }
-                });
-            }
-
             function initSelectOption() {
-                $.getJSON("../../json/sitefloor.json", function (data) {
-                    var sitefloors = data.sitefloors;
-                    for (var i = 0, j = sitefloors.length; i < j; i++) {
-                        var sitefloor = sitefloors[i].floor;
-                        $("#sitefloor").append("<option value=" + sitefloor + ">" + sitefloor + "F</option>");
-
-                    }
-                });
-
-                for (var i = 0; i < lineTypeOptions.length; i++) {
-                    var value = lineTypeOptions[i];
-                    $("#lineType, #lineType2").append("<option value=" + value + ">" + value + "</option>");
-                }
+                initLineOptions($("#lineType, #lineType2"));
+                initFloorOptions($("#sitefloor"));
             }
 
             function getDetail(tableId, id, isused) {
@@ -273,14 +236,20 @@
             }
 
             function getChartData(id, isused, chartId) {
+                var data;
+                if (id == null) {
+                    data = {};
+                } else {
+                    data = {
+                        id: id,
+                        babStatus: isused
+                    };
+                }
                 $.ajax({
                     url: "<c:url value="/BabChartController/getSensorDiffChart" />",
                     method: 'GET',
                     dataType: 'json',
-                    data: {
-                        id: id,
-                        babStatus: isused
-                    },
+                    data: data,
                     success: function (d) {
                         var arr = d.data;
                         if (arr != null) {
@@ -1045,7 +1014,7 @@
 
                     $("#errorCon").html("<textarea id='errorConText' maxlength='500'>" + (originErrorCon == "N/A" ? "" : originErrorCon) + "</textarea>");
 
-                    
+
 
                     $("#responseUser").html("<input type='text' id='responseUserText' maxlength='30' value='" + '${isAuthenticated ? user.jobnumber : null}' + "' readonly disabled>");
                 });

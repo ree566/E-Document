@@ -58,61 +58,24 @@
         <script src="../../js/param.check.js"></script>
         <script src="../../js/urlParamGetter.js"></script>
         <script src="../../js/jquery.fileDownload.js"></script>
+        <script src="../../js/ajax-option-select-loader/babLine.loader.js"></script>
+        <script src="../../js/ajax-option-select-loader/floor.loader.js"></script>
         <script>
             var round_digit = 2;
 
             var table2;
             var autoReloadInterval;
 
-            var lineTypeOptions = ["ASSY", "Packing"];
-
-            var lineObject = {
-                ASSY: [],
-                Packing: []
-            };
+            lineLoaderUrl = "<c:url value="/BabLineController/findWithLineType" />";
+            floorLoaderUrl = "<c:url value="/FloorController/findAll" />";
 
             var iframeUrl = "babMainSearch.jsp?t=1";
 
             var tagNameReg = /[-S-]+[0-9]{1,2}/g;
 
-            function setLineObject() {
-                $.ajax({
-                    type: "GET",
-                    url: "<c:url value="/BabLineController/findWithLineType" />",
-                    data: {
-                        sitefloor: $("#userSitefloorSelect").val()
-                    },
-                    dataType: "json",
-                    async: false,
-                    success: function (response) {
-                        var lines = response;
-                        for (var i = 0; i < lines.length; i++) {
-                            var line = lines[i];
-                            var lineName = line.name;
-                            var lineType = line.lineType.name;
-                            lineType == 'ASSY' ? lineObject.ASSY.push(lineName) : lineObject.Packing.push(lineName);
-                        }
-                    },
-                    error: function (xhr, ajaxOptions, thrownError) {
-                        showMsg(xhr.responseText);
-                    }
-                });
-            }
-
             function initSelectOption() {
-                $.getJSON("../../json/sitefloor.json", function (data) {
-                    var sitefloors = data.sitefloors;
-                    for (var i = 0, j = sitefloors.length; i < j; i++) {
-                        var sitefloor = sitefloors[i].floor;
-                        $("#sitefloor").append("<option value=" + sitefloor + ">" + sitefloor + "F</option>");
-
-                    }
-                });
-
-                for (var i = 0; i < lineTypeOptions.length; i++) {
-                    var value = lineTypeOptions[i];
-                    $("#lineTypeFilter").append("<option value=" + value + ">" + value + "</option>");
-                }
+                initLineOptions($("#lineTypeFilter"));
+                initFloorOptions($("#sitefloor"));
             }
 
             function getBAB() {
@@ -227,12 +190,12 @@
                 }
 
                 //balance節省麻煩由alasql做前端計算
-               
+
                 for (var i = 0; i < res.length; i++) {
                     $("#balanceCount").append(
                             '<p>線別: ' + res[i].lineName +
                             '(' + (res[i].bab_id != null ? res[i].bab_id : '未投入工單') + ')' +
-                            ' 最後一台平衡率: ' + (res[i].balance == null ? "N/A" :getPercent(res[i].balance, round_digit)) +
+                            ' 最後一台平衡率: ' + (res[i].balance == null ? "N/A" : getPercent(res[i].balance, round_digit)) +
                             "</p>");
                 }
             }

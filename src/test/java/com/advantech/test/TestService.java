@@ -8,6 +8,7 @@ package com.advantech.test;
 import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.model.Bab;
 import com.advantech.model.BabSettingHistory;
+import com.advantech.model.Line;
 import com.advantech.quartzJob.BabDataSaver;
 import com.advantech.service.BabSensorLoginRecordService;
 import com.advantech.service.BabService;
@@ -16,6 +17,7 @@ import com.advantech.service.LineBalancingService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.List;
 import static java.util.stream.Collectors.toList;
+import org.hibernate.Hibernate;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -79,23 +81,44 @@ public class TestService {
         HibernateObjectPrinter.print(l);
     }
 
-    @Test
+//    @Test
     public void testBabSettingHistory() throws JsonProcessingException {
 
         List<BabSettingHistory> allSettings = babSettingHistoryService.findProcessing();
         Bab b = babService.findByPrimaryKey(12991);
-        
+
         HibernateObjectPrinter.print(allSettings.get(0));
 
         List<BabSettingHistory> l = allSettings.stream()
                 .filter(rec -> rec.getBab().getId() == b.getId()).collect(toList());
-        
+
         HibernateObjectPrinter.print(l.get(0));
 
         assertTrue(!l.isEmpty());
 
         HibernateObjectPrinter.print(allSettings);
         HibernateObjectPrinter.print(l);
+    }
+
+    @Test
+    @Transactional
+    @Rollback(false)
+    public void testHibernateInitialize() {
+        Line line = new Line();
+        line.setId(1);
+
+        Bab b = new Bab("test", "test", line, 3, 1);
+        babService.insert(b);
+        assertTrue(b.getId() != 0);
+        
+        HibernateObjectPrinter.print(b);
+
+        Hibernate.initialize(b.getLine());
+        
+        
+//        assertTrue(line.getName() != null);
+
+        HibernateObjectPrinter.print(line);
     }
 
 }

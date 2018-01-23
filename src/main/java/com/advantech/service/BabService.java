@@ -152,7 +152,7 @@ public class BabService {
         boolean needToSave = false;
         if (babAvgs != null && !babAvgs.isEmpty()) {
             bab.setBabAvgs(babAvgs);
-            if (bab.getPeople() != 2) {
+            if (bab.getPeople() > 2) {
                 BabSettingHistory prev = babSettings.stream()
                         .filter(b -> b.getStation() == bab.getPeople() - 1)
                         .reduce((first, second) -> second).orElse(null);
@@ -164,7 +164,7 @@ public class BabService {
         if (needToSave) {
             this.closeBabWithSaving(bab);
             bab.setBabStatus(BabStatus.CLOSED);
-            if (bab.getReplyStatus() == ReplyStatus.NO_NEED_TO_REPLY && isBalanceAboveAvg(bab)) {
+            if (bab.getReplyStatus() == ReplyStatus.NO_NEED_TO_REPLY && !isBalanceAboveAvg(bab)) {
                 bab.setReplyStatus(ReplyStatus.UNREPLIED);
             }
         } else {
@@ -177,7 +177,7 @@ public class BabService {
         BabSettingHistory setting = babSettings.stream()
                 .filter(b -> b.getStation() == bab.getPeople())
                 .reduce((first, second) -> second).orElse(null);
-        this.stationComplete(bab, setting, needToSave == true);
+        this.stationComplete(bab, setting, needToSave == true && bab.getPeople() != 1);
 
         return 1;
     }
@@ -203,3 +203,4 @@ public class BabService {
     }
 
 }
+ 

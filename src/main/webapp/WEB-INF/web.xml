@@ -59,7 +59,7 @@
     
     <servlet>
         <servlet-name>cell</servlet-name>
-        <jsp-file>/cellpage.jsp</jsp-file>
+        <jsp-file>/cellpage_beta.jsp</jsp-file>
     </servlet>
     <servlet-mapping>
         <servlet-name>cell</servlet-name>

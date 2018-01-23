@@ -11,6 +11,7 @@ import com.advantech.dao.BabSettingHistoryDAO;
 import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.model.Bab;
 import com.advantech.model.BabSettingHistory;
+import com.advantech.model.Line;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -18,6 +19,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import javax.transaction.Transactional;
+import org.hibernate.Hibernate;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import static org.junit.Assert.*;
 import org.junit.Test;
@@ -78,7 +81,7 @@ public class TestDAO {
         HibernateObjectPrinter.print(setting);
     }
 
-    @Test
+//    @Test
     @Transactional
     @Rollback(true)
     public void testBabPcsDetailHistoryDAO() throws JsonProcessingException, ParseException {
@@ -87,6 +90,31 @@ public class TestDAO {
         Map m = l.get(0);
         assertNotNull(m.get("id"));
         HibernateObjectPrinter.print(l);
+    }
+    
+//    @Test
+    @Transactional
+    @Rollback(true)
+    public void testHibernateInitialize() {
+        Session session = sessionFactory.getCurrentSession();
+        
+        Line line = new Line();
+        line.setId(1);
+
+        Bab b = new Bab("test", "test", line, 3, 1);
+        session.save(b);
+        assertTrue(b.getId() != 0);
+        
+        HibernateObjectPrinter.print(b);
+        
+        session.flush();
+
+        Hibernate.initialize(b.getLine());
+        
+        
+        assertTrue(line.getName() != null);
+
+        HibernateObjectPrinter.print(line);
     }
 
 }

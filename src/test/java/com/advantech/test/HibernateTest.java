@@ -257,13 +257,15 @@ public class HibernateTest {
         HibernateObjectPrinter.print(bab);
     }
 
-//    @Test
+    @Test
     @Transactional
-    @Rollback(true)
+    @Rollback(false)
     public void testTagNameCompar() throws JsonProcessingException {
         Session session = sessionFactory.getCurrentSession();
-        List l = session.createCriteria(TagNameComparison.class).list();
-        HibernateObjectPrinter.print(l);
+        SensorTransform sensor = session.get(SensorTransform.class, "Cell-15-S-1");
+        assertNotNull(sensor);
+        sensor.setName("Cell-15-S-1*");
+        session.save(sensor);
     }
 
 //    @Test
@@ -292,7 +294,7 @@ public class HibernateTest {
         session.save(a);
     }
 
-    @Test
+//    @Test
     @Transactional
     @Rollback(false)
     public void userPswRefractor() {

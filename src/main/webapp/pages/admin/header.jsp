@@ -103,7 +103,8 @@
                         <span class="caret" />
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a href="CellRecord">歷史紀錄查詢</a></li>
+                        <li><a href="BabTotal?lineType=Cell">線平衡資訊查詢</a></li>
+                        <li><a href="BabDetailInfo">各站機台時間查詢</a></li>
                     </ul>
                 </li>
                 <li>

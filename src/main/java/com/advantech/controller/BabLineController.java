@@ -7,12 +7,9 @@
 package com.advantech.controller;
 
 import com.advantech.model.Line;
-import com.advantech.model.LineStatus;
-import com.advantech.model.view.UserInfoRemote;
+import com.advantech.model.LineType;
 import com.advantech.service.LineService;
-import com.advantech.service.SqlViewService;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import static com.google.common.base.Preconditions.*;
+import com.advantech.service.LineTypeService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -31,6 +28,9 @@ public class BabLineController {
 
     @Autowired
     private LineService lineService;
+    
+    @Autowired
+    private LineTypeService lineTypeService;
 
     @RequestMapping(value = "/findAll", method = {RequestMethod.GET})
     @ResponseBody
@@ -42,6 +42,12 @@ public class BabLineController {
     @ResponseBody
     protected List<Line> findWithLineType() {
         return lineService.findWithLineType();
+    }
+    
+    @RequestMapping(value = "/findLineType", method = {RequestMethod.GET})
+    @ResponseBody
+    protected List<LineType> findLineType() {
+        return lineTypeService.findAll();
     }
 
 }

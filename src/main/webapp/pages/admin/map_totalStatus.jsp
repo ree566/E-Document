@@ -150,7 +150,6 @@
         <script src="../../js/jquery.fullscreen-min.js"></script>
         <script src="../../js/tooltipster.bundle.min.js"></script>
         <script src="../../js/totalMap-setting/${userSitefloor}f.js"></script>
-        <script src="../../js/cell-setting/${userSitefloor}f.js?"></script>
         <script>
             var maxProductivity = 200;
 
@@ -159,14 +158,12 @@
                 initTitleGroup();
                 initTestGroup();
                 initBabGroup();
-                initCellGroup();
 
                 var testChildElement = $("#testArea>.testWiget div");
                 var babChildElement = $("#babArea>.babWiget div");
 
                 testObjectInit();
                 babObjectInit();
-                cellObjectInit();
 
                 $("#titleArea>div").not(".clearWiget").addClass("lineTitle");
 
@@ -234,21 +231,6 @@
                     }
                 }
 
-                function initCellGroup() {
-                    for (var i = 0; i < cellGroup.length; i++) {
-                        $("#cellArea").append("<div></div>");
-                        var groupStatus = cellGroup[i];
-                        for (var j = 0, k = groupStatus.people; j < k; j++) {
-                            $("#cellArea>div")
-                                    .eq(i)
-                                    .append("<div></div>")
-                                    .addClass("cellWiget")
-                                    .attr("id", groupStatus.lineName + "_cell")
-                                    .css({left: groupStatus.x + pXa, top: groupStatus.y + pYa});
-                        }
-                    }
-                }
-
                 function initWiget(obj) {
                     obj.addClass("blub-empty")
                             .removeClass("blub-alarm blub-normal blub-abnormal blub-prepared")
@@ -277,25 +259,6 @@
                                     .tooltipster({updateAnimation: null});
                             childAmount--;
                         });
-                    });
-                }
-
-                function cellObjectInit() {
-                    $(".cellWiget").each(function () {
-                        var lineName = $(this).attr("id");
-                        var childAmount = $(this).children().length;
-                        $(this).children().each(function () {
-                            $(this).attr({"id": (lineName + "_" + childAmount)})
-                                    .css({
-                                        display: "inline-block"
-                                    })
-                                    .addClass("draggable blub-empty divCustomBg")
-                                    .html(lineName.substring(0, 2));
-                            childAmount--;
-                        });
-                        $("#" + lineName)
-                                .attr({title: "empty"})
-                                .tooltipster({trigger: "hover", side: "right", contentAsHTML: true, updateAnimation: null});
                     });
                 }
 
@@ -350,36 +313,6 @@
                                     } else {
                                         childElement.addClass("blub-prepared")
                                                 .html(people.station);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                function cellDataToWiget(obj) {
-                    initWiget($("#cellArea>.cellWiget div"));
-                    if (obj != null) {
-                        var cellData = obj.data;
-                        if (cellData != null) {
-                            for (var k = 0, l = cellData.length; k < l; k++) {
-                                var cell = cellData[k];
-                                var childElement = $("#cellArea #" + cell.lineName + "_cell" + " #" + cell.lineName + "_cell_1");
-
-                                if (childElement.length) {
-                                    if (cell.diff == 0) {
-                                        childElement.removeClass("blub-empty")
-                                                .addClass("blub-prepared");
-                                    } else {
-                                        childElement.removeClass("blub-empty", "blub-prepared")
-                                                .addClass((cell.isAlarm ? "blub-alarm" : "blub-normal"));
-                                        var cellInfo =
-                                                "PO:" + cell.PO + "<br/>" +
-                                                "Barcode:" + cell.barcode + "<br/>" +
-                                                "Standard:" + cell.standard + " Min<br/>" +
-                                                "Diff:" + cell.diff + " Min<br/>" +
-                                                "Percent:" + getPercent(cell.percent) + "%<br/>";
-                                        childElement.parent().tooltipster('content', cellInfo);
                                     }
                                 }
                             }
@@ -450,17 +383,6 @@
                     };
                 }
 
-                if (cellGroup.length != 0) {
-                    ws4 = new ReconnectingWebSocket("ws://" + hostname + "/CalculatorWSApplication/echo4");
-                    setWebSocketClient(ws4);
-                    ws4.onmessage = function (message) {
-                        var jsonArray = $.parseJSON(message.data);
-                        if (jsonArray.length != 0) {
-                            cellDataToWiget(jsonArray);
-                        }
-                    };
-                }
-
                 function setWebSocketClient(webSocket) {
                     webSocket.timeoutInterval = 3000;
                     webSocket.onopen = onopen;
@@ -520,9 +442,6 @@
                 <!--<div class="clearWiget" /></div>-->
 
                 <div id="babArea"></div>
-                <!--<div class="clearWiget"></div>-->
-
-                <div id="cellArea"></div>
                 <!--<div class="clearWiget"></div>-->
             </div>
         </div>

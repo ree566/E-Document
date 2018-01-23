@@ -9,11 +9,8 @@
 <!DOCTYPE html>
 <html>
     <c:set var="userSitefloor" value="${param.sitefloor}" />
-    <%--
     <c:if test="${(userSitefloor == null) || (userSitefloor == '' || userSitefloor < 1 || userSitefloor > 7)}">
     </c:if>
-    --%>
-    <c:redirect url="/" />
     <head> 
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Cell ${userSitefloor} 樓 - ${initParam.pageTitle}</title>

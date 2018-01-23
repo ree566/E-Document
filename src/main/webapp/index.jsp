@@ -126,7 +126,7 @@
                         cloneObj.find("label").html(sitefloor + "F人員請按此");
                         cloneObj.find(".bab").attr("href", "Bab?sitefloor=" + sitefloor);
                         cloneObj.find(".test").attr("href", "Test?sitefloor=" + sitefloor);
-//                        cloneObj.find(".cell").attr("href", "Cell?sitefloor=" + sitefloor);
+                        cloneObj.find(".cell").attr("href", "Cell?sitefloor=" + sitefloor);
 
                         $("#selectGroupArea").append(cloneObj);
                     }
@@ -198,7 +198,7 @@
                     </a>
 
                     <a class="cell">
-                        <button class="btn btn-default col-xs-2 hidden" disabled="true" title="尚未完成">Cell</button>
+                        <button class="btn btn-default col-xs-2">Cell</button>
                     </a>
                 </div>
             </div>
