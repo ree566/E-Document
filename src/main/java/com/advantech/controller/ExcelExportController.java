@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @author Wei.Cheng
  */
 @Controller
+@RequestMapping("ExcelExportController")
 public class ExcelExportController {
 
     @Autowired
@@ -38,9 +39,9 @@ public class ExcelExportController {
 
     private String lineType, sitefloor;
 
-    @RequestMapping(value = "/BABExcelForEfficiencyReport", method = {RequestMethod.GET})
+    @RequestMapping(value = "/getEfficiencyReport", method = {RequestMethod.GET})
     @ResponseBody
-    protected void babExcelForEfficiencyReport(
+    protected void getEfficiencyReport(
             @RequestParam String lineType,
             @RequestParam String sitefloor,
             @RequestParam String startDate,
@@ -74,9 +75,9 @@ public class ExcelExportController {
         }
     }
 
-    @RequestMapping(value = "/BABExcelGenerate", method = {RequestMethod.GET})
+    @RequestMapping(value = "/getTotalInfoReport", method = {RequestMethod.GET})
     @ResponseBody
-    protected void babExcelGenerate(
+    protected void getTotalInfoReport(
             @RequestParam String lineType,
             @RequestParam String sitefloor,
             @RequestParam String startDate,

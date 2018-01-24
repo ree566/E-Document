@@ -1099,7 +1099,7 @@
 
                 var excelExport = function () {
                     var id = $(this).attr("id");
-                    var url = id == "generateExcel" ? "BabExcelGenerate" : "BabExcelForEfficiencyReport";
+                    var url = id == "generateExcel" ? "getTotalInfoReport" : "getEfficiencyReport";
 
                     var lineType = $('#lineType2').val();
                     var sitefloor = $('#sitefloor').val();
@@ -1108,7 +1108,7 @@
                     var aboveStandard = $("#aboveStandard").is(":checked");
 
                     $(".excel_export").attr("disabled", true);
-                    $.fileDownload('<c:url value="/" />' + url + '?startDate=' + startDate + '&endDate=' + endDate + '&lineType=' + lineType + '&sitefloor=' + sitefloor + '&aboveStandard=' + aboveStandard, {
+                    $.fileDownload('<c:url value="/ExcelExportController/" />' + url + '?startDate=' + startDate + '&endDate=' + endDate + '&lineType=' + lineType + '&sitefloor=' + sitefloor + '&aboveStandard=' + aboveStandard, {
                         preparingMessageHtml: "We are preparing your report, please wait...",
                         failMessageHtml: "No reports generated. No Survey data is available.",
                         successCallback: function (url) {
