@@ -6,8 +6,8 @@
  */
 package com.advantech.controller;
 
-import com.advantech.service.BabLineTypeFacade;
-import com.advantech.service.TestLineTypeFacade;
+import com.advantech.facade.BabLineTypeFacade;
+import com.advantech.facade.TestLineTypeFacade;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;

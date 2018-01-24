@@ -8,7 +8,7 @@ package com.advantech.quartzJob;
 
 import com.advantech.endpoint.Endpoint4;
 import com.advantech.helper.ApplicationContextHelper;
-import com.advantech.service.CellLineTypeFacade;
+import com.advantech.facade.CellLineTypeFacade;
 import org.json.JSONObject;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;

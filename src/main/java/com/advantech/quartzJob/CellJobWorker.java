@@ -7,7 +7,7 @@
 package com.advantech.quartzJob;
 
 import com.advantech.helper.ApplicationContextHelper;
-import com.advantech.service.CellLineTypeFacade;
+import com.advantech.facade.CellLineTypeFacade;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;

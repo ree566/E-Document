@@ -8,8 +8,8 @@ package com.advantech.quartzJob;
 
 import com.advantech.endpoint.Endpoint2;
 import com.advantech.helper.ApplicationContextHelper;
-import com.advantech.service.BabLineTypeFacade;
-import com.advantech.service.TestLineTypeFacade;
+import com.advantech.facade.BabLineTypeFacade;
+import com.advantech.facade.TestLineTypeFacade;
 import com.google.gson.Gson;
 import org.json.JSONArray;
 import org.quartz.JobExecutionContext;

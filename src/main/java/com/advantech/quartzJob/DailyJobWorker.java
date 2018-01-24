@@ -7,8 +7,8 @@
 package com.advantech.quartzJob;
 
 import com.advantech.helper.ApplicationContextHelper;
-import com.advantech.service.BabLineTypeFacade;
-import com.advantech.service.TestLineTypeFacade;
+import com.advantech.facade.BabLineTypeFacade;
+import com.advantech.facade.TestLineTypeFacade;
 import org.quartz.JobExecutionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

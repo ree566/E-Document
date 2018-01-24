@@ -7,10 +7,10 @@
 package com.advantech.quartzJob;
 
 import com.advantech.helper.ApplicationContextHelper;
-import com.advantech.service.BabLineTypeFacade;
+import com.advantech.facade.BabLineTypeFacade;
 import com.advantech.service.BabSensorLoginRecordService;
 import com.advantech.service.BabSettingHistoryService;
-import com.advantech.service.TestLineTypeFacade;
+import com.advantech.facade.TestLineTypeFacade;
 import com.advantech.service.TestService;
 import java.io.IOException;
 import org.quartz.JobExecutionContext;

@@ -60,7 +60,7 @@ public class UserDAO extends AbstractDao<Integer, User> implements BasicDAO_1<Us
                 .createQuery("select u from User u join u.userNotifications noti "
                         + "where noti.name = :notification_name "
                         + "and u.lines IS EMPTY")
-                .setParameter("notification_id", notification_name)
+                .setParameter("notification_name", notification_name)
                 .list();
     }
     

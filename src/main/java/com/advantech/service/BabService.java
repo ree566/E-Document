@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import static com.google.common.base.Preconditions.*;
 import java.util.Date;
+import org.hibernate.Hibernate;
 import org.springframework.transaction.annotation.Transactional;
 
 /*
@@ -96,6 +97,15 @@ public class BabService {
 
     public List<String> findAllModelName() {
         return babDAO.findAllModelName();
+    }
+
+    public List<Bab> findUnReplyed(int floor_id) {
+        List<Bab> l = babDAO.findUnReplyed(floor_id);
+        l.forEach(b -> {
+            Hibernate.initialize(b.getBabAlarmHistorys());
+            Hibernate.initialize(b.getLine().getUsers());
+        });
+        return l;
     }
 
     public int insert(Bab pojo) {
@@ -203,4 +213,3 @@ public class BabService {
     }
 
 }
- 

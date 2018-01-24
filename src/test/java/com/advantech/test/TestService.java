@@ -7,8 +7,8 @@ package com.advantech.test;
 
 import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.model.Bab;
+import com.advantech.model.BabAlarmHistory;
 import com.advantech.model.BabSettingHistory;
-import com.advantech.model.Line;
 import com.advantech.quartzJob.BabDataSaver;
 import com.advantech.service.BabSensorLoginRecordService;
 import com.advantech.service.BabService;
@@ -16,8 +16,8 @@ import com.advantech.service.BabSettingHistoryService;
 import com.advantech.service.LineBalancingService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.List;
+import java.util.Set;
 import static java.util.stream.Collectors.toList;
-import org.hibernate.Hibernate;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -101,24 +101,14 @@ public class TestService {
     }
 
     @Test
-    @Transactional
-    @Rollback(false)
     public void testHibernateInitialize() {
-        Line line = new Line();
-        line.setId(1);
+        List<Bab> l = babService.findUnReplyed(1);
+        Bab b = l.get(0);
+        assertNotNull(b);
+        Set<BabAlarmHistory> s1 = b.getBabAlarmHistorys();
+        assertTrue(!s1.isEmpty());
 
-        Bab b = new Bab("test", "test", line, 3, 1);
-        babService.insert(b);
-        assertTrue(b.getId() != 0);
-        
-        HibernateObjectPrinter.print(b);
-
-        Hibernate.initialize(b.getLine());
-        
-        
-//        assertTrue(line.getName() != null);
-
-        HibernateObjectPrinter.print(line);
+        HibernateObjectPrinter.print(s1);
     }
 
 }

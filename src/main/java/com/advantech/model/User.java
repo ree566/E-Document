@@ -183,7 +183,7 @@ public class User implements java.io.Serializable, UserDetails {
     }
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "User_Line_REF", joinColumns = {
+    @JoinTable(name = "Line_User_REF", joinColumns = {
         @JoinColumn(name = "[user_id]", nullable = false, updatable = false)}, inverseJoinColumns = {
         @JoinColumn(name = "line_id", nullable = false, updatable = false)})
     public Set<Line> getLines() {

@@ -7,7 +7,7 @@
 package com.advantech.controller;
 
 import com.advantech.model.TestTable;
-import com.advantech.service.TestLineTypeFacade;
+import com.advantech.facade.TestLineTypeFacade;
 import com.advantech.service.TestTableService;
 import java.util.List;
 import java.util.Map;

@@ -7,13 +7,16 @@ package com.advantech.dao;
 
 import com.advantech.model.Bab;
 import com.advantech.helper.PropertiesReader;
+import com.advantech.model.ReplyStatus;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
+import org.hibernate.Query;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.sql.JoinType;
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Repository;
 
@@ -102,7 +105,7 @@ public class BabDAO extends AbstractDao<Integer, Bab> implements BasicDAO_1<Bab>
         c.addOrder(Order.asc("id"));
         return c.list();
     }
-    
+
     public List<Bab> findProcessingByTagName(String tagName) {
         Criteria c = super.createEntityCriteria();
         c.createAlias("babSettingHistorys", "setting");
@@ -115,6 +118,15 @@ public class BabDAO extends AbstractDao<Integer, Bab> implements BasicDAO_1<Bab>
     public List<String> findAllModelName() {
         Criteria c = super.createEntityCriteria();
         c.setProjection(Projections.distinct(Projections.property("modelName")));
+        return c.list();
+    }
+
+    public List<Bab> findUnReplyed(int floor_id) {
+        Criteria c = super.createEntityCriteria();
+        c.createAlias("line", "l");
+        c.createAlias("l.lineType", "lt");
+        c.add(Restrictions.eq("replyStatus", ReplyStatus.UNREPLIED));
+        c.add(Restrictions.eq("l.floor.id", floor_id));
         return c.list();
     }
 

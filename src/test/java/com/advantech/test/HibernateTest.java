@@ -8,10 +8,10 @@ package com.advantech.test;
 import com.advantech.dao.AlarmTestActionDAO;
 import com.advantech.dao.BabDAO;
 import com.advantech.dao.SqlViewDAO;
-import com.advantech.helper.CustomPasswordEncoder;
 import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.model.AlarmBabAction;
 import com.advantech.model.Bab;
+import com.advantech.model.BabAlarmHistory;
 import com.advantech.model.BabSensorLoginRecord;
 import com.advantech.model.BabStatus;
 import com.advantech.model.CountermeasureEvent;
@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -257,7 +258,7 @@ public class HibernateTest {
         HibernateObjectPrinter.print(bab);
     }
 
-    @Test
+//    @Test
     @Transactional
     @Rollback(false)
     public void testTagNameCompar() throws JsonProcessingException {
@@ -296,7 +297,7 @@ public class HibernateTest {
 
 //    @Test
     @Transactional
-    @Rollback(false)
+    @Rollback(true)
     public void userPswRefractor() {
         Session session = sessionFactory.getCurrentSession();
         List<User> l = session.createCriteria(User.class).list();
@@ -307,5 +308,37 @@ public class HibernateTest {
         }).forEachOrdered((u) -> {
             session.update(u);
         });
+    }
+    
+//    @Test
+    @Transactional
+    @Rollback(true)
+    public void testQueryEnumField(){
+        Criteria c = sessionFactory.getCurrentSession().createCriteria(Bab.class);
+        c.add(Restrictions.eq("replyStatus", ReplyStatus.UNREPLIED));
+        List l = c.list();
+        assertEquals(375, l.size());
+    }
+    
+    @Test
+    @Transactional
+    @Rollback(true)
+    public void testCriteria(){
+        Criteria c = sessionFactory.getCurrentSession().createCriteria(Bab.class);
+        c.createAlias("line", "l");
+        c.createAlias("l.lineType", "lt");
+        c.createAlias("babAlarmHistorys", "h");
+        c.createAlias("l.users", "u");
+        c.add(Restrictions.eq("replyStatus", ReplyStatus.UNREPLIED));
+        c.add(Restrictions.eq("l.floor.id", 1));
+        List<Bab> l = c.list();
+        Bab b = l.get(0);
+        Set<User> s1 = b.getLine().getUsers();
+        Set<BabAlarmHistory> s2 = b.getBabAlarmHistorys();
+        assertTrue(!s1.isEmpty());
+        assertTrue(!s2.isEmpty());
+        HibernateObjectPrinter.print(l.get(0));
+        HibernateObjectPrinter.print(s1);
+        HibernateObjectPrinter.print(s2);
     }
 }

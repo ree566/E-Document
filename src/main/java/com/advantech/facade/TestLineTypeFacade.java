@@ -3,13 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.advantech.service;
+package com.advantech.facade;
 
 import com.advantech.model.Test;
 import com.advantech.model.TestRecord;
 import com.advantech.helper.PropertiesReader;
 import com.advantech.model.AlarmTestAction;
 import com.advantech.model.TestTable;
+import com.advantech.service.AlarmTestActionService;
+import com.advantech.service.BasicLineTypeFacade;
+import com.advantech.service.TestService;
 import com.advantech.webservice.WebServiceRV;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -59,7 +62,7 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
         rv = WebServiceRV.getInstance();
 
         this.initMap();
-        this.initAlarmSign();
+//        this.initAlarmSign();
     }
 
     @Override

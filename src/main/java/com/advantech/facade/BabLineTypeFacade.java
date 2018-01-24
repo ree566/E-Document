@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.advantech.service;
+package com.advantech.facade;
 
 import com.advantech.model.Bab;
 import com.advantech.model.Line;
@@ -11,6 +11,13 @@ import com.advantech.helper.PropertiesReader;
 import com.advantech.model.AlarmBabAction;
 import com.advantech.model.BabSettingHistory;
 import com.advantech.model.view.BabLastGroupStatus;
+import com.advantech.service.AlarmBabActionService;
+import com.advantech.service.BabService;
+import com.advantech.service.BabSettingHistoryService;
+import com.advantech.service.BasicLineTypeFacade;
+import com.advantech.service.LineBalancingService;
+import com.advantech.service.LineService;
+import com.advantech.service.SqlViewService;
 import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -59,7 +66,7 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
         PropertiesReader p = PropertiesReader.getInstance();
         BAB_STANDARD = p.getAssyStandard();
         this.initMap();
-        this.initAlarmSign();
+//        this.initAlarmSign();
     }
 
     @Override

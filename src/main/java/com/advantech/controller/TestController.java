@@ -7,11 +7,13 @@
 package com.advantech.controller;
 
 import com.advantech.datatable.DataTableResponse;
+import com.advantech.quartzJob.CountermeasureAlarm;
 import com.advantech.service.LineService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
@@ -47,5 +49,12 @@ public class TestController {
     @ResponseBody
     public DataTableResponse testDataTableResponse() throws Exception {
         return new DataTableResponse(lineService.findAll());
+    }
+
+    @RequestMapping(value = "/testMailBody", method = {RequestMethod.GET})
+    @ResponseBody
+    public String testMailBody(@RequestParam int floor_id) throws Exception {
+        CountermeasureAlarm c = new CountermeasureAlarm();
+        return c.generateMailBody(floor_id);
     }
 }
