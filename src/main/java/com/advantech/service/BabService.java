@@ -195,7 +195,7 @@ public class BabService {
     private boolean isBalanceAboveAvg(Bab b) {
         BabAlarmHistory alarmHistory = babAlarmHistoryService.findByBab(b.getId());
         checkArgument(alarmHistory != null, "Alarm history not found");
-        return alarmHistory.getIspass() == 1;
+        return alarmHistory.getBalanceIsPass()== 1;
     }
 
     public int closeBabDirectly(Bab b) {

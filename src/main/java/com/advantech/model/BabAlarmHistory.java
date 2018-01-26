@@ -5,9 +5,8 @@
  */
 package com.advantech.model;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.voodoodyne.jackson.jsog.JSOGGenerator;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -30,7 +29,9 @@ public class BabAlarmHistory implements Serializable {
     private Bab bab;
     private int failPcs;
     private int totalPcs;
-    private int ispass;
+    private BigDecimal balance;
+    private int alarmPercentIsPass;
+    private int balanceIsPass;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -71,13 +72,31 @@ public class BabAlarmHistory implements Serializable {
         this.totalPcs = totalPcs;
     }
 
-    @Column(name = "ispass", nullable = false)
-    public int getIspass() {
-        return ispass;
+    @Column(name = "balance", nullable = false)
+    public BigDecimal getBalance() {
+        return balance;
     }
 
-    public void setIspass(int ispass) {
-        this.ispass = ispass;
+    public void setBalance(BigDecimal balance) {
+        this.balance = balance;
+    }
+
+    @Column(name = "alarmPercentIsPass", nullable = false)
+    public int getAlarmPercentIsPass() {
+        return alarmPercentIsPass;
+    }
+
+    public void setAlarmPercentIsPass(int alarmPercentIsPass) {
+        this.alarmPercentIsPass = alarmPercentIsPass;
+    }
+
+    @Column(name = "balanceIsPass", nullable = false)
+    public int getBalanceIsPass() {
+        return balanceIsPass;
+    }
+
+    public void setBalanceIsPass(int balanceIsPass) {
+        this.balanceIsPass = balanceIsPass;
     }
 
 }

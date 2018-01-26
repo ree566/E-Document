@@ -15,9 +15,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -38,6 +42,13 @@ public class ExcelExportController {
     private final int minAllowAmount = 10;
 
     private String lineType, sitefloor;
+
+    private DateTimeFormatter fmt;
+
+    @PostConstruct
+    protected void init() {
+        fmt = org.joda.time.format.DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
+    }
 
     @RequestMapping(value = "/getEfficiencyReport", method = {RequestMethod.GET})
     @ResponseBody
@@ -80,19 +91,25 @@ public class ExcelExportController {
     protected void getTotalInfoReport(
             @RequestParam String lineType,
             @RequestParam String sitefloor,
-            @RequestParam String startDate,
-            @RequestParam String endDate,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime startDate,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime endDate,
             @RequestParam boolean aboveStandard,
             HttpServletResponse res) throws IOException {
 
         this.lineType = lineType;
         this.sitefloor = sitefloor;
 
+        startDate = startDate.withHourOfDay(0);
+        endDate = endDate.withHourOfDay(23);
+
+        String sD = fmt.print(startDate);
+        String eD = fmt.print(endDate);
+
         //http://stackoverflow.com/questions/13853300/jquery-file-download-filedownload
         //personalAlm記得轉格式才能special Excel generate
-        List<Map> countermeasures = fitData(reportService.getCountermeasureForExcel(startDate, endDate));
-        List<Map> personalAlarms = fitData(reportService.getPersonalAlmForExcel(startDate, endDate));
-        List<Map> emptyRecords = fitData(reportService.getEmptyRecordDownExcel(startDate, endDate));
+        List<Map> countermeasures = fitData(reportService.getCountermeasureForExcel(sD, eD));
+        List<Map> personalAlarms = fitData(reportService.getPersonalAlmForExcel(sD, eD));
+        List<Map> emptyRecords = fitData(reportService.getEmptyRecordDownExcel(sD, eD));
 
         List list = countermeasures;
         List list2 = transformPersonalAlmDataPattern(personalAlarms);//把各站亮燈頻率合併為橫式(類似 sql 的 Group by格式)
@@ -199,13 +216,13 @@ public class ExcelExportController {
         generator.generateWorkBooks(sheet1Data);
 
         generator.createExcelSheet(personalAlmSheetName + "(" + filterColumnName + "≧" + minAllowAmount + "台)");
-        generator.appendSpecialPattern(sheet3Data, 9, "Z", "瓶頸站", "AA", "亮燈頻率");
+        generator.appendSpecialPattern(sheet3Data, 10, "Z", "瓶頸站", "AA", "亮燈頻率");
 
         if (!showAboveOnly && !sheet2Data.isEmpty() && !sheet4Data.isEmpty()) {
             generator.createExcelSheet(countermeasureSheetName + "(" + filterColumnName + "<" + minAllowAmount + "台)");
             generator.generateWorkBooks(sheet2Data);
             generator.createExcelSheet(personalAlmSheetName + "(" + filterColumnName + "<" + minAllowAmount + "台)");
-            generator.appendSpecialPattern(sheet4Data, 9, "Z", "瓶頸站", "AA", "亮燈頻率");
+            generator.appendSpecialPattern(sheet4Data, 10, "Z", "瓶頸站", "AA", "亮燈頻率");
         }
 
         generator.createExcelSheet(lastSheetName);
@@ -218,6 +235,7 @@ public class ExcelExportController {
         List<Map> tList = new ArrayList();
         Map baseMap = null;
         int baseId = 0;
+        String tagNameFieldName = "tagName";
         String userIdFieldName = "USER_ID";
         String stationFieldName = "station";
         String failPercentFieldName = "failPercent(Personal)";
@@ -240,6 +258,10 @@ public class ExcelExportController {
                 removeUnusedKeyInMap(baseMap, userIdFieldName, stationFieldName, failPercentFieldName);
                 baseId = (int) m.get(idFieldName);
             } else if (baseMap != null && (int) m.get(idFieldName) == baseId) {
+                if ((int) m.get(stationFieldName) != 1) {
+                    baseMap.replace(tagNameFieldName, 
+                            baseMap.get(tagNameFieldName).toString() + ", " + m.get(tagNameFieldName).toString());
+                }
                 baseMap.put(userIdFieldName + m.get(stationFieldName), m.get(userIdFieldName));
                 baseMap.put(failPercentFieldNameCH + m.get(stationFieldName), m.get(failPercentFieldName));
                 if (i == (l.size() - 1)) {

@@ -87,7 +87,7 @@ Contributor(s):
         <mapping class="com.advantech.model.LineTypeConfig"/>
         <mapping class="com.advantech.model.ErrorCode"/>
         <mapping class="com.advantech.model.ActionCode"/>
-        <mapping class="com.advantech.model.ActionCodeMapping"/>
+        <mapping class="com.advantech.model.ActionCodeResponsor"/>
         <mapping class="com.advantech.model.Countermeasure"/>
         <mapping class="com.advantech.model.CountermeasureEvent"/>
         <mapping class="com.advantech.model.TagNameComparison"/>

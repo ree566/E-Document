@@ -23,19 +23,14 @@ public class SystemReportDao extends BasicDAO {
         return super.getDBUtilConn(SQL.WebAccess);
     }
 
-    //未填寫異常回覆列表
-    public List<Map> getUnFillCountermeasureBabs(int floor_id) {
-        return queryForMapList(getConn(), "SELECT * FROM unFillCountermeasureView WHERE floor_id = ? ORDER BY btime DESC", floor_id);
-    }
-
     //Bab各工單回復狀況以及詳細
     public List<Map> getCountermeasureForExcel(String startDate, String endDate) {
-        return queryProcForMapList(getConn(), "{CALL countermeasureDownExcel(?,?)}", startDate, endDate);
+        return queryProcForMapList(getConn(), "{CALL usp_Excel_Countermeasure(?,?)}", startDate, endDate);
     }
 
     //Bab各站別詳細
     public List<Map> getPersonalAlmForExcel(String startDate, String endDate) {
-        return queryProcForMapList(getConn(), "{CALL personalAlmDownExcel_1(?,?)}", startDate, endDate);
+        return queryProcForMapList(getConn(), "{CALL usp_Excel_PersonalAlarm(?,?)}", startDate, endDate);
     }
 
     //For效率報表
@@ -45,7 +40,7 @@ public class SystemReportDao extends BasicDAO {
     
     //沒有儲存紀錄的工單
     public List<Map> getEmptyRecordDownExcel(String startDate, String endDate) {
-        return queryProcForMapList(getConn(), "{CALL babEmptyRecordDownExcel(?,?)}", startDate, endDate);
+        return queryProcForMapList(getConn(), "{CALL usp_Excel_EmptyRecord(?,?)}", startDate, endDate);
     }
     
 }

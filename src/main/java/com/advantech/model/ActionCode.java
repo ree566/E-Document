@@ -31,7 +31,7 @@ public class ActionCode implements java.io.Serializable {
     private ErrorCode errorCode;
 
     @JsonIgnore
-    private Set<ActionCodeMapping> actionCodeMappings = new HashSet<ActionCodeMapping>(0);
+    private Set<ActionCodeResponsor> actionCodeMappings = new HashSet<ActionCodeResponsor>(0);
 
     @JsonIgnore
     private Set<Countermeasure> countermeasures = new HashSet<Countermeasure>(0);
@@ -43,7 +43,7 @@ public class ActionCode implements java.io.Serializable {
         this.name = name;
     }
 
-    public ActionCode(Set<ActionCodeMapping> actionCodeMappings, Set<Countermeasure> countermeasures, ErrorCode errorCode, String name) {
+    public ActionCode(Set<ActionCodeResponsor> actionCodeMappings, Set<Countermeasure> countermeasures, ErrorCode errorCode, String name) {
         this.actionCodeMappings = actionCodeMappings;
         this.countermeasures = countermeasures;
         this.errorCode = errorCode;
@@ -62,11 +62,11 @@ public class ActionCode implements java.io.Serializable {
     }
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "actionCode")
-    public Set<ActionCodeMapping> getActionCodeMappings() {
+    public Set<ActionCodeResponsor> getActionCodeMappings() {
         return this.actionCodeMappings;
     }
 
-    public void setActionCodeMappings(Set<ActionCodeMapping> actionCodeMappings) {
+    public void setActionCodeMappings(Set<ActionCodeResponsor> actionCodeMappings) {
         this.actionCodeMappings = actionCodeMappings;
     }
 

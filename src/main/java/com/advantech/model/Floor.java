@@ -35,7 +35,7 @@ public class Floor implements java.io.Serializable {
     private Set<Line> lines = new HashSet<>(0);
 
     @JsonIgnore
-    private Set<ActionCodeMapping> actionCodeMappings = new HashSet<>(0);
+    private Set<ActionCodeResponsor> actionCodeMappings = new HashSet<>(0);
 
     public Floor() {
     }
@@ -93,11 +93,11 @@ public class Floor implements java.io.Serializable {
     }
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "floor")
-    public Set<ActionCodeMapping> getActionCodeMappings() {
+    public Set<ActionCodeResponsor> getActionCodeMappings() {
         return actionCodeMappings;
     }
 
-    public void setActionCodeMappings(Set<ActionCodeMapping> actionCodeMappings) {
+    public void setActionCodeMappings(Set<ActionCodeResponsor> actionCodeMappings) {
         this.actionCodeMappings = actionCodeMappings;
     }
 

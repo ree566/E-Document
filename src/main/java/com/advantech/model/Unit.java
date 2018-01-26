@@ -29,7 +29,7 @@ public class Unit implements java.io.Serializable {
     private Set<User> users = new HashSet<User>(0);
 
     @JsonIgnore
-    private Set<ActionCodeMapping> actionCodeMappings = new HashSet<ActionCodeMapping>(0);
+    private Set<ActionCodeResponsor> actionCodeMappings = new HashSet<ActionCodeResponsor>(0);
 
     public Unit() {
     }
@@ -75,11 +75,11 @@ public class Unit implements java.io.Serializable {
     }
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "unit")
-    public Set<ActionCodeMapping> getActionCodeMappings() {
+    public Set<ActionCodeResponsor> getActionCodeMappings() {
         return actionCodeMappings;
     }
 
-    public void setActionCodeMappings(Set<ActionCodeMapping> actionCodeMappings) {
+    public void setActionCodeMappings(Set<ActionCodeResponsor> actionCodeMappings) {
         this.actionCodeMappings = actionCodeMappings;
     }
 

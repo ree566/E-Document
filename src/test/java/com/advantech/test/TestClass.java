@@ -5,10 +5,10 @@
  */
 package com.advantech.test;
 
-import com.advantech.converter.Encodeable;
-import com.advantech.model.BabStatus;
-import com.advantech.security.State;
 import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.Test;
 
 /**
@@ -19,8 +19,16 @@ public class TestClass {
 
     @Test
     public void test() throws IllegalAccessException, InvocationTargetException {
-        Object a = "1";
-        System.out.println(Encodeable.forToken(BabStatus.class, 1));
+        Map m = new HashMap();
+        m.put("a", 20);
+        m.put("c", "GG");
+        m.put("b", "B");
+        m.put("d", new BigDecimal(20));
+        m.put("e", 1);
+        
+        m.replace("b", "bCCA");
+        
+        System.out.println(m.toString());
     }
 
 

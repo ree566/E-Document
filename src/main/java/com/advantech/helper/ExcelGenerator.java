@@ -397,9 +397,6 @@ public class ExcelGenerator {
                 }
             }
 
-            System.out.println(failPercentCols.toString());
-            System.out.println(idCols.toString());
-
             maxDataIndex = xIndex;
             xIndex = baseXIndex;//跳回第一行
             yIndex++; //跳過head to next line

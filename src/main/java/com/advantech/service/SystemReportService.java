@@ -23,10 +23,6 @@ public class SystemReportService {
     @Autowired
     private SystemReportDao systemReportDao;
 
-    public List<Map> getUnFillCountermeasureBabs(int floor_id) {
-        return systemReportDao.getUnFillCountermeasureBabs(floor_id);
-    }
-
     public List<Map> getCountermeasureForExcel(String startDate, String endDate) {
         return systemReportDao.getCountermeasureForExcel(startDate, endDate);
     }
