@@ -457,7 +457,7 @@ public class ExcelGenerator {
                 }
                 formulaString1 += ")";
                 cell.setCellFormula(formulaString1);
-                cell.setCellStyle(percentCell);
+//                cell.setCellStyle(floatCell);
             }
         } else {
             setCellValue(row.createCell(baseYIndex), emptyMessage);

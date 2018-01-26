@@ -55,20 +55,33 @@ public class ExcelExportController {
     protected void getEfficiencyReport(
             @RequestParam String lineType,
             @RequestParam String sitefloor,
-            @RequestParam String startDate,
-            @RequestParam String endDate,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime startDate,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime endDate,
             @RequestParam boolean aboveStandard,
             HttpServletResponse res)
             throws IOException {
 
         this.lineType = lineType;
         this.sitefloor = sitefloor;
+        
+        startDate = startDate.withHourOfDay(0);
+        endDate = endDate.withHourOfDay(23);
 
-        List<Map> data = fitData(reportService.getCountermeasureAndPersonalAlm(startDate, endDate));
-        List<Map> emptyRecords = fitData(reportService.getEmptyRecordDownExcel(startDate, endDate));
+        String sD = fmt.print(startDate);
+        String eD = fmt.print(endDate);
+        
+        System.out.println(sD);
+        System.out.println(eD);
+
+        List<Map> data = fitData(reportService.getCountermeasureAndPersonalAlm(sD, eD));
+        List<Map> emptyRecords = fitData(reportService.getEmptyRecordDownExcel(sD, eD));
+        
+        System.out.println(data.size());
 
         List list2 = transformEfficiencyReportPattern(data);//把各站亮燈頻率合併為橫式(類似 sql 的 Group by格式)
         List list3 = emptyRecords;
+        
+        System.out.println(list2.size());
 
         if (data.isEmpty()) {
             res.setContentType("text/html");

@@ -35,7 +35,7 @@ public class SystemReportDao extends BasicDAO {
 
     //For效率報表
     public List<Map> getCountermeasureAndPersonalAlm(String startDate, String endDate) {
-        return queryProcForMapList(getConn(), "{CALL countermeasureAndPersonalAlmDownExcel(?,?)}", startDate, endDate);
+        return queryProcForMapList(getConn(), "{CALL usp_Excel_CountermeasureAndPersonalAlarm(?,?)}", startDate, endDate);
     }
     
     //沒有儲存紀錄的工單
