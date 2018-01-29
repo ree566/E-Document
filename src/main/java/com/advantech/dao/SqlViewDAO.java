@@ -46,6 +46,13 @@ public class SqlViewDAO extends AbstractDao<Integer, Object> {
                 .list();
     }
 
+    public List<Worktime> findWorktimeByModelName() {
+        return super.getSession()
+                .createSQLQuery("select * from vw_worktime")
+                .setResultTransformer(Transformers.aliasToBean(Worktime.class))
+                .list();
+    }
+
     public Worktime findWorktimeByModelName(String modelName) {
         return (Worktime) super.getSession()
                 .createSQLQuery("select * from vw_worktime where modelName = :modelName")

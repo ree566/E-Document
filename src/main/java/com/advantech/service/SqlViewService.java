@@ -37,6 +37,10 @@ public class SqlViewService {
         return sqlViewDAO.findBabAvgInHistory(bab_id);
     }
 
+    public List<Worktime> findWorktimeByModelName() {
+        return sqlViewDAO.findWorktimeByModelName();
+    }
+
     public Worktime findWorktimeByModelName(String modelName) {
         return sqlViewDAO.findWorktimeByModelName(modelName);
     }
