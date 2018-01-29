@@ -41,6 +41,7 @@ public class CountermeasureDAO extends AbstractDao<Integer, Countermeasure> impl
         c.setFetchMode("actionCodes", FetchMode.JOIN);
         c.setFetchMode("lastEditor", FetchMode.JOIN);
         c.setFetchMode("countermeasureEvents", FetchMode.JOIN);
+        c.setFetchMode("countermeasureSopRecords", FetchMode.JOIN);
         c.add(Restrictions.eq("bab.id", bab_id));
         return (Countermeasure) c.uniqueResult();
     }

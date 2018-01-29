@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -42,6 +43,9 @@ public class Countermeasure implements Serializable {
 
     @JsonIgnore
     private Set<CountermeasureEvent> countermeasureEvents = new HashSet<CountermeasureEvent>(0);
+
+//    @JsonIgnore
+    private Set<CountermeasureSopRecord> countermeasureSopRecords = new HashSet<CountermeasureSopRecord>(0);
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -123,6 +127,15 @@ public class Countermeasure implements Serializable {
 
     public void setCountermeasureEvents(Set<CountermeasureEvent> countermeasureEvents) {
         this.countermeasureEvents = countermeasureEvents;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "countermeasure", cascade = CascadeType.ALL, orphanRemoval = true)
+    public Set<CountermeasureSopRecord> getCountermeasureSopRecords() {
+        return countermeasureSopRecords;
+    }
+
+    public void setCountermeasureSopRecords(Set<CountermeasureSopRecord> countermeasureSopRecords) {
+        this.countermeasureSopRecords = countermeasureSopRecords;
     }
 
 }

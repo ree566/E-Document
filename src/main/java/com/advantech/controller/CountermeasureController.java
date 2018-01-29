@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import static com.google.common.base.Preconditions.*;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
  *
@@ -46,9 +47,6 @@ public class CountermeasureController {
     @Autowired
     private ActionCodeService actionCodeService;
 
-    @Autowired
-    private UserService userService;
-
     @RequestMapping(value = "/findByBab", method = {RequestMethod.GET})
     @ResponseBody
     protected Countermeasure findByBab(@RequestParam(value = "bab_id") int bab_id) {
@@ -62,9 +60,10 @@ public class CountermeasureController {
             @RequestParam(value = "errorCodes[]") Integer[] errorCodes,
             @RequestParam(value = "actionCodes[]") Integer[] actionCodes,
             @RequestParam String solution,
+            @RequestParam String sop,
             @RequestParam String editor
     ) {
-        User user = userService.findByJobnumber(editor.toUpperCase());
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         checkNotNull(user, "查無此使用者");
 
         Countermeasure c = cService.findByBab(bab_id);
@@ -80,9 +79,9 @@ public class CountermeasureController {
         c.setLastEditor(user);
         c.setSolution(solution);
         if (c.getId() == 0) {
-            cService.insert(c);
+            cService.insert(c, sop);
         } else {
-            cService.update(c);
+            cService.update(c, sop);
         }
         return true;
     }

@@ -90,6 +90,7 @@ Contributor(s):
         <mapping class="com.advantech.model.ActionCodeResponsor"/>
         <mapping class="com.advantech.model.Countermeasure"/>
         <mapping class="com.advantech.model.CountermeasureEvent"/>
+        <mapping class="com.advantech.model.CountermeasureSopRecord"/>
         <mapping class="com.advantech.model.TagNameComparison"/>
         <mapping class="com.advantech.model.TagNameComparisonId"/>
         <mapping class="com.advantech.model.Sensor"/>

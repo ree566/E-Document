@@ -667,10 +667,10 @@
             }
 
             function initCountermeasureDialog() {
-                $(".modal-body #errorCon, #responseUser").html("N/A");
+                $(".modal-body #errorCon, #sop, #responseUser").html("N/A");
                 $("input[name='errorCode']").prop("checked", false);
                 $('input[name="actionCode"]').prop("checked", false);
-                $(" #responseUser").html("");
+                $("#responseUser").html("");
                 $(".modal-body :checkbox").attr("disabled", true);
                 checkedErrorCodes = [];
                 checkedActionCodes = [];
@@ -678,7 +678,7 @@
                 showDialogMsg("");
             }
 
-            function getContermeasure(bab_id) {
+            function getCountermeasure(bab_id) {
                 initCountermeasureDialog();
 
                 $.ajax({
@@ -708,6 +708,14 @@
                         setActionCodeCheckBox(checkedActionCodes);
 
                         $(".modal-body :checkbox").attr("disabled", true);
+
+                        var countermeasureSopRecords = msg.countermeasureSopRecords;
+
+                        if (countermeasureSopRecords.length != 0) {
+                            var sop = countermeasureSopRecords[0].sop;
+                            var sopTran = sop.replace(/(?:\r\n|\r|\n)/g, '<br />');
+                            $(".modal-body #sop").html(sopTran);
+                        }
 
                         var lastEditor = jsonData.lastEditor;
                         $(".modal-body #responseUser").append("<span class='label label-default'>#" + (lastEditor == null ? 'N/A' : lastEditor.usernameCh) + "</span> ");
@@ -787,12 +795,12 @@
             }
 
             function counterMeasureModeUndo() {
-                $("#saveCountermeasure, #undoContent").hide();
+                $("#saveCountermeasure, #undoContent, #sopHint").hide();
                 $("#editCountermeasure").show();
             }
 
             function counterMeasureModeEdit() {
-                $("#saveCountermeasure, #undoContent").show();
+                $("#saveCountermeasure, #undoContent, #sopHint").show();
                 $("#editCountermeasure").hide();
             }
             function formatDate(dateString) {
@@ -837,7 +845,7 @@
                     success: function (msg) {
                         if (msg == true) {
                             counterMeasureModeUndo();
-                            getContermeasure(data.bab_id);
+                            getCountermeasure(data.bab_id);
                             $("#searchAvailableBab").trigger("click");
                             showDialogMsg("success");
                         } else {
@@ -989,7 +997,7 @@
                     if (selectData.cm_id == null) {
                         initCountermeasureDialog();
                     } else {
-                        getContermeasure(selectData.id);
+                        getCountermeasure(selectData.id);
                     }
                 });
 
@@ -1001,6 +1009,7 @@
 
                 $("#saveCountermeasure, #undoContent").hide();
 
+                var originSop;
                 var originErrorCon;
                 var originResponseUser;
 
@@ -1009,12 +1018,12 @@
 
                     $(":checkbox").removeAttr("disabled");
 
+                    originSop = $("#sop").html();
                     originErrorCon = $("#errorCon").html().replace(/<br *\/?>/gi, '\n');
                     originResponseUser = $("#responseUser").html();
 
+                    $("#sop").html("<textarea id='sopText' maxlength='200' style='height:100px'>" + (originSop == "N/A" ? "" : originSop) + "</textarea>");
                     $("#errorCon").html("<textarea id='errorConText' maxlength='500'>" + (originErrorCon == "N/A" ? "" : originErrorCon) + "</textarea>");
-
-
 
                     $("#responseUser").html("<input type='text' id='responseUserText' maxlength='30' value='" + '${isAuthenticated ? user.jobnumber : null}' + "' readonly disabled>");
                 });
@@ -1026,13 +1035,15 @@
                     counterMeasureModeUndo();
 
                     $(".modal-body :checkbox").attr("disabled", true);
-
+                    $("#sop").html(originSop);
                     $("#errorCon").html(originErrorCon.replace(/(?:\r\n|\r|\n)/g, '<br />'));
                     $("#responseUser").html(originResponseUser);
                 });
 
                 $("#saveCountermeasure").click(function () {
                     if (confirm("確定修改內容?")) {
+                        var sop = $("#sopText").val();
+
                         var editor = unEntity($("#responseUserText").val()),
                                 solution = unEntity($("#errorConText").val());
 
@@ -1044,7 +1055,7 @@
                             return c.value;
                         });
 
-                        if (checkVal(editor) == false || checkUserExist(editor) == false) {
+                        if (checkVal(editor) == false) {
                             showDialogMsg("找不到使用者，請重新確認您的工號是否存在");
                             return false;
                         } else if (errorCodes.length == 0) {
@@ -1052,6 +1063,9 @@
                             return false;
                         } else if (actionCodes.length == 0) {
                             showDialogMsg("請選擇至少一項ActionCode");
+                            return false;
+                        } else if (checkVal(sop) == false) {
+                            showDialogMsg("請填入SOP資訊");
                             return false;
                         } else {
                             showDialogMsg("");
@@ -1061,6 +1075,7 @@
                             solution: solution,
                             errorCodes: errorCodes,
                             actionCodes: actionCodes,
+                            sop: sop,
                             editor: editor
                         });
                     }
@@ -1194,14 +1209,14 @@
                                 <table id="countermeasureTable" cellspacing="10" class="table table-bordered">
                                     <tr>
                                         <td class="lab">Error Code</td>
-                                        <td id="errorCode"> 
+                                        <td id="errorCode" > 
                                             <div class="checkbox">
                                             </div>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td class="lab">Action Code</td>
-                                        <td id="actionCode"> 
+                                        <td id="actionCode" > 
                                             <div class="checkbox">
                                                 <label class="checkbox-inline">
                                                     <input type="checkbox" name="actionCode">
@@ -1211,12 +1226,19 @@
                                     </tr>
                                     <tr>
                                         <td class="lab">說明</td>
-                                        <td id="errorCon">
+                                        <td id="errorCon" >
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="lab">SOP資訊</td>
+                                        <td>
+                                            <label id="sopHint" hidden="">※請輸入完整Sop名稱及頁數:</label>
+                                            <div id="sop"></div>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td class="lab">最後修改人員</td>
-                                        <td id="responseUser">
+                                        <td id="responseUser" >
                                         </td>
                                     </tr>
                                 </table>

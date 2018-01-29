@@ -3,7 +3,9 @@ package com.advantech.service;
 import com.advantech.model.Countermeasure;
 import com.advantech.dao.CountermeasureDAO;
 import com.advantech.model.Bab;
+import com.advantech.model.CountermeasureSopRecord;
 import com.advantech.model.ReplyStatus;
+import static com.google.common.collect.Sets.newHashSet;
 import java.util.List;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +30,9 @@ public class CountermeasureService {
     @Autowired
     private BabService babService;
 
+    @Autowired
+    private CountermeasureSopRecordService countermeasureSopRecordService;
+
     public List<Countermeasure> findAll() {
         return countermeasureDAO.findAll();
     }
@@ -48,8 +53,26 @@ public class CountermeasureService {
         return 1;
     }
 
+    public int insert(Countermeasure c, String sop) {
+        this.insert(c);
+        countermeasureSopRecordService.insert(new CountermeasureSopRecord(c, sop));
+        return 1;
+    }
+
     public int update(Countermeasure pojo) {
         return countermeasureDAO.update(pojo);
+    }
+
+    public int update(Countermeasure c, String sop) {
+        this.update(c);
+        CountermeasureSopRecord rec = countermeasureSopRecordService.findByCountermeasure(c.getId());
+        if (rec == null) {
+            countermeasureSopRecordService.insert(new CountermeasureSopRecord(c, sop));
+        } else {
+            rec.setSop(sop);
+            countermeasureSopRecordService.update(rec);
+        }
+        return 1;
     }
 
     public int delete(Countermeasure pojo) {
