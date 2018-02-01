@@ -64,10 +64,10 @@ public class Bab implements Serializable {
     @JsonIgnore
     private Set<BabPcsDetailHistory> babPcsDetailHistorys = new HashSet<BabPcsDetailHistory>(0);
 
-    @JsonIgnore
+//    @JsonIgnore
     private Set<BabSettingHistory> babSettingHistorys = new HashSet<BabSettingHistory>(0);
 
-    @JsonIgnore
+//    @JsonIgnore
     private Set<BabAlarmHistory> babAlarmHistorys = new HashSet<BabAlarmHistory>(0);
 
     @JsonIgnore

@@ -14,6 +14,7 @@ import com.advantech.model.TagNameComparison;
 import static com.google.common.base.Preconditions.*;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,6 +41,10 @@ public class BabSettingHistoryService {
 
     public List<BabSettingHistory> findAll() {
         return babSettingHistoryDAO.findAll();
+    }
+
+    public List<Map> findAll(String po, Integer line_id, boolean findWithBalance, boolean findWithMininumAlarmPercent, int minPcs) {
+        return babSettingHistoryDAO.findAll(po, line_id, findWithBalance, findWithMininumAlarmPercent, minPcs);
     }
 
     public BabSettingHistory findByPrimaryKey(Object obj_id) {

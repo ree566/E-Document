@@ -6,10 +6,13 @@
 package com.advantech.controller;
 
 import com.advantech.datatable.DataTableResponse;
+import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.model.Bab;
+import com.advantech.model.BabSettingHistory;
 import com.advantech.model.BabStatus;
 import com.advantech.service.BabPcsDetailHistoryService;
 import com.advantech.service.BabService;
+import com.advantech.service.BabSettingHistoryService;
 import com.advantech.service.SqlViewService;
 import com.advantech.webservice.WebServiceRV;
 import static com.google.common.base.Preconditions.*;
@@ -143,10 +146,10 @@ public class BabController {
             return new DataTableResponse(babPcsDetailHistoryService.findByBab(bab.getId()));
         }
     }
-    
+
     @RequestMapping(value = "/findSensorStatusPerStationToday", method = {RequestMethod.GET})
     @ResponseBody
-    public DataTableResponse findSensorStatusPerStationToday(){
+    public DataTableResponse findSensorStatusPerStationToday() {
         return new DataTableResponse(sqlViewService.findSensorStatusPerStationToday());
     }
 

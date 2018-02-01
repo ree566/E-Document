@@ -50,7 +50,12 @@
         <property name="configLocation" value="classpath:hibernate.cfg.xml" />
         
         <!-- 指定ORM物件關聯表映射檔的設定檔位置 -->
-        <property name="packagesToScan" value="com.advantech.model" />
+        <property name="packagesToScan">
+            <array>
+                <value>com.advantech.model</value>
+                <value>com.advantech.model.view</value>
+            </array>
+        </property>
         
         <!-- 捨棄原hibernate.cfg.xml檔或
         覆蓋原hibernate.cfg.xml檔的部份設定 -->

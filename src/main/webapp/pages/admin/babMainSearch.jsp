@@ -375,6 +375,7 @@
                         {data: "isused"},
                         {data: "alarmPercent", "sType": "numeric-comma"},
                         {data: "btime"},
+                        {data: "needToReply"},
                         {data: "needToReply"}
                     ],
                     "columnDefs": [
@@ -424,10 +425,17 @@
                                 } else if (!isNeedToReply && row.alarmPercent != null && !isCmReply) {
                                     return "達到標準";
                                 } else if ((!isCmReply && isNeedToReply)) {
-                                    return "<input type='button' class='btn btn-danger btn-sm' data-toggle= 'modal' data-target='#myModal' value='檢視詳細' />";
+                                    return "<input type='button' class='cm-detail btn btn-danger btn-sm' data-toggle= 'modal' data-target='#myModal' value='檢視詳細' />";
                                 } else if (isCmReply) {
-                                    return "<input type='button' class='btn btn-info btn-sm' data-toggle= 'modal' data-target='#myModal' value='檢視詳細' />";
+                                    return "<input type='button' class='cm-detail btn btn-info btn-sm' data-toggle= 'modal' data-target='#myModal' value='檢視詳細' />";
                                 }
+                            }
+                        },
+                        {
+                            "type": "html",
+                            "targets": 10,
+                            'render': function (data, type, row) {
+                                return "<input type='button' class='babSetting-detail btn btn-primary btn-sm' data-toggle= 'modal' data-target='#myModal2' value='檢視' />";
                             }
                         }
                     ],
@@ -726,6 +734,49 @@
                 });
             }
 
+            function getBabSettingHistory(bab_id) {
+                $("#babSettingHistory").DataTable({
+                    dom: 'lfrtip',
+                    "serverSide": false,
+                    "ajax": {
+                        "url": "<c:url value="/BabSettingHistoryController/findByBab" />",
+                        "type": "GET",
+                        "data": {
+                            "id": bab_id
+                        }
+                    },
+                    "columns": [
+                        {data: "station"},
+                        {data: "tagName.name"},
+                        {data: "jobnumber"},
+                        {data: "createTime"},
+                        {data: "lastUpdateTime"}
+                    ],
+                    "columnDefs": [
+                        {
+                            "type": "html",
+                            "targets": [3, 4],
+                            "data": "ctrl_alarmPercent",
+                            'render': function (data, type, full, meta) {
+                                return formatDate(data);
+                            }
+                        },
+                    ],
+                    "oLanguage": {
+                        "sLengthMenu": "顯示 _MENU_ 筆記錄",
+                        "sZeroRecords": "無符合資料",
+                        "sInfo": "目前記錄：_START_ 至 _END_, 總筆數：_TOTAL_"
+                    },
+                    searching: false,
+                    paging: false,
+                    "bInfo": false,
+                    destroy: true,
+                    "drawCallback": function (settings) {
+                        $.unblockUI();
+                    }
+                });
+            }
+
             function setupCheckBox() {
 
                 $("#actionCode").html("");
@@ -982,11 +1033,11 @@
                 //edit counterMeasure 
                 var editId;
 
-                $("body").on('click', '#babHistory input[type="button"]', function () {
-
+                $("body").on('click', '.cm-detail', function () {
                     var selectData = historyTable.row($(this).parents('tr')).data();
                     editId = selectData.id;
-                    $("#myModal #titleMessage").html(
+                    var modal = $($(this).attr("data-target"));
+                    modal.find(".modal-title").html(
                             "號碼: " + editId +
                             " / 工單: " + selectData.po +
                             " / 機種: " + selectData.modelName +
@@ -1001,7 +1052,22 @@
                     }
                 });
 
-                $('#myModal').on('shown.bs.modal', function () {
+                $("body").on('click', '.babSetting-detail', function () {
+                    var selectData = historyTable.row($(this).parents('tr')).data();
+                    editId = selectData.id;
+                    var modal = $($(this).attr("data-target"));
+                    modal.find(".modal-title").html(
+                            "號碼: " + editId +
+                            " / 工單: " + selectData.po +
+                            " / 機種: " + selectData.modelName +
+                            " / 線別: " + selectData.lineName +
+                            " / 時間: " + formatDate(selectData.btime)
+                            );
+                    getBabSettingHistory(selectData.id);
+
+                });
+
+                $('.modal').on('shown.bs.modal', function () {
                     $(this).find('.modal-dialog').css({width: '90%',
                         height: 'auto',
                         'max-height': '100%'});
@@ -1255,6 +1321,40 @@
 
                 </div>
             </div>
+
+            <!-- Modal2 -->
+            <div id="myModal2" class="modal fade" role="dialog">
+                <div class="modal-dialog">
+
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 id="titleMessage2" class="modal-title"></h4>
+                        </div>
+                        <div class="modal-body">
+                            <div>
+                                <table id="babSettingHistory" class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>station</th>
+                                            <th>tagName</th>
+                                            <th>jobnumber</th>
+                                            <th>btime</th>
+                                            <th>lastUpdateTime</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                                <div id="dialog-msg2" class="alarm"></div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
             <!----->
             <div class="wiget-ctrl form-inline">
                 <div id="bab_HistoryList">
@@ -1298,6 +1398,7 @@
                                         <th>亮燈頻率(%)</th>
                                         <th>投入時間</th>
                                         <th>異常回覆</th>
+                                        <th>站別詳細</th>
                                     </tr>
                                 </thead>
                             </table>

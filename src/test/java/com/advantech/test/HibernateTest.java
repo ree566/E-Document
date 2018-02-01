@@ -13,6 +13,7 @@ import com.advantech.model.AlarmBabAction;
 import com.advantech.model.Bab;
 import com.advantech.model.BabAlarmHistory;
 import com.advantech.model.BabSensorLoginRecord;
+import com.advantech.model.BabSettingHistory;
 import com.advantech.model.BabStatus;
 import com.advantech.model.CountermeasureEvent;
 import com.advantech.model.ReplyStatus;
@@ -31,6 +32,9 @@ import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.transform.Transformers;
 import static org.junit.Assert.*;
@@ -249,12 +253,12 @@ public class HibernateTest {
         assertEquals(bab.getBabStatus(), BabStatus.UNFINSHED);
         assertNotNull(bab.getReplyStatus());
         assertEquals(bab.getReplyStatus(), ReplyStatus.UNREPLIED);
-        
+
         bab.setBabStatus(BabStatus.CLOSED);
         bab.setReplyStatus(ReplyStatus.NO_NEED_TO_REPLY);
-        
+
         session.update(bab);
-        
+
         HibernateObjectPrinter.print(bab);
     }
 
@@ -309,21 +313,21 @@ public class HibernateTest {
             session.update(u);
         });
     }
-    
+
 //    @Test
     @Transactional
     @Rollback(true)
-    public void testQueryEnumField(){
+    public void testQueryEnumField() {
         Criteria c = sessionFactory.getCurrentSession().createCriteria(Bab.class);
         c.add(Restrictions.eq("replyStatus", ReplyStatus.UNREPLIED));
         List l = c.list();
         assertEquals(375, l.size());
     }
-    
-    @Test
+
+//    @Test
     @Transactional
     @Rollback(true)
-    public void testCriteria(){
+    public void testCriteria() {
         Criteria c = sessionFactory.getCurrentSession().createCriteria(Bab.class);
         c.createAlias("line", "l");
         c.createAlias("l.lineType", "lt");
@@ -340,5 +344,26 @@ public class HibernateTest {
         HibernateObjectPrinter.print(l.get(0));
         HibernateObjectPrinter.print(s1);
         HibernateObjectPrinter.print(s2);
+    }
+
+    @Test
+    @Transactional
+    @Rollback(true)
+    public void testQuery2() {
+        Session session = sessionFactory.getCurrentSession();
+
+        String po = "PAH2070ZA";
+
+        Query q = session.createQuery(
+                "select bah from BabAlarmHistory bah"
+                + " join bah.bab b"
+                + " where b.po = :po"
+                + " order by balance desc, b.id desc");
+
+        q.setParameter("po", po);
+        q.setMaxResults(1);
+        List l = q.list();
+        assertTrue(!l.isEmpty());
+        HibernateObjectPrinter.print(l);
     }
 }

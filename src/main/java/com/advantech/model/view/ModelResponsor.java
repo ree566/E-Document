@@ -6,13 +6,16 @@
 package com.advantech.model.view;
 
 import java.io.Serializable;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
 /**
  *
  * @author Wei.Cheng
  * View object in db
  */
-//@Entity
+@Entity
+@Table(name = "Bab")
 public class ModelResponsor implements Serializable {
 
     private String Model_name;

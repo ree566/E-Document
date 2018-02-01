@@ -8,8 +8,11 @@ package com.advantech.dao;
 import com.advantech.model.Bab;
 import com.advantech.model.BabSettingHistory;
 import com.advantech.model.SensorTransform;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.criterion.Restrictions;
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Repository;
@@ -24,6 +27,47 @@ public class BabSettingHistoryDAO extends AbstractDao<Integer, BabSettingHistory
     @Override
     public List<BabSettingHistory> findAll() {
         return super.createEntityCriteria().list();
+    }
+
+    public List<Map> findAll(String po, Integer line_id,
+            boolean findWithBalance, boolean findWithMininumAlarmPercent, Integer minPcs) {
+        String sql = "";
+
+        if (findWithBalance) {
+            sql = "select new Map(bsh as babAlarmHistory, bah.balance as balance, bah.totalPcs as totalPcs) from Bab b "
+                    + " join b.babAlarmHistorys bah "
+                    + " join b.babSettingHistorys bsh"
+                    + " where b.po = :po"
+                    + " and (:line_id is null or :line_id = 0 or b.line.id = :line_id)"
+                    + " and bah.balance = ("
+                    + " select max(bah2.balance) from BabAlarmHistory bah2 "
+                    + " join bah2.bab b2 "
+                    + " where b2.po = :po and "
+                    + " (:line_id is null or :line_id = 0 or b2.line.id = :line_id)"
+                    + " and bah2.totalPcs >= :minPcs)"
+                    + " and bah.totalPcs >= :minPcs";
+        } else if (findWithMininumAlarmPercent) {
+            sql = "select new Map(bsh as babAlarmHistory, bah.failPcs * 1.0 / bah.totalPcs as alarmPercent, bah.totalPcs as totalPcs) from Bab b "
+                    + " join b.babAlarmHistorys bah "
+                    + " join b.babSettingHistorys bsh"
+                    + " where b.po = :po and (:line_id is null or :line_id = 0 or b.line.id = :line_id)"
+                    + " and (bah.failPcs * 1.0 / bah.totalPcs) = ("
+                    + " select min(bah2.failPcs * 1.0 / bah2.totalPcs) from BabAlarmHistory bah2 "
+                    + " join bah2.bab b2 where b2.po = :po"
+                    + " and (:line_id is null or :line_id = 0 or b2.line.id = :line_id)"
+                    + " and bah2.totalPcs >= :minPcs))"
+                    + " and bah.totalPcs >= :minPcs";
+        }
+        
+        if(!findWithBalance && !findWithMininumAlarmPercent){
+            return new ArrayList();
+        }
+
+        Query q = super.getSession().createQuery(sql);
+        q.setParameter("po", po);
+        q.setParameter("line_id", line_id);
+        q.setParameter("minPcs", minPcs);
+        return q.list();
     }
 
     @Override
@@ -43,14 +87,14 @@ public class BabSettingHistoryDAO extends AbstractDao<Integer, BabSettingHistory
         c.add(Restrictions.eq("station", station));
         return (BabSettingHistory) c.uniqueResult();
     }
-    
-    public List<BabSettingHistory> findProcessing(){
+
+    public List<BabSettingHistory> findProcessing() {
         Criteria c = super.createEntityCriteria();
         c.add(Restrictions.isNull("lastUpdateTime"));
         return c.list();
     }
-    
-    public BabSettingHistory findProcessingByTagName(SensorTransform tagName){
+
+    public BabSettingHistory findProcessingByTagName(SensorTransform tagName) {
         Criteria c = super.createEntityCriteria();
         c.add(Restrictions.eq("tagName", tagName));
         c.add(Restrictions.isNull("lastUpdateTime"));

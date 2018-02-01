@@ -6,7 +6,6 @@
 package com.advantech.dao;
 
 import com.advantech.model.Bab;
-import com.advantech.helper.PropertiesReader;
 import com.advantech.model.ReplyStatus;
 import java.util.List;
 import javax.annotation.PostConstruct;
@@ -16,7 +15,6 @@ import org.hibernate.Query;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
-import org.hibernate.sql.JoinType;
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Repository;
 
@@ -128,6 +126,26 @@ public class BabDAO extends AbstractDao<Integer, Bab> implements BasicDAO_1<Bab>
         c.add(Restrictions.eq("replyStatus", ReplyStatus.UNREPLIED));
         c.add(Restrictions.eq("l.floor.id", floor_id));
         return c.list();
+    }
+
+    /*
+        Select bab with maxium balance record or mininum alarmPercent record
+        from BabAlarmHistory table
+        Find bab setting in babSettingHistory also.
+     */
+    public Bab findWithBestBalanceAndSetting(String po) {
+        Query q = super.getSession().createQuery(
+                "select b from Bab b join b.babSettingHistorys bsh"
+                + " join b.babAlarmHistorys bah"
+                + " where b.id = ("
+                + " select bab.id from babSettingHistorys bs join bs.bab bab"
+                + " where bab.po = :po"
+                + " and balance = ("
+                + " select max(balance) from babSettingHistorys bs2 where bs.bab.id = bs2.bab.id"
+                + ")"
+                + " )");
+        q.setMaxResults(1);
+        return (Bab) q.uniqueResult();
     }
 
     @Override

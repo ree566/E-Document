@@ -32,13 +32,13 @@ public class TestQuartzJobs {
         tr.executeInternal(null);
     }
     
-//    @Test
+    @Test
     public void testDbInit() throws JobExecutionException {
         DataBaseInit d = new DataBaseInit();
         d.executeInternal(null);
     }
     
-    @Test
+//    @Test
     public void testBabDataSaver() throws JobExecutionException{
         BabDataSaver b = new BabDataSaver();
         b.executeInternal(null);

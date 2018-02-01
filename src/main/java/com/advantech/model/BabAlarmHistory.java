@@ -5,6 +5,8 @@
  */
 package com.advantech.model;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import javax.persistence.Column;
@@ -23,6 +25,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "BabAlarmHistory")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class BabAlarmHistory implements Serializable {
 
     private int id;
@@ -81,7 +84,7 @@ public class BabAlarmHistory implements Serializable {
         this.balance = balance;
     }
 
-    @Column(name = "alarmPercentIsPass", nullable = false)
+    @Column(name = "alarmPercent_isPass", nullable = false)
     public int getAlarmPercentIsPass() {
         return alarmPercentIsPass;
     }
@@ -90,7 +93,7 @@ public class BabAlarmHistory implements Serializable {
         this.alarmPercentIsPass = alarmPercentIsPass;
     }
 
-    @Column(name = "balanceIsPass", nullable = false)
+    @Column(name = "balance_isPass", nullable = false)
     public int getBalanceIsPass() {
         return balanceIsPass;
     }

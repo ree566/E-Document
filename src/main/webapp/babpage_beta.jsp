@@ -285,6 +285,14 @@
                     dialogMessage.dialog("open");
                 });
 
+                $("#searchBabSetting").click(function () {
+                    var po = $("#po3").val();
+                    if (checkVal(po) == false) {
+                        alert("Po is invalid");
+                        return false;
+                    }
+                    findBabSettingHistory(po);
+                });
             });
 
             function block() {
@@ -364,7 +372,10 @@
                     $("#step2").unblock();
                     showProcessing();
                 } else {
-                    $("#step2").block({message: "請先在步驟一完成相關步驟。", css: {cursor: 'default'}, overlayCSS: {cursor: 'default'}});
+                    $(".stepAfterLogin").block({
+                        message: "請先在步驟一完成相關步驟。",
+                        css: {cursor: 'default'},
+                        overlayCSS: {cursor: 'default'}});
                 }
             }
 
@@ -600,6 +611,52 @@
                 });
             }
 
+            function findBabSettingHistory(po) {
+                var findWithBalance = $("#maxBalance").is(":checked");
+                var findWithAlarmPercent = $("#minAlarmPercent").is(":checked");
+                $.ajax({
+                    type: "GET",
+                    url: "<c:url value="/BabSettingHistoryController/findWithMaxBalanceOrMinAlarmPercent" />",
+                    data: {
+                        po: po,
+                        findWithCurrentLine: $("#currentLine").is(":checked"),
+                        findWithBalance: findWithBalance,
+                        findWithAlarmPercent: findWithAlarmPercent,
+                        isAboveMinPcs: $("#aboveMinPcs").is(":checked")
+                    },
+                    dataType: "json",
+                    success: function (response) {
+                        var obj = $("#babSettingHistorySearchResult");
+                        obj.html("");
+                        var arr = response.data;
+                        if (arr.length == 0) {
+                            obj.html("<p>No data.</p>");
+                        } else {
+                            obj.append("<h5>Po : " + po + "</h5>");
+                            if (findWithBalance) {
+                                obj.append("<h5>Best lineBalance: " + arr[0].balance + "</h5>");
+                            } else if (findWithAlarmPercent) {
+                                obj.append("<h5>Min alarmPercent: " + arr[0].alarmPercent + "</h5>");
+                            }
+                            obj.append("<h5>User setting: </h5>");
+                            for (var i = 0; i < arr.length; i++) {
+                                var info = arr[i].babAlarmHistory;
+                                obj.append("<h5>" +
+                                        "(id: " + info.bab.id +
+                                        " / pcs: " + arr[i].totalPcs + ")" +
+                                        " / tagName: " + info.tagName.name +
+                                        " / station: " + info.station +
+                                        " / jobnumber: " + info.jobnumber +
+                                        "</h5>");
+                            }
+                        }
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        showMsg(xhr.responseText);
+                    }
+                });
+            }
+
             //auto uppercase the textbox value(PO, ModelName)
             function textBoxToUpperCase(obj) {
                 obj.val(obj.val().trim().toLocaleUpperCase());
@@ -643,7 +700,7 @@
         <div id="titleAlert">
             <c:out value="您所選擇的樓層是: ${userSitefloor}" />
             <a href="${pageContext.request.contextPath}">
-                <button id="redirectBtn" class="btn btn-default" >不是我的樓層?</button>
+                <button id="redirectBtn" class="btn btn-default btn-xs" >不是我的樓層?</button>
             </a>
         </div>
         <jsp:include page="temp/head.jsp" />
@@ -680,7 +737,7 @@
                 </div>
             </div>
 
-            <div id="step2" class="step">
+            <div id="step2" class="step stepAfterLogin">
                 <div class="userWiget form-inline">
                     <div id="selectStationWiget" class="row" style="display: block">
                         <div class="col col-xs-12">
@@ -762,7 +819,7 @@
                 </div>
             </div>
 
-            <div id="step3" class="step">
+            <div id="step3" class="step stepAfterLogin">
                 <div id='serverMsg' class="userWiget">        
                 </div>
                 <div class="wigetInfo">
@@ -771,7 +828,7 @@
                 </div>
             </div>
 
-            <div id="step4" class="step stepAlarm">
+            <div id="step4" class="step stepAlarm stepAfterLogin">
                 <div class="form-inline userWiget">
                     <div><input type="button" id="searchProcessing" value="查詢"></div>
                     <div id="processingBab" ></div>
@@ -780,6 +837,34 @@
                     <h3>完成:</h3>
                     <h5>此處可點選查詢按鈕搜尋正在進行的工單。</h5>
                     <h5>紅色字體代表目前正在進行線平衡量測的工單。</h5>
+                </div>
+            </div>
+
+            <div class="step stepAfterLogin">
+                <div class="form-inline userWiget">
+                    <div class="form-group">
+                        <input id="po3" type="text" placeholder="請輸入工單號碼" autocomplete="off" maxlength="50">  
+                    </div>
+                    <div class="form-group form-check">
+                        <input class="form-check-input" type="checkbox" id="currentLine" checked="">
+                        <label class="form-check-label" for="currentLine">本線別</label>
+                        <input class="form-check-input" type="checkbox" id="aboveMinPcs" checked="">
+                        <label class="form-check-label" for="aboveMinPcs">大於10台</label>
+                        <input class="form-check-input" type="radio" name="searchFilters" id="maxBalance" checked="">
+                        <label class="form-check-label" for="maxBalance">最佳線平衡率</label>
+                        <input class="form-check-input" type="radio" name="searchFilters" id="minAlarmPercent">
+                        <label class="form-check-label" for="minAlarmPercent">最低亮燈頻率</label>
+                    </div>
+                    <div class="form-group">
+                        <input type="button" id="searchBabSetting" value="查詢">
+                    </div>
+                    <div>
+                        <div id="babSettingHistorySearchResult"></div>
+                    </div>
+                </div>
+                <div class="wigetInfo">
+                    <h3>最佳線平衡配置查詢</h3>
+                    <h5>此處可查詢該工單在此線別的最佳配置情況，以供參考。</h5>
                 </div>
             </div>
 

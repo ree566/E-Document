@@ -91,30 +91,39 @@ public class TestDAO {
         assertNotNull(m.get("id"));
         HibernateObjectPrinter.print(l);
     }
-    
+
 //    @Test
     @Transactional
     @Rollback(true)
     public void testHibernateInitialize() {
         Session session = sessionFactory.getCurrentSession();
-        
+
         Line line = new Line();
         line.setId(1);
 
         Bab b = new Bab("test", "test", line, 3, 1);
         session.save(b);
         assertTrue(b.getId() != 0);
-        
+
         HibernateObjectPrinter.print(b);
-        
+
         session.flush();
 
         Hibernate.initialize(b.getLine());
-        
-        
+
         assertTrue(line.getName() != null);
 
         HibernateObjectPrinter.print(line);
+    }
+
+    @Test
+    @Transactional
+    @Rollback(true)
+    public void testFindWithBestBalanceAndSetting() {
+        List l = babSettingHistoryDAO.findAll("PSH5579ZA", 0, true, false, 0);
+        assertTrue(l != null);
+        assertTrue(!l.isEmpty());
+        HibernateObjectPrinter.print(l);
     }
 
 }
