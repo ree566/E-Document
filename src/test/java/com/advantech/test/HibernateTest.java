@@ -13,13 +13,14 @@ import com.advantech.model.AlarmBabAction;
 import com.advantech.model.Bab;
 import com.advantech.model.BabAlarmHistory;
 import com.advantech.model.BabSensorLoginRecord;
-import com.advantech.model.BabSettingHistory;
 import com.advantech.model.BabStatus;
 import com.advantech.model.CountermeasureEvent;
 import com.advantech.model.ReplyStatus;
 import com.advantech.model.SensorTransform;
 import com.advantech.model.TagNameComparison;
 import com.advantech.model.User;
+import com.advantech.model.view.UserInfoRemote;
+import com.advantech.model.view.Worktime;
 import com.advantech.security.State;
 import com.advantech.service.BabPcsDetailHistoryService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -29,12 +30,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.hibernate.Criteria;
+import org.hibernate.FetchMode;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.DetachedCriteria;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.transform.Transformers;
 import static org.junit.Assert.*;
@@ -352,18 +351,5 @@ public class HibernateTest {
     public void testQuery2() {
         Session session = sessionFactory.getCurrentSession();
 
-        String po = "PAH2070ZA";
-
-        Query q = session.createQuery(
-                "select bah from BabAlarmHistory bah"
-                + " join bah.bab b"
-                + " where b.po = :po"
-                + " order by balance desc, b.id desc");
-
-        q.setParameter("po", po);
-        q.setMaxResults(1);
-        List l = q.list();
-        assertTrue(!l.isEmpty());
-        HibernateObjectPrinter.print(l);
     }
 }

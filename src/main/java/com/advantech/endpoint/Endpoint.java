@@ -44,12 +44,13 @@ public class Endpoint {
     private static final Set<Session> sessions = Collections.synchronizedSet(new HashSet<Session>());
 
     private static final String POLLING_FREQUENCY;
+
     private static final String JOB_NAME = "JOB1";
-    
+
     private final CronTrigMod ctm = (CronTrigMod) ApplicationContextHelper.getBean("cronTrigMod");
 
     static {
-        POLLING_FREQUENCY = PropertiesReader.getInstance().getEndpointQuartzTrigger();
+        POLLING_FREQUENCY = ((PropertiesReader) ApplicationContextHelper.getBean("propertiesReader")).getEndpointPollingCron();
     }
 
     @OnOpen
@@ -60,7 +61,7 @@ public class Endpoint {
         } catch (IOException ex) {
             log.error(ex.toString());
         }
-        
+
 //        HandshakeRequest req = (HandshakeRequest) conf.getUserProperties().get("handshakereq");
 //        Map<String,List<String>> headers = req.getHeaders();
         sessions.add(session);
@@ -134,8 +135,8 @@ public class Endpoint {
             log.error(ex.toString());
         }
     }
-    
-    public static void clearSessions(){
+
+    public static void clearSessions() {
         sessions.clear();
     }
 }

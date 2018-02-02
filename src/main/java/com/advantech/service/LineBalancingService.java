@@ -8,11 +8,13 @@ package com.advantech.service;
 import com.advantech.model.Bab;
 import com.advantech.model.Line;
 import com.advantech.model.LineBalancing;
-import com.advantech.helper.MailSend;
-import com.advantech.helper.PropertiesReader;
 import com.advantech.dao.LineBalancingDAO;
 import com.advantech.dao.LineDAO;
+import com.advantech.dao.UserDAO;
+import com.advantech.helper.MailManager;
+import com.advantech.helper.PropertiesReader;
 import com.advantech.model.LineType;
+import com.advantech.model.User;
 import com.advantech.model.view.BabAvg;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
@@ -38,8 +40,11 @@ public class LineBalancingService {
 
     private static final Logger log = LoggerFactory.getLogger(LineBalancingDAO.class);
 
-    private String targetMail;
-    private int BALANCE_ROUNDING_DIGIT;
+    @Autowired
+    private PropertiesReader p;
+    
+    private Integer balanceRoundDigit;
+    private Double balnDiff;
 
     @Autowired
     private LineBalancingDAO lineBalanceDAO;
@@ -47,11 +52,16 @@ public class LineBalancingService {
     @Autowired
     private LineDAO lineDAO;
 
+    @Autowired
+    private UserDAO userDAO;
+    
+    @Autowired
+    private MailManager mailManager;
+    
     @PostConstruct
-    protected void init() {
-        PropertiesReader p = PropertiesReader.getInstance();
-        targetMail = p.getTestMail();
-        BALANCE_ROUNDING_DIGIT = p.getBalanceRoundingDigit();
+    private void init(){
+        balanceRoundDigit = p.getBabLineBalanceRoundDigit();
+        balnDiff = p.getBabLineBalanceAlarmDiff();
     }
 
     public List<LineBalancing> findAll() {
@@ -70,10 +80,9 @@ public class LineBalancingService {
         List<BabAvg> balances = bab.getBabAvgs();
 
         LineType lineType = lineDAO.findLineType(bab.getLine().getId());
-        
+
         LineBalancing maxBaln = this.getMaxBalance(bab, lineType); //先取得max才insert，不然會抓到自己
         double baln = this.caculateLineBalance(balances);
-        
 
         LineBalancing record = new LineBalancing(
                 bab.getPeople(),
@@ -95,7 +104,7 @@ public class LineBalancingService {
         }
 
         lineBalanceDAO.insert(record);
-        
+
         //Don't throw exception when mail send fail
         try {
             this.checkLineBalanceAndSendMail(bab, maxBaln, baln);
@@ -135,12 +144,11 @@ public class LineBalancingService {
 
     public Double caculateLineBalance(Double max, Double sum, int people) {
         return new BigDecimal(sum / (max * people))
-                .setScale(BALANCE_ROUNDING_DIGIT, BigDecimal.ROUND_HALF_DOWN)
+                .setScale(balanceRoundDigit, BigDecimal.ROUND_HALF_DOWN)
                 .doubleValue();
     }
 
     public void checkLineBalanceAndSendMail(Bab bab, LineBalancing linebaln, double balance) throws JSONException, MessagingException {
-        double balnDiff = PropertiesReader.getInstance().getBalanceDiff();
         //確定資料庫已經插入之後才送信
         int maxbln = parseDoubleToInteger(linebaln == null ? 0 : linebaln.getBalance());
         int currentbln = parseDoubleToInteger(balance);
@@ -163,12 +171,9 @@ public class LineBalancingService {
 
     private void sendMail(Bab bab, int maxbln, int currentbln, int diff) throws JSONException, MessagingException {
         Line line = bab.getLine();
-        String mailto = targetMail; //Get the responsor of linetype.
-        if ("".equals(mailto)) {
-            return;
-        }
+        List<User> mailTo = userDAO.findByUserNotification("");
         String subject = "[藍燈系統]異常訊息(" + line.getName().trim() + ")";
-        MailSend.getInstance().sendMail(mailto, subject,
+        mailManager.sendMail(mailTo, null, subject,
                 new StringBuilder()
                         .append("<p>時間 <strong>")
                         .append(new Date())

@@ -15,14 +15,29 @@ import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
  */
 public class HibernateObjectPrinter {
 
+    private static final ObjectMapper mapper;
+
+    static {
+        mapper = new ObjectMapper();
+        Hibernate5Module hbm = new Hibernate5Module();
+        hbm.enable(Hibernate5Module.Feature.SERIALIZE_IDENTIFIER_FOR_LAZY_NOT_LOADED_OBJECTS);
+        mapper.registerModule(hbm);
+        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+    }
+
     public static void print(Object obj) {
         try {
-            ObjectMapper mapper = new ObjectMapper();
-            Hibernate5Module hbm = new Hibernate5Module();
-            hbm.enable(Hibernate5Module.Feature.SERIALIZE_IDENTIFIER_FOR_LAZY_NOT_LOADED_OBJECTS);
-            mapper.registerModule(hbm);
-            mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
             System.out.println(mapper.writeValueAsString(obj));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void print(Object... obj) {
+        try {
+            for (Object o : obj) {
+                System.out.println(mapper.writeValueAsString(o));
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

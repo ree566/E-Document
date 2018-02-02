@@ -370,12 +370,24 @@
                     $("#jobnumber").val(obj.jobnumber);
                     $("#tagName").val(obj.tagName);
                     $("#step2").unblock();
+                    firstStationMaxPeopleInit(obj.line_max_people, obj.position);
                     showProcessing();
                 } else {
                     $(".stepAfterLogin").block({
                         message: "請先在步驟一完成相關步驟。",
                         css: {cursor: 'default'},
                         overlayCSS: {cursor: 'default'}});
+                }
+            }
+
+            function firstStationMaxPeopleInit(lineMax, position) {
+                if (position == lineMax) {
+                    return false;
+                }
+                var obj = $("#people");
+                var maxPeopleInput = lineMax - position + 1;
+                for (var i = 2; i < maxPeopleInput; i++) {
+                    obj.append("<option value='" + i + "'> " + i + " 人</option>");
                 }
             }
 
@@ -396,11 +408,48 @@
                     return false;
                 }
 
+                var tagName = getTagName(tagName);
+
+                if (tagName.id == null) {
+                    showMsg(paramNotVaildMessage);
+                    return false;
+                }
+
+                if ($("#userSitefloorSelect").val() != tagName.line.floor.name) {
+                    showMsg("Sensor's 不在您所屬的樓層");
+                    return false;
+                }
+
                 sensorChangeStatus({
                     jobnumber: jobnumber,
-                    tagName: tagName,
-                    "floor.name": $("#userSitefloorSelect").val()
+                    tagName: tagName.id.lampSysTagName.name,
+                    line_id: tagName.line.id,
+                    lineType_id: tagName.line.lineType.id,
+                    line_max_people: tagName.line.people,
+                    floor_id: tagName.line.floor.id,
+                    position: tagName.position,
+                    "floor.name": tagName.line.floor.name
                 }, STATION_LOGIN);
+            }
+
+            function getTagName(encodeStr) {
+                var result;
+                $.ajax({
+                    type: "GET",
+                    url: "<c:url value="/BabSensorLoginController/findSensorByEncode" />",
+                    data: {
+                        encodeStr: encodeStr
+                    },
+                    dataType: "json",
+                    async: false,
+                    success: function (response) {
+                        result = response;
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        showMsg(xhr.responseText);
+                    }
+                });
+                return result;
             }
 
             function changeJobnumber(newJobnumber) {
@@ -529,11 +578,14 @@
 
             //步驟一，維持各站別的唯一性
             function sensorChangeStatus(data, action) {
+                console.log(data);
                 $.ajax({
                     type: "Post",
                     url: "BabSensorLoginController/" + action.toLowerCase(),
+//                    url: "TestController/testInputParam",
                     data: data,
                     dataType: "html",
+                    traditional: true,
                     success: function (response) {
                         //傳回來 success or fail
                         if (response == "success") {
@@ -725,8 +777,8 @@
         <div class="container">
             <div id="step1" class="step">
                 <div class="userWiget form-inline">
-                    <input type="text" id="tagName" placeholder="請輸入Sensor代號" autocomplete="off" maxlength="10"/>
-                    <input type="text" id="jobnumber" placeholder="請輸入工號" autocomplete="off" maxlength="10"/>
+                    <input type="text" id="tagName" placeholder="請輸入Sensor代號" autocomplete="off" maxlength="50"/>
+                    <input type="text" id="jobnumber" placeholder="請輸入工號" autocomplete="off" maxlength="50"/>
                     <input type="button" id="saveInfo" value="Begin" />
                     <input type="button" id="clearInfo" value="End" />
                     <input type="button" id="changeUser" value="換人" />
@@ -766,11 +818,9 @@
                                 <tr>
                                     <td>選擇人數</td>
                                     <td>
+                                        <!-- Auto count people by maxLinePeopleSetting - tagName position = maxinum select people-->
                                         <select id='people'>
                                             <option value="-1">---請選擇人數---</option>
-                                            <option value="1">1</option>
-                                            <option value="2">2</option>
-                                            <option value="3">3</option>
                                         </select>
                                         <input type="checkbox" id="ispre" /><label for="ispre">前置</label>
                                     </td>

@@ -5,266 +5,203 @@
  */
 package com.advantech.helper;
 
-import java.io.InputStream;
-import static java.lang.System.out;
-import java.util.Properties;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.advantech.model.LineTypeConfig;
+import com.advantech.service.LineTypeConfigService;
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.stream.Collectors;
+import javax.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 /**
  *
  * @author Wei.Cheng
  */
+@Component
 public class PropertiesReader {
 
-    private static final Logger log = LoggerFactory.getLogger(PropertiesReader.class);
-    private static PropertiesReader instance;
+    @Value("${test.maxTable: 42}")
+    private Integer maxTestTables;
 
-    private String testMail, mailServerUsername, mailServerPassword, mailServerLocation, mailServerPort;
+    @Value("${bab.saveToRecord.quantity: 0}")
+    private Integer babSaveMininumQuantity;
 
-    private Double testStandardMin, testStandardMax;
-    private Double assyStandard, packingStandard;
-    private Double assyAlarmPercent, packingAlarmPercent;
-    private Double balanceDiff;
+    @Value("${bab.lineBalance.roundingDigit: 4}")
+    private Integer babLineBalanceRoundDigit;
 
-    private String[] systemAbnormalAlarmMailTo;
-    private String[] systemAbnormalAlarmMailCC;
+    @Value("${bab.lineBalance.difference: 0.05}")
+    private Double babLineBalanceAlarmDiff;
 
-    private Integer numLampMaxTestRequiredPeople, numLampGroupStart, numLampGroupEnd, numLampSpecCuttingGroup;
-    private Integer numLampMinStandardTime, numLampMinQuantity, numLampMinTotalStandardTime;
+    @Value("${sensorDetect.expireTime: 30}")
+    private Integer sensorDetectExprieTime;
 
-    private Integer maxTestTable;
+    @Value("${sensorDetect.period: 30}")
+    private Integer sensorDetectExpriePeriod;
 
-    private Integer babSaveToRecordStandardQuantity, balanceRoundingDigit;
+    @Value("${result.write.to.database: true}")
+    private Boolean isCalculateResultWriterToDatabase;
 
-    private Double cellStandardMin, cellStandardMax;
+    @Value("${result.save.to.oldServer: false}")
+    private Boolean isResultWriteToOldDatabase;
 
-    private Boolean writeToDB, saveToOldDB, sendMailAlarmUser;
+    @Value("${endpoint.quartz.trigger : }")
+    private String endpointPollingCron;
 
-    private String endpointQuartzTrigger;
+    //Settings inject from database
+    private BigDecimal assyLineBalanceStandard = new BigDecimal(0.8);
+    private BigDecimal packingLineBalanceStandard = new BigDecimal(0.8);
+    private BigDecimal babAlarmPercentStandard = new BigDecimal(0.3);
+    private BigDecimal packingAlarmPercentStandard = new BigDecimal(0.3);
+    private BigDecimal testProductivityStandardMin = new BigDecimal(0.8);
+    private BigDecimal testProductivityStandardMax = new BigDecimal(1.2);
+    private BigDecimal cellProductivityStandardMin = new BigDecimal(0.8);
+    private BigDecimal cellProductivityStandardMax = new BigDecimal(1.2);
 
-    private Integer sensorDetectExpireTime, sensorDetectPeriod;
+    @Autowired
+    private LineTypeConfigService lineTypeConfigService;
 
-    private PropertiesReader() throws Exception {
-        dataInit();
-    }
+    @PostConstruct
+    private void init() {
+        List<LineTypeConfig> configs = lineTypeConfigService.findWithLineType();
+        List<LineTypeConfig> balanceStandard = configs.stream()
+                .filter(o -> "LINEBALANCE_STANDARD".equals(o.getName())).collect(Collectors.toList());
+        List<LineTypeConfig> alarmPercentStandard = configs.stream()
+                .filter(o -> "ALARM_PERCENT_STANDARD".equals(o.getName())).collect(Collectors.toList());
+        List<LineTypeConfig> pStandardMax = configs.stream()
+                .filter(o -> "PRODUCTIVITY_STANDARD_MAX".equals(o.getName())).collect(Collectors.toList());
+        List<LineTypeConfig> pStandardMin = configs.stream()
+                .filter(o -> "PRODUCTIVITY_STANDARD_MIN".equals(o.getName())).collect(Collectors.toList());
 
-    public static PropertiesReader getInstance() {
-        if (instance == null) {
-            try {
-                instance = new PropertiesReader();
-            } catch (Exception ex) {
-                out.println("Can't read the property file.");
-                log.error("Can't read the property file.");
+        balanceStandard.forEach(o -> {
+            String st = o.getLineType().getName();
+            switch (st) {
+                case "ASSY":
+                    assyLineBalanceStandard = o.getValue();
+                    break;
+                case "Packing":
+                    packingAlarmPercentStandard = o.getValue();
+                    break;
+                default:
+                    break;
             }
-        }
-        return instance;
-    }
+        });
 
-    private void dataInit() throws Exception {
-        String configFile = "/options.properties";
-        Properties properties = new Properties();
-        InputStream is = this.getClass().getResourceAsStream(configFile);
-        properties.load(is);
+        alarmPercentStandard.forEach(o -> {
+            String st = o.getLineType().getName();
+            switch (st) {
+                case "ASSY":
+                    babAlarmPercentStandard = o.getValue();
+                    break;
+                case "Packing":
+                    packingLineBalanceStandard = o.getValue();
+                    break;
+                default:
+                    break;
+            }
+        });
 
-        loadParams(properties);
+        pStandardMax.forEach(o -> {
+            String st = o.getLineType().getName();
+            switch (st) {
+                case "Cell":
+                    cellProductivityStandardMax = o.getValue();
+                    break;
+                case "Test":
+                    testProductivityStandardMax = o.getValue();
+                    break;
+                default:
+                    break;
+            }
+        });
 
-        is.close();
-        properties.clear();
-    }
-
-    private void loadParams(Properties properties) {
-        maxTestTable = convertStringToInteger(properties.getProperty("test.maxTable"));
-        testStandardMin = convertStringToDouble(properties.getProperty("test.productivity.standard.min"));
-        testStandardMax = convertStringToDouble(properties.getProperty("test.productivity.standard.max"));
-
-        numLampMaxTestRequiredPeople = convertStringToInteger(properties.getProperty("numLamp.test.maxRequiredPeople"));
-        numLampGroupStart = convertStringToInteger(properties.getProperty("numLamp.balanceDetect.groupStart"));
-        numLampGroupEnd = convertStringToInteger(properties.getProperty("numLamp.balanceDetect.groupEnd"));
-        numLampSpecCuttingGroup = convertStringToInteger(properties.getProperty("numLamp.balanceDetect.specCuttingGroup"));
-        numLampMinStandardTime = convertStringToInteger(properties.getProperty("numLamp.mininum.standardTime"));
-        numLampMinQuantity = convertStringToInteger(properties.getProperty("numLamp.mininum.quantity"));
-        numLampMinTotalStandardTime = convertStringToInteger(properties.getProperty("numLamp.mininum.totalStandardTime"));
-
-        assyStandard = convertStringToDouble(properties.getProperty("bab.assy.lineBalance.standard"));
-        packingStandard = convertStringToDouble(properties.getProperty("bab.packing.lineBalance.standard"));
-        assyAlarmPercent = convertStringToDouble(properties.getProperty("bab.assy.alarmPercent.standard"));
-        packingAlarmPercent = convertStringToDouble(properties.getProperty("bab.packing.alarmPercent.standard"));
-        babSaveToRecordStandardQuantity = convertStringToInteger(properties.getProperty("bab.saveToRecord.quantity"));
-        balanceRoundingDigit = convertStringToInteger(properties.getProperty("bab.lineBalance.roundingDigit"));
-        balanceDiff = convertStringToDouble(properties.getProperty("bab.lineBalance.difference"));
-
-        cellStandardMin = convertStringToDouble(properties.getProperty("cell.standard.min"));
-        cellStandardMax = convertStringToDouble(properties.getProperty("cell.standard.max"));
-
-        testMail = properties.getProperty("mail.testMail");
-        mailServerUsername = properties.getProperty("mail.server.username");
-        mailServerPassword = properties.getProperty("mail.server.password");
-        mailServerPort = properties.getProperty("mail.server.port");
-        mailServerLocation = properties.getProperty("mail.server.location");
-
-        writeToDB = convertStringToBoolean(properties.getProperty("result.write.to.database"));
-        saveToOldDB = convertStringToBoolean(properties.getProperty("result.save.to.oldServer"));
-        sendMailAlarmUser = convertStringToBoolean(properties.getProperty("send.mail.alarm.user"));
-        endpointQuartzTrigger = properties.getProperty("endpoint.quartz.trigger");
-
-        systemAbnormalAlarmMailTo = separateMailLoop(properties.getProperty("systemAbnormalAlarm.mailTo"));
-        systemAbnormalAlarmMailCC = separateMailLoop(properties.getProperty("systemAbnormalAlarm.mailCC"));
-
-        sensorDetectExpireTime = convertStringToInteger(properties.getProperty("sensorDetect.expireTime"));
-        sensorDetectPeriod = convertStringToInteger(properties.getProperty("sensorDetect.period"));
+        pStandardMin.forEach(o -> {
+            String st = o.getLineType().getName();
+            switch (st) {
+                case "Cell":
+                    cellProductivityStandardMin = o.getValue();
+                    break;
+                case "Test":
+                    testProductivityStandardMin = o.getValue();
+                    break;
+                default:
+                    break;
+            }
+        });
 
     }
 
-    private Integer convertStringToInteger(String number) {
-        return (number != null && !"".equals(number)) ? Integer.parseInt(number) : 0;
+    public Integer getMaxTestTables() {
+        return maxTestTables;
     }
 
-    private Double convertStringToDouble(String number) {
-        return (number != null && !"".equals(number)) ? Double.parseDouble(number) : 0;
+    public Integer getBabSaveMininumQuantity() {
+        return babSaveMininumQuantity;
     }
 
-    private Boolean convertStringToBoolean(String str) {
-        return (str != null && !"".equals(str)) ? str.equals("true") : false;
+    public Integer getBabLineBalanceRoundDigit() {
+        return babLineBalanceRoundDigit;
     }
 
-    private String[] separateMailLoop(String mailString) {
-        return mailString == null ? new String[0] : mailString.replace(" ", "").split(",");
+    public Double getBabLineBalanceAlarmDiff() {
+        return babLineBalanceAlarmDiff;
     }
 
-    public Double getTestStandardMin() {
-        return testStandardMin;
+    public Integer getSensorDetectExprieTime() {
+        return sensorDetectExprieTime;
     }
 
-    public Double getTestStandardMax() {
-        return testStandardMax;
+    public Integer getSensorDetectExpriePeriod() {
+        return sensorDetectExpriePeriod;
     }
 
-    public Double getAssyStandard() {
-        return assyStandard;
+    public Boolean getIsCalculateResultWriterToDatabase() {
+        return isCalculateResultWriterToDatabase;
     }
 
-    public Double getPackingStandard() {
-        return packingStandard;
+    public Boolean getIsResultWriteToOldDatabase() {
+        return isResultWriteToOldDatabase;
     }
 
-    public Double getAssyAlarmPercent() {
-        return assyAlarmPercent;
+    public String getEndpointPollingCron() {
+        return endpointPollingCron;
     }
 
-    public Double getPackingAlarmPercent() {
-        return packingAlarmPercent;
+    public BigDecimal getAssyLineBalanceStandard() {
+        return assyLineBalanceStandard;
     }
 
-    public Double getBalanceDiff() {
-        return balanceDiff;
+    public BigDecimal getPackingLineBalanceStandard() {
+        return packingLineBalanceStandard;
     }
 
-    public String[] getSystemAbnormalAlarmMailTo() {
-        return systemAbnormalAlarmMailTo;
+    public BigDecimal getBabAlarmPercentStandard() {
+        return babAlarmPercentStandard;
     }
 
-    public String[] getSystemAbnormalAlarmMailCC() {
-        return systemAbnormalAlarmMailCC;
+    public BigDecimal getPackingAlarmPercentStandard() {
+        return packingAlarmPercentStandard;
     }
 
-    public String getTestMail() {
-        return testMail;
+    public BigDecimal getTestProductivityStandardMin() {
+        return testProductivityStandardMin;
     }
 
-    public Integer getMaxTestTable() {
-        return maxTestTable;
+    public BigDecimal getTestProductivityStandardMax() {
+        return testProductivityStandardMax;
     }
 
-    public Integer getNumLampMaxTestRequiredPeople() {
-        return numLampMaxTestRequiredPeople;
+    public BigDecimal getCellProductivityStandardMin() {
+        return cellProductivityStandardMin;
     }
 
-    public Integer getNumLampGroupStart() {
-        return numLampGroupStart;
+    public BigDecimal getCellProductivityStandardMax() {
+        return cellProductivityStandardMax;
     }
 
-    public Integer getNumLampGroupEnd() {
-        return numLampGroupEnd;
+    public LineTypeConfigService getLineTypeConfigService() {
+        return lineTypeConfigService;
     }
 
-    public Integer getNumLampSpecCuttingGroup() {
-        return numLampSpecCuttingGroup;
-    }
-
-    public Integer getNumLampMinStandardTime() {
-        return numLampMinStandardTime;
-    }
-
-    public Integer getNumLampMinQuantity() {
-        return numLampMinQuantity;
-    }
-
-    public Integer getNumLampMinTotalStandardTime() {
-        return numLampMinTotalStandardTime;
-    }
-
-    public Integer getBabSaveToRecordStandardQuantity() {
-        return babSaveToRecordStandardQuantity;
-    }
-
-    public Integer getBalanceRoundingDigit() {
-        return balanceRoundingDigit;
-    }
-
-    public Boolean isWriteToDB() {
-        return writeToDB;
-    }
-
-    public Boolean isSaveToOldDB() {
-        return saveToOldDB;
-    }
-
-    public String getMailServerUsername() {
-        return mailServerUsername;
-    }
-
-    public String getMailServerPassword() {
-        return mailServerPassword;
-    }
-
-    public String getMailServerLocation() {
-        return mailServerLocation;
-    }
-
-    public String getMailServerPort() {
-        return mailServerPort;
-    }
-
-    public Boolean isSendMailAlarmUser() {
-        return sendMailAlarmUser;
-    }
-
-    public String getEndpointQuartzTrigger() {
-        return endpointQuartzTrigger;
-    }
-
-    public Double getCellStandardMin() {
-        return cellStandardMin;
-    }
-
-    public Double getCellStandardMax() {
-        return cellStandardMax;
-    }
-
-    public Integer getSensorDetectExpireTime() {
-        return sensorDetectExpireTime;
-    }
-
-    public Integer getSensorDetectPeriod() {
-        return sensorDetectPeriod;
-    }
-
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this);
-    }
-
-    
 }

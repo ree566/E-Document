@@ -41,9 +41,9 @@ public class SensorDetect extends ProcessingBabDetector {
     private final UserService userService;
 
     static {
-        PropertiesReader p = PropertiesReader.getInstance();
-        SENSOR_EXPIRE_TIME = p.getSensorDetectExpireTime();
-        SENSOR_DETECT_PERIOD = p.getSensorDetectPeriod();
+        PropertiesReader p = (PropertiesReader) ApplicationContextHelper.getBean("propertiesReader");
+        SENSOR_EXPIRE_TIME = p.getSensorDetectExprieTime();
+        SENSOR_DETECT_PERIOD = p.getSensorDetectExpriePeriod();
     }
 
     public SensorDetect() {
@@ -68,16 +68,17 @@ public class SensorDetect extends ProcessingBabDetector {
         m.put("expireTime", SENSOR_EXPIRE_TIME);
         m.put("detectPeriod", SENSOR_DETECT_PERIOD);
         m.put("responsors", this.getResponsors(b));
+        m.put("ccLoops", this.getCcLoops());
         return m;
     }
 
-    private JSONArray getResponsors(Bab b) {
-        JSONArray arr = new JSONArray();
-        List<User> responsors = userService.findLineOwner(b.getLine().getId());
-        responsors.forEach((owner) -> {
-            arr.put(owner.getUsername());
-        });
-        return arr;
+    private List<User> getResponsors(Bab b) {
+        return userService.findLineOwner(b.getLine().getId());
+    }
+
+    //Add the mail which want sensor_alarm and lineId is not setting per sitefloor
+    private List<User> getCcLoops() {
+        return userService.findByUserNotificationAndNotLineOwner("sensor_alarm"); //bab.getLine.getFloor.getid
     }
 
     @Override

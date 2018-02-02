@@ -6,8 +6,6 @@
 package com.advantech.facade;
 
 import com.advantech.model.CellLine;
-import com.advantech.helper.PropertiesReader;
-import com.advantech.service.BasicLineTypeFacade;
 import com.advantech.service.CellLineService;
 import com.advantech.service.CellService;
 import com.advantech.service.PassStationService;
@@ -17,7 +15,6 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 /**
  *
@@ -41,10 +38,6 @@ public class CellLineTypeFacade extends BasicLineTypeFacade {
 
 //    @PostConstruct
     protected void init() {
-        PropertiesReader p = PropertiesReader.getInstance();
-        cellStandardMin = p.getCellStandardMin();
-        cellStandardMax = p.getCellStandardMax();
-
         this.initMap();
     }
 

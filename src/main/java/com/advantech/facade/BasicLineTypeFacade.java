@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.advantech.service;
+package com.advantech.facade;
 
 import com.advantech.helper.PropertiesReader;
 import java.io.IOException;
@@ -15,6 +15,7 @@ import javax.annotation.PostConstruct;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -26,24 +27,26 @@ public abstract class BasicLineTypeFacade implements com.advantech.service.Alarm
 
     private static final Logger log = LoggerFactory.getLogger(BasicLineTypeFacade.class);
 
-    protected boolean controlJobFlag = true;//Change the flag if you want to pause the job outside.
+    protected Boolean controlJobFlag = true;//Change the flag if you want to pause the job outside.
 
-    protected boolean isWriteToDB;
+    protected Boolean isWriteToDB;
 
     protected final int ALARM_SIGN = 1, NORMAL_SIGN = 0;
 
-    protected boolean resetFlag;//設定Flag，以免被重複init，當True才reset.
+    protected Boolean resetFlag;//設定Flag，以免被重複init，當True才reset.
 
     protected Map dataMap;//占存資料用map
     protected JSONObject processingJsonObject;//暫存處理過的資料
 
-    protected boolean isNeedToOutputResult;//從改寫的function 得知是否要output(有人亮燈時).
+    protected Boolean isNeedToOutputResult;//從改寫的function 得知是否要output(有人亮燈時).
+    
+    @Autowired
+    private PropertiesReader p;
 
     @PostConstruct
     protected void initValues() {
         System.out.println("BasicLineTypeFacade init");
-        PropertiesReader p = PropertiesReader.getInstance();
-        isWriteToDB = p.isWriteToDB();
+        isWriteToDB = p.getIsCalculateResultWriterToDatabase();
         resetFlag = true;
         dataMap = new HashMap();
     }

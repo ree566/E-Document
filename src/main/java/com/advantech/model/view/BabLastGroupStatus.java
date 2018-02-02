@@ -10,6 +10,7 @@ import java.io.Serializable;
 /**
  *
  * @author Wei.Cheng
+ * usp_GetLastGroupStatus
  */
 public class BabLastGroupStatus implements Serializable {
 

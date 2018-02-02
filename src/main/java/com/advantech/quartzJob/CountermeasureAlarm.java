@@ -7,7 +7,7 @@ package com.advantech.quartzJob;
 
 import com.advantech.helper.ApplicationContextHelper;
 import com.advantech.helper.DatetimeGenerator;
-import com.advantech.helper.MailSend;
+import com.advantech.helper.MailManager;
 import com.advantech.model.Bab;
 import com.advantech.model.BabAlarmHistory;
 import com.advantech.model.Floor;
@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.json.JSONArray;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
@@ -42,6 +41,7 @@ public class CountermeasureAlarm extends QuartzJobBean {
     private final BabService babService;
     private final UserService userService;
     private final FloorService floorService;
+    private final MailManager mailManager;
 
     private final String notificationName = "abnormal_unfill_alarm";
     private final String subject = "[藍燈系統]未填寫異常回覆工單列表 ";
@@ -50,6 +50,7 @@ public class CountermeasureAlarm extends QuartzJobBean {
         babService = (BabService) ApplicationContextHelper.getBean("babService");
         userService = (UserService) ApplicationContextHelper.getBean("userService");
         floorService = (FloorService) ApplicationContextHelper.getBean("floorService");
+        mailManager = (MailManager) ApplicationContextHelper.getBean("mailManager");
     }
 
     @Override
@@ -63,18 +64,19 @@ public class CountermeasureAlarm extends QuartzJobBean {
     }
 
     public void sendMail() throws Exception {
-        JSONArray ccMailLoop = conbineUsers(userService.findByUserNotificationAndNotLineOwner(notificationName));
+        List<User> ccMailLoop = userService.findByUserNotificationAndNotLineOwner(notificationName);
         List<Floor> floors = floorService.findAll();
-        for (Floor f : floors) {
-            JSONArray mailLoop = conbineUsers(userService.findLineOwnerBySitefloor(f.getId()));
-            if (mailLoop.length() != 0) {
+        floors.forEach((f) -> {
+            List<User> mailLoop = userService.findLineOwnerBySitefloor(f.getId());
+            if (!mailLoop.isEmpty()) {
                 // when user sitefloor is not setting, turn user's mail to mail cc loop
                 String mailBody = this.generateMailBody(f.getId());
-                if (!"".equals(mailBody)) { //有資料再寄信
-                    MailSend.getInstance().sendMail(mailLoop, ccMailLoop, subject + f.getName() + "F", mailBody);
+                if (!"".equals(mailBody)) {
+                    //有資料再寄信
+                    mailManager.sendMail(mailLoop, ccMailLoop, subject + f.getName() + "F", mailBody);
                 }
             }
-        }
+        });
     }
 
     public String generateMailBody(int floor_id) {
@@ -143,14 +145,6 @@ public class CountermeasureAlarm extends QuartzJobBean {
             return sb.toString();
         }
 
-    }
-
-    private JSONArray conbineUsers(List<User> l) {
-        JSONArray arr = new JSONArray();
-        l.forEach((u) -> {
-            arr.put(u.getUsername());
-        });
-        return arr;
     }
 
 }

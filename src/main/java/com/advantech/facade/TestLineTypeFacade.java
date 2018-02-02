@@ -5,13 +5,12 @@
  */
 package com.advantech.facade;
 
+import com.advantech.helper.PropertiesReader;
 import com.advantech.model.Test;
 import com.advantech.model.TestRecord;
-import com.advantech.helper.PropertiesReader;
 import com.advantech.model.AlarmTestAction;
 import com.advantech.model.TestTable;
 import com.advantech.service.AlarmTestActionService;
-import com.advantech.service.BasicLineTypeFacade;
 import com.advantech.service.TestService;
 import com.advantech.webservice.WebServiceRV;
 import java.util.ArrayList;
@@ -44,10 +43,13 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
     @Qualifier("alarmTestActionService")
     private AlarmTestActionService almService;
 
-    private int maxTestTable;
+    @Autowired
+    private PropertiesReader p;
+    private Integer maxTestTable;
+    private Double TEST_STANDARD_MIN;
+    private Double TEST_STANDARD_MAX;
+    
     private Map PEOPLE_NOT_MATCH;
-
-    private double TEST_STANDARD;
 
     private WebServiceRV rv;
 
@@ -55,12 +57,11 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
 
     @PostConstruct
     protected void init() {
+        maxTestTable = p.getMaxTestTables();
+        TEST_STANDARD_MIN = p.getTestProductivityStandardMin().doubleValue();
+        TEST_STANDARD_MAX = p.getTestProductivityStandardMax().doubleValue();
         PEOPLE_NOT_MATCH = new HashMap();
-        PropertiesReader p = PropertiesReader.getInstance();
-        TEST_STANDARD = p.getTestStandardMin();
-        maxTestTable = p.getMaxTestTable();
         rv = WebServiceRV.getInstance();
-
         this.initMap();
 //        this.initAlarmSign();
     }
@@ -101,7 +102,7 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
                         String tableName = table.getName();
                         int status;
 
-                        if (productivity < TEST_STANDARD) {
+                        if (productivity < TEST_STANDARD_MIN && productivity > TEST_STANDARD_MAX) {
                             status = ALARM_SIGN;
                             dataMap.put(tableName, ALARM_SIGN);
                             isSomeoneUnderStandard = true;

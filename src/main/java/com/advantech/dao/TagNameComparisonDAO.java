@@ -30,43 +30,51 @@ public class TagNameComparisonDAO extends AbstractDao<TagNameComparisonId, TagNa
     public TagNameComparison findByPrimaryKey(Object obj_id) {
         return super.getByKey((TagNameComparisonId) obj_id);
     }
-    
-    public TagNameComparison findByLampSysTagName(String tagName){
+
+    public TagNameComparison findByEncode(String encodeStr) {
+        Criteria c = super.createEntityCriteria();
+        c.createAlias("line", "line");
+        c.createAlias("line.floor", "f");
+        c.add(Restrictions.eq("tagNameEncode", encodeStr));
+        return (TagNameComparison) c.uniqueResult();
+    }
+
+    public TagNameComparison findByLampSysTagName(String tagName) {
         return (TagNameComparison) super.createEntityCriteria()
                 .createAlias("line", "line")
                 .add(Restrictions.eq("id.lampSysTagName.name", tagName))
                 .uniqueResult();
     }
-    
-    public TagNameComparison findByLampSysTagName(SensorTransform tag){
+
+    public TagNameComparison findByLampSysTagName(SensorTransform tag) {
         return (TagNameComparison) super.createEntityCriteria()
                 .add(Restrictions.eq("id.lampSysTagName", tag))
                 .uniqueResult();
     }
-    
-    public TagNameComparison findByLineAndStation(int line_id, int station){
+
+    public TagNameComparison findByLineAndStation(int line_id, int station) {
         return (TagNameComparison) super.createEntityCriteria()
                 .add(Restrictions.eq("line.id", line_id))
                 .add(Restrictions.eq("position", station))
                 .uniqueResult();
     }
-    
-    public List<TagNameComparison> findInRange(SensorTransform startPosition, int maxiumStation){
+
+    public List<TagNameComparison> findInRange(SensorTransform startPosition, int maxiumStation) {
         TagNameComparison tag = this.findByLampSysTagName(startPosition);
         Criteria c = super.createEntityCriteria();
         c.add(Restrictions.eq("line.id", tag.getLine().getId()));
         c.add(Restrictions.between("position", tag.getPosition(), tag.getPosition() + maxiumStation - 1));
         return c.list();
     }
-    
-    public List<TagNameComparison> findInRange(TagNameComparison startPosition, int maxiumStation){
+
+    public List<TagNameComparison> findInRange(TagNameComparison startPosition, int maxiumStation) {
         Criteria c = super.createEntityCriteria();
         c.add(Restrictions.eq("line.id", startPosition.getLine().getId()));
         c.add(Restrictions.between("position", startPosition.getPosition(), startPosition.getPosition() + maxiumStation - 1));
         return c.list();
     }
-    
-    public List<TagNameComparison> findByFloorName(String floorName){
+
+    public List<TagNameComparison> findByFloorName(String floorName) {
         Criteria c = super.createEntityCriteria();
         c.createAlias("line", "line");
         c.createAlias("line.floor", "f");
@@ -88,5 +96,5 @@ public class TagNameComparisonDAO extends AbstractDao<TagNameComparisonId, TagNa
     public int delete(TagNameComparison pojo) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
+
 }

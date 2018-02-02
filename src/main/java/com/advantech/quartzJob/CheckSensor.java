@@ -7,14 +7,11 @@
 package com.advantech.quartzJob;
 
 import com.advantech.model.Bab;
-import com.advantech.model.Fbn;
 import com.advantech.helper.ApplicationContextHelper;
-import com.advantech.helper.MailSend;
-import com.advantech.helper.PropertiesReader;
+import com.advantech.helper.MailManager;
 import com.advantech.model.User;
 import com.advantech.model.view.SensorCurrentGroupStatus;
 import com.advantech.service.SqlViewService;
-import com.advantech.service.UserService;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -24,7 +21,6 @@ import org.joda.time.Minutes;
 import org.joda.time.Period;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.json.JSONArray;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
@@ -42,19 +38,20 @@ public class CheckSensor extends QuartzJobBean {
     private Bab bab;
     private final DateTimeFormatter dtf = DateTimeFormat.forPattern("yy/MM/dd HH:mm:ss ");
     private final int excludeHour = 12;
+
+    //These param will inject by class SensorDetect
     private int expireTime;
     private int detectPeriod;
-    private JSONArray responsors;
+    private List<User> responsors;
+    private List<User> ccLoops;
 
     private final SqlViewService sqlViewService;
 
-    private final UserService userService;
-
-    private final String notificationName = "sensor_alarm";
+    private MailManager mailManager;
 
     public CheckSensor() {
         sqlViewService = (SqlViewService) ApplicationContextHelper.getBean("sqlViewService");
-        userService = (UserService) ApplicationContextHelper.getBean("userService");
+        mailManager = (MailManager) ApplicationContextHelper.getBean("mailManager");
     }
 
     @Override
@@ -124,21 +121,11 @@ public class CheckSensor extends QuartzJobBean {
     }
 
     private void sendMail(String tagName, String message) throws MessagingException {
-        if (responsors != null && responsors.length() != 0) {
-            JSONArray ccLoop = new JSONArray(PropertiesReader.getInstance().getSystemAbnormalAlarmMailTo());
-            addExtraMailToCCLoop(ccLoop);
+        if (responsors != null && !responsors.isEmpty()) {
             String subject = "[藍燈系統]Sensor異常訊息";
             String mailBody = generateMailBody(tagName, message);
-            MailSend.getInstance().sendMail(responsors, ccLoop, subject, mailBody);
+            mailManager.sendMail(responsors, ccLoops, subject, mailBody);
         }
-    }
-
-    //Add the mail which want sensor_alarm and lineId is not setting per sitefloor
-    private void addExtraMailToCCLoop(JSONArray arr) {
-        List<User> l = userService.findByUserNotificationAndNotLineOwner(notificationName); //bab.getLine.getFloor.getid
-        l.forEach((u) -> {
-            arr.put(u.getUsername());
-        });
     }
 
     private String generateMailBody(String tagName, String message) {
@@ -171,8 +158,12 @@ public class CheckSensor extends QuartzJobBean {
         this.detectPeriod = detectPeriod;
     }
 
-    public void setResponsors(JSONArray responsors) {
+    public void setResponsors(List<User> responsors) {
         this.responsors = responsors;
+    }
+
+    public void setCcLoops(List<User> ccLoops) {
+        this.ccLoops = ccLoops;
     }
 
 }

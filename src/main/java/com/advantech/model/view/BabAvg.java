@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 /**
  *
  * @author Wei.Cheng
+ * tbfn_BabAvg(:bab_id)
  */
 public class BabAvg implements Serializable {
 

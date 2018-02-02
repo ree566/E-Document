@@ -11,8 +11,6 @@ import com.advantech.model.TagNameComparison;
 import com.advantech.service.BabSettingHistoryService;
 import com.advantech.service.TagNameComparisonService;
 import static com.google.common.base.Preconditions.checkArgument;
-import java.util.List;
-import java.util.Map;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

@@ -21,12 +21,6 @@ import org.springframework.stereotype.Service;
 @Transactional
 public class LineTypeConfigService {
 
-    @PostConstruct
-    protected void init() {
-        //Get the value and store in static variable
-//        this.initBasicVariable();
-    }
-
     @Autowired
     private LineTypeConfigDAO lineTypeConfigDAO;
 
@@ -40,6 +34,10 @@ public class LineTypeConfigService {
 
     public List<LineTypeConfig> findByLineType(int lineType_id) {
         return lineTypeConfigDAO.findByLineType(lineType_id);
+    }
+
+    public List<LineTypeConfig> findWithLineType() {
+        return lineTypeConfigDAO.findWithLineType();
     }
 
     public int insert(LineTypeConfig pojo) {

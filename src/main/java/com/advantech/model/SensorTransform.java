@@ -36,6 +36,13 @@ public class SensorTransform implements Serializable {
     @JsonIgnore
     private Set<BabSensorLoginRecord> babSensorLoginRecords = new HashSet<>(0);
 
+    public SensorTransform() {
+    }
+
+    public SensorTransform(String name) {
+        this.name = name;
+    }
+
     @Id
     @Column(name = "name", unique = true, nullable = false)
     public String getName() {

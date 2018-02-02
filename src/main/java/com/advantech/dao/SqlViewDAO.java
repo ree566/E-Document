@@ -12,6 +12,7 @@ import com.advantech.model.view.UserInfoRemote;
 import com.advantech.model.view.Worktime;
 import java.util.List;
 import java.util.Map;
+import org.hibernate.criterion.Restrictions;
 import org.hibernate.transform.Transformers;
 import org.hibernate.type.StandardBasicTypes;
 import org.joda.time.DateTime;
@@ -46,26 +47,23 @@ public class SqlViewDAO extends AbstractDao<Integer, Object> {
                 .list();
     }
 
-    public List<Worktime> findWorktimeByModelName() {
+    public List<Worktime> findWorktime() {
         return super.getSession()
-                .createSQLQuery("select * from vw_worktime")
-                .setResultTransformer(Transformers.aliasToBean(Worktime.class))
+                .createCriteria(Worktime.class)
                 .list();
     }
 
-    public Worktime findWorktimeByModelName(String modelName) {
+    public Worktime findWorktime(String modelName) {
         return (Worktime) super.getSession()
-                .createSQLQuery("select * from vw_worktime where modelName = :modelName")
-                .setParameter("modelName", modelName)
-                .setResultTransformer(Transformers.aliasToBean(Worktime.class))
+                .createCriteria(Worktime.class)
+                .add(Restrictions.eq("modelName", modelName))
                 .uniqueResult();
     }
 
     public UserInfoRemote findUserInfoRemote(String jobnumber) {
         return (UserInfoRemote) super.getSession()
-                .createSQLQuery("select * from vw_UserInfoRemote where jobnumber = :jobnumber")
-                .setParameter("jobnumber", jobnumber)
-                .setResultTransformer(Transformers.aliasToBean(UserInfoRemote.class))
+                .createCriteria(UserInfoRemote.class)
+                .add(Restrictions.eq("jobnumber", jobnumber))
                 .uniqueResult();
     }
 

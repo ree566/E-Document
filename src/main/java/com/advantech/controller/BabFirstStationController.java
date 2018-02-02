@@ -6,14 +6,16 @@
  */
 package com.advantech.controller;
 
+import com.advantech.helper.MailManager;
 import com.advantech.model.Bab;
-import com.advantech.helper.MailSend;
-import com.advantech.helper.PropertiesReader;
 import com.advantech.model.Line;
 import com.advantech.model.TagNameComparison;
+import com.advantech.model.User;
 import com.advantech.service.BabService;
 import com.advantech.service.TagNameComparisonService;
+import com.advantech.service.UserService;
 import static com.google.common.base.Preconditions.*;
+import java.util.List;
 import javax.mail.MessagingException;
 import javax.validation.Valid;
 import org.joda.time.DateTime;
@@ -37,12 +39,20 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class BabFirstStationController {
 
     private static final Logger log = LoggerFactory.getLogger(BabFirstStationController.class);
+    
+    private final String notify_name = "bab_run_in_alarm";
 
     @Autowired
     private BabService babService;
 
     @Autowired
     private TagNameComparisonService tagNameComparisonService;
+    
+    @Autowired
+    private MailManager mailManager;
+    
+    @Autowired
+    private UserService userService;
 
     @RequestMapping(value = "/insert", method = {RequestMethod.POST})
     @ResponseBody
@@ -72,13 +82,10 @@ public class BabFirstStationController {
 
     private void sendMailAfterBABRunIn(Bab bab) throws MessagingException {
 
-        String targetMail = PropertiesReader.getInstance().getTestMail();
-        if ("".equals(targetMail)) {
-            return;
-        }
+        List<User> l = userService.findByUserNotification(notify_name);
 
         String subject = "[藍燈系統]系統訊息";
-        MailSend.getInstance().sendMail(targetMail, subject, generateMailBody(bab));
+        mailManager.sendMail(l, null, subject, generateMailBody(bab));
 
     }
 

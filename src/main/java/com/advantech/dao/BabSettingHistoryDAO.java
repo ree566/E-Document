@@ -58,8 +58,8 @@ public class BabSettingHistoryDAO extends AbstractDao<Integer, BabSettingHistory
                     + " and bah2.totalPcs >= :minPcs))"
                     + " and bah.totalPcs >= :minPcs";
         }
-        
-        if(!findWithBalance && !findWithMininumAlarmPercent){
+
+        if (!findWithBalance && !findWithMininumAlarmPercent) {
             return new ArrayList();
         }
 

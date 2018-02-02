@@ -11,10 +11,8 @@ import com.advantech.model.BabSettingHistory;
 import com.advantech.model.TagNameComparison;
 import com.advantech.service.BabSensorLoginRecordService;
 import com.advantech.service.BabSettingHistoryService;
-import com.advantech.service.FloorService;
 import com.advantech.service.TagNameComparisonService;
 import static com.google.common.base.Preconditions.*;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -45,15 +43,12 @@ public class BabSensorLoginController {
     @ResponseBody
     public String login(
             @RequestParam String tagName,
-            @RequestParam String jobnumber,
-            @RequestParam(name = "floor.name") String floorName
+            @RequestParam String jobnumber
     ) {
-        List<TagNameComparison> l = tagNameComparisonService.findByFloorName(floorName);
-        TagNameComparison sensor = l.stream()
-                .filter(t -> t.getId().getLampSysTagName().getName().equals(tagName))
-                .findFirst().orElse(null);
-        checkArgument(sensor != null, "Can't found sensor named " + tagName);
-        babSensorLoginRecordService.insert(new BabSensorLoginRecord(sensor.getId().getLampSysTagName(), jobnumber));
+        /* 
+            ※The tagname input is already be encode to MD5
+         */
+        babSensorLoginRecordService.insert(tagName, jobnumber);
         return "success";
     }
 
@@ -89,6 +84,13 @@ public class BabSensorLoginController {
             }
             return true;
         }
+    }
+
+    @RequestMapping(value = "/findSensorByEncode", method = {RequestMethod.GET})
+    @ResponseBody
+    public Object findSensorByEncode(@RequestParam String encodeStr) {
+        TagNameComparison t = tagNameComparisonService.findByEncode(encodeStr);
+        return t == null ? new Object() : t;
     }
 
 }

@@ -35,16 +35,17 @@ import org.slf4j.LoggerFactory;
 public class Endpoint4 {
 
     private static final Logger log = LoggerFactory.getLogger(Endpoint4.class);
-//    private static final Queue<Session> queue = new ConcurrentLinkedQueue<>();
+
     private static final Set<Session> sessions = Collections.synchronizedSet(new HashSet<Session>());
 
     private static final String POLLING_FREQUENCY;
+
     private static final String JOB_NAME = "JOB4";
-    
+
     private final CronTrigMod ctm = (CronTrigMod) ApplicationContextHelper.getBean("cronTrigMod");
 
     static {
-        POLLING_FREQUENCY = PropertiesReader.getInstance().getEndpointQuartzTrigger();
+        POLLING_FREQUENCY = ((PropertiesReader) ApplicationContextHelper.getBean("propertiesReader")).getEndpointPollingCron();
     }
 
     @OnOpen
@@ -138,5 +139,5 @@ public class Endpoint4 {
             System.out.println("Receive endpoint param: " + map.get(it.next()));
         }
     }
-    
+
 }

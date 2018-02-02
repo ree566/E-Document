@@ -8,7 +8,6 @@ package com.advantech.listener;
 import com.advantech.endpoint.Endpoint;
 import com.advantech.endpoint.Endpoint2;
 import com.advantech.endpoint.Endpoint4;
-import com.advantech.helper.PropertiesReader;
 import com.advantech.helper.ThreadLocalCleanUtil;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -31,7 +30,6 @@ public class QuartzContextListener implements ServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        PropertiesReader.getInstance();
     }
 
     @Override

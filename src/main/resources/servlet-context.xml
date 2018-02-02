@@ -154,6 +154,23 @@
         </mvc:message-converters>
     </mvc:annotation-driven>
     
+    <!--Email setting-->
+    <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+        <property name="host" value="Relay.advantech.com.tw" />
+        <property name="port" value="25" />
+
+        <property name="javaMailProperties">
+            <props>
+                <prop key="mail.smtp.auth">false</prop>
+                <prop key="mail.smtp.starttls.enable">true</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean id="orderManager" class="com.advantech.helper.MailManager">
+        <property name="mailSender" ref="mailSender"/>
+    </bean>
+    
     <!--Other file import-->
     <import resource="classpath:spring-security.xml"/>
     <import resource="classpath:spring-quartz.xml"/>

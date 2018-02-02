@@ -5,6 +5,7 @@
  */
 package com.advantech.facade;
 
+import com.advantech.helper.PropertiesReader;
 import com.advantech.model.Bab;
 import com.advantech.model.Line;
 import com.advantech.model.AlarmBabAction;
@@ -14,7 +15,6 @@ import com.advantech.model.view.Worktime;
 import com.advantech.service.AlarmBabActionService;
 import com.advantech.service.BabService;
 import com.advantech.service.BabSettingHistoryService;
-import com.advantech.service.BasicLineTypeFacade;
 import com.advantech.service.LineBalancingService;
 import com.advantech.service.LineService;
 import com.advantech.service.SqlViewService;
@@ -59,24 +59,24 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
 
     @Autowired
     private BabSettingHistoryService babSettingHistoryService;
+    
+    @Autowired
+    private PropertiesReader p;
 
-    @Value("${bab.assy.lineBalance.standard: 0.8}")
-    private double ASSY_STANDARD;
+    private Double ASSY_STANDARD;
 
-    @Value("${bab.packing.lineBalance.standard: 0.8}")
-    private double PKG_STANDARD;
+    private Double PKG_STANDARD;
 
-    @Value("${cell.standard.min: 0.8}")
-    private double CELL_STANDARD;
+    private Double CELL_STANDARD;
 
     private List<Worktime> worktimes;
 
-    private List<Worktime> temp_worktimes;
-
     @PostConstruct
     protected void init() {
-        worktimes = sqlViewService.findWorktimeByModelName();
-        temp_worktimes = new ArrayList();
+        ASSY_STANDARD = p.getAssyLineBalanceStandard().doubleValue();
+        PKG_STANDARD = p.getPackingLineBalanceStandard().doubleValue();
+        CELL_STANDARD = p.getCellProductivityStandardMin().doubleValue();
+        worktimes = sqlViewService.findWorktime();
         this.initMap();
 //        this.initAlarmSign();
     }
@@ -245,7 +245,7 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
     }
 
     public void refreshWorktime() {
-        worktimes = sqlViewService.findWorktimeByModelName();
+        worktimes = sqlViewService.findWorktime();
     }
 
 }

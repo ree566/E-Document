@@ -8,6 +8,7 @@ package com.advantech.dao;
 import com.advantech.model.LineTypeConfig;
 import java.util.List;
 import org.hibernate.Criteria;
+import org.hibernate.FetchMode;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
@@ -31,6 +32,12 @@ public class LineTypeConfigDAO extends AbstractDao<Integer, LineTypeConfig> impl
     public List<LineTypeConfig> findByLineType(int lineType_id) {
         Criteria c = super.createEntityCriteria();
         c.add(Restrictions.eq("lineType.id", lineType_id));
+        return c.list();
+    }
+    
+    public List<LineTypeConfig> findWithLineType(){
+        Criteria c = super.createEntityCriteria();
+        c.setFetchMode("lineType", FetchMode.JOIN);
         return c.list();
     }
 

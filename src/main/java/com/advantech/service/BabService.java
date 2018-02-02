@@ -173,16 +173,9 @@ public class BabService {
 
         if (needToSave) {
             this.closeBabWithSaving(bab);
-            bab.setBabStatus(BabStatus.CLOSED);
-            if (bab.getReplyStatus() == ReplyStatus.NO_NEED_TO_REPLY && !isBalanceAboveAvg(bab)) {
-                bab.setReplyStatus(ReplyStatus.UNREPLIED);
-            }
         } else {
             this.closeBabDirectly(bab);
-            bab.setBabStatus(BabStatus.NO_RECORD);
         }
-        //Update Status flag
-        this.update(bab);
 
         BabSettingHistory setting = babSettings.stream()
                 .filter(b -> b.getStation() == bab.getPeople())
@@ -190,12 +183,6 @@ public class BabService {
         this.stationComplete(bab, setting, needToSave == true && bab.getPeople() != 1);
 
         return 1;
-    }
-
-    private boolean isBalanceAboveAvg(Bab b) {
-        BabAlarmHistory alarmHistory = babAlarmHistoryService.findByBab(b.getId());
-        checkArgument(alarmHistory != null, "Alarm history not found");
-        return alarmHistory.getBalanceIsPass()== 1;
     }
 
     public int closeBabDirectly(Bab b) {

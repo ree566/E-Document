@@ -8,6 +8,7 @@ package com.advantech.service;
 import com.advantech.dao.BabSensorLoginRecordDAO;
 import com.advantech.model.BabSensorLoginRecord;
 import com.advantech.model.BabSettingHistory;
+import com.advantech.model.SensorTransform;
 import static com.google.common.base.Preconditions.checkArgument;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,11 +45,11 @@ public class BabSensorLoginRecordService {
         return babSensorLoginRecordDAO.findByLine(line_id);
     }
 
-    public int insert(BabSensorLoginRecord pojo) {
-        BabSensorLoginRecord recCheck1 = this.findBySensor(pojo.getTagName().getName());
+    public int insert(String tagName, String jobnumber) {
+        BabSensorLoginRecord recCheck1 = this.findBySensor(tagName);
         checkArgument(recCheck1 == null, "This sensor is already logged in by other user");
-        checkJobnumberIsExist(pojo.getJobnumber());
-        return babSensorLoginRecordDAO.insert(pojo);
+        checkJobnumberIsExist(jobnumber);
+        return babSensorLoginRecordDAO.insert(new BabSensorLoginRecord(new SensorTransform(tagName), jobnumber));
     }
 
     public int update(BabSensorLoginRecord pojo) {

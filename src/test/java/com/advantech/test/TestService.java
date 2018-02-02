@@ -5,24 +5,28 @@
  */
 package com.advantech.test;
 
+import com.advantech.facade.BabLineTypeFacade;
+import com.advantech.helper.ApplicationContextHelper;
 import com.advantech.helper.HibernateObjectPrinter;
+import com.advantech.helper.PropertiesReader;
 import com.advantech.model.Bab;
-import com.advantech.model.BabAlarmHistory;
 import com.advantech.model.BabSettingHistory;
 import com.advantech.quartzJob.BabDataSaver;
 import com.advantech.service.BabSensorLoginRecordService;
 import com.advantech.service.BabService;
 import com.advantech.service.BabSettingHistoryService;
 import com.advantech.service.LineBalancingService;
+import com.advantech.service.TagNameComparisonService;
+import com.advantech.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.List;
-import java.util.Set;
 import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -51,6 +55,15 @@ public class TestService {
 
     @Autowired
     private BabSensorLoginRecordService babSensorLoginRecordService;
+
+    @Autowired
+    private TagNameComparisonService tagNameComparisonService;
+
+    @Autowired
+    private UserService userService;
+    
+    @Autowired
+    private BabLineTypeFacade bf;
 
 //    @Test
     @Transactional
@@ -102,13 +115,17 @@ public class TestService {
 
     @Test
     public void testHibernateInitialize() {
-        List<Bab> l = babService.findUnReplyed(1);
-        Bab b = l.get(0);
-        assertNotNull(b);
-        Set<BabAlarmHistory> s1 = b.getBabAlarmHistorys();
-        assertTrue(!s1.isEmpty());
+//        List<User> l = userService.findByUserNotification("sensor_alarm");
+//
+//        Object[] toMails = l.stream()
+//                .map(User::getEmail).collect(Collectors.toList())
+//                .stream().toArray(String[]::new);
+//
+//        HibernateObjectPrinter.print(toMails);
 
-        HibernateObjectPrinter.print(s1);
+        
+        HibernateObjectPrinter.print(lineBalancingService.findAll());
+        HibernateObjectPrinter.print(bf.generateData());
     }
 
 }

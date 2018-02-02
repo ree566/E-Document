@@ -33,6 +33,10 @@ public class TagNameComparisonService {
         return tagNameComparisonDAO.findByPrimaryKey(obj_id);
     }
 
+    public TagNameComparison findByEncode(String encodeStr) {
+        return tagNameComparisonDAO.findByEncode(encodeStr);
+    }
+
     public TagNameComparison findByLampSysTagName(String tagName) {
         return tagNameComparisonDAO.findByLampSysTagName(tagName);
     }

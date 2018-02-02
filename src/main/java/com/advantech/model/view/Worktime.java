@@ -7,11 +7,22 @@ package com.advantech.model.view;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import org.hibernate.annotations.Immutable;
 
 /**
  *
  * @author Wei.Cheng
+ * vw_worktime
  */
+@Entity
+@Immutable
+@Table(name = "vw_WorkTime")
 public class Worktime implements Serializable {
 
     private String modelName;
@@ -24,6 +35,9 @@ public class Worktime implements Serializable {
     private BigDecimal t2Time;
     private BigDecimal packingTime;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "modelName", unique = true, updatable = false)
     public String getModelName() {
         return modelName;
     }
@@ -32,6 +46,7 @@ public class Worktime implements Serializable {
         this.modelName = modelName;
     }
 
+    @Column(name = "floorName", updatable = false)
     public String getFloorName() {
         return floorName;
     }
@@ -40,6 +55,7 @@ public class Worktime implements Serializable {
         this.floorName = floorName;
     }
 
+    @Column(name = "speOwnerName", updatable = false)
     public String getSpeOwnerName() {
         return speOwnerName;
     }
@@ -48,6 +64,7 @@ public class Worktime implements Serializable {
         this.speOwnerName = speOwnerName;
     }
 
+    @Column(name = "eeOwnerName", updatable = false)
     public String getEeOwnerName() {
         return eeOwnerName;
     }
@@ -56,6 +73,7 @@ public class Worktime implements Serializable {
         this.eeOwnerName = eeOwnerName;
     }
 
+    @Column(name = "qcOwnerName", updatable = false)
     public String getQcOwnerName() {
         return qcOwnerName;
     }
@@ -64,6 +82,7 @@ public class Worktime implements Serializable {
         this.qcOwnerName = qcOwnerName;
     }
 
+    @Column(name = "assyTime", updatable = false)
     public BigDecimal getAssyTime() {
         return assyTime;
     }
@@ -72,6 +91,7 @@ public class Worktime implements Serializable {
         this.assyTime = assyTime;
     }
 
+    @Column(name = "t1Time", updatable = false)
     public BigDecimal getT1Time() {
         return t1Time;
     }
@@ -80,6 +100,7 @@ public class Worktime implements Serializable {
         this.t1Time = t1Time;
     }
 
+    @Column(name = "t2Time", updatable = false)
     public BigDecimal getT2Time() {
         return t2Time;
     }
@@ -88,6 +109,7 @@ public class Worktime implements Serializable {
         this.t2Time = t2Time;
     }
 
+    @Column(name = "packingTime", updatable = false)
     public BigDecimal getPackingTime() {
         return packingTime;
     }

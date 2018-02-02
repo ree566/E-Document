@@ -8,10 +8,13 @@ package com.advantech.test;
 import com.advantech.dao.BabDAO;
 import com.advantech.dao.BabPcsDetailHistoryDAO;
 import com.advantech.dao.BabSettingHistoryDAO;
+import com.advantech.dao.SensorTransformDAO;
+import com.advantech.helper.CustomPasswordEncoder;
 import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.model.Bab;
 import com.advantech.model.BabSettingHistory;
 import com.advantech.model.Line;
+import com.advantech.model.SensorTransform;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -26,6 +29,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -53,6 +57,9 @@ public class TestDAO {
 
     @Autowired
     private BabPcsDetailHistoryDAO babPcsDetailHistoryDAO;
+
+    @Autowired
+    private SensorTransformDAO sensorTransformDAO;
 
 //    @Test
     @Transactional
@@ -116,7 +123,7 @@ public class TestDAO {
         HibernateObjectPrinter.print(line);
     }
 
-    @Test
+//    @Test
     @Transactional
     @Rollback(true)
     public void testFindWithBestBalanceAndSetting() {
@@ -125,5 +132,6 @@ public class TestDAO {
         assertTrue(!l.isEmpty());
         HibernateObjectPrinter.print(l);
     }
+
 
 }
