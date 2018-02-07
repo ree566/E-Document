@@ -31,6 +31,10 @@ public class LineTypeService {
         return lineTypeDAO.findByPrimaryKey(obj_id);
     }
 
+    public LineType findByName(String lineTypeName) {
+        return lineTypeDAO.findByName(lineTypeName);
+    }
+
     public int insert(LineType pojo) {
         return lineTypeDAO.insert(pojo);
     }

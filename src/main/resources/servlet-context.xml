@@ -174,10 +174,11 @@
     <!--Other file import-->
     <import resource="classpath:spring-security.xml"/>
     <import resource="classpath:spring-quartz.xml"/>
+    <import resource="classpath:spring-websocket.xml"/>
     <!--<bean id="schedulerFactoryBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean" />-->
 
     <!-- 輔助類別，幫助在非spring管理下的物件取得spring管理的物件 -->
     <bean id="SpringApplicationContext" class="com.advantech.helper.ApplicationContextHelper">
     </bean>
-    
+
 </beans>

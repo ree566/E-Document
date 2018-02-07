@@ -8,14 +8,17 @@ package com.advantech.controller;
 
 import com.advantech.helper.MailManager;
 import com.advantech.model.Bab;
+import com.advantech.model.BabSensorLoginRecord;
 import com.advantech.model.Line;
 import com.advantech.model.TagNameComparison;
 import com.advantech.model.User;
+import com.advantech.service.BabSensorLoginRecordService;
 import com.advantech.service.BabService;
 import com.advantech.service.TagNameComparisonService;
 import com.advantech.service.UserService;
 import static com.google.common.base.Preconditions.*;
 import java.util.List;
+import java.util.Objects;
 import javax.mail.MessagingException;
 import javax.validation.Valid;
 import org.joda.time.DateTime;
@@ -39,7 +42,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class BabFirstStationController {
 
     private static final Logger log = LoggerFactory.getLogger(BabFirstStationController.class);
-    
+
     private final String notify_name = "bab_run_in_alarm";
 
     @Autowired
@@ -47,33 +50,44 @@ public class BabFirstStationController {
 
     @Autowired
     private TagNameComparisonService tagNameComparisonService;
-    
+
     @Autowired
     private MailManager mailManager;
-    
+
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private BabSensorLoginRecordService babSensorLoginRecordService;
+
     @RequestMapping(value = "/insert", method = {RequestMethod.POST})
     @ResponseBody
-    protected String insert(@Valid @ModelAttribute Bab bab, @RequestParam String tagName, @RequestParam String jobnumber) {
+    protected String insert(
+            @Valid @ModelAttribute Bab bab,
+            @RequestParam String tagName,
+            @RequestParam String jobnumber,
+            @RequestParam(required = false) String recordLineType
+    ) {
+
+        BabSensorLoginRecord loginRecord = babSensorLoginRecordService.findBySensor(tagName);
+        checkArgument(loginRecord != null, "Can't find login record on this tagName");
+        checkArgument(Objects.equals(loginRecord.getJobnumber(), jobnumber), "Jobnumber is not matches at loginRecord in database");
 
         TagNameComparison tag = tagNameComparisonService.findByLampSysTagName(tagName);
         checkArgument(tag != null, "Can't find tagName " + tagName + " in setting.");
 
         Line line = tag.getLine();
-        checkArgument(line != null, "Can't find line setting in tagName " + tagName);
 
         checkArgument(bab.getPeople() + tag.getPosition() - 1 <= line.getPeople(),
                 "People out of index(" + line.getPeople() + ")");
 
         bab.setLine(line);
-        babService.checkAndInsert(bab, jobnumber, tag);
+        babService.checkAndInsert(bab, tag, recordLineType);
 
         //Don't show mail send error message when mail error caused.
         try {
             sendMailAfterBABRunIn(bab);
-        } catch (Exception e) {
+        } catch (MessagingException e) {
             log.error(e.getMessage());
         }
 //                Endpoint6.syncAndEcho();

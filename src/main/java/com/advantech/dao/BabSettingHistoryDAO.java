@@ -13,7 +13,11 @@ import java.util.List;
 import java.util.Map;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.criterion.Subqueries;
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Repository;
 
@@ -101,6 +105,34 @@ public class BabSettingHistoryDAO extends AbstractDao<Integer, BabSettingHistory
         c.add(Restrictions.gt("createTime", new DateTime().withHourOfDay(0).toDate()));
         c.setMaxResults(1);
         return (BabSettingHistory) c.uniqueResult();
+    }
+
+    //Find the mininum bab_id per tagName
+    public List<BabSettingHistory> findProcessingByLine(String lineName) {
+        return super.getSession().createQuery(
+                "from BabSettingHistory bsh join bsh.bab b join b.line l "
+                + "where bsh.id in( "
+                + "select min(bsh1.id) from BabSettingHistory bsh1 "
+                + "join bsh1.bab b2 join b2.line l2 "
+                + "where b2.babStatus is null "
+                + "and l2.name = :lineName "
+                + "and bsh1.lastUpdateTime is null "
+                + "group by bsh1.tagName) "
+                + "order by bsh.tagName")
+                .setParameter("lineName", lineName)
+                .list();
+    }
+
+    public List<BabSettingHistory> findProcessingByLine(int line_id) {
+        return super.createEntityCriteria()
+                .createAlias("bab", "b")
+                .createAlias("b.line", "l")
+                .createAlias("l.lineType", "lt")
+                .add(Restrictions.isNull("b.babStatus"))
+                .add(Restrictions.gt("b.beginTime", new DateTime().withHourOfDay(0).toDate()))
+                .add(Restrictions.eq("l.id", line_id))
+                .addOrder(Order.asc("b.id"))
+                .list();
     }
 
     @Override

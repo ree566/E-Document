@@ -29,10 +29,13 @@ public class PollingBabAndTestResult extends QuartzJobBean {
     private static TestLineTypeFacade tF;
 
     private static BabLineTypeFacade bF;
+    
+    private static Endpoint2 socket;
 
     static {
         tF = (TestLineTypeFacade) ApplicationContextHelper.getBean("testLineTypeFacade");
         bF = (BabLineTypeFacade) ApplicationContextHelper.getBean("babLineTypeFacade");
+        socket = (Endpoint2) ApplicationContextHelper.getBean("endpoint2");
     }
 
     @Override
@@ -50,7 +53,7 @@ public class PollingBabAndTestResult extends QuartzJobBean {
          */
         try {
             System.out.println("PollingBabAndTestResult");
-            Endpoint2.sendAll(getData());
+            socket.sendAll(getData());
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }

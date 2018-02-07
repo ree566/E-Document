@@ -1,5 +1,8 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+<sec:authentication var="user" property="principal" />
+<sec:authorize access="isAuthenticated()"  var="isAuthenticated" />
 <link rel="stylesheet" href="../../css/bootstrap.min.css">
 <link rel="stylesheet" href="../../css/font-awesome.min.css">
 <style>
@@ -123,6 +126,32 @@
                     </a>
                     <ul class="dropdown-menu sensorAdjustSelect"></ul>
                 </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <c:choose>
+                    <c:when test="${!isAuthenticated}">
+                        <li>
+                            <a href="<c:url value="/login" />">
+                                <span class="glyphicon glyphicon-log-in" />
+                                login
+                            </a>
+                        </li>
+                    </c:when>
+                    <c:otherwise>
+                        <li>
+                            <a href="#">
+                                <span class="glyphicon glyphicon-user" />
+                                <c:out value="${user.username}" />
+                            </a>
+                        </li>
+                        <li>
+                            <a href="<c:url value="/logout" />">
+                                <span class="glyphicon glyphicon-log-out" />
+                                logout
+                            </a>
+                        </li>
+                    </c:otherwise>
+                </c:choose>
             </ul>
         </div>
         <!-- /.navbar-collapse -->

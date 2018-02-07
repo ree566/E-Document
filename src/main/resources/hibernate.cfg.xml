@@ -82,6 +82,7 @@ Contributor(s):
         <mapping class="com.advantech.model.BabBalanceHistory"/>
         <mapping class="com.advantech.model.BabAlarmHistory"/>
         <mapping class="com.advantech.model.BabSensorLoginRecord"/>
+        <mapping class="com.advantech.model.CellLineTypeRecord"/>
         <mapping class="com.advantech.model.Line"/>
         <mapping class="com.advantech.model.LineType"/>
         <mapping class="com.advantech.model.LineTypeConfig"/>

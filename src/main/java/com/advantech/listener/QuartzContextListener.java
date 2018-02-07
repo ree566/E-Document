@@ -38,9 +38,9 @@ public class QuartzContextListener implements ServletContextListener {
         try {
 //            CronTrigMod.getInstance().unScheduleAllJob();
             
-            Endpoint.clearSessions();
-            Endpoint2.clearSessions();
-            Endpoint4.clearSessions();
+//            Endpoint.clearSessions();
+//            Endpoint2.clearSessions();
+//            Endpoint4.clearSessions();
 
             Thread.sleep(3000);
             ThreadLocalCleanUtil.clearThreadLocals();

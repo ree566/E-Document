@@ -143,6 +143,33 @@
             .adjustPosition{
                 position: absolute;
             }
+            #infoArea {
+                background: white;
+                margin: 0;
+                padding: 0.5em 0.5em 0.5em 0.5em;
+                position: absolute;
+                /*                position: fixed;*/
+                left: 0px;
+                bottom: 0px;
+                overflow: auto;
+                height: 20%;
+                width: 35%;
+                border-width: 3px;
+                border-style: solid;
+                border-color: #FFAC55;
+                opacity: 0.8;
+                font-size: 12px;
+                /*display: none;*/
+            }
+            #log-toggle{
+                right: 0px;
+                top: 0px;
+                padding: 0.2em;
+                border-width: 1px;
+                border-style: solid;
+                border-color: red;
+                cursor: pointer;
+            }
         </style>
         <script src="../../js/jquery-1.11.3.min.js"></script>
         <script src="../../js/jquery-ui-1.10.0.custom.min.js"></script>
@@ -154,6 +181,9 @@
             var maxProductivity = 200;
 
             $(function () {
+                var log = $("#log");
+                var infoArea = $("#infoArea");
+
                 initMapInfo();
                 initTitleGroup();
                 initTestGroup();
@@ -176,8 +206,26 @@
                     }
                 });
 
-                $("#fullBtn").click(function () {
-                    $("#wigetCtrl").fullScreen(true);
+                var timeout;
+
+                $('.lineTitle').on('click', function () {
+                    infoArea.show();
+                    var id = $(this).attr("id");
+                    var st = id.replace("_title", "");
+
+                    //if you already have a timout, clear it
+                    if (typeof timeout != 'undefined') {
+                        clearTimeout(timeout);
+                    }
+
+                    //start new time, to perform ajax stuff in 500ms
+                    timeout = setTimeout(function () {
+                        getDetails(st);
+                    }, 500);
+                });
+                
+                $("#log-toggle").click(function(){
+                    infoArea.hide();
                 });
 
                 function initMapInfo() {
@@ -408,6 +456,42 @@
                     var size = Math.pow(10, precision);
                     return Math.round(val * size) / size;
                 }
+
+                function appendLog(message) {
+                    log.append(message);
+                    log.scrollTop(log.prop("scrollHeight"));
+                }
+
+                function getDetails(lineName) {
+                    log.html("");
+                    $.ajax({
+                        url: "<c:url value="/BabSettingHistoryController/findProcessingByLine" />",
+                        method: 'GET',
+                        dataType: 'json',
+                        data: {
+                            lineName: lineName
+                        },
+                        success: function (d) {
+                            var arr = d.data;
+                            if (arr.length == 0) {
+                                appendLog("<div>該線別無進行中的工單</div>");
+                            } else {
+                                for (var i = 0; i < arr.length; i++) {
+                                    var o = arr[i];
+                                    var stationInfo = o[0];
+                                    var bab = o[1];
+                                    var line = o[2];
+                                    appendLog("<div>" + stationInfo.tagName.name +
+                                            "(" + bab.id + ")" +
+                                            " / po:" + bab.po +
+                                            " / modelName:" + bab.modelName +
+                                            "</div>");
+                                }
+                            }
+                        }
+                    });
+
+                }
             });
         </script>
     </head>
@@ -443,6 +527,10 @@
 
                 <div id="babArea"></div>
                 <!--<div class="clearWiget"></div>-->
+                <div id="infoArea" hidden="">
+                    <div id="log-toggle">─</div>
+                    <div id="log"></div>
+                </div>
             </div>
         </div>
         <div class="clearWiget" />

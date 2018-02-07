@@ -5,6 +5,10 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+<sec:authentication var="user" property="principal" />
+<sec:authorize access="isAuthenticated()"  var="isAuthenticated" />
 <!DOCTYPE html>
 <html>
     <head>
@@ -26,6 +30,10 @@
         <script src="../../js/moment.js"></script>
         <script>
             $(document).ready(function () {
+                var holdHours = 0;
+                var maxHoldHours = 8;
+                initRefreshTimer();
+
                 var sitefloor = ${param.sitefloor};
 
                 var cookieTNum = $.cookie("user_sel");//cookie save the user selected 站別 in babpage.jsp，search when it is exist
@@ -74,7 +82,7 @@
                                     "<td>" + arrobj.groupid + "</td>" +
                                     "<td>" + (diff == null ? "計算中..." : diff + "秒") + "</td>" +
                                     "<td>" + time + "</td>" +
-                                    "<td>" + arrobj.BABid + "</td>" +
+                                    "<td>" + arrobj.bab_id + "</td>" +
                                     "</tr>";
                             flag = true;
                         }
@@ -140,11 +148,25 @@
                     console.log("websocket connection is now end");
                 }
 //-----------------------
+                $("#redirectBtn").click(function () {
+                    console.log("click");
+                });
+                
+                //Redirect page when user stay on page too long.
+                function initRefreshTimer() {
+                    setInterval(function () {
+                        holdHours++;
+                        var now = moment().get('hour');
+                        if (holdHours >= maxHoldHours || now == 22) {
+                            parent.document.location.href = "<c:url value="SysInfo" />";
+                        }
+                    }, 60 * 60 * 1000);
+                }
             });
         </script>
     </head>
     <body>
-        <div id="servermsg" style="color:red; border: 2"></div>
+        <div id="servermsg" style="color:red; border: 2px"></div>
         <div id="sensorMsg">
             <table id="sen_table" class="table table-bordered" style="text-align: center;">
                 <thead>

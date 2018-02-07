@@ -7,6 +7,7 @@
 package com.advantech.quartzJob;
 
 import com.advantech.endpoint.Endpoint;
+import com.advantech.endpoint.Endpoint2;
 import com.advantech.helper.ApplicationContextHelper;
 import com.advantech.service.FbnService;
 import com.google.gson.Gson;
@@ -22,13 +23,15 @@ import org.springframework.scheduling.quartz.QuartzJobBean;
  */
 public class PollingSensorStatus extends QuartzJobBean {
 
-    private final Gson gson;
+    private static final Gson gson;
     private static final Logger log = LoggerFactory.getLogger(PollingSensorStatus.class);
-    private final FbnService fbnService;
-
-    public PollingSensorStatus() {
+    private static final FbnService fbnService;
+    private static Endpoint socket;
+    
+    static{
         gson = new Gson();
         fbnService = (FbnService) ApplicationContextHelper.getBean("fbnService");
+        socket = (Endpoint) ApplicationContextHelper.getBean("endpoint");
     }
 
     @Override
@@ -45,7 +48,7 @@ public class PollingSensorStatus extends QuartzJobBean {
          Query: select * from LS_GetSenRealTime Parameters: []
          */
         try {
-            Endpoint.sendAll(getData());
+            socket.sendAll(getData());
         } catch (Exception e) {
             log.error(e.toString());
         }

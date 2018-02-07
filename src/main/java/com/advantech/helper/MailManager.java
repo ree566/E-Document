@@ -9,6 +9,7 @@ import com.advantech.model.User;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
@@ -39,6 +40,7 @@ public class MailManager {
     @PostConstruct
     protected void init() {
         try {
+            log.info(MailManager.class + " init host address");
             hostIp = getHostAddr();
         } catch (UnknownHostException | SocketException ex) {
             log.error(ex.toString());
@@ -49,12 +51,17 @@ public class MailManager {
         this.mailSender = mailSender;
     }
 
-    public boolean sendMail(List<User> to, List<User> cc, String subject, String text) {
-//        List<String> toMails = to.stream().map(User::getEmail).collect(Collectors.toList());
-//        List<String> ccMails = ccstream().map(User::getEmail).collect(Collectors.toList());
-//
-//        return sendMail(toMails.toArray(), ccMails.toArray(), subject, text);
-        return false;
+    public boolean sendMail(List<User> to, List<User> cc, String subject, String text) throws MessagingException {
+        if (to.isEmpty()) {
+            return false;
+        }
+        if (cc == null) {
+            cc = new ArrayList();
+        }
+        String[] toMails = (String[]) to.stream().map(User::getEmail).collect(Collectors.toList()).stream().toArray(String[]::new);
+        String[] ccMails = cc.stream().map(User::getEmail).collect(Collectors.toList()).stream().toArray(String[]::new);
+
+        return sendMail(toMails, ccMails, subject, text);
     }
 
     public boolean sendMail(String[] to, String subject, String text) throws MessagingException {

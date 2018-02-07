@@ -115,9 +115,7 @@ public class BabController {
     public Map findLineBalanceCompare(
             @RequestParam int bab_id
     ) {
-        Bab b = babService.findWithLineInfo(bab_id);
-        checkArgument(b != null, "Can't find bab_id " + bab_id);
-        List<Map> l = sqlViewService.findLineBalanceCompare(b.getModelName(), b.getLine().getLineType().getName());
+        List<Map> l = sqlViewService.findLineBalanceCompareByBab(bab_id);
         Map m = new HashMap();
         m.put("ctrlAvgs", 0);
         m.put("expAvgs", 0);
@@ -152,5 +150,5 @@ public class BabController {
     public DataTableResponse findSensorStatusPerStationToday() {
         return new DataTableResponse(sqlViewService.findSensorStatusPerStationToday());
     }
-
+    
 }

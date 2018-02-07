@@ -65,6 +65,14 @@ public class BabSettingHistoryService {
         return babSettingHistoryDAO.findProcessingByTagName(sensor);
     }
 
+    public List<BabSettingHistory> findProcessingByLine(String lineName) {
+        return babSettingHistoryDAO.findProcessingByLine(lineName);
+    }
+
+    public List<BabSettingHistory> findProcessingByLine(int line_id) {
+        return babSettingHistoryDAO.findProcessingByLine(line_id);
+    }
+
     public BabSettingHistory findByBabAndStation(Bab b, int station) {
         return babSettingHistoryDAO.findByBabAndStation(b, station);
     }

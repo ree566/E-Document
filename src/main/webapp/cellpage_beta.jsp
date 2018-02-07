@@ -364,12 +364,44 @@
                     showMsg(userNotFoundMessage);
                     return false;
                 }
+                
+                var tagInfo = getTagName(tagName);
+                
+                if (tagInfo.id == null) {
+                    showMsg(paramNotVaildMessage);
+                    return false;
+                }
 
                 sensorChangeStatus({
                     jobnumber: jobnumber,
-                    tagName: tagName,
-                    "floor.name": $("#userSitefloorSelect").val()
+                    tagName: tagInfo.id.lampSysTagName.name,
+                    line_id: tagInfo.line.id,
+                    lineType_id: tagInfo.line.lineType.id,
+                    line_max_people: tagInfo.line.people,
+                    floor_id: tagInfo.line.floor.id,
+                    position: tagInfo.position,
+                    "floor.name": tagInfo.line.floor.name
                 }, STATION_LOGIN);
+            }
+            
+            function getTagName(encodeStr) {
+                var result;
+                $.ajax({
+                    type: "GET",
+                    url: "<c:url value="/BabSensorLoginController/findSensorByEncode" />",
+                    data: {
+                        encodeStr: encodeStr
+                    },
+                    dataType: "json",
+                    async: false,
+                    success: function (response) {
+                        result = response;
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        showMsg(xhr.responseText);
+                    }
+                });
+                return result;
             }
 
             function changeJobnumber(newJobnumber) {
@@ -530,12 +562,14 @@
                 }
 
                 var ispre = $("#ispre").is(":checked") ? 1 : 0;
+                var lineType = $("#lineType").val();
 
                 saveBabInfo({
                     po: po,
                     modelName: modelName,
                     people: people,
-                    ispre: ispre
+                    ispre: ispre,
+                    recordLineType: lineType
                 });
             }
 
@@ -677,8 +711,8 @@
                                     <td>
                                         <select id='lineType'>
                                             <option value="-1">---請選擇製程---</option>
-                                            <option value="1">ASSY</option>
-                                            <option value="2">PKG</option>
+                                            <option value="ASSY">ASSY</option>
+                                            <option value="Packing">Packing</option>
                                         </select>
                                         <input type="checkbox" id="ispre" /><label for="ispre">前置</label>
                                     </td>

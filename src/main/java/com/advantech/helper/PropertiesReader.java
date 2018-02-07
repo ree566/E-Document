@@ -11,6 +11,8 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -21,6 +23,8 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class PropertiesReader {
+    
+    private static final Logger log = LoggerFactory.getLogger(PropertiesReader.class);
 
     @Value("${test.maxTable: 42}")
     private Integer maxTestTables;
@@ -46,7 +50,7 @@ public class PropertiesReader {
     @Value("${result.save.to.oldServer: false}")
     private Boolean isResultWriteToOldDatabase;
 
-    @Value("${endpoint.quartz.trigger : }")
+    @Value("${endpoint.quartz.trigger}")
     private String endpointPollingCron;
 
     //Settings inject from database
@@ -64,6 +68,7 @@ public class PropertiesReader {
 
     @PostConstruct
     private void init() {
+        log.info(PropertiesReader.class + " init properties");
         List<LineTypeConfig> configs = lineTypeConfigService.findWithLineType();
         List<LineTypeConfig> balanceStandard = configs.stream()
                 .filter(o -> "LINEBALANCE_STANDARD".equals(o.getName())).collect(Collectors.toList());

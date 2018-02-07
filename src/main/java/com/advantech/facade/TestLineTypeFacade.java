@@ -57,6 +57,7 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
 
     @PostConstruct
     protected void init() {
+        log.info(TestLineTypeFacade.class.getName() + " init inner setting and db object.");
         maxTestTable = p.getMaxTestTables();
         TEST_STANDARD_MIN = p.getTestProductivityStandardMin().doubleValue();
         TEST_STANDARD_MAX = p.getTestProductivityStandardMax().doubleValue();

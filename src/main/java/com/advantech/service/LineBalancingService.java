@@ -60,6 +60,7 @@ public class LineBalancingService {
     
     @PostConstruct
     private void init(){
+        log.info(LineBalancingService.class.getName() + " init inner paramaters.");
         balanceRoundDigit = p.getBabLineBalanceRoundDigit();
         balnDiff = p.getBabLineBalanceAlarmDiff();
     }

@@ -30,7 +30,6 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 /**
@@ -59,7 +58,7 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
 
     @Autowired
     private BabSettingHistoryService babSettingHistoryService;
-    
+
     @Autowired
     private PropertiesReader p;
 
@@ -73,6 +72,7 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
 
     @PostConstruct
     protected void init() {
+        log.info(BabLineTypeFacade.class.getName() + " init inner setting and db object.");
         ASSY_STANDARD = p.getAssyLineBalanceStandard().doubleValue();
         PKG_STANDARD = p.getPackingLineBalanceStandard().doubleValue();
         CELL_STANDARD = p.getCellProductivityStandardMin().doubleValue();
@@ -184,6 +184,9 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
                 Worktime w = worktimes.stream().filter(o -> o.getModelName().equals(b.getModelName())).findFirst().orElse(null);
                 checkState(w != null, "Can't find worktime setting on modelName " + b.getModelName());
                 double cBaln = max / w.getAssyTime().doubleValue();
+
+                System.out.printf("Cell max: %f / Standard: %f / PRODUCTIVITY: %f / standard: %f.\n",
+                        max, w.getAssyTime().doubleValue(), cBaln, CELL_STANDARD);
                 return (Double.compare(cBaln, CELL_STANDARD) < 0);
             default:
                 return false;

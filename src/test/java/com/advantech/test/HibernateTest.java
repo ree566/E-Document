@@ -13,14 +13,13 @@ import com.advantech.model.AlarmBabAction;
 import com.advantech.model.Bab;
 import com.advantech.model.BabAlarmHistory;
 import com.advantech.model.BabSensorLoginRecord;
+import com.advantech.model.BabSettingHistory;
 import com.advantech.model.BabStatus;
 import com.advantech.model.CountermeasureEvent;
 import com.advantech.model.ReplyStatus;
 import com.advantech.model.SensorTransform;
 import com.advantech.model.TagNameComparison;
 import com.advantech.model.User;
-import com.advantech.model.view.UserInfoRemote;
-import com.advantech.model.view.Worktime;
 import com.advantech.security.State;
 import com.advantech.service.BabPcsDetailHistoryService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -31,11 +30,17 @@ import java.util.Map;
 import java.util.Set;
 import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
+import org.hibernate.Hibernate;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.criterion.Subqueries;
 import org.hibernate.transform.Transformers;
+import org.joda.time.DateTime;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -349,7 +354,27 @@ public class HibernateTest {
     @Transactional
     @Rollback(true)
     public void testQuery2() {
+        String lineName = "L2";
         Session session = sessionFactory.getCurrentSession();
+        
+        DetachedCriteria subquery = DetachedCriteria.forClass(BabSettingHistory.class);
+        subquery.createAlias("bab", "b")
+                .createAlias("b.line", "l")
+                .add(Restrictions.isNull("b.babStatus"))
+                .add(Restrictions.gt("beginTime", new DateTime().withHourOfDay(0).toDate()))
+                .setProjection(Projections.projectionList()
+                        .add(Projections.min("b.id"))
+                        .add(Projections.groupProperty("tagName"))
+                )
+                .add(Restrictions.eq("l.name", lineName));
 
+        List l = session.createCriteria(BabSettingHistory.class)
+                .createAlias("bab", "b")
+                .createAlias("b.line", "l")
+                .createAlias("l.lineType", "lt")
+                .add(Subqueries.propertyIn("id", subquery))
+                .list();
+        
+        HibernateObjectPrinter.print(l);
     }
 }

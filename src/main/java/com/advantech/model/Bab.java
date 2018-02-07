@@ -74,6 +74,9 @@ public class Bab implements Serializable {
     private Set<BabBalanceHistory> babBalanceHistorys = new HashSet<BabBalanceHistory>(0);
 
     @JsonIgnore
+    private Set<CellLineTypeRecord> cellLineTypeRecords = new HashSet<>(0);
+
+    @JsonIgnore
     private List<BabAvg> babAvgs = new ArrayList();
 
     public Bab() {
@@ -249,6 +252,15 @@ public class Bab implements Serializable {
 
     public void setBabBalanceHistorys(Set<BabBalanceHistory> babBalanceHistorys) {
         this.babBalanceHistorys = babBalanceHistorys;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "bab")
+    public Set<CellLineTypeRecord> getCellLineTypeRecords() {
+        return cellLineTypeRecords;
+    }
+
+    public void setCellLineTypeRecords(Set<CellLineTypeRecord> cellLineTypeRecords) {
+        this.cellLineTypeRecords = cellLineTypeRecords;
     }
 
     @Transient

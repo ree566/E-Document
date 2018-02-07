@@ -66,7 +66,7 @@ public class CountermeasureAlarm extends QuartzJobBean {
     public void sendMail() throws Exception {
         List<User> ccMailLoop = userService.findByUserNotificationAndNotLineOwner(notificationName);
         List<Floor> floors = floorService.findAll();
-        floors.forEach((f) -> {
+        for (Floor f : floors) {
             List<User> mailLoop = userService.findLineOwnerBySitefloor(f.getId());
             if (!mailLoop.isEmpty()) {
                 // when user sitefloor is not setting, turn user's mail to mail cc loop
@@ -76,7 +76,7 @@ public class CountermeasureAlarm extends QuartzJobBean {
                     mailManager.sendMail(mailLoop, ccMailLoop, subject + f.getName() + "F", mailBody);
                 }
             }
-        });
+        };
     }
 
     public String generateMailBody(int floor_id) {

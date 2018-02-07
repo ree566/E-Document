@@ -15,7 +15,6 @@ import com.advantech.service.ActionCodeService;
 import com.advantech.service.BabService;
 import com.advantech.service.CountermeasureService;
 import com.advantech.service.ErrorCodeService;
-import com.advantech.service.UserService;
 import static com.google.common.collect.Sets.newHashSet;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +24,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import static com.google.common.base.Preconditions.*;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
@@ -63,8 +64,9 @@ public class CountermeasureController {
             @RequestParam String sop,
             @RequestParam String editor
     ) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        checkNotNull(user, "查無此使用者");
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        checkState(!(auth instanceof AnonymousAuthenticationToken), "查無登入紀錄，請重新登入");
+        User user = (User) auth.getPrincipal();
 
         Countermeasure c = cService.findByBab(bab_id);
         if (c == null) {

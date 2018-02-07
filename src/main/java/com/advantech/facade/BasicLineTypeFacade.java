@@ -45,7 +45,7 @@ public abstract class BasicLineTypeFacade implements com.advantech.service.Alarm
 
     @PostConstruct
     protected void initValues() {
-        System.out.println("BasicLineTypeFacade init");
+        log.info("BasicLineTypeFacade init");
         isWriteToDB = p.getIsCalculateResultWriterToDatabase();
         resetFlag = true;
         dataMap = new HashMap();

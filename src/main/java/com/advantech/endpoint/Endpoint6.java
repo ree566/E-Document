@@ -3,6 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  * 組包換線狀態(測試中)
+ * 待改變成spring格式
  */
 package com.advantech.endpoint;
 
@@ -31,7 +32,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Wei.Cheng
  */
-@ServerEndpoint(value = "/echo6/{clientId}")
+//@ServerEndpoint(value = "/echo6/{clientId}")
 public class Endpoint6 {
 
     private static final Logger log = LoggerFactory.getLogger(Endpoint6.class);

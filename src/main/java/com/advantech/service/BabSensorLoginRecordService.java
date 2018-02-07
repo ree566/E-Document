@@ -28,6 +28,9 @@ public class BabSensorLoginRecordService {
 
     @Autowired
     private BabSettingHistoryService babSettingHistoryService;
+    
+    @Autowired
+    private SensorTransformService sensorTransformService;
 
     public List<BabSensorLoginRecord> findAll() {
         return babSensorLoginRecordDAO.findAll();
@@ -49,7 +52,8 @@ public class BabSensorLoginRecordService {
         BabSensorLoginRecord recCheck1 = this.findBySensor(tagName);
         checkArgument(recCheck1 == null, "This sensor is already logged in by other user");
         checkJobnumberIsExist(jobnumber);
-        return babSensorLoginRecordDAO.insert(new BabSensorLoginRecord(new SensorTransform(tagName), jobnumber));
+        SensorTransform sensor = sensorTransformService.findByPrimaryKey(tagName);
+        return babSensorLoginRecordDAO.insert(new BabSensorLoginRecord(sensor, jobnumber));
     }
 
     public int update(BabSensorLoginRecord pojo) {

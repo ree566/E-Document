@@ -2,20 +2,18 @@ package com.advantech.service;
 
 import com.advantech.model.Bab;
 import com.advantech.dao.BabDAO;
-import com.advantech.helper.HibernateObjectPrinter;
-import com.advantech.model.BabAlarmHistory;
 import com.advantech.model.BabSettingHistory;
-import com.advantech.model.BabStatus;
-import com.advantech.model.ReplyStatus;
+import com.advantech.model.CellLineTypeRecord;
+import com.advantech.model.LineType;
 import com.advantech.model.TagNameComparison;
 import com.advantech.model.view.BabAvg;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.List;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import static com.google.common.base.Preconditions.*;
 import java.util.Date;
+import java.util.Objects;
 import org.hibernate.Hibernate;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,17 +40,13 @@ public class BabService {
     private BabSettingHistoryService babSettingHistoryService;
 
     @Autowired
-    private TagNameComparisonService tagNameComparisonService;
-
-    @Autowired
     private SqlViewService sqlViewService;
 
     @Autowired
-    private BabAlarmHistoryService babAlarmHistoryService;
-
-    public void BABDAO() {
-        babDAO.BABDAO();
-    }
+    private CellLineTypeRecordService cellLineTypeRecordService;
+    
+    @Autowired
+    private LineTypeService lineTypeService;
 
     public List<Bab> findAll() {
         return babDAO.findAll();
@@ -87,10 +81,6 @@ public class BabService {
         return babDAO.findProcessing();
     }
 
-    public List<Bab> findProcessingByLine(int line_id) {
-        return babDAO.findProcessingByLine(line_id);
-    }
-
     public List<Bab> findProcessingByTagName(String tagName) {
         return babDAO.findProcessingByTagName(tagName);
     }
@@ -112,12 +102,24 @@ public class BabService {
         return babDAO.insert(pojo);
     }
 
-    public int checkAndInsert(Bab b, String jobnumber, TagNameComparison tag) {
-        List<Bab> processes = babDAO.findProcessingByLine(b.getLine().getId());
-        Bab duplicate = processes.stream().filter(bab -> bab.getPo().equals(b.getPo())).findFirst().orElse(null);
-        checkArgument(duplicate == null, "工單號碼已經存在");
+    public int checkAndInsert(Bab b, TagNameComparison tag) {
+        BabSettingHistory bsh = babSettingHistoryService.findProcessingByTagName(tag.getId().getLampSysTagName().getName());
+        if (bsh != null) {
+            Bab processingBab = bsh.getBab();
+            checkArgument(!Objects.equals(processingBab.getPo(), b.getPo()), "工單號碼已經存在");
+        }
         babDAO.insert(b);
         babSettingHistoryService.insertByBab(b, tag);
+        return 1;
+    }
+
+    public int checkAndInsert(Bab b, TagNameComparison tag, String recordLineType) {
+        this.checkAndInsert(b, tag);
+        if (recordLineType != null) {
+            LineType lt = lineTypeService.findByName(recordLineType);
+            checkArgument(lt != null, "Can't find lineType name: " + recordLineType);
+            cellLineTypeRecordService.insert(new CellLineTypeRecord(b, lt));
+        }
         return 1;
     }
 

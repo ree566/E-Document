@@ -6,6 +6,7 @@
  */
 package com.advantech.quartzJob;
 
+import com.advantech.endpoint.Endpoint;
 import com.advantech.endpoint.Endpoint4;
 import com.advantech.helper.ApplicationContextHelper;
 import com.advantech.facade.CellLineTypeFacade;
@@ -25,9 +26,12 @@ public class PollingCellResult extends QuartzJobBean {
     private static final Logger log = LoggerFactory.getLogger(PollingCellResult.class);
 
     private static CellLineTypeFacade cF;
+    
+    private Endpoint socket;
 
     static {
         cF = (CellLineTypeFacade) ApplicationContextHelper.getBean("cellLineTypeFacade");
+//        socket = (Endpoint) ApplicationContextHelper.getBean("endpoint");
     }
 
     @Override
@@ -43,11 +47,11 @@ public class PollingCellResult extends QuartzJobBean {
          and has been chosen as the deadlock victim. Rerun the transaction. 
          Query: select * from LS_GetSenRealTime Parameters: []
          */
-        try {
-            Endpoint4.sendAll(getData());
-        } catch (Exception e) {
-            log.error(e.toString());
-        }
+//        try {
+//            Endpoint4.sendAll(getData());
+//        } catch (Exception e) {
+//            log.error(e.toString());
+//        }
     }
 
     public static String getData() {

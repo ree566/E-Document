@@ -386,7 +386,7 @@
                 }
                 var obj = $("#people");
                 var maxPeopleInput = lineMax - position + 1;
-                for (var i = 2; i < maxPeopleInput; i++) {
+                for (var i = 2; i <= maxPeopleInput; i++) {
                     obj.append("<option value='" + i + "'> " + i + " 人</option>");
                 }
             }
@@ -396,9 +396,9 @@
             }
 
             //步驟一儲存使用者資訊
-            function saveUserStatus(tagName, jobnumber) {
+            function saveUserStatus(tag, jobnumber) {
 
-                if (checkVal(jobnumber, tagName) == false || !jobnumber.match(tabreg)) {
+                if (checkVal(jobnumber, tag) == false || !jobnumber.match(tabreg)) {
                     showMsg(paramNotVaildMessage);
                     return false;
                 }
@@ -408,7 +408,7 @@
                     return false;
                 }
 
-                var tagName = getTagName(tagName);
+                var tagName = getTagName(tag);
 
                 if (tagName.id == null) {
                     showMsg(paramNotVaildMessage);

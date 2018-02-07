@@ -63,5 +63,11 @@ public class BabSettingHistoryController {
         return new DataTableResponse(babSettingHistoryService.findAll(po, line_id,
                 findWithBalance, findWithAlarmPercent, isAboveMinPcs ? 10 : 0));
     }
+    
+    @RequestMapping(value = "/findProcessingByLine", method = {RequestMethod.GET})
+    @ResponseBody
+    public DataTableResponse findBabSettingHistory(@RequestParam String lineName) {
+        return new DataTableResponse(babSettingHistoryService.findProcessingByLine(lineName));
+    }
 
 }

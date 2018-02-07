@@ -38,6 +38,9 @@ public class LineType implements Serializable {
     @JsonIgnore
     private Set<LineTypeConfig> lineTypeConfigs = new HashSet<>(0);
 
+    @JsonIgnore
+    private Set<CellLineTypeRecord> cellLineTypeRecords = new HashSet<>(0);
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", unique = true, nullable = false)
@@ -74,6 +77,15 @@ public class LineType implements Serializable {
 
     public void setLineTypeConfigs(Set<LineTypeConfig> lineTypeConfigs) {
         this.lineTypeConfigs = lineTypeConfigs;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "lineType")
+    public Set<CellLineTypeRecord> getCellLineTypeRecords() {
+        return cellLineTypeRecords;
+    }
+
+    public void setCellLineTypeRecords(Set<CellLineTypeRecord> cellLineTypeRecords) {
+        this.cellLineTypeRecords = cellLineTypeRecords;
     }
 
 }

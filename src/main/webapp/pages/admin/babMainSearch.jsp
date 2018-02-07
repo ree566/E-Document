@@ -758,9 +758,9 @@
                             "targets": [3, 4],
                             "data": "ctrl_alarmPercent",
                             'render': function (data, type, full, meta) {
-                                return formatDate(data);
+                                return data == null ? 'n/a' : formatDate(data);
                             }
-                        },
+                        }
                     ],
                     "oLanguage": {
                         "sLengthMenu": "顯示 _MENU_ 筆記錄",
@@ -1239,6 +1239,7 @@
                 var readonly = getQueryVariable("readonly") == null ? false : (getQueryVariable("readonly").toUpperCase() == "TRUE");
                 if (readonly || ${!isAuthenticated}) {
                     $("#editCountermeasure").off("click").attr("disabled", true);
+                    $("#countermeasureEditHint").show();
                 }
 
                 $(window).on("blur", function () {
@@ -1312,6 +1313,7 @@
                             </div>
                         </div>
                         <div class="modal-footer">
+                            <label id="countermeasureEditHint" for="editCountermeasure" hidden="">請<a href="<c:url value="/login" /> " target='_parent'>登入</a>做異常回覆</label>
                             <button type="button" id="editCountermeasure" class="btn btn-default" >Edit</button>
                             <button type="button" id="saveCountermeasure" class="btn btn-default">Save</button>
                             <button type="button" id="undoContent" class="btn btn-default">Undo</button>

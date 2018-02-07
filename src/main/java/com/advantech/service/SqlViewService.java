@@ -68,6 +68,10 @@ public class SqlViewService {
     public List<Map> findBabDetail(String lineTypeName, String sitefloorName, DateTime sD, DateTime eD, boolean isAboveStandard) {
         return sqlViewDAO.findBabDetail(lineTypeName, sitefloorName, sD, eD, isAboveStandard);
     }
+    
+    public List<Map> findLineBalanceCompareByBab(int bab_id) {
+        return sqlViewDAO.findLineBalanceCompareByBab(bab_id);
+    }
 
     public List<Map> findLineBalanceCompare(String modelName, String lineTypeName) {
         return sqlViewDAO.findLineBalanceCompare(modelName, lineTypeName);

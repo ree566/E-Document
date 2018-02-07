@@ -17,7 +17,7 @@
                 class="com.advantech.security.AjaxAwareAuthenticationEntryPoint">
         <beans:constructor-arg name="loginUrl" value="/login"/>
     </beans:bean>
-
+    
     <http auto-config="true">
         <!--
             If frame option is set to default(deny all), 
@@ -26,7 +26,7 @@
             user can't get the error message and the client stuck on "file will be downloading..." message.
         -->
         <headers>
-            <frame-options policy="SAMEORIGIN" />
+            <frame-options disabled="true" />
             <hsts disabled="true"/>
         </headers>
         
@@ -42,7 +42,9 @@
         
         <!--Controller security role setting-->
         
-<!--        <form-login  
+        <form-login authentication-success-forward-url="/SysInfo" />
+        
+        <!--        <form-login  
             login-page="/login.jsp"
             default-target-url="/pages/"
             always-use-default-target="true"                    
@@ -52,7 +54,7 @@
         />-->
 
         <logout invalidate-session="true"
-                logout-success-url="/login?logout"
+                logout-success-url="/SysInfo"
                 logout-url="/logout"
                 delete-cookies="JSESSIONID"
         />
@@ -64,7 +66,7 @@
         />
         
     </http>
-
+    
     <authentication-manager >
         <authentication-provider user-service-ref="customUserDetailsService">
             <password-encoder ref="customPasswordEncoder" />
@@ -72,13 +74,6 @@
     </authentication-manager>
       
     <beans:bean id="customUserDetailsService" class="com.advantech.service.CustomUserDetailsService" />
-    
-    <!--    <websocket:message-broker application-destination-prefix="/app">
-        <websocket:stomp-endpoint path="/socket">
-            <websocket:sockjs/>
-        </websocket:stomp-endpoint>
-        <websocket:simple-broker prefix="/topic, /queue"/>
-    </websocket:message-broker>-->
-     
+
     <global-method-security secured-annotations="enabled" />
 </beans:beans>

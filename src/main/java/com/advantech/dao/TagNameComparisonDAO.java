@@ -42,6 +42,7 @@ public class TagNameComparisonDAO extends AbstractDao<TagNameComparisonId, TagNa
     public TagNameComparison findByLampSysTagName(String tagName) {
         return (TagNameComparison) super.createEntityCriteria()
                 .createAlias("line", "line")
+                .createAlias("line.lineType", "lt")
                 .add(Restrictions.eq("id.lampSysTagName.name", tagName))
                 .uniqueResult();
     }

@@ -11,6 +11,7 @@ import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.helper.PropertiesReader;
 import com.advantech.model.Bab;
 import com.advantech.model.BabSettingHistory;
+import com.advantech.model.TagNameComparison;
 import com.advantech.quartzJob.BabDataSaver;
 import com.advantech.service.BabSensorLoginRecordService;
 import com.advantech.service.BabService;
@@ -61,9 +62,12 @@ public class TestService {
 
     @Autowired
     private UserService userService;
-    
+
     @Autowired
     private BabLineTypeFacade bf;
+
+    @Value("${endpoint.quartz.trigger}")
+    private String endpointPollingCron;
 
 //    @Test
     @Transactional
@@ -114,18 +118,15 @@ public class TestService {
     }
 
     @Test
+    @Transactional
+    @Rollback(false)
     public void testHibernateInitialize() {
-//        List<User> l = userService.findByUserNotification("sensor_alarm");
-//
-//        Object[] toMails = l.stream()
-//                .map(User::getEmail).collect(Collectors.toList())
-//                .stream().toArray(String[]::new);
-//
-//        HibernateObjectPrinter.print(toMails);
-
+        TagNameComparison t4 = tagNameComparisonService.findByLampSysTagName("L2-S-4");
+        TagNameComparison t7 = tagNameComparisonService.findByLampSysTagName("L2-S-7");
+        assertNotNull(t4);
+        assertNotNull(t7);
         
-        HibernateObjectPrinter.print(lineBalancingService.findAll());
-        HibernateObjectPrinter.print(bf.generateData());
+//        babService.checkAndInsert(b, endpointPollingCron, t7);
     }
 
 }

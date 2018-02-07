@@ -17,18 +17,8 @@ import org.junit.Test;
  */
 public class TestClass {
 
-    @Test
     public void test() throws IllegalAccessException, InvocationTargetException {
-        Map m = new HashMap();
-        m.put("a", 20);
-        m.put("c", "GG");
-        m.put("b", "B");
-        m.put("d", new BigDecimal(20));
-        m.put("e", 1);
         
-        m.replace("b", "bCCA");
-        
-        System.out.println(m.toString());
     }
 
 

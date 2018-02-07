@@ -8,11 +8,9 @@ package com.advantech.dao;
 import com.advantech.model.Bab;
 import com.advantech.model.ReplyStatus;
 import java.util.List;
-import javax.annotation.PostConstruct;
 import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
 import org.hibernate.Query;
-import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.joda.time.DateTime;
@@ -24,11 +22,6 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public class BabDAO extends AbstractDao<Integer, Bab> implements BasicDAO_1<Bab> {
-
-    @PostConstruct
-    public void BABDAO() {
-
-    }
 
     @Override
     public List<Bab> findAll() {
@@ -84,23 +77,13 @@ public class BabDAO extends AbstractDao<Integer, Bab> implements BasicDAO_1<Bab>
         }
         return c.list();
     }
-
+    
     public List<Bab> findProcessing() {
         Criteria c = super.createEntityCriteria();
-        c.add(Restrictions.isNull("babStatus"));
-        c.add(Restrictions.gt("beginTime", new DateTime().withHourOfDay(0).toDate()));
         c.createAlias("line", "l");
         c.createAlias("l.lineType", "lineType");
-        return c.list();
-    }
-
-    public List<Bab> findProcessingByLine(int line_id) {
-        DateTime d = new DateTime();
-        Criteria c = super.createEntityCriteria();
-        c.add(Restrictions.eq("line.id", line_id));
         c.add(Restrictions.isNull("babStatus"));
-        c.add(Restrictions.between("beginTime", d.withHourOfDay(0).toDate(), d.withHourOfDay(23).toDate()));
-        c.addOrder(Order.asc("id"));
+        c.add(Restrictions.gt("beginTime", new DateTime().withHourOfDay(0).toDate()));
         return c.list();
     }
 

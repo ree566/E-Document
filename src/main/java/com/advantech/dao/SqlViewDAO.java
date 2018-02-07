@@ -113,6 +113,15 @@ public class SqlViewDAO extends AbstractDao<Integer, Object> {
     }
 
     //Get bananceCompare with alarmPercent in /pages/admin/BabTotal page
+    public List<Map> findLineBalanceCompareByBab(int bab_id) {
+        return super.getSession()
+                .createSQLQuery("{CALL usp_GetLineBalanceCompareByBab(:bab_id)}")
+                .setParameter("bab_id", bab_id)
+                .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
+                .list();
+    }
+
+    //Get bananceCompare with alarmPercent in /pages/admin/BabTotal page
     public List<Map> findLineBalanceCompare(String modelName, String lineTypeName) {
         return super.getSession()
                 .createSQLQuery("{CALL usp_GetLineBalanceCompare(:modelName, :lineTypeName)}")
