@@ -26,6 +26,8 @@ import static org.junit.Assert.*;
  * @author Wei.Cheng
  */
 public class WebServiceRVTest {
+    
+    private WebServiceRV rv;
 
     public WebServiceRVTest() {
     }
@@ -47,25 +49,13 @@ public class WebServiceRVTest {
     }
 
     /**
-     * Test of getInstance method, of class WebServiceRV.
-     */
-//    @Test
-    public void testGetInstance() {
-        System.out.println("getInstance");
-        WebServiceRV expResult = null;
-        WebServiceRV result = WebServiceRV.getInstance();
-        assertNotEquals(expResult, result);
-    }
-
-    /**
      * Test of getKanbanUsersForString method, of class WebServiceRV.
      */
 //    @Test
     public void testGetKanbanUsersForString() throws Exception {
         System.out.println("getKanbanUsersForString");
-        WebServiceRV instance = WebServiceRV.getInstance();
         List<String> expResult = new ArrayList();
-        List<String> result = instance.getKanbanUsersForString();
+        List<String> result = rv.getKanbanUsersForString();
         assertNotEquals(expResult, result);
 
 //        for (String st : result) {
@@ -80,9 +70,8 @@ public class WebServiceRVTest {
     public void testGetKanbanWorkId() throws Exception {
         System.out.println("getKanbanWorkId");
         String jobnumber = "A-7275";
-        WebServiceRV instance = WebServiceRV.getInstance();
         String expResult = "";
-        String result = instance.getKanbanWorkId(jobnumber);
+        String result = rv.getKanbanWorkId(jobnumber);
         assertNotEquals(expResult, result);
         out.println(result);
     }
@@ -94,9 +83,8 @@ public class WebServiceRVTest {
     public void testGetModelnameByPo() throws Exception {
         System.out.println("getModelnameByPo");
         String po = "PAGB079ZA";
-        WebServiceRV instance = WebServiceRV.getInstance();
         String expResult = "";
-        String result = instance.getModelnameByPo(po);
+        String result = rv.getModelnameByPo(po);
         assertNotEquals(expResult, result);
         out.println(result);
     }
@@ -108,9 +96,8 @@ public class WebServiceRVTest {
     public void testGetMESUser() {
         System.out.println("getMESUser");
         String jobnumber = "A-7275";
-        WebServiceRV instance = WebServiceRV.getInstance();
         UserOnMes expResult = null;
-        UserOnMes result = instance.getMESUser(jobnumber);
+        UserOnMes result = rv.getMESUser(jobnumber);
         assertNotEquals(expResult, result);
         out.println(new Gson().toJson(result));
     }
@@ -123,9 +110,8 @@ public class WebServiceRVTest {
         System.out.println("getPassStationRecords");
         String po = "PNGC030ZA";
         Integer lineId = 55;
-        WebServiceRV instance = WebServiceRV.getInstance();
         List<PassStation> expResult = null;
-        List<PassStation> result = instance.getPassStationRecords(po, "ASSY");
+        List<PassStation> result = rv.getPassStationRecords(po, "ASSY");
         assertNotEquals(expResult, result);
         for (PassStation p : result) {
             out.println(new Gson().toJson(p));
@@ -138,9 +124,8 @@ public class WebServiceRVTest {
 //    @Test
     public void testGetTestLineTypeUsers() {
         System.out.println("getTestLineTypeUsers");
-        WebServiceRV instance = WebServiceRV.getInstance();
         List<TestRecord> expResult = null;
-        List<TestRecord> result = instance.getTestLineTypeRecords();
+        List<TestRecord> result = rv.getTestLineTypeRecords();
         assertNotEquals(expResult, result);
         for (TestRecord t : result) {
             out.println(new Gson().toJson(t));
@@ -149,7 +134,7 @@ public class WebServiceRVTest {
 
     @Test
     public void testGetTestLineTypeRecord() throws JsonProcessingException{
-        List<TestRecord> l = WebServiceRV.getInstance().getTestLineTypeRecords();
+        List<TestRecord> l = rv.getTestLineTypeRecords();
         assertNotEquals(0, l.size());
         HibernateObjectPrinter.print(l);
     }

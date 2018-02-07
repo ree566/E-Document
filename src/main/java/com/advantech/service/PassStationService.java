@@ -24,6 +24,9 @@ import org.springframework.stereotype.Service;
 @Service
 @Transactional
 public class PassStationService {
+    
+    @Autowired
+    private WebServiceRV rv;
 
     @Autowired
     private PassStationDAO passStationDAO;
@@ -46,7 +49,7 @@ public class PassStationService {
 
     public void checkDifferenceAndInsert(String PO, String type, Integer apsLineId) {
 
-        List<PassStation> l = WebServiceRV.getInstance().getPassStationRecords(PO, type);
+        List<PassStation> l = rv.getPassStationRecords(PO, type);
         Iterator it = l.iterator();
         while (it.hasNext()) {
             PassStation p = (PassStation) it.next();

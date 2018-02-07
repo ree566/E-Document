@@ -33,10 +33,12 @@ public class TestLineTypeRecord extends QuartzJobBean {
 
     private final TestService testService;
     private final TestRecordService testRecordService;
+    private WebServiceRV rv;
 
     public TestLineTypeRecord() {
         testService = (TestService) ApplicationContextHelper.getBean("testService");
         testRecordService = (TestRecordService) ApplicationContextHelper.getBean("testRecordService");
+        rv = (WebServiceRV) ApplicationContextHelper.getBean("webServiceRV");
     }
 
     @Override
@@ -47,7 +49,7 @@ public class TestLineTypeRecord extends QuartzJobBean {
             log.info("No need to record right now.");
         } else {
             //只存下已經刷入的使用者
-            List<com.advantech.model.TestRecord> testLineTypeStatus = separateOfflineUser(WebServiceRV.getInstance().getTestLineTypeRecords());
+            List<com.advantech.model.TestRecord> testLineTypeStatus = separateOfflineUser(rv.getTestLineTypeRecords());
             testRecordService.insert(testLineTypeStatus);
             log.info("Record success");
         }

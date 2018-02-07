@@ -110,7 +110,8 @@
         com.advantech.service,
         com.advantech.controller,
         com.advantech.helper,
-        com.advantech.facade
+        com.advantech.facade,
+        com.advantech.webservice
     " />
     
     <!-- 要使用 @Transactional 時需要 -->

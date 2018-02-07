@@ -17,6 +17,7 @@ import java.util.Objects;
 import org.apache.commons.collections4.CollectionUtils;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 
 /**
@@ -31,6 +32,8 @@ public class CellStation extends QuartzJobBean {
     
     private final PassStationService passStationService;
     
+    private WebServiceRV rv;
+    
     public CellStation(){
         passStationService = (PassStationService) ApplicationContextHelper.getBean("passStationService");
     }
@@ -44,7 +47,7 @@ public class CellStation extends QuartzJobBean {
     private void syncMesDataToDatabase() {
         System.out.println("Begin check PO:" + PO + " / type:" + type);
         //先看紀錄幾筆了
-        List<PassStation> l = WebServiceRV.getInstance().getPassStationRecords(PO, type);
+        List<PassStation> l = rv.getPassStationRecords(PO, type);
 
         //確認已經開始了
         if (!l.isEmpty()) {
@@ -56,7 +59,7 @@ public class CellStation extends QuartzJobBean {
 
     private void checkDifferenceAndInsert(String PO, String type, Integer apsLineId) {
 
-        List<PassStation> l = WebServiceRV.getInstance().getPassStationRecords(PO, type);
+        List<PassStation> l = rv.getPassStationRecords(PO, type);
         Iterator it = l.iterator();
         while(it.hasNext()){
             PassStation p = (PassStation) it.next();

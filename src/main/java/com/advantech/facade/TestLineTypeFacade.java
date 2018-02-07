@@ -51,6 +51,7 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
     
     private Map PEOPLE_NOT_MATCH;
 
+    @Autowired
     private WebServiceRV rv;
 
     private final int TEST_USER_NOT_IN_SYSTEM_SIGN = -1, TEST_USER_NOT_IN_XML_SIGN = 2;
@@ -62,7 +63,6 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
         TEST_STANDARD_MIN = p.getTestProductivityStandardMin().doubleValue();
         TEST_STANDARD_MAX = p.getTestProductivityStandardMax().doubleValue();
         PEOPLE_NOT_MATCH = new HashMap();
-        rv = WebServiceRV.getInstance();
         this.initMap();
 //        this.initAlarmSign();
     }

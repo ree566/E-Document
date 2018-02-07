@@ -8,6 +8,7 @@ package com.advantech.controller;
 
 import com.advantech.webservice.WebServiceRV;
 import javax.servlet.http.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -19,12 +20,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
  */
 @Controller
 public class WebServiceController {
+    
+    @Autowired
+    private WebServiceRV rv;
 
     //Check the webservice data is working or not(for testLineType)
     @RequestMapping(value = "/XMLServlet", method = {RequestMethod.GET}, produces = "text/xml; charset=UTF-8")
     @ResponseBody
     protected String testXml(HttpServletResponse res) throws Exception {
-        WebServiceRV rv = WebServiceRV.getInstance();
         return rv.getKanbanUsersForString().get(1);
     }
 }

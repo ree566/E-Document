@@ -12,12 +12,16 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
  * @author Wei.Cheng
  */
 public class WebServiceTXTest {
+    
+    @Autowired
+    private WebServiceTX tx;
 
     @BeforeClass
     public static void setUpClass() {
@@ -55,7 +59,7 @@ public class WebServiceTXTest {
     @Test
     public void testLogout() {
         out.println("testLogout");
-        WebServiceTX.getInstance().kanbanUserLogout(testJobnumber);
+        tx.kanbanUserLogout(testJobnumber);
     }
 
 }

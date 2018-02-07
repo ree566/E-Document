@@ -12,27 +12,28 @@ import org.slf4j.LoggerFactory;
 import org.tempuri.Service;
 import org.tempuri.ServiceSoap;
 import static com.google.common.base.Preconditions.*;
+import javax.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  *
  * @author Wei.Cheng
  */
+@Component
 public class WebServiceTX {
 
-    private final URL url;//webservice位置(放在專案中，因為url無法讀取，裏頭標籤衝突)
+    private URL url;//webservice位置(放在專案中，因為url無法讀取，裏頭標籤衝突)
     private static final Logger log = LoggerFactory.getLogger(WebServiceTX.class);
+    
+    @Autowired
+    private WebServiceRV rv;
 
-    private static WebServiceTX instance;
-
-    private WebServiceTX() {
-        url = this.getClass().getClassLoader().getResource("wsdl/Service.wsdl");
-    }
-
-    public static WebServiceTX getInstance() {
-        if (instance == null) {
-            instance = new WebServiceTX();
-        }
-        return instance;
+    @PostConstruct
+    private void init() {
+        Class clz = this.getClass();
+        log.info(clz.getName() + " init url");
+        url = clz.getClassLoader().getResource("wsdl/Service.wsdl");
     }
 
     //Get data from WebService
@@ -49,7 +50,6 @@ public class WebServiceTX {
     }
 
     public void kanbanUserLogin(String jobnumber) {
-        WebServiceRV rv = WebServiceRV.getInstance();
         UserOnMes user = rv.getMESUser(jobnumber);
 
         checkUserIsAvailable(user);
@@ -72,7 +72,6 @@ public class WebServiceTX {
     }
 
     public void kanbanUserLogout(String jobnumber) {
-        WebServiceRV rv = WebServiceRV.getInstance();
         String workId = rv.getKanbanWorkId(jobnumber);
         UserOnMes user = rv.getMESUser(jobnumber);
 

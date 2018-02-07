@@ -8,6 +8,7 @@ package com.advantech.service;
 import com.advantech.model.Test;
 import com.advantech.dao.TestDAO;
 import com.advantech.model.TestTable;
+import com.advantech.webservice.WebServiceTX;
 import static com.google.common.base.Preconditions.*;
 import java.util.List;
 import org.joda.time.DateTime;
@@ -28,6 +29,9 @@ public class TestService {
 
     @Autowired
     private TestTableService testTableService;
+    
+    @Autowired
+    private WebServiceTX tx;
 
     public List<Test> findAll() {
         return testDAO.findAll();
@@ -48,7 +52,7 @@ public class TestService {
         Test t = new Test(table, jobnumber);
         t.setLastUpdateTime(new DateTime().toDate());
         this.insert(t);
-//        WebServiceTX.getInstance().kanbanUserLogin(jobnumber);
+        tx.kanbanUserLogin(jobnumber);
         return 1;
     }
 

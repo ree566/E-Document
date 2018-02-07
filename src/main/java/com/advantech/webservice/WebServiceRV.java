@@ -18,6 +18,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import javax.annotation.PostConstruct;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
@@ -29,6 +30,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 import org.tempuri.RvResponse;
 import org.tempuri.Service;
 import org.tempuri.ServiceSoap;
@@ -41,22 +43,17 @@ import org.w3c.dom.NodeList;
  *
  * @author Wei.Cheng
  */
+@Component
 public class WebServiceRV {
 
-    private final URL url;//webservice位置(放在專案中，因為url無法讀取，裏頭標籤衝突)
+    private URL url;//webservice位置(放在專案中，因為url無法讀取，裏頭標籤衝突)
     private static final Logger log = LoggerFactory.getLogger(WebServiceRV.class);
 
-    private static WebServiceRV instance;
-
-    private WebServiceRV() {
-        url = this.getClass().getClassLoader().getResource("wsdl/Service.wsdl");
-    }
-
-    public static WebServiceRV getInstance() {
-        if (instance == null) {
-            instance = new WebServiceRV();
-        }
-        return instance;
+    @PostConstruct
+    private void init() {
+        Class clz = this.getClass();
+        log.info(clz.getName() + " init url");
+        url = clz.getClassLoader().getResource("wsdl/Service.wsdl");
     }
 
     //Get data from WebService

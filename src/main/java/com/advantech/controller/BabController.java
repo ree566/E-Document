@@ -47,6 +47,9 @@ public class BabController {
 
     @Autowired
     private BabPcsDetailHistoryService babPcsDetailHistoryService;
+    
+    @Autowired
+    private WebServiceRV rv;
 
     @RequestMapping(value = "/findByMultipleClause", method = {RequestMethod.GET})
     @ResponseBody
@@ -62,7 +65,7 @@ public class BabController {
     @RequestMapping(value = "/findModelNameByPo", method = {RequestMethod.GET})
     @ResponseBody
     protected String findModelNameByPo(@RequestParam String po) {
-        String modelname = WebServiceRV.getInstance().getModelnameByPo(po);
+        String modelname = rv.getModelnameByPo(po);
         return (modelname == null ? "data not found" : convertString(modelname));
     }
 
