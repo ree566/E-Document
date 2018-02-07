@@ -176,7 +176,7 @@ public class HibernateTest {
         worktimeUploadMesService.delete(w);
     }
 
-    @Test
+//    @Test
     @Transactional
     @Rollback(true)
     public void testLastStatus() {
@@ -189,5 +189,7 @@ public class HibernateTest {
         System.out.println(Objects.equals((int) w.getPartNoAttributeMaintain(), (int) rowLastStatus.getPartNoAttributeMaintain()));
 
     }
+
+    
 
 }

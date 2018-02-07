@@ -649,7 +649,7 @@
         </h5>
         <c:if test="${isAdmin || isAuthor || isContributor}">
             <h5 style="color:red" class="form-control">
-                ※料號負責人、徒程、SOP在該欄位有更動時時會上傳至MES，請務必確認資料是否正確
+                ※料號負責人、途程、SOP及料號屬性質在該欄位有更動時會上傳至MES，請務必確認資料是否正確
             </h5>
         </c:if>
     </div>

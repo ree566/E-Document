@@ -28,7 +28,7 @@
                 {label: '1 Hr', name: "1 Hr"},
                 {label: '2 Hrs', name: "2 Hrs"},
                 {label: '4 Hrs', name: "4 Hrs"},
-                {label: '5 Hrs', name: "5 Hrs"},
+//                {label: '5 Hrs', name: "5 Hrs"},
                 {label: '6 Hrs', name: "6 Hrs"},
                 {label: '8 Hrs', name: "8 Hrs"},
                 {label: '10 Hrs', name: "10 Hrs"},
