@@ -223,8 +223,8 @@
                         getDetails(st);
                     }, 500);
                 });
-                
-                $("#log-toggle").click(function(){
+
+                $("#log-toggle").click(function () {
                     infoArea.hide();
                 });
 
@@ -485,6 +485,7 @@
                                             "(" + bab.id + ")" +
                                             " / po:" + bab.po +
                                             " / modelName:" + bab.modelName +
+                                            (bab.ispre == 0 ? "" : " / (前置)") +
                                             "</div>");
                                 }
                             }

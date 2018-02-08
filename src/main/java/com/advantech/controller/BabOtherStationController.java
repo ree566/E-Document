@@ -8,15 +8,13 @@
 package com.advantech.controller;
 
 import com.advantech.model.Bab;
+import com.advantech.model.BabAlarmHistory;
 import com.advantech.model.BabSettingHistory;
-import com.advantech.model.TagNameComparison;
+import com.advantech.model.ReplyStatus;
+import com.advantech.service.BabAlarmHistoryService;
 import com.advantech.service.BabSensorLoginRecordService;
 import com.advantech.service.BabSettingHistoryService;
 import com.advantech.service.BabService;
-import com.advantech.service.TagNameComparisonService;
-import java.io.*;
-import javax.servlet.http.*;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,12 +37,12 @@ public class BabOtherStationController {
 
     @Autowired
     private BabSettingHistoryService babSettingHistoryService;
-    
+
     @Autowired
     private BabSensorLoginRecordService babSensorLoginRecordService;
 
     @Autowired
-    private TagNameComparisonService tagNameComparisonService;
+    private BabAlarmHistoryService babAlarmHistoryService;
 
     @Autowired
     private BabService babService;
@@ -74,11 +72,20 @@ public class BabOtherStationController {
 
         if (setting.getStation() == b.getPeople()) { // if the station is the last station
             babService.closeBab(b);
+            BabAlarmHistory bah = babAlarmHistoryService.findByBab(bab_id);
+            if (bah != null && bah.getTotalPcs() < 10) {
+                //Get object again and set reply flag
+                //Get bab again because object bab close by procedure not by update object itself
+                //bab object is old, babStatus is null
+                b = babService.findByPrimaryKey(bab_id);
+                b.setReplyStatus(ReplyStatus.NO_NEED_TO_REPLY);
+                babService.update(b);
+            }
 //                            Endpoint6.syncAndEcho();
         } else {
-            babService.stationComplete(b, setting); 
+            babService.stationComplete(b, setting);
         }
-        
+
         return "success";
     }
 

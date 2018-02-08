@@ -209,10 +209,10 @@ public class CronTrigMod {
 
     public void scheduleJob(Class jobClass, JobKey jobKey, TriggerKey trigKey, String crontrigger) throws SchedulerException {
 
-        System.out.println("jobClass: " + jobClass);
-        System.out.println("jobKey: " + jobKey);
-        System.out.println("trigKey: " + trigKey);
-        System.out.println("crontrigger: " + crontrigger);
+//        System.out.println("jobClass: " + jobClass);
+//        System.out.println("jobKey: " + jobKey);
+//        System.out.println("trigKey: " + trigKey);
+//        System.out.println("crontrigger: " + crontrigger);
 
         if (!isKeyInScheduleExist(jobKey)) {
             JobDetail job = JobBuilder.newJob(jobClass).withIdentity(jobKey).build();

@@ -52,7 +52,6 @@ public class PollingBabAndTestResult extends QuartzJobBean {
          Query: select * from LS_GetSenRealTime Parameters: []
          */
         try {
-            System.out.println("PollingBabAndTestResult");
             socket.sendAll(getData());
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -60,7 +59,6 @@ public class PollingBabAndTestResult extends QuartzJobBean {
     }
 
     public static String getData() {
-        System.out.println(new Gson().toJson(tF.getJSONObject()));
         return new JSONArray().put(tF.getJSONObject())
                 .put(bF.getJSONObject()).toString();
     }

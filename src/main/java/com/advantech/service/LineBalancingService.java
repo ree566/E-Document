@@ -42,7 +42,7 @@ public class LineBalancingService {
 
     @Autowired
     private PropertiesReader p;
-    
+
     private Integer balanceRoundDigit;
     private Double balnDiff;
 
@@ -54,12 +54,12 @@ public class LineBalancingService {
 
     @Autowired
     private UserDAO userDAO;
-    
+
     @Autowired
     private MailManager mailManager;
-    
+
     @PostConstruct
-    private void init(){
+    private void init() {
         log.info(LineBalancingService.class.getName() + " init inner paramaters.");
         balanceRoundDigit = p.getBabLineBalanceRoundDigit();
         balnDiff = p.getBabLineBalanceAlarmDiff();
@@ -123,27 +123,18 @@ public class LineBalancingService {
         return lineBalanceDAO.delete(pojo);
     }
 
-    public Double caculateLineBalance(List<BabAvg> balances) throws JSONException {
-
-        double max = 0.0;
-        double sum = 0.0;
-        double balancing = -1;
-
+    public double caculateLineBalance(List<BabAvg> balances) throws JSONException {
+        double balancing = 0.0;
         if (balances != null && !balances.isEmpty()) {
+            double max = balances.stream().mapToDouble(i -> i.getAverage()).max().getAsDouble();
+            double sum = balances.stream().mapToDouble(i -> i.getAverage()).sum();
             int babPeople = balances.size();
-            for (int a = 0; a < babPeople; a++) {//Find the max avg and sum the avgs.
-                double avg = balances.get(a).getAverage();
-                if (max < avg) {
-                    max = avg;
-                }
-                sum += avg;
-            }
             balancing = (max != 0 ? caculateLineBalance(max, sum, babPeople) : 0.0);
         }
         return balancing;
     }
 
-    public Double caculateLineBalance(Double max, Double sum, int people) {
+    public double caculateLineBalance(double max, double sum, int people) {
         return new BigDecimal(sum / (max * people))
                 .setScale(balanceRoundDigit, BigDecimal.ROUND_HALF_DOWN)
                 .doubleValue();

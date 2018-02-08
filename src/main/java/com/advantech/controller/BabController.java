@@ -6,13 +6,12 @@
 package com.advantech.controller;
 
 import com.advantech.datatable.DataTableResponse;
-import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.model.Bab;
-import com.advantech.model.BabSettingHistory;
 import com.advantech.model.BabStatus;
+import com.advantech.model.view.BabAvg;
 import com.advantech.service.BabPcsDetailHistoryService;
 import com.advantech.service.BabService;
-import com.advantech.service.BabSettingHistoryService;
+import com.advantech.service.LineBalancingService;
 import com.advantech.service.SqlViewService;
 import com.advantech.webservice.WebServiceRV;
 import static com.google.common.base.Preconditions.*;
@@ -21,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -47,7 +47,10 @@ public class BabController {
 
     @Autowired
     private BabPcsDetailHistoryService babPcsDetailHistoryService;
-    
+
+    @Autowired
+    private LineBalancingService lineBalancingService;
+
     @Autowired
     private WebServiceRV rv;
 
@@ -115,15 +118,24 @@ public class BabController {
 
     @RequestMapping(value = "/findLineBalanceCompareByBab", method = {RequestMethod.GET})
     @ResponseBody
-    public Map findLineBalanceCompare(
+    public DataTableResponse findLineBalanceCompare(
             @RequestParam int bab_id
     ) {
+        Bab b = babService.findByPrimaryKey(bab_id);
         List<Map> l = sqlViewService.findLineBalanceCompareByBab(bab_id);
-        Map m = new HashMap();
-        m.put("ctrlAvgs", 0);
-        m.put("expAvgs", 0);
-        m.put("data", l);
-        return m;
+        Map m = l.get(0);
+
+        m.put("exp_avgs",
+                b.getBabStatus() == BabStatus.CLOSED ? getAvg(sqlViewService.findBabAvgInHistory(bab_id))
+                : b.getBabStatus() == null ? getAvg(sqlViewService.findBabAvg(bab_id)) : 0);
+
+        Integer ctrl_bab = (Integer) m.get("ctrl_id");
+        m.put("ctrl_avgs", ctrl_bab == null ? 0 : getAvg(sqlViewService.findBabAvgInHistory(ctrl_bab)));
+        return new DataTableResponse(l);
+    }
+
+    private Double getAvg(List<BabAvg> l) {
+        return lineBalancingService.caculateLineBalance(l);
     }
 
     @RequestMapping(value = "/findLineBalanceCompare", method = {RequestMethod.GET})
@@ -153,5 +165,5 @@ public class BabController {
     public DataTableResponse findSensorStatusPerStationToday() {
         return new DataTableResponse(sqlViewService.findSensorStatusPerStationToday());
     }
-    
+
 }

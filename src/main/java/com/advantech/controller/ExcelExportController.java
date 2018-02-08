@@ -69,19 +69,12 @@ public class ExcelExportController {
 
         String sD = fmt.print(startDate);
         String eD = fmt.print(endDate);
-        
-        System.out.println(sD);
-        System.out.println(eD);
 
         List<Map> data = fitData(reportService.getCountermeasureAndPersonalAlm(sD, eD));
         List<Map> emptyRecords = fitData(reportService.getEmptyRecordDownExcel(sD, eD));
         
-        System.out.println(data.size());
-
         List list2 = transformEfficiencyReportPattern(data);//把各站亮燈頻率合併為橫式(類似 sql 的 Group by格式)
         List list3 = emptyRecords;
-        
-        System.out.println(list2.size());
 
         if (data.isEmpty()) {
             res.setContentType("text/html");

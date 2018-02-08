@@ -82,7 +82,7 @@ public class TestService {
     public int delete(String jobnumber) {
         Test t = testDAO.findByJobnumber(jobnumber);
         this.delete(t);
-//        WebServiceTX.getInstance().kanbanUserLogout(jobnumber);
+        tx.kanbanUserLogout(jobnumber);
         return 1;
     }
 

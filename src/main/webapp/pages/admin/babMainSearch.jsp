@@ -622,8 +622,8 @@
                         var expId = jsonObj.exp_id;
                         var exp_isused = jsonObj.exp_isused;
 
-                        var ctrlAvgs = json.ctrlAvgs;
-                        var expAvgs = json.expAvgs;
+                        var ctrlAvgs = jsonObj["ctrl_avgs"];
+                        var expAvgs = jsonObj["exp_avgs"];
 
                         $("#totalDetail, #totalDetail > div").show();
 

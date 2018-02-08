@@ -7,7 +7,6 @@ package com.advantech.endpoint;
 
 import com.advantech.helper.CronTrigMod;
 import com.advantech.helper.PropertiesReader;
-import com.advantech.quartzJob.PollingBabAndTestResult;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -45,11 +44,6 @@ public abstract class BasicHandler {
 
     ///Brocast the servermessage to all online users.
     public void sendAll(String msg) {
-        System.out.println("Brocade message...");
-
-        if (sessions.isEmpty()) {
-            System.out.println("Session is empty");
-        }
         try {
             /* Send the new rate to all open WebSocket sessions */
             ArrayList<WebSocketSession> closedSessions = new ArrayList<>();

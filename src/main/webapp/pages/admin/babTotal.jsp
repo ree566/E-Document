@@ -310,7 +310,7 @@
 
                 $(window).on("focus", function () {
                     autoReloadInterval = setInterval(function () {
-                        table2.ajax.reloasetInterd(function (json) {
+                        table2.ajax.reload(function (json) {
                             generateLineBalance(lineType);
                         });
                     }, 10 * 1000);

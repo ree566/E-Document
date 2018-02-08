@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import static java.util.stream.Collectors.toList;
 import javax.annotation.PostConstruct;
 import org.json.JSONArray;
@@ -131,27 +132,17 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
                     isSomeBabUnderStandard = true;
 
                 } else {
-                    double maxTimeDiff = -1;
-                    double sumTimeDiff = -1;
-                    int dataindex = -1;
-                    for (int i = 0, length = currentGroupSum; i < length; i++) {//for loop find the maxium number
-                        //jsonObject的getInt所用參數不一樣，假使是取單台要getInt(diff)，整套則是getInt(average)
-                        Double timeDiff = status.get(i).getDiff() * 1.0;
-                        if (maxTimeDiff < timeDiff) {
-                            maxTimeDiff = timeDiff;
-                            dataindex = i;
-                        }
-                        sumTimeDiff += timeDiff;
-                    }
+                    BabLastGroupStatus maxStatus = status.stream().max((p1, p2) -> Double.compare(p1.getDiff(), p2.getDiff())).get();
+                    double diffTimeSum = status.stream().mapToDouble(BabLastGroupStatus::getDiff).sum();
 
-                    boolean isUnderBalance = checkIsUnderBalance(bab, maxTimeDiff, sumTimeDiff);
+                    boolean isUnderBalance = checkIsUnderBalance(bab, maxStatus.getDiff(), diffTimeSum);
 
                     if (isUnderBalance) {
                         isSomeBabUnderStandard = true;
                     }
-                    for (int i = 0; i < currentGroupSum; i++) {
-                        BabLastGroupStatus bgs = status.get(i);
-                        bgs.setIsmax(isUnderBalance ? (dataindex == i) : false);
+
+                    for (BabLastGroupStatus bgs : status) {
+                        bgs.setIsmax(isUnderBalance && Objects.equals(bgs, maxStatus));
                         transBabData.put(new JSONObject(bgs));
                     }
                 }
@@ -176,17 +167,18 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
         switch (lineTypeName) {
             case "ASSY":
                 double aBaln = lineBalanceService.caculateLineBalance(max, sum, b.getPeople());
+//                System.out.printf("bab_id %d / Max: %.3f / Sum: %.3f / BANANCE: %.3f / STANDARD: %.3f \n", b.getId(), max, 
+//                        sum, aBaln, ASSY_STANDARD);
                 return (Double.compare(aBaln, ASSY_STANDARD) < 0);
             case "Packing":
                 double pBaln = lineBalanceService.caculateLineBalance(max, sum, b.getPeople());
+//                System.out.printf("bab_id %d / Max: %.3f / Sum: %.3f / BANANCE: %.3f / STANDARD: %.3f \n", b.getId(), max,
+//                        sum, pBaln, ASSY_STANDARD);
                 return (Double.compare(pBaln, PKG_STANDARD) < 0);
             case "Cell":
                 Worktime w = worktimes.stream().filter(o -> o.getModelName().equals(b.getModelName())).findFirst().orElse(null);
                 checkState(w != null, "Can't find worktime setting on modelName " + b.getModelName());
                 double cBaln = max / w.getAssyTime().doubleValue();
-
-                System.out.printf("Cell max: %f / Standard: %f / PRODUCTIVITY: %f / standard: %f.\n",
-                        max, w.getAssyTime().doubleValue(), cBaln, CELL_STANDARD);
                 return (Double.compare(cBaln, CELL_STANDARD) < 0);
             default:
                 return false;

@@ -60,7 +60,7 @@ import org.springframework.transaction.annotation.Transactional;
     "classpath:servlet-context.xml"
 })
 @RunWith(SpringJUnit4ClassRunner.class)
-public class HibernateTest {
+public class TestHibernate {
 
     @Autowired
     SessionFactory sessionFactory;

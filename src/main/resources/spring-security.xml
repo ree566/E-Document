@@ -72,7 +72,7 @@
             <password-encoder ref="customPasswordEncoder" />
         </authentication-provider>
     </authentication-manager>
-      
+   
     <beans:bean id="customUserDetailsService" class="com.advantech.service.CustomUserDetailsService" />
 
     <global-method-security secured-annotations="enabled" />

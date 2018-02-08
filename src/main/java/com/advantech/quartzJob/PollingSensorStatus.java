@@ -7,7 +7,6 @@
 package com.advantech.quartzJob;
 
 import com.advantech.endpoint.Endpoint;
-import com.advantech.endpoint.Endpoint2;
 import com.advantech.helper.ApplicationContextHelper;
 import com.advantech.service.FbnService;
 import com.google.gson.Gson;
@@ -27,8 +26,8 @@ public class PollingSensorStatus extends QuartzJobBean {
     private static final Logger log = LoggerFactory.getLogger(PollingSensorStatus.class);
     private static final FbnService fbnService;
     private static Endpoint socket;
-    
-    static{
+
+    static {
         gson = new Gson();
         fbnService = (FbnService) ApplicationContextHelper.getBean("fbnService");
         socket = (Endpoint) ApplicationContextHelper.getBean("endpoint");
@@ -54,7 +53,7 @@ public class PollingSensorStatus extends QuartzJobBean {
         }
     }
 
-    public String getData() {
+    public static String getData() {
         return gson.toJson(fbnService.getSensorCurrentStatus());
     }
 }
