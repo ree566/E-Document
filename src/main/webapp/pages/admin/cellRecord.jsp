@@ -181,8 +181,8 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                         headerOffset: 50
                     },
                     "ajax": {
-                        "url": "../../CellSearch",
-                        "type": "Post",
+                        "url": "<c:url value="/CellController/findByDate" />",
+                        "type": "GET",
                         data: {
                             action: "getHistory",
                             startDate: $("#fini").val(),
@@ -191,11 +191,11 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                     },
                     "columns": [
                         {data: "id", visible: false},
-                        {data: "lineId", visible: false},
-                        {data: "PO"},
-                        {data: "Model_name"},
-                        {data: "lineName"},
-                        {data: "TYPE"},
+                        {data: "line.id", visible: false},
+                        {data: "po"},
+                        {data: "modelName"},
+                        {data: "line.name"},
+                        {data: "lineType.name"},
                         {data: "failPercent"},
                         {data: "total"},
                         {data: "isused"},

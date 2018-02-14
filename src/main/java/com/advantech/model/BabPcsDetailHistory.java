@@ -7,6 +7,7 @@ package com.advantech.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.voodoodyne.jackson.jsog.JSOGGenerator;
 import java.io.Serializable;
 import java.util.Date;
@@ -30,11 +31,12 @@ import org.springframework.format.annotation.DateTimeFormat;
  */
 @Entity
 @Table(name = "BabPcsDetailHistory")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class BabPcsDetailHistory implements Serializable {
 
     private int id;
     private Bab bab;
-    private String tagName;
+    private SensorTransform tagName;
     private int station;
     private int groupid;
     private int diff;
@@ -61,12 +63,13 @@ public class BabPcsDetailHistory implements Serializable {
         this.bab = bab;
     }
 
-    @Column(name = "tagName", length = 50, nullable = false)
-    public String getTagName() {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tagName", nullable = false)
+    public SensorTransform getTagName() {
         return tagName;
     }
 
-    public void setTagName(String tagName) {
+    public void setTagName(SensorTransform tagName) {
         this.tagName = tagName;
     }
 

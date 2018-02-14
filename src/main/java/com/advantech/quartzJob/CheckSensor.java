@@ -66,6 +66,10 @@ public class CheckSensor extends QuartzJobBean {
     //定時查看sensor資料是否又暫停or異常
     private void checkSensorAndSendMail() throws MessagingException {
 
+        if (responsors.isEmpty()) {
+            return;
+        }
+
         List<SensorCurrentGroupStatus> sensorStatus = sqlViewService.findSensorCurrentGroupStatus(bab.getId());
         DateTime currentTime = new DateTime();
 

@@ -77,7 +77,7 @@ public class FbnService {
         return fbnDAO.getAbnormalData(BABid);
     }
 
-    public boolean sensorDataClean(String date) {
+    public int sensorDataClean(String date) {
         return fbnDAO.sensorDataClean(date);
     }
 }

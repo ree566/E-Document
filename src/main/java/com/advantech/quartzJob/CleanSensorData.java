@@ -25,10 +25,10 @@ public class CleanSensorData extends QuartzJobBean {
     private static final Logger log = LoggerFactory.getLogger(CleanSensorData.class);
     private final DatetimeGenerator dg = new DatetimeGenerator("yyyy-MM-dd");
     private static final int SPECIFY_DAY = 7;
-    
+
     private final FbnService fbnService;
-    
-    public CleanSensorData(){
+
+    public CleanSensorData() {
         fbnService = (FbnService) ApplicationContextHelper.getBean("fbnService");
     }
 
@@ -37,6 +37,7 @@ public class CleanSensorData extends QuartzJobBean {
         DateTime d = new DateTime();
         d = d.minusDays(SPECIFY_DAY);
         String date = dg.dateFormatToString(d);
+        log.info("Begin clean sensor data date before " + date);
         fbnService.sensorDataClean(date);
     }
 }

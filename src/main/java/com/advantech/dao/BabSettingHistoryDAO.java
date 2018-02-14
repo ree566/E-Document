@@ -115,7 +115,9 @@ public class BabSettingHistoryDAO extends AbstractDao<Integer, BabSettingHistory
                 + "select min(bsh1.id) from BabSettingHistory bsh1 "
                 + "join bsh1.bab b2 join b2.line l2 "
                 + "where b2.babStatus is null "
-                + "and l2.name = :lineName "
+                + ("CELL".equals(lineName)
+                ? "and upper(l2.name) like CONCAT(upper(:lineName), '%')"
+                : "and l2.name = :lineName ")
                 + "and bsh1.lastUpdateTime is null "
                 + "group by bsh1.tagName) "
                 + "order by bsh.tagName")

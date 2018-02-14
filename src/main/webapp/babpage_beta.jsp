@@ -167,10 +167,7 @@
                 $("#saveInfo").click(function () {
                     var jobnumber = $("#jobnumber").val();
                     var tagName = $("#tagName").val();
-
-                    if (confirm("確定您所填入的資料無誤?\n" + "Sensor代號:" + tagName + "\n工號:" + jobnumber + "\n")) {
-                        saveUserStatus(tagName, jobnumber);
-                    }
+                    saveUserStatus(tagName, jobnumber);
                 });
 
                 //當找不到資訊時，相關event註冊到此(只有saveInfo後後續event才會依序註冊)
@@ -417,6 +414,10 @@
 
                 if ($("#userSitefloorSelect").val() != tagName.line.floor.name) {
                     showMsg("Sensor's 不在您所屬的樓層");
+                    return false;
+                }
+
+                if (!confirm("確定您所填入的資料無誤?\n" + "Sensor代號:" + tagName.id.lampSysTagName.name + "\n工號:" + jobnumber + "\n")) {
                     return false;
                 }
 

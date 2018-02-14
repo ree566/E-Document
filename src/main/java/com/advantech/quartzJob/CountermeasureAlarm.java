@@ -18,6 +18,7 @@ import com.advantech.service.FloorService;
 import com.advantech.service.UserService;
 import static com.google.common.base.Preconditions.checkState;
 import java.text.DecimalFormat;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,10 +66,16 @@ public class CountermeasureAlarm extends QuartzJobBean {
 
     public void sendMail() throws Exception {
         List<User> ccMailLoop = userService.findByUserNotificationAndNotLineOwner(notificationName);
+        String[] ccMailUsers = ccMailLoop.stream().map(u -> u.getUsername()).toArray(String[]::new);
         List<Floor> floors = floorService.findAll();
         for (Floor f : floors) {
             List<User> mailLoop = userService.findLineOwnerBySitefloor(f.getId());
             if (!mailLoop.isEmpty()) {
+                String[] mailUsers = mailLoop.stream().map(u -> u.getUsername()).toArray(String[]::new);
+                log.info("Begin send countermeasure alarm to sitefloor " + f.getName());
+                log.info("Line owners " + Arrays.toString(mailUsers));
+                log.info("CC users " + Arrays.toString(ccMailUsers));
+
                 // when user sitefloor is not setting, turn user's mail to mail cc loop
                 String mailBody = this.generateMailBody(f.getId());
                 if (!"".equals(mailBody)) {
@@ -76,7 +83,7 @@ public class CountermeasureAlarm extends QuartzJobBean {
                     mailManager.sendMail(mailLoop, ccMailLoop, subject + f.getName() + "F", mailBody);
                 }
             }
-        };
+        }
     }
 
     public String generateMailBody(int floor_id) {

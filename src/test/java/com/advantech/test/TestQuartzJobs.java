@@ -5,7 +5,9 @@
  */
 package com.advantech.test;
 
-import com.advantech.quartzJob.BabDataSaver;
+import com.advantech.quartzJob.CleanSensorData;
+import com.advantech.quartzJob.CountermeasureAlarm;
+import com.advantech.quartzJob.HandleUncloseBab;
 import com.advantech.quartzJob.DataBaseInit;
 import com.advantech.quartzJob.TestLineTypeRecord;
 import org.junit.Test;
@@ -31,16 +33,28 @@ public class TestQuartzJobs {
         TestLineTypeRecord tr = new TestLineTypeRecord();
         tr.executeInternal(null);
     }
-    
-    @Test
+
+//    @Test
     public void testDbInit() throws JobExecutionException {
         DataBaseInit d = new DataBaseInit();
         d.executeInternal(null);
     }
-    
+
 //    @Test
-    public void testBabDataSaver() throws JobExecutionException{
-        BabDataSaver b = new BabDataSaver();
+    public void testBabDataSaver() throws JobExecutionException {
+        HandleUncloseBab b = new HandleUncloseBab();
         b.executeInternal(null);
+    }
+
+//    @Test
+    public void testCleanSensorData() throws JobExecutionException {
+        CleanSensorData c = new CleanSensorData();
+        c.executeInternal(null);
+    }
+    
+    @Test
+    public void testCountermeasureAlarm() throws JobExecutionException {
+        CountermeasureAlarm c = new CountermeasureAlarm();
+        c.executeInternal(null);
     }
 }

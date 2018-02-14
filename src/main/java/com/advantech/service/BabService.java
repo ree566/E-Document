@@ -44,7 +44,7 @@ public class BabService {
 
     @Autowired
     private CellLineTypeRecordService cellLineTypeRecordService;
-    
+
     @Autowired
     private LineTypeService lineTypeService;
 
@@ -81,6 +81,10 @@ public class BabService {
         return babDAO.findProcessing();
     }
 
+    public List<Bab> findProcessingAndNotPre() {
+        return babDAO.findProcessingAndNotPre();
+    }
+
     public List<Bab> findProcessingByTagName(String tagName) {
         return babDAO.findProcessingByTagName(tagName);
     }
@@ -96,6 +100,10 @@ public class BabService {
             Hibernate.initialize(b.getLine().getUsers());
         });
         return l;
+    }
+
+    public List<Bab> findCell(DateTime sD, DateTime eD) {
+        return babDAO.findCell(sD, eD);
     }
 
     public int insert(Bab pojo) {

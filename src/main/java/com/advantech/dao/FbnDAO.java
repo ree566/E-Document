@@ -64,12 +64,12 @@ public class FbnDAO extends AbstractDao<Integer, Fbn> {
                 .list();
     }
 
-    public boolean sensorDataClean(String date) {
+    public int sensorDataClean(String date) {
         super.getSession()
-                .createSQLQuery("{CALL sensorDataCleanProc(:date)}")
+                .createSQLQuery("{CALL usp_DeleteSensorData(:date)}")
                 .setParameter("date", date)
                 .executeUpdate();
-        return true;
+        return 1;
     }
 
 }

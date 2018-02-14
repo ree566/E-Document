@@ -11,6 +11,7 @@ import com.advantech.model.TagNameComparison;
 import com.advantech.model.TagNameComparisonId;
 import java.util.List;
 import org.hibernate.Criteria;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 

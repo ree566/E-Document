@@ -22,13 +22,13 @@ import org.springframework.scheduling.quartz.QuartzJobBean;
  * @author Wei.Cheng Auto close bab and set to abnormal sign on bab isused
  * 避免Auto close on working time, 使用者無法得知系統已經自動關閉逾期未關閉工單
  */
-public class BabDataSaver extends QuartzJobBean {
+public class HandleUncloseBab extends QuartzJobBean {
 
-    private static final Logger log = LoggerFactory.getLogger(BabDataSaver.class);
+    private static final Logger log = LoggerFactory.getLogger(HandleUncloseBab.class);
 
     private final BabService babService;
 
-    public BabDataSaver() {
+    public HandleUncloseBab() {
         babService = (BabService) ApplicationContextHelper.getBean("babService");
     }
 

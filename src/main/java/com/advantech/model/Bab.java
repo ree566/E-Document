@@ -61,7 +61,7 @@ public class Bab implements Serializable {
     @JsonIgnore
     private Set<Countermeasure> countermeasures = new HashSet<Countermeasure>(0);
 
-    @JsonIgnore
+//    @JsonIgnore
     private Set<BabPcsDetailHistory> babPcsDetailHistorys = new HashSet<BabPcsDetailHistory>(0);
 
 //    @JsonIgnore

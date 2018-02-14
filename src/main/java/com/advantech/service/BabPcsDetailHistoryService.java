@@ -9,6 +9,7 @@ import com.advantech.dao.BabPcsDetailHistoryDAO;
 import com.advantech.model.BabPcsDetailHistory;
 import java.util.List;
 import java.util.Map;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +31,10 @@ public class BabPcsDetailHistoryService {
 
     public List<Map> findByBabForMap(int bab_id) {
         return babPcsDetailHistoryDAO.findByBabForMap(bab_id);
+    }
+
+    public List<BabPcsDetailHistory> findWithBabAndAlarmDetails(String modelName, String lineType, DateTime sD, DateTime eD) {
+        return babPcsDetailHistoryDAO.findWithBabAndAlarmDetails(modelName, lineType, sD, eD);
     }
 
 }

@@ -97,19 +97,7 @@ public class SensorDetect extends ProcessingBabDetector {
 
     @Override
     public List<Bab> getProcessingBab() {
-        List<Bab> l = babService.findProcessing();
-        return removePreBab(l);
+        return babService.findProcessingAndNotPre();
     }
 
-    private List<Bab> removePreBab(List<Bab> l) {
-        Iterator it = l.iterator();
-        while (it.hasNext()) {
-            Bab b = (Bab) it.next();
-            if (b.getIspre() == 1) {
-                it.remove();
-            }
-        }
-
-        return l;
-    }
 }

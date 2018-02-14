@@ -12,8 +12,8 @@ import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.model.AlarmBabAction;
 import com.advantech.model.Bab;
 import com.advantech.model.BabAlarmHistory;
+import com.advantech.model.BabPcsDetailHistory;
 import com.advantech.model.BabSensorLoginRecord;
-import com.advantech.model.BabSettingHistory;
 import com.advantech.model.BabStatus;
 import com.advantech.model.CountermeasureEvent;
 import com.advantech.model.ReplyStatus;
@@ -29,18 +29,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.hibernate.Criteria;
-import org.hibernate.FetchMode;
 import org.hibernate.Hibernate;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.DetachedCriteria;
-import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
-import org.hibernate.criterion.Subqueries;
 import org.hibernate.transform.Transformers;
-import org.joda.time.DateTime;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -350,31 +345,52 @@ public class TestHibernate {
         HibernateObjectPrinter.print(s2);
     }
 
-    @Test
+//    @Test
     @Transactional
     @Rollback(true)
     public void testQuery2() {
-        String lineName = "L2";
-        Session session = sessionFactory.getCurrentSession();
-        
-        DetachedCriteria subquery = DetachedCriteria.forClass(BabSettingHistory.class);
-        subquery.createAlias("bab", "b")
-                .createAlias("b.line", "l")
-                .add(Restrictions.isNull("b.babStatus"))
-                .add(Restrictions.gt("beginTime", new DateTime().withHourOfDay(0).toDate()))
-                .setProjection(Projections.projectionList()
-                        .add(Projections.min("b.id"))
-                        .add(Projections.groupProperty("tagName"))
-                )
-                .add(Restrictions.eq("l.name", lineName));
+        String lineName = "CELL";
+        List l = sessionFactory.getCurrentSession().createQuery(
+                "from BabSettingHistory bsh join bsh.bab b join b.line l "
+                + "where bsh.id in( "
+                + "select min(bsh1.id) from BabSettingHistory bsh1 "
+                + "join bsh1.bab b2 join b2.line l2 "
+                + "where b2.babStatus is null "
+                + ("CELL".equals(lineName)
+                ? "and lower(l2.name) like CONCAT(lower(:lineName), '%')"
+                : "and l2.name = :lineName ")
+                + "and bsh1.lastUpdateTime is null "
+                + "group by bsh1.tagName) "
+                + "order by bsh.tagName")
+                .setParameter("lineName", lineName)
+                .list();
 
-        List l = session.createCriteria(BabSettingHistory.class)
-                .createAlias("bab", "b")
+        HibernateObjectPrinter.print(l);
+    }
+
+    @Test
+    @Transactional
+    @Rollback(true)
+    public void testReport() {
+        String testModel = "UTC-520FP-IKA0E";
+        String lineTypeName = "ASSY";
+
+        Session session = sessionFactory.getCurrentSession();
+        Criteria c = session.createCriteria(BabPcsDetailHistory.class, "bps");
+        List<BabPcsDetailHistory> l = c.createAlias("bab", "b")
                 .createAlias("b.line", "l")
                 .createAlias("l.lineType", "lt")
-                .add(Subqueries.propertyIn("id", subquery))
+                .add(Restrictions.eq("b.modelName", testModel))
+                .add(Restrictions.eq("lt.name", lineTypeName))
+                .add(Restrictions.eq("b.babStatus", BabStatus.CLOSED))
+                .setMaxResults(10)
                 .list();
         
+        l.forEach(b ->{
+            Hibernate.initialize(b.getBab().getBabAlarmHistorys());
+        });
+        
         HibernateObjectPrinter.print(l);
+
     }
 }

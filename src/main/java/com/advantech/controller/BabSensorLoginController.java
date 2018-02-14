@@ -46,7 +46,7 @@ public class BabSensorLoginController {
             @RequestParam String jobnumber
     ) {
         /* 
-            ※The tagname input is already be encode to MD5
+            ※The tagname input is already be decode from MD5
          */
         babSensorLoginRecordService.insert(tagName, jobnumber);
         return "success";
@@ -88,7 +88,8 @@ public class BabSensorLoginController {
 
     @RequestMapping(value = "/findSensorByEncode", method = {RequestMethod.GET})
     @ResponseBody
-    public Object findSensorByEncode(@RequestParam String encodeStr) {
+    public Object findSensorByEncode(@RequestParam() String encodeStr) {
+        checkArgument(encodeStr.length() == 15, "The encodeStr length is not valid");
         TagNameComparison t = tagNameComparisonService.findByEncode(encodeStr);
         return t == null ? new Object() : t;
     }

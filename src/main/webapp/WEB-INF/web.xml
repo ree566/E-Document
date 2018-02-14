@@ -16,6 +16,11 @@
         <param-name>pageTitle</param-name>
         <param-value>藍燈系統</param-value>
     </context-param>
+    
+    <context-param>
+        <param-name>betaMode</param-name>
+        <param-value>1</param-value>
+    </context-param>
 
     <!--Filter chain-->
     <filter>

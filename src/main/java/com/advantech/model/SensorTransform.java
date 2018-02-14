@@ -34,6 +34,9 @@ public class SensorTransform implements Serializable {
     private Set<BabSettingHistory> babSettingHistorys = new HashSet<>(0);
 
     @JsonIgnore
+    private Set<BabPcsDetailHistory> babPcsDetailHistorys = new HashSet<>(0);
+
+    @JsonIgnore
     private Set<BabSensorLoginRecord> babSensorLoginRecords = new HashSet<>(0);
 
     public SensorTransform() {
@@ -69,6 +72,15 @@ public class SensorTransform implements Serializable {
 
     public void setBabSettingHistorys(Set<BabSettingHistory> babSettingHistorys) {
         this.babSettingHistorys = babSettingHistorys;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "tagName")
+    public Set<BabPcsDetailHistory> getBabPcsDetailHistorys() {
+        return babPcsDetailHistorys;
+    }
+
+    public void setBabPcsDetailHistorys(Set<BabPcsDetailHistory> babPcsDetailHistorys) {
+        this.babPcsDetailHistorys = babPcsDetailHistorys;
     }
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "tagName")

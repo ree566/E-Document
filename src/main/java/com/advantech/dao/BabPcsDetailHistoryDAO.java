@@ -6,9 +6,11 @@
 package com.advantech.dao;
 
 import com.advantech.model.BabPcsDetailHistory;
+import com.advantech.model.BabStatus;
 import java.util.List;
 import java.util.Map;
 import org.hibernate.criterion.Restrictions;
+import org.joda.time.DateTime;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -19,7 +21,9 @@ import org.springframework.stereotype.Repository;
 public class BabPcsDetailHistoryDAO extends AbstractDao<Integer, BabPcsDetailHistory> {
 
     public List<BabPcsDetailHistory> findByBab(int bab_id) {
-        return super.createEntityCriteria().add(Restrictions.eq("bab.id", bab_id)).list();
+        return super.createEntityCriteria()
+                .add(Restrictions.eq("bab.id", bab_id))
+                .list();
     }
 
     /*Use for chart generate*/
@@ -30,6 +34,18 @@ public class BabPcsDetailHistoryDAO extends AbstractDao<Integer, BabPcsDetailHis
                 + "lastUpdateTime as lastUpdateTime) "
                 + "from BabPcsDetailHistory where bab.id = :bab_id order by groupid, tagName")
                 .setParameter("bab_id", bab_id)
+                .list();
+    }
+
+    public List<BabPcsDetailHistory> findWithBabAndAlarmDetails(String modelName, String lineType, DateTime sD, DateTime eD) {
+        return super.createEntityCriteria()
+                .createAlias("bab", "b")
+                .createAlias("b.line", "l")
+                .createAlias("l.lineType", "lt")
+                .add(Restrictions.eq("b.modelName", modelName))
+                .add(Restrictions.eq("lt.name", lineType))
+                .add(Restrictions.eq("b.babStatus", BabStatus.CLOSED))
+                .setMaxResults(10)
                 .list();
     }
 

@@ -168,7 +168,7 @@
         </property>
     </bean>
 
-    <bean id="orderManager" class="com.advantech.helper.MailManager">
+    <bean id="mailManager" class="com.advantech.helper.MailManager">
         <property name="mailSender" ref="mailSender"/>
     </bean>
     

@@ -12,7 +12,7 @@ import com.advantech.helper.PropertiesReader;
 import com.advantech.model.Bab;
 import com.advantech.model.BabSettingHistory;
 import com.advantech.model.TagNameComparison;
-import com.advantech.quartzJob.BabDataSaver;
+import com.advantech.quartzJob.HandleUncloseBab;
 import com.advantech.service.BabSensorLoginRecordService;
 import com.advantech.service.BabService;
 import com.advantech.service.BabSettingHistoryService;
@@ -73,7 +73,7 @@ public class TestService {
     @Transactional
     @Rollback(true)
     public void testLineBalancingService() throws JobExecutionException {
-        new BabDataSaver().executeInternal(null);
+        new HandleUncloseBab().executeInternal(null);
     }
 
 //    @Test

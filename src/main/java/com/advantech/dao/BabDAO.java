@@ -86,6 +86,16 @@ public class BabDAO extends AbstractDao<Integer, Bab> implements BasicDAO_1<Bab>
         c.add(Restrictions.gt("beginTime", new DateTime().withHourOfDay(0).toDate()));
         return c.list();
     }
+    
+    public List<Bab> findProcessingAndNotPre(){
+        Criteria c = super.createEntityCriteria();
+        c.createAlias("line", "l");
+        c.createAlias("l.lineType", "lineType");
+        c.add(Restrictions.isNull("babStatus"));
+        c.add(Restrictions.gt("beginTime", new DateTime().withHourOfDay(0).toDate()));
+        c.add(Restrictions.eq("ispre", 0));
+        return c.list();
+    }
 
     public List<Bab> findProcessingByTagName(String tagName) {
         Criteria c = super.createEntityCriteria();
@@ -129,6 +139,18 @@ public class BabDAO extends AbstractDao<Integer, Bab> implements BasicDAO_1<Bab>
                 + " )");
         q.setMaxResults(1);
         return (Bab) q.uniqueResult();
+    }
+    
+    public List<Bab> findCell(DateTime sD, DateTime eD){
+        sD = sD.withHourOfDay(0);
+        eD = eD.withHourOfDay(23);
+        
+        return super.createEntityCriteria()
+                .createAlias("line", "l")
+                .createAlias("l.lineType", "lt")
+                .add(Restrictions.eq("lt.name", "Cell"))
+                .add(Restrictions.between("beginTime", sD.toDate(), eD.toDate()))
+                .list();
     }
 
     @Override

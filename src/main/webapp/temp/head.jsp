@@ -26,5 +26,8 @@
                 , please check your system environment or contact system administrator";
     }
 </script>
+<c:if test="${initParam.betaMode == 1}">
+    <jsp:include page="_beta.jsp" />
+</c:if>
 
 <!-- 為了省略include所造成多餘的<html><body>標籤而簡化，encoding會有問題還是要加上開頭 -->
