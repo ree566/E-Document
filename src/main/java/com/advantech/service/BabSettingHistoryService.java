@@ -7,6 +7,7 @@ package com.advantech.service;
 
 import com.advantech.model.BabSettingHistory;
 import com.advantech.dao.BabSettingHistoryDAO;
+import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.model.Bab;
 import com.advantech.model.BabSensorLoginRecord;
 import com.advantech.model.SensorTransform;
@@ -82,6 +83,8 @@ public class BabSettingHistoryService {
     }
 
     public int insertByBab(Bab b, TagNameComparison tag) {
+        HibernateObjectPrinter.print(b, tag);
+        
         List<BabSensorLoginRecord> babLogins = babSensorLoginRecordService.findByLine(b.getLine().getId());
 
         //Find setting in setting and check users in lists are login or not

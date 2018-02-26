@@ -46,9 +46,6 @@ public class BabController {
     private SqlViewService sqlViewService;
 
     @Autowired
-    private BabPcsDetailHistoryService babPcsDetailHistoryService;
-
-    @Autowired
     private LineBalancingService lineBalancingService;
 
     @Autowired
@@ -146,18 +143,6 @@ public class BabController {
     ) {
         List l = sqlViewService.findLineBalanceCompare(modelName, lineTypeName);
         return new DataTableResponse(l);
-    }
-
-    @RequestMapping(value = "/findPcsDetail", method = {RequestMethod.GET})
-    @ResponseBody
-    public DataTableResponse findPcsDetail(@ModelAttribute Bab bab) {
-        checkArgument(bab != null);
-        BabStatus status = bab.getBabStatus();
-        if (status == null) {
-            return new DataTableResponse(sqlViewService.findSensorStatus(bab.getId()));
-        } else {
-            return new DataTableResponse(babPcsDetailHistoryService.findByBab(bab.getId()));
-        }
     }
 
     @RequestMapping(value = "/findSensorStatusPerStationToday", method = {RequestMethod.GET})

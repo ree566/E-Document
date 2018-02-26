@@ -202,7 +202,9 @@
                 });
 
                 $("#isNotFirstStation").click(function () {
-                    if (checkStation($("#tagName").val(), false) == true) {
+                    var processData = searchProcessing();
+                    if (processData == null || processData.length == 0 || processData[0].people == 1 
+                            || checkStation($("#tagName").val(), false) == true) {
                         $(this).attr("disabled", true);
                         $("#isFirstStation").removeAttr("disabled");
                         $("#firstStationWiget").hide();
@@ -378,12 +380,9 @@
             }
 
             function firstStationMaxPeopleInit(lineMax, position) {
-                if (position == lineMax) {
-                    return false;
-                }
                 var obj = $("#people");
                 var maxPeopleInput = lineMax - position + 1;
-                for (var i = 2; i <= maxPeopleInput; i++) {
+                for (var i = 1; i <= maxPeopleInput; i++) {
                     obj.append("<option value='" + i + "'> " + i + " 人</option>");
                 }
             }

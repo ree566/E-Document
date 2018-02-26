@@ -200,7 +200,7 @@
                         headerOffset: 50
                     },
                     "ajax": {
-                        "url": "<c:url value="/BabController/findPcsDetail" />",
+                        "url": "<c:url value="/BabPcsDetailHistoryController/findByBab" />",
                         "type": "Get",
                         data: {
                             id: BABid,
@@ -209,7 +209,7 @@
                     },
                     "columns": [
                         {data: "bab.id", visible: false},
-                        {data: "tagName"},
+                        {data: "tagName.name"},
                         {data: "groupid"},
                         {data: "diff"},
                         {data: "lastUpdateTime"}

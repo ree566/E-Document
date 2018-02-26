@@ -140,8 +140,6 @@ public class BabService {
     }
 
     public int stationComplete(Bab bab, BabSettingHistory setting, boolean isNeedCheckPrev) {
-        checkArgument(bab.getIspre() != 1, "前置工單請直接從最後一站關閉");
-
         if (isNeedCheckPrev) {
             BabSettingHistory prev = babSettingHistoryService.findByBabAndStation(bab, setting.getStation() - 1);
 
@@ -167,18 +165,21 @@ public class BabService {
         不需要在code做其他動作(除了save avg data into Line_Balancing.dbo.Line_Balancing_Main table)
      */
     public int closeBab(Bab bab) {
-        List<BabAvg> babAvgs = sqlViewService.findBabAvg(bab.getId()); //先各站別取平衡率再算平均
-        List<BabSettingHistory> babSettings = babSettingHistoryService.findByBab(bab);
         boolean needToSave = false;
-        if (babAvgs != null && !babAvgs.isEmpty()) {
-            bab.setBabAvgs(babAvgs);
-            if (bab.getPeople() > 2) {
-                BabSettingHistory prev = babSettings.stream()
-                        .filter(b -> b.getStation() == bab.getPeople() - 1)
-                        .reduce((first, second) -> second).orElse(null);
-                checkArgument(prev.getLastUpdateTime() != null, "關閉失敗，請檢查上一站是否關閉");
+        List<BabSettingHistory> babSettings = babSettingHistoryService.findByBab(bab);
+
+        if (bab.getIspre() != 0) {
+            List<BabAvg> babAvgs = sqlViewService.findBabAvg(bab.getId()); //先各站別取平衡率再算平均
+            if (babAvgs != null && !babAvgs.isEmpty()) {
+                bab.setBabAvgs(babAvgs);
+                if (bab.getPeople() > 2) {
+                    BabSettingHistory prev = babSettings.stream()
+                            .filter(b -> b.getStation() == bab.getPeople() - 1)
+                            .reduce((first, second) -> second).orElse(null);
+                    checkArgument(prev.getLastUpdateTime() != null, "關閉失敗，請檢查上一站是否關閉");
+                }
+                needToSave = true;
             }
-            needToSave = true;
         }
 
         if (needToSave) {
