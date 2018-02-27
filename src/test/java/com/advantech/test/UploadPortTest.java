@@ -174,7 +174,7 @@ public class UploadPortTest {
         }
     }
 
-    @Test
+    //@Test
     @Rollback(true)
     public void testMaterialPropertyUploadPort() throws Exception {
 
@@ -211,7 +211,7 @@ public class UploadPortTest {
     @Autowired
     private StandardTimeUpload standardTimeUpload;
 
-//    @Test
+    @Test
     @Rollback(true)
     public void testStandardTimeUploadJob() {
         standardTimeUpload.uploadToMes();

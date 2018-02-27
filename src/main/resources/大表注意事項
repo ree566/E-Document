@@ -1,7 +1,7 @@
 大表sql新增欄位時須執行
 1.
-hibernate的<property name="hibernate.hbm2ddl.auto">update</property>打開
-並在sql中建立欄位
+Hibernate 的[ <property name="hibernate.hbm2ddl.auto">update</property> ]打開
+並在 Worktime.class & Sql 中建立欄位
 把system deploy一次(系統會自動建立Worktime_AUD的欄位)
 
 2.

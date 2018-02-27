@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
+import javax.transaction.Transactional;
 import static junit.framework.Assert.*;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.poi.ss.usermodel.Cell;
@@ -29,11 +30,16 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.ss.util.CellUtil;
+import org.hibernate.Hibernate;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.jxls.reader.ReaderBuilder;
 import org.jxls.reader.XLSReadStatus;
 import org.jxls.reader.XLSReader;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -54,6 +60,9 @@ public class ExcelTest {
 
     @Autowired
     private WorktimeService worktimeService;
+
+    @Autowired
+    private SessionFactory sessionFactory;
 
 //    @Test
     public void testJxls() throws Exception {
@@ -76,9 +85,14 @@ public class ExcelTest {
         }
     }
 
+    @Test
+    @Transactional
+    @Rollback(false)
     public void testFileSyncToDb() throws Exception {
+        Session session = sessionFactory.getCurrentSession();
+
         List<Worktime> l = worktimeService.findAll();
-        String syncFilePath = "C:\\Users\\Wei.Cheng\\Desktop\\testXls\\conflict_1227.xls";
+        String syncFilePath = "C:\\Users\\Wei.Cheng\\Desktop\\testXls\\M3機種秤重明細.xlsx";
         try (InputStream is = new FileInputStream(new File(syncFilePath))) {
             Workbook workbook = WorkbookFactory.create(is);
             Sheet sheet = workbook.getSheetAt(0);
@@ -91,19 +105,20 @@ public class ExcelTest {
                     Cell cell_A = CellUtil.getCell(row, CellReference.convertColStringToIndex("A"));
                     cell_A.setCellType(CellType.STRING);
 
-                    String modelName = (String) getCellValue(row, "A");
+                    String modelName = ((String) getCellValue(row, "A")).trim();
 
                     Worktime w = l.stream().filter(o -> Objects.equals(o.getModelName(), modelName)).findFirst().orElse(null);
-                    assertNotNull(w);
 
-                    w.setNsInOneCollectionBox(objToBigDecimal(getCellValue(row, "C")));
-                    w.setBiTemperature(objToBigDecimal(getCellValue(row, "E")));
-                    w.setBiTime(objToBigDecimal(getCellValue(row, "G")));
+                    if (w == null) {
+                        System.out.println("Can't find modelName: " + modelName + " in worktime");
+                        continue;
+                    }
 
-//                    Object burnIn = getCellValue(row, "I");
-//                    w.setBurnIn(burnIn == null ? "N" : );
-                    BigDecimal kA = objToBigDecimal(getCellValue(row, "K"));
-                    w.setKeypartA(kA == null ? null : kA.intValue());
+                    w.setWeight(objToBigDecimal(getCellValue(row, "B")));
+                    w.setTolerance(objToBigDecimal(getCellValue(row, "C")));
+
+                    session.update(w);
+
                 }
             }
         }

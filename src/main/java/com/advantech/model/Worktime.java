@@ -21,7 +21,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
@@ -107,6 +106,8 @@ public class Worktime implements java.io.Serializable {
     private int kc;
     private BigDecimal nsInOneCollectionBox = BigDecimal.ZERO;
     private char partNoAttributeMaintain;
+    private BigDecimal weight = BigDecimal.ZERO;
+    private BigDecimal tolerance = BigDecimal.ZERO;
     private BigDecimal assyLeadTime = BigDecimal.ZERO;
     private BigDecimal packingLeadTime = BigDecimal.ZERO;
     private BigDecimal productionWt = BigDecimal.ZERO;
@@ -583,7 +584,7 @@ public class Worktime implements java.io.Serializable {
     public void setEac(int eac) {
         this.eac = eac;
     }
-    
+
     @NotNull
     @Column(name = "kc", nullable = false)
     public int getKc() {
@@ -612,6 +613,28 @@ public class Worktime implements java.io.Serializable {
 
     public void setPartNoAttributeMaintain(char partNoAttributeMaintain) {
         this.partNoAttributeMaintain = partNoAttributeMaintain;
+    }
+
+    @NotNull
+    @Digits(integer = 10 /*precision*/, fraction = 4 /*scale*/)
+    @Column(name = "weight", nullable = false, precision = 10, scale = 4)
+    public BigDecimal getWeight() {
+        return weight;
+    }
+
+    public void setWeight(BigDecimal weight) {
+        this.weight = weight;
+    }
+
+    @NotNull
+    @Digits(integer = 10 /*precision*/, fraction = 3 /*scale*/)
+    @Column(name = "tolerance", nullable = false, precision = 10, scale = 3)
+    public BigDecimal getTolerance() {
+        return tolerance;
+    }
+
+    public void setTolerance(BigDecimal tolerance) {
+        this.tolerance = tolerance;
     }
 
     @Digits(integer = 10 /*precision*/, fraction = 1 /*scale*/)

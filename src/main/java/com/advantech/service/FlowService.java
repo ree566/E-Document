@@ -45,6 +45,10 @@ public class FlowService {
         return flowDAO.findByPrimaryKey(obj_id);
     }
 
+    public Flow findByFlowName(String flowName) {
+        return flowDAO.findByFlowName(flowName);
+    }
+
     public List<Flow> findByFlowGroup(int flowGroupId) {
         FlowGroup fg = flowGroupDAO.findByPrimaryKey(flowGroupId);
         return flowDAO.findByFlowGroup(fg);

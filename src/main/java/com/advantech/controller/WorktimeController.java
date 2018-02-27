@@ -13,9 +13,9 @@ import com.advantech.jqgrid.JqGridResponse;
 import com.advantech.service.WorktimeService;
 import static com.google.common.base.Preconditions.*;
 import static com.google.common.collect.Lists.newArrayList;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -57,8 +57,12 @@ public class WorktimeController extends CrudController<Worktime> {
 
         String modifyMessage;
 
+        removeModelNameExtraSpaceCharacter(worktime);
+        
         worktimeService.checkModelExists(worktime);
+        
         resetNullableColumn(worktime);
+        
         modifyMessage = worktimeService.insertWithFormulaSetting(worktime) == 1 ? this.SUCCESS_MESSAGE : FAIL_MESSAGE;
         if (SUCCESS_MESSAGE.equals(modifyMessage)) {
             worktimeMailManager.notifyUser(newArrayList(worktime), ADD);
@@ -72,12 +76,16 @@ public class WorktimeController extends CrudController<Worktime> {
             @RequestParam String baseModelName,
             @RequestParam(value = "seriesModelNames[]") String[] seriesModelNames
     ) throws Exception {
+        
         checkArgument(baseModelName != null && !"".equals(baseModelName), "BaseModelName illegal");
         checkArgument(seriesModelNames != null && seriesModelNames.length != 0, "SeriesModelNames illegal");
 
         String modifyMessage;
 
-        List<String> l = new ArrayList<>(Arrays.asList(seriesModelNames));
+        List<String> l = Arrays.stream(seriesModelNames).map(s -> {
+            return removeModelNameExtraSpaceCharacter(s);
+        }).collect(Collectors.toList());
+
         modifyMessage = worktimeService.insertSeries(baseModelName, l) == 1 ? this.SUCCESS_MESSAGE : FAIL_MESSAGE;
         if (SUCCESS_MESSAGE.equals(modifyMessage)) {
             worktimeMailManager.notifyUser2(l, ADD);
@@ -97,6 +105,9 @@ public class WorktimeController extends CrudController<Worktime> {
         String modifyMessage;
 
         worktimeService.checkModelExists(worktime);
+        
+        removeModelNameExtraSpaceCharacter(worktime);
+        
         resetNullableColumn(worktime);
 
         modifyMessage = worktimeService.merge(worktime) == 1 ? this.SUCCESS_MESSAGE : FAIL_MESSAGE;
@@ -136,6 +147,15 @@ public class WorktimeController extends CrudController<Worktime> {
             worktime.setUserByEeOwnerId(null);
         }
 
+    }
+
+    private void removeModelNameExtraSpaceCharacter(Worktime w) {
+        String modelName = w.getModelName();
+        w.setModelName(removeModelNameExtraSpaceCharacter(modelName));
+    }
+
+    private String removeModelNameExtraSpaceCharacter(String modelName) {
+        return modelName.replaceAll("^\\s+", "").replaceAll("\\s+$", "");
     }
 
 }

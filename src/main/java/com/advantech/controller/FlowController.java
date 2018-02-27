@@ -83,7 +83,7 @@ public class FlowController extends CrudController<Flow> {
     }
 
     private boolean isFlowExist(Flow flow) {
-        return flowService.findAll().contains(flow);
+        return flowService.findByFlowName(flow.getName()) != null;
     }
 
     //flow 編輯頁面中group的下拉式選單

@@ -50,6 +50,8 @@ var worktimeCol = [
     {name: "kc"},
     {name: "nsInOneCollectionBox"},
     {name: "partNoAttributeMaintain"},
+    {name: "weight"},
+    {name: "tolerance"},
     {name: "assyStation"},
     {name: "packingStation"},
     {name: "assyLeadTime"},
