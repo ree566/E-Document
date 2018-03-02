@@ -12,7 +12,9 @@ import com.advantech.service.AuditService;
 import com.advantech.service.WorktimeService;
 import com.advantech.service.WorktimeUploadMesService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -21,6 +23,7 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import static junit.framework.Assert.*;
+import org.apache.commons.beanutils.PropertyUtils;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.envers.AuditReader;
@@ -187,7 +190,7 @@ public class HibernateTest {
         
     }
     
-    @Test
+//    @Test
     @Transactional
     @Rollback(true)
     public void testTrimModel() throws JsonProcessingException {
@@ -211,6 +214,32 @@ public class HibernateTest {
     
     private String removeModelNameExtraSpaceCharacter(String modelName) {
         return modelName.replaceAll("^\\s+", "").replaceAll("\\s+$", "");
+    }
+    
+    @Test
+    @Transactional
+    @Rollback(true)
+    public void testPojoGetSetByName() throws IllegalAccessException, NoSuchMethodException, InvocationTargetException{
+        Session session = sessionFactory.getCurrentSession();
+        Worktime w = (Worktime) session
+                .createQuery("from Worktime w order by id desc")
+                .setMaxResults(1)
+                .uniqueResult();
+        
+        assertNotNull(w);
+        
+        Object modelName = PropertyUtils.getProperty(w, "modelName");
+        assertEquals("HPC7442MB1707-T", modelName);
+        
+        Object t1 = PropertyUtils.getProperty(w, "t1");
+        assertNotNull(t1);
+        assertTrue(new BigDecimal(40).compareTo((BigDecimal) t1) == 0);
+        
+        PropertyUtils.setProperty(w, "t1", new BigDecimal(50));
+        t1 = PropertyUtils.getProperty(w, "t1");
+        assertNotNull(t1);
+        assertTrue(new BigDecimal(50).compareTo((BigDecimal) t1) == 0);
+
     }
     
 }

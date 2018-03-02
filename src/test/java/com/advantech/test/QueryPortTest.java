@@ -134,11 +134,11 @@ public class QueryPortTest {
 //    @Test
     public void testMaterialPropertyUserPermissionQueryPort() throws Exception {
         List<MaterialPropertyUserPermission> l = materialPropertyUserPermissionQueryPort.query("A-7060");
-        assertEquals(81, l.size());
-        assertEquals("01", l.get(0).getMaterialPropertyNo());
+        assertEquals(4, l.size());
+        assertEquals("BD", l.get(0).getMaterialPropertyNo());
     }
 
-//    @Test
+    @Test
     public void testMaterialPropertyQueryPort() throws Exception {
         List<MaterialProperty> l = materialPropertyQueryPort.query("FC");
         assertEquals(1, l.size());
@@ -146,12 +146,12 @@ public class QueryPortTest {
         System.out.println(l.get(0).getAffPropertyType());
     }
 
-    @Test
+//    @Test
     public void testMaterialPropertValueyQueryPort() throws Exception {
         Worktime w1 = worktimeService.findByModel("2063002307");
         assertNotNull(w1);
         List<MaterialPropertyValue> l = materialPropertyValueQueryPort.query(w1);
-        assertEquals(5, l.size());
+        assertEquals(6, l.size());
         MaterialPropertyValue value = l.stream()
                 .filter(v -> "KB".equals(v.getMatPropertyNo())).findFirst().orElse(null);
         assertNotNull(value);

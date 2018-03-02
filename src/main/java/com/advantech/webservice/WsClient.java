@@ -16,6 +16,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.client.core.support.WebServiceGatewaySupport;
@@ -35,6 +36,7 @@ import org.w3c.dom.Node;
 public class WsClient extends WebServiceGatewaySupport {
 
     @Autowired
+    @Qualifier("webServiceTemplate2")
     private WebServiceTemplate webServiceTemplate;
 
     public TxResponse simpleTxSendAndReceive(String v, UploadType type) throws IOException {
