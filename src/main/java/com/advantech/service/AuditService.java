@@ -74,8 +74,8 @@ public class AuditService implements AuditAction {
         return auditDAO.findLastRevisions(clz, id);
     }
 
-    public boolean isFieldChangedAtLastRevision(Class clz, Object id, String fieldName) {
-        return auditDAO.isFieldChangedAtLastRevision(clz, id, fieldName);
+    public boolean isFieldChangedAtLastRevision(Class clz, Object id, String[] fieldNames) {
+        return auditDAO.isFieldChangedAtLastRevision(clz, id, fieldNames);
     }
 
     public Object findLastStatusBeforeUpdate(Class clz, Object id) {

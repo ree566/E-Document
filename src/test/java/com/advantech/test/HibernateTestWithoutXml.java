@@ -50,8 +50,8 @@ public class HibernateTestWithoutXml {
             HibernateObjectPrinter.print(l);
 
             txn.commit();
-        } catch (JsonProcessingException | HibernateException e) {
-            if (txn != null && txn.isActive()) {
+        } catch (HibernateException e) {
+            if (txn != null) {
                 txn.rollback();
             }
             System.out.println(e);

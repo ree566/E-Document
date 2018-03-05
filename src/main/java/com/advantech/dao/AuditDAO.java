@@ -162,13 +162,17 @@ public class AuditDAO implements AuditAction {
         return revision;
     }
 
-    public boolean isFieldChangedAtLastRevision(Class clz, Object id, String fieldName) {
+    public boolean isFieldChangedAtLastRevision(Class clz, Object id, String[] fieldNames) {
         AuditQuery q = getReader().createQuery()
                 .forRevisionsOfEntity(clz, true, false)
-                .addProjection(new AuditProperty<>(new ModifiedFlagPropertyName(new EntityPropertyName(fieldName))))
                 .add(AuditEntity.id().eq(id))
                 .add(AuditEntity.revisionNumber().maximize().computeAggregationInInstanceContext());
-        return (boolean) q.getSingleResult();
+
+        for (String field : fieldNames) {
+            q.add(AuditEntity.property(field).hasChanged());
+        }
+        List l = q.getResultList();
+        return !l.isEmpty();
     }
 
     public Object findLastStatusBeforeUpdate(Class clz, Object id) {
@@ -189,7 +193,7 @@ public class AuditDAO implements AuditAction {
         fieldNames.forEach((fieldName) -> {
             disjunction.add(AuditEntity.property(fieldName).hasChanged());
         });
-        
+
         q.add(disjunction);
 
         List l = q.getResultList();

@@ -52,7 +52,7 @@ Contributor(s):
         <property name="hibernate.connection.password">m3server</property>-->
         
         <!--other setting-->
-        <property name="hibernate.dialect">org.hibernate.dialect.SQLServerDialect</property>
+        <property name="hibernate.dialect">org.hibernate.dialect.SQLServer2008Dialect</property>
         <property name="hibernate.show_sql">true</property>
         <!--<property name="hibernate.format_sql">true</property>-->
         <property name="hibernate.transaction.factory_class">org.hibernate.transaction.JDBCTransactionFactory</property>
@@ -60,6 +60,9 @@ Contributor(s):
         <property name="hibernate.c3p0.contextClassLoaderSource">library</property>
     
         <!--<property name="hibernate.hbm2ddl.auto">update</property>-->
+        
+        <!--Hibernate 5 auto generate id part will cause error when not add this config-->
+        <property name="hibernate.id.new_generator_mappings" >false</property>
         
         <property name="hibernate.connection.provider_class">org.hibernate.connection.C3P0ConnectionProvider</property>  
         <property name="hibernate.c3p0.max_size">10</property>  

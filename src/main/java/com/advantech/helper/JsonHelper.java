@@ -7,7 +7,7 @@ package com.advantech.helper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
+import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -82,8 +82,8 @@ public class JsonHelper {
 
     public static String toStringWithLazyLoading(Object obj) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
-        Hibernate4Module hbm = new Hibernate4Module();
-        hbm.enable(Hibernate4Module.Feature.SERIALIZE_IDENTIFIER_FOR_LAZY_NOT_LOADED_OBJECTS);
+        Hibernate5Module hbm = new Hibernate5Module();
+        hbm.enable(Hibernate5Module.Feature.SERIALIZE_IDENTIFIER_FOR_LAZY_NOT_LOADED_OBJECTS);
         mapper.registerModule(hbm);
 
         return mapper.writeValueAsString(obj);

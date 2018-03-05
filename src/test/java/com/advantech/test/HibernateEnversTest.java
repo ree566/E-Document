@@ -7,6 +7,7 @@ package com.advantech.test;
 
 import com.advantech.excel.XlsWorkBook;
 import com.advantech.excel.XlsWorkSheet;
+import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.model.Worktime;
 import com.advantech.service.*;
 import com.google.common.base.Predicate;
@@ -75,15 +76,17 @@ public class HibernateEnversTest {
     @Autowired
     private SessionFactory sessionFactory;
 
+    private AuditReader reader;
+
     @Before
     public void setUp() {
+        Session session = sessionFactory.getCurrentSession();
+        reader = AuditReaderFactory.get(session);
     }
 
     public void setUpList() {
         DateTime d = new DateTime("2017-09-26").withHourOfDay(0);
 
-        Session session = sessionFactory.getCurrentSession();
-        AuditReader reader = AuditReaderFactory.get(session);
         AuditQuery q = reader.createQuery()
                 .forRevisionsOfEntity(Worktime.class, false, false)
                 .addProjection(AuditEntity.id())
@@ -139,7 +142,7 @@ public class HibernateEnversTest {
 
     @Transactional
     @Rollback(false)
-    @Test
+//    @Test
     public void updateDbSops() throws Exception {
         setUpList();
         String inputLocation = "C:\\Users\\Wei.Cheng\\Desktop\\testXls\\M3SOP-ok.xls";
@@ -204,12 +207,7 @@ public class HibernateEnversTest {
     }
 
     public Worktime findMatches(final String modelName) {
-        return Iterables.find(l, new Predicate<Worktime>() {
-            @Override
-            public boolean apply(Worktime input) {
-                return modelName.replaceAll(regex, "").trim().equals(input.getModelName().replaceAll(regex, "").trim());
-            }
-        }, null);
+        return Iterables.find(l, (Worktime input) -> modelName.replaceAll(regex, "").trim().equals(input.getModelName().replaceAll(regex, "").trim()), null);
     }
 
     private void outputFile(List data, InputStream is, OutputStream os) throws IOException {
@@ -237,4 +235,22 @@ public class HibernateEnversTest {
     public String replaceWhenNull(String st) {
         return st == null ? "" : st;
     }
+
+    @Test
+    @Transactional
+    @Rollback(true)
+    public void testModifyFlag() {
+        AuditQuery q = reader.createQuery()
+                .forRevisionsOfEntity(Worktime.class, false, false)
+                .add(AuditEntity.id().eq(17991))
+                .add(AuditEntity.property("userBySpeOwnerId").hasChanged())
+                .add(AuditEntity.revisionNumber().maximize().computeAggregationInInstanceContext());
+
+        List result = q.getResultList();
+        
+        assertEquals(1, result.size());
+
+        HibernateObjectPrinter.print(result);
+    }
+
 }
