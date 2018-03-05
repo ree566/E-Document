@@ -19,7 +19,7 @@
     
     <context-param>
         <param-name>betaMode</param-name>
-        <param-value>1</param-value>
+        <param-value>0</param-value>
     </context-param>
 
     <!--Filter chain-->
@@ -160,6 +160,15 @@
     <servlet-mapping>
         <servlet-name>BabDetailInfo</servlet-name>
         <url-pattern>/pages/admin/BabDetailInfo</url-pattern>  
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>BabDetailInfo2</servlet-name>
+        <jsp-file>/pages/admin/babDetailInfo_1.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>BabDetailInfo2</servlet-name>
+        <url-pattern>/pages/admin/BabDetailInfo2</url-pattern>  
     </servlet-mapping>
     
     <servlet>

@@ -99,29 +99,39 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
     public boolean generateData() {
         boolean isSomeBabUnderStandard = false;
 
-        List<Bab> babGroups = babService.findProcessing();
-        List<BabSettingHistory> allSettings = babSettingHistoryService.findProcessing();
+        List<Bab> processingBabs = babService.findProcessing();
+        List<BabSettingHistory> allBabSettings = babSettingHistoryService.findProcessing();
 
-        if (hasDataInCollection(allSettings) && hasDataInCollection(babGroups)) {
+        if (hasDataInCollection(allBabSettings) && hasDataInCollection(processingBabs)) {
             //把所有有在bab資料表的id集合起來，找到統計值之後依序寫入txt(各線別取當日最早輸入的工單id來亮燈)
             JSONArray transBabData = new JSONArray();
             processingJsonObject = new JSONObject();
+            
+            /*
+                Because BabLastGroupStatus.class is a sql view object
+                Get all data in one transaction to prevent sql deadlock.
+            */
+            List<BabLastGroupStatus> status = sqlViewService.findBabLastGroupStatus(processingBabs);
 
-            for (Bab bab : babGroups) {
-                List<BabSettingHistory> babSettings = allSettings.stream()
+            for (Bab bab : processingBabs) {
+                List<BabSettingHistory> babSettings = allBabSettings.stream()
                         .filter(rec -> rec.getBab().getId() == bab.getId()).collect(toList());
+                
+                List<BabLastGroupStatus> matchesStatus = status.stream()
+                        .filter(stat -> stat.getBab_id() == bab.getId()).collect(toList());
 
                 if (babSettings.isEmpty()) {
                     continue;
                 }
 
-                List<BabLastGroupStatus> status = sqlViewService.findBabLastGroupStatus(bab.getId());
-                int currentGroupSum = status.size();//看目前組別人數是否有到達bab裏頭設定的人數
+                int currentGroupSum = matchesStatus.size();//看目前組別人數是否有到達bab裏頭設定的人數
                 int peoples = bab.getPeople();
                 if (currentGroupSum == 0 || currentGroupSum != peoples) {
-                    //Insert an empty status
-                    //BabSettingHistory in allSettings are proxy object generate by hibernate
-                    //Can't transform to json by google.Gson directly
+                    /*
+                        Insert an empty status
+                        BabSettingHistory in allBabSettings are proxy object generate by hibernate
+                        Can't transform to json by google.Gson directly
+                    */
                     babSettings.forEach((setting) -> {
                         JSONObject obj = new JSONObject();
                         obj.put("tagName", setting.getTagName().getName());
@@ -132,8 +142,9 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
                     isSomeBabUnderStandard = true;
 
                 } else {
-                    BabLastGroupStatus maxStatus = status.stream().max((p1, p2) -> Double.compare(p1.getDiff(), p2.getDiff())).get();
-                    double diffTimeSum = status.stream().mapToDouble(BabLastGroupStatus::getDiff).sum();
+                    BabLastGroupStatus maxStatus = matchesStatus.stream()
+                            .max((p1, p2) -> Double.compare(p1.getDiff(), p2.getDiff())).get();
+                    double diffTimeSum = matchesStatus.stream().mapToDouble(BabLastGroupStatus::getDiff).sum();
 
                     boolean isUnderBalance = checkIsUnderBalance(bab, maxStatus.getDiff(), diffTimeSum);
 
@@ -141,7 +152,7 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
                         isSomeBabUnderStandard = true;
                     }
 
-                    for (BabLastGroupStatus bgs : status) {
+                    for (BabLastGroupStatus bgs : matchesStatus) {
                         bgs.setIsmax(isUnderBalance && Objects.equals(bgs, maxStatus));
                         transBabData.put(new JSONObject(bgs));
                     }
@@ -167,13 +178,17 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
         switch (lineTypeName) {
             case "ASSY":
                 double aBaln = lineBalanceService.caculateLineBalance(max, sum, b.getPeople());
-//                System.out.printf("bab_id %d / Max: %.3f / Sum: %.3f / BANANCE: %.3f / STANDARD: %.3f \n", b.getId(), max, 
-//                        sum, aBaln, ASSY_STANDARD);
+                
+                log.debug("bab_id {} / Max: {} / Sum: {} / BANANCE: {} / STANDARD: {}", b.getId(), max, 
+                        sum, aBaln, ASSY_STANDARD);
+                
                 return (Double.compare(aBaln, ASSY_STANDARD) < 0);
             case "Packing":
                 double pBaln = lineBalanceService.caculateLineBalance(max, sum, b.getPeople());
-//                System.out.printf("bab_id %d / Max: %.3f / Sum: %.3f / BANANCE: %.3f / STANDARD: %.3f \n", b.getId(), max,
-//                        sum, pBaln, ASSY_STANDARD);
+                
+                log.debug("bab_id {} / Max: {} / Sum: {} / BANANCE: {} / STANDARD: {}", b.getId(), max,
+                        sum, pBaln, PKG_STANDARD);
+                
                 return (Double.compare(pBaln, PKG_STANDARD) < 0);
             case "Cell":
                 Worktime w = worktimes.stream().filter(o -> o.getModelName().equals(b.getModelName())).findFirst().orElse(null);

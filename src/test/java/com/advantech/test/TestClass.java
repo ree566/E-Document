@@ -5,21 +5,25 @@
  */
 package com.advantech.test;
 
-import java.lang.reflect.InvocationTargetException;
-import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.Map;
+import com.advantech.facade.BabLineTypeFacade;
+import static com.google.common.collect.Lists.newArrayList;
+import java.util.List;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Wei.Cheng
  */
 public class TestClass {
+    
+    private static final Logger log = LoggerFactory.getLogger(TestClass.class);
 
-    public void test() throws IllegalAccessException, InvocationTargetException {
-        
+    @Test
+    public void test() {
+        log.info("bab_id {} / Max: {} / Sum: {} / BANANCE: {} / STANDARD: {}", 1, 0.1,
+                        0.2, 0.3, 0.4);
     }
-
 
 }

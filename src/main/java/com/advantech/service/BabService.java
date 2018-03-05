@@ -168,9 +168,9 @@ public class BabService {
         boolean needToSave = false;
         List<BabSettingHistory> babSettings = babSettingHistoryService.findByBab(bab);
 
-        if (bab.getIspre() != 0) {
+        if (bab.getIspre() == 0) {
             List<BabAvg> babAvgs = sqlViewService.findBabAvg(bab.getId()); //先各站別取平衡率再算平均
-            if (babAvgs != null && !babAvgs.isEmpty()) {
+            if (babAvgs != null && !babAvgs.isEmpty() && babAvgs.size() == bab.getPeople()) {
                 bab.setBabAvgs(babAvgs);
                 if (bab.getPeople() > 2) {
                     BabSettingHistory prev = babSettings.stream()

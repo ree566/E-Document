@@ -47,10 +47,14 @@ public class BabPcsDetailHistoryController {
         }
     }
 
+    @RequestMapping(value = "/findReport", method = {RequestMethod.GET})
+    @ResponseBody
     public DataTableResponse findReport(
-            @RequestParam String modelName, 
+            @RequestParam String modelName,
+            @RequestParam String lineType,
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime startDate,
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime endDate) {
-        return null;
+        
+        return new DataTableResponse(sqlViewService.findBabPcsDetail(modelName, lineType, startDate, endDate));
     }
 }

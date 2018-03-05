@@ -161,11 +161,15 @@ public class LineBalancingService {
         return (int) Math.round(d * 100);
     }
 
-    private void sendMail(Bab bab, int maxbln, int currentbln, int diff) throws JSONException, MessagingException {
-        Line line = bab.getLine();
-        List<User> mailTo = userDAO.findByUserNotification("");
+    public void sendMail(Bab bab, int maxbln, int currentbln, int diff) throws MessagingException {
+
+        Line line = lineDAO.findByPrimaryKey(bab.getLine().getId());
+        
+        List<User> mailTo = userDAO.findLineOwner(line.getId());
+        List<User> mailCc = userDAO.findByUserNotification("under_balance_alarm");
+
         String subject = "[藍燈系統]異常訊息(" + line.getName().trim() + ")";
-        mailManager.sendMail(mailTo, null, subject,
+        mailManager.sendMail(mailTo, mailCc, subject,
                 new StringBuilder()
                         .append("<p>時間 <strong>")
                         .append(new Date())

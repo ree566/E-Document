@@ -29,7 +29,7 @@ public class BabPcsDetailHistoryDAO extends AbstractDao<Integer, BabPcsDetailHis
     /*Use for chart generate*/
     public List<Map> findByBabForMap(int bab_id) {
         return super.getSession().createQuery(
-                "select new Map(id as id, bab.id as bab_id, tagName as tagName, "
+                "select new Map(id as id, bab.id as bab_id, tagName.name as tagName, "
                 + "station as station, groupid as groupid, diff as diff, "
                 + "lastUpdateTime as lastUpdateTime) "
                 + "from BabPcsDetailHistory where bab.id = :bab_id order by groupid, tagName")

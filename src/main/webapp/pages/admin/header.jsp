@@ -59,7 +59,7 @@
             <a class="navbar-brand" href="SysInfo">
                 <span><img id="logoImg" src="../../images/bulb.png" alt="sysIcon" /></span>
                     ${initParam.pageTitle}
-                <span><img id="logoImg" src="../../images/bulb.png" alt="sysIcon" /></span>
+                <!--<span><img id="logoImg" src="../../images/bulb.png" alt="sysIcon" /></span>-->
             </a>
         </div>
         <!-- Collect the nav links, forms, and other content for toggling -->
@@ -86,6 +86,7 @@
                     <ul class="dropdown-menu">
                         <li><a href="BabTotal?lineType=ASSY">線平衡資訊查詢</a></li>
                         <li><a href="BabDetailInfo">各站機台時間查詢</a></li>
+                        <li><a href="BabDetailInfo2?lineType=ASSY">各站時間查詢(報表格式)</a></li>
                     </ul>
                 </li>
                 <li class="dropdown">
@@ -97,6 +98,7 @@
                     <ul class="dropdown-menu">
                         <li><a href="BabTotal?lineType=Packing">線平衡資訊查詢</a></li>
                         <li><a href="BabDetailInfo">各站機台時間查詢</a></li>
+                        <li><a href="BabDetailInfo2?lineType=Packing">各站時間查詢(報表格式)</a></li>
                     </ul>
                 </li>
                 <li>

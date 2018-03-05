@@ -21,7 +21,11 @@ import com.advantech.service.TagNameComparisonService;
 import com.advantech.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import static java.util.stream.Collectors.toList;
+import javax.mail.MessagingException;
+import org.json.JSONException;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -117,16 +121,31 @@ public class TestService {
         HibernateObjectPrinter.print(l);
     }
 
-    @Test
-    @Transactional
-    @Rollback(false)
+//    @Test
+//    @Transactional
+//    @Rollback(false)
     public void testHibernateInitialize() {
         TagNameComparison t4 = tagNameComparisonService.findByLampSysTagName("L2-S-4");
         TagNameComparison t7 = tagNameComparisonService.findByLampSysTagName("L2-S-7");
         assertNotNull(t4);
         assertNotNull(t7);
-        
+
 //        babService.checkAndInsert(b, endpointPollingCron, t7);
+    }
+
+    @Test
+    public void testBabSaving() {
+        try {
+            
+            Bab b = babService.findByPrimaryKey(14227);
+
+            lineBalancingService.sendMail(b, 1, 1, 1);
+            
+        } catch (MessagingException ex) {
+
+        } catch (Exception ex1) {
+            System.out.println(ex1);
+        }
     }
 
 }

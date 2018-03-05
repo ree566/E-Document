@@ -137,4 +137,21 @@ public class SqlViewDAO extends AbstractDao<Integer, Object> {
                 .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
                 .list();
     }
+
+    public List<Map> findBabPcsDetail(String modelName, String lineType, DateTime startDate, DateTime endDate) {
+
+        if (startDate != null && endDate != null) {
+            startDate = startDate.withHourOfDay(0);
+            endDate = endDate.withHourOfDay(23);
+        }
+
+        return super.getSession()
+                .createSQLQuery("{CALL usp_Excel_PcsDetail(:modelName, :lineType, :startDate, :endDate)}")
+                .setParameter("modelName", modelName)
+                .setParameter("lineType", "-1".equals(lineType) ? null : lineType)
+                .setParameter("startDate", startDate != null ? startDate.toDate() : startDate)
+                .setParameter("endDate", endDate != null ? endDate.toDate() : endDate)
+                .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
+                .list();
+    }
 }

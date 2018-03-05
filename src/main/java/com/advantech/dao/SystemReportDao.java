@@ -8,6 +8,7 @@ package com.advantech.dao;
 import java.sql.Connection;
 import java.util.List;
 import java.util.Map;
+import org.joda.time.DateTime;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -42,5 +43,7 @@ public class SystemReportDao extends BasicDAO {
     public List<Map> getEmptyRecordDownExcel(String startDate, String endDate) {
         return queryProcForMapList(getConn(), "{CALL usp_Excel_EmptyRecord(?,?)}", startDate, endDate);
     }
+    
+    
     
 }

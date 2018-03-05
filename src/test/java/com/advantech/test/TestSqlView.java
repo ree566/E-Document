@@ -62,7 +62,7 @@ public class TestSqlView {
     @Transactional
     @Rollback(true)
     public void testBabPcsDetailHistory() {
-        List l = babPcsDetailHistoryDAO.findByBabForMap(13044);
+        List l = babPcsDetailHistoryDAO.findByBabForMap(14223);
         HibernateObjectPrinter.print(l);
     }
 }

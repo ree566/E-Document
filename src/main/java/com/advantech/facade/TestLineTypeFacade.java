@@ -45,6 +45,7 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
 
     @Autowired
     private PropertiesReader p;
+    
     private Integer maxTestTable;
     private Double TEST_STANDARD_MIN;
     private Double TEST_STANDARD_MAX;
@@ -85,16 +86,16 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
             initMap();
             JSONArray userArr = new JSONArray();
 
-            List<TestRecord> kanbanUsers = rv.getTestLineTypeRecords();
+            List<TestRecord> kanbanUsersRecord = rv.getTestLineTypeRecords();
 
             processingJsonObject = new JSONObject();
             boolean isInTheWebService = false;
 
-            for (TestRecord user : kanbanUsers) {
+            for (TestRecord record : kanbanUsersRecord) {
 
-                String jobnumber = user.getUserId();
-                String userName = user.getUserName();
-                Double productivity = user.getProductivity();
+                String jobnumber = record.getUserId();
+                String userName = record.getUserName();
+                Double productivity = record.getProductivity();
 
                 for (Iterator it = tests.iterator(); it.hasNext();) {
                     Test ti = (Test) it.next();
@@ -134,10 +135,10 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
     private JSONArray separateAbnormalUser(List<Test> l, JSONArray j) {
         String emptyUserName = "n/a";
         Double emptyProductivity = 0.0;
-        for (Test ti : l) {
+        l.forEach((ti) -> {
             TestTable table = ti.getTestTable();
             j.put(newTestUser(emptyUserName, ti.getUserId(), table.getName().replace("T", ""), emptyProductivity, table.getFloor().getName(), TEST_USER_NOT_IN_XML_SIGN));
-        }
+        });
         return j;
     }
 
