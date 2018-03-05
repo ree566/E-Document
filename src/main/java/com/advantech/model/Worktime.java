@@ -617,7 +617,6 @@ public class Worktime implements java.io.Serializable {
         this.partNoAttributeMaintain = partNoAttributeMaintain;
     }
 
-//    @Transient
     @NotNull
     @Digits(integer = 10 /*precision*/, fraction = 4 /*scale*/)
     @Column(name = "weight", nullable = false, precision = 10, scale = 4)
@@ -629,7 +628,6 @@ public class Worktime implements java.io.Serializable {
         this.weight = weight;
     }
 
-//    @Transient
     @NotNull
     @Digits(integer = 10 /*precision*/, fraction = 3 /*scale*/)
     @Column(name = "tolerance", nullable = false, precision = 10, scale = 3)

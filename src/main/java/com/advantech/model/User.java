@@ -61,6 +61,9 @@ public class User implements UserDetails, Comparable<User> {
     @JsonIgnore
     private Set<UserNotification> userNotifications = new HashSet<UserNotification>(0);
 
+    @JsonIgnore
+    private Set<Factory> factorys = new HashSet<>(0);
+
     private boolean enabled;
     private boolean accountNonExpired;
     private boolean credentialsNonExpired;
@@ -229,6 +232,18 @@ public class User implements UserDetails, Comparable<User> {
         this.userNotifications = userNotifications;
     }
 
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "User_Factory_REF", schema = "dbo", catalog = "E_Document", joinColumns = {
+        @JoinColumn(name = "user_id", nullable = false, insertable = false, updatable = false)}, inverseJoinColumns = {
+        @JoinColumn(name = "factory_id", nullable = false, insertable = false, updatable = false)})
+    public Set<Factory> getFactorys() {
+        return factorys;
+    }
+
+    public void setFactorys(Set<Factory> factorys) {
+        this.factorys = factorys;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -302,6 +317,6 @@ public class User implements UserDetails, Comparable<User> {
 
     @Override
     public int compareTo(User o) {
-        return ObjectUtils.compare(this.id, o.getId()); 
+        return ObjectUtils.compare(this.id, o.getId());
     }
 }

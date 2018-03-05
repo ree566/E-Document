@@ -87,7 +87,7 @@ public class StandardTimeUpload {
 
         DateTime today = new DateTime();
 
-        Date startDate = today.minusWeeks(1).toDate();
+        Date startDate = today.minusDays(10).toDate();
         Date endDate = today.toDate();
 
         for (Worktime w : modifiedWorktimes) {
