@@ -38,6 +38,8 @@ public class BusinessGroup implements java.io.Serializable {
     private int id;
     private String name;
     private Set<Worktime> worktimes = new HashSet<>(0);
+    
+    @JsonIgnore
     private Set<Factory> factorys = new HashSet<>(0);
 
     @Id

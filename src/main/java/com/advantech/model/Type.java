@@ -13,6 +13,9 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -21,8 +24,8 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "Type",
-         schema = "dbo",
-         catalog = "E_Document"
+        schema = "dbo",
+        catalog = "E_Document"
 )
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Type implements java.io.Serializable {
@@ -30,6 +33,9 @@ public class Type implements java.io.Serializable {
     private int id;
     private String name;
     private Set<Worktime> worktimes = new HashSet<>(0);
+
+    @JsonIgnore
+    private Set<Factory> factorys = new HashSet<>(0);
 
     public Type() {
     }
@@ -74,6 +80,18 @@ public class Type implements java.io.Serializable {
 
     public void setWorktimes(Set<Worktime> worktimes) {
         this.worktimes = worktimes;
+    }
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "Type_Factory_REF", schema = "dbo", catalog = "E_Document", joinColumns = {
+        @JoinColumn(name = "type_id", nullable = false, updatable = false)}, inverseJoinColumns = {
+        @JoinColumn(name = "factory_id", nullable = false, updatable = false)})
+    public Set<Factory> getFactorys() {
+        return factorys;
+    }
+
+    public void setFactorys(Set<Factory> factorys) {
+        this.factorys = factorys;
     }
 
 }

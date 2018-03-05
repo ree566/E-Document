@@ -51,6 +51,9 @@ public class Flow implements java.io.Serializable, Comparable<Flow> {
     @JsonIgnore
     private Set<Worktime> worktimesForBabFlowId = new HashSet<Worktime>(0);
 
+    @JsonIgnore
+    private Set<Factory> factorys = new HashSet<>(0);
+
     public Flow() {
     }
 
@@ -150,6 +153,18 @@ public class Flow implements java.io.Serializable, Comparable<Flow> {
         this.worktimesForBabFlowId = worktimesForBabFlowId;
     }
 
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "Flow_Factory_REF", schema = "dbo", catalog = "E_Document", joinColumns = {
+        @JoinColumn(name = "flow_id", nullable = false, updatable = false)}, inverseJoinColumns = {
+        @JoinColumn(name = "factory_id", nullable = false, updatable = false)})
+    public Set<Factory> getFactorys() {
+        return factorys;
+    }
+
+    public void setFactorys(Set<Factory> factorys) {
+        this.factorys = factorys;
+    }
+
     @Override
     public int hashCode() {
         int hash = 7;
@@ -180,7 +195,7 @@ public class Flow implements java.io.Serializable, Comparable<Flow> {
 
     @Override
     public int compareTo(Flow o) {
-        return ObjectUtils.compare(this.id, o.getId()); 
+        return ObjectUtils.compare(this.id, o.getId());
     }
 
 }

@@ -23,18 +23,18 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserNotificationService {
 
     @Autowired
-    private UserNotificationDAO userProfileDAO;
+    private UserNotificationDAO userNotificationDAO;
 
     public List<UserNotification> findAll() {
-        return userProfileDAO.findAll();
+        return userNotificationDAO.findAll();
     }
 
     public UserNotification findByPrimaryKey(Object obj_id) {
-        return userProfileDAO.findByPrimaryKey(obj_id);
+        return userNotificationDAO.findByPrimaryKey(obj_id);
     }
 
     public List<User> findUsersByNotification(String name) {
-        UserNotification n = userProfileDAO.findByName(name);
+        UserNotification n = userNotificationDAO.findByName(name);
         List l = new ArrayList();
         if (n != null && n.enabled()) {
             l.addAll(n.getUsers());
@@ -43,15 +43,15 @@ public class UserNotificationService {
     }
 
     public int insert(UserNotification userProfile) {
-        return userProfileDAO.insert(userProfile);
+        return userNotificationDAO.insert(userProfile);
     }
 
     public int update(UserNotification userProfile) {
-        return userProfileDAO.update(userProfile);
+        return userNotificationDAO.update(userProfile);
     }
 
     public int delete(UserNotification userProfile) {
-        return userProfileDAO.delete(userProfile);
+        return userNotificationDAO.delete(userProfile);
     }
 
 }
