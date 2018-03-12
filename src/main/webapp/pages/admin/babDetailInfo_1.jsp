@@ -50,6 +50,7 @@
 
         <script>
             $(function () {
+
                 var momentFormatString = 'YYYY-MM-DD';
                 $(":text,input[type='number'],select").addClass("form-control");
                 $(":button").addClass("btn btn-default");
@@ -71,11 +72,6 @@
                     var lineType = $('#lineType').val();
                     var startDate = $('#fini').val();
                     var endDate = $('#ffin').val();
-
-                    if (modelName == null || modelName.trim() == "") {
-                        alert("請輸入機種");
-                        return false;
-                    }
 
                     getDetail(modelName, lineType, startDate, endDate);
                 });
@@ -120,6 +116,7 @@
             });
 
             function getDetail(modelName, lineType, startDate, endDate) {
+                $("#send").attr("disabled", true);
                 $("#BabDetail").DataTable({
                     dom: 'Bfrtip',
                     buttons: [
@@ -138,6 +135,9 @@
                             lineType: lineType,
                             startDate: startDate,
                             endDate: endDate
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            alert(xhr.responseText);
                         }
                     },
                     "columns": [
@@ -188,6 +188,7 @@
                     pageLength: 10,
                     destroy: true,
                     "initComplete": function (settings, json) {
+                        $("#send").attr("disabled", false);
                         $("#BabDetail").show();
                     },
                     "order": [[0, "asc"], [6, "asc"]]

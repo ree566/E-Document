@@ -2,6 +2,7 @@ package com.advantech.service;
 
 import com.advantech.model.Bab;
 import com.advantech.dao.BabDAO;
+import com.advantech.helper.PropertiesReader;
 import com.advantech.model.BabSettingHistory;
 import com.advantech.model.CellLineTypeRecord;
 import com.advantech.model.LineType;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import static com.google.common.base.Preconditions.*;
 import java.util.Date;
 import java.util.Objects;
+import javax.annotation.PostConstruct;
 import org.hibernate.Hibernate;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,6 +49,16 @@ public class BabService {
 
     @Autowired
     private LineTypeService lineTypeService;
+
+    @Autowired
+    private PropertiesReader p;
+
+    private boolean isResultWriteToOldDatabase;
+
+    @PostConstruct
+    private void init() {
+        isResultWriteToOldDatabase = p.getIsResultWriteToOldDatabase();
+    }
 
     public List<Bab> findAll() {
         return babDAO.findAll();
@@ -202,7 +214,9 @@ public class BabService {
 
     public int closeBabWithSaving(Bab b) {
         babDAO.closeBabWithSaving(b);
-        lineBalancingService.insert(b);
+        if (isResultWriteToOldDatabase) {
+            lineBalancingService.insert(b);
+        }
         return 1;
     }
 

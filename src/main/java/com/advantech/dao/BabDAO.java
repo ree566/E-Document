@@ -118,6 +118,7 @@ public class BabDAO extends AbstractDao<Integer, Bab> implements BasicDAO_1<Bab>
         c.createAlias("l.lineType", "lt");
         c.add(Restrictions.eq("replyStatus", ReplyStatus.UNREPLIED));
         c.add(Restrictions.eq("l.floor.id", floor_id));
+        c.add(Restrictions.lt("beginTime", new DateTime().withHourOfDay(0).toDate()));
         return c.list();
     }
 

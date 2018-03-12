@@ -61,16 +61,16 @@ public class TestDAO {
     @Autowired
     private SensorTransformDAO sensorTransformDAO;
 
-//    @Test
+    @Test
     @Transactional
     @Rollback(true)
     public void testBabDAO() throws JsonProcessingException {
-//        Bab b = babDAO.findByPrimaryKey(11262);
-//        assertNotNull(b);
-//        BabSettingHistory setting = new BabSettingHistory(b, 2, b.getLine().getName() + "-S-" + 2, "A-TEST");
-//        babSettingHistoryDAO.insert(setting);
-//        assertNotNull(setting.getCreateTime());
-//        HibernateObjectPrinter.print(setting);
+
+        for (int i = 1; i <= 4; i++) {
+            List l = babDAO.findUnReplyed(i);
+            assertTrue(l.isEmpty());
+        }
+
     }
 
 //    @Test
@@ -132,6 +132,5 @@ public class TestDAO {
         assertTrue(!l.isEmpty());
         HibernateObjectPrinter.print(l);
     }
-
 
 }

@@ -6,12 +6,12 @@
 package com.advantech.test;
 
 import com.advantech.facade.BabLineTypeFacade;
-import com.advantech.helper.ApplicationContextHelper;
+import com.advantech.helper.CustomPasswordEncoder;
 import com.advantech.helper.HibernateObjectPrinter;
-import com.advantech.helper.PropertiesReader;
 import com.advantech.model.Bab;
 import com.advantech.model.BabSettingHistory;
 import com.advantech.model.TagNameComparison;
+import com.advantech.model.User;
 import com.advantech.quartzJob.HandleUncloseBab;
 import com.advantech.service.BabSensorLoginRecordService;
 import com.advantech.service.BabService;
@@ -21,11 +21,8 @@ import com.advantech.service.TagNameComparisonService;
 import com.advantech.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import static java.util.stream.Collectors.toList;
 import javax.mail.MessagingException;
-import org.json.JSONException;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -69,6 +66,9 @@ public class TestService {
 
     @Autowired
     private BabLineTypeFacade bf;
+    
+    @Autowired
+    private CustomPasswordEncoder encoder;
 
     @Value("${endpoint.quartz.trigger}")
     private String endpointPollingCron;
@@ -133,18 +133,32 @@ public class TestService {
 //        babService.checkAndInsert(b, endpointPollingCron, t7);
     }
 
-    @Test
+//    @Test
     public void testBabSaving() {
         try {
-            
+
             Bab b = babService.findByPrimaryKey(14227);
 
             lineBalancingService.sendMail(b, 1, 1, 1);
-            
+
         } catch (MessagingException ex) {
 
         } catch (Exception ex1) {
             System.out.println(ex1);
+        }
+    }
+
+    @Test
+    @Transactional
+    @Rollback(false)
+    public void testUserService() {
+
+        int[] ids = {23, 24, 25, 26};
+
+        for (int id : ids) {
+            User u = userService.findByPrimaryKey(id);
+            u.setPassword(encoder.encode(u.getPassword()));
+            userService.update(u);
         }
     }
 

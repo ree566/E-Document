@@ -40,8 +40,8 @@ public class UserDAO extends AbstractDao<Integer, User> implements BasicDAO_1<Us
                 .setParameter("line_id", line_id)
                 .list();
     }
-    
-    public List<User> findLineOwnerBySitefloor(int floor_id){
+
+    public List<User> findLineOwnerBySitefloor(int floor_id) {
         return getSession()
                 .createQuery("select distinct u from User u left join u.lines line where line.floor.id = :floor_id")
                 .setParameter("floor_id", floor_id)
@@ -54,7 +54,7 @@ public class UserDAO extends AbstractDao<Integer, User> implements BasicDAO_1<Us
                 .setParameter("notification_name", notification_name)
                 .list();
     }
-    
+
     public List<User> findByUserNotificationAndNotLineOwner(String notification_name) {
         return getSession()
                 .createQuery("select u from User u join u.userNotifications noti "
@@ -63,7 +63,7 @@ public class UserDAO extends AbstractDao<Integer, User> implements BasicDAO_1<Us
                 .setParameter("notification_name", notification_name)
                 .list();
     }
-    
+
     public List<User> findByUserNotificationAndNotLineOwner(int floor_id, String notification_name) {
         return getSession()
                 .createQuery("select u from User u join u.userNotifications noti "
@@ -76,17 +76,20 @@ public class UserDAO extends AbstractDao<Integer, User> implements BasicDAO_1<Us
 
     @Override
     public int insert(User pojo) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        super.getSession().save(pojo);
+        return 1;
     }
 
     @Override
     public int update(User pojo) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        super.getSession().update(pojo);
+        return 1;
     }
 
     @Override
     public int delete(User pojo) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        super.getSession().delete(pojo);
+        return 1;
     }
 
 }

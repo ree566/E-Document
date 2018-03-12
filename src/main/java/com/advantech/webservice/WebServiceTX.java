@@ -25,7 +25,7 @@ public class WebServiceTX {
 
     private URL url;//webservice位置(放在專案中，因為url無法讀取，裏頭標籤衝突)
     private static final Logger log = LoggerFactory.getLogger(WebServiceTX.class);
-    
+
     @Autowired
     private WebServiceRV rv;
 
@@ -46,7 +46,11 @@ public class WebServiceTX {
 
     private void sendData(String data, UploadType uploadType) {
         String st = this.simpleTxSendAndReceive(data, uploadType.toString());
-        checkState(!"OK".equals(st), st);
+        try {
+            checkState("OK".equals(st), st);
+        } catch (RuntimeException e) {
+            log.error(e.getMessage());
+        }
     }
 
     public void kanbanUserLogin(String jobnumber) {
@@ -93,7 +97,7 @@ public class WebServiceTX {
     }
 
     private void checkUserIsAvailable(UserOnMes user) {
-        checkArgument(user == null || user.getUserId() == null || user.getUserNo() == null, "The user is not exist.");
+        checkArgument(user != null && user.getUserId() != null && user.getUserNo() != null, "The user is not exist.");
     }
 
 }

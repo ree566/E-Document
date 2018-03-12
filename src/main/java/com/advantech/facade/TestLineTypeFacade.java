@@ -104,7 +104,7 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
                         String tableName = table.getName();
                         int status;
 
-                        if (productivity < TEST_STANDARD_MIN && productivity > TEST_STANDARD_MAX) {
+                        if (productivity < TEST_STANDARD_MIN || productivity > TEST_STANDARD_MAX) {
                             status = ALARM_SIGN;
                             dataMap.put(tableName, ALARM_SIGN);
                             isSomeoneUnderStandard = true;

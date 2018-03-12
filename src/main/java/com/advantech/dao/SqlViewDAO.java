@@ -5,6 +5,7 @@
  */
 package com.advantech.dao;
 
+import com.advantech.model.Floor;
 import com.advantech.model.view.BabAvg;
 import com.advantech.model.view.BabLastGroupStatus;
 import com.advantech.model.view.SensorCurrentGroupStatus;
@@ -12,6 +13,7 @@ import com.advantech.model.view.UserInfoRemote;
 import com.advantech.model.view.Worktime;
 import java.util.List;
 import java.util.Map;
+import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.transform.Transformers;
 import org.hibernate.type.StandardBasicTypes;
@@ -101,7 +103,12 @@ public class SqlViewDAO extends AbstractDao<Integer, Object> {
 
     //Join detail with alarmPercent in /pages/admin/BabTotal page
     public List<Map> findBabDetail(String lineTypeName, String sitefloorName, DateTime sD, DateTime eD, boolean isAboveStandard) {
-        return super.getSession()
+        Session session = super.getSession();
+        if (!"-1".equals(sitefloorName)) {
+            Floor f = session.get(Floor.class, Integer.parseInt(sitefloorName));
+            sitefloorName = f.getName();
+        }
+        return session
                 .createSQLQuery("{CALL usp_GetBabDetail(:lineTypeName, :sitefloorName, :sD, :eD, :minPcs)}")
                 .setParameter("lineTypeName", lineTypeName)
                 .setParameter("sitefloorName", sitefloorName)
