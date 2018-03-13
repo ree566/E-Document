@@ -39,23 +39,23 @@ public class TestSqlReport {
     @Transactional
     @Rollback(true)
     public void testCountermeasureForExcel() {
-        List l = systemReportService.getCountermeasureForExcel("18/01/01", "18/02/01");
-        HibernateObjectPrinter.print(l);
+//        List l = systemReportService.getCountermeasureForExcel("18/01/01", "18/02/01");
+//        HibernateObjectPrinter.print(l);
     }
     
     @Test
     @Transactional
     @Rollback(true)
     public void testPersonalAlmForExcel() {
-        List l = systemReportService.getPersonalAlmForExcel("18/01/01", "18/02/01");
-        HibernateObjectPrinter.print(l);
+//        List l = systemReportService.getPersonalAlmForExcel("18/01/01", "18/02/01");
+//        HibernateObjectPrinter.print(l);
     }
     
     @Test
     @Transactional
     @Rollback(true)
     public void testEmptyRecordDownExcel() {
-        List l = systemReportService.getEmptyRecordDownExcel("18/01/01", "18/02/01");
-        HibernateObjectPrinter.print(l);
+//        List l = systemReportService.getEmptyRecordDownExcel("18/01/01", "18/02/01");
+//        HibernateObjectPrinter.print(l);
     }
 }

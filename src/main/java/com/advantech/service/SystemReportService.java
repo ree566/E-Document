@@ -24,22 +24,20 @@ public class SystemReportService {
     @Autowired
     private SystemReportDao systemReportDao;
 
-    public List<Map> getCountermeasureForExcel(String startDate, String endDate) {
-        return systemReportDao.getCountermeasureForExcel(startDate, endDate);
+    public List<Map> getCountermeasureForExcel(String lineTypeName, int floorId, String startDate, String endDate, boolean isAboveStandard) {
+        return systemReportDao.getCountermeasureForExcel(lineTypeName, floorId, startDate, endDate, isAboveStandard);
     }
 
-    public List<Map> getPersonalAlmForExcel(String startDate, String endDate) {
-        return systemReportDao.getPersonalAlmForExcel(startDate, endDate);
+    public List<Map> getPersonalAlmForExcel(String lineTypeName, int floorId, String startDate, String endDate, boolean isAboveStandard) {
+        return systemReportDao.getPersonalAlmForExcel(lineTypeName, floorId, startDate, endDate, isAboveStandard);
     }
 
     public List<Map> getCountermeasureAndPersonalAlm(String startDate, String endDate) {
         return systemReportDao.getCountermeasureAndPersonalAlm(startDate, endDate);
     }
 
-    public List<Map> getEmptyRecordDownExcel(String startDate, String endDate) {
-        return systemReportDao.getEmptyRecordDownExcel(startDate, endDate);
+    public List<Map> getEmptyRecordDownExcel(String lineTypeName, int floorId, String startDate, String endDate) {
+        return systemReportDao.getEmptyRecordDownExcel(lineTypeName, floorId, startDate, endDate);
     }
-
-   
 
 }

@@ -63,16 +63,18 @@ public class ExcelExportController {
 
         this.lineType = lineType;
         this.sitefloor = sitefloor;
-        
+
         startDate = startDate.withHourOfDay(0);
         endDate = endDate.withHourOfDay(23);
 
         String sD = fmt.print(startDate);
         String eD = fmt.print(endDate);
 
+        int floorId = Integer.parseInt(sitefloor);
+
         List<Map> data = fitData(reportService.getCountermeasureAndPersonalAlm(sD, eD));
-        List<Map> emptyRecords = fitData(reportService.getEmptyRecordDownExcel(sD, eD));
-        
+        List<Map> emptyRecords = reportService.getEmptyRecordDownExcel(lineType, floorId, sD, eD);
+
         List list2 = transformEfficiencyReportPattern(data);//把各站亮燈頻率合併為橫式(類似 sql 的 Group by格式)
         List list3 = emptyRecords;
 
@@ -111,11 +113,13 @@ public class ExcelExportController {
         String sD = fmt.print(startDate);
         String eD = fmt.print(endDate);
 
+        int floorId = Integer.parseInt(sitefloor);
+
         //http://stackoverflow.com/questions/13853300/jquery-file-download-filedownload
         //personalAlm記得轉格式才能special Excel generate
-        List<Map> countermeasures = fitData(reportService.getCountermeasureForExcel(sD, eD));
-        List<Map> personalAlarms = fitData(reportService.getPersonalAlmForExcel(sD, eD));
-        List<Map> emptyRecords = fitData(reportService.getEmptyRecordDownExcel(sD, eD));
+        List<Map> countermeasures = reportService.getCountermeasureForExcel(lineType, floorId, sD, eD, aboveStandard);
+        List<Map> personalAlarms = reportService.getPersonalAlmForExcel(lineType, floorId, sD, eD, aboveStandard);
+        List<Map> emptyRecords = reportService.getEmptyRecordDownExcel(lineType, floorId, sD, eD);
 
         List list = countermeasures;
         List list2 = transformPersonalAlmDataPattern(personalAlarms);//把各站亮燈頻率合併為橫式(類似 sql 的 Group by格式)
@@ -265,7 +269,7 @@ public class ExcelExportController {
                 baseId = (int) m.get(idFieldName);
             } else if (baseMap != null && (int) m.get(idFieldName) == baseId) {
                 if ((int) m.get(stationFieldName) != 1) {
-                    baseMap.replace(tagNameFieldName, 
+                    baseMap.replace(tagNameFieldName,
                             baseMap.get(tagNameFieldName).toString() + ", " + m.get(tagNameFieldName).toString());
                 }
                 baseMap.put(userIdFieldName + m.get(stationFieldName), m.get(userIdFieldName));
