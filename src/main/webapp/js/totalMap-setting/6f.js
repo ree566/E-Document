@@ -3,44 +3,38 @@ var pYa = 0;
 
 var mapInfo = {
     titleName: "東湖廠6樓",
-    x: 950,
-    y: 50
+    x: 30,
+    y: 395
 };
 
 var titleGroup = [
     //assy
-    {lineName: "L1", x: 810, y: 265},
-    {lineName: "L2", x: 810, y: 175},
-    {lineName: "L3", x: 810, y: 105},
-    {lineName: "L4", x: 810, y: 25},
+    {lineName: "L1", x: 1055, y: 260},
+    {lineName: "L2", x: 1055, y: 155},
+    {lineName: "L3", x: 1055, y: 90},
+    {lineName: "L4", x: 1055, y: 0},
     //pkg
-    {lineName: "L6", x: 90, y: 235},
-    {lineName: "L7", x: 90, y: 150},
-    {lineName: "L8", x: 285, y: 175},
-    {lineName: "L9", x: 285, y: 290},
-    {lineName: "CELL", x: 980, y: 185}
+    {lineName: "L6", x: 310, y: 195},
+    {lineName: "L7", x: 310, y: 100},
+    {lineName: "L8", x: 510, y: 160},
+    {lineName: "L9", x: 510, y: 290}
+//    {lineName: "CELL", x: 980, y: 185}
 ];
 var testGroup = [
-    {people: 4, x: 315, y: 80}, // group 39-42
-    {people: 4, x: 315, y: 130}, // group 35-38
-    {people: 5, x: 350, y: 200}, // group 30-34
-    {people: 5, x: 350, y: 280} // group 25-29
+    {people: 4, x: 545, y: 15}, // group 39-42
+    {people: 4, x: 545, y: 105}, // group 35-38
+    {people: 5, x: 590, y: 180}, // group 30-34
+    {people: 5, x: 595, y: 275} // group 25-29
 ];
 var babGroup = [
-    {people: 8, x: 530, y: 270, lineName: "L1"},
-    {people: 8, x: 530, y: 190, lineName: "L2"},
-    {people: 7, x: 530, y: 130, lineName: "L3"},
-    {people: 7, x: 530, y: 50, lineName: "L4"},
-    {people: 3, x: 0, y: 200, lineName: "L6"},
-    {people: 3, x: 8, y: 115, lineName: "L7"},
-    {people: 4, x: 145, y: 200, lineName: "L8"},
-    {people: 4, x: 135, y: 290, lineName: "L9"},
-    {people: 1, x: 910, y: 290, lineName: "CELL-10"},
-    {people: 1, x: 990, y: 290, lineName: "CELL-11"},
-    {people: 1, x: 1070, y: 290, lineName: "CELL-12"},
-    {people: 1, x: 1150, y: 290, lineName: "CELL-13"},
-    {people: 1, x: 890, y: 430, lineName: "CELL-14"},
-    {people: 1, x: 960, y: 430, lineName: "CELL-15"}
+    {people: 8, x: 770, y: 260, lineName: "L1"},
+    {people: 8, x: 770, y: 165, lineName: "L2"},
+    {people: 7, x: 770, y: 105, lineName: "L3"},
+    {people: 7, x: 770, y: 10, lineName: "L4"},
+    {people: 3, x: 205, y: 180, lineName: "L6"},
+    {people: 3, x: 205, y: 105, lineName: "L7"},
+    {people: 4, x: 365, y: 175, lineName: "L8"},
+    {people: 4, x: 365, y: 275, lineName: "L9"}
 ];
 
 var maxTestTableNo = 42;
