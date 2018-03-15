@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  *
  * @author Wei.Cheng
  */
-@Controller
+//@Controller
 @RequestMapping(value = "/Pending")
 public class PendingController extends CrudController<Pending> {
 

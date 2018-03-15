@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.advantech</groupId>
-    <artifactId>E-Document</artifactId>
+    <artifactId>E-Document-M6</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>war</packaging>
 
@@ -635,7 +635,7 @@
                 <version>2.15</version>
                 <configuration>
                     <argLine>-Dfile.encoding=UTF-8</argLine>
-                    <skipTests>true</skipTests>
+                    <skipTests>false</skipTests>
                 </configuration>
             </plugin>
         </plugins>

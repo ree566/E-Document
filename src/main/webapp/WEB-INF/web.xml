@@ -5,7 +5,7 @@
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
          version="3.0">
     
-    <display-name>E-Document</display-name>
+    <display-name>E-Document-M6</display-name>
     
     <welcome-file-list>
         <welcome-file>login.jsp</welcome-file>
@@ -15,7 +15,7 @@
     
     <context-param>
         <param-name>pageTitle</param-name>
-        <param-value>E-Document</param-value>
+        <param-value>E-Document-M6</param-value>
     </context-param>
     
     <context-param>

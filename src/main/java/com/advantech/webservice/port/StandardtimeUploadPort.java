@@ -94,14 +94,14 @@ public class StandardtimeUploadPort extends BasicUploadPort implements UploadPor
         swt.setMIXCT(totalCt); //Temporarily set this column equal to totalCt
 
         if ("B".equals(columnUnit) && setting.getStationId() != null) {
-            swt.setMACHINECNT(w.getAssyStation());
-            swt.setOPCNT(w.getAssyStation());
+//            swt.setMACHINECNT(w.getAssyStation());
+//            swt.setOPCNT(w.getAssyStation());
         } else if ("P".equals(columnUnit) && setting.getStationId() != null) {
-            swt.setMACHINECNT(w.getPackingStation());
-            swt.setOPCNT(2);
+//            swt.setMACHINECNT(w.getPackingStation());
+//            swt.setOPCNT(2);
         } else {
-            swt.setMACHINECNT(0);
-            swt.setOPCNT(1);
+//            swt.setMACHINECNT(0);
+//            swt.setOPCNT(1);
         }
         super.upload(root, UploadType.INSERT);
     }

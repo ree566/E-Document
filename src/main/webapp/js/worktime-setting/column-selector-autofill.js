@@ -48,10 +48,9 @@ var businessGroup_select_event = [
         type: 'change', fn: function (e) {
             var selectOption = $('option:selected', this).text();
             var defaultValue = {
-                IAG: "ASSY",
-                EDIS: "ASS-01",
-                SAG: "ASS-02",
-                ES: "ES"
+                ECG: "LCD_ENHS",
+                ES: "LCD_ES",
+                Module: "LCD_MOD"
             };
             $('input#workCenter').val(defaultValue[selectOption]);
         }

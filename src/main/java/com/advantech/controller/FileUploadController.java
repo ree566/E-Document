@@ -98,176 +98,176 @@ public class FileUploadController {
     @RequestMapping(value = "/uploadFile", method = RequestMethod.POST)
     public String uploadFileHandler(@RequestParam("file") MultipartFile file) {
         String message = "";
-        String flowRegex = "[^a-zA-Z0-9\\_\\-\\\\(\\\\)]+";
-
-        Workbook workbook = null;
-        int i = 0;
-        if (l == null) {
-            l = new ArrayList();
-        }
-
-        InputStream inputStream = null;
-
-        try {
-            inputStream = file.getInputStream();
-            if (l.isEmpty()) {
-                Map<String, Floor> floorOptions = this.tranToIdNameCompare(floorService.findByPrimaryKeys(1, 2));
-                Map<String, User> userOptions = this.tranToIdNameCompare(userService.findAll());
-                Map<String, Type> typeOptions = this.tranToIdNameCompare(typeService.findByPrimaryKeys(6, 9, 10));
-                Pending pendingN = pendingService.findByPrimaryKey(3);
-
-                Map<String, Flow> flowOptions = new HashMap();
-                List<Flow> flows = flowService.findFlowWithSub();
-                for (Flow f : flows) {
-                    flowOptions.put(f.getName().replaceAll(flowRegex, ""), f);
-                }
-
-                workbook = WorkbookFactory.create(inputStream);
-
-                Sheet sheet = workbook.getSheetAt(0);
-
-                int maxNumberfRows = sheet.getPhysicalNumberOfRows();
-
-                for (i = 1; i < maxNumberfRows; i++) {
-                    // 由於第 0 Row 為 title, 故 i 從 1 開始
-
-                    Row row = sheet.getRow(i); // 取得第 i Row
-                    if (row != null) {
-                        Cell cell_A = CellUtil.getCell(row, CellReference.convertColStringToIndex("A"));
-                        cell_A.setCellType(CellType.STRING);
-
-                        Worktime w = new Worktime();
-                        w.setFloor(floorOptions.get((String) getCellValue(row, "V")));
-
-                        Object babFlowName = getCellValue(row, "AF");
-                        if (babFlowName != null) {
-                            babFlowName = babFlowName.toString().replaceAll(flowRegex, "");
-                            Flow babFlow = flowOptions.get(((String) babFlowName));
-                            if (babFlow == null) {
-                                System.out.println(babFlowName);
-                                throw new Exception("bab flow not found");
-                            }
-                            w.setFlowByBabFlowId(babFlow);
-                        }
-
-                        Object testFlowName = getCellValue(row, "AG");
-                        if (testFlowName != null) {
-                            testFlowName = testFlowName.toString().replaceAll(flowRegex, "");
-                            Flow testFlow = flowOptions.get(((String) testFlowName));
-                            if (testFlow == null) {
-                                System.out.println(testFlowName);
-                                throw new Exception("test flow not found");
-                            }
-                            w.setFlowByTestFlowId(testFlow);
-                        }
-
-                        w.setFlowByPackingFlowId(getCellValue(row, "AH") == null ? null : flowOptions.get("PKG"));
-
-                        Object eeSheet = getCellValue(row, "AA");
-                        User eeUser = eeSheet == null ? null : userOptions.get(eeSheet.toString().trim().toLowerCase());
-                        w.setUserByEeOwnerId(eeUser);
-                        w.setUserByQcOwnerId(userOptions.get(((String) getCellValue(row, "AB")).trim().toLowerCase()));
-                        w.setUserBySpeOwnerId(userOptions.get(((String) getCellValue(row, "Z")).trim().toLowerCase()));
-                        w.setType(typeOptions.get(getCellValue(row, "B").toString()));
-                        w.setModelName((String) getCellValue(row, "A"));
-                        w.setTotalModule(objToBigDecimal(getCellValue(row, "D")));
-                        w.setCleanPanel(objToBigDecimal(getCellValue(row, "F")));
-                        w.setAssy(objToBigDecimal(getCellValue(row, "G")));
-                        w.setT1(objToBigDecimal(getCellValue(row, "H")));
-                        w.setT2(objToBigDecimal(getCellValue(row, "I")));
-                        w.setT3(objToBigDecimal(getCellValue(row, "J")));
-                        w.setT4(objToBigDecimal(getCellValue(row, "K")));
-                        w.setPacking(objToBigDecimal(getCellValue(row, "L")));
-                        w.setUpBiRi(objToBigDecimal(getCellValue(row, "M")));
-                        w.setDownBiRi(objToBigDecimal(getCellValue(row, "N")));
-                        w.setBiCost(objToBigDecimal(getCellValue(row, "O")));
-                        w.setVibration(objToBigDecimal(getCellValue(row, "P")));
-                        w.setHiPotLeakage(objToBigDecimal(getCellValue(row, "Q")));
-                        w.setColdBoot(objToBigDecimal(getCellValue(row, "R")));
-                        w.setWarmBoot(objToBigDecimal(getCellValue(row, "S")));
-                        w.setBurnIn(getCellValue(row, "W") == null ? "N" : (String) getCellValue(row, "W"));
-
-                        BigDecimal biTime = objToBigDecimal(getCellValue(row, "X"));
-                        w.setBiTime(biTime == null ? BigDecimal.ZERO : biTime); //Not null
-
-                        BigDecimal biTemperature = objToBigDecimal(getCellValue(row, "Y"));
-                        w.setBiTemperature(biTemperature == null ? BigDecimal.ZERO : biTemperature); //Not null
-
-                        BigDecimal keypartA = objToBigDecimal(getCellValue(row, "AD"));
-                        w.setKeypartA(keypartA == null ? null : keypartA.intValue());
-
-                        BigDecimal keypartB = objToBigDecimal(getCellValue(row, "AE"));
-                        w.setKeypartB(keypartB == null ? null : keypartB.intValue());
-                        w.setPartLink(getCellValue(row, "AI") == null ? null : ((String) getCellValue(row, "AI")).charAt(0));
-                        w.setCe(getCellValue(row, "AJ") == null ? 0 : 1);
-                        w.setUl(getCellValue(row, "AK") == null ? 0 : 1);
-                        w.setRohs(getCellValue(row, "AL") == null ? 0 : 1);
-                        w.setWeee(getCellValue(row, "AM") == null ? 0 : 1);
-                        w.setMadeInTaiwan(getCellValue(row, "AN") == null ? 0 : 1);
-                        w.setFcc(getCellValue(row, "AO") == null ? 0 : 1);
-                        w.setEac(getCellValue(row, "AP") == null ? 0 : 1);
-                        w.setNsInOneCollectionBox(objToBigDecimal(getCellValue(row, "AQ")));
-                        w.setPartNoAttributeMaintain(getCellValue(row, "AR") == null ? 'N' : (getCellValue(row, "AR")).toString().charAt(0));
-                        w.setAssyLeadTime(objToBigDecimal(getCellValue(row, "AU")));
-                        w.setPackingLeadTime(objToBigDecimal(getCellValue(row, "AW")));
-                        w.setProductionWt(objToBigDecimal(getCellValue(row, "C")));
-                        w.setSetupTime(objToBigDecimal(getCellValue(row, "E")));
-                        w.setAssyToT1(objToBigDecimal(getCellValue(row, "T")));
-                        w.setT2ToPacking(objToBigDecimal(getCellValue(row, "U")));
-
-                        BigDecimal assyStation = objToBigDecimal(getCellValue(row, "AS"));
-                        w.setAssyStation(assyStation == null ? null : assyStation.intValue());
-
-                        BigDecimal packingStation = objToBigDecimal(getCellValue(row, "AT"));
-                        w.setPackingStation(packingStation == null ? null : packingStation.intValue());
-
-                        w.setAssyKanbanTime(objToBigDecimal(getCellValue(row, "AV")));
-                        w.setPackingKanbanTime(objToBigDecimal(getCellValue(row, "AX")));
-                        w.setCleanPanelAndAssembly(objToBigDecimal(getCellValue(row, "BB")));
-                        w.setPending(pendingN);
-                        w.setPendingTime(BigDecimal.ZERO);
-                        w.setAssyPackingSop(getCellValue(row, "AC") == null ? null : (String) getCellValue(row, "AC"));
-
-                        WorktimeFormulaSetting setting = new WorktimeFormulaSetting();
-
-                        setting.setAssyKanbanTime(isFormula(row, "AV"));
-                        setting.setAssyStation(isFormula(row, "AS"));
-                        setting.setPackingKanbanTime(isFormula(row, "AX"));
-                        setting.setPackingStation(isFormula(row, "AT"));
-                        setting.setAssyToT1(isFormula(row, "T"));
-                        setting.setT2ToPacking(isFormula(row, "U"));
-                        setting.setProductionWt(isFormula(row, "C"));
-                        setting.setSetupTime(isFormula(row, "E"));
-                        setting.setCleanPanelAndAssembly(isFormula(row, "BB"));
-
-                        w.setWorktimeFormulaSettings(newArrayList(setting));
-                        l.add(w);
-                    } else {
-                        break;
-                    }
-                }
-            }
-            worktimeService.saveOrUpdate(l);
-            message = "Data init done.";
-        } catch (IOException | IllegalAccessException | NoSuchMethodException | InvocationTargetException | EncryptedDocumentException | InvalidFormatException ex) {
-            System.out.println(ex);
-            message = ex.getMessage();
-        } catch (Exception ex) {
-            System.out.println(ex);
-            message = "Error initialize object at row number " + (i + 1);
-        } finally {
-            try {
-                if (workbook != null) {
-                    workbook.close();
-                }
-
-                if (inputStream != null) {
-                    inputStream.close();
-                }
-            } catch (IOException ex) {
-                System.out.println(ex);
-            }
-        }
+//        String flowRegex = "[^a-zA-Z0-9\\_\\-\\\\(\\\\)]+";
+//
+//        Workbook workbook = null;
+//        int i = 0;
+//        if (l == null) {
+//            l = new ArrayList();
+//        }
+//
+//        InputStream inputStream = null;
+//
+//        try {
+//            inputStream = file.getInputStream();
+//            if (l.isEmpty()) {
+//                Map<String, Floor> floorOptions = this.tranToIdNameCompare(floorService.findByPrimaryKeys(1, 2));
+//                Map<String, User> userOptions = this.tranToIdNameCompare(userService.findAll());
+//                Map<String, Type> typeOptions = this.tranToIdNameCompare(typeService.findByPrimaryKeys(6, 9, 10));
+//                Pending pendingN = pendingService.findByPrimaryKey(3);
+//
+//                Map<String, Flow> flowOptions = new HashMap();
+//                List<Flow> flows = flowService.findFlowWithSub();
+//                for (Flow f : flows) {
+//                    flowOptions.put(f.getName().replaceAll(flowRegex, ""), f);
+//                }
+//
+//                workbook = WorkbookFactory.create(inputStream);
+//
+//                Sheet sheet = workbook.getSheetAt(0);
+//
+//                int maxNumberfRows = sheet.getPhysicalNumberOfRows();
+//
+//                for (i = 1; i < maxNumberfRows; i++) {
+//                    // 由於第 0 Row 為 title, 故 i 從 1 開始
+//
+//                    Row row = sheet.getRow(i); // 取得第 i Row
+//                    if (row != null) {
+//                        Cell cell_A = CellUtil.getCell(row, CellReference.convertColStringToIndex("A"));
+//                        cell_A.setCellType(CellType.STRING);
+//
+//                        Worktime w = new Worktime();
+//                        w.setFloor(floorOptions.get((String) getCellValue(row, "V")));
+//
+//                        Object babFlowName = getCellValue(row, "AF");
+//                        if (babFlowName != null) {
+//                            babFlowName = babFlowName.toString().replaceAll(flowRegex, "");
+//                            Flow babFlow = flowOptions.get(((String) babFlowName));
+//                            if (babFlow == null) {
+//                                System.out.println(babFlowName);
+//                                throw new Exception("bab flow not found");
+//                            }
+//                            w.setFlowByBabFlowId(babFlow);
+//                        }
+//
+//                        Object testFlowName = getCellValue(row, "AG");
+//                        if (testFlowName != null) {
+//                            testFlowName = testFlowName.toString().replaceAll(flowRegex, "");
+//                            Flow testFlow = flowOptions.get(((String) testFlowName));
+//                            if (testFlow == null) {
+//                                System.out.println(testFlowName);
+//                                throw new Exception("test flow not found");
+//                            }
+//                            w.setFlowByTestFlowId(testFlow);
+//                        }
+//
+//                        w.setFlowByPackingFlowId(getCellValue(row, "AH") == null ? null : flowOptions.get("PKG"));
+//
+//                        Object eeSheet = getCellValue(row, "AA");
+//                        User eeUser = eeSheet == null ? null : userOptions.get(eeSheet.toString().trim().toLowerCase());
+//                        w.setUserByEeOwnerId(eeUser);
+//                        w.setUserByQcOwnerId(userOptions.get(((String) getCellValue(row, "AB")).trim().toLowerCase()));
+//                        w.setUserBySpeOwnerId(userOptions.get(((String) getCellValue(row, "Z")).trim().toLowerCase()));
+//                        w.setType(typeOptions.get(getCellValue(row, "B").toString()));
+//                        w.setModelName((String) getCellValue(row, "A"));
+//                        w.setTotalModule(objToBigDecimal(getCellValue(row, "D")));
+//                        w.setCleanPanel(objToBigDecimal(getCellValue(row, "F")));
+//                        w.setAssy(objToBigDecimal(getCellValue(row, "G")));
+//                        w.setT1(objToBigDecimal(getCellValue(row, "H")));
+//                        w.setT2(objToBigDecimal(getCellValue(row, "I")));
+//                        w.setT3(objToBigDecimal(getCellValue(row, "J")));
+//                        w.setT4(objToBigDecimal(getCellValue(row, "K")));
+//                        w.setPacking(objToBigDecimal(getCellValue(row, "L")));
+//                        w.setUpBiRi(objToBigDecimal(getCellValue(row, "M")));
+//                        w.setDownBiRi(objToBigDecimal(getCellValue(row, "N")));
+//                        w.setBiCost(objToBigDecimal(getCellValue(row, "O")));
+//                        w.setVibration(objToBigDecimal(getCellValue(row, "P")));
+//                        w.setHiPotLeakage(objToBigDecimal(getCellValue(row, "Q")));
+//                        w.setColdBoot(objToBigDecimal(getCellValue(row, "R")));
+//                        w.setWarmBoot(objToBigDecimal(getCellValue(row, "S")));
+//                        w.setBurnIn(getCellValue(row, "W") == null ? "N" : (String) getCellValue(row, "W"));
+//
+//                        BigDecimal biTime = objToBigDecimal(getCellValue(row, "X"));
+//                        w.setBiTime(biTime == null ? BigDecimal.ZERO : biTime); //Not null
+//
+//                        BigDecimal biTemperature = objToBigDecimal(getCellValue(row, "Y"));
+//                        w.setBiTemperature(biTemperature == null ? BigDecimal.ZERO : biTemperature); //Not null
+//
+//                        BigDecimal keypartA = objToBigDecimal(getCellValue(row, "AD"));
+//                        w.setKeypartA(keypartA == null ? null : keypartA.intValue());
+//
+//                        BigDecimal keypartB = objToBigDecimal(getCellValue(row, "AE"));
+//                        w.setKeypartB(keypartB == null ? null : keypartB.intValue());
+//                        w.setPartLink(getCellValue(row, "AI") == null ? null : ((String) getCellValue(row, "AI")).charAt(0));
+//                        w.setCe(getCellValue(row, "AJ") == null ? 0 : 1);
+//                        w.setUl(getCellValue(row, "AK") == null ? 0 : 1);
+//                        w.setRohs(getCellValue(row, "AL") == null ? 0 : 1);
+//                        w.setWeee(getCellValue(row, "AM") == null ? 0 : 1);
+//                        w.setMadeInTaiwan(getCellValue(row, "AN") == null ? 0 : 1);
+//                        w.setFcc(getCellValue(row, "AO") == null ? 0 : 1);
+//                        w.setEac(getCellValue(row, "AP") == null ? 0 : 1);
+//                        w.setNsInOneCollectionBox(objToBigDecimal(getCellValue(row, "AQ")));
+//                        w.setPartNoAttributeMaintain(getCellValue(row, "AR") == null ? 'N' : (getCellValue(row, "AR")).toString().charAt(0));
+//                        w.setAssyLeadTime(objToBigDecimal(getCellValue(row, "AU")));
+//                        w.setPackingLeadTime(objToBigDecimal(getCellValue(row, "AW")));
+//                        w.setProductionWt(objToBigDecimal(getCellValue(row, "C")));
+//                        w.setSetupTime(objToBigDecimal(getCellValue(row, "E")));
+//                        w.setAssyToT1(objToBigDecimal(getCellValue(row, "T")));
+//                        w.setT2ToPacking(objToBigDecimal(getCellValue(row, "U")));
+//
+//                        BigDecimal assyStation = objToBigDecimal(getCellValue(row, "AS"));
+//                        w.setAssyStation(assyStation == null ? null : assyStation.intValue());
+//
+//                        BigDecimal packingStation = objToBigDecimal(getCellValue(row, "AT"));
+//                        w.setPackingStation(packingStation == null ? null : packingStation.intValue());
+//
+//                        w.setAssyKanbanTime(objToBigDecimal(getCellValue(row, "AV")));
+//                        w.setPackingKanbanTime(objToBigDecimal(getCellValue(row, "AX")));
+//                        w.setCleanPanelAndAssembly(objToBigDecimal(getCellValue(row, "BB")));
+//                        w.setPending(pendingN);
+//                        w.setPendingTime(BigDecimal.ZERO);
+//                        w.setAssyPackingSop(getCellValue(row, "AC") == null ? null : (String) getCellValue(row, "AC"));
+//
+//                        WorktimeFormulaSetting setting = new WorktimeFormulaSetting();
+//
+//                        setting.setAssyKanbanTime(isFormula(row, "AV"));
+//                        setting.setAssyStation(isFormula(row, "AS"));
+//                        setting.setPackingKanbanTime(isFormula(row, "AX"));
+//                        setting.setPackingStation(isFormula(row, "AT"));
+//                        setting.setAssyToT1(isFormula(row, "T"));
+//                        setting.setT2ToPacking(isFormula(row, "U"));
+//                        setting.setProductionWt(isFormula(row, "C"));
+//                        setting.setSetupTime(isFormula(row, "E"));
+//                        setting.setCleanPanelAndAssembly(isFormula(row, "BB"));
+//
+//                        w.setWorktimeFormulaSettings(newArrayList(setting));
+//                        l.add(w);
+//                    } else {
+//                        break;
+//                    }
+//                }
+//            }
+//            worktimeService.saveOrUpdate(l);
+//            message = "Data init done.";
+//        } catch (IOException | IllegalAccessException | NoSuchMethodException | InvocationTargetException | EncryptedDocumentException | InvalidFormatException ex) {
+//            System.out.println(ex);
+//            message = ex.getMessage();
+//        } catch (Exception ex) {
+//            System.out.println(ex);
+//            message = "Error initialize object at row number " + (i + 1);
+//        } finally {
+//            try {
+//                if (workbook != null) {
+//                    workbook.close();
+//                }
+//
+//                if (inputStream != null) {
+//                    inputStream.close();
+//                }
+//            } catch (IOException ex) {
+//                System.out.println(ex);
+//            }
+//        }
         return message;
     }
 

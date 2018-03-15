@@ -1,17 +1,20 @@
 //Js檔用來給予下拉式表單使用(unit可編輯欄位需要區隔，記錄在db之中)
+//Js檔用來給予下拉式表單使用(unit可編輯欄位需要區隔，記錄在db之中)
 var worktimeCol = [
     {name: "id", editable: false},
     {name: "modelName"},
     {name: "type.id"},
     {name: "productionWt"},
-    {name: "totalModule"},
-    {name: "setupTime"},
+    {name: "setupTime"},                                                                                                                                                                  
+    {name: "arFilmAttachment"},                                                                                                                                                                  
+    {name: "seal"},
+    {name: "opticalBonding"},
+    {name: "pressureCooker"},
     {name: "cleanPanel"},
+    {name: "pi"},
     {name: "assy"},
     {name: "t1"},
     {name: "t2"},
-    {name: "t3"},
-    {name: "t4"},
     {name: "packing"},
     {name: "upBiRi"},
     {name: "downBiRi"},
@@ -23,8 +26,6 @@ var worktimeCol = [
     {name: "assyToT1"},
     {name: "t2ToPacking"},
     {name: "floor.id"},
-    {name: "pending.id"},
-    {name: "pendingTime"},
     {name: "burnIn"},
     {name: "biTime"},
     {name: "biTemperature"},
@@ -40,6 +41,7 @@ var worktimeCol = [
     {name: "flowByTestFlowId.id"},
     {name: "flowByPackingFlowId.id"},
     {name: "partLink"},
+    {name: "remark"},
     {name: "ce"},
     {name: "ul"},
     {name: "rohs"},
@@ -50,26 +52,25 @@ var worktimeCol = [
     {name: "kc"},
     {name: "nsInOneCollectionBox"},
     {name: "partNoAttributeMaintain"},
+    {name: "labelInformation"},
     {name: "weight"},
     {name: "tolerance"},
-    {name: "assyStation"},
-    {name: "packingStation"},
+    {name: "materialVolumeA"},
+    {name: "materialVolumeB"},
     {name: "assyLeadTime"},
-    {name: "assyKanbanTime"},
-    {name: "packingLeadTime"},
-    {name: "packingKanbanTime"},
-    {name: "cleanPanelAndAssembly"},
+    {name: "test"},
     {name: "modifiedDate", editable: false},
-    {name: "bwFields.0.assyAvg", editable: false},
-    {name: "bwFields.0.packingAvg", editable: false},
+//    {name: "bwFields.0.assyAvg", editable: false},
+//    {name: "bwFields.0.packingAvg", editable: false},
     {name: "businessGroup.id"},
     {name: "workCenter"}
 
 ];
 
+
 //不受show / hide 影響
 var do_not_change_columns = [
-    "id", "rowId", "modifiedDate", "bwFields.0.assyAvg", "bwFields.0.packingAvg"
+    "id", "rowId", "createDate", "modifiedDate", "bwFields.0.assyAvg", "bwFields.0.packingAvg"
 ];
 
 //指定的column要有checkbox
@@ -78,9 +79,6 @@ var formulaColumn = [
     "setupTime",
     "assyToT1",
     "t2ToPacking",
-    "assyStation",
-    "packingStation",
-    "assyKanbanTime",
-    "packingKanbanTime",
-    "cleanPanelAndAssembly"
+    "assyLeadTime",
+    "test"
 ];

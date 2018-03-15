@@ -113,7 +113,6 @@ public class MaterialPropertyUploadPort extends BasicUploadPort implements Uploa
     //找出Remote & local difference, 差異如果屬性值在local setting則update, else keep and don't change its value
     //已存在遠端的setting只許更新其值
     public MaterialPropertyBatchUploadRoot checkDifferenceAndGenerateRoot(List<MaterialPropertyValue> remotePropSettings, Worktime w) throws Exception {
-        w.setPending(pendingService.findByPrimaryKey(w.getPending().getId()));
         List<WorktimeMaterialPropertyUploadSetting> settings = propSettingService.findAll();
 
         Set<String> localMatPropNo = settings.stream()

@@ -9,7 +9,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Date;
 import java.util.List;
-import javax.annotation.PostConstruct;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -27,8 +26,10 @@ import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
@@ -49,55 +50,47 @@ import org.springframework.util.AutoPopulatingList;
 @DynamicUpdate(true)
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = Worktime.class)
 @Audited(targetAuditMode = NOT_AUDITED, withModifiedFlag = true)
-//@FlowValidate
-//@EsValidate
 public class Worktime implements java.io.Serializable {
 
     private int id;
-    private Floor floor;
-    private Flow flowByTestFlowId;
-    private Flow flowByPackingFlowId;
-    private Flow flowByBabFlowId;
-    private User userByEeOwnerId;
-    private User userByQcOwnerId;
-    private User userBySpeOwnerId;
-    private Pending pending;
-    private PreAssy preAssy;
+    private String modelName;
     private Type type;
     private BusinessGroup businessGroup;
-    private String modelName;
-
-//    @JsonIgnore
-    private List<BwField> bwField = new AutoPopulatingList<BwField>(BwField.class);
-
-    @JsonIgnore
-    private List<WorktimeFormulaSetting> worktimeFormulaSettings = new AutoPopulatingList<WorktimeFormulaSetting>(WorktimeFormulaSetting.class);
-
     private String workCenter;
-    private BigDecimal totalModule = BigDecimal.ZERO;
+    private BigDecimal productionWt = BigDecimal.ZERO;
+    private BigDecimal setupTime = BigDecimal.ZERO;
+    private Integer arFilmAttachment = 0;
+    private Integer seal = 0;
+    private Integer opticalBonding = 0;
+    private String pressureCooker;
     private BigDecimal cleanPanel = BigDecimal.ZERO;
+    private BigDecimal pi = BigDecimal.ZERO;
     private BigDecimal assy = BigDecimal.ZERO;
     private BigDecimal t1 = BigDecimal.ZERO;
     private BigDecimal t2 = BigDecimal.ZERO;
-    private BigDecimal t3 = BigDecimal.ZERO;
-    private BigDecimal t4 = BigDecimal.ZERO;
     private BigDecimal packing = BigDecimal.ZERO;
     private BigDecimal upBiRi = BigDecimal.ZERO;
     private BigDecimal downBiRi = BigDecimal.ZERO;
     private BigDecimal biCost = BigDecimal.ZERO;
-    private BigDecimal vibration = BigDecimal.ZERO;
-    private BigDecimal hiPotLeakage = BigDecimal.ZERO;
-    private BigDecimal coldBoot = BigDecimal.ZERO;
-    private BigDecimal warmBoot = BigDecimal.ZERO;
-    private BigDecimal pendingTime;
+    private BigDecimal assyToT1 = BigDecimal.ZERO;
+    private BigDecimal t2ToPacking = BigDecimal.ZERO;
+    private Floor floor;
     private String burnIn;
     private BigDecimal biTime;
     private BigDecimal biTemperature;
+    private User userBySpeOwnerId;
+    private User userByEeOwnerId;
+    private User userByQcOwnerId;
     private String assyPackingSop;
     private String testSop;
     private Integer keypartA = 0;
     private Integer keypartB = 0;
-    private Character partLink;
+    private PreAssy preAssy;
+    private Flow flowByTestFlowId;
+    private Flow flowByBabFlowId;
+    private Flow flowByPackingFlowId;
+    private String partLink;
+    private String remark;
     private int ce;
     private int ul;
     private int rohs;
@@ -107,21 +100,22 @@ public class Worktime implements java.io.Serializable {
     private int eac;
     private int kc;
     private BigDecimal nsInOneCollectionBox = BigDecimal.ZERO;
-    private char partNoAttributeMaintain;
+    private String partNoAttributeMaintain;
+    private String labelInformation;
     private BigDecimal weight = BigDecimal.ZERO;
     private BigDecimal tolerance = BigDecimal.ZERO;
+    private Integer materialVolumeA = 0;
+    private Integer materialVolumeB = 0;
     private BigDecimal assyLeadTime = BigDecimal.ZERO;
-    private BigDecimal packingLeadTime = BigDecimal.ZERO;
-    private BigDecimal productionWt = BigDecimal.ZERO;
-    private BigDecimal setupTime = BigDecimal.ZERO;
-    private BigDecimal assyToT1 = BigDecimal.ZERO;
-    private BigDecimal t2ToPacking = BigDecimal.ZERO;
-    private Integer assyStation = 0;
-    private Integer packingStation = 0;
-    private BigDecimal assyKanbanTime = BigDecimal.ZERO;
-    private BigDecimal packingKanbanTime = BigDecimal.ZERO;
-    private BigDecimal cleanPanelAndAssembly = BigDecimal.ZERO;
+    private BigDecimal test = BigDecimal.ZERO;
+    private Date createDate;
     private Date modifiedDate;
+
+    @JsonIgnore
+    private List<BwField> bwField = new AutoPopulatingList<BwField>(BwField.class);
+
+    @JsonIgnore
+    private List<WorktimeFormulaSetting> worktimeM6FormulaSettings = new AutoPopulatingList<WorktimeFormulaSetting>(WorktimeFormulaSetting.class);
 
     public Worktime() {
     }
@@ -138,123 +132,6 @@ public class Worktime implements java.io.Serializable {
     }
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "floor_id", nullable = false)
-    public Floor getFloor() {
-        return this.floor;
-    }
-
-    public void setFloor(Floor floor) {
-        this.floor = floor;
-    }
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "test_flow_id")
-    public Flow getFlowByTestFlowId() {
-        return this.flowByTestFlowId;
-    }
-
-    public void setFlowByTestFlowId(Flow flowByTestFlowId) {
-        this.flowByTestFlowId = flowByTestFlowId;
-    }
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "packing_flow_id")
-    public Flow getFlowByPackingFlowId() {
-        return this.flowByPackingFlowId;
-    }
-
-    public void setFlowByPackingFlowId(Flow flowByPackingFlowId) {
-        this.flowByPackingFlowId = flowByPackingFlowId;
-    }
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "bab_flow_id")
-    public Flow getFlowByBabFlowId() {
-        return this.flowByBabFlowId;
-    }
-
-    public void setFlowByBabFlowId(Flow flowByBabFlowId) {
-        this.flowByBabFlowId = flowByBabFlowId;
-    }
-
-//    @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ee_owner_id", nullable = true)
-    public User getUserByEeOwnerId() {
-        return this.userByEeOwnerId;
-    }
-
-    public void setUserByEeOwnerId(User userByEeOwnerId) {
-        this.userByEeOwnerId = userByEeOwnerId;
-    }
-
-    @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "qc_owner_id", nullable = true)
-    public User getUserByQcOwnerId() {
-        return this.userByQcOwnerId;
-    }
-
-    public void setUserByQcOwnerId(User userByQcOwnerId) {
-        this.userByQcOwnerId = userByQcOwnerId;
-    }
-
-    @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "spe_owner_id", nullable = true)
-    public User getUserBySpeOwnerId() {
-        return this.userBySpeOwnerId;
-    }
-
-    public void setUserBySpeOwnerId(User userBySpeOwnerId) {
-        this.userBySpeOwnerId = userBySpeOwnerId;
-    }
-
-    @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "pending_id", nullable = false)
-    public Pending getPending() {
-        return this.pending;
-    }
-
-    public void setPending(Pending pending) {
-        this.pending = pending;
-    }
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "pre_assy_id")
-    public PreAssy getPreAssy() {
-        return this.preAssy;
-    }
-
-    public void setPreAssy(PreAssy preAssy) {
-        this.preAssy = preAssy;
-    }
-
-    @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "type_id", nullable = false)
-    public Type getType() {
-        return this.type;
-    }
-
-    public void setType(Type type) {
-        this.type = type;
-    }
-
-//    @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "businessGroup_id")
-    public BusinessGroup getBusinessGroup() {
-        return businessGroup;
-    }
-
-    public void setBusinessGroup(BusinessGroup businessGroup) {
-        this.businessGroup = businessGroup;
-    }
-
-    @NotNull
     @NotEmpty
     @Size(min = 0, max = 50)
     @Column(name = "model_name", unique = true, nullable = false, length = 50)
@@ -264,6 +141,27 @@ public class Worktime implements java.io.Serializable {
 
     public void setModelName(String modelName) {
         this.modelName = modelName;
+    }
+
+//    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "[type_id]", nullable = false)
+    public Type getType() {
+        return this.type;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "businessGroup_id")
+    public BusinessGroup getBusinessGroup() {
+        return businessGroup;
+    }
+
+    public void setBusinessGroup(BusinessGroup businessGroup) {
+        this.businessGroup = businessGroup;
     }
 
     @Size(min = 0, max = 50)
@@ -276,14 +174,64 @@ public class Worktime implements java.io.Serializable {
         this.workCenter = workCenter;
     }
 
-    @Digits(integer = 10 /*precision*/, fraction = 1 /*scale*/)
-    @Column(name = "total_module", precision = 10, scale = 1)
-    public BigDecimal getTotalModule() {
-        return this.totalModule;
+    @Digits(integer = 10 /*precision*/, fraction = 2 /*scale*/)
+    @Column(name = "productionWt", precision = 10, scale = 2)
+    public BigDecimal getProductionWt() {
+        return productionWt;
     }
 
-    public void setTotalModule(BigDecimal totalModule) {
-        this.totalModule = autoFixScale(totalModule, 1);
+    public void setProductionWt(BigDecimal productionWt) {
+        this.productionWt = autoFixScale(productionWt, 2);
+    }
+
+    @Digits(integer = 10 /*precision*/, fraction = 1 /*scale*/)
+    @Column(name = "setup_time", precision = 10, scale = 1)
+    public BigDecimal getSetupTime() {
+        return setupTime;
+    }
+
+    public void setSetupTime(BigDecimal setupTime) {
+        this.setupTime = autoFixScale(setupTime, 1);
+    }
+
+    @NotNull
+    @Column(name = "arFilmAttachment")
+    public Integer getArFilmAttachment() {
+        return arFilmAttachment;
+    }
+
+    public void setArFilmAttachment(Integer arFilmAttachment) {
+        this.arFilmAttachment = arFilmAttachment;
+    }
+
+    @NotNull
+    @Column(name = "seal")
+    public Integer getSeal() {
+        return seal;
+    }
+
+    public void setSeal(Integer seal) {
+        this.seal = seal;
+    }
+
+    @NotNull
+    @Column(name = "opticalBonding")
+    public Integer getOpticalBonding() {
+        return opticalBonding;
+    }
+
+    public void setOpticalBonding(Integer opticalBonding) {
+        this.opticalBonding = opticalBonding;
+    }
+
+    @Size(min = 0, max = 10)
+    @Column(name = "pressureCooker", length = 10)
+    public String getPressureCooker() {
+        return pressureCooker;
+    }
+
+    public void setPressureCooker(String pressureCooker) {
+        this.pressureCooker = pressureCooker;
     }
 
     @Digits(integer = 10 /*precision*/, fraction = 1 /*scale*/)
@@ -294,6 +242,16 @@ public class Worktime implements java.io.Serializable {
 
     public void setCleanPanel(BigDecimal cleanPanel) {
         this.cleanPanel = autoFixScale(cleanPanel, 1);
+    }
+
+    @Digits(integer = 10 /*precision*/, fraction = 1 /*scale*/)
+    @Column(name = "[pi]", precision = 10, scale = 1)
+    public BigDecimal getPi() {
+        return pi;
+    }
+
+    public void setPi(BigDecimal pi) {
+        this.pi = autoFixScale(pi, 1);
     }
 
     @Digits(integer = 10 /*precision*/, fraction = 1 /*scale*/)
@@ -324,26 +282,6 @@ public class Worktime implements java.io.Serializable {
 
     public void setT2(BigDecimal t2) {
         this.t2 = autoFixScale(t2, 1);
-    }
-
-    @Digits(integer = 10 /*precision*/, fraction = 1 /*scale*/)
-    @Column(name = "t3", precision = 10, scale = 1)
-    public BigDecimal getT3() {
-        return this.t3;
-    }
-
-    public void setT3(BigDecimal t3) {
-        this.t3 = autoFixScale(t3, 1);
-    }
-
-    @Digits(integer = 10 /*precision*/, fraction = 1 /*scale*/)
-    @Column(name = "t4", precision = 10, scale = 1)
-    public BigDecimal getT4() {
-        return this.t4;
-    }
-
-    public void setT4(BigDecimal t4) {
-        this.t4 = autoFixScale(t4, 1);
     }
 
     @Digits(integer = 10 /*precision*/, fraction = 1 /*scale*/)
@@ -387,54 +325,34 @@ public class Worktime implements java.io.Serializable {
     }
 
     @Digits(integer = 10 /*precision*/, fraction = 1 /*scale*/)
-    @Column(name = "vibration", precision = 10, scale = 1)
-    public BigDecimal getVibration() {
-        return this.vibration;
+    @Column(name = "assy_to_t1", precision = 10, scale = 1)
+    public BigDecimal getAssyToT1() {
+        return assyToT1;
     }
 
-    public void setVibration(BigDecimal vibration) {
-        this.vibration = autoFixScale(vibration, 1);
-    }
-
-    @Digits(integer = 10 /*precision*/, fraction = 1 /*scale*/)
-    @Column(name = "hi_pot_leakage", precision = 10, scale = 1)
-    public BigDecimal getHiPotLeakage() {
-        return this.hiPotLeakage;
-    }
-
-    public void setHiPotLeakage(BigDecimal hiPotLeakage) {
-        this.hiPotLeakage = autoFixScale(hiPotLeakage, 1);
+    public void setAssyToT1(BigDecimal assyToT1) {
+        this.assyToT1 = autoFixScale(assyToT1, 1);
     }
 
     @Digits(integer = 10 /*precision*/, fraction = 1 /*scale*/)
-    @Column(name = "cold_boot", precision = 10, scale = 1)
-    public BigDecimal getColdBoot() {
-        return this.coldBoot;
+    @Column(name = "t2_to_packing", precision = 10, scale = 1)
+    public BigDecimal getT2ToPacking() {
+        return t2ToPacking;
     }
 
-    public void setColdBoot(BigDecimal coldBoot) {
-        this.coldBoot = autoFixScale(coldBoot, 1);
+    public void setT2ToPacking(BigDecimal t2ToPacking) {
+        this.t2ToPacking = autoFixScale(t2ToPacking, 1);
     }
 
-    @Digits(integer = 10 /*precision*/, fraction = 1 /*scale*/)
-    @Column(name = "warm_boot", precision = 10, scale = 1)
-    public BigDecimal getWarmBoot() {
-        return this.warmBoot;
+//    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "floor_id", nullable = false)
+    public Floor getFloor() {
+        return this.floor;
     }
 
-    public void setWarmBoot(BigDecimal warmBoot) {
-        this.warmBoot = autoFixScale(warmBoot, 1);
-    }
-
-    @NotNull(message = "Pending Time 不可為空")
-    @Digits(integer = 10 /*precision*/, fraction = 1 /*scale*/)
-    @Column(name = "pending_time", nullable = false, precision = 10, scale = 1)
-    public BigDecimal getPendingTime() {
-        return this.pendingTime;
-    }
-
-    public void setPendingTime(BigDecimal pendingTime) {
-        this.pendingTime = autoFixScale(pendingTime, 1);
+    public void setFloor(Floor floor) {
+        this.floor = floor;
     }
 
     @NotNull
@@ -468,6 +386,38 @@ public class Worktime implements java.io.Serializable {
 
     public void setBiTemperature(BigDecimal biTemperature) {
         this.biTemperature = autoFixScale(biTemperature, 1);
+    }
+
+//    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "spe_owner_id", nullable = true)
+    public User getUserBySpeOwnerId() {
+        return this.userBySpeOwnerId;
+    }
+
+    public void setUserBySpeOwnerId(User userBySpeOwnerId) {
+        this.userBySpeOwnerId = userBySpeOwnerId;
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ee_owner_id", nullable = true)
+    public User getUserByEeOwnerId() {
+        return this.userByEeOwnerId;
+    }
+
+    public void setUserByEeOwnerId(User userByEeOwnerId) {
+        this.userByEeOwnerId = userByEeOwnerId;
+    }
+
+//    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "qc_owner_id", nullable = true)
+    public User getUserByQcOwnerId() {
+        return this.userByQcOwnerId;
+    }
+
+    public void setUserByQcOwnerId(User userByQcOwnerId) {
+        this.userByQcOwnerId = userByQcOwnerId;
     }
 
     @Size(min = 0, max = 500)
@@ -508,13 +458,62 @@ public class Worktime implements java.io.Serializable {
         this.keypartB = keypartB;
     }
 
-    @Column(name = "part_link", length = 1)
-    public Character getPartLink() {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "pre_assy_id")
+    public PreAssy getPreAssy() {
+        return this.preAssy;
+    }
+
+    public void setPreAssy(PreAssy preAssy) {
+        this.preAssy = preAssy;
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "bab_flow_id")
+    public Flow getFlowByBabFlowId() {
+        return this.flowByBabFlowId;
+    }
+
+    public void setFlowByBabFlowId(Flow flowByBabFlowId) {
+        this.flowByBabFlowId = flowByBabFlowId;
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "test_flow_id")
+    public Flow getFlowByTestFlowId() {
+        return this.flowByTestFlowId;
+    }
+
+    public void setFlowByTestFlowId(Flow flowByTestFlowId) {
+        this.flowByTestFlowId = flowByTestFlowId;
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "packing_flow_id")
+    public Flow getFlowByPackingFlowId() {
+        return this.flowByPackingFlowId;
+    }
+
+    public void setFlowByPackingFlowId(Flow flowByPackingFlowId) {
+        this.flowByPackingFlowId = flowByPackingFlowId;
+    }
+
+    @Column(name = "part_link", length = 10)
+    public String getPartLink() {
         return this.partLink;
     }
 
-    public void setPartLink(Character partLink) {
+    public void setPartLink(String partLink) {
         this.partLink = partLink;
+    }
+
+    @Column(name = "remark", length = 100)
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
     }
 
     @NotNull
@@ -607,25 +606,33 @@ public class Worktime implements java.io.Serializable {
         this.nsInOneCollectionBox = autoFixScale(NsInOneCollectionBox, 1);
     }
 
-    @NotNull
-    @Column(name = "part_no_attribute_maintain", nullable = false, length = 1)
-    public char getPartNoAttributeMaintain() {
-        return this.partNoAttributeMaintain;
+    @Column(name = "part_no_attribute_maintain", length = 10)
+    public String getPartNoAttributeMaintain() {
+        return partNoAttributeMaintain;
     }
 
-    public void setPartNoAttributeMaintain(char partNoAttributeMaintain) {
+    public void setPartNoAttributeMaintain(String partNoAttributeMaintain) {
         this.partNoAttributeMaintain = partNoAttributeMaintain;
+    }
+
+    @Column(name = "label_information", length = 10)
+    public String getLabelInformation() {
+        return labelInformation;
+    }
+
+    public void setLabelInformation(String labelInformation) {
+        this.labelInformation = labelInformation;
     }
 
     @NotNull
     @Digits(integer = 10 /*precision*/, fraction = 4 /*scale*/)
-    @Column(name = "weight", nullable = false, precision = 10, scale = 4)
+    @Column(name = "[weight]", nullable = false, precision = 10, scale = 4)
     public BigDecimal getWeight() {
         return weight;
     }
 
     public void setWeight(BigDecimal weight) {
-        this.weight = this.autoFixScale(weight, 4);
+        this.weight = autoFixScale(weight, 4);
     }
 
     @NotNull
@@ -636,7 +643,25 @@ public class Worktime implements java.io.Serializable {
     }
 
     public void setTolerance(BigDecimal tolerance) {
-        this.tolerance = this.autoFixScale(tolerance, 3);
+        this.tolerance = autoFixScale(tolerance, 3);
+    }
+
+    @Column(name = "materialVolumeA")
+    public Integer getMaterialVolumeA() {
+        return materialVolumeA;
+    }
+
+    public void setMaterialVolumeA(Integer materialVolumeA) {
+        this.materialVolumeA = materialVolumeA;
+    }
+
+    @Column(name = "materialVolumeB")
+    public Integer getMaterialVolumeB() {
+        return materialVolumeB;
+    }
+
+    public void setMaterialVolumeB(Integer materialVolumeB) {
+        this.materialVolumeB = materialVolumeB;
     }
 
     @Digits(integer = 10 /*precision*/, fraction = 1 /*scale*/)
@@ -650,111 +675,35 @@ public class Worktime implements java.io.Serializable {
     }
 
     @Digits(integer = 10 /*precision*/, fraction = 1 /*scale*/)
-    @Column(name = "packing_lead_time", precision = 10, scale = 1)
-    public BigDecimal getPackingLeadTime() {
-        return this.packingLeadTime;
+    @Column(name = "test", precision = 10, scale = 1)
+    public BigDecimal getTest() {
+        return test;
     }
 
-    public void setPackingLeadTime(BigDecimal packingLeadTime) {
-        this.packingLeadTime = autoFixScale(packingLeadTime, 1);
+    public void setTest(BigDecimal test) {
+        this.test = autoFixScale(test, 1);
     }
 
-    @Digits(integer = 10 /*precision*/, fraction = 1 /*scale*/)
-    @Column(name = "productionWt", precision = 10, scale = 1)
-    public BigDecimal getProductionWt() {
-        return productionWt;
-    }
-
-    public void setProductionWt(BigDecimal productionWt) {
-        this.productionWt = autoFixScale(productionWt, 1);
-    }
-
-    @Digits(integer = 10 /*precision*/, fraction = 1 /*scale*/)
-    @Column(name = "setup_time", precision = 10, scale = 1)
-    public BigDecimal getSetupTime() {
-        return setupTime;
-    }
-
-    public void setSetupTime(BigDecimal setupTime) {
-        this.setupTime = autoFixScale(setupTime, 1);
-    }
-
-    @Digits(integer = 10 /*precision*/, fraction = 1 /*scale*/)
-    @Column(name = "assy_to_t1", precision = 10, scale = 1)
-    public BigDecimal getAssyToT1() {
-        return assyToT1;
-    }
-
-    public void setAssyToT1(BigDecimal assyToT1) {
-        this.assyToT1 = autoFixScale(assyToT1, 1);
-    }
-
-    @Digits(integer = 10 /*precision*/, fraction = 1 /*scale*/)
-    @Column(name = "t2_to_packing", precision = 10, scale = 1)
-    public BigDecimal getT2ToPacking() {
-        return t2ToPacking;
-    }
-
-    public void setT2ToPacking(BigDecimal t2ToPacking) {
-        this.t2ToPacking = autoFixScale(t2ToPacking, 1);
-    }
-
-    @Column(name = "assy_station")
-    public Integer getAssyStation() {
-        return assyStation;
-    }
-
-    public void setAssyStation(Integer assyStation) {
-        this.assyStation = assyStation;
-    }
-
-    @Column(name = "packing_station")
-    public Integer getPackingStation() {
-        return packingStation;
-    }
-
-    public void setPackingStation(Integer packingStation) {
-        this.packingStation = packingStation;
-    }
-
-    @Digits(integer = 10 /*precision*/, fraction = 2 /*scale*/)
-    @Column(name = "assy_kanban_time", precision = 10, scale = 2)
-    public BigDecimal getAssyKanbanTime() {
-        return assyKanbanTime;
-    }
-
-    public void setAssyKanbanTime(BigDecimal assyKanbanTime) {
-        this.assyKanbanTime = autoFixScale(assyKanbanTime, 2);
-    }
-
-    @Digits(integer = 10 /*precision*/, fraction = 2 /*scale*/)
-    @Column(name = "packing_kanban_time", precision = 10, scale = 2)
-    public BigDecimal getPackingKanbanTime() {
-        return packingKanbanTime;
-    }
-
-    public void setPackingKanbanTime(BigDecimal packingKanbanTime) {
-        this.packingKanbanTime = autoFixScale(packingKanbanTime, 2);
-    }
-
-    @Digits(integer = 10 /*precision*/, fraction = 1 /*scale*/)
-    @Column(name = "clean_panel_and_assembly", precision = 10, scale = 1)
-    public BigDecimal getCleanPanelAndAssembly() {
-        return cleanPanelAndAssembly;
-    }
-
-    public void setCleanPanelAndAssembly(BigDecimal cleanPanelAndAssembly) {
-        this.cleanPanelAndAssembly = autoFixScale(cleanPanelAndAssembly, 1);
-    }
-
-    private BigDecimal autoFixScale(BigDecimal d, int scale) {
-        return d == null ? null : d.setScale(scale, RoundingMode.HALF_UP);
-    }
-
+    @NotAudited
+    @CreationTimestamp
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @JsonFormat(pattern = "yyyy-MM-dd'T'kk:mm:ss.SSS'Z'", timezone = "GMT+8")
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "modified_date", length = 23, insertable = false, updatable = false)
+    @Column(name = "create_date", length = 23, updatable = false)
+    public Date getCreateDate() {
+        return createDate;
+    }
+
+    public void setCreateDate(Date createDate) {
+        this.createDate = createDate;
+    }
+
+    @NotAudited
+    @UpdateTimestamp
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    @JsonFormat(pattern = "yyyy-MM-dd'T'kk:mm:ss.SSS'Z'", timezone = "GMT+8")
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "modified_date", length = 23)
     public Date getModifiedDate() {
         return this.modifiedDate;
     }
@@ -763,16 +712,22 @@ public class Worktime implements java.io.Serializable {
         this.modifiedDate = modifiedDate;
     }
 
+    private BigDecimal autoFixScale(BigDecimal d, int scale) {
+        return d == null ? null : d.setScale(scale, RoundingMode.HALF_UP);
+    }
+
+    @Transient
     @NotAudited
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "worktime", orphanRemoval = true)
     public List<WorktimeFormulaSetting> getWorktimeFormulaSettings() {
-        return this.worktimeFormulaSettings;
+        return this.worktimeM6FormulaSettings;
     }
 
-    public void setWorktimeFormulaSettings(List<WorktimeFormulaSetting> worktimeFormulaSettings) {
-        this.worktimeFormulaSettings = worktimeFormulaSettings;
+    public void setWorktimeFormulaSettings(List<WorktimeFormulaSetting> worktimeM6FormulaSettings) {
+        this.worktimeM6FormulaSettings = worktimeM6FormulaSettings;
     }
 
+    @Transient
     @NotAudited
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "worktime")
     public List<BwField> getBwFields() {
@@ -785,86 +740,47 @@ public class Worktime implements java.io.Serializable {
 
 //  Default formula column caculate
     public void setDefaultProductWt() {
-        BigDecimal defaultValue = notEmpty(totalModule).add(notEmpty(cleanPanel))
-                .add(notEmpty(assy)).add(notEmpty(t1)).add(notEmpty(t2))
-                .add(notEmpty(t3)).add(notEmpty(t4)).add(notEmpty(packing)).add(notEmpty(upBiRi))
-                .add(notEmpty(downBiRi)).add(notEmpty(biCost)).add(notEmpty(vibration)).add(notEmpty(hiPotLeakage))
-                .add(notEmpty(coldBoot)).add(notEmpty(warmBoot));
-
+        BigDecimal defaultValue = notEmpty(new BigDecimal(arFilmAttachment)).add(notEmpty(new BigDecimal(seal)))
+                .add(notEmpty(new BigDecimal(opticalBonding))).add(notEmpty(cleanPanel)).add(notEmpty(pi))
+                .add(notEmpty(assy)).add(notEmpty(t1)).add(notEmpty(t2)).add(notEmpty(packing))
+                .add(notEmpty(upBiRi)).add(notEmpty(downBiRi)).add(notEmpty(biCost));
         this.setProductionWt(defaultValue);
     }
 
     public void setDefaultSetupTime() {
         BigDecimal defaultValue = BigDecimal.ZERO
-                .add(notEmpty(totalModule).compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : new BigDecimal(5))
-                .add((notEmpty(assy)).compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : new BigDecimal(25))
-                .add(notEmpty(t1).compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : new BigDecimal(10))
-                .add(notEmpty(t2).compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : new BigDecimal(10))
-                .add(notEmpty(t3).compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : new BigDecimal(5))
-                .add(notEmpty(t4).compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : new BigDecimal(5))
-                .add((notEmpty(packing)).compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : new BigDecimal(15));
+                .add(notEmpty(new BigDecimal(arFilmAttachment)).add(notEmpty(cleanPanel)).add(notEmpty(pi)).compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : new BigDecimal(20))
+                .add(notEmpty(assy).compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : new BigDecimal(10))
+                .add(notEmpty(t1).add(notEmpty(t2)).compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : new BigDecimal(5))
+                .add(notEmpty(packing).compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : new BigDecimal(10));
         this.setSetupTime(defaultValue);
     }
 
     public void setDefaultAssyToT1() {
-        BigDecimal defaultValue = notEmpty(cleanPanel).add(notEmpty(assy).add(notEmpty(totalModule))).add(notEmpty(t1))
-                .add(notEmpty(upBiRi)).add(notEmpty(vibration))
-                .add(notEmpty(hiPotLeakage)).add(notEmpty(coldBoot)).add(notEmpty(warmBoot));
+        BigDecimal defaultValue = notEmpty(new BigDecimal(arFilmAttachment))
+                .add(notEmpty(new BigDecimal(seal)))
+                .add(notEmpty(new BigDecimal(opticalBonding)))
+                .add(notEmpty(cleanPanel)).add(notEmpty(pi))
+                .add(notEmpty(assy)).add(notEmpty(t1));
         this.setAssyToT1(defaultValue);
     }
 
     public void setDefaultT2ToPacking() {
         BigDecimal defaultValue = notEmpty(t2)
-                .add(notEmpty(t3)).add(notEmpty(t4)).add(notEmpty(packing).add(notEmpty(packingLeadTime))).add(notEmpty(downBiRi));
+                .add(notEmpty(packing));
         this.setT2ToPacking(defaultValue);
     }
 
-    public void setDefaultAssyStation() {
-        int defaultValue;
-        if ((notEmpty(assy).add(notEmpty(totalModule))).compareTo(new BigDecimal(45)) <= 0) {
-            defaultValue = 3;
-        } else {
-            BigDecimal b = (notEmpty(assy).add(notEmpty(totalModule))).divide(new BigDecimal(15), 0, RoundingMode.HALF_UP);
-            if (b.compareTo(new BigDecimal(6)) >= 0) {
-                defaultValue = 6;
-            } else {
-                defaultValue = b.intValue();
-            }
-        }
-        this.setAssyStation(defaultValue);
+    public void setDefaultAssyLeadTime() {
+        BigDecimal defaultValue = notEmpty(new BigDecimal(arFilmAttachment))
+                .add(notEmpty(cleanPanel))
+                .add(notEmpty(pi));
+        this.setAssyLeadTime(defaultValue);
     }
 
-    public void setDefaultPackingStation() {
-        int defaultValue;
-        if ((notEmpty(packing).add(notEmpty(packingLeadTime))).compareTo(new BigDecimal(10)) <= 0) {
-            defaultValue = 2;
-        } else {
-            BigDecimal b = (notEmpty(packing).add(notEmpty(packingLeadTime))).divide(new BigDecimal(5), 0, RoundingMode.HALF_UP);
-            if (b.compareTo(new BigDecimal(6)) >= 0) {
-                defaultValue = 6;
-            } else {
-                defaultValue = b.intValue();
-            }
-        }
-        this.setPackingStation(defaultValue);
-    }
-
-    public void setDefaultAssyKanbanTime() {
-        BigDecimal defaultValue = notEmpty(assy)
-                .divide(new BigDecimal(assyStation), 2, RoundingMode.HALF_UP);
-        this.setAssyKanbanTime(defaultValue);
-
-    }
-
-    public void setDefaultPackingKanbanTime() {
-        BigDecimal defaultValue = notEmpty(packing)
-                .divide(new BigDecimal(packingStation), 2, RoundingMode.HALF_UP);
-        this.setPackingKanbanTime(defaultValue);
-    }
-
-    public void setDefaultCleanPanelAndAssembly() {
-        BigDecimal defaultValue = notEmpty(cleanPanel).add(notEmpty(assy));
-        this.setCleanPanelAndAssembly(defaultValue);
+    public void setDefaultTest() {
+        BigDecimal defaultValue = notEmpty(t1).add(notEmpty(t2));
+        this.setTest(defaultValue);
     }
 
     private BigDecimal notEmpty(BigDecimal d) {

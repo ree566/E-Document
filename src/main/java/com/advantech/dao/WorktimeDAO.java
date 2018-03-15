@@ -28,9 +28,9 @@ public class WorktimeDAO extends AbstractDao<Integer, Worktime> implements Basic
     }
 
     public List<Worktime> findAll(PageInfo info) {
-        String fetchField = "bwFields";
+//        String fetchField = "bwFields";
         Criteria criteria = createEntityCriteria();
-        criteria.createAlias(fetchField, fetchField, JoinType.LEFT_OUTER_JOIN);
+//        criteria.createAlias(fetchField, fetchField, JoinType.LEFT_OUTER_JOIN);
         List l = getByPaginateInfo(criteria, info);
         return l;
     }

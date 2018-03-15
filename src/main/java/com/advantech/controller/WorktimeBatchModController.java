@@ -66,9 +66,6 @@ public class WorktimeBatchModController {
     private FloorService floorService;
 
     @Autowired
-    private PendingService pendingService;
-
-    @Autowired
     private UserService userService;
 
     @Autowired
@@ -100,10 +97,10 @@ public class WorktimeBatchModController {
     protected String batchInsert(@RequestParam("file") MultipartFile file) throws Exception {
 
         List<Worktime> hgList = this.transToWorktimes(file, false);
-        
-        for (Worktime w : hgList) {
+
+        hgList.forEach((w) -> {
             w.setId(0);
-        }
+        });
 
         worktimeService.checkModelExists(hgList);
 
@@ -264,7 +261,7 @@ public class WorktimeBatchModController {
         Map<String, Floor> floorOptions = toSelectOptions(floorService.findAll());
         Map<String, User> userOptions = toSelectOptions(userService.findAll());
         Map<String, Flow> flowOptions = toSelectOptions(flowService.findAll());
-        Map<String, Pending> pendingOptions = toSelectOptions(pendingService.findAll());
+
         Map<String, PreAssy> preAssyOptions = toSelectOptions(preAssyService.findAll());
         Map<String, BusinessGroup> businessGroupOptions = toSelectOptions(businessGroupService.findAll());
 
@@ -289,8 +286,6 @@ public class WorktimeBatchModController {
             w.setFlowByBabFlowId(valid(babFlowName, flowOptions.get(babFlowName)));
             w.setFlowByPackingFlowId(valid(pkgFlowName, flowOptions.get(pkgFlowName)));
             w.setFlowByTestFlowId(valid(testFlowName, flowOptions.get(testFlowName)));
-
-            w.setPending(pendingOptions.get(sheet.getValue(i, "pendingName").toString()));
 
             String preAssyName = sheet.getValue(i, "preAssyName").toString();
             w.setPreAssy(valid(preAssyName, preAssyOptions.get(preAssyName)));

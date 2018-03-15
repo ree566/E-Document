@@ -192,9 +192,6 @@ public class WorktimeService {
         //Lazy loading
         WorktimeFormulaSetting setting = w.getWorktimeFormulaSettings().get(0);
 
-        if (isColumnCalculated(setting.getCleanPanelAndAssembly())) {
-            w.setDefaultCleanPanelAndAssembly();
-        }
         if (isColumnCalculated(setting.getProductionWt())) {
             w.setDefaultProductWt();
         }
@@ -207,17 +204,11 @@ public class WorktimeService {
         if (isColumnCalculated(setting.getT2ToPacking())) {
             w.setDefaultT2ToPacking();
         }
-        if (isColumnCalculated(setting.getAssyStation())) {
-            w.setDefaultAssyStation();
+        if (isColumnCalculated(setting.getAssyLeadTime())) {
+            w.setDefaultAssyLeadTime();
         }
-        if (isColumnCalculated(setting.getPackingStation())) {
-            w.setDefaultPackingStation();
-        }
-        if (isColumnCalculated(setting.getAssyKanbanTime())) {
-            w.setDefaultAssyKanbanTime();
-        }
-        if (isColumnCalculated(setting.getPackingKanbanTime())) {
-            w.setDefaultPackingKanbanTime();
+        if (isColumnCalculated(setting.getTest())) {
+            w.setDefaultTest();
         }
     }
 
