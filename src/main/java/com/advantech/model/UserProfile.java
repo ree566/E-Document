@@ -29,8 +29,6 @@ import javax.persistence.UniqueConstraint;
 @Entity
 @Table(
         name = "User_Profile",
-        schema = "dbo",
-        catalog = "E_Document",
         uniqueConstraints = @UniqueConstraint(columnNames = "type")
 )
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
@@ -84,7 +82,7 @@ public class UserProfile implements java.io.Serializable {
     }
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "User_Profile_REF", schema = "dbo", catalog = "E_Document", joinColumns = {
+    @JoinTable(name = "User_Profile_REF", joinColumns = {
         @JoinColumn(name = "user_profile_id", nullable = false, insertable = false, updatable = false)}, inverseJoinColumns = {
         @JoinColumn(name = "user_id", nullable = false, insertable = false, updatable = false)})
     public Set<User> getUsers() {

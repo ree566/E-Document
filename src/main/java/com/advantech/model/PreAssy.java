@@ -37,9 +37,6 @@ public class PreAssy implements java.io.Serializable, Comparable<PreAssy> {
     @JsonIgnore
     private Set<Worktime> worktimes = new HashSet<Worktime>(0);
 
-    @JsonIgnore
-    private Set<Factory> factorys = new HashSet<>(0);
-
     public PreAssy() {
     }
 
@@ -80,18 +77,6 @@ public class PreAssy implements java.io.Serializable, Comparable<PreAssy> {
 
     public void setWorktimes(Set<Worktime> worktimes) {
         this.worktimes = worktimes;
-    }
-
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "PreAssy_Factory_REF", schema = "dbo", catalog = "E_Document", joinColumns = {
-        @JoinColumn(name = "preAssy_id", nullable = false, updatable = false)}, inverseJoinColumns = {
-        @JoinColumn(name = "factory_id", nullable = false, updatable = false)})
-    public Set<Factory> getFactorys() {
-        return factorys;
-    }
-
-    public void setFactorys(Set<Factory> factorys) {
-        this.factorys = factorys;
     }
 
     @Override

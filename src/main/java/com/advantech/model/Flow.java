@@ -51,9 +51,6 @@ public class Flow implements java.io.Serializable, Comparable<Flow> {
     @JsonIgnore
     private Set<Worktime> worktimesForBabFlowId = new HashSet<Worktime>(0);
 
-    @JsonIgnore
-    private Set<Factory> factorys = new HashSet<>(0);
-
     public Flow() {
     }
 
@@ -121,7 +118,7 @@ public class Flow implements java.io.Serializable, Comparable<Flow> {
     }
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "Flow_REF", schema = "dbo", catalog = "E_Document", joinColumns = {
+    @JoinTable(name = "Flow_REF", joinColumns = {
         @JoinColumn(name = "bab_flow_id", nullable = false, updatable = false)}, inverseJoinColumns = {
         @JoinColumn(name = "test_flow_id", nullable = false, updatable = false)})
     public Set<Flow> getFlowsForTestFlowId() {
@@ -133,7 +130,7 @@ public class Flow implements java.io.Serializable, Comparable<Flow> {
     }
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "Flow_REF", schema = "dbo", catalog = "E_Document", joinColumns = {
+    @JoinTable(name = "Flow_REF", joinColumns = {
         @JoinColumn(name = "test_flow_id", nullable = false, updatable = false)}, inverseJoinColumns = {
         @JoinColumn(name = "bab_flow_id", nullable = false, updatable = false)})
     public Set<Flow> getFlowsForBabFlowId() {
@@ -151,18 +148,6 @@ public class Flow implements java.io.Serializable, Comparable<Flow> {
 
     public void setWorktimesForBabFlowId(Set<Worktime> worktimesForBabFlowId) {
         this.worktimesForBabFlowId = worktimesForBabFlowId;
-    }
-
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "Flow_Factory_REF", schema = "dbo", catalog = "E_Document", joinColumns = {
-        @JoinColumn(name = "flow_id", nullable = false, updatable = false)}, inverseJoinColumns = {
-        @JoinColumn(name = "factory_id", nullable = false, updatable = false)})
-    public Set<Factory> getFactorys() {
-        return factorys;
-    }
-
-    public void setFactorys(Set<Factory> factorys) {
-        this.factorys = factorys;
     }
 
     @Override

@@ -376,14 +376,14 @@ public class Worktime implements java.io.Serializable {
         this.downBiRi = autoFixScale(downBiRi, 1);
     }
 
-    @Digits(integer = 10 /*precision*/, fraction = 1 /*scale*/)
-    @Column(name = "bi_cost", precision = 10, scale = 1)
+    @Digits(integer = 10 /*precision*/, fraction = 2 /*scale*/)
+    @Column(name = "bi_cost", precision = 10, scale = 2)
     public BigDecimal getBiCost() {
         return this.biCost;
     }
 
     public void setBiCost(BigDecimal biCost) {
-        this.biCost = autoFixScale(biCost, 1);
+        this.biCost = autoFixScale(biCost, 2);
     }
 
     @Digits(integer = 10 /*precision*/, fraction = 1 /*scale*/)
@@ -625,7 +625,7 @@ public class Worktime implements java.io.Serializable {
     }
 
     public void setWeight(BigDecimal weight) {
-        this.weight = weight;
+        this.weight = this.autoFixScale(weight, 4);
     }
 
     @NotNull
@@ -636,7 +636,7 @@ public class Worktime implements java.io.Serializable {
     }
 
     public void setTolerance(BigDecimal tolerance) {
-        this.tolerance = tolerance;
+        this.tolerance = this.autoFixScale(tolerance, 3);
     }
 
     @Digits(integer = 10 /*precision*/, fraction = 1 /*scale*/)

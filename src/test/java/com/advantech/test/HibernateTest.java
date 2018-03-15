@@ -7,13 +7,6 @@ package com.advantech.test;
 
 import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.jqgrid.PageInfo;
-import com.advantech.model.BusinessGroup;
-import com.advantech.model.Factory;
-import com.advantech.model.Floor;
-import com.advantech.model.Flow;
-import com.advantech.model.PreAssy;
-import com.advantech.model.Type;
-import com.advantech.model.User;
 import com.advantech.model.Worktime;
 import com.advantech.service.AuditService;
 import com.advantech.service.WorktimeService;
@@ -25,7 +18,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import javax.transaction.Transactional;
 import javax.validation.Validation;
 import javax.validation.Validator;
@@ -40,7 +32,6 @@ import org.hibernate.envers.query.AuditEntity;
 import org.hibernate.envers.query.AuditQuery;
 import org.joda.time.DateTime;
 import org.junit.Before;
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
@@ -248,46 +239,6 @@ public class HibernateTest {
         assertNotNull(t1);
         assertTrue(new BigDecimal(50).compareTo((BigDecimal) t1) == 0);
 
-    }
-
-    @Test
-    @Transactional
-    @Rollback(true)
-    public void testRef() {
-        Session session = sessionFactory.getCurrentSession();
-
-        Factory twm3 = (Factory) session.get(Factory.class, 1);
-
-        //Test BusinessGroup
-        BusinessGroup bg = (BusinessGroup) session.get(BusinessGroup.class, 1);
-        assertNotNull(bg);
-        testFactoryContains(twm3, bg.getFactorys());
-
-        Floor f = (Floor) session.get(Floor.class, 1);
-        assertNotNull(f);
-        testFactoryContains(twm3, f.getFactorys());
-
-        Flow flow = (Flow) session.get(Flow.class, 1);
-        assertNotNull(flow);
-        testFactoryContains(twm3, flow.getFactorys());
-        
-        PreAssy p = (PreAssy) session.get(PreAssy.class, 1);
-        assertNotNull(p);
-        testFactoryContains(twm3, p.getFactorys());
-        
-        Type t = (Type) session.get(Type.class, 6);
-        assertNotNull(p);
-        testFactoryContains(twm3, t.getFactorys());
-        
-        User u = (User) session.get(User.class, 1);
-        assertNotNull(u);
-        testFactoryContains(twm3, u.getFactorys());
-        
-    }
-
-    private void testFactoryContains(Factory f, Set<Factory> s) {
-        assertEquals(1, s.size());
-        assertTrue(s.contains(f));
     }
 
 }

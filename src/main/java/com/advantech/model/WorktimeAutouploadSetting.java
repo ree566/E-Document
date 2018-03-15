@@ -20,10 +20,7 @@ import javax.persistence.Table;
  * @author Wei.Cheng
  */
 @Entity
-@Table(name = "Worktime_Autoupload_Setting",
-        schema = "dbo",
-        catalog = "E_Document"
-)
+@Table(name = "Worktime_Autoupload_Setting")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class WorktimeAutouploadSetting implements java.io.Serializable {
 

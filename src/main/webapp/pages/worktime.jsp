@@ -51,6 +51,7 @@
 <script src="<c:url value="/js/worktime-setting/column-setting.js" />"></script>
 <script src="<c:url value="/js/worktime-setting/column-validator.js" />"></script>
 <script src="<c:url value="/webjars/github-com-johnculviner-jquery-fileDownload/1.4.6/src/Scripts/jquery.fileDownload.js" />"></script>
+<script src="<c:url value="/js/worktime-setting/column-custom-callback.js" />"></script>
 
 <script>
     $(function () {
@@ -105,25 +106,6 @@
             if (val == 111) {
                 return " class='hide-emptyName-flow noselect'";
             }
-        };
-
-        var testFlowInit_add = function (form) {
-            setTimeout(function () {
-                // do here all what you need (like alert('yey');)
-                $("#flowByBabFlowId\\.id").trigger("change");
-                $("#businessGroup\\.id").trigger("change");
-            }, 50);
-            greyout(form);
-        };
-
-        var testFlowInit_edit = function (form) {
-            setTimeout(function () {
-                // do here all what you need (like alert('yey');)
-                $("#flowByBabFlowId\\.id").trigger("change");
-                $("#businessGroup\\.id").trigger("change");
-                settingFormulaCheckbox();
-            }, 50);
-            greyout(form);
         };
 
         var checkRevision = function (form) {
@@ -188,7 +170,7 @@
             autoencode: true,
             colModel: [
                 {label: 'id', name: "id", width: 60, frozen: true, hidden: false, key: true, search: true, searchoptions: search_decimal_options, editable: true, editrules: {edithidden: true}, editoptions: {readonly: 'readonly', disabled: true, defaultValue: "0"}},
-                {label: 'Model', name: "modelName", frozen: true, editable: true, searchrules: {required: true}, searchoptions: search_string_options, editrules: {required: true}, formoptions: required_form_options},
+                {label: 'Model', name: "modelName", frozen: true, editable: true, searchrules: {required: true}, searchoptions: search_string_options, editrules: {required: true}, editoptions: {dataInit: autoUpperCase}, formoptions: required_form_options},
                 {label: 'TYPE', name: "type.id", edittype: "select", editoptions: {value: selectOptions["type"]}, formatter: selectOptions["type_func"], width: 100, searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["type"], sopt: ['eq']}},
                 {label: 'BU', name: "businessGroup.id", edittype: "select", editoptions: {value: selectOptions["businessGroup"], dataEvents: businessGroup_select_event}, formatter: selectOptions["businessGroup_func"], width: 100, searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["businessGroup"], sopt: ['eq']}},
                 {label: 'Work Center', name: "workCenter", width: 100, searchrules: {required: true}, searchoptions: search_string_options, editrules: {required: false}},
@@ -310,11 +292,22 @@
                     reloadAfterSubmit: true,
                     errorTextFormat: errorTextFormatF,
                     beforeSubmit: before_edit,
-                    beforeShowForm: testFlowInit_edit,
+                    beforeShowForm: function (form) {
+                        setTimeout(function () {
+                            // do here all what you need (like alert('yey');)
+                            $("#flowByBabFlowId\\.id").trigger("change");
+                            $("#businessGroup\\.id").trigger("change");
+                            settingFormulaCheckbox();
+                        }, 50);
+                        greyout(form);
+                    },
+                    afterShowForm: function (form) {
+                        modelNameFormat();
+                        checkRevision(form);
+                    },
                     afterclickPgButtons: function (whichbutton, formid, rowid) {
                         $("#flowByBabFlowId\\.id").trigger("change");
                     },
-                    afterShowForm: checkRevision,
                     afterSubmit: showServerModifyMessage,
                     recreateForm: true,
                     closeOnEscape: true,
@@ -332,8 +325,18 @@
                     errorTextFormat: errorTextFormatF,
                     afterclickPgButtons: clearCheckErrorIcon,
                     beforeSubmit: before_add,
-                    beforeShowForm: testFlowInit_add,
-                    afterShowForm: checkRevision,
+                    beforeShowForm: function (form) {
+                        setTimeout(function () {
+                            // do here all what you need (like alert('yey');)
+                            $("#flowByBabFlowId\\.id").trigger("change");
+                            $("#businessGroup\\.id").trigger("change");
+                        }, 50);
+                        greyout(form);
+                    },
+                    afterShowForm: function (form) {
+                        modelNameFormat();
+                        checkRevision(form);
+                    },
                     afterSubmit: showServerModifyMessage,
                     recreateForm: true,
                     closeOnEscape: true,

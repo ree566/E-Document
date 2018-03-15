@@ -24,10 +24,7 @@ import javax.persistence.Table;
  */
 
 @Entity
-@Table(name = "_BwField",
-        schema = "dbo",
-        catalog = "E_Document"
-)
+@Table(name = "_BwField")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class BwField implements java.io.Serializable {
 
