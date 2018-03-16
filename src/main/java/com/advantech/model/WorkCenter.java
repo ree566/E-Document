@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.Column;
@@ -17,6 +18,8 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -25,16 +28,14 @@ import javax.persistence.Table;
  * @author Wei.Cheng
  */
 @Entity
-@Table(name = "BusinessGroup")
+@Table(name = "WorkCenter")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-public class BusinessGroup implements java.io.Serializable {
+public class WorkCenter implements Serializable {
 
     private int id;
     private String name;
-
-    @JsonIgnore
-    private Set<WorkCenter> workCenters = new HashSet<>(0);
-
+    private BusinessGroup businessGroup;
+    
     @JsonIgnore
     private Set<Worktime> worktimes = new HashSet<>(0);
 
@@ -58,16 +59,17 @@ public class BusinessGroup implements java.io.Serializable {
         this.name = name;
     }
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "businessGroup")
-    public Set<WorkCenter> getWorkCenters() {
-        return workCenters;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "businessGroup_id", nullable = false)
+    public BusinessGroup getBusinessGroup() {
+        return businessGroup;
     }
 
-    public void setWorkCenters(Set<WorkCenter> workCenters) {
-        this.workCenters = workCenters;
+    public void setBusinessGroup(BusinessGroup businessGroup) {
+        this.businessGroup = businessGroup;
     }
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "businessGroup")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "workCenter")
     public Set<Worktime> getWorktimes() {
         return worktimes;
     }

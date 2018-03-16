@@ -46,13 +46,15 @@ var babFlow_select_event = [
 var businessGroup_select_event = [
     {
         type: 'change', fn: function (e) {
-            var selectOption = $('option:selected', this).text();
-            var defaultValue = {
-                ECG: "LCD_ENHS",
-                ES: "LCD_ES",
-                Module: "LCD_MOD"
-            };
-            $('input#workCenter').val(defaultValue[selectOption]);
+            var sel3 = $("#workCenter\\.id");
+            $.get('../SelectOption/workCenter/' + $(this).val(), function (data) {
+                sel3.html("");
+//                sel2.append("<option role='option' value=0>empty</option>");
+                for (var i = 0; i < data.length; i++) {
+                    sel3.append("<option role='option' value=" + data[i].id + ">" + data[i].name + "</option>");
+                }
+                sel3.children().first().attr("selected", "selected");
+            });
         }
     }
 ];

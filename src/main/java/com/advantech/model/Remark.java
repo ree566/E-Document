@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.Column;
@@ -25,16 +26,13 @@ import javax.persistence.Table;
  * @author Wei.Cheng
  */
 @Entity
-@Table(name = "BusinessGroup")
+@Table(name = "Remark")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-public class BusinessGroup implements java.io.Serializable {
+public class Remark implements Serializable {
 
     private int id;
     private String name;
-
-    @JsonIgnore
-    private Set<WorkCenter> workCenters = new HashSet<>(0);
-
+    
     @JsonIgnore
     private Set<Worktime> worktimes = new HashSet<>(0);
 
@@ -42,7 +40,7 @@ public class BusinessGroup implements java.io.Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", unique = true, nullable = false)
     public int getId() {
-        return id;
+        return this.id;
     }
 
     public void setId(int id) {
@@ -51,29 +49,19 @@ public class BusinessGroup implements java.io.Serializable {
 
     @Column(name = "name", nullable = false, length = 50)
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public void setName(String name) {
         this.name = name;
     }
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "businessGroup")
-    public Set<WorkCenter> getWorkCenters() {
-        return workCenters;
-    }
-
-    public void setWorkCenters(Set<WorkCenter> workCenters) {
-        this.workCenters = workCenters;
-    }
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "businessGroup")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "remark")
     public Set<Worktime> getWorktimes() {
-        return worktimes;
+        return this.worktimes;
     }
 
     public void setWorktimes(Set<Worktime> worktimes) {
         this.worktimes = worktimes;
     }
-
 }

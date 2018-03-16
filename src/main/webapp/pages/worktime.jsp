@@ -89,6 +89,7 @@
             rootUrl: "<c:url value="/" />",
             columnInfo: [
                 {name: "businessGroup", isNullable: false},
+                {name: "workCenter", isNullable: false},
                 {name: "floor", isNullable: false},
                 {name: "user", nameprefix: "spe_", isNullable: false, dataToServer: "SPE"},
                 {name: "user", nameprefix: "ee_", isNullable: true, dataToServer: "EE"},
@@ -97,7 +98,8 @@
                 {name: "flow", nameprefix: "bab_", isNullable: true, dataToServer: "1"},
                 {name: "flow", nameprefix: "test_", isNullable: true, dataToServer: "3"},
                 {name: "flow", nameprefix: "pkg_", isNullable: true, dataToServer: "2"},
-                {name: "preAssy", isNullable: true}
+                {name: "preAssy", isNullable: true},
+                {name: "remark", isNullable: false}
             ]
         });
 
@@ -172,13 +174,13 @@
                 {label: 'Model', name: "modelName", frozen: true, editable: true, searchrules: {required: true}, searchoptions: search_string_options, editrules: {required: true}, formoptions: required_form_options},
                 {label: 'TYPE', name: "type.id", edittype: "select", editoptions: {value: selectOptions["type"]}, formatter: selectOptions["type_func"], width: 100, searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["type"], sopt: ['eq']}},
                 {label: 'BU', name: "businessGroup.id", edittype: "select", editoptions: {value: selectOptions["businessGroup"], dataEvents: businessGroup_select_event}, formatter: selectOptions["businessGroup_func"], width: 100, searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["businessGroup"], sopt: ['eq']}},
-                {label: 'Work Center', name: "workCenter", width: 100, searchrules: {required: true}, searchoptions: search_string_options, editrules: {required: false}},
+                {label: 'Work Center', name: "workCenter.id", edittype: "select", editoptions: {value: selectOptions["workCenter"]}, formatter: selectOptions["workCenter_func"], width: 100, searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["workCenter"], sopt: ['eq']}},
                 {label: 'ProductionWT', name: "productionWt", width: 120, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: {elmsuffix: addFormulaCheckbox("productionWt")}, editrules: {number: true}, editoptions: {defaultValue: '0'}},
                 {label: 'Setup Time', name: "setupTime", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: {elmsuffix: addFormulaCheckbox("setupTime")}, editrules: {number: true}, editoptions: {defaultValue: '0'}},
                 {label: 'AR film attachment', name: "arFilmAttachment", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, editoptions: {defaultValue: '0'}},
                 {label: 'SEAL', name: "seal", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, editoptions: {defaultValue: '0'}},
                 {label: 'OB', name: "opticalBonding", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, editoptions: {defaultValue: '0'}},
-                {label: '壓力鍋', name: "pressureCooker", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editoptions: {value: "Y:Y;N:N", defaultValue: 'N'}},
+                {label: '壓力鍋', name: "pressureCooker", width: 100, searchrules: {required: true}, searchoptions: search_string_options, edittype: "select", editoptions: {value: "Y:Y;N:N", defaultValue: 'N'}},
                 {label: 'CleanPanel', name: "cleanPanel", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true, required: true}, editoptions: {defaultValue: '0'}},
                 {label: 'PI', name: "pi", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true, required: true}, editoptions: {defaultValue: '0'}},
                 {label: 'Assembly', name: "assy", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true, required: true}, editoptions: {defaultValue: '0'}},
@@ -206,7 +208,7 @@
                 {label: 'TEST_FLOW', name: "flowByTestFlowId.id", edittype: "select", editoptions: {value: selectOptions["test_flow"]}, formatter: selectOptions["test_flow_func"], width: 100, searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["test_flow"], sopt: ['eq']}},
                 {label: 'PACKING_FLOW', name: "flowByPackingFlowId.id", edittype: "select", editoptions: {value: selectOptions["pkg_flow"]}, formatter: selectOptions["pkg_flow_func"], width: 140, searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["pkg_flow"], sopt: ['eq']}},
                 {label: 'PART-LINK', name: "partLink", edittype: "select", editoptions: {value: "Y:Y;N:N", defaultValue: 'Y'}, width: 100, searchrules: {required: true}, searchoptions: search_string_options},
-                {label: 'Remark', name: "remark", width: 100, search: true, searchrules: {required: true}, searchoptions: search_string_options, edittype: "textarea", editoptions: {maxlength: 100}},
+                {label: 'Remark', name: "remark.id", edittype: "select", editoptions: {value: selectOptions["remark"]}, formatter: selectOptions["remark_func"], width: 100, searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["remark"], sopt: ['eq']}},
                 {label: 'CE', name: "ce", width: 60, searchrules: number_search_rule, searchoptions: search_string_options, edittype: "select", editoptions: {value: "0:0;1:1"}},
                 {label: 'UL', name: "ul", width: 60, searchrules: number_search_rule, searchoptions: search_string_options, edittype: "select", editoptions: {value: "0:0;1:1"}},
                 {label: 'ROHS', name: "rohs", width: 60, searchrules: number_search_rule, searchoptions: search_string_options, edittype: "select", editoptions: {value: "0:0;1:1"}},

@@ -56,7 +56,7 @@ public class Worktime implements java.io.Serializable {
     private String modelName;
     private Type type;
     private BusinessGroup businessGroup;
-    private String workCenter;
+    private WorkCenter workCenter;
     private BigDecimal productionWt = BigDecimal.ZERO;
     private BigDecimal setupTime = BigDecimal.ZERO;
     private Integer arFilmAttachment = 0;
@@ -90,7 +90,7 @@ public class Worktime implements java.io.Serializable {
     private Flow flowByBabFlowId;
     private Flow flowByPackingFlowId;
     private String partLink;
-    private String remark;
+    private Remark remark;
     private int ce;
     private int ul;
     private int rohs;
@@ -164,13 +164,13 @@ public class Worktime implements java.io.Serializable {
         this.businessGroup = businessGroup;
     }
 
-    @Size(min = 0, max = 50)
-    @Column(name = "work_center", length = 50)
-    public String getWorkCenter() {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "workCenter_id")
+    public WorkCenter getWorkCenter() {
         return workCenter;
     }
 
-    public void setWorkCenter(String workCenter) {
+    public void setWorkCenter(WorkCenter workCenter) {
         this.workCenter = workCenter;
     }
 
@@ -507,12 +507,13 @@ public class Worktime implements java.io.Serializable {
         this.partLink = partLink;
     }
 
-    @Column(name = "remark", length = 100)
-    public String getRemark() {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "remark_id", nullable = false)
+    public Remark getRemark() {
         return remark;
     }
 
-    public void setRemark(String remark) {
+    public void setRemark(Remark remark) {
         this.remark = remark;
     }
 
