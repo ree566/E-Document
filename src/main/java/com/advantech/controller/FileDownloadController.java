@@ -20,7 +20,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.jexl2.JexlEngine;
 import org.jxls.common.Context;
-import org.jxls.expression.JexlExpressionEvaluator;
+import org.jxls.expression.JexlExpressionEvaluatorNoThreadLocal;
+import org.jxls.transform.TransformationConfig;
 import org.jxls.transform.Transformer;
 import org.jxls.util.JxlsHelper;
 import org.slf4j.Logger;
@@ -123,7 +124,9 @@ public class FileDownloadController {
 
         JxlsHelper helper = JxlsHelper.getInstance();
         Transformer transformer = helper.createTransformer(is, os);
-        JexlExpressionEvaluator evaluator = (JexlExpressionEvaluator) transformer.getTransformationConfig().getExpressionEvaluator();
+        TransformationConfig config = transformer.getTransformationConfig();
+        config.setExpressionEvaluator(new JexlExpressionEvaluatorNoThreadLocal());
+        JexlExpressionEvaluatorNoThreadLocal evaluator = (JexlExpressionEvaluatorNoThreadLocal) config.getExpressionEvaluator();
 
         //避免Jexl2在javabean值為null時會log
         JexlEngine engine = evaluator.getJexlEngine();
