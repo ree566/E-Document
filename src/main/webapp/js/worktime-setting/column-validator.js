@@ -22,22 +22,19 @@ var needRI = function (obj) {
 //Flow check logic setting
 var flow_check_logic = {
     "PRE-ASSY": [
-        {keyword: ["PRE_ASSY"], checkColumn: ["cleanPanel", "totalModule"], checkType: "OR", message: not_null_and_zero_message, prmValid: notZeroOrNull}
+        {keyword: ["PRE_ASSY"], checkColumn: ["arFilmAttachment", "cleanPanel", "pi"], checkType: "OR", message: not_null_and_zero_message, prmValid: notZeroOrNull}
     ],
     BAB: [
         {keyword: ["ASSY"], checkColumn: ["assy"], message: not_null_and_zero_message, prmValid: notZeroOrNull},
+        {keyword: ["SL"], checkColumn: ["seal"], message: not_null_and_zero_message, prmValid: notZeroOrNull},
+        {keyword: ["OB"], checkColumn: ["opticalBonding"], message: not_null_and_zero_message, prmValid: notZeroOrNull},
         {keyword: ["T1"], checkColumn: ["t1"], message: not_null_and_zero_message, prmValid: notZeroOrNull},
-        {keyword: ["VB"], checkColumn: ["vibration"], message: not_null_and_zero_message, prmValid: notZeroOrNull},
-        {keyword: ["H1", " LK"], checkColumn: ["hiPotLeakage"], message: not_null_and_zero_message, prmValid: notZeroOrNull},
-        {keyword: ["CB"], checkColumn: ["coldBoot"], message: not_null_and_zero_message, prmValid: notZeroOrNull},
         {keyword: ["BI", "RI"], checkColumn: ["upBiRi", "downBiRi", "biCost"], message: not_null_and_zero_message, prmValid: notZeroOrNull},
         {keyword: ["BI"], checkColumn: ["burnIn"], message: "內容須為BI", prmValid: needBI},
         {keyword: ["RI"], checkColumn: ["burnIn"], message: "內容須為RI", prmValid: needRI}
     ],
     TEST: [
-        {keyword: ["T2"], checkColumn: ["t2"], message: not_null_and_zero_message, prmValid: notZeroOrNull},
-        {keyword: ["T3"], checkColumn: ["t3"], message: not_null_and_zero_message, prmValid: notZeroOrNull},
-        {keyword: ["T4"], checkColumn: ["t4"], message: not_null_and_zero_message, prmValid: notZeroOrNull}
+        {keyword: ["T2"], checkColumn: ["t2"], message: not_null_and_zero_message, prmValid: notZeroOrNull}
     ],
     PKG: [
         {keyword: ["PKG"], checkColumn: ["packing"], message: not_null_and_zero_message, prmValid: notZeroOrNull}
@@ -45,21 +42,16 @@ var flow_check_logic = {
 };
 
 var field_check_flow_logic = [
+    {checkColumn: {name: "arFilmAttachment", equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: preAssy, keyword: ["PRE_ASSY"]}},
     {checkColumn: {name: "cleanPanel", equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: preAssy, keyword: ["PRE_ASSY"]}},
-    {checkColumn: {name: "totalModule", equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: preAssy, keyword: ["PRE_ASSY"]}},
+    {checkColumn: {name: "pi", equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: preAssy, keyword: ["PRE_ASSY"]}},
     {checkColumn: {name: "assy", equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: babFlow, keyword: ["ASSY"]}},
+    {checkColumn: {name: "seal", equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: babFlow, keyword: ["SL"]}},
+    {checkColumn: {name: "opticalBonding", equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: babFlow, keyword: ["OB"]}},
     {checkColumn: {name: "t1", equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: babFlow, keyword: ["T1"]}},
-    {checkColumn: {name: "vibration", equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: babFlow, keyword: ["VB"]}},
-    {checkColumn: {name: "hiPotLeakage", equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: babFlow, keyword: ["H1", "LK"]}},
-    {checkColumn: {name: "coldBoot", equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: babFlow, keyword: ["CB"]}},
-    {checkColumn: {name: "upBiRi", equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: babFlow, keyword: ["BI", "RI"]}},
-    {checkColumn: {name: "downBiRi", equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: babFlow, keyword: ["BI", "RI"]}},
-    {checkColumn: {name: "biCost", equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: babFlow, keyword: ["BI", "RI"]}},
     {checkColumn: {name: "burnIn", equals: true, value: "BI"}, description: "內容為BI", targetColumn: {name: babFlow, keyword: ["BI"]}},
     {checkColumn: {name: "burnIn", equals: true, value: "RI"}, description: "內容為RI", targetColumn: {name: babFlow, keyword: ["RI"]}},
     {checkColumn: {name: "t2", equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: testFlow, keyword: ["T2"]}},
-    {checkColumn: {name: "t3", equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: testFlow, keyword: ["T3"]}},
-    {checkColumn: {name: "t4", equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: testFlow, keyword: ["T4"]}},
     {checkColumn: {name: "packing", equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: packingFlow, keyword: ["PKG"]}}
 
 ];

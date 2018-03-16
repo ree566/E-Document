@@ -115,7 +115,7 @@ public class Worktime implements java.io.Serializable {
     private List<BwField> bwField = new AutoPopulatingList<BwField>(BwField.class);
 
     @JsonIgnore
-    private List<WorktimeFormulaSetting> worktimeM6FormulaSettings = new AutoPopulatingList<WorktimeFormulaSetting>(WorktimeFormulaSetting.class);
+    private List<WorktimeFormulaSetting> worktimeFormulaSettings = new AutoPopulatingList<WorktimeFormulaSetting>(WorktimeFormulaSetting.class);
 
     public Worktime() {
     }
@@ -717,15 +717,14 @@ public class Worktime implements java.io.Serializable {
         return d == null ? null : d.setScale(scale, RoundingMode.HALF_UP);
     }
 
-    @Transient
     @NotAudited
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "worktime", orphanRemoval = true)
     public List<WorktimeFormulaSetting> getWorktimeFormulaSettings() {
-        return this.worktimeM6FormulaSettings;
+        return this.worktimeFormulaSettings;
     }
 
-    public void setWorktimeFormulaSettings(List<WorktimeFormulaSetting> worktimeM6FormulaSettings) {
-        this.worktimeM6FormulaSettings = worktimeM6FormulaSettings;
+    public void setWorktimeFormulaSettings(List<WorktimeFormulaSetting> worktimeFormulaSettings) {
+        this.worktimeFormulaSettings = worktimeFormulaSettings;
     }
 
     @Transient

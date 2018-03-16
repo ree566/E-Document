@@ -14,8 +14,8 @@
 <script src="<c:url value="/js/jqgrid-custom-setting.js" />"></script>
 <script>
     $(function () {
-        var grid = $("#list"), grid2 = $("#list2");
-        var tableName = "燒機成本工時對照表", tableName2 = "吹面板工時對照表";
+        var grid = $("#list"), grid2 = $("#list2"), grid3 = $("#list3");
+        var tableName = "燒機成本工時對照表", tableName2 = "吹面板工時對照表", tableName3 = "貼合製程工時對照表";
 
         grid.jqGrid({
             url: '<c:url value="/json/biCost.json" />',
@@ -129,6 +129,71 @@
             ]
         });
 
+        grid3.jqGrid({
+            url: '<c:url value="/json/biCost_LCD.json" />',
+            datatype: 'json',
+            mtype: 'GET',
+            autoencode: true,
+            colModel: [
+                {label: 'LCD Size', name: "LCD Size"},
+                {label: 'Touch', name: "Touch"},
+                {label: 'Panel', name: "Panel"},
+                {label: '貼合<br/>(含清潔)', name: "貼合"},
+                {label: 'Test', name: "Test"},
+                {label: 'Packing<br/>(不含附件盒)', name: "Packing"},
+                {label: 'Total<br/>(Mins)', name: "Total"},
+                {label: 'Hourly Rate:<br/> NTD 700', name: "Hourly Rate: NTD 700"},
+                {label: '製費<br/>(USD)', name: "製費 (USD)"}
+
+            ],
+            rowNum: 20,
+            rowList: [20, 50, 100],
+            pager: '#pager',
+            viewrecords: true,
+            autowidth: true,
+            shrinkToFit: true,
+            hidegrid: true,
+            stringResult: true,
+            gridview: true,
+            loadonce: true,
+            jsonReader: {
+                root: "rows",
+                page: "page",
+                total: "total",
+                records: "records",
+                repeatitems: false
+            },
+            afterSubmit: function () {
+                $(this).jqGrid("setGridParam", {datatype: 'json'});
+                return [true];
+            },
+            navOptions: {reloadGridOptions: {fromServer: true}},
+            caption: tableName3,
+//            height: 450,
+//            sortname: '1 Hr', sortorder: 'asc',
+            error: function (xhr, ajaxOptions, thrownError) {
+                alert("Ajax Error occurred\n"
+                        + "\nstatus is: " + xhr.status
+                        + "\nthrownError is: " + thrownError
+                        + "\najaxOptions is: " + ajaxOptions
+                        );
+            }
+        });
+
+        grid3.jqGrid('setGroupHeaders', {
+            useColSpanStyle: true,
+            groupHeaders: [
+                {startColumnName: "LCD Size", numberOfColumns: 1, titleText: "<em>AR製程</em>"},
+                {startColumnName: "Touch", numberOfColumns: 6, titleText: "<em>產品工時 (min)</em>"},
+                {startColumnName: "Hourly Rate: NTD 700", numberOfColumns: 1, titleText: "<em>製費 (NTD)</em>"}
+            ]
+        }).jqGrid("setGroupHeaders", {
+            groupHeaders: [
+                {startColumnName: 'Touch', numberOfColumns: 2, titleText: '<em>PI</em>'}
+            ]
+        });
+
+
         function headerRow(rowId, cellValue, rawObject, cm, rdata) {
             return " class='ui-state-default headerRow'";
         }
@@ -143,5 +208,9 @@
     <hr />
     <div>
         <table id="list2"></table> 
+    </div>
+    <hr />
+    <div>
+        <table id="list3"></table> 
     </div>
 </div>

@@ -1,0 +1,156 @@
+[
+  {
+    "LCD Size": "4.7吋面板",
+    "Touch": 2,
+    "Panel": 3,
+    "貼合": 5,
+    "Test": 5,
+    "Packing": 3,
+    "Total": 18,
+    "Hourly Rate: NTD 700": 210,
+    "製費 (USD)": 7
+  },
+  {
+    "LCD Size": "5.6吋面板",
+    "Touch": 2,
+    "Panel": 3,
+    "貼合": 5,
+    "Test": 5,
+    "Packing": 3,
+    "Total": 18,
+    "Hourly Rate: NTD 700": 210,
+    "製費 (USD)": 7
+  },
+  {
+    "LCD Size": "6.5吋面板",
+    "Touch": 2,
+    "Panel": 3,
+    "貼合": 5,
+    "Test": 5,
+    "Packing": 3,
+    "Total": 18,
+    "Hourly Rate: NTD 700": 210,
+    "製費 (USD)": 7
+  },
+  {
+    "LCD Size": "7吋面板",
+    "Touch": 2,
+    "Panel": 3,
+    "貼合": 5,
+    "Test": 5,
+    "Packing": 3,
+    "Total": 18,
+    "Hourly Rate: NTD 700": 210,
+    "製費 (USD)": 7
+  },
+  {
+    "LCD Size": "8吋面板",
+    "Touch": 2,
+    "Panel": 3,
+    "貼合": 7.6,
+    "Test": 5,
+    "Packing": 3,
+    "Total": 20.6,
+    "Hourly Rate: NTD 700": 240.3,
+    "製費 (USD)": 8
+  },
+  {
+    "LCD Size": "10.4吋面板",
+    "Touch": 2,
+    "Panel": 3,
+    "貼合": 7.6,
+    "Test": 5,
+    "Packing": 5,
+    "Total": 22.6,
+    "Hourly Rate: NTD 700": 263.7,
+    "製費 (USD)": 8.8
+  },
+  {
+    "LCD Size": "12吋面板",
+    "Touch": 2,
+    "Panel": 3,
+    "貼合": 8.8,
+    "Test": 5,
+    "Packing": 5,
+    "Total": 23.8,
+    "Hourly Rate: NTD 700": 277.7,
+    "製費 (USD)": 9.3
+  },
+  {
+    "LCD Size": "12.1吋面板",
+    "Touch": 2,
+    "Panel": 3,
+    "貼合": 8.8,
+    "Test": 5,
+    "Packing": 5,
+    "Total": 23.8,
+    "Hourly Rate: NTD 700": 277.7,
+    "製費 (USD)": 9.3
+  },
+  {
+    "LCD Size": "15吋面板",
+    "Touch": 2,
+    "Panel": 3,
+    "貼合": 11.5,
+    "Test": 5,
+    "Packing": 5,
+    "Total": 26.5,
+    "Hourly Rate: NTD 700": 309.2,
+    "製費 (USD)": 10.3
+  },
+  {
+    "LCD Size": "17吋面板",
+    "Touch": 2,
+    "Panel": 3,
+    "貼合": 13.6,
+    "Test": 5,
+    "Packing": 5,
+    "Total": 28.6,
+    "Hourly Rate: NTD 700": 333.7,
+    "製費 (USD)": 11.1
+  },
+  {
+    "LCD Size": "19吋面板",
+    "Touch": 2,
+    "Panel": 3,
+    "貼合": 16,
+    "Test": 5,
+    "Packing": 5,
+    "Total": 31,
+    "Hourly Rate: NTD 700": 361.7,
+    "製費 (USD)": 12.1
+  },
+  {
+    "LCD Size": "20吋面板",
+    "Touch": 2,
+    "Panel": 3,
+    "貼合": 16,
+    "Test": 5,
+    "Packing": 6,
+    "Total": 32,
+    "Hourly Rate: NTD 700": 373.3,
+    "製費 (USD)": 12.4
+  },
+  {
+    "LCD Size": "21吋面板",
+    "Touch": 2,
+    "Panel": 3,
+    "貼合": 18,
+    "Test": 5,
+    "Packing": 6,
+    "Total": 34,
+    "Hourly Rate: NTD 700": 396.7,
+    "製費 (USD)": 13.2
+  },
+  {
+    "LCD Size": "22吋面板",
+    "Touch": 2,
+    "Panel": 3,
+    "貼合": 18,
+    "Test": 5,
+    "Packing": 6,
+    "Total": 34,
+    "Hourly Rate: NTD 700": 396.7,
+    "製費 (USD)": 13.2
+  }
+]
