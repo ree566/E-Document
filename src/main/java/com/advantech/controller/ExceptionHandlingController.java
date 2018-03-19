@@ -26,14 +26,14 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class ExceptionHandlingController {
     
     private static final Logger log = LoggerFactory.getLogger(ExceptionHandlingController.class);
-
+    
     @ExceptionHandler(HttpSessionRequiredException.class)
     public ResponseEntity handleSessionExpired() {
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
                 .body("The session has expired.");
     }
-
+    
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity handleAccessDeniedException() {
         return ResponseEntity
@@ -46,7 +46,8 @@ public class ExceptionHandlingController {
     @ExceptionHandler(Exception.class)
     public ResponseEntity handleError(HttpServletRequest req, Exception ex) {
         System.out.println("Request: " + req.getRequestURL() + " raised " + ex);
-
+        log.error(ex.getMessage(), ex);
+        
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ex.getMessage());

@@ -55,7 +55,7 @@ public class UploadPortTest {
     private FlowUploadPort flowUploadPort;
 
     @Autowired
-    private ModelResponsorUploadPort mappingUserPort;
+    private ModelResponsorUploadPort modelResponsorUploadPort;
 
     @Autowired
     private SopUploadPort sopPort;
@@ -211,9 +211,17 @@ public class UploadPortTest {
     @Autowired
     private StandardTimeUpload standardTimeUpload;
 
-    @Test
+//    @Test
     @Rollback(true)
     public void testStandardTimeUploadJob() {
         standardTimeUpload.uploadToMes();
+    }
+    
+    @Test
+    @Rollback(true)
+    public void testModelResponsorUploadPort() throws Exception{
+        Worktime obj = new Worktime();
+        obj.setModelName("TEST-MODEL-2");
+        modelResponsorUploadPort.delete(obj);
     }
 }

@@ -68,13 +68,10 @@ public class ModelResponsorUploadPort extends BasicUploadPort implements UploadP
     @Override
     public void delete(Worktime w) throws Exception {
         try {
-            String userIdsString = concatUserId(getWorktimeOwners(w));
-            if (!"".equals(userIdsString)) {
-                PartMappingUserRoot root = new PartMappingUserRoot();
-                root.setPARTNO(w.getModelName()); //機種
-                root.setUSERIDs(userIdsString); //人員代碼
-                super.upload(root, UploadType.UPDATE);
-            }
+            PartMappingUserRoot root = new PartMappingUserRoot();
+            root.setPARTNO(w.getModelName()); //機種
+            root.setUSERIDs(""); //人員代碼
+            super.upload(root, UploadType.UPDATE);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw e;

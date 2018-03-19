@@ -92,7 +92,7 @@
                 {name: "workCenter", isNullable: false},
                 {name: "floor", isNullable: false},
                 {name: "user", nameprefix: "spe_", isNullable: false, dataToServer: "SPE"},
-                {name: "user", nameprefix: "ee_", isNullable: true, dataToServer: "EE"},
+                {name: "user", nameprefix: "ee_", isNullable: false, dataToServer: "EE"},
                 {name: "user", nameprefix: "qc_", isNullable: false, dataToServer: "QC"},
                 {name: "type", isNullable: false},
                 {name: "flow", nameprefix: "bab_", isNullable: true, dataToServer: "1"},
@@ -144,7 +144,6 @@
                 errorTextFormatF(checkResult); //field // code
                 return [false, "There are some errors in the entered data. Hover over the error icons for details."];
             } else {
-                return [false, "SAVED"];
                 //儲存前再check一次版本，給予覆蓋or取消的選擇
                 var revision_number = getRowRevision();
                 if (revision_number != selected_row_revision) {
@@ -194,7 +193,7 @@
                 {label: 'ASS_T1', name: "assyToT1", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: {elmsuffix: addFormulaCheckbox("assyToT1")}, editrules: {number: true}, editoptions: {defaultValue: '0'}},
                 {label: 'T2_PACKING', name: "t2ToPacking", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: {elmsuffix: addFormulaCheckbox("t2ToPacking")}, editrules: {number: true}, editoptions: {defaultValue: '0'}},
                 {label: 'Floor', name: "floor.id", edittype: "select", editoptions: {value: selectOptions["floor"]}, width: 100, formatter: selectOptions["floor_func"], searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["floor"], sopt: ['eq']}},
-                {label: 'BurnIn', name: "burnIn", edittype: "select", editoptions: {value: "N:N;BI:BI;RI:RI", dataEvents: burnIn_select_event}, width: 100, searchrules: {required: true}, searchoptions: search_string_options},
+                {label: 'BurnIn', name: "burnIn", edittype: "select", editoptions: {value: "N:N;BI:BI", dataEvents: burnIn_select_event}, width: 100, searchrules: {required: true}, searchoptions: search_string_options},
                 {label: 'B/I Time', name: "biTime", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {required: true, number: true}, editoptions: {defaultValue: '0'}, formoptions: required_form_options},
                 {label: 'BI_Temperature', name: "biTemperature", width: 120, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {required: true, number: true}, editoptions: {defaultValue: '0'}, formoptions: required_form_options},
                 {label: 'SPE Owner', name: "userBySpeOwnerId.id", edittype: "select", editoptions: {value: selectOptions["spe_user"]}, formatter: selectOptions["spe_user_func"], width: 100, searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["spe_user"], sopt: ['eq']}},
@@ -208,7 +207,7 @@
                 {label: 'BAB_FLOW', name: "flowByBabFlowId.id", edittype: "select", editoptions: {value: selectOptions["bab_flow"]}, formatter: selectOptions["bab_flow_func"], cellattr: hideEmptyBabFlow, width: 100, searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["bab_flow"], sopt: ['eq']}},
                 {label: 'TEST_FLOW', name: "flowByTestFlowId.id", edittype: "select", editoptions: {value: selectOptions["test_flow"]}, formatter: selectOptions["test_flow_func"], width: 100, searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["test_flow"], sopt: ['eq']}},
                 {label: 'PACKING_FLOW', name: "flowByPackingFlowId.id", edittype: "select", editoptions: {value: selectOptions["pkg_flow"]}, formatter: selectOptions["pkg_flow_func"], width: 140, searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["pkg_flow"], sopt: ['eq']}},
-                {label: 'PART-LINK', name: "partLink", edittype: "select", editoptions: {value: "Y:Y;N:N", defaultValue: 'Y'}, width: 100, searchrules: {required: true}, searchoptions: search_string_options},
+                {label: 'PART-LINK', name: "partLink", edittype: "select", editoptions: {value: "Y:Y;N:N", defaultValue: 'N'}, width: 100, searchrules: {required: true}, searchoptions: search_string_options},
                 {label: 'Remark', name: "remark.id", edittype: "select", editoptions: {value: selectOptions["remark"]}, formatter: selectOptions["remark_func"], width: 100, searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["remark"], sopt: ['eq']}},
                 {label: 'CE', name: "ce", width: 60, searchrules: number_search_rule, searchoptions: search_string_options, edittype: "select", editoptions: {value: "0:0;1:1"}},
                 {label: 'UL', name: "ul", width: 60, searchrules: number_search_rule, searchoptions: search_string_options, edittype: "select", editoptions: {value: "0:0;1:1"}},
@@ -219,8 +218,8 @@
                 {label: 'EAC', name: "eac", width: 60, searchrules: number_search_rule, searchoptions: search_string_options, edittype: "select", editoptions: {value: "0:0;1:1"}},
                 {label: 'KC', name: "kc", width: 60, searchrules: number_search_rule, searchoptions: search_string_options, edittype: "select", editoptions: {value: "0:0;1:1"}},
                 {label: '包裝單箱數量設定', name: "nsInOneCollectionBox", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, editoptions: {defaultValue: '0'}},
-                {label: 'SN是否等於SSN', name: "partNoAttributeMaintain", edittype: "select", editoptions: {value: "N:N; :empty", defaultValue: ' '}, width: 120, searchrules: {required: true}, searchoptions: search_string_options},
-                {label: '啟用料號屬性', name: "labelInformation", edittype: "select", editoptions: {value: "N:N; :empty", defaultValue: ' '}, width: 120, searchrules: {required: true}, searchoptions: search_string_options},
+                {label: 'SN是否等於SSN', name: "partNoAttributeMaintain", edittype: "select", editoptions: {value: "Y:Y; :empty", defaultValue: ' '}, width: 120, searchrules: {required: true}, searchoptions: search_string_options},
+                {label: '啟用料號屬性', name: "labelInformation", edittype: "select", editoptions: {value: "Y:Y; :empty", defaultValue: ' '}, width: 120, searchrules: {required: true}, searchoptions: search_string_options},
                 {label: '禮盒總重量(含配件)(kg)', name: "weight", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true, required: true}, editoptions: {defaultValue: '0'}},
                 {label: '整箱總重量誤差值(kg)', name: "tolerance", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true, required: true}, editoptions: {defaultValue: '0'}},
                 {label: 'A膠溶劑量', name: "materialVolumeA", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true, required: true}, editoptions: {defaultValue: '0'}},
@@ -278,7 +277,8 @@
                 {startColumnName: 'partNoAttributeMaintain', numberOfColumns: 1, titleText: '<em>料號屬性值維護</em>'},
                 {startColumnName: 'labelInformation', numberOfColumns: 1, titleText: '<em>標籤</em>'},
                 {startColumnName: 'materialVolumeA', numberOfColumns: 2, titleText: '<em>A/B material volume(c.c.)</em>'},
-                {startColumnName: 'assyLeadTime', numberOfColumns: 2, titleText: '<em>組裝效率</em>'}
+                {startColumnName: 'assyLeadTime', numberOfColumns: 2, titleText: '<em>組裝效率</em>'},
+                {startColumnName: 'weight', numberOfColumns: 2, titleText: '<em>包裝重量</em>'}
             ]
         });
         grid.jqGrid('navGrid', '#pager',

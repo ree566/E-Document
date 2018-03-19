@@ -5,6 +5,8 @@
  */
 package com.advantech.dao;
 
+import com.advantech.jqgrid.PageInfo;
+import com.advantech.model.BusinessGroup;
 import com.advantech.model.WorkCenter;
 import java.util.List;
 import org.hibernate.criterion.Restrictions;
@@ -20,6 +22,10 @@ public class WorkCenterDAO extends AbstractDao<Integer, WorkCenter> implements B
     @Override
     public List<WorkCenter> findAll() {
         return createEntityCriteria().list();
+    }
+
+    public List<WorkCenter> findAll(PageInfo info) {
+        return super.getByPaginateInfo(info);
     }
 
     @Override

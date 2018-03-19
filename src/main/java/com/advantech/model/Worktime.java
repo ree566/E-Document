@@ -59,9 +59,9 @@ public class Worktime implements java.io.Serializable {
     private WorkCenter workCenter;
     private BigDecimal productionWt = BigDecimal.ZERO;
     private BigDecimal setupTime = BigDecimal.ZERO;
-    private Integer arFilmAttachment = 0;
-    private Integer seal = 0;
-    private Integer opticalBonding = 0;
+    private BigDecimal arFilmAttachment = BigDecimal.ZERO;
+    private BigDecimal seal = BigDecimal.ZERO;
+    private BigDecimal opticalBonding = BigDecimal.ZERO;
     private String pressureCooker;
     private BigDecimal cleanPanel = BigDecimal.ZERO;
     private BigDecimal pi = BigDecimal.ZERO;
@@ -194,34 +194,34 @@ public class Worktime implements java.io.Serializable {
         this.setupTime = autoFixScale(setupTime, 1);
     }
 
-    @NotNull
-    @Column(name = "arFilmAttachment")
-    public Integer getArFilmAttachment() {
+    @Digits(integer = 10 /*precision*/, fraction = 1 /*scale*/)
+    @Column(name = "arFilmAttachment", precision = 10, scale = 1)
+    public BigDecimal getArFilmAttachment() {
         return arFilmAttachment;
     }
 
-    public void setArFilmAttachment(Integer arFilmAttachment) {
-        this.arFilmAttachment = arFilmAttachment;
+    public void setArFilmAttachment(BigDecimal arFilmAttachment) {
+        this.arFilmAttachment = autoFixScale(arFilmAttachment, 1);
     }
 
-    @NotNull
-    @Column(name = "seal")
-    public Integer getSeal() {
+    @Digits(integer = 10 /*precision*/, fraction = 1 /*scale*/)
+    @Column(name = "seal", precision = 10, scale = 1)
+    public BigDecimal getSeal() {
         return seal;
     }
 
-    public void setSeal(Integer seal) {
-        this.seal = seal;
+    public void setSeal(BigDecimal seal) {
+        this.seal = autoFixScale(seal, 1);
     }
 
-    @NotNull
-    @Column(name = "opticalBonding")
-    public Integer getOpticalBonding() {
+    @Digits(integer = 10 /*precision*/, fraction = 1 /*scale*/)
+    @Column(name = "opticalBonding", precision = 10, scale = 1)
+    public BigDecimal getOpticalBonding() {
         return opticalBonding;
     }
 
-    public void setOpticalBonding(Integer opticalBonding) {
-        this.opticalBonding = opticalBonding;
+    public void setOpticalBonding(BigDecimal opticalBonding) {
+        this.opticalBonding = autoFixScale(opticalBonding, 1);
     }
 
     @Size(min = 0, max = 10)
@@ -740,8 +740,8 @@ public class Worktime implements java.io.Serializable {
 
 //  Default formula column caculate
     public void setDefaultProductWt() {
-        BigDecimal defaultValue = notEmpty(new BigDecimal(arFilmAttachment)).add(notEmpty(new BigDecimal(seal)))
-                .add(notEmpty(new BigDecimal(opticalBonding))).add(notEmpty(cleanPanel)).add(notEmpty(pi))
+        BigDecimal defaultValue = notEmpty(arFilmAttachment).add(notEmpty(seal))
+                .add(notEmpty(opticalBonding)).add(notEmpty(cleanPanel)).add(notEmpty(pi))
                 .add(notEmpty(assy)).add(notEmpty(t1)).add(notEmpty(t2)).add(notEmpty(packing))
                 .add(notEmpty(upBiRi)).add(notEmpty(downBiRi)).add(notEmpty(biCost));
         this.setProductionWt(defaultValue);
@@ -749,7 +749,7 @@ public class Worktime implements java.io.Serializable {
 
     public void setDefaultSetupTime() {
         BigDecimal defaultValue = BigDecimal.ZERO
-                .add(notEmpty(new BigDecimal(arFilmAttachment)).add(notEmpty(cleanPanel)).add(notEmpty(pi)).compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : new BigDecimal(20))
+                .add(notEmpty(arFilmAttachment).add(notEmpty(cleanPanel)).add(notEmpty(pi)).compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : new BigDecimal(20))
                 .add(notEmpty(assy).compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : new BigDecimal(10))
                 .add(notEmpty(t1).add(notEmpty(t2)).compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : new BigDecimal(5))
                 .add(notEmpty(packing).compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : new BigDecimal(10));
@@ -757,9 +757,9 @@ public class Worktime implements java.io.Serializable {
     }
 
     public void setDefaultAssyToT1() {
-        BigDecimal defaultValue = notEmpty(new BigDecimal(arFilmAttachment))
-                .add(notEmpty(new BigDecimal(seal)))
-                .add(notEmpty(new BigDecimal(opticalBonding)))
+        BigDecimal defaultValue = notEmpty(arFilmAttachment)
+                .add(notEmpty(seal))
+                .add(notEmpty(opticalBonding))
                 .add(notEmpty(cleanPanel)).add(notEmpty(pi))
                 .add(notEmpty(assy)).add(notEmpty(t1));
         this.setAssyToT1(defaultValue);
@@ -772,7 +772,7 @@ public class Worktime implements java.io.Serializable {
     }
 
     public void setDefaultAssyLeadTime() {
-        BigDecimal defaultValue = notEmpty(new BigDecimal(arFilmAttachment))
+        BigDecimal defaultValue = notEmpty(arFilmAttachment)
                 .add(notEmpty(cleanPanel))
                 .add(notEmpty(pi));
         this.setAssyLeadTime(defaultValue);

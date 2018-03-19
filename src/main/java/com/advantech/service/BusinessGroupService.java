@@ -6,6 +6,7 @@
 package com.advantech.service;
 
 import com.advantech.dao.BusinessGroupDAO;
+import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.BusinessGroup;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,10 @@ public class BusinessGroupService {
         return businessGroupDAO.findAll();
     }
 
+    public List<BusinessGroup> findAll(PageInfo info) {
+        return businessGroupDAO.findAll(info);
+    }
+
     public BusinessGroup findByPrimaryKey(Object obj_id) {
         return businessGroupDAO.findByPrimaryKey(obj_id);
     }
@@ -41,6 +46,11 @@ public class BusinessGroupService {
 
     public int delete(BusinessGroup pojo) {
         return businessGroupDAO.delete(pojo);
+    }
+
+    public int delete(int obj_id) {
+        BusinessGroup b = this.findByPrimaryKey(obj_id);
+        return businessGroupDAO.delete(b);
     }
 
 }

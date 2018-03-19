@@ -6,8 +6,8 @@ var burnIn_select_event = [
         fn: function (e) {
             var selectOption = $('option:selected', this).text();
             var defaultValue = {
-                BI: [4, 40],
-                RI: [4, 0],
+                BI: [0, 60],
+                RI: [0, 0],
                 N: [0, 0]
             };
             $('input#biTime').val(defaultValue[selectOption][0]);

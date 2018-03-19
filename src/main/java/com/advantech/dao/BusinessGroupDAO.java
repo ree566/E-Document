@@ -5,8 +5,10 @@
  */
 package com.advantech.dao;
 
+import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.BusinessGroup;
 import java.util.List;
+import org.hibernate.criterion.Order;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -18,7 +20,13 @@ public class BusinessGroupDAO extends AbstractDao<Integer, BusinessGroup> implem
 
     @Override
     public List<BusinessGroup> findAll() {
-        return createEntityCriteria().list();
+        return createEntityCriteria()
+                .addOrder(Order.asc("name"))
+                .list();
+    }
+    
+    public List<BusinessGroup> findAll(PageInfo info) {
+        return super.getByPaginateInfo(info);
     }
 
     @Override

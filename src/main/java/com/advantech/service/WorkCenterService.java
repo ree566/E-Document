@@ -6,6 +6,7 @@
 package com.advantech.service;
 
 import com.advantech.dao.WorkCenterDAO;
+import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.WorkCenter;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,10 @@ public class WorkCenterService {
         return workCenterDAO.findAll();
     }
 
+    public List<WorkCenter> findAll(PageInfo info) {
+        return workCenterDAO.findAll(info);
+    }
+
     public WorkCenter findByPrimaryKey(Object obj_id) {
         return workCenterDAO.findByPrimaryKey(obj_id);
     }
@@ -45,6 +50,11 @@ public class WorkCenterService {
 
     public int delete(WorkCenter pojo) {
         return workCenterDAO.delete(pojo);
+    }
+
+    public int delete(int obj_id) {
+        WorkCenter w = this.findByPrimaryKey(obj_id);
+        return workCenterDAO.delete(w);
     }
 
 }
