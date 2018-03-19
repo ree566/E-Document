@@ -36,7 +36,7 @@ import org.w3c.dom.Node;
 public class WsClient extends WebServiceGatewaySupport {
 
     @Autowired
-    @Qualifier("webServiceTemplate2")
+    @Qualifier("webServiceTemplate")
     private WebServiceTemplate webServiceTemplate;
 
     public TxResponse simpleTxSendAndReceive(String v, UploadType type) throws IOException {
