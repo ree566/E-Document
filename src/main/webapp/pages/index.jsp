@@ -29,6 +29,12 @@
         <link href="<c:url value="/css/sbadmin2-sidebar-toggle.css" />" rel="stylesheet">
         <link href="<c:url value="/css/sys-beta.css" />" rel="stylesheet">
 
+        <style>
+            body{
+                font-family: 微軟正黑體;
+            }
+        </style>
+
         <script src="<c:url value="/webjars/jquery/1.12.4/jquery.min.js" />"></script>
 
         <script src="<c:url value="/webjars/bootstrap/3.3.7/js/bootstrap.min.js" />"></script>

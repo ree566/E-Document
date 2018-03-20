@@ -85,19 +85,76 @@
 
                 initMathType();
                 costFormulaCalc();
-                $(":text").on("keyup", costCalc);
 
-                $(".form-check-input").change(function () {
+                $("input[type=number]").on("keyup change", function () {
+                    costFormulaCalc();
+                    costCalc();
+                });
+                
+                $("input[name=formatFloatType]").on("change", function(){
                     initMathType();
                     costFormulaCalc();
                     costCalc();
                 });
+
+                $("input[type=number]").first().trigger("keyup");
             });
         </script>
     </head>
     <body>
         <div class="container">
-            <div class="row form-inline">
+            <div class="row">
+                <table class="table table-bordered">
+                    <tr>
+                        <th colspan="3">一、壓力鍋成本工時計算</th>
+                    </tr>
+                    <tr>
+                        <td>負載量/次</td>
+                        <td>使用分鐘/次</td>
+                        <td>次數</td>
+                    </tr>
+                    <tr class="warning">
+                        <td>
+                            <input type="number" id="loadTime" class="form-control" placeholder="負載量/次" value="15" min="1" />
+                        </td>
+                        <td>
+                            <input type="number" id="useMinuteTime" class="form-control" placeholder="使用分鐘/次" value="60" min="1" />
+                        </td>
+                        <td>
+                            <input type="number" id="frequency" class="form-control" placeholder="次數" value="2" min="1" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>費用</td>
+                        <td colspan="2">
+                            <div id="cost"></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>換算工時(min)</td>
+                        <td colspan="2">
+                            <div id="worktime"></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>小數點格式</td>
+                        <td colspan="2">
+                            <div class="custom-control custom-checkbox">
+                                <input type="radio" id="round" class="form-check-input" name="formatFloatType" value="round" checked />
+                                <label for="round">Round</label>
+                                <input type="radio" id="floor" class="form-check-input" name="formatFloatType" value="floor" />
+                                <label for="floor">Floor</label>
+                                <input type="radio" id="ceil" class="form-check-input" name="formatFloatType" value="ceil" />
+                                <label for="ceil">Ceil</label>
+                                <input type="radio" id="original" class="form-check-input" name="formatFloatType" value="original" />
+                                <label for="original">Original</label>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="row">
                 <table class="table table-bordered table-sm">
                     <tr>
                         <th colspan="8">二、壓力鍋成本計算公式</th>
@@ -219,56 +276,6 @@
                         <td>負載量</td>
                         <td></td>
                         <td></td>
-                    </tr>
-                </table>
-            </div>
-            <div class="row">
-                <table class="table table-bordered">
-                    <tr>
-                        <th colspan="3">一、壓力鍋成本工時計算</th>
-                    </tr>
-                    <tr>
-                        <td>負載量/次</td>
-                        <td>使用分鐘/次</td>
-                        <td>次數</td>
-                    </tr>
-                    <tr class="warning">
-                        <td>
-                            <input type="text" id="loadTime" class="form-control" placeholder="負載量/次" />
-                        </td>
-                        <td>
-                            <input type="text" id="useMinuteTime" class="form-control" placeholder="使用分鐘/次" />
-                        </td>
-                        <td>
-                            <input type="text" id="frequency" class="form-control" placeholder="次數" />
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>費用</td>
-                        <td colspan="2">
-                            <div id="cost"></div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>換算工時(min)</td>
-                        <td colspan="2">
-                            <div id="worktime"></div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>小數點格式</td>
-                        <td colspan="2">
-                            <div class="custom-control custom-checkbox">
-                                <input type="radio" id="round" class="form-check-input" name="formatFloatType" value="round" checked />
-                                <label for="round">Round</label>
-                                <input type="radio" id="floor" class="form-check-input" name="formatFloatType" value="floor" />
-                                <label for="floor">Floor</label>
-                                <input type="radio" id="ceil" class="form-check-input" name="formatFloatType" value="ceil" />
-                                <label for="ceil">Ceil</label>
-                                <input type="radio" id="original" class="form-check-input" name="formatFloatType" value="original" />
-                                <label for="original">Original</label>
-                            </div>
-                        </td>
                     </tr>
                 </table>
             </div>

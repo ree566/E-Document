@@ -659,4 +659,7 @@
     </div>
     <table id="list"></table> 
     <div id="pager"></div>
+
+    <hr />
+    <jsp:include page="pressureCooker.jsp" />
 </div>
