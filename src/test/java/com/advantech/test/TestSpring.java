@@ -9,10 +9,11 @@ import com.advantech.model.view.BabAvg;
 import com.advantech.service.LineBalancingService;
 import com.advantech.service.SqlViewService;
 import java.util.List;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -36,7 +37,10 @@ public class TestSpring {
 
     private final double DELTA = 1e-15;
 
-    @Test
+    @Value("${pageTitle}")
+    private String webAppName;
+
+//    @Test
     public void testLineBalanceCount() {
         List<BabAvg> l = sqlViewService.findBabAvgInHistory(13220);
 //        assertEquals(3, l.size());
@@ -44,7 +48,6 @@ public class TestSpring {
         double max = l.stream().mapToDouble(i -> i.getAverage()).max().getAsDouble();
 
 //        assertEquals(830.667, max, DELTA);
-
         double sum = l.stream().mapToDouble(i -> i.getAverage()).sum();
 
         System.out.printf("sum: %.3f and max: %.3f \n", sum, max);
@@ -52,6 +55,11 @@ public class TestSpring {
         double balance = lineBalancingService.caculateLineBalance(l);
 
         System.out.printf("balance: %.3f \n", balance);
+    }
+
+    @Test
+    public void testContextParam() {
+        assertEquals("無效工時即時管理系統", webAppName);
     }
 
 }

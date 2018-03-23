@@ -14,7 +14,7 @@
     <!--Global param-->
     <context-param>
         <param-name>pageTitle</param-name>
-        <param-value>藍燈系統</param-value>
+        <param-value>無效工時即時管理系統</param-value>
     </context-param>
     
     <context-param>
