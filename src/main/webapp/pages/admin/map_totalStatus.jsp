@@ -233,7 +233,7 @@
                     $("#mapInfo>div")
                             .attr("id", "map_title")
                             .addClass("titleWiget mapTitle")
-                            .html(mapInfo.titleName)
+                            .html('${initParam.pageTitle}' + ': ' + mapInfo.titleName)
                             .css({left: mapInfo.x + pXa, top: mapInfo.y + pYa});
                 }
 
