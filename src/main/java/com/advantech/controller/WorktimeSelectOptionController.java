@@ -90,7 +90,7 @@ public class WorktimeSelectOptionController {
     @ResponseBody
     @RequestMapping(value = "/floor", method = {RequestMethod.GET})
     protected List<Floor> getFloorOption() {
-        return floorService.findByPrimaryKeys(2, 5);
+        return floorService.findByPrimaryKeys(4, 5);
     }
 
     @ResponseBody

@@ -193,7 +193,7 @@
                                     <ul class="nav nav-second-level">
                                         <li>
                                             <!--id="preload_page"--> 
-                                            <a class="redirect-link" href="worktime.jsp">工時大表</a>
+                                            <a class="redirect-link" id="preload_page" href="worktime.jsp">工時大表</a>
                                         </li>
                                         <sec:authorize access="hasAnyRole('ADMIN', 'OPER', 'AUTHOR')">
                                             <li>

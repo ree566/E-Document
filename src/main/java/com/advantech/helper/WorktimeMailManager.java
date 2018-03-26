@@ -16,6 +16,7 @@ import javax.mail.MessagingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
@@ -34,11 +35,14 @@ public class WorktimeMailManager {
     @Autowired
     private MailManager mailManager;
 
+    @Value("#{contextParameters.pageTitle}")
+    private String pageTitle;
+
     public void notifyUser(List<Worktime> l, String action) {
         String[] to = getMailByNotification("worktime_alarm");
         String[] cc = getMailByNotification("worktime_alarm_cc");
 
-        String subject = "【系統訊息】大表異動";
+        String subject = "【" + pageTitle + "系統訊息】大表異動";
         String text = generateTextBody(l, action);
 
         try {
@@ -52,7 +56,7 @@ public class WorktimeMailManager {
         String[] to = getMailByNotification("worktime_alarm");
         String[] cc = getMailByNotification("worktime_alarm_cc");
 
-        String subject = "【系統訊息】大表異動";
+        String subject = "【" + pageTitle + "系統訊息】大表異動";
         String text = generateTextBody2(modelNames, action);
 
         try {

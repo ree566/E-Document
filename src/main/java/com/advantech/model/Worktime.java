@@ -104,8 +104,8 @@ public class Worktime implements java.io.Serializable {
     private String labelInformation;
     private BigDecimal weight = BigDecimal.ZERO;
     private BigDecimal tolerance = BigDecimal.ZERO;
-    private Integer materialVolumeA = 0;
-    private Integer materialVolumeB = 0;
+    private BigDecimal materialVolumeA = BigDecimal.ZERO;
+    private BigDecimal materialVolumeB = BigDecimal.ZERO;
     private BigDecimal assyLeadTime = BigDecimal.ZERO;
     private BigDecimal test = BigDecimal.ZERO;
     private Date createDate;
@@ -390,7 +390,7 @@ public class Worktime implements java.io.Serializable {
 
 //    @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "spe_owner_id", nullable = true)
+    @JoinColumn(name = "spe_owner_id", nullable = false)
     public User getUserBySpeOwnerId() {
         return this.userBySpeOwnerId;
     }
@@ -400,7 +400,7 @@ public class Worktime implements java.io.Serializable {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ee_owner_id", nullable = true)
+    @JoinColumn(name = "ee_owner_id", nullable = false)
     public User getUserByEeOwnerId() {
         return this.userByEeOwnerId;
     }
@@ -411,7 +411,7 @@ public class Worktime implements java.io.Serializable {
 
 //    @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "qc_owner_id", nullable = true)
+    @JoinColumn(name = "qc_owner_id", nullable = false)
     public User getUserByQcOwnerId() {
         return this.userByQcOwnerId;
     }
@@ -459,7 +459,7 @@ public class Worktime implements java.io.Serializable {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "pre_assy_id")
+    @JoinColumn(name = "pre_assy_id", nullable = true)
     public PreAssy getPreAssy() {
         return this.preAssy;
     }
@@ -469,7 +469,7 @@ public class Worktime implements java.io.Serializable {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "bab_flow_id")
+    @JoinColumn(name = "bab_flow_id", nullable = true)
     public Flow getFlowByBabFlowId() {
         return this.flowByBabFlowId;
     }
@@ -479,7 +479,7 @@ public class Worktime implements java.io.Serializable {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "test_flow_id")
+    @JoinColumn(name = "test_flow_id", nullable = true)
     public Flow getFlowByTestFlowId() {
         return this.flowByTestFlowId;
     }
@@ -489,7 +489,7 @@ public class Worktime implements java.io.Serializable {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "packing_flow_id")
+    @JoinColumn(name = "packing_flow_id", nullable = true)
     public Flow getFlowByPackingFlowId() {
         return this.flowByPackingFlowId;
     }
@@ -508,7 +508,7 @@ public class Worktime implements java.io.Serializable {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "remark_id", nullable = false)
+    @JoinColumn(name = "remark_id", nullable = true)
     public Remark getRemark() {
         return remark;
     }
@@ -648,20 +648,20 @@ public class Worktime implements java.io.Serializable {
     }
 
     @Column(name = "materialVolumeA")
-    public Integer getMaterialVolumeA() {
+    public BigDecimal getMaterialVolumeA() {
         return materialVolumeA;
     }
 
-    public void setMaterialVolumeA(Integer materialVolumeA) {
+    public void setMaterialVolumeA(BigDecimal materialVolumeA) {
         this.materialVolumeA = materialVolumeA;
     }
 
     @Column(name = "materialVolumeB")
-    public Integer getMaterialVolumeB() {
+    public BigDecimal getMaterialVolumeB() {
         return materialVolumeB;
     }
 
-    public void setMaterialVolumeB(Integer materialVolumeB) {
+    public void setMaterialVolumeB(BigDecimal materialVolumeB) {
         this.materialVolumeB = materialVolumeB;
     }
 

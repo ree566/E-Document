@@ -25,6 +25,7 @@ import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 /**
@@ -56,6 +57,9 @@ public class StandardTimeUpload {
     private PageInfo tempInfo;
 
     private List<String> checkField;
+    
+    @Value("#{contextParameters.pageTitle}")
+    private String pageTitle;
 
     @PostConstruct
     public void init() {
@@ -116,7 +120,7 @@ public class StandardTimeUpload {
         String[] to = getMailByNotification("worktime_upload_alarm");
         String[] cc = new String[0];
 
-        String subject = "【系統訊息】大表上傳";
+        String subject = "【" + pageTitle + "系統訊息】大表上傳";
         String text = generateTextBody(l);
 
         try {

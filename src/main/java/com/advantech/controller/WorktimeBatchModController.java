@@ -11,19 +11,19 @@ import com.advantech.excel.XlsWorkSheet;
 import com.advantech.model.BusinessGroup;
 import com.advantech.model.Floor;
 import com.advantech.model.Flow;
-import com.advantech.model.Pending;
 import com.advantech.model.PreAssy;
 import com.advantech.model.Type;
 import com.advantech.model.User;
+import com.advantech.model.WorkCenter;
 import com.advantech.model.Worktime;
 import com.advantech.service.AuditService;
 import com.advantech.service.BusinessGroupService;
 import com.advantech.service.FloorService;
 import com.advantech.service.FlowService;
-import com.advantech.service.PendingService;
 import com.advantech.service.PreAssyService;
 import com.advantech.service.TypeService;
 import com.advantech.service.UserService;
+import com.advantech.service.WorkCenterService;
 import com.advantech.service.WorktimeService;
 import com.google.gson.Gson;
 import java.lang.reflect.InvocationTargetException;
@@ -79,6 +79,9 @@ public class WorktimeBatchModController {
 
     @Autowired
     private BusinessGroupService businessGroupService;
+    
+    @Autowired
+    private WorkCenterService workCenterService;
 
     @Autowired
     private AuditService auditService;
@@ -231,8 +234,6 @@ public class WorktimeBatchModController {
     }
 
     private boolean validateWorktime(List<Worktime> l) throws Exception {
-        worktimeService.checkModelExists(l);
-
         Map<String, Map<String, String>> checkResult = new HashMap();
         int count = 2;
         for (Worktime w : l) {
@@ -264,6 +265,7 @@ public class WorktimeBatchModController {
 
         Map<String, PreAssy> preAssyOptions = toSelectOptions(preAssyService.findAll());
         Map<String, BusinessGroup> businessGroupOptions = toSelectOptions(businessGroupService.findAll());
+        Map<String, WorkCenter> workCenterOptions = toSelectOptions(workCenterService.findAll());
 
         //設定關聯by name
         for (int i = 0; i < hgList.size(); i++) {
@@ -279,9 +281,9 @@ public class WorktimeBatchModController {
             w.setUserBySpeOwnerId(valid(speUserName, userOptions.get(speUserName)));
             w.setUserByQcOwnerId(valid(qcUserName, userOptions.get(qcUserName)));
 
-            String babFlowName = sheet.getValue(i, "babFlowName").toString();
-            String pkgFlowName = sheet.getValue(i, "packingFlowName").toString();
-            String testFlowName = sheet.getValue(i, "testFlowName").toString();
+            String babFlowName = sheet.getValue(i, "babFlowName").toString().trim();
+            String pkgFlowName = sheet.getValue(i, "packingFlowName").toString().trim();
+            String testFlowName = sheet.getValue(i, "testFlowName").toString().trim();
 
             w.setFlowByBabFlowId(valid(babFlowName, flowOptions.get(babFlowName)));
             w.setFlowByPackingFlowId(valid(pkgFlowName, flowOptions.get(pkgFlowName)));
@@ -292,6 +294,9 @@ public class WorktimeBatchModController {
 
             String businessGroupName = sheet.getValue(i, "businessGroupName").toString();
             w.setBusinessGroup(valid(businessGroupName, businessGroupOptions.get(businessGroupName)));
+            
+            String workCenterName = sheet.getValue(i, "workCenterName").toString();
+            w.setWorkCenter(valid(workCenterName, workCenterOptions.get(workCenterName)));
 
         }
 
