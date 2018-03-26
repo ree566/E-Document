@@ -109,7 +109,7 @@ public class FileDownloadController {
             try (OutputStream os = response.getOutputStream()) {
                 this.outputFile(l, is, os);
             }
-        } 
+        }
     }
 
     private void outputFile(List data, InputStream is, OutputStream os) throws IOException {
@@ -127,11 +127,12 @@ public class FileDownloadController {
         TransformationConfig config = transformer.getTransformationConfig();
         config.setExpressionEvaluator(new JexlExpressionEvaluatorNoThreadLocal());
         JexlExpressionEvaluatorNoThreadLocal evaluator = (JexlExpressionEvaluatorNoThreadLocal) config.getExpressionEvaluator();
-
+ 
         //避免Jexl2在javabean值為null時會log
         JexlEngine engine = evaluator.getJexlEngine();
-        engine.setSilent(true);
-
+        engine.setSilent(true); // will throw errors now for selects that don't evaluate properly
+//        engine.setLenient(false);
+//        engine.setDebug(true);
         helper.processTemplate(context, transformer);
     }
 

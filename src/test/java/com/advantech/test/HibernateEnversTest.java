@@ -10,7 +10,6 @@ import com.advantech.excel.XlsWorkSheet;
 import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.model.Worktime;
 import com.advantech.service.*;
-import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import java.io.File;
 import java.io.FileInputStream;
@@ -18,7 +17,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -35,6 +36,9 @@ import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
 import org.hibernate.envers.query.AuditEntity;
 import org.hibernate.envers.query.AuditQuery;
+import org.hibernate.envers.query.criteria.AuditProperty;
+import org.hibernate.envers.query.internal.property.EntityPropertyName;
+import org.hibernate.envers.query.internal.property.ModifiedFlagPropertyName;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
@@ -236,21 +240,47 @@ public class HibernateEnversTest {
         return st == null ? "" : st;
     }
 
-    @Test
+//    @Test
     @Transactional
     @Rollback(true)
     public void testModifyFlag() {
+        Class c = Worktime.class;
+
         AuditQuery q = reader.createQuery()
-                .forRevisionsOfEntity(Worktime.class, false, false)
+                .forRevisionsOfEntity(c, false, false)
                 .add(AuditEntity.id().eq(17991))
-                .add(AuditEntity.property("userBySpeOwnerId").hasChanged())
-                .add(AuditEntity.revisionNumber().maximize().computeAggregationInInstanceContext());
+                .addProjection(AuditEntity.revisionNumber())
+                .addProjection(AuditEntity.id());
+
+        Field fields[] = c.getDeclaredFields();
+        for (Field field : fields) {
+            if (!Collection.class.isAssignableFrom(field.getType()) && !field.isAnnotationPresent(javax.persistence.JoinColumn.class)) {
+                String fieldName = field.getName();
+                System.out.println(fieldName);
+                // for each of your entity's properties
+                q.addProjection(AuditEntity.property(fieldName));
+                // for the modification properties
+
+                if (!"id".equals(fieldName)) {
+                    q.addProjection(new AuditProperty<>(fieldName, new ModifiedFlagPropertyName(new EntityPropertyName(fieldName))));
+                }
+            }
+        }
 
         List result = q.getResultList();
-        
-        assertEquals(1, result.size());
 
         HibernateObjectPrinter.print(result);
+    }
+    
+    @Test
+    @Transactional
+    @Rollback(true)
+    public void tsetEnvers(){
+//        AuditQuery q = reader.createQuery()
+//                .forRevisionsOfEntity(Worktime.class, true, false)
+//                .add(AuditEntity.revisionNumber().maximize().computeAggregationInInstanceContext());
+//        List l = q.list();
+//        assertEquals(,l.size());
     }
 
 }

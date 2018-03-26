@@ -174,6 +174,24 @@ public class WorktimeService {
     }
 
     public int mergeByExcel(List<Worktime> l) throws Exception {
+        retriveFormulaSetting(l);
+
+        uploadMesService.portParamInit();
+        int i = 1;
+        for (Worktime w : l) {
+            //Don't need to update formula, but still need to re-calculate the formula field
+            this.initUnfilledFormulaColumn(w);
+            
+            worktimeDAO.merge(w);
+            uploadMesService.update(w);
+            flushIfReachFetchSize(i++);
+        }
+        return 1;
+        
+    }
+
+    private void retriveFormulaSetting(List<Worktime> l) {
+        //Retrive settings because excel doesn't have formula setting field.
         List<WorktimeFormulaSetting> settings = worktimeFormulaSettingDAO.findWithWorktime();
         Map<Integer, WorktimeFormulaSetting> settingMap = new HashMap();
         settings.forEach((setting) -> {
@@ -183,9 +201,6 @@ public class WorktimeService {
         l.forEach((w) -> {
             w.setWorktimeFormulaSettings(newArrayList(settingMap.get(w.getId())));
         });
-
-        this.merge(l);
-        return 1;
     }
 
     public void initUnfilledFormulaColumn(Worktime w) {

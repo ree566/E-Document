@@ -8,6 +8,7 @@ package com.advantech.test;
 import com.advantech.model.Type;
 import com.advantech.model.Worktime;
 import com.advantech.service.WorktimeService;
+import com.advantech.webservice.port.MaterialPropertyUploadPort;
 import com.google.gson.Gson;
 import java.io.File;
 import java.io.FileInputStream;
@@ -63,6 +64,9 @@ public class ExcelTest {
 
     @Autowired
     private SessionFactory sessionFactory;
+    
+    @Autowired
+    private MaterialPropertyUploadPort port;
 
 //    @Test
     public void testJxls() throws Exception {
@@ -91,6 +95,8 @@ public class ExcelTest {
     public void testFileSyncToDb() throws Exception {
         Session session = sessionFactory.getCurrentSession();
 
+        port.initSetting();
+        
         List<Worktime> l = worktimeService.findAll();
         String syncFilePath = "C:\\Users\\Wei.Cheng\\Desktop\\testXls\\M3機種秤重明細.xlsx";
         try (InputStream is = new FileInputStream(new File(syncFilePath))) {
@@ -118,7 +124,7 @@ public class ExcelTest {
                     w.setTolerance(objToBigDecimal(getCellValue(row, "C")));
 
                     session.update(w);
-
+                    port.update(w);
                 }
             }
         }

@@ -38,30 +38,31 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class MaterialPropertyUploadPort extends BasicUploadPort implements UploadPort {
-
+    
     private static final Logger logger = LoggerFactory.getLogger(MaterialPropertyUploadPort.class);
-
+    
     @Autowired
     private MaterialPropertyQueryPort materialPropertyQueryPort;
-
+    
     @Autowired
     private MaterialPropertyValueQueryPort materialPropertyValueQueryPort;
-
+    
     @Autowired
     private MaterialPropertyUserPermissionQueryPort permissionQueryPort;
-
+    
     @Autowired
     private WorktimeMaterialPropertyUploadSettingService propSettingService;
-
+    
     @Autowired
     private PendingService pendingService;
-
+    
     @Autowired
     private SpringExpressionUtils expressionUtils;
-
+    
     private List<MaterialProperty> temp_MaterialPropertys = new ArrayList();
     private List<MaterialPropertyUserPermission> temp_MaterialPropertyUserPermissions = new ArrayList();
-
+    private List<WorktimeMaterialPropertyUploadSetting> settings = new ArrayList();
+    
     @Override
     protected void initJaxbMarshaller() {
         try {
@@ -70,7 +71,7 @@ public class MaterialPropertyUploadPort extends BasicUploadPort implements Uploa
             logger.error(e.toString());
         }
     }
-
+    
     public void initSetting() throws Exception {
         temp_MaterialPropertys = materialPropertyQueryPort.query("");
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -80,8 +81,9 @@ public class MaterialPropertyUploadPort extends BasicUploadPort implements Uploa
             User user = (User) auth.getPrincipal();
             temp_MaterialPropertyUserPermissions = permissionQueryPort.query(user.getJobnumber());
         }
+        settings = propSettingService.findAll();
     }
-
+    
     @Override
     public void insert(Worktime w) throws Exception {
         //Query to prevent override the exists setting on MES.
@@ -89,14 +91,14 @@ public class MaterialPropertyUploadPort extends BasicUploadPort implements Uploa
         MaterialPropertyBatchUploadRoot root = this.checkDifferenceAndGenerateRoot(remotePropSettings, w);
         super.upload(root, UploadType.UPDATE);
     }
-
+    
     @Override
     public void update(Worktime w) throws Exception {
         List<MaterialPropertyValue> remotePropSettings = materialPropertyValueQueryPort.query(w);
         MaterialPropertyBatchUploadRoot root = this.checkDifferenceAndGenerateRoot(remotePropSettings, w);
         super.upload(root, UploadType.UPDATE);
     }
-
+    
     @Override
     public void delete(Worktime w) throws Exception {
         //因為要刪除全部設定，固直接將遠端setting丟給checkMatPermission檢查即可
@@ -113,9 +115,10 @@ public class MaterialPropertyUploadPort extends BasicUploadPort implements Uploa
     //找出Remote & local difference, 差異如果屬性值在local setting則update, else keep and don't change its value
     //已存在遠端的setting只許更新其值
     public MaterialPropertyBatchUploadRoot checkDifferenceAndGenerateRoot(List<MaterialPropertyValue> remotePropSettings, Worktime w) throws Exception {
+        checkArgument(!settings.isEmpty(), "Can't find any upload setting in WorktimeMaterialPropertyUploadSetting table");
+        
         w.setPending(pendingService.findByPrimaryKey(w.getPending().getId()));
-        List<WorktimeMaterialPropertyUploadSetting> settings = propSettingService.findAll();
-
+        
         Set<String> localMatPropNo = settings.stream()
                 .map(WorktimeMaterialPropertyUploadSetting::getMatPropNo)
                 .collect(Collectors.toSet());
@@ -124,19 +127,19 @@ public class MaterialPropertyUploadPort extends BasicUploadPort implements Uploa
         List<MaterialPropertyValue> propNotSettingInLocal = remotePropSettings.stream()
                 .filter(r -> Objects.equals(w.getModelName(), r.getItemNo()) && !localMatPropNo.contains(r.getMatPropertyNo()))
                 .collect(Collectors.toList());
-
+        
         List<MaterialPropertyValue> propSettingInLocal = new ArrayList();
         List<MaterialPropertyValue> updatedMatProps = new ArrayList();
-
+        
         settings.forEach((setting) -> {
             boolean isUpdated = false;
             //先計算，等於初始值者跳過
             //省去找MaterialPropertyValue的時間
             String mainValue = getValueFromFormula(w, setting.getFormula());
             String secondValue = getValueFromFormula(w, setting.getAffFormula());
-
+            
             if (!Objects.equals(mainValue, setting.getDefaultValue()) || (Objects.equals(mainValue, setting.getDefaultValue()) && setting.getUploadWhenDefault() == 1)) {
-
+                
                 MaterialPropertyValue mp = remotePropSettings.stream()
                         .filter(r -> Objects.equals(w.getModelName(), r.getItemNo()) && Objects.equals(setting.getMatPropNo(), r.getMatPropertyNo()))
                         .findFirst().orElse(null);
@@ -156,7 +159,7 @@ public class MaterialPropertyUploadPort extends BasicUploadPort implements Uploa
                 mp.setValue(mainValue);
                 mp.setAffPropertyValue(secondValue);
                 propSettingInLocal.add(mp);
-
+                
                 if (isUpdated) {
                     updatedMatProps.add(mp);
                 }
@@ -169,7 +172,7 @@ public class MaterialPropertyUploadPort extends BasicUploadPort implements Uploa
         root.getMATVALUE().setITEMNO(w.getModelName());
         return root;
     }
-
+    
     private MaterialPropertyBatchUploadRoot toJaxbElement(List<MaterialPropertyValue> l) {
         MaterialPropertyBatchUploadRoot root = new MaterialPropertyBatchUploadRoot();
         MaterialPropertyBatchUploadRoot.MATVALUE matvalue = root.getMATVALUE();
@@ -186,10 +189,10 @@ public class MaterialPropertyUploadPort extends BasicUploadPort implements Uploa
         matvalue.setMATVALUEDETAIL(details);
         return root;
     }
-
+    
     private String getValueFromFormula(Worktime w, String formula) {
         Object o = expressionUtils.getValueFromFormula(w, formula);
-
+        
         if (o != null) {
             if (o instanceof BigDecimal && ((BigDecimal) o).signum() == 0) {
                 return "0";
@@ -201,7 +204,7 @@ public class MaterialPropertyUploadPort extends BasicUploadPort implements Uploa
         }
         return null;
     }
-
+    
     private void checkMatPermission(List<MaterialPropertyValue> changedMatProp) {
         List<String> noPermissionMatProp = new ArrayList();
         changedMatProp.forEach(prop -> {
@@ -214,7 +217,7 @@ public class MaterialPropertyUploadPort extends BasicUploadPort implements Uploa
         });
         checkState(noPermissionMatProp.isEmpty(), "您在MES中沒有權限更新下列屬性值欄位: " + noPermissionMatProp.toString());
     }
-
+    
     private MaterialProperty findMatPropInfo(String matPropNo) {
         MaterialProperty propInfo = temp_MaterialPropertys.stream()
                 .filter(tM -> ObjectUtils.compare(tM.getMatPropertyNo(), matPropNo) == 0)

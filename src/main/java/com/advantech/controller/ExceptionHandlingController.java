@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 //Global exception setting
 @ControllerAdvice
 public class ExceptionHandlingController {
-    
+
     private static final Logger log = LoggerFactory.getLogger(ExceptionHandlingController.class);
 
     @ExceptionHandler(HttpSessionRequiredException.class)
@@ -46,6 +46,7 @@ public class ExceptionHandlingController {
     @ExceptionHandler(Exception.class)
     public ResponseEntity handleError(HttpServletRequest req, Exception ex) {
         System.out.println("Request: " + req.getRequestURL() + " raised " + ex);
+        log.error(ex.getMessage(), ex);
 
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)

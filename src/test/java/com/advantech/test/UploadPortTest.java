@@ -211,9 +211,18 @@ public class UploadPortTest {
     @Autowired
     private StandardTimeUpload standardTimeUpload;
 
-    @Test
-    @Rollback(true)
+//    @Test
+//    @Rollback(true)
     public void testStandardTimeUploadJob() {
         standardTimeUpload.uploadToMes();
+    }
+    
+    @Test
+    @Rollback(true)
+    public void testStandardTimeUpload() throws Exception{
+        Worktime worktime = worktimeService.findByPrimaryKey(527);
+        assertNotNull(worktime);
+        standardtimePort.initSettings();
+        standardtimePort.update(worktime);
     }
 }

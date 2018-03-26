@@ -22,60 +22,45 @@
 
         <script>
             $(function () {
-                $(".download").click(function () {
-                    console.log("click");
-                    $.fileDownload($(this).attr("href"), {
-                        preparingMessageHtml: "We are preparing your report, please wait...",
-                        failMessageHtml: "There was a problem generating your report, please try again.",
-                        successCallback: function (url) {
-                            console.log("successCallback");
-                        },
-                        failCallback: function (html, url) {
-                            console.log("failCallback");
-                        }
-                    });
-                    return false;
+                var data;
+                $.ajax({
+                    url: '<c:url value="/json/biCost.json" />',
+                    async: false,
+                    dataType: 'json',
+                    success: function (d) {
+                        data = d;
+                    }
                 });
 
-                $("#test1").click(function () {
-                    $.ajax({
-                        type: "GET",
-                        url: "<c:url value="/testCtrl/test" />",
-                        dataType: "json",
-                        success: function (response) {
-                            console.log(response);
-                        },
-                        error: function (xhr, ajaxOptions, thrownError) {
-                            console.log(xhr.responseText);
+                var value = transformValue(30.34);
+                var i = getValueInJson(value);
+                console.log(i);
+                
+                function transformValue(value){
+                    return value.toFixed(2) + ' Mins';
+                }
+
+                function getValueInJson(value) {
+                    var flag = false;
+                    for (var i = 0; i < data.length; i++) {
+                        var object = data[i];
+                        for (var property in object) {
+                            if (object.hasOwnProperty(property)) {
+                                if (object[property] == value) {
+                                    flag = true;
+                                    break;
+                                }
+                            }
                         }
-                    });
-                });
+                    }
+                    return flag;
+                }
             });
         </script>
     </head>
     <body>
         <div class="container">
-            <h3>
-                <a class="download" href="<c:url value="/testCtrl/test" />">
-                    test
-                </a>
-            </h3>
-            <h3>
-                <a class="download" href="<c:url value="/testCtrl/exceptionTest" />">
-                    exceptionTest
-                </a>
-            </h3>
-            <h3>
-                <a class="download" href="<c:url value="/testCtrl/runtimeExceptionTest" />">
-                    runtimeExceptionTest
-                </a>
-            </h3>
-            <h3>
-                <a class="download" href="<c:url value="/testCtrl/mavExceptionTest" />">
-                    mavExceptionTest
-                </a>
-            </h3>
+
         </div>
-        <input type="button" id="test1" value="test" />
     </body>
 </html>

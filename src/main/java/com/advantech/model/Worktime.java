@@ -619,7 +619,7 @@ public class Worktime implements java.io.Serializable {
 
     @NotNull
     @Digits(integer = 10 /*precision*/, fraction = 4 /*scale*/)
-    @Column(name = "weight", nullable = false, precision = 10, scale = 4)
+    @Column(name = "[weight]", nullable = false, precision = 10, scale = 4)
     public BigDecimal getWeight() {
         return weight;
     }
