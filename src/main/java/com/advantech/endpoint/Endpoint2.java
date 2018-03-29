@@ -22,15 +22,18 @@ import org.springframework.web.socket.WebSocketSession;
  * @author Wei.Cheng
  */
 public class Endpoint2 extends BasicHandler implements WebSocketHandler {
-    
+
     private static final Logger log = LoggerFactory.getLogger(Endpoint2.class);
 
     private static final String JOB_NAME = "JOB2";
-    
+
     @PostConstruct
     private void init() {
         log.info("Endpoint2 schedule polling job: " + PollingBabAndTestResult.class.getName());
         super.init(PollingBabAndTestResult.class, JOB_NAME);
+        if (super.sessions != null && !super.sessions.isEmpty()) {
+            sessions.clear();
+        }
     }
 
     @Override

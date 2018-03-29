@@ -35,6 +35,9 @@ public class Endpoint extends BasicHandler implements WebSocketHandler {
     private void init() {
         log.info("Endpoint schedule polling job: " + PollingSensorStatus.class.getName());
         super.init(PollingSensorStatus.class, JOB_NAME);
+        if (super.sessions != null && !super.sessions.isEmpty()) {
+            sessions.clear();
+        }
     }
 
     @Override
