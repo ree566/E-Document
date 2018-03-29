@@ -46,7 +46,6 @@ public class ExceptionHandlingController {
     @ExceptionHandler(Exception.class)
     public ResponseEntity handleError(HttpServletRequest req, Exception ex) {
         System.out.println("Request: " + req.getRequestURL() + " raised " + ex);
-        log.error(ex.getMessage(), ex);
         
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)

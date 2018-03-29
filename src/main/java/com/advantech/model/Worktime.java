@@ -118,7 +118,6 @@ public class Worktime implements java.io.Serializable {
     private List<WorktimeFormulaSetting> worktimeFormulaSettings = new AutoPopulatingList<WorktimeFormulaSetting>(WorktimeFormulaSetting.class);
 
     public Worktime() {
-        this.type = new Type();
     }
 
     @Id

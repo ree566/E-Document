@@ -53,12 +53,14 @@
             var loadTime = $("#loadTime").val();
             var useMinuteTime = $("#useMinuteTime").val();
             var frequency = $("#frequency").val();
+            var hourlyRate = $("#hourlyRate").val();
+            
             var cost = (equipmentDepreciationExpenses() * useMinuteTime * frequency / 60 / loadTime) +
                     (plantFloorAreaUse() * useMinuteTime * frequency / 60 / loadTime) +
                     (electricityCosts() * frequency / loadTime);
             $("#cost").html(formatFloat(cost, 2));
 
-            $("#worktime").html(formatFloat((cost / 700 * 60), 2));
+            $("#worktime").html(formatFloat((cost / hourlyRate * 60), 2));
         };
 
         var costFormulaCalc = function () {
@@ -94,12 +96,13 @@
     <div>
         <table class="table table-bordered table-condensed">
             <tr>
-                <th colspan="3">一、壓力鍋成本工時計算</th>
+                <th colspan="4">一、壓力鍋成本工時計算</th>
             </tr>
             <tr>
                 <td>負載量/次</td>
                 <td>使用分鐘/次</td>
                 <td>次數</td>
+                <td>Hourly Rate</td>
             </tr>
             <tr class="warning">
                 <td>
@@ -111,22 +114,25 @@
                 <td>
                     <input type="number" id="frequency" class="form-control" placeholder="次數" value="2" min="1" />
                 </td>
+                <td>
+                    <input type="number" id="hourlyRate" class="form-control" placeholder="hourlyRate" value="700" min="1" />
+                </td>
             </tr>
             <tr>
                 <td>費用</td>
-                <td colspan="2">
+                <td colspan="3">
                     <div id="cost"></div>
                 </td>
             </tr>
             <tr>
                 <td>換算工時(min)</td>
-                <td colspan="2">
+                <td colspan="3">
                     <div id="worktime"></div>
                 </td>
             </tr>
             <tr>
                 <td>小數點格式</td>
-                <td colspan="2">
+                <td colspan="3">
                     <div class="custom-control custom-checkbox">
                         <input type="radio" id="float_round" class="form-check-input" name="formatFloatType" value="round" checked />
                         <label for="float_round">Round</label>
