@@ -58,7 +58,7 @@ public class StandardTimeUpload {
 
     private List<String> checkField;
     
-    @Value("#{contextParameters.pageTitle}")
+    @Value("#{systemProperties['contextParameters.pageTitle'] ?: 'E-Document'}")
     private String pageTitle;
 
     @PostConstruct

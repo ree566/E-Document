@@ -5,7 +5,11 @@
  */
 package com.advantech.test;
 
+import static com.advantech.excel.ExcelUtils.getCellValue;
+import com.advantech.excel.XlsWorkBook;
+import com.advantech.excel.XlsWorkSheet;
 import com.advantech.helper.HibernateObjectPrinter;
+import com.advantech.model.Flow;
 import com.advantech.model.Worktime;
 import com.advantech.service.WorktimeService;
 import com.advantech.webservice.port.FlowRuleQueryPort;
@@ -21,14 +25,36 @@ import com.advantech.webservice.unmarshallclass.MaterialFlow;
 import com.advantech.webservice.unmarshallclass.MaterialProperty;
 import com.advantech.webservice.unmarshallclass.MaterialPropertyUserPermission;
 import com.advantech.webservice.unmarshallclass.MaterialPropertyValue;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import javax.transaction.Transactional;
 import static junit.framework.Assert.*;
+import org.apache.poi.hssf.usermodel.HSSFFont;
+import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.ss.util.CellReference;
+import org.apache.poi.ss.util.CellUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -79,7 +105,7 @@ public class QueryPortTest {
 
     @Before
     public void init() {
-        w = worktimeService.findByPrimaryKey(5352);
+        w = worktimeService.findByPrimaryKey(897);
     }
 
 //    @Test
@@ -138,7 +164,7 @@ public class QueryPortTest {
         assertEquals("BD", l.get(0).getMaterialPropertyNo());
     }
 
-    @Test
+//    @Test
     public void testMaterialPropertyQueryPort() throws Exception {
         List<MaterialProperty> l = materialPropertyQueryPort.query("FC");
         assertEquals(1, l.size());
@@ -158,4 +184,64 @@ public class QueryPortTest {
         assertEquals(null, value.getAffPropertyValue());
         assertEquals("N", value.getValue());
     }
+
+    @Test
+    public void testFlowMappingOnMes() throws FileNotFoundException, IOException, Exception {
+
+        String inputLocation = "C:\\Users\\Wei.Cheng\\Desktop\\testXls\\m6_babFlow.xls";
+        String outputFile = "C:\\Users\\Wei.Cheng\\Desktop\\m6_babFlow_mod.xls";
+
+        try (InputStream is = new FileInputStream(inputLocation); OutputStream os = new FileOutputStream(outputFile)) {
+            Workbook workbook = WorkbookFactory.create(is);
+            Sheet sheet = workbook.getSheetAt(0);
+
+            CellStyle style = workbook.createCellStyle();
+            Font font = workbook.createFont();
+            font.setColor(HSSFColor.RED.index);
+            style.setFont(font);
+
+            Worktime tempW = new Worktime();
+
+            for (int i = 1, maxNumberfRows = sheet.getPhysicalNumberOfRows(); i < maxNumberfRows; i++) {
+                Row row = sheet.getRow(i); // 取得第 i Row
+                if (row != null) {
+
+                    //Because cell_A will auto convert to number if modelName only contains numbers.
+                    //Search will cause exception when not add convert lines
+                    Cell cell_A = CellUtil.getCell(row, CellReference.convertColStringToIndex("A"));
+                    cell_A.setCellType(CellType.STRING);
+
+                    if (getCellValue(row, "A") == null) {
+                        continue;
+                    }
+
+                    String modelName = ((String) getCellValue(row, "A")).trim();
+                    System.out.println(modelName);
+                    tempW.setModelName(modelName);
+
+                    String babFlowName = (String) getCellValue(row, "B");
+
+                    List<MaterialFlow> l = materialFlowQueryPort.query(tempW);
+
+                    MaterialFlow mesBabFlow = l.stream()
+                            .filter(f -> "B".equals(f.getUnitNo()))
+                            .findAny()
+                            .orElse(null);
+
+                    String flowName = mesBabFlow == null ? null : mesBabFlow.getFlowRuleName();
+
+                    Cell cell_C = CellUtil.createCell(row, CellReference.convertColStringToIndex("C"), flowName);
+                    cell_C.setCellValue(flowName);
+                    if (!Objects.equals(babFlowName, flowName)) {
+                        cell_C.setCellStyle(style);
+                    }
+
+                }
+            }
+            workbook.write(os);
+            workbook.close();
+
+        }
+    }
+
 }

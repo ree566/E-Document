@@ -5,6 +5,7 @@
  */
 package com.advantech.test;
 
+import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.model.Type;
 import com.advantech.model.Worktime;
 import com.advantech.service.WorktimeService;
@@ -30,15 +31,17 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.ss.util.CellUtil;
-import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.jxls.reader.ReaderBuilder;
+import org.jxls.reader.ReaderConfig;
 import org.jxls.reader.XLSReadStatus;
 import org.jxls.reader.XLSReader;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -64,6 +67,9 @@ public class ExcelTest {
     @Autowired
     private SessionFactory sessionFactory;
 
+    @Autowired
+    private ResourceLoader resourceLoader;
+
 //    @Test
     public void testJxls() throws Exception {
         try (InputStream inputXML = new FileInputStream(new File(xmlConfig))) {
@@ -85,15 +91,17 @@ public class ExcelTest {
         }
     }
 
-    @Test
+//    @Test
     @Transactional
-    @Rollback(false)
+    @Rollback(true)
     public void testFileSyncToDb() throws Exception {
-        Session session = sessionFactory.getCurrentSession();
 
-        List<Worktime> l = worktimeService.findAll();
-        String syncFilePath = "C:\\Users\\Wei.Cheng\\Desktop\\testXls\\M3機種秤重明細.xlsx";
+        String syncFilePath = "C:\\Users\\Wei.Cheng\\Desktop\\m6.xlsx";
         try (InputStream is = new FileInputStream(new File(syncFilePath))) {
+
+            Session session = sessionFactory.getCurrentSession();
+            List<Worktime> l = worktimeService.findAll();
+
             Workbook workbook = WorkbookFactory.create(is);
             Sheet sheet = workbook.getSheetAt(0);
             for (int i = 1, maxNumberfRows = sheet.getPhysicalNumberOfRows(); i < maxNumberfRows; i++) {
@@ -159,5 +167,26 @@ public class ExcelTest {
 
     private BigDecimal objToBigDecimal(Object o) {
         return o != null && NumberUtils.isNumber(o.toString()) ? new BigDecimal(o.toString()) : null;
+    }
+
+    @Test
+    public void testJxlsReader() throws Exception {
+        Resource r = resourceLoader.getResource("classpath:worktime.xml");
+        String filePath = "C:\\Users\\Wei.Cheng\\Desktop\\worktime-template.xlsx";
+
+        try (InputStream inputXML = r.getInputStream(); InputStream inputXLS = new FileInputStream(filePath);) {
+            XLSReader mainReader = ReaderBuilder.buildFromXML(inputXML);
+//            ReaderConfig.getInstance().setSkipErrors(true);
+
+            List<Worktime> worktimes = new ArrayList();
+
+            Map beans = new HashMap();
+            beans.put("worktimes", worktimes);
+            mainReader.read(inputXLS, beans);
+            
+            assertEquals(2, worktimes.size());
+
+            HibernateObjectPrinter.print(worktimes);
+        }
     }
 }

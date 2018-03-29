@@ -6,6 +6,9 @@
 package com.advantech.test;
 
 import com.advantech.model.Worktime;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -43,10 +46,18 @@ public class Test1Test {
     private String removeModelNameExtraSpaceCharacter(String modelName) {
         return modelName.replaceAll("^\\s+", "").replaceAll("\\s+$", "");
     }
-    
-    @Test
-    public void testDateTime(){
+
+//    @Test
+    public void testDateTime() {
         DateTime d = new DateTime("2017/01/01 00:00:00.00 ");
+    }
+
+    @Test
+    public void testReadFile() throws Exception{
+        String syncFilePath = "C:\\Users\\Wei.Cheng\\Desktop\\M6 work_time(整理後).xls";
+        try (InputStream is = new FileInputStream(new File(syncFilePath))) {
+            
+        }   
     }
 
 }

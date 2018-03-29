@@ -118,6 +118,7 @@ public class Worktime implements java.io.Serializable {
     private List<WorktimeFormulaSetting> worktimeFormulaSettings = new AutoPopulatingList<WorktimeFormulaSetting>(WorktimeFormulaSetting.class);
 
     public Worktime() {
+        this.type = new Type();
     }
 
     @Id
@@ -637,8 +638,8 @@ public class Worktime implements java.io.Serializable {
     }
 
     @NotNull
-    @Digits(integer = 10 /*precision*/, fraction = 3 /*scale*/)
-    @Column(name = "tolerance", nullable = false, precision = 10, scale = 3)
+    @Digits(integer = 10 /*precision*/, fraction = 4 /*scale*/)
+    @Column(name = "tolerance", nullable = false, precision = 10, scale = 4)
     public BigDecimal getTolerance() {
         return tolerance;
     }
