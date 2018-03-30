@@ -629,14 +629,14 @@ public class Worktime implements java.io.Serializable {
     }
 
     @NotNull
-    @Digits(integer = 10 /*precision*/, fraction = 3 /*scale*/)
-    @Column(name = "tolerance", nullable = false, precision = 10, scale = 3)
+    @Digits(integer = 10 /*precision*/, fraction = 4 /*scale*/)
+    @Column(name = "tolerance", nullable = false, precision = 10, scale = 4)
     public BigDecimal getTolerance() {
         return tolerance;
     }
 
     public void setTolerance(BigDecimal tolerance) {
-        this.tolerance = this.autoFixScale(tolerance, 3);
+        this.tolerance = this.autoFixScale(tolerance, 4);
     }
 
     @Digits(integer = 10 /*precision*/, fraction = 1 /*scale*/)

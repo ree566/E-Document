@@ -391,17 +391,17 @@
                 position: "last"
             });
 
-            grid.navButtonAdd('#pager', {
-                caption: "Export to Excel(SPE)",
-                buttonicon: "ui-icon-disk",
-                id: "excelDownload2",
-                onClickButton: function () {
-                    var button = $("#excelDownload2");
-                    excelDownload(button, "<c:url value="/WorktimeDownload/excelForSpe" />");
-                    return false;
-                },
-                position: "last"
-            });
+//            grid.navButtonAdd('#pager', {
+//                caption: "Export to Excel(SPE)",
+//                buttonicon: "ui-icon-disk",
+//                id: "excelDownload2",
+//                onClickButton: function () {
+//                    var button = $("#excelDownload2");
+//                    excelDownload(button, "<c:url value="/WorktimeDownload/excelForSpe" />");
+//                    return false;
+//                },
+//                position: "last"
+//            });
         }
 
         //有可編輯column的人再來分可編輯欄位
