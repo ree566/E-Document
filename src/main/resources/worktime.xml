@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <workbook>
-    <worksheet name="sheet1">
+    <worksheet idx="0">
         
         <section startRow="0" endRow="1" />
         
         <loop startRow="1" endRow="1" items="worktimes" var="worktime" varType="com.advantech.model.Worktime">
             <section startRow="1" endRow="1">
-                <mapping cell="A1">worktime.id</mapping>
-                <mapping cell="B1">worktime.modelName</mapping>
-                <mapping cell="C1">worktime.type.name</mapping>
+                <mapping row="1" col="0">worktime.id</mapping>
+                <mapping row="1" col="1">worktime.modelName</mapping>
+                <!--<mapping cell="C1">worktime.type.name</mapping>-->
                 <!--<mapping cell="F1">worktime.productionWt</mapping>-->
                 <!--<mapping cell="D1" type="com.advantech.model.BusinessGroup">worktime.businessGroup.name</mapping>-->
             </section>

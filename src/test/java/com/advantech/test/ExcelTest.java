@@ -36,7 +36,6 @@ import org.hibernate.SessionFactory;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.jxls.reader.ReaderBuilder;
-import org.jxls.reader.ReaderConfig;
 import org.jxls.reader.XLSReadStatus;
 import org.jxls.reader.XLSReader;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -172,7 +171,7 @@ public class ExcelTest {
     @Test
     public void testJxlsReader() throws Exception {
         Resource r = resourceLoader.getResource("classpath:worktime.xml");
-        String filePath = "C:\\Users\\Wei.Cheng\\Desktop\\worktime-template.xlsx";
+        String filePath = "C:\\Users\\Wei.Cheng\\Desktop\\複本 worktime-template.xls";
 
         try (InputStream inputXML = r.getInputStream(); InputStream inputXLS = new FileInputStream(filePath);) {
             XLSReader mainReader = ReaderBuilder.buildFromXML(inputXML);
@@ -183,8 +182,8 @@ public class ExcelTest {
             Map beans = new HashMap();
             beans.put("worktimes", worktimes);
             mainReader.read(inputXLS, beans);
-            
-            assertEquals(2, worktimes.size());
+
+            assertEquals(370, worktimes.size());
 
             HibernateObjectPrinter.print(worktimes);
         }
