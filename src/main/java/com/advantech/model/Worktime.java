@@ -121,6 +121,7 @@ public class Worktime implements java.io.Serializable {
     private BigDecimal assyKanbanTime = BigDecimal.ZERO;
     private BigDecimal packingKanbanTime = BigDecimal.ZERO;
     private BigDecimal cleanPanelAndAssembly = BigDecimal.ZERO;
+//    private Date createDate;
     private Date modifiedDate;
 
     public Worktime() {
@@ -750,7 +751,23 @@ public class Worktime implements java.io.Serializable {
     private BigDecimal autoFixScale(BigDecimal d, int scale) {
         return d == null ? null : d.setScale(scale, RoundingMode.HALF_UP);
     }
+    
+//    @NotAudited
+//    @CreationTimestamp
+//    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+//    @JsonFormat(pattern = "yyyy-MM-dd'T'kk:mm:ss.SSS'Z'", timezone = "GMT+8")
+//    @Temporal(TemporalType.TIMESTAMP)
+//    @Column(name = "create_date", length = 23, updatable = false)
+//    public Date getCreateDate() {
+//        return createDate;
+//    }
+//
+//    public void setCreateDate(Date createDate) {
+//        this.createDate = createDate;
+//    }
 
+//    @NotAudited
+//    @UpdateTimestamp
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @JsonFormat(pattern = "yyyy-MM-dd'T'kk:mm:ss.SSS'Z'", timezone = "GMT+8")
     @Temporal(TemporalType.TIMESTAMP)
