@@ -12,28 +12,20 @@ import com.advantech.model.TestRecord;
 import com.advantech.model.TestRecords;
 import com.advantech.model.UserOnMes;
 import java.io.IOException;
-import java.io.StringWriter;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import javax.annotation.PostConstruct;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tempuri.RvResponse;
-import org.tempuri.Service;
-import org.tempuri.ServiceSoap;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -46,21 +38,15 @@ import org.w3c.dom.NodeList;
 @Component
 public class WebServiceRV {
 
-    private URL url;//webservice位置(放在專案中，因為url無法讀取，裏頭標籤衝突)
     private static final Logger log = LoggerFactory.getLogger(WebServiceRV.class);
 
-    @PostConstruct
-    private void init() {
-        Class clz = this.getClass();
-        log.info(clz.getName() + " init url");
-        url = clz.getClassLoader().getResource("wsdl/Service.wsdl");
-    }
+    @Autowired
+    private WsClient client;
 
     //Get data from WebService
     private List<Object> getWebServiceData(String queryString) {
-        Service service = new Service(url);
-        ServiceSoap port = service.getServiceSoap();
-        RvResponse.RvResult result = port.rv(queryString);
+        RvResponse response = client.simpleRvSendAndReceive(queryString);
+        RvResponse.RvResult result = response.getRvResult();
         return result.getAny();
     }
 
@@ -79,24 +65,14 @@ public class WebServiceRV {
         return this.getWebServiceData(queryString);
     }
 
-    public List<String> getKanbanUsersForString() throws TransformerException, IOException {
-        List list = new ArrayList();//ws = WebService
-        List data = getKanbanUsers();
-        for (Object obj : data) {
-            Document doc = ((Node) obj).getOwnerDocument();
-            try (StringWriter sw = new StringWriter()) {
-                TransformerFactory tf = TransformerFactory.newInstance();
-                Transformer transformer = tf.newTransformer();
-                transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
-                transformer.setOutputProperty(OutputKeys.METHOD, "xml");
-                transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-                transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-                transformer.transform(new DOMSource(doc), new StreamResult(sw));
-                list.add(sw.toString());
-            }
-        }
-
-        return list;
+    public List<String> getKanbanUsersForString() throws IOException, TransformerConfigurationException, TransformerException{
+        String queryString = "<root>"
+                + "<METHOD ID='ETLSO.QryProductionKanban4Test'/>"
+                + "<KANBANTEST>"
+                + "<STATION_ID>4,122,124,11,3,5,6,32,30,134,151,04,105</STATION_ID>"
+                + "</KANBANTEST>"
+                + "</root>";
+        return client.getFormatWebServiceData(queryString);
     }
 
     public String getKanbanWorkId(String jobnumber) {

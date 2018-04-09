@@ -15,6 +15,7 @@ import static com.google.common.base.Preconditions.*;
 import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.tempuri.TxResponse;
 
 /**
  *
@@ -23,32 +24,20 @@ import org.springframework.stereotype.Component;
 @Component
 public class WebServiceTX {
 
-    private URL url;//webservice位置(放在專案中，因為url無法讀取，裏頭標籤衝突)
     private static final Logger log = LoggerFactory.getLogger(WebServiceTX.class);
 
     @Autowired
+    private WsClient client;
+    
+    @Autowired
     private WebServiceRV rv;
 
-    @PostConstruct
-    private void init() {
-        Class clz = this.getClass();
-        log.info(clz.getName() + " init url");
-        url = clz.getClassLoader().getResource("wsdl/Service.wsdl");
-    }
-
-    //Get data from WebService
-    private String simpleTxSendAndReceive(String data, String action) {
-        Service service = new Service(url);
-        ServiceSoap port = service.getServiceSoap();
-        String result = port.tx(data, action);
-        return result;
-    }
-
     private void sendData(String data, UploadType uploadType) {
-        String st = this.simpleTxSendAndReceive(data, uploadType.toString());
         try {
+            TxResponse response = client.simpleTxSendAndReceive(data, uploadType);
+            String st = response.getTxResult();
             checkState("OK".equals(st), st);
-        } catch (RuntimeException e) {
+        } catch (Exception e) {
             log.error(e.getMessage());
         }
     }

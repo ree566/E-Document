@@ -62,22 +62,17 @@ public class WebServiceRVTest {
     /**
      * Test of getKanbanUsersForString method, of class WebServiceRV.
      */
-//    @Test
+    @Test
     public void testGetKanbanUsersForString() throws Exception {
         System.out.println("getKanbanUsersForString");
-        List<String> expResult = new ArrayList();
         List<String> result = rv.getKanbanUsersForString();
-        assertNotEquals(expResult, result);
-
-//        for (String st : result) {
-//            out.println(st);
-//        }
+        assertTrue(!result.isEmpty());
     }
 
     /**
      * Test of getKanbanWorkId method, of class WebServiceRV.
      */
-//    @Test
+    @Test
     public void testGetKanbanWorkId() throws Exception {
         System.out.println("getKanbanWorkId");
         String jobnumber = "A-7275";
@@ -90,7 +85,7 @@ public class WebServiceRVTest {
     /**
      * Test of getModelnameByPo method, of class WebServiceRV.
      */
-//    @Test
+    @Test
     public void testGetModelnameByPo() throws Exception {
         System.out.println("getModelnameByPo");
         String po = "PAGB079ZA";
@@ -116,7 +111,7 @@ public class WebServiceRVTest {
     /**
      * Test of getPassStationRecords method, of class WebServiceRV.
      */
-//    @Test
+    @Test
     public void testGetPassStationRecords() {
         System.out.println("getPassStationRecords");
         String po = "PNGC030ZA";
@@ -132,7 +127,7 @@ public class WebServiceRVTest {
     /**
      * Test of getTestLineTypeUsers method, of class WebServiceRV.
      */
-//    @Test
+    @Test
     public void testGetTestLineTypeUsers() {
         System.out.println("getTestLineTypeUsers");
         List<TestRecord> expResult = null;
