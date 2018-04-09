@@ -9,7 +9,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Date;
 import java.util.List;
-import javax.annotation.PostConstruct;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -22,13 +21,14 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
@@ -121,7 +121,7 @@ public class Worktime implements java.io.Serializable {
     private BigDecimal assyKanbanTime = BigDecimal.ZERO;
     private BigDecimal packingKanbanTime = BigDecimal.ZERO;
     private BigDecimal cleanPanelAndAssembly = BigDecimal.ZERO;
-//    private Date createDate;
+    private Date createDate;
     private Date modifiedDate;
 
     public Worktime() {
@@ -752,26 +752,26 @@ public class Worktime implements java.io.Serializable {
         return d == null ? null : d.setScale(scale, RoundingMode.HALF_UP);
     }
     
-//    @NotAudited
-//    @CreationTimestamp
-//    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-//    @JsonFormat(pattern = "yyyy-MM-dd'T'kk:mm:ss.SSS'Z'", timezone = "GMT+8")
-//    @Temporal(TemporalType.TIMESTAMP)
-//    @Column(name = "create_date", length = 23, updatable = false)
-//    public Date getCreateDate() {
-//        return createDate;
-//    }
-//
-//    public void setCreateDate(Date createDate) {
-//        this.createDate = createDate;
-//    }
-
-//    @NotAudited
-//    @UpdateTimestamp
+    @NotAudited
+    @CreationTimestamp
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @JsonFormat(pattern = "yyyy-MM-dd'T'kk:mm:ss.SSS'Z'", timezone = "GMT+8")
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "modified_date", length = 23, insertable = false, updatable = false)
+    @Column(name = "create_date", length = 23, updatable = false)
+    public Date getCreateDate() {
+        return createDate;
+    }
+
+    public void setCreateDate(Date createDate) {
+        this.createDate = createDate;
+    }
+
+    @NotAudited
+    @UpdateTimestamp
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    @JsonFormat(pattern = "yyyy-MM-dd'T'kk:mm:ss.SSS'Z'", timezone = "GMT+8")
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "modified_date", length = 23)
     public Date getModifiedDate() {
         return this.modifiedDate;
     }

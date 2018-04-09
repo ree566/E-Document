@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<workbook>
+    <worksheet idx="0">
+        
+        <section startRow="0" endRow="0" />
+        
+        <loop startRow="0" endRow="0" items="worktimes" var="worktime" varType="com.advantech.excel.WorktimeJxlsModel">
+            <section startRow="0" endRow="0">
+                <mapping row="0" col="0">worktime.id</mapping>
+                <mapping row="0" col="1">worktime.modelName</mapping>
+                <mapping row="0" col="2">worktime.type.name</mapping>
+                <mapping row="0" col="3">worktime.businessGroup.name</mapping>
+                <mapping row="0" col="4">worktime.workCenter</mapping>
+                <mapping row="0" col="5">worktime.productionWt</mapping>
+                <mapping row="0" col="6">worktime.setupTime</mapping>
+                <mapping row="0" col="7">worktime.cleanPanel</mapping>
+                <mapping row="0" col="8">worktime.totalModule</mapping>
+                <mapping row="0" col="9">worktime.assy</mapping>
+                <mapping row="0" col="10">worktime.t1</mapping>
+                <mapping row="0" col="11">worktime.t2</mapping>
+                <mapping row="0" col="12">worktime.t3</mapping>
+                <mapping row="0" col="13">worktime.t4</mapping>
+            </section>
+            <loopbreakcondition>
+                <rowcheck offset="0">
+                    <cellcheck offset="0"></cellcheck>
+                </rowcheck>
+            </loopbreakcondition>
+        </loop>
+    </worksheet>
+</workbook>

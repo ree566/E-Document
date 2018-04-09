@@ -25,6 +25,7 @@ import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 /**
@@ -56,6 +57,11 @@ public class StandardTimeUpload {
     private PageInfo tempInfo;
 
     private List<String> checkField;
+
+    @Value("#{contextParameters[pageTitle] ?: ''}")
+    private String pageTitle;
+
+    private int uploadFailMaxAllow = 5;
 
     @PostConstruct
     public void init() {
@@ -90,16 +96,26 @@ public class StandardTimeUpload {
         Date startDate = today.minusDays(10).toDate();
         Date endDate = today.toDate();
 
+        int failCount = 0;
+
         for (Worktime w : modifiedWorktimes) {
             try {
                 boolean isFieldChanged = auditService.isFieldChangedInTime(Worktime.class, w.getId(), checkField, startDate, endDate);
                 if (isFieldChanged) {
                     port.update(w);
-                } 
+                }
             } catch (Exception e) {
                 String errorMessage = w.getModelName() + " upload fail: " + e.getMessage();
                 errorMessages.add(errorMessage);
                 log.error(errorMessage);
+
+                failCount++;
+
+                if (failCount == uploadFailMaxAllow) {
+                    log.error("Reaching maxinum upload fail allow count "
+                            + uploadFailMaxAllow + ", abort mission.");
+                    break;
+                }
             }
         }
 
@@ -116,7 +132,7 @@ public class StandardTimeUpload {
         String[] to = getMailByNotification("worktime_upload_alarm");
         String[] cc = new String[0];
 
-        String subject = "【系統訊息】大表上傳";
+        String subject = "【" + pageTitle + "系統訊息】大表上傳";
         String text = generateTextBody(l);
 
         try {

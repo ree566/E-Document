@@ -201,6 +201,7 @@
                             );
                 }
             });
+
             $("#cb_" + grid[0].id).hide();
             grid.jqGrid('setFrozenColumns');
         }

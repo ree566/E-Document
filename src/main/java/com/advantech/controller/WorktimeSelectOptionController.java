@@ -28,6 +28,7 @@ import com.advantech.service.UnitService;
 import com.advantech.service.UserNotificationService;
 import com.advantech.service.UserProfileService;
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -150,8 +151,12 @@ public class WorktimeSelectOptionController {
 
     @ResponseBody
     @RequestMapping(value = "/userProfiles", method = {RequestMethod.GET})
-    protected List<UserProfile> getUserProfileOption() {
-        return userProfileService.findAll();
+    protected List<UserProfile> getUserProfileOption(HttpServletRequest request) {
+        List<UserProfile> l = userProfileService.findAll();
+        if (!request.isUserInRole("ROLE_ADMIN")) {
+            l.removeIf(item -> "ADMIN".equals(item.getName()));
+        }
+        return l;
     }
 
     @ResponseBody

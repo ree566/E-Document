@@ -105,10 +105,8 @@ public class FileDownloadController {
         response.setHeader("Set-Cookie", "fileDownload=true; path=/");
         response.setHeader("Content-Disposition", String.format("attachment; filename=\"" + r.getFilename() + "\""));
 
-        try (InputStream is = r.getInputStream()) {
-            try (OutputStream os = response.getOutputStream()) {
-                this.outputFile(l, is, os);
-            }
+        try (InputStream is = r.getInputStream(); OutputStream os = response.getOutputStream()) {
+            this.outputFile(l, is, os);
         }
     }
 
@@ -127,7 +125,7 @@ public class FileDownloadController {
         TransformationConfig config = transformer.getTransformationConfig();
         config.setExpressionEvaluator(new JexlExpressionEvaluatorNoThreadLocal());
         JexlExpressionEvaluatorNoThreadLocal evaluator = (JexlExpressionEvaluatorNoThreadLocal) config.getExpressionEvaluator();
- 
+
         //避免Jexl2在javabean值為null時會log
         JexlEngine engine = evaluator.getJexlEngine();
         engine.setSilent(true); // will throw errors now for selects that don't evaluate properly

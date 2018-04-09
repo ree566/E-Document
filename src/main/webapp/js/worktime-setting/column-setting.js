@@ -69,7 +69,7 @@ var worktimeCol = [
 
 //不受show / hide 影響
 var do_not_change_columns = [
-    "id", "rowId", "modifiedDate", "bwFields.0.assyAvg", "bwFields.0.packingAvg"
+    "id", "rowId", "modifiedDate", "bwFields.0.assyAvg", "bwFields.0.packingAvg", "createDate"
 ];
 
 //指定的column要有checkbox

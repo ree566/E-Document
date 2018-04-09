@@ -16,6 +16,7 @@ import java.util.Set;
 import javax.servlet.http.HttpServletResponse;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
@@ -41,6 +42,9 @@ public class TestController {
 
     @Autowired
     private WorktimeService worktimeService;
+
+    @Value("#{contextParameters[pageTitle] ?: ''}")
+    private String pageTitle;
 
     @ResponseBody
     @RequestMapping(value = "/test", method = {RequestMethod.GET, RequestMethod.POST})
@@ -121,8 +125,15 @@ public class TestController {
         System.out.println(baseModelName);
         System.out.print("Series models: ");
         System.out.println(Arrays.toString(seriesModelNames));
-        
+
         return "get data";
+    }
+    
+    @ResponseBody
+    @RequestMapping(value = "/pageTitleTest", method = {RequestMethod.GET})
+    @Secured("ROLE_ADMIN")
+    protected String getPageTitle(){
+        return this.pageTitle;
     }
 
 }
