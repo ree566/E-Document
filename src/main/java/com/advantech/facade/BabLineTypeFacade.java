@@ -11,14 +11,12 @@ import com.advantech.model.Line;
 import com.advantech.model.AlarmBabAction;
 import com.advantech.model.BabSettingHistory;
 import com.advantech.model.view.BabLastGroupStatus;
-import com.advantech.model.view.Worktime;
 import com.advantech.service.AlarmBabActionService;
 import com.advantech.service.BabService;
 import com.advantech.service.BabSettingHistoryService;
 import com.advantech.service.LineBalancingService;
 import com.advantech.service.LineService;
 import com.advantech.service.SqlViewService;
-import static com.google.common.base.Preconditions.checkState;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -67,17 +65,11 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
 
     private Double PKG_STANDARD;
 
-    private Double CELL_STANDARD;
-
-    private List<Worktime> worktimes;
-
     @PostConstruct
     protected void init() {
         log.info(BabLineTypeFacade.class.getName() + " init inner setting and db object.");
         ASSY_STANDARD = p.getAssyLineBalanceStandard().doubleValue();
         PKG_STANDARD = p.getPackingLineBalanceStandard().doubleValue();
-        CELL_STANDARD = p.getCellProductivityStandardMin().doubleValue();
-        worktimes = sqlViewService.findWorktime();
         this.initMap();
 //        this.initAlarmSign();
     }
@@ -190,11 +182,6 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
                         sum, pBaln, PKG_STANDARD);
                 
                 return (Double.compare(pBaln, PKG_STANDARD) < 0);
-            case "Cell":
-                Worktime w = worktimes.stream().filter(o -> o.getModelName().equals(b.getModelName())).findFirst().orElse(null);
-                checkState(w != null, "Can't find worktime setting on modelName " + b.getModelName());
-                double cBaln = max / w.getAssyTime().doubleValue();
-                return (Double.compare(cBaln, CELL_STANDARD) < 0);
             default:
                 return false;
         }
@@ -253,9 +240,4 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
         }
         return l;
     }
-
-    public void refreshWorktime() {
-        worktimes = sqlViewService.findWorktime();
-    }
-
 }

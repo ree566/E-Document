@@ -452,6 +452,14 @@
             <artifactId>jxls-poi</artifactId>
             <version>1.0.12</version>
         </dependency>
+        
+        <!--Tool to test tomcat memory issue-->
+        <!-- https://mvnrepository.com/artifact/com.cloudhopper.proxool/proxool -->
+        <dependency>
+            <groupId>com.cloudhopper.proxool</groupId>
+            <artifactId>proxool</artifactId>
+            <version>0.9.1</version>
+        </dependency>
 
     </dependencies>
 

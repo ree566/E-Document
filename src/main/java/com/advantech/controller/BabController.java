@@ -76,13 +76,13 @@ public class BabController {
     }
 
     private String convertString(String input) {
-        String converstring = "";
+        StringBuilder converstring = new StringBuilder();
         Pattern p = Pattern.compile("[\\w|-]");
         Matcher matcher = p.matcher(input);
         while (matcher.find()) {
-            converstring += matcher.group();
+            converstring.append(matcher.group());
         }
-        return converstring;
+        return converstring.toString();
     }
 
     @RequestMapping(value = "/findByModelAndDate", method = {RequestMethod.GET})

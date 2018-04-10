@@ -427,27 +427,43 @@ public class ExcelGenerator {
                 spreadsheet.setColumnHidden(a, true);
             }
 
+            StringBuilder formulaString = null;
+            StringBuilder formulaStringEnding = null;
+
             //set final two column formula at Num Z and Num AA
             for (int i = 1; i <= list.size(); i++) {
+
+                //Reset string to empty
+                if (formulaString == null || formulaString.length() != 0) {
+                    formulaString = new StringBuilder();
+                }
+
+                if (formulaStringEnding == null || formulaStringEnding.length() != 0) {
+                    formulaStringEnding = new StringBuilder();
+                }
+
                 Row maxium = spreadsheet.getRow(i);
                 int currentYIndex = i + 1;
 
                 //瓶頸站人名
                 cell = maxium.createCell(failPersonNumIndex);
-                String formulaString = "";
-                String formulaStringEnding = "";
+
                 for (int j = 0, m = idCols.size(); j < m; j++) {
                     String formulaCol = failTotalNumLetter + currentYIndex;
                     String failPercentCol = failPercentCols.get(j) + currentYIndex;
                     String userNameCol = idCols.get(j) + currentYIndex;
-                    formulaString += "if(" + failPercentCol + "=" + formulaCol + "," + userNameCol;
+                    formulaString.append("if(").append(failPercentCol).append("=")
+                            .append(formulaCol).append(",").append(userNameCol);
                     if (j < m - 1) {
-                        formulaString += ",";
+                        formulaString.append(",");
                     }
-                    formulaStringEnding += ")";
+                    
+                    formulaStringEnding.append(")");
                 }
-                formulaString += formulaStringEnding;
-                cell.setCellFormula(formulaString);
+
+                formulaString.append(formulaStringEnding);
+
+                cell.setCellFormula(formulaString.toString());
 
                 //瓶頸站趴數
                 cell = maxium.createCell(failTotalNumIndex);

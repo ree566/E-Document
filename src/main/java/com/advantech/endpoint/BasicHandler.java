@@ -51,8 +51,10 @@ public abstract class BasicHandler {
                 if (!session.isOpen()) {
                     closedSessions.add(session);
                 } else {
-                    TextMessage t = new TextMessage(msg);
-                    session.sendMessage(t);
+                    synchronized (session) {
+                        TextMessage t = new TextMessage(msg);
+                        session.sendMessage(t);
+                    }
                 }
             }
             sessions.removeAll(closedSessions);
