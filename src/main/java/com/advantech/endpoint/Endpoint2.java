@@ -59,7 +59,7 @@ public class Endpoint2 extends BasicHandler implements WebSocketHandler {
 
     @Override
     public void handleMessage(WebSocketSession wss, WebSocketMessage<?> wsm) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        //Do nothing.
     }
 
     @Override

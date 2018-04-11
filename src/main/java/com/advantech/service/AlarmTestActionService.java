@@ -7,7 +7,6 @@ package com.advantech.service;
 
 import com.advantech.dao.AlarmTestActionDAO;
 import com.advantech.model.AlarmTestAction;
-import java.util.Date;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,9 +36,7 @@ public class AlarmTestActionService {
     }
 
     public boolean insert(List<AlarmTestAction> l) {
-        for (AlarmTestAction a : l) {
-            this.insert(a);
-        }
+        alarmTestActionDAO.insert(l);
         return true;
     }
 
@@ -48,18 +45,16 @@ public class AlarmTestActionService {
     }
 
     public boolean update(List<AlarmTestAction> l) {
-        l.forEach((a) -> {
-            this.update(a);
-        });
+        alarmTestActionDAO.update(l);
         return true;
     }
 
     public boolean reset() {
         List<AlarmTestAction> l = this.findAll();
-        for (AlarmTestAction a : l) {
+        l.forEach((a) -> {
             a.setAlarm(0);
-            this.update(a);
-        }
+        });
+        this.update(l);
         return true;
     }
 
@@ -68,18 +63,16 @@ public class AlarmTestActionService {
     }
 
     public int delete(List<AlarmTestAction> l) {
-        for (AlarmTestAction a : l) {
-            this.delete(a);
-        }
+        alarmTestActionDAO.delete(l);
         return 1;
     }
 
     public void AlarmToTestingMode() {
         List<AlarmTestAction> l = this.findAll();
-        for (AlarmTestAction a : l) {
+        l.forEach((a) -> {
             a.setAlarm(1);
-            this.update(a);
-        }
+        });
+        alarmTestActionDAO.update(l);
     }
 
 }

@@ -9,8 +9,10 @@ import com.advantech.model.TestRecord;
 import java.util.List;
 import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
+import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -19,6 +21,9 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public class TestRecordDAO extends AbstractDao<Integer, TestRecord> implements BasicDAO_1<TestRecord> {
+
+    @Value("${HIBERNATE.JDBC.BATCHSIZE}")
+    private Integer batchSize;
 
     @Override
     public List<TestRecord> findAll() {
@@ -45,6 +50,16 @@ public class TestRecordDAO extends AbstractDao<Integer, TestRecord> implements B
         return 1;
     }
 
+    public int insert(List<TestRecord> l) {
+        Session session = super.getSession();
+        int currentRow = 1;
+        for (TestRecord a : l) {
+            session.save(a);
+            flushIfReachFetchSize(session, currentRow++);
+        }
+        return 1;
+    }
+
     @Override
     public int update(TestRecord pojo) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -53,6 +68,13 @@ public class TestRecordDAO extends AbstractDao<Integer, TestRecord> implements B
     @Override
     public int delete(TestRecord pojo) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    private void flushIfReachFetchSize(Session session, int currentRow) {
+        if (currentRow % batchSize == 0 && currentRow > 0) {
+            session.flush();
+            session.clear();
+        }
     }
 
 }

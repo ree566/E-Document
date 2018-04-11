@@ -12,7 +12,6 @@ import com.advantech.facade.TestLineTypeFacade;
 import org.quartz.JobExecutionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 
 /**
@@ -43,7 +42,7 @@ public class DailyJobWorker extends QuartzJobBean {
         try {
             tF.processingDataAndSave();
         } catch (Exception ex) {
-            log.error(ex.toString());
+            log.error("TestLineTypeFacade throw some exception", ex);
         }
     }
 
@@ -51,7 +50,7 @@ public class DailyJobWorker extends QuartzJobBean {
         try {
             bF.processingDataAndSave();
         } catch (Exception ex) {
-            log.error(ex.toString());
+            log.error("BabLineTypeFacade throw some exception", ex);
         }
     }
 

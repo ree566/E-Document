@@ -7,9 +7,12 @@ package com.advantech.endpoint;
 
 import com.advantech.helper.CronTrigMod;
 import com.advantech.helper.PropertiesReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import org.quartz.SchedulerException;
 import org.slf4j.Logger;
@@ -32,7 +35,8 @@ public abstract class BasicHandler {
     @Autowired
     private CronTrigMod ctm;
 
-    protected final Set<WebSocketSession> sessions = Collections.synchronizedSet(new HashSet<WebSocketSession>());
+    protected final Set<WebSocketSession> sessions = Collections.synchronizedSet(new HashSet<>());
+    private final Map<WebSocketSession, Integer> errroCounter = new HashMap();
 
     private String jobName;
     private Class<?> clz;
@@ -44,10 +48,11 @@ public abstract class BasicHandler {
 
     ///Brocast the servermessage to all online users.
     public void sendAll(String msg) {
-        try {
-            /* Send the new rate to all open WebSocket sessions */
-            ArrayList<WebSocketSession> closedSessions = new ArrayList<>();
-            for (WebSocketSession session : sessions) {
+
+        /* Send the new rate to all open WebSocket sessions */
+        ArrayList<WebSocketSession> closedSessions = new ArrayList<>();
+        sessions.forEach((session) -> {
+            try {
                 if (!session.isOpen()) {
                     closedSessions.add(session);
                 } else {
@@ -56,10 +61,23 @@ public abstract class BasicHandler {
                         session.sendMessage(t);
                     }
                 }
+            } catch (IOException ex) {
+                log.error("Error cause on session id " + session.getId(), ex);
+                removeIfSessionReachErrorCount(session);
             }
-            sessions.removeAll(closedSessions);
-        } catch (Throwable ex) {
-            log.error(ex.toString());
+        });
+        sessions.removeAll(closedSessions);
+    }
+
+    //Remove not exist client session in sessions
+    //https://bbs.csdn.net/topics/392066158
+    private void removeIfSessionReachErrorCount(WebSocketSession session) {
+        Integer errorCount = errroCounter.get(session);
+        if (errorCount != null && ++errorCount == 3) {
+            sessions.remove(session);
+            log.info("Error session removed, now have " + sessions.size() + " in the sessions(static collection).");
+        } else {
+            errroCounter.put(session, errorCount == null ? 0 : errorCount);
         }
     }
 

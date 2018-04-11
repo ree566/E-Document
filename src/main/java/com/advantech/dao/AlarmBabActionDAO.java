@@ -7,6 +7,8 @@ package com.advantech.dao;
 
 import com.advantech.model.AlarmBabAction;
 import java.util.List;
+import org.hibernate.Session;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -15,6 +17,9 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public class AlarmBabActionDAO extends AbstractDao<String, AlarmBabAction> implements BasicDAO_1<AlarmBabAction> {
+    
+    @Value("${HIBERNATE.JDBC.BATCHSIZE}")
+    private Integer batchSize;
 
     @Override
     public List<AlarmBabAction> findAll() {
@@ -32,9 +37,29 @@ public class AlarmBabActionDAO extends AbstractDao<String, AlarmBabAction> imple
         return 1;
     }
 
+    public int insert(List<AlarmBabAction> l) {
+        Session session = super.getSession();
+        int currentRow = 1;
+        for (AlarmBabAction a : l) {
+            session.save(a);
+            flushIfReachFetchSize(session, currentRow++);
+        }
+        return 1;
+    }
+
     @Override
     public int update(AlarmBabAction pojo) {
         super.getSession().update(pojo);
+        return 1;
+    }
+
+    public int update(List<AlarmBabAction> l) {
+        Session session = super.getSession();
+        int currentRow = 1;
+        for (AlarmBabAction a : l) {
+            session.update(a);
+            flushIfReachFetchSize(session, currentRow++);
+        }
         return 1;
     }
 
@@ -42,6 +67,23 @@ public class AlarmBabActionDAO extends AbstractDao<String, AlarmBabAction> imple
     public int delete(AlarmBabAction pojo) {
         super.getSession().delete(pojo);
         return 1;
+    }
+
+    public int delete(List<AlarmBabAction> l) {
+        Session session = super.getSession();
+        int currentRow = 1;
+        for (AlarmBabAction a : l) {
+            session.delete(a);
+            flushIfReachFetchSize(session, currentRow++);
+        }
+        return 1;
+    }
+
+    private void flushIfReachFetchSize(Session session, int currentRow) {
+        if (currentRow % batchSize == 0 && currentRow > 0) {
+            session.flush();
+            session.clear();
+        }
     }
 
 }

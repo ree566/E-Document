@@ -41,10 +41,7 @@ public class TestRecordService {
     }
 
     public int insert(List<TestRecord> l) {
-        for (TestRecord t : l) {
-            this.insert(t);
-        }
-        return 1;
+        return testRecordDAO.insert(l);
     }
 
     public int update(TestRecord pojo) {

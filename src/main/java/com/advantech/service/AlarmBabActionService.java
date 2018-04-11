@@ -6,9 +6,7 @@
 package com.advantech.service;
 
 import com.advantech.dao.AlarmBabActionDAO;
-import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.model.AlarmBabAction;
-import java.util.Date;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,9 +36,7 @@ public class AlarmBabActionService {
     }
 
     public boolean insert(List<AlarmBabAction> l) {
-        l.forEach((a) -> {
-            this.insert(a);
-        });
+        alarmBabActionDAO.insert(l);
         return true;
     }
 
@@ -49,20 +45,16 @@ public class AlarmBabActionService {
     }
 
     public boolean update(List<AlarmBabAction> l) {
-        l.forEach((a) -> {
-            alarmBabActionDAO.update(a);
-        });
+        alarmBabActionDAO.update(l);
         return true;
     }
 
     public boolean reset() {
         List<AlarmBabAction> l = this.findAll();
-        l.stream().map((a) -> {
+        l.forEach((a) -> {
             a.setAlarm(0);
-            return a;
-        }).forEachOrdered((a) -> {
-            this.update(a);
         });
+        this.update(l);
         return true;
     }
 
@@ -71,20 +63,16 @@ public class AlarmBabActionService {
     }
 
     public int delete(List<AlarmBabAction> l) {
-        l.forEach((a) -> {
-            this.delete(a);
-        });
+        alarmBabActionDAO.delete(l);
         return 1;
     }
 
     public void AlarmToTestingMode() {
         List<AlarmBabAction> l = this.findAll();
-        l.stream().map((a) -> {
+        l.forEach((a) -> {
             a.setAlarm(1);
-            return a;
-        }).forEachOrdered((a) -> {
-            this.update(a);
         });
+        this.update(l);
     }
 
 }
