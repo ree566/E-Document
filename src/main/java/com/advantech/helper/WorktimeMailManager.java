@@ -35,7 +35,7 @@ public class WorktimeMailManager {
     @Autowired
     private MailManager mailManager;
 
-    @Value("#{contextParameters.pageTitle ?: systemProperties['contextParameters.pageTitle']}")
+    @Value("#{contextParameters[pageTitle] ?: ''}")
     private String pageTitle;
 
     public void notifyUser(List<Worktime> l, String action) {

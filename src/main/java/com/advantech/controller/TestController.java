@@ -43,7 +43,7 @@ public class TestController {
     @Autowired
     private WorktimeService worktimeService;
 
-    @Value("#{contextParameters.pageTitle ?: systemProperties['contextParameters.pageTitle']}")
+    @Value("#{contextParameters[pageTitle] ?: ''}")
     private String pageTitle;
 
     @ResponseBody
