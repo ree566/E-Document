@@ -5,6 +5,7 @@
  */
 package com.advantech.controller;
 
+import com.advantech.excel.JxlsExcelView;
 import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.SheetView;
 import com.advantech.model.Worktime;
@@ -15,7 +16,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.jexl2.JexlEngine;
@@ -27,7 +30,6 @@ import org.jxls.util.JxlsHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -43,8 +45,6 @@ import org.springframework.web.servlet.ModelAndView;
 @RequestMapping("/WorktimeDownload")
 public class FileDownloadController {
 
-    private static final Logger logger = LoggerFactory.getLogger(FileDownloadController.class);
-
     @Autowired
     private SheetViewService sheetViewService;
 
@@ -53,9 +53,6 @@ public class FileDownloadController {
 
     @Autowired
     private AuditService auditService;
-
-    @Autowired
-    private ResourceLoader resourceLoader;
 
     @ResponseBody
     @RequestMapping(value = "/excel", method = {RequestMethod.GET})
@@ -74,17 +71,17 @@ public class FileDownloadController {
 
     @ResponseBody
     @RequestMapping(value = "/excel2", method = {RequestMethod.GET})
-    protected void generateExcel2(HttpServletResponse response, PageInfo info) throws Exception {
-        this.fileExport("worktime-template.xls", response, info);
+    protected ModelAndView generateExcel2(PageInfo info) throws Exception {
+        return this.fileExport("worktime-template.xls", info);
     }
 
     @ResponseBody
     @RequestMapping(value = "/excelForSpe", method = {RequestMethod.GET})
-    protected void generateExcelForUpload(HttpServletResponse response, PageInfo info) throws Exception {
-        this.fileExport("Plant-sp matl status(M3) (2).xls", response, info);
+    protected void generateExcelForUpload(PageInfo info) throws Exception {
+        this.fileExport("Plant-sp matl status(M3) (2).xls", info);
     }
 
-    private void fileExport(String tempfileName, HttpServletResponse response, PageInfo info) throws Exception {
+    private ModelAndView fileExport(String tempfileName, PageInfo info) throws Exception {
 
         //Adjust search query and search data
         info.setRows(-1);
@@ -98,40 +95,17 @@ public class FileDownloadController {
             throw new Exception("The query result is empty.");
         }
 
-        Resource r = resourceLoader.getResource("classpath:excel-template\\" + tempfileName);
-
-        //Set filedownload header
-        response.setContentType("application/vnd.ms-excel");
-        response.setHeader("Set-Cookie", "fileDownload=true; path=/");
-        response.setHeader("Content-Disposition", String.format("attachment; filename=\"" + r.getFilename() + "\""));
-
-        try (InputStream is = r.getInputStream(); OutputStream os = response.getOutputStream()) {
-            this.outputFile(l, is, os);
-        }
-    }
-
-    private void outputFile(List data, InputStream is, OutputStream os) throws IOException {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         Number revisionNum = auditService.findLastRevisions(Worktime.class);
         String revisionInfo = this.encodeRevisionInfo(revisionNum);
 
-        Context context = new Context();
-        context.putVar("worktimes", data);
-        context.putVar("dateFormat", dateFormat);
-        context.putVar("revision", revisionInfo);
+        Map<String, Object> model = new HashMap<>();
+        model.put("worktimes", l);
+        model.put("dateFormat", dateFormat);
+        model.put("revision", revisionInfo);
 
-        JxlsHelper helper = JxlsHelper.getInstance();
-        Transformer transformer = helper.createTransformer(is, os);
-        TransformationConfig config = transformer.getTransformationConfig();
-        config.setExpressionEvaluator(new JexlExpressionEvaluatorNoThreadLocal());
-        JexlExpressionEvaluatorNoThreadLocal evaluator = (JexlExpressionEvaluatorNoThreadLocal) config.getExpressionEvaluator();
+        return new ModelAndView(new JxlsExcelView("excel-template/" + tempfileName, tempfileName), model);
 
-        //避免Jexl2在javabean值為null時會log
-        JexlEngine engine = evaluator.getJexlEngine();
-        engine.setSilent(true); // will throw errors now for selects that don't evaluate properly
-//        engine.setLenient(false);
-//        engine.setDebug(true);
-        helper.processTemplate(context, transformer);
     }
 
     private String encodeRevisionInfo(Number revisionNumber) {
