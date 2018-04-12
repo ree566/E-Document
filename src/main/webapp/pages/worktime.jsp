@@ -661,6 +661,8 @@
     <table id="list"></table> 
     <div id="pager"></div>
 
-    <hr />
-    <jsp:include page="pressureCooker.jsp" />
+    <c:if test="${isAdmin || isAuthor || isContributor}">
+        <hr />
+        <jsp:include page="pressureCooker.jsp" />
+    </c:if>
 </div>
