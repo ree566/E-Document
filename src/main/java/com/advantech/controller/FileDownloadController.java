@@ -12,25 +12,14 @@ import com.advantech.model.Worktime;
 import com.advantech.service.AuditService;
 import com.advantech.service.SheetViewService;
 import com.advantech.service.WorktimeService;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.jexl2.JexlEngine;
-import org.jxls.common.Context;
-import org.jxls.expression.JexlExpressionEvaluatorNoThreadLocal;
-import org.jxls.transform.TransformationConfig;
-import org.jxls.transform.Transformer;
-import org.jxls.util.JxlsHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -45,6 +34,8 @@ import org.springframework.web.servlet.ModelAndView;
 @RequestMapping("/WorktimeDownload")
 public class FileDownloadController {
 
+    private static final Logger logger = LoggerFactory.getLogger(FileDownloadController.class);
+
     @Autowired
     private SheetViewService sheetViewService;
 
@@ -53,6 +44,8 @@ public class FileDownloadController {
 
     @Autowired
     private AuditService auditService;
+
+    private static int fileDownloadCount = 0;
 
     @ResponseBody
     @RequestMapping(value = "/excel", method = {RequestMethod.GET})
@@ -72,13 +65,15 @@ public class FileDownloadController {
     @ResponseBody
     @RequestMapping(value = "/excel2", method = {RequestMethod.GET})
     protected ModelAndView generateExcel2(PageInfo info) throws Exception {
+        logger.info("Excel download count " + (++fileDownloadCount));
         return this.fileExport("worktime-template.xls", info);
     }
 
     @ResponseBody
     @RequestMapping(value = "/excelForSpe", method = {RequestMethod.GET})
-    protected void generateExcelForUpload(PageInfo info) throws Exception {
-        this.fileExport("Plant-sp matl status(M3) (2).xls", info);
+    protected ModelAndView generateExcelForUpload(PageInfo info) throws Exception {
+        logger.info("Excel download count " + (++fileDownloadCount));
+        return this.fileExport("Plant-sp matl status(M3) (2).xls", info);
     }
 
     private ModelAndView fileExport(String tempfileName, PageInfo info) throws Exception {

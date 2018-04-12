@@ -60,14 +60,15 @@ public class JxlsExcelView extends AbstractView {
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
         Context context = new Context(model);
-        
+
         response.setContentType(getContentType());
         response.setHeader("Set-Cookie", "fileDownload=true; path=/");
         response.setHeader("Content-Disposition", String.format("attachment; filename=\"" + exportFileName + "\""));
-        
-        ServletOutputStream os = response.getOutputStream();
+
         try (InputStream is = this.getClass().getClassLoader().getResourceAsStream(templatePath)) {
-            processJxlsTemplate(is, os, context);
+            try (ServletOutputStream os = response.getOutputStream()) {
+                processJxlsTemplate(is, os, context);
+            }
         }
     }
 
@@ -81,8 +82,6 @@ public class JxlsExcelView extends AbstractView {
         //避免Jexl2在javabean值為null時會log
         JexlEngine engine = evaluator.getJexlEngine();
         engine.setSilent(true); // will throw errors now for selects that don't evaluate properly
-//        engine.setLenient(false);
-//        engine.setDebug(true);
         helper.processTemplate(context, transformer);
     }
 }
