@@ -19,7 +19,11 @@
         <link href="<c:url value="/webjars/bootstrap/3.3.7/css/bootstrap.min.css" />" rel="stylesheet">
         <link href="<c:url value="/webjars/bootstrap/3.3.7/css/bootstrap-theme.min.css" />" rel="stylesheet">
         <link href="<c:url value="/webjars/font-awesome/4.7.0/css/font-awesome.min.css" />" rel="stylesheet">
-        <link href="<c:url value="/webjars/jquery-ui-themes/1.12.1/ui-lightness/jquery-ui.min.css" />" rel="stylesheet">
+        
+        <!--The custom jquery ui theme-->
+        <link href="<c:url value="/css/jquery-ui.custom.theme.min.css" />" rel="stylesheet">
+        
+        <%--<link href="<c:url value="/webjars/jquery-ui-themes/1.12.1/ui-lightness/jquery-ui.min.css" />" rel="stylesheet">--%>
 
         <link href="<c:url value="/webjars/free-jqgrid/4.14.1/css/ui.jqgrid.min.css" />" rel="stylesheet"/>
         <link href="<c:url value="/webjars/free-jqgrid/4.14.1/plugins/css/ui.multiselect.css" />" rel="stylesheet"/>
