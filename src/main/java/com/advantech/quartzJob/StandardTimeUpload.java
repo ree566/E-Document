@@ -57,9 +57,11 @@ public class StandardTimeUpload {
     private PageInfo tempInfo;
 
     private List<String> checkField;
-    
+
     @Value("#{contextParameters[pageTitle] ?: ''}")
     private String pageTitle;
+
+    private final int uploadFailMaxAllow = 5;
 
     @PostConstruct
     public void init() {
@@ -73,10 +75,8 @@ public class StandardTimeUpload {
 
     private void initCheckFieldNames() {
         checkField = newArrayList(
-                "totalModule", "cleanPanel", "assy", "t1", "t2",
-                "t3", "t4", "hiPotLeakage", "coldBoot", "warmBoot",
-                "vibration", "upBiRi", "downBiRi", "packing", "assyStation",
-                "packingStation"
+                "arFilmAttachment", "cleanPanel", "assy", "pi", "t1", "t2",
+                "packing", "seal", "opticalBonding"
         );
     }
 
@@ -94,16 +94,26 @@ public class StandardTimeUpload {
         Date startDate = today.minusDays(10).toDate();
         Date endDate = today.toDate();
 
+        int failCount = 0;
+
         for (Worktime w : modifiedWorktimes) {
             try {
                 boolean isFieldChanged = auditService.isFieldChangedInTime(Worktime.class, w.getId(), checkField, startDate, endDate);
                 if (isFieldChanged) {
                     port.update(w);
-                } 
+                }
             } catch (Exception e) {
                 String errorMessage = w.getModelName() + " upload fail: " + e.getMessage();
                 errorMessages.add(errorMessage);
                 log.error(errorMessage);
+
+                failCount++;
+
+                if (failCount == uploadFailMaxAllow) {
+                    log.error("Reaching maxinum upload fail allow count "
+                            + uploadFailMaxAllow + ", abort mission.");
+                    break;
+                }
             }
         }
 
