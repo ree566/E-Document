@@ -230,7 +230,7 @@
                 {label: 'Modified_Date', width: 200, name: "modifiedDate", index: "modifiedDate", formatter: 'date', formatoptions: {srcformat: 'Y-m-d H:i:s A', newformat: 'Y-m-d H:i:s A'}, stype: 'text', searchrules: date_search_rule, searchoptions: search_date_options, align: 'center'}
             ],
             rowNum: 20,
-            rowList: [20, 50, 100],
+            rowList: [20, 100, 500],
             pager: '#pager',
             viewrecords: true,
             autowidth: true,
