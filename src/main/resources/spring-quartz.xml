@@ -4,8 +4,12 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans-4.3.xsd">
     
-    <!--job1 setting-->
-    <!--主要工作job，把資料轉換到TXT控制燈號-->
+    <!--
+        Job1 setting
+        Work 8:00 - 20:59 
+        主要工作job，把資料轉換到TXT控制燈號
+    -->
+    <!--Bab linetype job-->
     <bean name="BabGenerateData" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
         <property name="targetObject" ref="babLineTypeFacade" />
         <property name="targetMethod" value="processingDataAndSave"/>  
@@ -17,7 +21,7 @@
         <property name="cronExpression" value="0/40 * 8-20 ? * MON-SAT *" />
     </bean>
     
-    <!--主要工作job，把資料轉換到TXT控制燈號-->
+    <!--Test linetype job-->
     <bean name="TestGenerateData" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
         <property name="targetObject" ref="testLineTypeFacade" />
         <property name="targetMethod" value="processingDataAndSave"/>  
@@ -29,8 +33,10 @@
         <property name="cronExpression" value="0/40 * 8-20 ? * MON-SAT *" />
     </bean>
     
-    <!--job2 setting-->
-    <!--清理資料庫job-->
+    <!--
+        Job2 setting
+        清理資料庫job
+    -->
     <bean name="DataBaseInit" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
         <property name="jobClass" value="com.advantech.quartzJob.DataBaseInit" />
         <property name="durability" value="true" />
@@ -38,11 +44,13 @@
     
     <bean id="DataBaseInit-Trig" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
         <property name="jobDetail" ref="DataBaseInit" />
-        <property name="cronExpression" value="0 30 6,21 ? * MON-SAT *" />
+        <property name="cronExpression" value="0 30 6,22 ? * MON-SAT *" />
     </bean>
 
-    <!--job3 setting-->
-    <!--把未完結工單做儲存的job-->
+    <!--
+        Job3 setting
+        把未完結工單做儲存的job
+    -->
     <bean name="HandleUncloseBab" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
         <property name="jobClass" value="com.advantech.quartzJob.HandleUncloseBab" />
         <property name="durability" value="true" />
@@ -53,8 +61,11 @@
         <property name="cronExpression" value="0 10 22 ? * MON-SAT *" />
     </bean>
     
-    <!--job4 setting-->
-    <!--定時查看sensor是否異常，回報-->
+    <!--
+        Job4 setting
+        定時查看sensor是否異常，回報
+        關閉中，待修改邏輯(中午時間不列入資料異常)
+    -->
     <bean name="SensorDetect" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
         <property name="jobClass" value="com.advantech.quartzJob.SensorDetect" />
         <property name="durability" value="true" />
@@ -65,8 +76,10 @@
         <property name="cronExpression" value="0 0/10 8-20 ? * MON-FRI *" />
     </bean>
     
-    <!--job5 setting-->
-    <!--禮拜三零點固定將Database的sensor unused的資料clean一次--> 
+    <!--
+        Job5 setting
+        禮拜三零點固定將Database的sensor unused的資料clean一次
+    --> 
     <bean name="CleanSensorData" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
         <property name="jobClass" value="com.advantech.quartzJob.CleanSensorData" />
         <property name="durability" value="true" />
@@ -77,8 +90,10 @@
         <property name="cronExpression" value="0 0 0 ? * WED *" />
     </bean>
     
-    <!--job6 setting-->
-    <!--把測試線別狀態記錄到資料庫-->    
+    <!--
+        Job6 setting
+        把測試線別狀態記錄到資料庫
+    -->    
     <bean name="TestLineTypeRecord" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
         <property name="jobClass" value="com.advantech.quartzJob.TestLineTypeRecord" />
         <property name="durability" value="true" />
@@ -89,8 +104,10 @@
         <property name="cronExpression" value="0 50 9-16 ? * MON-FRI *" />
     </bean>
     
-    <!--job7 setting-->
-    <!-- 每日把未回覆異常原因的回覆給幹部-->    
+    <!--
+        Job7 setting
+        每日把未回覆異常原因的回覆給幹部
+    -->    
     <bean name="CountermeasureAlarm" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
         <property name="jobClass" value="com.advantech.quartzJob.CountermeasureAlarm" />
         <property name="durability" value="true" />
@@ -101,8 +118,11 @@
         <property name="cronExpression" value="0 0 11,16 ? * MON-FRI *" />
     </bean>
     
-    <!--job8 setting-->
-    <!--Clear all subPolling job separate by system-->    
+    <!--
+        Job8 setting
+        Clear all subPolling job separate by system
+        Cell已移除，待修改為FQC job
+    -->    
     <bean name="ClearPollingJob" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
         <property name="jobClass" value="com.advantech.quartzJob.ClearPollingJob" />
         <property name="durability" value="true" />
@@ -113,8 +133,11 @@
         <property name="cronExpression" value="0 30 21 ? * MON-FRI *" />
     </bean>
     
-    <!--job9 setting-->
-    <!--把Cell是否合格資訊轉換到資料庫(不包含把接口資料新增進sql)-->
+    <!--
+        Job9 setting
+        把Cell是否合格資訊轉換到資料庫(不包含把接口資料新增進sql)
+        Cell已移除，待修改為FQC job
+    -->
     <bean name="CellJobWorker" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
         <property name="jobClass" value="com.advantech.quartzJob.CellJobWorker" />
         <property name="durability" value="true" />
@@ -125,8 +148,11 @@
         <property name="cronExpression" value="0/30 * 8-20 ? * MON-SAT *" />
     </bean>
     
-    <!--job10 setting-->
-    <!--Cell auto close-->    
+    <!--
+        Job10 setting
+        Cell auto close
+        Cell已移除，待修改為FQC job
+    -->    
     <bean name="HandleUnclosedCell" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
         <property name="jobClass" value="com.advantech.quartzJob.CellDataSaver" />
         <property name="durability" value="true" />
@@ -136,6 +162,32 @@
         <property name="jobDetail" ref="HandleUnclosedCell" />
         <property name="cronExpression" value="0 10 22 ? * MON-SAT *" />
     </bean>
+    
+    <!--
+        Ohter polling data jobs
+        Job start by endpoint
+    -->
+    <bean name="PollingBabAndTest" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="pollingBabAndTestResult" />
+        <property name="targetMethod" value="dataBrocast"/>  
+        <property name="concurrent" value="false"/>
+    </bean>
+    
+    <bean id="PollingBabAndTest-Trig" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="PollingBabAndTest" />
+        <property name="cronExpression" value="10,20,40,50 * 8-20 ? * MON-SAT *" />
+    </bean>
+    
+    <bean name="PollingSensor" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="pollingSensorStatus" />
+        <property name="targetMethod" value="dataBrocast"/>  
+        <property name="concurrent" value="false"/>
+    </bean>
+    
+    <bean id="PollingSensor-Trig" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="PollingSensor" />
+        <property name="cronExpression" value="10,20,40,50 * 8-20 ? * MON-SAT *" />
+    </bean>
 
     <!--schedule jobs-->
     <bean id="schedulerFactoryBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
@@ -144,7 +196,7 @@
         <property name="triggers">
             <list>
                 
-                <ref bean="BabGenerateData-Trig"/>
+                <!--<ref bean="BabGenerateData-Trig"/>-->
                 <ref bean="TestGenerateData-Trig"/>
 <!--                <ref bean="DataBaseInit-Trig"/>
                 <ref bean="HandleUncloseBab-Trig"/>

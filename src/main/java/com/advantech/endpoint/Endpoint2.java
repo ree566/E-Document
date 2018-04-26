@@ -11,6 +11,7 @@ import java.io.IOException;
 import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketHandler;
@@ -25,12 +26,15 @@ public class Endpoint2 extends BasicHandler implements WebSocketHandler {
 
     private static final Logger log = LoggerFactory.getLogger(Endpoint2.class);
 
-    private static final String JOB_NAME = "JOB2";
+    private final String JOB_NAME = "PollingBabAndTest";
+
+    @Autowired
+    private PollingBabAndTestResult pollingJob;
 
     @PostConstruct
     private void init() {
-        log.info("Endpoint2 schedule polling job: " + PollingBabAndTestResult.class.getName());
-        super.init(PollingBabAndTestResult.class, JOB_NAME);
+        log.info("Endpoint2 init polling job: " + JOB_NAME);
+        super.init(JOB_NAME);
         if (super.sessions != null && !super.sessions.isEmpty()) {
             sessions.clear();
         }
@@ -39,21 +43,19 @@ public class Endpoint2 extends BasicHandler implements WebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession wss) throws Exception {
         //Push the current status on client first connect
-        try {
-            wss.sendMessage(new TextMessage(new PollingBabAndTestResult().getData()));
-        } catch (IOException ex) {
-            log.error(ex.toString());
-        }
+        wss.sendMessage(new TextMessage(pollingJob.getData()));
 
-//        HandshakeRequest req = (HandshakeRequest) conf.getUserProperties().get("handshakereq");
+        //        HandshakeRequest req = (HandshakeRequest) conf.getUserProperties().get("handshakereq");
 //        Map<String,List<String>> headers = req.getHeaders();
         sessions.add(wss);
 //        System.out.println("New session opened: " + session.getId());
 
         //每次當client連接進來時，去看目前session的數量 當有1個session時把下方quartz job加入到schedule裏頭(只要執行一次，不要重複加入)
-        int a = sessions.size();
-        if (a == 1) {
-            pollingDBAndBrocast();
+        synchronized (sessions) {
+            int a = sessions.size();
+            if (a == 1) {
+                pollingDBAndBrocast();
+            }
         }
     }
 

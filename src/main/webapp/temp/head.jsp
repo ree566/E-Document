@@ -1,7 +1,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+<link rel="stylesheet" href="<c:url value="css/bootstrap.min.css"/>">
+<link rel="stylesheet" href="<c:url value="css/font-awesome.min.css"/>">
 <link rel="stylesheet" href="<c:url value="css/bootstrap-switch.min.css" />">
 <style>
     a[disabled] {
@@ -11,7 +11,7 @@
         font-family: 微軟正黑體;
     }
 </style>
-<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="<c:url value="js/bootstrap.min.js" />"></script>
 <script src="<c:url value="js/bootstrap-switch.min.js" />"></script>
 
 <div style="text-align:center; color: red">

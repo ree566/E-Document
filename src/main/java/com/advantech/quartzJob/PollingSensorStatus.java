@@ -7,39 +7,39 @@
 package com.advantech.quartzJob;
 
 import com.advantech.endpoint.Endpoint;
-import com.advantech.helper.ApplicationContextHelper;
 import com.advantech.service.FbnService;
 import com.google.gson.Gson;
-import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
+import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.quartz.QuartzJobBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  *
  * @author Wei.Cheng
  */
-public class PollingSensorStatus extends QuartzJobBean {
+@Component
+public class PollingSensorStatus implements EndpointPollingJob {
 
-    private static final Gson gson;
     private static final Logger log = LoggerFactory.getLogger(PollingSensorStatus.class);
-    private static final FbnService fbnService;
-    private static Endpoint socket;
 
-    static {
+    private Gson gson;
+
+    @Autowired
+    private FbnService fbnService;
+
+    @Autowired
+    private Endpoint socket;
+
+    @PostConstruct
+    public void init() {
         gson = new Gson();
-        fbnService = (FbnService) ApplicationContextHelper.getBean("fbnService");
-        socket = (Endpoint) ApplicationContextHelper.getBean("endpoint");
-    }
-
-    @Override
-    public void executeInternal(JobExecutionContext jec) throws JobExecutionException {
-        dataBrocast();
     }
 
     //抓取資料庫資料並廣播
-    private void dataBrocast() {
+    @Override
+    public void dataBrocast() {
         /*
          ERROR - java.sql.SQLException: 
          Transaction (Process ID 69) was deadlocked on lock resources with another process 
@@ -53,7 +53,7 @@ public class PollingSensorStatus extends QuartzJobBean {
         }
     }
 
-    public static String getData() {
+    public String getData() {
         return gson.toJson(fbnService.getSensorCurrentStatus());
     }
 }

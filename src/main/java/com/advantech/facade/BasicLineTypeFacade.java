@@ -23,7 +23,7 @@ import org.springframework.stereotype.Component;
  * @author Wei.Cheng
  */
 @Component
-public abstract class BasicLineTypeFacade implements com.advantech.service.AlarmAction{
+public abstract class BasicLineTypeFacade implements com.advantech.service.AlarmAction {
 
     private static final Logger log = LoggerFactory.getLogger(BasicLineTypeFacade.class);
 
@@ -39,7 +39,7 @@ public abstract class BasicLineTypeFacade implements com.advantech.service.Alarm
     protected JSONObject processingJsonObject;//暫存處理過的資料
 
     protected Boolean isNeedToOutputResult;//從改寫的function 得知是否要output(有人亮燈時).
-    
+
     @Autowired
     private PropertiesReader p;
 
@@ -51,9 +51,9 @@ public abstract class BasicLineTypeFacade implements com.advantech.service.Alarm
         dataMap = new HashMap();
     }
 
-    public void processingDataAndSave(){
-        isNeedToOutputResult = this.generateData();
+    public void processingDataAndSave() {
         if (controlJobFlag == true) {
+            isNeedToOutputResult = this.generateData();
             if (isNeedToOutputResult) {
                 outputResult(dataMap);
             } else {
@@ -74,14 +74,14 @@ public abstract class BasicLineTypeFacade implements com.advantech.service.Alarm
      */
     protected abstract boolean generateData();
 
-    private void outputResult(Map m){
+    private void outputResult(Map m) {
         if (isWriteToDB) {
             saveAlarmSignToDb(m);
             resetFlag = true;
         }
     }
 
-    protected void resetOutputResult(){
+    protected void resetOutputResult() {
         if (isWriteToDB) {
             if (resetFlag == true) {
                 initMap();
@@ -117,7 +117,8 @@ public abstract class BasicLineTypeFacade implements com.advantech.service.Alarm
 
     /**
      * This JSONObject is already DataTable form.
-     * @return 
+     *
+     * @return
      */
     public JSONObject getJSONObject() {
         return this.processingJsonObject;

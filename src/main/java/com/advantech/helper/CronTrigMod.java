@@ -5,6 +5,7 @@
  */
 package com.advantech.helper;
 
+import static com.google.common.base.Preconditions.checkState;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -30,6 +31,9 @@ import org.slf4j.LoggerFactory;
 import org.quartz.impl.matchers.GroupMatcher;
 import static org.quartz.TriggerKey.triggerKey;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.quartz.CronTriggerFactoryBean;
+import org.springframework.scheduling.quartz.JobDetailFactoryBean;
+import org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.stereotype.Component;
 
@@ -213,7 +217,6 @@ public class CronTrigMod {
 //        System.out.println("jobKey: " + jobKey);
 //        System.out.println("trigKey: " + trigKey);
 //        System.out.println("crontrigger: " + crontrigger);
-
         if (!isKeyInScheduleExist(jobKey)) {
             JobDetail job = JobBuilder.newJob(jobClass).withIdentity(jobKey).build();
             CronTrigger trigger = TriggerBuilder.newTrigger().withIdentity(trigKey)
@@ -240,9 +243,29 @@ public class CronTrigMod {
         }
     }
 
+    public void scheduleJob(String triggerName) throws SchedulerException {
+        JobDetail jobDetail;
+        Trigger trigger;
+        try {
+            jobDetail = (JobDetail) ApplicationContextHelper.getBean(triggerName);
+            trigger = (Trigger) ApplicationContextHelper.getBean(triggerName + "-Trig");
+            checkState(jobDetail != null, "Can't find jobDetail name " + triggerName);
+            checkState(trigger != null, "Can't find trigger name " + triggerName + "-Trig");
+            if (!this.isJobInScheduleExist(jobDetail.getKey())) {
+                this.getScheduler().scheduleJob(jobDetail, trigger);
+                log.info("The job with name " + triggerName + " is sched.");
+            }else{
+                log.info("The job with name " + triggerName + "  is already exist.");
+            }
+
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+    }
+
     public void jobPause(JobKey jobKey) throws SchedulerException {
         getScheduler().pauseJob(jobKey);
-        log.info("The job with key name " + jobKey + " is already pause.");
+        log.info("The job with key name " + jobKey + "is already pause.");
     }
 
     public void interruptJob(JobKey jobKey) throws SchedulerException {
@@ -251,10 +274,10 @@ public class CronTrigMod {
     }
 
     public void removeJob(String jobName) throws SchedulerException {
-        Scheduler scheduler = getScheduler();
-        JobKey jobKey = this.createJobKey(jobName);
+        Scheduler scheduler = this.getScheduler();
+        JobKey jobKey = this.createJobKey(jobName); 
         scheduler.deleteJob(jobKey);
-        log.info("The job with key name " + jobKey + (scheduler.checkExists(jobKey) ? " remove fail." : " remove success."));
+        log.info("The job with name " + jobName + (scheduler.checkExists(jobKey) ? " remove fail." : " remove success."));
     }
 
     public void removeJob(JobKey jobKey) throws SchedulerException {

@@ -6,7 +6,6 @@
 package com.advantech.endpoint;
 
 import com.advantech.helper.CronTrigMod;
-import com.advantech.helper.PropertiesReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,6 +13,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import javax.annotation.PreDestroy;
 import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,20 +30,15 @@ public abstract class BasicHandler {
     private static final Logger log = LoggerFactory.getLogger(BasicHandler.class);
 
     @Autowired
-    private PropertiesReader p;
-
-    @Autowired
     private CronTrigMod ctm;
 
     protected final Set<WebSocketSession> sessions = Collections.synchronizedSet(new HashSet<>());
     private final Map<WebSocketSession, Integer> errroCounter = new HashMap();
 
-    private String jobName;
-    private Class<?> clz;
+    private String triggerName;
 
-    protected void init(Class<?> clz, String jobName) {
-        this.clz = clz;
-        this.jobName = jobName;
+    protected void init(String triggerName) {
+        this.triggerName = triggerName;
     }
 
     ///Brocast the servermessage to all online users.
@@ -84,21 +79,26 @@ public abstract class BasicHandler {
     // Generate when connect users are at least one.
     protected void pollingDBAndBrocast() {
         try {
-            String cron = p.getEndpointPollingCron();
-            ctm.scheduleJob(clz, jobName, cron);
+            ctm.scheduleJob(triggerName);
         } catch (SchedulerException ex) {
-            log.error(ex.toString());
+            log.error(ex.getMessage(), ex);
         }
     }
 
     // Delete when all users are disconnect.
     protected void unPollingDB() {
         try {
-            ctm.removeJob(jobName);
+            ctm.removeJob(triggerName);
 //            System.out.println("trigger has been removed");
         } catch (SchedulerException ex) {
             log.error(ex.toString());
         }
+    }
+    
+    @PreDestroy
+    protected void removeSessions(){
+        this.sessions.clear();
+        this.errroCounter.clear();
     }
 
 }
