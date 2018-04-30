@@ -220,7 +220,7 @@ public class UploadPortTest {
     @Test
     @Rollback(true)
     public void testStandardTimeUpload() throws Exception{
-        Worktime worktime = worktimeService.findByPrimaryKey(527);
+        Worktime worktime = worktimeService.findByPrimaryKey(8901);
         assertNotNull(worktime);
         standardtimePort.initSettings();
         standardtimePort.update(worktime);
