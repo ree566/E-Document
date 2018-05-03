@@ -112,37 +112,6 @@ public class CronTrigMod {
         }
     }
 
-    public boolean triggerPauseOrResume(String order) {
-        try {
-            if ("pause".equals(order)) {
-                enterTestMode();
-            } else if ("resume".equals(order)) {
-                outTestMode();
-            }
-        } catch (SchedulerException ex) {
-            log.error(ex.toString());
-            return false;
-        }
-        return true;
-    }
-
-    private void enterTestMode() throws SchedulerException {
-//        scheduler.standby();
-        changeResultOutputFlag(false);
-        log.info("Stop result output");
-    }
-
-    private void outTestMode() throws SchedulerException {
-//        scheduler.start();
-        changeResultOutputFlag(true);
-        log.info("Resume result output");
-    }
-
-    private void changeResultOutputFlag(boolean flag) {
-//        BabLineTypeFacade.getInstance().isNeedToOutput(flag);
-//        TestLineTypeFacade.getInstance().isNeedToOutput(flag);
-    }
-
     public void updateMainJobCronExpressionToDefault() throws SchedulerException {
         String mainJobKey = "DailyJobWorker";
 

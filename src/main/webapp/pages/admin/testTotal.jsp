@@ -3,6 +3,7 @@
     Created on : 2015/11/20, 上午 11:36:50
     Author     : Wei.Cheng
 https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-render-function-with-ajax-datasource-getting-undefined
+Auto polling test record page by client.
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>

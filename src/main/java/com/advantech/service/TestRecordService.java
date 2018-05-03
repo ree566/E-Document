@@ -32,8 +32,8 @@ public class TestRecordService {
         return testRecordDAO.findByPrimaryKey(obj_id);
     }
 
-    public List<TestRecord> findByDate(DateTime sD, DateTime eD) {
-        return testRecordDAO.findByDate(sD, eD);
+    public List<TestRecord> findByDate(DateTime sD, DateTime eD, boolean unReplyOnly) {
+        return testRecordDAO.findByDate(sD, eD, unReplyOnly);
     }
 
     public int insert(TestRecord pojo) {

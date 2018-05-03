@@ -28,7 +28,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 @RunWith(SpringJUnit4ClassRunner.class)
 public class TestQuartzJobs {
 
-//    @Test
+    @Test
     public void testTestLineTypeRecord() throws JobExecutionException {
         TestLineTypeRecord tr = new TestLineTypeRecord();
         tr.executeInternal(null);
@@ -52,7 +52,7 @@ public class TestQuartzJobs {
         c.executeInternal(null);
     }
     
-    @Test
+//    @Test
     public void testCountermeasureAlarm() throws JobExecutionException {
         CountermeasureAlarm c = new CountermeasureAlarm();
         c.executeInternal(null);

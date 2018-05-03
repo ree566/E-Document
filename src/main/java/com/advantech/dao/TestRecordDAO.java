@@ -5,6 +5,7 @@
  */
 package com.advantech.dao;
 
+import com.advantech.model.ReplyStatus;
 import com.advantech.model.TestRecord;
 import java.util.List;
 import org.hibernate.Criteria;
@@ -35,12 +36,17 @@ public class TestRecordDAO extends AbstractDao<Integer, TestRecord> implements B
         return super.getByKey((int) obj_id);
     }
 
-    public List<TestRecord> findByDate(DateTime sD, DateTime eD) {
+    public List<TestRecord> findByDate(DateTime sD, DateTime eD, boolean unReplyOnly) {
         sD = sD.withHourOfDay(0);
         eD = eD.withHourOfDay(23);
         Criteria c = super.createEntityCriteria();
         c.setFetchMode("testTable", FetchMode.JOIN);
         c.add(Restrictions.between("lastUpdateTime", sD.toDate(), eD.toDate()));
+
+        if (unReplyOnly) {
+            c.add(Restrictions.eq("replyStatus", ReplyStatus.UNREPLIED));
+        }
+
         return c.list();
     }
 
@@ -62,7 +68,8 @@ public class TestRecordDAO extends AbstractDao<Integer, TestRecord> implements B
 
     @Override
     public int update(TestRecord pojo) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        super.getSession().update(pojo);
+        return 1;
     }
 
     @Override

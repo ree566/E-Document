@@ -7,6 +7,9 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+<sec:authentication var="user" property="principal" />
+<sec:authorize access="isAuthenticated()"  var="isAuthenticated" />
 <!DOCTYPE html>
 <html>
     <head>
@@ -41,10 +44,11 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
         <script src="../../js/jquery-datatable-button/buttons.html5.min.js"></script>
         <script src="../../js/jquery-datatable-button/buttons.print.min.js"></script>
         <script src="../../js/urlParamGetter.js"></script>
+        <script src="../../js/param.check.js"></script>
         <script>
             var maxProductivity = 200;
             var table;
-            $(document).ready(function () {
+            $(function () {
 
                 var momentFormatString = 'YYYY-MM-DD';
                 $(":text,input[type='number'],select").addClass("form-control");
@@ -69,8 +73,6 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
 
                 $("#send").click(function () {
 
-                    console.log("I'm clicked");
-
                     var startDate = $('#fini').val();
                     var endDate = $('#ffin').val();
 
@@ -91,6 +93,85 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                     $("#send").trigger("click");
                     table.search(decodeURIComponent(jobnumber)).draw();
                 }
+
+                /*
+                 Remark dialog area
+                 */
+
+                var originRemark;
+                var originResponseUser;
+                var editId;
+
+                $("body").on("click", ".testRecord-remark", function () {
+                    var d = table.row($(this).parents('tr')).data();
+                    editId = d.id;
+                    var modal = $($(this).attr("data-target"));
+                    modal.find(".modal-title").html(
+                            "號碼: " + editId +
+                            " / 工號: " + d.userId +
+                            " / 人名: " + d.userName +
+                            " / 效率: " + d.productivity +
+                            " / 桌次: " + (d == null ? "n/a" : d.testTable.name) +
+                            " / 時間: " + d.lastUpdateTime
+                            );
+
+                    if (d.replyStatus == "UNREPLIED") {
+                        initRemarkDialog();
+                    } else {
+                        getRemark(editId);
+                    }
+                });
+
+                $("#editRemark").click(function () {
+                    remarkModeEdit();
+
+                    originRemark = $("#remark").html().replace(/<br *\/?>/gi, '\n');
+                    originResponseUser = $("#responseUser").html();
+
+                    $("#remark").html("<textarea id='remarkText' maxlength='500'>" + (originRemark == "N/A" ? "" : originRemark) + "</textarea>");
+
+                    $("#responseUser").html("<input type='text' id='responseUserText' maxlength='30' value='" + '${isAuthenticated ? user.jobnumber : null}' + "' readonly disabled>");
+                });
+
+                $("#undoContent").click(function () {
+                    if (!confirm("確定捨棄修改?")) {
+                        return false;
+                    }
+                    remarkModeUndo();
+
+                    $(".modal-body").attr("disabled", true);
+                    $("#remark").html(originRemark.replace(/(?:\r\n|\r|\n)/g, '<br />'));
+                    $("#responseUser").html(originResponseUser);
+                });
+
+                $("#saveRemark").click(function () {
+                    if (confirm("確定修改內容?")) {
+
+                        var editor = unEntity($("#responseUserText").val()),
+                                remark = unEntity($("#remarkText").val());
+
+                        if (checkVal(editor) == false) {
+                            showDialogMsg("找不到使用者，請重新確認您的工號是否存在");
+                            return false;
+                        } else {
+                            showDialogMsg("");
+                        }
+                        saveRemark({
+                            recordId: editId,
+                            remark: remark
+                        });
+                    }
+
+                });
+
+                if (${!isAuthenticated}) {
+                    $("#editRemark").off("click").attr("disabled", true);
+                    $("#remarkEditHint").show();
+                }
+
+                $('#myModal').on('hidden.bs.modal', function () {
+                    remarkModeUndo();
+                });
             });
 
             function getDetail(startDate, endDate) {
@@ -111,20 +192,35 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                         data: {
                             startDate: startDate,
                             endDate: endDate,
-                            action: "getTest"
+                            unReplyOnly: $("#unReplyOnly").is(":checked")
                         }
                     },
                     "columns": [
-                        {data: "id", visible: false},
+                        {data: "id", visible: true},
                         {data: "userId"},
                         {data: "userName"},
                         {data: "productivity"},
-                        {data: "testTable", 
-                            "render": function (data, type, row) {
+                        {
+                            data: "testTable",
+                            render: function (data, type, row) {
                                 return data == null ? "n/a" : data.name;
                             }
                         },
-                        {data: "lastUpdateTime"}
+                        {data: "lastUpdateTime"},
+                        {
+                            data: "replyStatus",
+                            render: function (data, type, row) {
+                                if (data == 'UNREPLIED') {
+                                    return "<input type='button' class='testRecord-remark btn btn-danger btn-sm' data-toggle= 'modal' " +
+                                            "data-target='#myModal' value='檢視詳細' />";
+                                } else if (data == "REPLIED") {
+                                    return "<input type='button' class='testRecord-remark btn btn-info btn-sm' "+
+                                            " data-toggle= 'modal' data-target='#myModal' value='檢視詳細' />";
+                                } else {
+                                    return data;
+                                }
+                            }
+                        }
                     ],
                     "columnDefs": [
                         {
@@ -173,6 +269,74 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                 return Math.round(val * size) / size;
             }
 
+            function initRemarkDialog() {
+                $(".modal-body #remark, #responseUser").html("N/A");
+                $("#responseUser").html("");
+                showDialogMsg("");
+                remarkModeUndo();
+            }
+
+            function getRemark(row_id) {
+                initRemarkDialog();
+
+                $.ajax({
+                    url: "<c:url value="/TestRecordController/findRemark" />",
+                    data: {
+                        recordId: row_id
+                    },
+                    type: "GET",
+                    dataType: 'json',
+                    success: function (msg) {
+                        var jsonData = msg;
+                        $(".modal-body #remark").html(jsonData.remark.replace(/(?:\r\n|\r|\n)/g, '<br />'));
+
+                        var lastEditor = jsonData.user;
+                        $(".modal-body #responseUser").append("<span class='label label-default'>#" +
+                                (lastEditor == null ? 'N/A' : lastEditor.usernameCh) + "</span> ");
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        showDialogMsg(xhr.responseText);
+                    }
+                });
+            }
+
+            function saveRemark(data) {
+                $.ajax({
+                    url: "<c:url value="/TestRecordController/updateRemark" />",
+                    data: data,
+                    type: "POST",
+                    dataType: 'json',
+                    success: function (msg) {
+                        remarkModeUndo();
+                        getRemark(data.recordId);
+                        $("#send").trigger("click");
+                        showDialogMsg("success");
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        showDialogMsg(xhr.responseText);
+                    }
+                });
+            }
+
+            function showDialogMsg(msg) {
+                $("#dialog-msg").html(msg);
+            }
+
+            function remarkModeUndo() {
+                $("#saveRemark, #undoContent").hide();
+                $("#editRemark").show();
+            }
+
+            function remarkModeEdit() {
+                $("#saveRemark, #undoContent").show();
+                $("#editRemark").hide();
+            }
+
+            //隔離特殊字元
+            function unEntity(str) {
+                return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            }
+
         </script>
     </head>
     <body>
@@ -180,8 +344,48 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
 
         <div class="container">
             <h3>測試線別資料擷取紀錄查詢</h3>
+
+            <!-- Modal -->
+            <div id="myModal" class="modal fade" role="dialog">
+                <div class="modal-dialog">
+
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 id="titleMessage" class="modal-title"></h4>
+                        </div>
+                        <div class="modal-body">
+                            <div>
+                                <table id="remarkTable" cellspacing="10" class="table table-bordered">
+                                    <tr>
+                                        <td class="lab">效率異常備註</td>
+                                        <td id="remark" >
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="lab">最後修改人員</td>
+                                        <td id="responseUser" >
+                                        </td>
+                                    </tr>
+                                </table>
+                                <div id="dialog-msg" class="alarm"></div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <label id="remarkEditHint" for="editRemark" hidden="">請<a href="<c:url value="/login" /> " target='_parent'>登入</a>做異常回覆</label>
+                            <button type="button" id="editRemark" class="btn btn-default" >Edit</button>
+                            <button type="button" id="saveRemark" class="btn btn-default">Save</button>
+                            <button type="button" id="undoContent" class="btn btn-default">Undo</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
             <div>
-                <table id="leaveRequest" class="table">
+                <table class="table">
                     <tr>
                         <td>
                             <div class="form-group form-inline">
@@ -192,6 +396,9 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                                 到 
                                 <div class='input-group date' id='endTime'>
                                     <input type="text" id="ffin" placeholder="請選擇結束時間"> 
+                                </div>
+                                <div class="checkbox">
+                                    <input type="checkbox" id="unReplyOnly" /><label for="unReplyOnly">只顯示異常未維護</label>
                                 </div>
                                 <input type="button" id="send" value="確定(Ok)">
                             </div>
@@ -209,6 +416,7 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                             <th>效率</th>
                             <th>桌次</th>
                             <th>儲存時間</th>
+                            <th>ReplyStatus</th>
                         </tr>
                     </thead>
                 </table>

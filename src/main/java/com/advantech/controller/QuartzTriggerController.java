@@ -6,15 +6,13 @@
  */
 package com.advantech.controller;
 
+import com.advantech.facade.BabLineTypeFacade;
+import com.advantech.facade.TestLineTypeFacade;
 import com.advantech.helper.CronTrigMod;
-import java.io.*;
-import javax.servlet.ServletException;
 import javax.servlet.http.*;
-import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,14 +27,28 @@ public class QuartzTriggerController {
 
     private static final Logger log = LoggerFactory.getLogger(QuartzTriggerController.class);
 
-    @Autowired
-    private CronTrigMod ctm;
-
+    private BabLineTypeFacade babFacade;
+    
+    private TestLineTypeFacade testFacade;
+    
     @RequestMapping(value = "/updateQuartz", method = {RequestMethod.POST})
-    protected String updateQuartz(@RequestParam String order, HttpServletRequest req) {
+    protected String updateQuartz(@RequestParam final String order, HttpServletRequest req) {
         String remoteIp = req.getRemoteAddr();
-        ctm.triggerPauseOrResume(order);
-        log.info("Someone change the flag to :" + order + " --- " + remoteIp);
+        
+        switch(order){
+            case "pause":
+                babFacade.isNeedToOutput(false);
+                testFacade.isNeedToOutput(false);
+                log.info(remoteIp + " pause the lineTypeFacade job.");
+                break;
+            case "resume":
+                babFacade.isNeedToOutput(true);
+                testFacade.isNeedToOutput(true);
+                log.info(remoteIp + " resume the lineTypeFacade job.");
+            default:
+                break;
+        }
+
         return "success";
     }
 

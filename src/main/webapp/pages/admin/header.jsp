@@ -68,7 +68,7 @@
                 <li>
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                         <span class="glyphicon glyphicon-list-alt" aria-hidden="true" /> 
-                        測試線別
+                        測試
                         <span class="caret" />
                     </a>
                     <ul class="dropdown-menu">
@@ -80,7 +80,7 @@
                 <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                         <span class="glyphicon glyphicon-list-alt" aria-hidden="true" /> 
-                        組裝線別
+                        組裝
                         <span class="caret" />
                     </a>
                     <ul class="dropdown-menu">
@@ -92,7 +92,7 @@
                 <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                         <span class="glyphicon glyphicon-list-alt" aria-hidden="true" /> 
-                        包裝線別
+                        包裝
                         <span class="caret" />
                     </a>
                     <ul class="dropdown-menu">
@@ -104,7 +104,7 @@
                 <li>
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                         <span class="glyphicon glyphicon-list-alt" aria-hidden="true" /> 
-                        Cell
+                        FQC
                         <span class="caret" />
                     </a>
                     <ul class="dropdown-menu">

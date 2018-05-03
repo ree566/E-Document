@@ -914,7 +914,7 @@
                 return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
             }
 
-            $(document).ready(function () {
+            $(function () {
                 $('[data-toggle="tooltip"]').tooltip();
                 var interval = null;
                 var countdownnumber = 30 * 60;
