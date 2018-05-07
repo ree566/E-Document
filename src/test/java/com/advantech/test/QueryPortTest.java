@@ -138,7 +138,7 @@ public class QueryPortTest {
         assertEquals("BD", l.get(0).getMaterialPropertyNo());
     }
 
-    @Test
+//    @Test
     public void testMaterialPropertyQueryPort() throws Exception {
         List<MaterialProperty> l = materialPropertyQueryPort.query("FC");
         assertEquals(1, l.size());
@@ -147,7 +147,7 @@ public class QueryPortTest {
     }
 
 //    @Test
-    public void testMaterialPropertValueyQueryPort() throws Exception {
+    public void testMaterialPropertyValueyQueryPort() throws Exception {
         Worktime w1 = worktimeService.findByModel("2063002307");
         assertNotNull(w1);
         List<MaterialPropertyValue> l = materialPropertyValueQueryPort.query(w1);
@@ -157,5 +157,31 @@ public class QueryPortTest {
         assertNotNull(value);
         assertEquals(null, value.getAffPropertyValue());
         assertEquals("N", value.getValue());
+    }
+
+    @Test
+    public void testRetriveMatPropertyValue() throws Exception {
+        List<Worktime> worktimes = worktimeService.findAll();
+        for (Worktime worktime : worktimes) {
+            System.out.println("Update " + worktime.getModelName());
+            List<MaterialPropertyValue> l = materialPropertyValueQueryPort.query(worktime);
+            MaterialPropertyValue acw = l.stream().filter(m1 -> "HA".equals(m1.getMatPropertyNo())).findFirst().orElse(null);
+            MaterialPropertyValue llt = l.stream().filter(m1 -> "HL".equals(m1.getMatPropertyNo())).findFirst().orElse(null);
+            MaterialPropertyValue testP = l.stream().filter(m1 -> "HP".equals(m1.getMatPropertyNo())).findFirst().orElse(null);
+            MaterialPropertyValue ir = l.stream().filter(m1 -> "HI".equals(m1.getMatPropertyNo())).findFirst().orElse(null);
+            if (acw != null) {
+                worktime.setAcwVoltage(acw.getValue());
+            }
+            if (llt != null) {
+                worktime.setLltValue(llt.getValue());
+            }
+            if (testP != null) {
+                worktime.setTestProfile(testP.getValue());
+            }
+            if (ir != null) {
+                worktime.setIrVoltage(ir.getValue());
+            }
+        }
+        worktimeService.update(worktimes);
     }
 }

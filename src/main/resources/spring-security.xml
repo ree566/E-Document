@@ -17,7 +17,7 @@
                 class="com.advantech.security.AjaxAwareAuthenticationEntryPoint">
         <beans:constructor-arg name="loginUrl" value="/login"/>
     </beans:bean>
-
+    
     <http auto-config="true">
         <!--
             If frame option is set to default(deny all), 
@@ -29,6 +29,8 @@
             <frame-options policy="SAMEORIGIN" />
             <hsts disabled="true"/>
         </headers>
+        
+        <!--<csrf disabled="true"/>-->
         
         <!--Global system access setting-->
         <intercept-url pattern="/login.jsp" access="permitAll" />
@@ -83,6 +85,7 @@
             remember-me-parameter="remember-me"
         />
         
+        <session-management invalid-session-url="/login.jsp" />
     </http>
 
     <authentication-manager >

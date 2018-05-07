@@ -142,7 +142,8 @@
             if (checkResult.length != 0) {
                 errorTextFormatF(checkResult); //field // code
                 return [false, "There are some errors in the entered data. Hover over the error icons for details."];
-            } else { 
+            } else {
+//                return [false, "Saved."]; //--For debug validator
                 //儲存前再check一次版本，給予覆蓋or取消的選擇
                 var revision_number = getRowRevision();
                 if (revision_number != selected_row_revision) {
@@ -221,6 +222,10 @@
                 {label: 'KC', name: "kc", width: 60, searchrules: number_search_rule, searchoptions: search_string_options, edittype: "select", editoptions: {value: "0:0;1:1"}},
                 {label: 'N合1集合箱', name: "nsInOneCollectionBox", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, editoptions: {defaultValue: '0'}},
                 {label: 'SN是否等於SSN', name: "partNoAttributeMaintain", edittype: "select", editoptions: {value: "N:N; :empty", defaultValue: ' '}, width: 120, searchrules: {required: true}, searchoptions: search_string_options},
+                {label: 'ACW Voltage', name: "acwVoltage", width: 100, search: true, searchrules: {required: true}, searchoptions: search_string_options, edittype: "text", editoptions: {defaultValue: '1500'}, editrules: {required: true}},
+                {label: 'IR Voltage', name: "irVoltage", width: 100, search: true, searchrules: {required: true}, searchoptions: search_string_options, edittype: "text", editoptions: {defaultValue: '500'}, editrules: {required: true}},
+                {label: 'Test Profile', name: "testProfile", width: 100, search: true, searchrules: {required: true}, searchoptions: search_string_options, edittype: "text", editoptions: {defaultValue: '601'}, editrules: {required: true}},
+                {label: 'LLT Value', name: "lltValue", width: 100, search: true, searchrules: {required: true}, searchoptions: search_string_options, edittype: "text", editoptions: {defaultValue: '100,500,500,1000,500,100,500,500,1000,500'}, editrules: {required: true}},
                 {label: '禮盒總重量(含配件)', name: "weight", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true, required: true}, editoptions: {defaultValue: '0'}},
                 {label: '整箱總重量誤差值', name: "tolerance", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true, required: true}, editoptions: {defaultValue: '0'}},
                 {label: '組裝排站人數', name: "assyStation", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: {elmsuffix: addFormulaCheckbox("assyStation")}, editrules: {integer: true}, editoptions: {defaultValue: '0'}},
@@ -281,6 +286,7 @@
                 {startColumnName: 'partNoAttributeMaintain', numberOfColumns: 1, titleText: '<em>料號屬性值維護</em>'},
                 {startColumnName: 'assyLeadTime', numberOfColumns: 2, titleText: '<em>組裝看板工時</em>'},
                 {startColumnName: 'packingLeadTime', numberOfColumns: 2, titleText: '<em>包裝看板工時</em>'},
+                {startColumnName: 'acwVoltage', numberOfColumns: 4, titleText: '<em>hi-pot Test</em>'},
                 {startColumnName: 'weight', numberOfColumns: 2, titleText: '<em>包裝重量</em>'}
             ]
         });

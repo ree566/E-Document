@@ -28,7 +28,8 @@ var flow_check_logic = {
         {keyword: ["ASSY"], checkColumn: ["assy"], message: not_null_and_zero_message, prmValid: notZeroOrNull},
         {keyword: ["T1"], checkColumn: ["t1"], message: not_null_and_zero_message, prmValid: notZeroOrNull},
         {keyword: ["VB"], checkColumn: ["vibration"], message: not_null_and_zero_message, prmValid: notZeroOrNull},
-        {keyword: ["H1", " LK"], checkColumn: ["hiPotLeakage"], message: not_null_and_zero_message, prmValid: notZeroOrNull},
+        {keyword: ["H1", " LK"], checkColumn: ["hiPotLeakage", "acwVoltage"], message: not_null_and_zero_message, prmValid: notZeroOrNull},
+        {keyword: ["LK"], checkColumn: ["irVoltage", "testProfile", "lltValue"], message: not_null_and_zero_message, prmValid: notZeroOrNull},
         {keyword: ["CB"], checkColumn: ["coldBoot"], message: not_null_and_zero_message, prmValid: notZeroOrNull},
         {keyword: ["BI", "RI"], checkColumn: ["upBiRi", "downBiRi", "biCost"], message: not_null_and_zero_message, prmValid: notZeroOrNull},
         {keyword: ["BI"], checkColumn: ["burnIn"], message: "內容須為BI", prmValid: needBI},
@@ -46,22 +47,24 @@ var flow_check_logic = {
 };
 
 var field_check_flow_logic = [
-    {checkColumn: {name: "cleanPanel", equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: preAssy, keyword: ["PRE_ASSY"]}},
-    {checkColumn: {name: "totalModule", equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: preAssy, keyword: ["PRE_ASSY"]}},
-    {checkColumn: {name: "assy", equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: babFlow, keyword: ["ASSY"]}},
-    {checkColumn: {name: "t1", equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: babFlow, keyword: ["T1"]}},
-    {checkColumn: {name: "vibration", equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: babFlow, keyword: ["VB"]}},
-    {checkColumn: {name: "hiPotLeakage", equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: babFlow, keyword: ["H1", "LK"]}},
-    {checkColumn: {name: "coldBoot", equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: babFlow, keyword: ["CB"]}},
-    {checkColumn: {name: "upBiRi", equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: babFlow, keyword: ["BI", "RI"]}},
-    {checkColumn: {name: "downBiRi", equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: babFlow, keyword: ["BI", "RI"]}},
-    {checkColumn: {name: "biCost", equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: babFlow, keyword: ["BI", "RI"]}},
-    {checkColumn: {name: "burnIn", equals: true, value: "BI"}, description: "內容為BI", targetColumn: {name: babFlow, keyword: ["BI"]}},
-    {checkColumn: {name: "burnIn", equals: true, value: "RI"}, description: "內容為RI", targetColumn: {name: babFlow, keyword: ["RI"]}},
-    {checkColumn: {name: "t2", equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: testFlow, keyword: ["T2"]}},
-    {checkColumn: {name: "t3", equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: testFlow, keyword: ["T3"]}},
-    {checkColumn: {name: "t4", equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: testFlow, keyword: ["T4"]}},
-    {checkColumn: {name: "packing", equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: packingFlow, keyword: ["PKG"]}}
+    {checkColumn: {name: ["cleanPanel"], equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: preAssy, keyword: ["PRE_ASSY"]}},
+    {checkColumn: {name: ["totalModule"], equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: preAssy, keyword: ["PRE_ASSY"]}},
+    {checkColumn: {name: ["assy"], equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: babFlow, keyword: ["ASSY"]}},
+    {checkColumn: {name: ["t1"], equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: babFlow, keyword: ["T1"]}},
+    {checkColumn: {name: ["vibration"], equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: babFlow, keyword: ["VB"]}},
+    {checkColumn: {name: ["hiPotLeakage"], equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: babFlow, keyword: ["H1", "LK"]}},
+    {checkColumn: {name: ["acwVoltage"], equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: babFlow, keyword: ["H1"]}},
+    {checkColumn: {name: ["acwVoltage", "irVoltage", "testProfile", "lltValue"], equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: babFlow, keyword: ["LK"]}},
+    {checkColumn: {name: ["coldBoot"], equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: babFlow, keyword: ["CB"]}},
+    {checkColumn: {name: ["upBiRi"], equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: babFlow, keyword: ["BI", "RI"]}},
+    {checkColumn: {name: ["downBiRi"], equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: babFlow, keyword: ["BI", "RI"]}},
+    {checkColumn: {name: ["biCost"], equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: babFlow, keyword: ["BI", "RI"]}},
+    {checkColumn: {name: ["burnIn"], equals: true, value: "BI"}, description: "內容為BI", targetColumn: {name: babFlow, keyword: ["BI"]}},
+    {checkColumn: {name: ["burnIn"], equals: true, value: "RI"}, description: "內容為RI", targetColumn: {name: babFlow, keyword: ["RI"]}},
+    {checkColumn: {name: ["t2"], equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: testFlow, keyword: ["T2"]}},
+    {checkColumn: {name: ["t3"], equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: testFlow, keyword: ["T3"]}},
+    {checkColumn: {name: ["t4"], equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: testFlow, keyword: ["T4"]}},
+    {checkColumn: {name: ["packing"], equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: packingFlow, keyword: ["PKG"]}}
     //{checkColumn: {name: "weight", equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: packingFlow, keyword: ["PI-PKG(WET)"]}}
 ];
 
@@ -72,9 +75,8 @@ function fieldCheck(postdata, preAssyVal, babFlowVal, testFlowVal, packingFlowVa
         var logic = field_check_flow_logic[i];
         var colInfo = logic.checkColumn;
 
-        var colName = colInfo.name;
+        var col = colInfo.name;
         var checkBool = colInfo.equals;
-        var fieldVal = postdata[colName];
         var checkVal = colInfo.value;
 
         var description = logic.description;
@@ -101,17 +103,25 @@ function fieldCheck(postdata, preAssyVal, babFlowVal, testFlowVal, packingFlowVa
                 throw 'TargetColName not found!';
         }
 
+        //Check col array's value all equals or not equals to checkCol.val
+        var isMatchesRule = col.every(function (el, index, arr) {
+            var colName = arr[index];
+            var fieldVal = postdata[colName];
+            return fieldVal != null && (checkBool == true ? fieldVal == checkVal : fieldVal != checkVal);
+        });
+
         if (checkBool != null) {
             var errorResult = checkFlow(
-                    (fieldVal != null && (checkBool == true ? fieldVal == checkVal : fieldVal != checkVal)),
+                    isMatchesRule,
                     targetColName, targetColVal, targetKeyword);
             if (errorResult.field != null) {
-                appendFieldInfo(colName, description, errorResult);
+                appendFieldInfo(col, description, errorResult);
                 validationErrors.push(errorResult);
             }
         } else {
             throw "CheckBool is not setting!";
         }
+
     }
     return validationErrors;
 }

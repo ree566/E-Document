@@ -108,6 +108,10 @@ public class Worktime implements java.io.Serializable {
     private int kc;
     private BigDecimal nsInOneCollectionBox = BigDecimal.ZERO;
     private char partNoAttributeMaintain;
+    private String acwVoltage;
+    private String irVoltage;
+    private String testProfile;
+    private String lltValue;
     private BigDecimal weight = BigDecimal.ZERO;
     private BigDecimal tolerance = BigDecimal.ZERO;
     private BigDecimal assyLeadTime = BigDecimal.ZERO;
@@ -629,6 +633,46 @@ public class Worktime implements java.io.Serializable {
         this.weight = this.autoFixScale(weight, 4);
     }
 
+//    @NotNull
+    @Column(name = "acw_voltage", nullable = false, length = 30)
+    public String getAcwVoltage() {
+        return acwVoltage;
+    }
+
+    public void setAcwVoltage(String acwVoltage) {
+        this.acwVoltage = acwVoltage;
+    }
+
+//    @NotNull
+    @Column(name = "ir_voltage", nullable = false, length = 30)
+    public String getIrVoltage() {
+        return irVoltage;
+    }
+
+    public void setIrVoltage(String irVoltage) {
+        this.irVoltage = irVoltage;
+    }
+
+//    @NotNull
+    @Column(name = "test_profile", nullable = false, length = 30)
+    public String getTestProfile() {
+        return testProfile;
+    }
+
+    public void setTestProfile(String testProfile) {
+        this.testProfile = testProfile;
+    }
+
+//    @NotNull
+    @Column(name = "llt_value", nullable = false, length = 100)
+    public String getLltValue() {
+        return lltValue;
+    }
+
+    public void setLltValue(String lltValue) {
+        this.lltValue = lltValue;
+    }
+
     @NotNull
     @Digits(integer = 10 /*precision*/, fraction = 4 /*scale*/)
     @Column(name = "tolerance", nullable = false, precision = 10, scale = 4)
@@ -751,7 +795,7 @@ public class Worktime implements java.io.Serializable {
     private BigDecimal autoFixScale(BigDecimal d, int scale) {
         return d == null ? null : d.setScale(scale, RoundingMode.HALF_UP);
     }
-    
+
     @NotAudited
     @CreationTimestamp
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
