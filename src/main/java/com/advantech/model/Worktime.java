@@ -644,7 +644,7 @@ public class Worktime implements java.io.Serializable {
     }
 
     public void setTolerance(BigDecimal tolerance) {
-        this.tolerance = autoFixScale(tolerance, 3);
+        this.tolerance = autoFixScale(tolerance, 4);
     }
 
     @Column(name = "materialVolumeA")

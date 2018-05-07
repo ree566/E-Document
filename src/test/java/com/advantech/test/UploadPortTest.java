@@ -211,13 +211,13 @@ public class UploadPortTest {
     @Autowired
     private StandardTimeUpload standardTimeUpload;
 
-//    @Test
+    @Test
     @Rollback(true)
     public void testStandardTimeUploadJob() {
         standardTimeUpload.uploadToMes();
     }
     
-    @Test
+//    @Test
     @Rollback(true)
     public void testModelResponsorUploadPort() throws Exception{
         Worktime obj = new Worktime();
