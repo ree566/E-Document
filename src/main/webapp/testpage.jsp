@@ -15,7 +15,7 @@
     <head> 
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>測試 ${userSitefloor} 樓 - ${initParam.pageTitle}</title>
-        <link rel="shortcut icon" href="images/favicon.ico"/>
+        <link rel="shortcut icon" href="<c:url value="/images/favicon.ico" />"/>
         <style>
             #titleAlert{
                 background-color: green;
@@ -37,13 +37,13 @@
             }
 
         </style>
-        <script src="js/jquery-1.11.3.min.js"></script>
-        <script src="js/moment.js"></script>
-        <script src="js/jquery.cookie.js"></script>
-        <script src="js/jquery.blockUI.js"></script>
-        <script src="js/jquery.blockUI.Default.js"></script>
-        <script src="js/cookie.check.js"></script>
-        <script src="js/param.check.js"></script>
+        <script src="<c:url value="/webjars/jquery/1.12.4/jquery.min.js" />"></script>
+        <script src="<c:url value="/webjars/momentjs/2.18.1/moment.js" /> "></script>
+        <script src="<c:url value="/js/jquery.cookie.js" /> "></script>
+        <script src="<c:url value="/webjars/jquery-blockui/2.70/jquery.blockUI.js" /> "></script>
+        <script src="<c:url value="/js/jquery.blockUI.Default.js" /> "></script>
+        <script src="<c:url value="/js/cookie.check.js" /> "></script>
+        <script src="<c:url value="/js/param.check.js" /> "></script>
         <script>
             var cookie_expired_time = moment().set({hour: 23, minute: 0, second: 0});
 

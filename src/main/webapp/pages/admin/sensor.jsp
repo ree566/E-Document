@@ -4,7 +4,7 @@
     Author     : Wei.Cheng
 --%>
 
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page contentType="text/html" pageEncoding="UTF-8"%> 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <sec:authentication var="user" property="principal" />
@@ -14,22 +14,22 @@
     <head>
         <meta charset=UTF-8>
         <title>${initParam.pageTitle}</title>
-        <link rel="stylesheet" href="../../css/bootstrap.min.css">
-        <link rel="stylesheet" href="../../css/jquery.dataTables.min.css">
+        <link rel="stylesheet" href="<c:url value="/webjars/bootstrap/3.3.7/css/bootstrap.min.css" />">
+        <link rel="stylesheet" href="<c:url value="/webjars/datatables/1.10.16/css/jquery.dataTables.min.css" />">
         <style>
             .non-padding{
                 padding: 0 0;
             }
         </style>
-        <script src="../../js/jquery-1.11.3.min.js"></script>
-        <script src="../../js/bootstrap.min.js"></script>
-        <script src="../../js/reconnecting-websocket.min.js"></script>
-        <script src="../../js/jquery.tablesorter.min.js"></script> 
-        <script src="../../js/jquery.cookie.js"></script>
-        <script src="../../js/jquery.dataTables.min.js"></script>
-        <script src="../../js/moment.js"></script>
+        <script src="<c:url value="/webjars/jquery/1.12.4/jquery.min.js" />"></script>
+        <script src="<c:url value="/webjars/bootstrap/3.3.7/js/bootstrap.min.js" />"></script>
+        <script src="<c:url value="/js/reconnecting-websocket.min.js"/>"></script>
+        <script src="<c:url value="/js/jquery.tablesorter.min.js"/>"></script> 
+        <script src="<c:url value="/js/jquery.cookie.js" /> "></script>
+        <script src="<c:url value="/webjars/datatables/1.10.16/js/jquery.dataTables.min.js" /> "></script>
+        <script src="<c:url value="/webjars/momentjs/2.18.1/moment.js" /> "></script>
         <script>
-            $(document).ready(function () {
+            $(function () {
                 var holdHours = 0;
                 var maxHoldHours = 8;
                 initRefreshTimer();

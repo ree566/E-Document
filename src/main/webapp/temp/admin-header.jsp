@@ -3,8 +3,8 @@
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <sec:authentication var="user" property="principal" />
 <sec:authorize access="isAuthenticated()"  var="isAuthenticated" />
-<link rel="stylesheet" href="../../css/bootstrap.min.css">
-<link rel="stylesheet" href="../../css/font-awesome.min.css">
+<link rel="stylesheet" href="<c:url value="/webjars/bootstrap/3.3.7/css/bootstrap.min.css" />">
+<link rel="stylesheet" href="<c:url value="/webjars/font-awesome/4.7.0/css/font-awesome.min.css" />" >
 <style>
     a[disabled] {
         pointer-events: none;
@@ -20,7 +20,7 @@
         font-family: 微軟正黑體;
     }
 </style>
-<script src="../../js/bootstrap.min.js"></script>
+<script src="<c:url value="/webjars/bootstrap/3.3.7/js/bootstrap.min.js" />"></script>
 
 <div style="text-align:center; color: red">
     <noscript>For full functionality of this page it is necessary to enable JavaScript. Here are the <a href="http://www.enable-javascript.com" target="_blank"> instructions how to enable JavaScript in your web browser</a></noscript>
@@ -57,7 +57,7 @@
                 <span class="icon-bar"></span>
             </button>
             <a class="navbar-brand" href="SysInfo">
-                <span><img id="logoImg" src="../../images/bulb.png" alt="sysIcon" /></span>
+                <span><img id="logoImg" src="<c:url value="/images/bulb.png" />" alt="sysIcon" /></span>
                     ${initParam.pageTitle}
                 <!--<span><img id="logoImg" src="../../images/bulb.png" alt="sysIcon" /></span>-->
             </a>

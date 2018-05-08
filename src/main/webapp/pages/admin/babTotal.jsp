@@ -11,11 +11,11 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>${initParam.pageTitle}</title>
-        <link rel="shortcut icon" href="../../images/favicon.ico"/>
-        <link rel="stylesheet" href="../../css/jquery.dataTables.min.css">
-        <link rel="stylesheet" href="../../css/bootstrap-datetimepicker.min.css">
-        <link rel="stylesheet" href="../../css/jquery-ui.css">
-        <link rel="stylesheet" href="../../css/buttons.dataTables.min.css">
+        <link rel="shortcut icon" href="<c:url value="/images/favicon.ico" />"/>
+        <link rel="stylesheet" href="<c:url value="/webjars/datatables/1.10.16/css/jquery.dataTables.min.css" />">
+        <link rel="stylesheet" href="<c:url value="/css/bootstrap-datetimepicker.min.css" />">
+        <link rel="stylesheet" href="<c:url value="/webjars/jquery-ui-themes/1.12.1/redmond/jquery-ui.min.css" />" >
+        <link rel="stylesheet" href="<c:url value="/css/buttons.dataTables.min.css" />">
         <style>
             body{
                 font-size: 16px;
@@ -37,29 +37,29 @@
                 width:50%;
             }
         </style>
-        <script src="../../js/charts.loader.js"></script>
-        <script src="../../js/jquery-1.11.3.min.js"></script>
-        <script src="../../js/jquery-ui-1.10.0.custom.min.js"></script>
-        <script src="../../js/canvasjs.min.js"></script>
-        <script src="../../js/jquery.dataTables.min.js"></script>
-        <script src="../../js/dataTables.fnMultiFilter.js"></script>
-        <script src="../../js/jquery.blockUI.js"></script>
-        <script src="../../js/moment.js"></script>
-        <script src="../../js/bootstrap-datetimepicker.min.js"></script>
-        <script src="../../js/jquery.cookie.js"></script>
-        <script src="../../js/alasql.min.js"></script> 
-        <script src="../../js/jquery-datatable-button/dataTables.buttons.min.js"></script>
-        <script src="../../js/jquery-datatable-button/buttons.flash.min.js"></script>
-        <script src="../../js/jquery-datatable-button/jszip.min.js"></script>
-        <script src="../../js/jquery-datatable-button/pdfmake.min.js"></script>
-        <script src="../../js/jquery-datatable-button/vfs_fonts.js"></script>
-        <script src="../../js/jquery-datatable-button/buttons.html5.min.js"></script>
-        <script src="../../js/jquery-datatable-button/buttons.print.min.js"></script>
-        <script src="../../js/param.check.js"></script>
-        <script src="../../js/urlParamGetter.js"></script>
-        <script src="../../js/jquery.fileDownload.js"></script>
-        <script src="../../js/ajax-option-select-loader/babLine.loader.js"></script>
-        <script src="../../js/ajax-option-select-loader/floor.loader.js"></script>
+        <script src="<c:url value="/js/charts.loader.js" />"></script>
+        <script src="<c:url value="/webjars/jquery/1.12.4/jquery.min.js" />"></script>
+        <script src="<c:url value="/js/jquery-ui-1.10.0.custom.min.js" />"></script>
+        <script src="<c:url value="/js/canvasjs.min.js" />"></script>
+        <script src="<c:url value="/webjars/datatables/1.10.16/js/jquery.dataTables.min.js" /> "></script>
+        <script src="<c:url value="/js/dataTables.fnMultiFilter.js" />"></script>
+        <script src="<c:url value="/webjars/jquery-blockui/2.70/jquery.blockUI.js" /> "></script>
+        <script src="<c:url value="/webjars/momentjs/2.18.1/moment.js" /> "></script>
+        <script src="<c:url value="/js/bootstrap-datetimepicker.min.js" />"></script>
+        <script src="<c:url value="/js/jquery.cookie.js" />"></script>
+        <script src="<c:url value="/js/alasql.min.js" />"></script> 
+        <script src="<c:url value="/js/jquery-datatable-button/dataTables.buttons.min.js" />"></script>
+        <script src="<c:url value="/js/jquery-datatable-button/buttons.flash.min.js" />"></script>
+        <script src="<c:url value="/js/jquery-datatable-button/jszip.min.js" />"></script>
+        <script src="<c:url value="/js/jquery-datatable-button/pdfmake.min.js" />"></script>
+        <script src="<c:url value="/js/jquery-datatable-button/vfs_fonts.js" />"></script>
+        <script src="<c:url value="/js/jquery-datatable-button/buttons.html5.min.js" />"></script>
+        <script src="<c:url value="/js/jquery-datatable-button/buttons.print.min.js" />"></script>
+        <script src="<c:url value="/js/param.check.js"/>"></script>
+        <script src="<c:url value="/js/urlParamGetter.js"/>"></script>
+        <script src="<c:url value="/js/jquery.fileDownload.js"/>"></script>
+        <script src="<c:url value="/js/ajax-option-select-loader/babLine.loader.js"/>"></script>
+        <script src="<c:url value="/js/ajax-option-select-loader/floor.loader.js"/>"></script>
         <script>
             var round_digit = 2;
 
@@ -343,7 +343,7 @@
         </script>
     </head>
     <body>
-        <jsp:include page="header.jsp" />
+        <c:import url="/temp/admin-header.jsp" />
         <!----->
         <div>
             <div class="wiget-ctrl form-inline">
@@ -380,6 +380,6 @@
             </div>
         </div>
 
-        <jsp:include page="footer.jsp" />
+        <c:import url="/temp/admin-footer.jsp" />
     </body>
 </html>

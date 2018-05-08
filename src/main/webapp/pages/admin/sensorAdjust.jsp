@@ -15,7 +15,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>${initParam.pageTitle}</title>
-        <link rel="shortcut icon" href="../../images/favicon.ico"/>
+        <link rel="shortcut icon" href="<c:url value="/images/favicon.ico" />">
         <style>
             #goback{
                 cursor: pointer;
@@ -30,7 +30,7 @@
                 width: 98%
             }
         </style>
-        <script src="../../js/jquery-1.11.3.min.js"></script>
+        <script src="<c:url value="/webjars/jquery/1.12.4/jquery.min.js" />"></script>
         <script>
             $(function () {
                 $("#iframe1").load(function () {
@@ -41,11 +41,11 @@
         </script>
     </head>
     <body>
-        <jsp:include page="header.jsp" />
+        <c:import url="/temp/admin-header.jsp" />
         <div id="wigetCtrl">
             <h3>組裝包裝各感應器目前狀態</h3>
             <iframe id="iframe1" style='width:100%; height:500px' src="Sensor?sitefloor=${userSitefloor}"></iframe>
         </div>
-        <jsp:include page="footer.jsp" />
+        <c:import url="/temp/admin-footer.jsp" />
     </body>
 </html>

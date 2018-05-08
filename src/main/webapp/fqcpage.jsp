@@ -22,19 +22,17 @@
                 text-align: center;
             }
         </style>
-        <script src="js/jquery-1.11.3.min.js"></script>
-        <script src="js/jquery.cookie.js"></script>
-        <script src="js/jquery.blockUI.js"></script>
-        <script src="js/jquery.blockUI.Default.js"></script>
-        <script src="js/cookie.check.js"></script>
-        <script src="js/param.check.js"></script>
-        <script src="js/moment.js"></script>
-        <script src="js/stopwatch.js"></script>
+        <script src="<c:url value="/webjars/jquery/1.12.4/jquery.min.js" />"></script>
+        <script src="<c:url value="/js/jquery.cookie.js" /> "></script>
+        <script src="<c:url value="/webjars/jquery-blockui/2.70/jquery.blockUI.js" /> "></script>
+        <script src="<c:url value="/js/jquery.blockUI.Default.js" /> "></script>
+        <script src="<c:url value="/js/cookie.check.js" /> "></script>
+        <script src="<c:url value="/js/param.check.js" /> "></script>
+        <script src="<c:url value="/webjars/momentjs/2.18.1/moment.js" /> "></script>
+        <script src="<c:url value="/js/stopwatch.js" /> "></script>
 
         <script>
             var serverErrorConnMessage = "Error, the textbox can't connect to server now.";
-
-            var cookie_expired_time = moment().set({hour: 23, minute: 0, second: 0});
 
             var userInfoCookieName = "userInfo", //組包步驟一的cookie
                     testLineTypeCookieName = "testLineTypeCookieName", //測試線別的cookie 
@@ -391,7 +389,8 @@
                 }
 
                 function getExpireDate() {
-                    return cookie_expired_time.toDate();
+                    var d = moment().set({hour: 23, minute: 0, second: 0});
+                    return d.toDate();
                 }
 
 

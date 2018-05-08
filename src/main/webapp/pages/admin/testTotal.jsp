@@ -13,8 +13,8 @@ Auto polling test record page by client.
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>${initParam.pageTitle}</title>
-        <link rel="shortcut icon" href="../../images/favicon.ico"/>
-        <link rel="stylesheet" href="../../css/jquery.dataTables.min.css">
+        <link rel="shortcut icon" href="<c:url value="/images/favicon.ico" />"/>
+        <link rel="stylesheet" href="<c:url value="/webjars/datatables/1.10.16/css/jquery.dataTables.min.css" />">
         <style>
             .nodata{
                 opacity: 0.2
@@ -38,9 +38,9 @@ Auto polling test record page by client.
                 /* Required padding for .navbar-fixed-top. Remove if using .navbar-static-top. Change if height of navigation changes. */
             }
         </style>
-        <script src="../../js/jquery-1.11.3.min.js"></script>
-        <script src="../../js/jquery.dataTables.min.js"></script>
-        <script src="../../js/jquery.cookie.js"></script>
+        <script src="<c:url value="/webjars/jquery/1.12.4/jquery.min.js" />"></script>
+        <script src="<c:url value="/webjars/datatables/1.10.16/js/jquery.dataTables.min.js" /> "></script>
+        <script src="<c:url value="/js/jquery.cookie.js" /> "></script>
         <script>
             var maxProductivity = 200;
             $(document).ready(function () {
@@ -146,13 +146,6 @@ Auto polling test record page by client.
                     }
                     countdownnumber -= diff;
                 }, diff * 1000);
-//                $(window).focus(function () {
-//                    
-//                    console.log("timer start");
-//                }).blur(function () {
-//                    clearInterval(interval);
-//                    console.log("timer stop");
-//                });
 
                 $(window).unload(function () {
                     var cookies = $.cookie();
@@ -191,7 +184,7 @@ Auto polling test record page by client.
         </script>
     </head>
     <body>
-        <jsp:include page="header.jsp" />
+        <c:import url="/temp/admin-header.jsp" />
         <div id="wigetCtrl">
             <h3>測試各站別狀態</h3><!----------------------------------------------->
             <div style="width: 50%; background-color: #F5F5F5">
@@ -221,6 +214,6 @@ Auto polling test record page by client.
             </div>
         </div>
         <div id="final_time"></div>
-        <jsp:include page="footer.jsp" />
+        <c:import url="/temp/admin-footer.jsp" />
     </body>
 </html>

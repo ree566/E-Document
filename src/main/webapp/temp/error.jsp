@@ -13,16 +13,16 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>${initParam.pageTitle}</title>
-        <link rel="shortcut icon" href="images/favicon.ico"/>
-        <link rel="stylesheet" href="css/bootstrap.min.css">
+        <link rel="shortcut icon" href="<c:url value="/images/favicon.ico" />"/>
+        <link rel="stylesheet" href="<c:url value="/webjars/bootstrap/3.3.7/css/bootstrap.min.css" />">
         <style>
             #goback:hover{
                 cursor: pointer;
             }
         </style>
 
-        <script src="js/jquery-1.11.3.min.js"></script>
-        <script src="js/bootstrap.min.js"></script>
+        <script src="<c:url value="/webjars/jquery/1.12.4/jquery.min.js" />"></script>
+        <script src="<c:url value="/webjars/bootstrap/3.3.7/js/bootstrap.min.js" />"></script>
         <script>
             function goBack() {
                 window.history.back();

@@ -16,8 +16,8 @@
         </c:if>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>${userSitefloor}F狀態平面圖 - ${initParam.pageTitle}</title>
-        <link rel="stylesheet" href="../../css/jquery-ui.css">
-        <link rel="stylesheet" href="../../css/tooltipster.bundle.min.css">
+        <link rel="stylesheet" href="<c:url value="/webjars/jquery-ui-themes/1.12.1/redmond/jquery-ui.min.css" />" >
+        <link rel="stylesheet" href="<c:url value="/css/tooltipster.bundle.min.css"/>" >
         <style>
             body{
                 font-family: 微軟正黑體;
@@ -171,12 +171,12 @@
                 cursor: pointer;
             }
         </style>
-        <script src="../../js/jquery-1.11.3.min.js"></script>
-        <script src="../../js/jquery-ui-1.10.0.custom.min.js"></script>
-        <script src="../../js/reconnecting-websocket.min.js"></script>
-        <script src="../../js/jquery.fullscreen-min.js"></script>
-        <script src="../../js/tooltipster.bundle.min.js"></script>
-        <script src="../../js/totalMap-setting/${userSitefloor}f.js"></script>
+        <script src="<c:url value="/webjars/jquery/1.12.4/jquery.min.js" />"></script>
+        <script src="<c:url value="/js/jquery-ui-1.10.0.custom.min.js"/>"></script>
+        <script src="<c:url value="/js/reconnecting-websocket.min.js"/>"></script>
+        <script src="<c:url value="/js/jquery.fullscreen-min.js"/>"></script>
+        <script src="<c:url value="/js/tooltipster.bundle.min.js"/>"></script>
+        <script src="<c:url value="/js/totalMap-setting/${userSitefloor}f.js"/>"></script>
         <script>
             var maxProductivity = 200;
 
