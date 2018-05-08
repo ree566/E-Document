@@ -85,7 +85,8 @@
             remember-me-parameter="remember-me"
         />
         
-        <session-management invalid-session-url="/login.jsp" />
+        <!--Bug when session is null, session will count++ every invalid session redirect-->
+        <!--<session-management invalid-session-url="/login.jsp" />-->
     </http>
 
     <authentication-manager >
