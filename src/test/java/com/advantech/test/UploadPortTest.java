@@ -216,13 +216,17 @@ public class UploadPortTest {
     public void testStandardTimeUploadJob() {
         standardTimeUpload.uploadToMes();
     }
-    
+
     @Test
     @Rollback(true)
-    public void testStandardTimeUpload() throws Exception{
-        Worktime worktime = worktimeService.findByPrimaryKey(8901);
-        assertNotNull(worktime);
+    public void testStandardTimeUpload() throws Exception {
+        Integer[] ids = {6283, 6284, 6285, 6576, 8462, 8505, 8769, 8811, 8812, 8814,
+            8815, 8824, 8830, 8901, 8938, 8939, 8949, 8971, 8981, 8984, 9020};
+        List<Worktime> l = worktimeService.findByPrimaryKeys(ids);
+        assertEquals(ids.length, l.size());
         standardtimePort.initSettings();
-        standardtimePort.update(worktime);
+        for (Worktime worktime : l) {
+            standardtimePort.update(worktime);
+        }
     }
 }

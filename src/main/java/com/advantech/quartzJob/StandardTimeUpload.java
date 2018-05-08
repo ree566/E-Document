@@ -75,6 +75,7 @@ public class StandardTimeUpload {
 
     private void initCheckFieldNames() {
         checkField = newArrayList(
+                "modelName",
                 "totalModule", "cleanPanel", "assy", "t1", "t2",
                 "t3", "t4", "hiPotLeakage", "coldBoot", "warmBoot",
                 "vibration", "upBiRi", "downBiRi", "packing", "assyStation",
