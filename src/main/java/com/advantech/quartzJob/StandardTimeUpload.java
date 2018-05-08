@@ -75,6 +75,7 @@ public class StandardTimeUpload {
 
     private void initCheckFieldNames() {
         checkField = newArrayList(
+                "modelName",
                 "arFilmAttachment", "cleanPanel", "assy", "pi", "t1", "t2",
                 "packing", "seal", "opticalBonding"
         );
