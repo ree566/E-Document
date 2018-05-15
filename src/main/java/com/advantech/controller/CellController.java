@@ -79,12 +79,12 @@ public class CellController {
 //        }
 //    }
 
-    @RequestMapping(value = "/findByDate", method = {RequestMethod.GET})
-    @ResponseBody
-    protected DataTableResponse doPost(
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime startDate,
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime endDate
-    ) throws IOException {
-        return new DataTableResponse(babService.findCell(startDate, endDate));
-    }
+//    @RequestMapping(value = "/findByDate", method = {RequestMethod.GET})
+//    @ResponseBody
+//    protected DataTableResponse doPost(
+//            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime startDate,
+//            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime endDate
+//    ) throws IOException {
+//        return new DataTableResponse(babService.findCell(startDate, endDate));
+//    }
 }

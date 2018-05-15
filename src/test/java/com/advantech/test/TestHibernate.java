@@ -16,24 +16,27 @@ import com.advantech.model.BabPcsDetailHistory;
 import com.advantech.model.BabSensorLoginRecord;
 import com.advantech.model.BabStatus;
 import com.advantech.model.CountermeasureEvent;
+import com.advantech.model.PassStationRecord;
 import com.advantech.model.ReplyStatus;
 import com.advantech.model.SensorTransform;
 import com.advantech.model.TagNameComparison;
 import com.advantech.model.User;
 import com.advantech.security.State;
 import com.advantech.service.BabPcsDetailHistoryService;
+import com.advantech.service.PassStationRecordService;
+import com.advantech.webservice.WebServiceRV;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.apache.commons.collections.CollectionUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Hibernate;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.transform.Transformers;
 import static org.junit.Assert.*;
@@ -368,7 +371,7 @@ public class TestHibernate {
         HibernateObjectPrinter.print(l);
     }
 
-    @Test
+//    @Test
     @Transactional
     @Rollback(true)
     public void testReport() {
@@ -392,5 +395,28 @@ public class TestHibernate {
         
         HibernateObjectPrinter.print(l);
 
+    }
+    
+    @Autowired
+    private WebServiceRV rv;
+    
+    @Autowired
+    private PassStationRecordService passStationService;
+    
+    @Test
+    @Transactional
+    @Rollback(false)
+    public void testMergePassStationRecord(){
+        String po = "PII3346ZA";
+        
+        List<PassStationRecord> l = rv.getPassStationRecords(po);
+        List<PassStationRecord> history = passStationService.findByPo(po);
+
+        List<PassStationRecord> newData = (List<PassStationRecord>) CollectionUtils.subtract(l, history);
+
+        if (!newData.isEmpty()) {
+            passStationService.insert(newData);
+        }
+        
     }
 }

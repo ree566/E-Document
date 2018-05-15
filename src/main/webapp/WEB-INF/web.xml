@@ -180,24 +180,6 @@
         <url-pattern>/pages/admin/CellRecord</url-pattern>  
     </servlet-mapping>
     
-    <servlet>
-        <servlet-name>About</servlet-name>
-        <jsp-file>/pages/admin/about.jsp</jsp-file>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>About</servlet-name>
-        <url-pattern>/pages/admin/About</url-pattern>  
-    </servlet-mapping>
-    
-    <servlet>
-        <servlet-name>SysDoc</servlet-name>
-        <jsp-file>/pages/admin/sysDoc.jsp</jsp-file>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>SysDoc</servlet-name>
-        <url-pattern>/pages/admin/SysDoc</url-pattern>  
-    </servlet-mapping>
-    
     <!--Other setting-->
     <servlet>
         <servlet-name>appServlet</servlet-name>

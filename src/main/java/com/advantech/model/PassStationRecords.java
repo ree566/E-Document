@@ -20,14 +20,14 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "root")
 public class PassStationRecords implements Serializable {
 
-    @XmlElement(name = "QryData", type = PassStation.class)
-    private List<PassStation> QryData;
+    @XmlElement(name = "QryData", type = PassStationRecord.class)
+    private List<PassStationRecord> QryData;
 
-    public List<PassStation> getQryData() {
+    public List<PassStationRecord> getQryData() {
         return QryData;
     }
 
-    public void setQryData(List<PassStation> QryData) {
+    public void setQryData(List<PassStationRecord> QryData) {
         this.QryData = QryData;
     }
 

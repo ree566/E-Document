@@ -123,7 +123,7 @@
         Clear all subPolling job separate by system
         Cell已移除，待修改為FQC job
     -->    
-    <bean name="ClearPollingJob" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+<!--    <bean name="ClearPollingJob" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
         <property name="jobClass" value="com.advantech.quartzJob.ClearPollingJob" />
         <property name="durability" value="true" />
     </bean>
@@ -131,14 +131,14 @@
     <bean id="ClearPollingJob-Trig" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
         <property name="jobDetail" ref="ClearPollingJob" />
         <property name="cronExpression" value="0 30 21 ? * MON-FRI *" />
-    </bean>
+    </bean>-->
     
     <!--
         Job9 setting
         把Cell是否合格資訊轉換到資料庫(不包含把接口資料新增進sql)
         Cell已移除，待修改為FQC job
     -->
-    <bean name="CellJobWorker" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+<!--    <bean name="CellJobWorker" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
         <property name="jobClass" value="com.advantech.quartzJob.CellJobWorker" />
         <property name="durability" value="true" />
     </bean>
@@ -146,14 +146,14 @@
     <bean id="CellJobWorker-Trig" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
         <property name="jobDetail" ref="CellJobWorker" />
         <property name="cronExpression" value="0/30 * 8-20 ? * MON-SAT *" />
-    </bean>
+    </bean>-->
     
     <!--
         Job10 setting
         Cell auto close
         Cell已移除，待修改為FQC job
     -->    
-    <bean name="HandleUnclosedCell" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+<!--    <bean name="HandleUnclosedCell" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
         <property name="jobClass" value="com.advantech.quartzJob.CellDataSaver" />
         <property name="durability" value="true" />
     </bean>
@@ -161,7 +161,7 @@
     <bean id="HandleUnclosedCell-Trig" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
         <property name="jobDetail" ref="HandleUnclosedCell" />
         <property name="cronExpression" value="0 10 22 ? * MON-SAT *" />
-    </bean>
+    </bean>-->
     
     <!--
         Ohter polling data jobs

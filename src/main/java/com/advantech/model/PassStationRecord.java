@@ -5,27 +5,45 @@
  */
 package com.advantech.model;
 
+import com.advantech.webservice.XmlDateAdapter;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.io.Serializable;
+import java.util.Date;
 import java.util.Objects;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import org.springframework.format.annotation.DateTimeFormat;
 
 /**
  *
- * @author Wei.Cheng
- * Cell passstation record
+ * @author Wei.Cheng Cell passstation record
  */
+@Entity
+@Table(name = "PassStationRecord")
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "QryData")
-public class PassStation implements Serializable {
+public class PassStationRecord implements Serializable {
+
+    private int id;
 
     @XmlElement(name = "BARCODE_NO")
     private String barcode;
 
     @XmlElement(name = "WIP_NO")
-    private String PO;
+    private String po;
 
     @XmlElement(name = "LINE_DESC")
     private String lineName;
@@ -37,7 +55,8 @@ public class PassStation implements Serializable {
     private String station;
 
     @XmlElement(name = "CREATE_DATE")
-    private String createDate;
+    @XmlJavaTypeAdapter(XmlDateAdapter.class)  
+    private Date createDate;
 
     @XmlElement(name = "USER_NO")
     private String userNo;
@@ -45,8 +64,20 @@ public class PassStation implements Serializable {
     @XmlElement(name = "USER_NAME_CH")
     private String userName;
 
-    private String type;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id", unique = true, nullable = false, updatable = false)
+    public int getId() {
+        return id;
+    }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    @NotNull
+    @Size(min = 0, max = 20)
+    @Column(name = "barcode", length = 20, nullable = false)
     public String getBarcode() {
         return barcode;
     }
@@ -55,14 +86,20 @@ public class PassStation implements Serializable {
         this.barcode = barcode;
     }
 
-    public String getPO() {
-        return PO;
+    @NotNull
+    @Size(min = 0, max = 20)
+    @Column(name = "po", length = 20, nullable = false)
+    public String getPo() {
+        return po;
     }
 
-    public void setPO(String PO) {
-        this.PO = PO;
+    public void setPo(String po) {
+        this.po = po;
     }
 
+    @NotNull
+    @Size(min = 0, max = 20)
+    @Column(name = "lineName", length = 20, nullable = false)
     public String getLineName() {
         return lineName;
     }
@@ -71,6 +108,8 @@ public class PassStation implements Serializable {
         this.lineName = lineName;
     }
 
+    @NotNull
+    @Column(name = "lineId", nullable = false)
     public Integer getLineId() {
         return lineId;
     }
@@ -79,6 +118,9 @@ public class PassStation implements Serializable {
         this.lineId = lineId;
     }
 
+    @NotNull
+    @Size(min = 0, max = 20)
+    @Column(name = "station", length = 20, nullable = false)
     public String getStation() {
         return station;
     }
@@ -87,14 +129,21 @@ public class PassStation implements Serializable {
         this.station = station;
     }
 
-    public String getCreateDate() {
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    @JsonFormat(pattern = "yyyy-MM-dd'T'kk:mm:ss.SSS'Z'", timezone = "GMT+8")
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "createDate", length = 23, insertable = true, updatable = false)
+    public Date getCreateDate() {
         return createDate;
     }
 
-    public void setCreateDate(String createDate) {
+    public void setCreateDate(Date createDate) {
         this.createDate = createDate;
     }
 
+    @NotNull
+    @Size(min = 0, max = 20)
+    @Column(name = "userNo", length = 20, nullable = false)
     public String getUserNo() {
         return userNo;
     }
@@ -103,20 +152,15 @@ public class PassStation implements Serializable {
         this.userNo = userNo;
     }
 
+    @NotNull
+    @Size(min = 0, max = 20)
+    @Column(name = "userName", length = 20, nullable = false)
     public String getUserName() {
         return userName;
     }
 
     public void setUserName(String userName) {
         this.userName = userName;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
     }
 
     @Override
@@ -138,7 +182,7 @@ public class PassStation implements Serializable {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final PassStation other = (PassStation) obj;
+        final PassStationRecord other = (PassStationRecord) obj;
         if (!Objects.equals(this.barcode, other.barcode)) {
             return false;
         }

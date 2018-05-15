@@ -5,10 +5,10 @@
  */
 package com.advantech.dao;
 
+import static com.advantech.helper.HibernateBatchUtils.flushIfReachFetchSize;
 import com.advantech.model.AlarmTestAction;
 import java.util.List;
 import org.hibernate.Session;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -17,9 +17,6 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public class AlarmTestActionDAO extends AbstractDao<String, AlarmTestAction> implements BasicDAO_1<AlarmTestAction> {
-
-    @Value("${HIBERNATE.JDBC.BATCHSIZE}")
-    private Integer batchSize;
 
     @Override
     public List<AlarmTestAction> findAll() {
@@ -77,13 +74,6 @@ public class AlarmTestActionDAO extends AbstractDao<String, AlarmTestAction> imp
             flushIfReachFetchSize(session, currentRow++);
         }
         return 1;
-    }
-
-    private void flushIfReachFetchSize(Session session, int currentRow) {
-        if (currentRow % batchSize == 0 && currentRow > 0) {
-            session.flush();
-            session.clear();
-        }
     }
 
 }

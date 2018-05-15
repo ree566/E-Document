@@ -20,7 +20,7 @@
         <link rel="stylesheet" href="<c:url value="/webjars/datatables/1.10.16/css/jquery.dataTables.min.css" />">
         <link rel="stylesheet" href="<c:url value="/css/bootstrap-datetimepicker.min.css"/>">
         <link rel="stylesheet" href="<c:url value="/webjars/jquery-ui-themes/1.12.1/redmond/jquery-ui.min.css" />" >
-        <link rel="stylesheet" href="<c:url value="/webjars/datatables/1.10.16/css/jquery.dataTables.min.css" />">
+        <link rel="stylesheet" href="<c:url value="/css/buttons.dataTables.min.css"/>" >
         <style>
             body{
                 font-family: 微軟正黑體;

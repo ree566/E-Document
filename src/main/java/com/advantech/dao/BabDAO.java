@@ -141,18 +141,6 @@ public class BabDAO extends AbstractDao<Integer, Bab> implements BasicDAO_1<Bab>
         q.setMaxResults(1);
         return (Bab) q.uniqueResult();
     }
-    
-    public List<Bab> findCell(DateTime sD, DateTime eD){
-        sD = sD.withHourOfDay(0);
-        eD = eD.withHourOfDay(23);
-        
-        return super.createEntityCriteria()
-                .createAlias("line", "l")
-                .createAlias("l.lineType", "lt")
-                .add(Restrictions.eq("lt.name", "Cell"))
-                .add(Restrictions.between("beginTime", sD.toDate(), eD.toDate()))
-                .list();
-    }
 
     @Override
     public int insert(Bab pojo) {

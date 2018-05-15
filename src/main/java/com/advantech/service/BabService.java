@@ -4,7 +4,6 @@ import com.advantech.model.Bab;
 import com.advantech.dao.BabDAO;
 import com.advantech.helper.PropertiesReader;
 import com.advantech.model.BabSettingHistory;
-import com.advantech.model.CellLineTypeRecord;
 import com.advantech.model.LineType;
 import com.advantech.model.TagNameComparison;
 import com.advantech.model.view.BabAvg;
@@ -43,12 +42,6 @@ public class BabService {
 
     @Autowired
     private SqlViewService sqlViewService;
-
-    @Autowired
-    private CellLineTypeRecordService cellLineTypeRecordService;
-
-    @Autowired
-    private LineTypeService lineTypeService;
 
     @Autowired
     private PropertiesReader p;
@@ -114,10 +107,6 @@ public class BabService {
         return l;
     }
 
-    public List<Bab> findCell(DateTime sD, DateTime eD) {
-        return babDAO.findCell(sD, eD);
-    }
-
     public int insert(Bab pojo) {
         return babDAO.insert(pojo);
     }
@@ -130,16 +119,6 @@ public class BabService {
         }
         babDAO.insert(b);
         babSettingHistoryService.insertByBab(b, tag);
-        return 1;
-    }
-
-    public int checkAndInsert(Bab b, TagNameComparison tag, String recordLineType) {
-        this.checkAndInsert(b, tag);
-        if (recordLineType != null) {
-            LineType lt = lineTypeService.findByName(recordLineType);
-            checkArgument(lt != null, "Can't find lineType name: " + recordLineType);
-            cellLineTypeRecordService.insert(new CellLineTypeRecord(b, lt));
-        }
         return 1;
     }
 

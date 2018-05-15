@@ -5,13 +5,9 @@
  */
 package com.advantech.facade;
 
-import com.advantech.model.CellLine;
-import com.advantech.service.CellLineService;
-import com.advantech.service.CellService;
-import com.advantech.service.PassStationService;
+import com.advantech.service.PassStationRecordService;
 import java.util.List;
 import java.util.Map;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,13 +22,7 @@ public class CellLineTypeFacade extends BasicLineTypeFacade {
     private static final Logger log = LoggerFactory.getLogger(CellLineTypeFacade.class);
 
     @Autowired
-    private CellService cellService;
-
-    @Autowired
-    private CellLineService cellLineService;
-
-    @Autowired
-    private PassStationService passStationService;
+    private PassStationRecordService passStationService;
 
     private Double cellStandardMin, cellStandardMax;
 
@@ -44,45 +34,46 @@ public class CellLineTypeFacade extends BasicLineTypeFacade {
     @Override
     protected void initMap() {
         this.dataMap.clear();
-        List<CellLine> l = cellLineService.findAll();
-        for (CellLine cellLine : l) {
-            dataMap.put(cellLine.getOutputName(), super.NORMAL_SIGN);
-        }
+//        List<CellLine> l = cellLineService.findAll();
+//        for (CellLine cellLine : l) {
+//            dataMap.put(cellLine.getOutputName(), super.NORMAL_SIGN);
+//        }
     }
 
     @Override
     protected boolean generateData() {
-        List<Map> l = passStationService.getCellLastGroupStatusView();
-        boolean isCellsUnderBalance = false;
-        this.initMap();
-        if (!l.isEmpty()) {
-            processingJsonObject = new JSONObject();
-            String percentKeyName = "percent";
-            String lineNameKeyName = "linename";
-            String outputLineNameKeyName = "outputLinename";
-            for (Map m : l) {
-                if (m.containsKey(percentKeyName) && m.containsKey(lineNameKeyName) && m.containsKey(outputLineNameKeyName)) {
-                    String outputLineName = (String) m.get(outputLineNameKeyName);
-                    Double percent = (Double) m.get(percentKeyName);
-
-                    boolean isPass = isInTheRange(percent);
-                    if (isPass) {
-                        dataMap.put(outputLineName, this.NORMAL_SIGN);
-                    } else {
-                        dataMap.put(outputLineName, this.ALARM_SIGN);
-                        isCellsUnderBalance = true;
-                    }
-                    m.put("isAlarm", !isPass);
-                } else {
-                    log.error("Can not find the spec key in map, need keys " + percentKeyName + " " + lineNameKeyName + " " + outputLineNameKeyName);
-                    return false;
-                }
-            }
-            processingJsonObject.put("data", l);
-        } else {
-            processingJsonObject = null;
-        }
-        return isCellsUnderBalance;
+        return false;
+//        List<Map> l = passStationService.getCellLastGroupStatusView();
+//        boolean isCellsUnderBalance = false;
+//        this.initMap();
+//        if (!l.isEmpty()) {
+//            processingJsonObject = new JSONObject();
+//            String percentKeyName = "percent";
+//            String lineNameKeyName = "linename";
+//            String outputLineNameKeyName = "outputLinename";
+//            for (Map m : l) {
+//                if (m.containsKey(percentKeyName) && m.containsKey(lineNameKeyName) && m.containsKey(outputLineNameKeyName)) {
+//                    String outputLineName = (String) m.get(outputLineNameKeyName);
+//                    Double percent = (Double) m.get(percentKeyName);
+//
+//                    boolean isPass = isInTheRange(percent);
+//                    if (isPass) {
+//                        dataMap.put(outputLineName, this.NORMAL_SIGN);
+//                    } else {
+//                        dataMap.put(outputLineName, this.ALARM_SIGN);
+//                        isCellsUnderBalance = true;
+//                    }
+//                    m.put("isAlarm", !isPass);
+//                } else {
+//                    log.error("Can not find the spec key in map, need keys " + percentKeyName + " " + lineNameKeyName + " " + outputLineNameKeyName);
+//                    return false;
+//                }
+//            }
+//            processingJsonObject.put("data", l);
+//        } else {
+//            processingJsonObject = null;
+//        }
+//        return isCellsUnderBalance;
     }
 
     private boolean isInTheRange(Double percent) {

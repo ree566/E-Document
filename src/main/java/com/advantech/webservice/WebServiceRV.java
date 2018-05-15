@@ -5,12 +5,12 @@
  */
 package com.advantech.webservice;
 
-import com.advantech.model.CellLineType;
-import com.advantech.model.PassStation;
+import com.advantech.model.PassStationRecord;
 import com.advantech.model.PassStationRecords;
 import com.advantech.model.TestRecord;
 import com.advantech.model.TestRecords;
 import com.advantech.model.UserOnMes;
+import static com.google.common.base.Preconditions.*;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -65,7 +65,7 @@ public class WebServiceRV {
         return this.getWebServiceData(queryString);
     }
 
-    public List<String> getKanbanUsersForString() throws IOException, TransformerConfigurationException, TransformerException{
+    public List<String> getKanbanUsersForString() throws IOException, TransformerConfigurationException, TransformerException {
         String queryString = "<root>"
                 + "<METHOD ID='ETLSO.QryProductionKanban4Test'/>"
                 + "<KANBANTEST>"
@@ -122,15 +122,8 @@ public class WebServiceRV {
         }
     }
 
-    public List<PassStation> getPassStationRecords(String po, String type) {
-        String stations;
-        if (CellLineType.BAB.toString().equals(type)) {
-            stations = "'2','20'";
-        } else if (CellLineType.PKG.toString().equals(type)) {
-            stations = "'53','28'";
-        } else {
-            return new ArrayList();
-        }
+    public List<PassStationRecord> getPassStationRecords(String po) {
+        String stations = "16";
 
         try {
             String queryString
@@ -147,7 +140,7 @@ public class WebServiceRV {
 
             Object o = this.unmarshalFromList(node, PassStationRecords.class);
             return o == null ? new ArrayList() : ((PassStationRecords) o).getQryData();
-        } catch (Exception ex) {
+        } catch (JAXBException ex) {
             log.error(ex.toString());
             return new ArrayList();
         }
@@ -163,7 +156,7 @@ public class WebServiceRV {
             Object o = this.unmarshalFromList(node, TestRecords.class);
 
             return o == null ? new ArrayList() : ((TestRecords) o).getQryData();
-        } catch (Exception ex) {
+        } catch (JAXBException ex) {
             log.error(ex.toString());
             return new ArrayList();
         }

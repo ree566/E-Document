@@ -21,6 +21,12 @@
                 color: white;
                 text-align: center;
             }
+            .timer-container{
+                border-style: solid;
+                border-color: green;
+                padding: 15px;
+                background-color: lightgreen;
+            }
         </style>
         <script src="<c:url value="/webjars/jquery/1.12.4/jquery.min.js" />"></script>
         <script src="<c:url value="/js/jquery.cookie.js" /> "></script>
@@ -29,7 +35,8 @@
         <script src="<c:url value="/js/cookie.check.js" /> "></script>
         <script src="<c:url value="/js/param.check.js" /> "></script>
         <script src="<c:url value="/webjars/momentjs/2.18.1/moment.js" /> "></script>
-        <script src="<c:url value="/js/stopwatch.js" /> "></script>
+        <script src="<c:url value="/js/timer.jquery.min.js" /> "></script>
+        <script src="<c:url value="/js/timer.jquery.event.js" /> "></script>
 
         <script>
             var serverErrorConnMessage = "Error, the textbox can't connect to server now.";
@@ -39,10 +46,12 @@
                     fqcCookieName = "fqcCookieName";
             var serverMsgTimeout;
             var hnd;//鍵盤輸入間隔
+            var timerCount = 0;
+            var maxTimerCount = 10;
 
             $(function () {
-                initStopWatch();
-                
+//                initStopWatch();
+
                 //Add class to transform the button type to bootstrap.
                 $(":button").addClass("btn btn-default");
                 $("#refresh").addClass("btn-xs");
@@ -130,10 +139,53 @@
                 });
 
                 $("#po").on("keyup", function () {
-                    var po = $(this).val().toUpperCase().trim();
-                    $(this).val(po);
-                    getModel(po, $("#modelname"));
+                    getModel($(this).val(), $("#modelname"));
                 });
+
+                var timerElement = $(".timer-container:first");
+                timerElement.hide();
+
+                $("#timer-add").click(function () {
+                    if (timerCount >= maxTimerCount) {
+                        alert("Reach max timer count " + maxTimerCount + " !!");
+                        return false;
+                    }
+                    var cloneTimer = timerElement.clone(true);
+                    timerInit(cloneTimer);
+                    cloneTimer.insertAfter("div.timer-container:last");
+                    cloneTimer.show();
+                    timerCount++;
+                });
+
+                $("body").on("click", ".timer-destroy", function () {
+                    if (confirm("Remove timer?")) {
+                        $(this).parents(".timer-container").remove();
+                        timerCount--;
+                    }
+                });
+
+                $(".start-timer-btn").on("click", function (e) {
+                    var container = $(this).parents(".timer-container");
+                    var poValue = container.find(".po").val();
+                    if (poValue == null || poValue == "") {
+                        alert("Please insert po first");
+                        e.stopImmediatePropagation();
+                        return false;
+                    }
+                    container.find(".po, .timer-destroy").prop("disabled", true);
+                });
+
+                $(".remove-timer-btn").on("click", function () {
+                    $(this).parents(".timer-container").find(".po, .timer-destroy").prop("disabled", false);
+                });
+
+                $(".upperText").on("keyup", function () {
+                    var v = $(this).val().toUpperCase().trim();
+                    $(this).val(v);
+                });
+                
+                $("#timer-add").trigger("click").hide();
+                $(".timer-destroy").hide();
 
                 function checkExistCookies() {
                     var testLineTypeCookie = $.cookie(testLineTypeCookieName);
@@ -416,6 +468,7 @@
                 <select id="lineId">
                     <option value="-1">---請選擇線別---</option>
                 </select>
+                <input type="text" id="jobnumber" class="upperText" placeholder="請輸入工號" style="width: 180px" />
                 <input type="button" id="login" value="Login" />
                 <input type="button" id="logout" value="Logout" />
             </div>
@@ -423,41 +476,47 @@
             <div id="startSchedArea">
                 <div class="form-group form-inline">
                     <label>Processing</label>
-                    <input type="text" id="po" placeholder="Please insert your po" />
+                    <input type="text" id="po" class="upperText" placeholder="Please insert your po" />
                     <input type="text" name="modelname" id="modelname" placeholder="機種" readonly style="background: #CCC; width: 180px" />
-                    <select id="type">
-                        <option value="BAB">BAB</option>
-                        <option value="TEST">Test</option>
-                        <option value="PKG">Packing</option>
-                    </select>
                 </div>
 
-                <div class="form-group form-inline">
-                    <div class="stopwatch" id="stopwatch">
-                        <button class="btn" id="stopwatch-start"><span class="glyphicon glyphicon-play" />Start</button>
-                        <button class="btn" id="stopwatch-stop"><span class="glyphicon glyphicon-stop" />Stop</button>
-                        <button class="btn" id="stopwatch-reset"><span class="glyphicon glyphicon-repeat" />Reset</button>
-                        <button class="btn btn-success" id="start-productivity-count">開始計算效率</button>
-                        <button class="btn btn-danger" id="stop-productivity-count">停止計算效率</button>
-                        <div>
-                            <label for="time-container">時間: </label>
-                            <div id="time-container" class="container">00 : 00 : 00</div>
+                <div>
+                    <div>
+                        <input type="button" id="timer-add" class="btn btn-default" value="+" />
+                    </div>
+                    <div id="timer-area">
+                        <div class="row timer-container">
+                            <div class="col-md-3">
+                                <input name="po" class="form-control po upperText" placeholder="Please insert your po" type="text">
+                            </div>
+                            <div class="col-md-3">
+                                <input name="timer" class="form-control timer" placeholder="0 sec" type="text" readonly="">
+                            </div>
+                            <div class="col-md-3">
+                                <button class="btn btn-success start-timer-btn">Start</button>
+                                <button class="btn btn-success resume-timer-btn hidden">Resume</button>
+                                <button class="btn pause-timer-btn hidden">Pause</button>
+                                <button class="btn btn-danger remove-timer-btn hidden">Remove Timer</button>
+                            </div>
+                            <div class="col-md-3">
+                                <input type="button" class="btn btn-default start-productivity" value="開始計算效率" />
+                                <input type="button" class="btn btn-default timer-destroy" value="-" />
+                            </div>
                         </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Processing keys</label>
+                        <button id="refresh"><span class="glyphicon glyphicon-repeat"></span></button>
+                        <div id="processingArea"></div>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label>Processing keys</label>
-                    <button id="refresh"><span class="glyphicon glyphicon-repeat"></span></button>
-                    <div id="processingArea"></div>
+                    <label>Server message</label>
+                    <div id="serverMsg"></div>
                 </div>
             </div>
-
-            <div class="form-group">
-                <label>Server message</label>
-                <div id="serverMsg"></div>
-            </div>
-        </div>
-        <jsp:include page="temp/footer.jsp" />
+            <jsp:include page="temp/footer.jsp" />
     </body>
 </html>

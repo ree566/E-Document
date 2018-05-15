@@ -6,7 +6,7 @@
 package com.advantech.webservice;
 
 import com.advantech.helper.HibernateObjectPrinter;
-import com.advantech.model.PassStation;
+import com.advantech.model.PassStationRecord;
 import com.advantech.model.TestRecord;
 import com.advantech.model.UserOnMes;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -116,10 +116,10 @@ public class WebServiceRVTest {
         System.out.println("getPassStationRecords");
         String po = "PNGC030ZA";
         Integer lineId = 55;
-        List<PassStation> expResult = null;
-        List<PassStation> result = rv.getPassStationRecords(po, "ASSY");
+        List<PassStationRecord> expResult = null;
+        List<PassStationRecord> result = rv.getPassStationRecords(po);
         assertNotEquals(expResult, result);
-        for (PassStation p : result) {
+        for (PassStationRecord p : result) {
             out.println(new Gson().toJson(p));
         }
     }
