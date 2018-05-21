@@ -16,6 +16,7 @@ import com.advantech.model.BabPcsDetailHistory;
 import com.advantech.model.BabSensorLoginRecord;
 import com.advantech.model.BabStatus;
 import com.advantech.model.CountermeasureEvent;
+import com.advantech.model.Fqc;
 import com.advantech.model.PassStationRecord;
 import com.advantech.model.ReplyStatus;
 import com.advantech.model.SensorTransform;
@@ -403,7 +404,7 @@ public class TestHibernate {
     @Autowired
     private PassStationRecordService passStationService;
     
-    @Test
+//    @Test
     @Transactional
     @Rollback(false)
     public void testMergePassStationRecord(){
@@ -418,5 +419,18 @@ public class TestHibernate {
             passStationService.insert(newData);
         }
         
+    }
+    
+    @Test
+    @Transactional
+    @Rollback(true)
+    public void testOneToMany(){
+        Session session = sessionFactory.getCurrentSession();
+        List<Fqc> l = session
+                .createQuery("from FqcSettingHistory h join h.fqc f order by f.id desc")
+                .setMaxResults(10)
+                .list();
+        
+        HibernateObjectPrinter.print(l);
     }
 }

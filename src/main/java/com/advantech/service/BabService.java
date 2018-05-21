@@ -4,7 +4,6 @@ import com.advantech.model.Bab;
 import com.advantech.dao.BabDAO;
 import com.advantech.helper.PropertiesReader;
 import com.advantech.model.BabSettingHistory;
-import com.advantech.model.LineType;
 import com.advantech.model.TagNameComparison;
 import com.advantech.model.view.BabAvg;
 import java.util.List;

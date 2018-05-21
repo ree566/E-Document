@@ -35,10 +35,10 @@ public abstract class BasicHandler {
     protected final Set<WebSocketSession> sessions = Collections.synchronizedSet(new HashSet<>());
     private final Map<WebSocketSession, Integer> errroCounter = new HashMap();
 
-    private String triggerName;
+    private String jobName;
 
-    protected void init(String triggerName) {
-        this.triggerName = triggerName;
+    protected void init(String jobName) {
+        this.jobName = jobName;
     }
 
     ///Brocast the servermessage to all online users.
@@ -79,7 +79,8 @@ public abstract class BasicHandler {
     // Generate when connect users are at least one.
     protected void pollingDBAndBrocast() {
         try {
-            ctm.scheduleJob(triggerName);
+            ctm.scheduleJob(jobName);
+            log.info("Job " + jobName + " has been schedule");
         } catch (SchedulerException ex) {
             log.error(ex.getMessage(), ex);
         }
@@ -88,15 +89,15 @@ public abstract class BasicHandler {
     // Delete when all users are disconnect.
     protected void unPollingDB() {
         try {
-            ctm.removeJob(triggerName);
-//            System.out.println("trigger has been removed");
+            ctm.removeJob(jobName);
+            log.info("Job " + jobName + " has been removed");
         } catch (SchedulerException ex) {
             log.error(ex.toString());
         }
     }
-    
+
     @PreDestroy
-    protected void removeSessions(){
+    protected void removeSessions() {
         this.sessions.clear();
         this.errroCounter.clear();
     }

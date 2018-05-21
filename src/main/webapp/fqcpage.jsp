@@ -35,6 +35,8 @@
         <script src="<c:url value="/js/cookie.check.js" /> "></script>
         <script src="<c:url value="/js/param.check.js" /> "></script>
         <script src="<c:url value="/webjars/momentjs/2.18.1/moment.js" /> "></script>
+
+        <!--http://jquerytimer.com/-->
         <script src="<c:url value="/js/timer.jquery.min.js" /> "></script>
         <script src="<c:url value="/js/timer.jquery.event.js" /> "></script>
 
@@ -75,48 +77,44 @@
                 if (fqcCookie != null) {
                     var fqcLoginObj = $.parseJSON(fqcCookie);
 
-                    getLineStatus(fqcLoginObj.lineId);
-
                     if (fqcLoginObj.floor != $("#userSitefloorSelect").val()) {
                         lockAllUserInput();
                         showMsg("您已經登入其他樓層");
                         return false;
                     }
 
-                    $("#lineId").val(fqcLoginObj.lineId).attr("disabled", true);
+                    $("#lineId").val(fqcLoginObj["fqcLine.id"]).attr("disabled", true);
+                    $("#jobnumber").val(fqcLoginObj.jobnumber).attr("disabled", true);
                     $("#login, #lineId").attr("disabled", true);
                     $("#logout").attr("disabled", false);
 
-                    poDetect();
-
-                    if (fqcLoginObj.po != null) {
-                        $("#po").val(fqcLoginObj.po);
-                        $("#begin, #po, #type").attr("disabled", true).unbind("click");
-                        $("#end").removeAttr("disabled");
-                    } else {
-                        $("#end").attr("disabled", true).unbind("click");
-                        $("#begin, #po, #type").removeAttr("disabled");
-                    }
                     $("#startSchedArea").unblock();
-                    showProcessing();
                 } else {
                     $("#login, #lineId").attr("disabled", false);
                     $("#logout").attr("disabled", true);
-//                    $("#startSchedArea").block({message: "請先登入線別。", css: {cursor: 'default'}, overlayCSS: {cursor: 'default'}});
+                    $("#startSchedArea").block({message: "請先登入線別。", css: {cursor: 'default'}, overlayCSS: {cursor: 'default'}});
                 }
 
                 $("#login").click(function () {
                     var lineId = $("#lineId").val();
                     var lineName = $("#lineId option:selected").text().trim();
+                    var jobnumber = $("#jobnumber").val().trim();
 
-                    if (checkVal(lineId) == false) {
-                        showMsg("Please select a line");
+                    if (checkVal(lineId, jobnumber) == false) {
+                        showMsg("Please check you input value.");
                         return false;
                     }
+
+                    if (!checkUserExist(jobnumber)) {
+                        showMsg("User is not exist.");
+                        return false;
+                    }
+
                     if (confirm("Login " + lineName + " ?")) {
                         var obj = {
-                            lineId: lineId,
+                            "fqcLine.id": lineId,
                             lineName: lineName,
+                            jobnumber: jobnumber,
                             floor: $("#userSitefloorSelect").val(),
                             action: "LOGIN"
                         };
@@ -125,21 +123,20 @@
                 });
 
                 $("#logout").click(function () {
+                    fqcLoginObj.action = "LOGOUT";
                     if (fqcLoginObj != null) {
                         if (confirm("Logout " + fqcLoginObj.lineName.trim() + " ?")) {
-                            var obj = {
-                                lineId: fqcLoginObj.lineId,
-                                action: "LOGOUT"
-                            };
-                            fqcLineSwitch(obj);
+                            fqcLineSwitch(fqcLoginObj);
                         }
                     } else {
                         showMsg("Can't find your login status");
                     }
                 });
 
-                $("#po").on("keyup", function () {
-                    getModel($(this).val(), $("#modelname"));
+                $(".po").on("keyup", function () {
+                    var obj = $(this);
+                    var modelTextBox = obj.parents(".timer-container").find(".modelName");
+                    getModel(obj.val().toUpperCase(), modelTextBox);
                 });
 
                 var timerElement = $(".timer-container:first");
@@ -173,19 +170,148 @@
                         return false;
                     }
                     container.find(".po, .timer-destroy").prop("disabled", true);
+                    container.find(".fqc-status").toggleClass("alert-success")
+                            .addClass("alert-danger").html("計算第一台時間中...");
+                });
+
+                $(".pause-timer-btn").on("click", function (e) {
+                    var container = $(this).parents(".timer-container");
+                    container.find(".fqc-status").html("計算第一台時間中...(暫停)");
+                });
+
+                $(".resume-timer-btn").on("click", function (e) {
+                    var container = $(this).parents(".timer-container");
+                    container.find(".fqc-status").html("計算第一台時間中...");
                 });
 
                 $(".remove-timer-btn").on("click", function () {
                     $(this).parents(".timer-container").find(".po, .timer-destroy").prop("disabled", false);
                 });
 
+                $(".start-productivity").click(function () {
+                    var container = $(this).parents(".timer-container");
+                    var po = container.find(".po").val();
+                    var modelName = container.find(".modelName").val();
+                    var firstPcsTimeCost = container.find(".timer").data('seconds');
+
+                    if (checkVal(po, modelName) == false || modelName == "data not found") {
+                        alert("Po is not valid");
+                        return false;
+                    }
+
+                    if (firstPcsTimeCost == null || firstPcsTimeCost == 0) {
+                        alert("First pcs cost 0 second, please check again");
+                        return false;
+                    }
+
+                    if (confirm("開始計算效率? 工單: " + po + " 機種: " + modelName)) {
+                        saveFqcInfo({
+                            po: po,
+                            modelName: modelName,
+                            firstPcsTimeCost: firstPcsTimeCost
+                        }, container);
+                    }
+                });
+
+                $(".stop-productivity").click(function () {
+                    var container = $(this).parents(".timer-container");
+                    var fqc_id = container.find(".fqc-id").val();
+                    if (checkVal(fqc_id) == false) {
+                        alert("Close fqc id not found");
+                        return false;
+                    }
+                    if (confirm("結束計算效率?")) {
+                        fqcComplete(fqc_id, container);
+                    }
+                });
+
                 $(".upperText").on("keyup", function () {
                     var v = $(this).val().toUpperCase().trim();
                     $(this).val(v);
                 });
-                
+
                 $("#timer-add").trigger("click").hide();
                 $(".timer-destroy").hide();
+
+                if (fqcLoginObj != null) {
+                    initProcessingFqc(fqcLoginObj["fqcLine.id"]);
+                }
+
+                function initProcessingFqc(fqcLine_id) {
+                    if (fqcLine_id == null) {
+                        return false;
+                    }
+                    $.ajax({
+                        type: "Post",
+                        url: "FqcController/findProcessing",
+                        data: {
+                            "fqcLine.id": fqcLine_id
+                        },
+                        dataType: "json",
+                        success: function (response) {
+                            var i = 0;
+                            if (response.length == 0) {
+                                return false;
+                            }
+                            $(".timer-container:not(:first)").each(function () {
+                                var fqcData = response[i++];
+                                var container = $(this);
+                                container.find(".fqc-id").val(fqcData.id);
+                                container.find(".po").val(fqcData.po);
+                                container.find(".modelName").val(fqcData.modelName);
+                                container.find(".timer").timer({
+                                    seconds: fqcData.firstPcsTimeCost //Specify start time in seconds
+                                }).timer('pause');
+                                modeStartProductivity(container);
+                            });
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            showMsg(xhr.responseText);
+                        }
+                    });
+                }
+
+                //站別一對資料庫操作
+                function saveFqcInfo(data, container) {
+                    var totalUserInfo = $.extend($.parseJSON($.cookie(fqcCookieName)), data);
+                    $.ajax({
+                        type: "Post",
+                        url: "FqcController/insert",
+                        data: totalUserInfo,
+                        dataType: "html",
+                        success: function (response) {
+                            showMsg(response);
+                            if (response == "success") {
+                                modeStartProductivity(container);
+                                container.find(".fqc-status").addClass("alert-success").html("效率計算中...");
+                            }
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            showMsg(xhr.responseText);
+                        }
+                    });
+                }
+
+                function fqcComplete(fqc_id, container) {
+                    $.ajax({
+                        type: "Post",
+                        url: "FqcController/stationComplete",
+                        data: {
+                            "fqc.id": fqc_id
+                        },
+                        dataType: "html",
+                        success: function (response) {
+                            alert(response);
+                            if (response == "success") {
+                                modeStopProductivity(container);
+                                container.find(".fqc-status").removeClass("alert-success").html("");
+                            }
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            showMsg(xhr.responseText);
+                        }
+                    });
+                }
 
                 function checkExistCookies() {
                     var testLineTypeCookie = $.cookie(testLineTypeCookieName);
@@ -209,52 +335,32 @@
                 }
 
                 function getLine() {
-//                    var result;
-//                    $.ajax({
-//                        type: "Get",
-//                        url: "CellLineServlet/findBySitefloor",
-//                        data: {
-//                            sitefloor: $("#userSitefloorSelect").val()
-//                        },
-//                        dataType: "json",
-//                        async: false,
-//                        success: function (response) {
-//                            result = response;
-//                        },
-//                        error: function (xhr, ajaxOptions, thrownError) {
-//                            showMsg(xhr.responseText);
-//                        }
-//                    });
-//                    return result;
-                }
-
-                function getLineStatus(lineId) {
-//                    $.ajax({
-//                        type: "Post",
-//                        url: "CellLineServlet",
-//                        data: {
-//                            action: "select",
-//                            lineId: lineId
-//                        },
-//                        dataType: "html",
-//                        success: function (response) {
-//                            var obj = $.parseJSON(response);
-//                            console.log(obj);
-//                            if (obj.isused == 0) {
-//                                removeCookie(fqcCookieName);
-//                                reload();
-//                            }
-//                        },
-//                        error: function () {
-//                            showMsg("error");
-//                        }
-//                    });
+                    var result;
+                    $.ajax({
+                        type: "Get",
+                        url: "FqcLineController/findAll",
+                        data: {
+                            sitefloor: $("#userSitefloorSelect").val()
+                        },
+                        dataType: "json",
+                        async: false,
+                        success: function (response) {
+                            result = response;
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            showMsg(xhr.responseText);
+                        }
+                    });
+                    return result;
                 }
 
                 function fqcLineSwitch(data) {
+                    if (data.action == null) {
+                        return false;
+                    }
                     $.ajax({
                         type: "Post",
-                        url: "CellLineServlet",
+                        url: "FqcLoginController/" + data.action.toLowerCase(),
                         data: data,
                         dataType: "html",
                         success: function (response) {
@@ -272,38 +378,8 @@
                                 showMsg(response);
                             }
                         },
-                        error: function () {
-                            showMsg("error");
-                        }
-                    });
-                }
-
-                function poDetect() {
-                    $.ajax({
-                        type: "Post",
-                        url: "CellSearch",
-                        data: {
-                            lineId: $("#lineId").val(),
-                            action: "getProcessing"
-                        },
-                        success: function (response) {
-                            var fqcInfo = response.data;
-                            var fqcLoginObj = getCellCookie();
-                            if (fqcInfo != null && fqcInfo.length != 0 && fqcLoginObj.po == null) {
-                                var fqc = fqcInfo[0]; //always get the first input fqc info
-                                addpoInCellCookie(fqc.po);
-                                reload();
-                            } else if ((fqcInfo == null || fqcInfo.length == 0)) {
-                                var po = fqcLoginObj.po;
-                                if (po != null) {
-                                    addpoInCellCookie(null);
-                                }
-//                                deleteSchedJob();
-                                $("#po").val("");
-                            }
-                        },
-                        error: function () {
-                            showMsg("error");
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            showMsg(xhr.responseText);
                         }
                     });
                 }
@@ -324,8 +400,8 @@
                                     obj.val(response);
                                     $("#reSearch").show();
                                 },
-                                error: function () {
-                                    showMsg(serverErrorConnMessage);
+                                error: function (xhr, ajaxOptions, thrownError) {
+                                    showMsg(xhr.responseText);
                                 }
                             });
                         }, 1000);
@@ -348,55 +424,34 @@
                             }
                             showProcessing();
                         },
-                        error: function () {
-                            showMsg("error");
-                        }
-                    });
-                }
-
-                function deleteSchedJob() {
-                    $.ajax({
-                        type: "Post",
-                        url: "<c:url value="/CellScheduleJobServlet/delete" />",
-                        data: {
-                            lineId: $("#lineId").val(),
-                            po: $("#po").val()
-                        },
-                        dataType: "html",
-                        success: function (response) {
-                            showMsg(response);
-                            showProcessing();
-                            if (response == "success") {
-                                addpoInCellCookie(null);
-                                reload();
-                            }
-                        },
-                        error: function () {
-                            showMsg("error");
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            showMsg(xhr.responseText);
                         }
                     });
                 }
 
                 function showProcessing() {
-//                    $("#processingArea").html("");
-//                    $.ajax({
-//                        type: "GET",
-//                        url: "<c:url value="/CellScheduleJobServlet/select" />",
-//                        success: function (response, status, xhr) {
-//                            var ct = xhr.getResponseHeader("content-type") || "";
-//                            var obj = response;
-//                            if (ct.indexOf('json') > -1) {
-//                                for (var i = 0; i < obj.length; i++) {
-//                                    $("#processingArea").append(JSON.stringify(obj[i]) + "<br />");
-//                                }
-//                            } else {
-//                                $("#processingArea").html(obj);
-//                            }
-//                        },
-//                        error: function () {
-//                            $("#serverMsg").html("error");
-//                        }
-//                    });
+            <%--
+                $("#processingArea").html("");
+                $.ajax({
+                    type: "GET",
+                    url: "<c:url value="/CellScheduleJobServlet/select" />",
+                    success: function (response, status, xhr) {
+                        var ct = xhr.getResponseHeader("content-type") || "";
+                        var obj = response;
+                        if (ct.indexOf('json') > -1) {
+                            for (var i = 0; i < obj.length; i++) {
+                                $("#processingArea").append(JSON.stringify(obj[i]) + "<br />");
+                            }
+                        } else {
+                            $("#processingArea").html(obj);
+                        }
+                    },
+                    error: function () {
+                        $("#serverMsg").html("error");
+                    }
+                });
+            --%>
                 }
 
                 function getCellCookie() {
@@ -411,6 +466,27 @@
                     fqcLoginObj.po = po;
                     fqcLoginObj.type = (po == null ? null : $("#type").val());
                     $.cookie(fqcCookieName, JSON.stringify(fqcLoginObj), {expires: getExpireDate()});
+                }
+
+                //看使用者是否存在
+                function checkUserExist(jobnumber) {
+                    var result;
+                    $.ajax({
+                        type: "GET",
+                        url: "CheckUser",
+                        data: {
+                            jobnumber: jobnumber
+                        },
+                        dataType: "json",
+                        async: false,
+                        success: function (response) {
+                            result = response;
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            showMsg(xhr.responseText);
+                        }
+                    });
+                    return result;
                 }
 
                 //generate all cookies exist 12 hours
@@ -429,6 +505,7 @@
                 }
 
                 function showMsg(msg) {
+                    alert(msg);
                     $("#serverMsg").html(msg);
                     clearTimeout(serverMsgTimeout);
                     serverMsgTimeout = setTimeout(function () {
@@ -445,6 +522,19 @@
                     return d.toDate();
                 }
 
+                function modeStartProductivity(container) {
+                    container.find(".start-timer-btn").hide();
+                    container.find(".resume-timer-btn, .remove-timer-btn").show().attr("disabled", true);
+                    container.find(".po, .start-productivity").attr("disabled", true);
+                    container.find(".stop-productivity").removeAttr("disabled");
+                }
+
+                function modeStopProductivity(container) {
+                    container.find(".start-timer-btn").show();
+                    container.find(".resume-timer-btn, .remove-timer-btn").show().removeAttr("disabled");
+                    container.find(".po, .start-productivity").removeAttr("disabled");
+                    container.find(".stop-productivity").attr("disabled", true);
+                }
 
             });
         </script>
@@ -474,33 +564,33 @@
             </div>
 
             <div id="startSchedArea">
-                <div class="form-group form-inline">
-                    <label>Processing</label>
-                    <input type="text" id="po" class="upperText" placeholder="Please insert your po" />
-                    <input type="text" name="modelname" id="modelname" placeholder="機種" readonly style="background: #CCC; width: 180px" />
-                </div>
-
                 <div>
                     <div>
                         <input type="button" id="timer-add" class="btn btn-default" value="+" />
                     </div>
                     <div id="timer-area">
                         <div class="row timer-container">
-                            <div class="col-md-3">
+                            <div class="col-md-2">
+                                <input type="hidden" class="fqc-id">
                                 <input name="po" class="form-control po upperText" placeholder="Please insert your po" type="text">
+                                <input type="text" name="modelname" class="modelName" placeholder="機種" readonly style="background: #CCC; width: 180px" />
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <input name="timer" class="form-control timer" placeholder="0 sec" type="text" readonly="">
                             </div>
                             <div class="col-md-3">
                                 <button class="btn btn-success start-timer-btn">Start</button>
-                                <button class="btn btn-success resume-timer-btn hidden">Resume</button>
-                                <button class="btn pause-timer-btn hidden">Pause</button>
-                                <button class="btn btn-danger remove-timer-btn hidden">Remove Timer</button>
+                                <button class="btn btn-success resume-timer-btn">Resume</button>
+                                <button class="btn pause-timer-btn">Pause</button>
+                                <button class="btn btn-danger remove-timer-btn">Remove Timer</button>
+                            </div>
+                            <div class="col-md-2">
+                                <input type="button" class="btn btn-default start-productivity" value="開始計算效率" />
+                                <input type="button" class="btn btn-default stop-productivity" value="結束計算效率" />
+                                <input type="button" class="btn btn-default timer-destroy" value="-" />
                             </div>
                             <div class="col-md-3">
-                                <input type="button" class="btn btn-default start-productivity" value="開始計算效率" />
-                                <input type="button" class="btn btn-default timer-destroy" value="-" />
+                                <div class="fqc-status alert">This is some message.</div>
                             </div>
                         </div>
                     </div>
@@ -517,6 +607,7 @@
                     <div id="serverMsg"></div>
                 </div>
             </div>
+            <jsp:include page="temp/_debug.jsp" />
             <jsp:include page="temp/footer.jsp" />
     </body>
 </html>

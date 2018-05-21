@@ -14,6 +14,7 @@
     <handlers>
         <mapping path="/echo" handler="endpoint"/>
         <mapping path="/echo2" handler="endpoint2"/>
+        <mapping path="/echo4" handler="endpoint4"/>
         <handshake-interceptors>
             <beans:bean class="org.springframework.web.socket.server.support.HttpSessionHandshakeInterceptor"/>
         </handshake-interceptors>
@@ -21,5 +22,6 @@
     
     <beans:bean id="endpoint" class="com.advantech.endpoint.Endpoint"/>
     <beans:bean id="endpoint2" class="com.advantech.endpoint.Endpoint2"/>
+    <beans:bean id="endpoint4" class="com.advantech.endpoint.Endpoint4"/>
 
 </beans:beans>

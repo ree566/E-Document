@@ -118,50 +118,38 @@
         <property name="cronExpression" value="0 0 11,16 ? * MON-FRI *" />
     </bean>
     
-    <!--
-        Job8 setting
-        Clear all subPolling job separate by system
-        Cell已移除，待修改為FQC job
-    -->    
-<!--    <bean name="ClearPollingJob" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
-        <property name="jobClass" value="com.advantech.quartzJob.ClearPollingJob" />
-        <property name="durability" value="true" />
-    </bean>
     
-    <bean id="ClearPollingJob-Trig" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
-        <property name="jobDetail" ref="ClearPollingJob" />
-        <property name="cronExpression" value="0 30 21 ? * MON-FRI *" />
-    </bean>-->
-    
-    <!--
+    <!--        
         Job9 setting
-        把Cell是否合格資訊轉換到資料庫(不包含把接口資料新增進sql)
-        Cell已移除，待修改為FQC job
+        把Fqc是否合格資訊轉換到資料庫(不包含把接口資料新增進sql)
     -->
-<!--    <bean name="CellJobWorker" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
-        <property name="jobClass" value="com.advantech.quartzJob.CellJobWorker" />
-        <property name="durability" value="true" />
+    
+    <bean name="FqcGenerateData" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="fqcLineTypeFacade" />
+        <property name="targetMethod" value="processingDataAndSave"/>  
+        <property name="concurrent" value="false"/>
     </bean>
     
-    <bean id="CellJobWorker-Trig" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
-        <property name="jobDetail" ref="CellJobWorker" />
-        <property name="cronExpression" value="0/30 * 8-20 ? * MON-SAT *" />
-    </bean>-->
+    <bean id="FqcGenerateData-Trig" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="FqcGenerateData" />
+        <property name="cronExpression" value="0/40 * 8-20 ? * MON-SAT *" />
+    </bean>
     
-    <!--
+    
+    <!--        
         Job10 setting
-        Cell auto close
-        Cell已移除，待修改為FQC job
-    -->    
-<!--    <bean name="HandleUnclosedCell" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
-        <property name="jobClass" value="com.advantech.quartzJob.CellDataSaver" />
+        Fqc auto close
+    -->
+        
+    <bean name="HandleUncloseFqc" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+        <property name="jobClass" value="com.advantech.quartzJob.HandleUncloseFqc" />
         <property name="durability" value="true" />
     </bean>
     
-    <bean id="HandleUnclosedCell-Trig" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
-        <property name="jobDetail" ref="HandleUnclosedCell" />
+    <bean id="HandleUncloseFqc-Trig" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="HandleUnclosedFqc" />
         <property name="cronExpression" value="0 10 22 ? * MON-SAT *" />
-    </bean>-->
+    </bean>
     
     <!--
         Ohter polling data jobs
@@ -188,6 +176,17 @@
         <property name="jobDetail" ref="PollingSensor" />
         <property name="cronExpression" value="10,20,40,50 * 8-20 ? * MON-SAT *" />
     </bean>
+    
+    <bean name="PollingFqc" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="pollingFqcResult" />
+        <property name="targetMethod" value="dataBrocast"/>  
+        <property name="concurrent" value="false"/>
+    </bean>
+    
+    <bean id="PollingFqc-Trig" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="PollingFqc" />
+        <property name="cronExpression" value="10,20,40,50 * 8-20 ? * MON-SAT *" />
+    </bean>
 
     <!--schedule jobs-->
     <bean id="schedulerFactoryBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
@@ -196,18 +195,20 @@
         <property name="triggers">
             <list>
                 
-                <!--<ref bean="BabGenerateData-Trig"/>-->
-<!--                <ref bean="TestGenerateData-Trig"/>
+                <ref bean="FqcGenerateData-Trig"/>
+                <ref bean="HandleUnclosedFqc-Trig"/>
+                
+                <!--
+                <ref bean="BabGenerateData-Trig"/>
+                <ref bean="TestGenerateData-Trig"/>
                 <ref bean="DataBaseInit-Trig"/>
                 <ref bean="HandleUncloseBab-Trig"/>
                 <ref bean="CleanSensorData-Trig"/>
                 <ref bean="TestLineTypeRecord-Trig"/>
-                <ref bean="CountermeasureAlarm-Trig"/>-->
+                <ref bean="CountermeasureAlarm-Trig"/>
+                -->
                 
                 <!--<ref bean="SensorDetect-Trig"/>-->
-                <!--<ref bean="ClearPollingJob-Trig"/>-->
-                <!--<ref bean="CellJobWorker-Trig"/>-->
-                <!--<ref bean="HandleUnclosedCell-Trig"/>-->
             </list>
         </property>
         <property name="schedulerName">

@@ -14,24 +14,24 @@ function timerInit(element) {
         timer_obj.timer({
             editable: true
         });
-        $(this).addClass('hidden');
-        pause_btn.removeClass('hidden');
-        remove_btn.removeClass('hidden');
+        $(this).hide();
+        pause_btn.show();
+        remove_btn.show();
     });
 
     // Init timer resume
     resume_btn.on('click', function () {
         timer_obj.timer('resume');
-        $(this).addClass('hidden');
-        pause_btn.removeClass('hidden');
-        remove_btn.removeClass('hidden');
+        $(this).hide();
+        pause_btn.show();
+        remove_btn.show();
     });
 
     // Init timer pause
     pause_btn.on('click', function () {
         timer_obj.timer('pause');
-        $(this).addClass('hidden');
-        resume_btn.removeClass('hidden');
+        $(this).hide();
+        resume_btn.show();
     });
 
     // Remove timer
@@ -39,27 +39,31 @@ function timerInit(element) {
         if (confirm('Remove timer?')) {
             hasTimer = false;
             timer_obj.timer('remove');
-            $(this).addClass('hidden');
-            start_btn.removeClass('hidden');
-            pause_btn.addClass('hidden');
-            resume_btn.addClass('hidden');
+            $(this).hide();
+            start_btn.show();
+            pause_btn.hide();
+            resume_btn.hide();
         }
     });
 
     // Additional focus event for this demo
     timer_obj.on('focus', function () {
         if (hasTimer) {
-            pause_btn.addClass('hidden');
-            resume_btn.removeClass('hidden');
+            pause_btn.hide();
+            resume_btn.show();
         }
     });
 
     // Additional blur event for this demo
     timer_obj.on('blur', function () {
         if (hasTimer) {
-            pause_btn.removeClass('hidden');
-            resume_btn.addClass('hidden');
+            pause_btn.show();
+            resume_btn.hide();
         }
     });
+    
+    pause_btn.hide();
+    resume_btn.hide();
+    remove_btn.hide();
 //})();
 }

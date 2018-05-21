@@ -10,12 +10,16 @@ import com.advantech.helper.CustomPasswordEncoder;
 import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.model.Bab;
 import com.advantech.model.BabSettingHistory;
+import com.advantech.model.Fqc;
+import com.advantech.model.FqcLine;
 import com.advantech.model.TagNameComparison;
 import com.advantech.model.User;
 import com.advantech.quartzJob.HandleUncloseBab;
 import com.advantech.service.BabSensorLoginRecordService;
 import com.advantech.service.BabService;
 import com.advantech.service.BabSettingHistoryService;
+import com.advantech.service.FqcLineService;
+import com.advantech.service.FqcService;
 import com.advantech.service.LineBalancingService;
 import com.advantech.service.TagNameComparisonService;
 import com.advantech.service.UserService;
@@ -66,9 +70,15 @@ public class TestService {
 
     @Autowired
     private BabLineTypeFacade bf;
-    
+
     @Autowired
     private CustomPasswordEncoder encoder;
+
+    @Autowired
+    private FqcService fqcService;
+
+    @Autowired
+    private FqcLineService fqcLineService;
 
     @Value("${endpoint.quartz.trigger}")
     private String endpointPollingCron;
@@ -148,9 +158,9 @@ public class TestService {
         }
     }
 
-    @Test
-    @Transactional
-    @Rollback(false)
+//    @Test
+//    @Transactional
+//    @Rollback(false)
     public void testUserService() {
 
         int[] ids = {23, 24, 25, 26};
@@ -160,6 +170,23 @@ public class TestService {
             u.setPassword(encoder.encode(u.getPassword()));
             userService.update(u);
         }
+    }
+
+    @Test
+    @Transactional
+    @Rollback(true)
+    public void testFqc() {
+        Fqc fqc = fqcService.findByPrimaryKey(1);
+        assertNotNull(fqc);
+        assertEquals(1, fqc.getId());
+        assertEquals("PIGB304ZA", fqc.getPo());
+
+        FqcLine fqcLine = fqcLineService.findByPrimaryKey(8);
+        assertNotNull(fqcLine);
+        assertEquals(8, fqcLine.getId());
+        assertEquals("L9", fqcLine.getName());
+
+        assertEquals(fqc.getFqcLine(), fqcLine);
     }
 
 }

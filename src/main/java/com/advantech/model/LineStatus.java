@@ -5,11 +5,13 @@
  */
 package com.advantech.model;
 
+import com.advantech.converter.Encodeable;
+
 /**
  *
  * @author Wei.Cheng
  */
-public enum LineStatus {
+public enum LineStatus implements Encodeable{
     
     /**
      * 1 for open sign
@@ -21,13 +23,14 @@ public enum LineStatus {
      */
     CLOSE(0);
  
-    private final Integer value;
+    private final Integer e_token;
  
-    private LineStatus(Integer value) {
-        this.value = value;
+    private LineStatus(Integer e_token) {
+        this.e_token = e_token;
     }
  
-    public Integer getState() {
-        return this.value;
+    @Override
+    public Integer token() {
+        return this.e_token;
     }
 }
