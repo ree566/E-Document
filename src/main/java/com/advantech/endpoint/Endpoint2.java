@@ -27,6 +27,8 @@ public class Endpoint2 extends BasicHandler implements WebSocketHandler {
 
     private final String JOB_NAME = "PollingBabAndTest";
 
+    private static boolean isJobScheduled = false;
+
     @Autowired
     private PollingBabAndTestResult pollingJob;
 
@@ -52,8 +54,9 @@ public class Endpoint2 extends BasicHandler implements WebSocketHandler {
         //每次當client連接進來時，去看目前session的數量 當有1個session時把下方quartz job加入到schedule裏頭(只要執行一次，不要重複加入)
         synchronized (sessions) {
             int a = sessions.size();
-            if (a == 1) {
+            if (a > 1 && isJobScheduled == false) {
                 pollingDBAndBrocast();
+                isJobScheduled = true;
             }
         }
     }
@@ -77,6 +80,7 @@ public class Endpoint2 extends BasicHandler implements WebSocketHandler {
         //當client端完全沒有連結中的使用者時，把job給關閉(持續執行浪費性能)
         if (sessions.isEmpty()) {
             unPollingDB();
+            isJobScheduled = false;
         }
     }
 

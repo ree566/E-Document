@@ -59,6 +59,8 @@
                     filter: true,
                     paginate: false
                 });
+                
+                $("#standardTime, #nPcs, #firstPcsCost").on("keyup change", calcProductivity);
 
                 function refreshRowData(arr) {
                     var d = [];
@@ -173,6 +175,14 @@
                 function roundDecimal(val, precision) {
                     var size = Math.pow(10, precision);
                     return Math.round(val * size) / size;
+                }
+                
+                function calcProductivity() {
+                    var standardTime = $("#standardTime").val();
+                    var nPcs = $("#nPcs").val();
+                    var firstPcsCost = $("#firstPcsCost").val();
+                    var productivity = (standardTime * nPcs) / (firstPcsCost * nPcs);
+                    $("#productivity").val(productivity);
                 }
 
             });

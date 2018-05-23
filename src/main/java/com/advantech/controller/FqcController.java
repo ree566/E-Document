@@ -43,16 +43,16 @@ public class FqcController {
     }
 
     //Save時把MES過站資料存回資料庫
-    @RequestMapping(value = "/stationComplete", method = {RequestMethod.POST})
-    @ResponseBody
-    protected String stationComplete(@RequestParam(name = "fqc.id") int fqc_id) {
-
-        Fqc fqc = fqcService.findByPrimaryKey(fqc_id);
-        checkArgument(fqc != null);
-
-        fqcService.stationComplete(fqc);
-        return "success";
-    }
+//    @RequestMapping(value = "/stationComplete", method = {RequestMethod.POST})
+//    @ResponseBody
+//    protected String stationComplete(@RequestParam(name = "fqc.id") int fqc_id) {
+//
+//        Fqc fqc = fqcService.findByPrimaryKey(fqc_id);
+//        checkArgument(fqc != null);
+//
+//        fqcService.stationComplete(fqc);
+//        return "success";
+//    }
 
     @RequestMapping(value = "/findProcessing", method = {RequestMethod.POST})
     @ResponseBody

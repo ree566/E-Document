@@ -147,7 +147,7 @@
     </bean>
     
     <bean id="HandleUncloseFqc-Trig" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
-        <property name="jobDetail" ref="HandleUnclosedFqc" />
+        <property name="jobDetail" ref="HandleUncloseFqc" />
         <property name="cronExpression" value="0 10 22 ? * MON-SAT *" />
     </bean>
     
@@ -195,8 +195,8 @@
         <property name="triggers">
             <list>
                 
-                <ref bean="FqcGenerateData-Trig"/>
-                <ref bean="HandleUnclosedFqc-Trig"/>
+                <!--<ref bean="FqcGenerateData-Trig"/>-->
+                <!--<ref bean="HandleUncloseFqc-Trig"/>-->
                 
                 <!--
                 <ref bean="BabGenerateData-Trig"/>

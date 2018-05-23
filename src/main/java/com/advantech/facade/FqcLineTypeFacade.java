@@ -81,7 +81,7 @@ public class FqcLineTypeFacade extends BasicLineTypeFacade {
             int standardTime = 150;
 
             if (currentPcs != 0) {
-                productivity = calculateProductivity(standardTime, fqc.getFirstPcsTimeCost(), currentPcs);
+                productivity = calculateProductivity(standardTime, 1, currentPcs);
             }
 
             Map m = new HashMap();

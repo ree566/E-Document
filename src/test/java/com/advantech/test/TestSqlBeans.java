@@ -13,14 +13,17 @@ import com.advantech.model.Floor;
 import com.advantech.model.Fqc;
 import com.advantech.model.FqcLine;
 import com.advantech.model.FqcLoginRecord;
+import com.advantech.model.FqcModelStandardTime;
 import com.advantech.model.FqcSettingHistory;
 import com.advantech.model.Line;
 import com.advantech.model.LineStatus;
 import com.advantech.model.LineType;
+import com.advantech.model.ModelSopRemark;
 import com.advantech.model.TestTable;
 import com.advantech.model.Unit;
 import com.advantech.model.User;
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.collect.Sets.newHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -120,23 +123,23 @@ public class TestSqlBeans {
         assertNotNull(b);
         HibernateObjectPrinter.print(b);
     }
-    
+
 //    @Test
-    public void testFqcConverter(){
+    public void testFqcConverter() {
         FqcLine fqcLine = session.get(FqcLine.class, 1);
         assertNotNull(fqcLine);
         assertEquals(LineStatus.CLOSE, fqcLine.getLineStatus());
     }
-    
+
 //    @Test
 //    @Rollback(false)
-    public void testLogin(){
+    public void testLogin() {
         FqcLine fqcLine = session.get(FqcLine.class, 1);
         FqcLoginRecord loginRecord = new FqcLoginRecord(fqcLine, "A-Test");
         session.save(loginRecord);
         assertTrue(loginRecord.getId() != 0);
         System.out.println("Login record's id: " + loginRecord.getId());
-        
+
         Fqc fqc = session.get(Fqc.class, 1);
         assertNotNull(fqc);
         FqcSettingHistory history = new FqcSettingHistory(fqc, "A-Test");
@@ -144,26 +147,49 @@ public class TestSqlBeans {
         assertTrue(history.getId() != 0);
         System.out.println("Setting history's id: " + history.getId());
     }
-    
-    @Test
+
+//    @Test
     @Rollback(true)
-    public void testRecordCheck(){
+    public void testRecordCheck() {
         List<FqcLoginRecord> l = session
                 .createCriteria(FqcLoginRecord.class).list();
-        
+
         FqcLine line = session.get(FqcLine.class, 1);
-        
+
         FqcLoginRecord pojo = new FqcLoginRecord(line, "A-8888");
-        
+
         FqcLoginRecord existRecord = l.stream()
                 .filter(p -> Objects.equals(p.getJobnumber(), pojo.getJobnumber())
                 || Objects.equals(p.getFqcLine(), pojo.getFqcLine()))
                 .findFirst().orElse(null);
-        
+
         assertNotNull(existRecord);
-        
+
         HibernateObjectPrinter.print(existRecord);
-        
+
         checkArgument(existRecord == null, "Jobnumber or FqcLine is already in fqcRecord.");
+    }
+
+//    @Test
+//    @Rollback(false)
+    public void testModelSopRemark() {
+        ModelSopRemark remark = session.get(ModelSopRemark.class, 1);
+        assertNotNull(remark);
+
+        Line line = session.get(Line.class, 1);
+        assertNotNull(line);
+
+        remark.setLines(newHashSet(line));
+        session.save(remark);
+    }
+
+    @Test
+    @Rollback(false)
+    public void testFqcModelStandardTime() {
+        FqcModelStandardTime standardTime = new FqcModelStandardTime();
+        standardTime.setModelNameCategory("BO");
+        standardTime.setStandardTime(132);
+        session.save(standardTime);
+        assertTrue(standardTime.getId() != 0);
     }
 }

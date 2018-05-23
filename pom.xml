@@ -408,6 +408,17 @@
             <artifactId>poi</artifactId>
             <version>${poi.version}</version>
         </dependency>
+        
+        <dependency>  
+            <groupId>org.apache.poi</groupId>  
+            <artifactId>poi-ooxml</artifactId>  
+            <version>${poi.version}</version>  
+        </dependency>  
+        <dependency>  
+            <groupId>org.apache.poi</groupId>  
+            <artifactId>poi-ooxml-schemas</artifactId>  
+            <version>${poi.version}</version>  
+        </dependency>  
 
         <!-- https://mvnrepository.com/artifact/org.mockito/mockito-core -->
         <dependency>
@@ -646,7 +657,7 @@
                 <version>2.21.0</version>
                 <configuration>
                     <argLine>-Dfile.encoding=UTF-8</argLine>
-                    <skipTests>true</skipTests>
+                    <skipTests>false</skipTests>
                 </configuration>
             </plugin>
         </plugins>

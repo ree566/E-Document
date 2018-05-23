@@ -21,7 +21,6 @@ import org.quartz.JobDetail;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
-import org.quartz.SimpleScheduleBuilder;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 import org.quartz.TriggerKey;
@@ -29,11 +28,7 @@ import org.quartz.impl.triggers.CronTriggerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.quartz.impl.matchers.GroupMatcher;
-import static org.quartz.TriggerKey.triggerKey;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.quartz.CronTriggerFactoryBean;
-import org.springframework.scheduling.quartz.JobDetailFactoryBean;
-import org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.stereotype.Component;
 
@@ -110,40 +105,6 @@ public class CronTrigMod {
         } catch (SchedulerException ex) {
             log.error(ex.toString());
         }
-    }
-
-    public void updateMainJobCronExpressionToDefault() throws SchedulerException {
-        String mainJobKey = "DailyJobWorker";
-
-        // retrieve the trigger
-        Object trig = changedJobKey.get(mainJobKey);
-        Scheduler scheduler = getScheduler();
-        Trigger oldTrigger = (trig != null) ? (Trigger) trig : scheduler.getTrigger(triggerKey(mainJobKey));
-        scheduler.rescheduleJob(oldTrigger.getKey(), oldTrigger);
-        changedJobKey.remove(mainJobKey);
-    }
-
-    public void updateMainJobCronExpression() throws SchedulerException {
-        String mainJobKey = "DailyJobWorker";
-
-        // retrieve the trigger
-        Object trig = changedJobKey.get(mainJobKey);
-        Scheduler scheduler = getScheduler();
-
-        Trigger oldTrigger = (trig != null) ? (Trigger) trig : scheduler.getTrigger(triggerKey(mainJobKey));
-        changedJobKey.put(mainJobKey, oldTrigger);
-
-        // obtain a builder that would produce the trigger
-        TriggerBuilder tb = oldTrigger.getTriggerBuilder();
-
-        // update the schedule associated with the builder, and build the new trigger
-        // (other builder methods could be called, to change the trigger in any desired way)
-        Trigger newTrigger = tb.withSchedule(SimpleScheduleBuilder.simpleSchedule()
-                .withIntervalInMinutes(15)
-                .withRepeatCount(1)
-        ).build();
-
-        scheduler.rescheduleJob(oldTrigger.getKey(), newTrigger);
     }
 
     public boolean updateCronExpression(String triggerKey, String cronExpression, Integer executeNow) throws SchedulerException {

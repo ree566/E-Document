@@ -43,6 +43,9 @@ public class Line implements Serializable {
     @JsonIgnore
     private Set<Bab> babs = new HashSet<Bab>(0);
 
+    @JsonIgnore
+    private Set<ModelSopRemark> modelSopRemarks = new HashSet<ModelSopRemark>(0);
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", unique = true, nullable = false)
@@ -120,6 +123,18 @@ public class Line implements Serializable {
 
     public void setBabs(Set<Bab> babs) {
         this.babs = babs;
+    }
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "ModelSopRemark_Line_REF", joinColumns = {
+        @JoinColumn(name = "line_id", nullable = false, insertable = false, updatable = false)}, inverseJoinColumns = {
+        @JoinColumn(name = "modelSopRemark_id", nullable = false, insertable = false, updatable = false)})
+    public Set<ModelSopRemark> getModelSopRemarks() {
+        return modelSopRemarks;
+    }
+
+    public void setModelSopRemarks(Set<ModelSopRemark> modelSopRemarks) {
+        this.modelSopRemarks = modelSopRemarks;
     }
 
 }

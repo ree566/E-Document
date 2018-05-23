@@ -12,10 +12,10 @@ import com.advantech.model.FqcLine;
 import com.advantech.model.FqcLoginRecord;
 import com.advantech.model.FqcSettingHistory;
 import com.advantech.model.PassStationRecord;
+import com.advantech.webservice.WebServiceRV;
 import static com.google.common.base.Preconditions.*;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,6 +39,9 @@ public class FqcService {
 
     @Autowired
     private PassStationRecordService passStationRecordService;
+    
+    @Autowired
+    private WebServiceRV rv;
 
     public List<Fqc> findAll() {
         return fqcDAO.findAll();
@@ -63,31 +66,27 @@ public class FqcService {
         FqcLine fqcLine = pojo.getFqcLine();
         FqcLoginRecord loginRecord = fqcLoginRecordService.findByFqcLine(fqcLine.getId());
         checkArgument(loginRecord != null, "Can't find login record in this line");
-        List<Fqc> processing = this.findProcessing(fqcLine.getId());
-        Fqc samePoRecord = processing.stream().filter(p -> Objects.equals(p.getPo(), pojo.getPo())).findFirst().orElse(null);
-        checkArgument(samePoRecord == null, "Same po is already exist");
+        
+        String jobnumber = loginRecord.getJobnumber();
+        
+        pojo.setBabStatus(BabStatus.CLOSED);
         this.insert(pojo);
-        fqcSettingHistoryService.insert(new FqcSettingHistory(pojo, loginRecord.getJobnumber()));
+        
+        FqcSettingHistory history = new FqcSettingHistory(pojo, jobnumber);
+        history.setBeginTime(pojo.getBeginTime());
+        history.setLastUpdateTime(pojo.getLastUpdateTime());
+        fqcSettingHistoryService.insert(history);
+        
+        List<PassStationRecord> records = rv.getPassStationRecords(pojo.getPo());
+        records.removeIf(rec -> !jobnumber.equals(rec.getUserNo()) || 
+                rec.getCreateDate().before(pojo.getBeginTime()) || 
+                rec.getCreateDate().after(pojo.getLastUpdateTime()));
+        passStationRecordService.insert(records);
+        
         return 1;
     }
 
     public int stationComplete(Fqc pojo) {
-        Date now = new Date();
-        FqcSettingHistory history = fqcSettingHistoryService.findByFqc(pojo);
-        
-        passStationRecordService.insertFromMes(pojo.getPo(), history.getJobnumber());
-
-        List<PassStationRecord> records = passStationRecordService.findByPo(pojo.getPo());
-        records.removeIf(rec -> !history.getJobnumber().equals(rec.getUserNo()));
-
-        pojo.setLastUpdateTime(now);
-        history.setLastUpdateTime(now);
-
-        pojo.setBabStatus(records.isEmpty() ? BabStatus.NO_RECORD : BabStatus.CLOSED);
-
-        this.update(pojo);
-        fqcSettingHistoryService.update(history);
-
         return 1;
     }
 

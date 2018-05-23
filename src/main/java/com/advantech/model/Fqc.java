@@ -44,7 +44,6 @@ public class Fqc implements Serializable {
     private String modelName;
     private FqcLine fqcLine;
     private BabStatus babStatus;
-    private int firstPcsTimeCost;
     private Date beginTime;
     private Date lastUpdateTime;
     private ReplyStatus replyStatus = ReplyStatus.NO_NEED_TO_REPLY;
@@ -103,15 +102,6 @@ public class Fqc implements Serializable {
 
     public void setBabStatus(BabStatus babStatus) {
         this.babStatus = babStatus;
-    }
-
-    @Column(name = "firstPcsTimeCost")
-    public int getFirstPcsTimeCost() {
-        return firstPcsTimeCost;
-    }
-
-    public void setFirstPcsTimeCost(int firstPcsTimeCost) {
-        this.firstPcsTimeCost = firstPcsTimeCost;
     }
 
     @CreationTimestamp
