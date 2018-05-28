@@ -63,7 +63,7 @@ public class FqcLoginController {
     ) throws IOException, SchedulerException {
 
         FqcLoginRecord fqcLoginRecord = fqcLoginRecordService.findByFqcLine(fqcLine_id);
-        checkArgument(fqcLoginRecord != null, "Can't find this fqcLine in setting");
+        checkArgument(fqcLoginRecord != null, "Can't find login record in setting");
         checkArgument(jobnumber.equals(fqcLoginRecord.getJobnumber()), "Jobnumber is not match in login record");
         fqcLoginRecordService.delete(fqcLoginRecord);
         

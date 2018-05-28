@@ -50,9 +50,9 @@
             var hnd;//鍵盤輸入間隔
             var timerCount = 0;
             var maxTimerCount = 10;
+            var fqcLoginObj;
 
             $(function () {
-//                initStopWatch();
 
                 //Add class to transform the button type to bootstrap.
                 $(":button").addClass("btn btn-default");
@@ -72,28 +72,9 @@
                     }
                 }
 
-                var fqcCookie = $.cookie(fqcCookieName);
-                var fqcLoginObj;
-                if (fqcCookie != null) {
-                    var fqcLoginObj = $.parseJSON(fqcCookie);
-
-                    if (fqcLoginObj.floor != $("#userSitefloorSelect").val()) {
-                        lockAllUserInput();
-                        showMsg("您已經登入其他樓層");
-                        return false;
-                    }
-
-                    $("#lineId").val(fqcLoginObj["fqcLine.id"]).attr("disabled", true);
-                    $("#jobnumber").val(fqcLoginObj.jobnumber).attr("disabled", true);
-                    $("#login, #lineId").attr("disabled", true);
-                    $("#logout").attr("disabled", false);
-
-                    $("#startSchedArea").unblock();
-                } else {
-                    $("#login, #lineId").attr("disabled", false);
-                    $("#logout").attr("disabled", true);
-                    $("#startSchedArea").block({message: "請先登入線別。", css: {cursor: 'default'}, overlayCSS: {cursor: 'default'}});
-                }
+                fqcFormInit();
+                
+                console.log(fqcLoginObj);
 
                 $("#login").click(function () {
                     var lineId = $("#lineId").val();
@@ -163,65 +144,57 @@
 
                 $(".start-timer-btn").on("click", function (e) {
                     var container = $(this).parents(".timer-container");
-                    var poValue = container.find(".po").val();
-                    if (poValue == null || poValue == "") {
-                        alert("Please insert po first");
-                        e.stopImmediatePropagation();
-                        return false;
-                    }
-                    container.find(".po, .timer-destroy").prop("disabled", true);
-                    container.find(".fqc-status").toggleClass("alert-success")
-                            .addClass("alert-danger").html("計算第一台時間中...");
-                });
-
-                $(".pause-timer-btn").on("click", function (e) {
-                    var container = $(this).parents(".timer-container");
-                    container.find(".fqc-status").html("計算第一台時間中...(暫停)");
-                });
-
-                $(".resume-timer-btn").on("click", function (e) {
-                    var container = $(this).parents(".timer-container");
-                    container.find(".fqc-status").html("計算第一台時間中...");
-                });
-
-                $(".remove-timer-btn").on("click", function () {
-                    $(this).parents(".timer-container").find(".po, .timer-destroy").prop("disabled", false);
-                });
-
-                $(".start-productivity").click(function () {
-                    var container = $(this).parents(".timer-container");
                     var po = container.find(".po").val();
                     var modelName = container.find(".modelName").val();
                     var firstPcsTimeCost = container.find(".timer").data('seconds');
 
                     if (checkVal(po, modelName) == false || modelName == "data not found") {
                         alert("Po is not valid");
-                        return false;
-                    }
-
-                    if (firstPcsTimeCost == null || firstPcsTimeCost == 0) {
-                        alert("First pcs cost 0 second, please check again");
+                        e.stopImmediatePropagation();
                         return false;
                     }
 
                     if (confirm("開始計算效率? 工單: " + po + " 機種: " + modelName)) {
                         saveFqcInfo({
                             po: po,
-                            modelName: modelName,
-                            firstPcsTimeCost: firstPcsTimeCost
+                            modelName: modelName
                         }, container);
+                    } else {
+                        e.stopImmediatePropagation();
                     }
                 });
 
-                $(".stop-productivity").click(function () {
+
+                $(".pause-timer-btn").on("click", function (e) {
+                    var container = $(this).parents(".timer-container");
+                    container.find(".fqc-status").html("計算時間中...(暫停)");
+                    container.find(".remove-timer-btn, .fqc-remark").removeAttr("disabled");
+                });
+
+                $(".resume-timer-btn").on("click", function (e) {
+                    var container = $(this).parents(".timer-container");
+                    container.find(".fqc-status").html("計算時間中...");
+                    container.find(".remove-timer-btn, .fqc-remark").attr("disabled", true);
+                });
+
+                $(".remove-timer-btn").on("click", function (e) {
                     var container = $(this).parents(".timer-container");
                     var fqc_id = container.find(".fqc-id").val();
                     if (checkVal(fqc_id) == false) {
                         alert("Close fqc id not found");
+                        e.stopImmediatePropagation();
                         return false;
                     }
                     if (confirm("結束計算效率?")) {
-                        fqcComplete(fqc_id, container);
+                        var timeCost = container.find(".timer").data('seconds');
+                        if ((timeCost == 0 && confirm("總作業時間為0，儲存?")) || timeCost != 0) {
+                            var remark = container.find(".fqc-remark").val();
+                            fqcComplete(fqc_id, timeCost, remark, container);
+                        } else {
+                            e.stopImmediatePropagation();
+                        }
+                    } else {
+                        e.stopImmediatePropagation();
                     }
                 });
 
@@ -232,43 +205,35 @@
 
                 $("#timer-add").trigger("click").hide();
                 $(".timer-destroy").hide();
+                $(".fqc-remark").attr("disabled", true);
 
                 if (fqcLoginObj != null) {
                     initProcessingFqc(fqcLoginObj["fqcLine.id"]);
                 }
 
-                function initProcessingFqc(fqcLine_id) {
-                    if (fqcLine_id == null) {
-                        return false;
-                    }
-                    $.ajax({
-                        type: "Post",
-                        url: "FqcController/findProcessing",
-                        data: {
-                            "fqcLine.id": fqcLine_id
-                        },
-                        dataType: "json",
-                        success: function (response) {
-                            var i = 0;
-                            if (response.length == 0) {
-                                return false;
-                            }
-                            $(".timer-container:not(:first)").each(function () {
-                                var fqcData = response[i++];
-                                var container = $(this);
-                                container.find(".fqc-id").val(fqcData.id);
-                                container.find(".po").val(fqcData.po);
-                                container.find(".modelName").val(fqcData.modelName);
-                                container.find(".timer").timer({
-                                    seconds: fqcData.firstPcsTimeCost //Specify start time in seconds
-                                }).timer('pause');
-                                modeStartProductivity(container);
-                            });
-                        },
-                        error: function (xhr, ajaxOptions, thrownError) {
-                            showMsg(xhr.responseText);
+                function fqcFormInit() {
+                    var fqcCookie = $.cookie(fqcCookieName);
+                    if (fqcCookie != null) {
+                        fqcLoginObj = $.parseJSON(fqcCookie);
+
+                        if (fqcLoginObj.floor != $("#userSitefloorSelect").val()) {
+                            lockAllUserInput();
+                            showMsg("您已經登入其他樓層");
+                            return false;
                         }
-                    });
+
+                        $("#lineId").val(fqcLoginObj["fqcLine.id"]).attr("disabled", true);
+                        $("#jobnumber").val(fqcLoginObj.jobnumber).attr("disabled", true);
+                        $("#login, #lineId").attr("disabled", true);
+                        $("#logout").attr("disabled", false);
+
+                        $("#startSchedArea").unblock();
+                    } else {
+                        $("#login, #lineId").attr("disabled", false);
+                        $("#jobnumber").attr("disabled", false).val("");
+                        $("#logout").attr("disabled", true);
+                        $("#startSchedArea").block({message: "請先登入線別。", css: {cursor: 'default'}, overlayCSS: {cursor: 'default'}});
+                    }
                 }
 
                 //站別一對資料庫操作
@@ -278,37 +243,54 @@
                         type: "Post",
                         url: "FqcController/insert",
                         data: totalUserInfo,
-                        dataType: "html",
+                        dataType: "json",
                         success: function (response) {
-                            showMsg(response);
-                            if (response == "success") {
-                                modeStartProductivity(container);
-                                container.find(".fqc-status").addClass("alert-success").html("效率計算中...");
-                            }
+                            showMsg("success");
+
+                            var fqcObject = response;
+
+                            modeStartProductivity(container);
+                            container.find(".po, .timer-destroy").prop("disabled", true);
+                            container.find(".fqc-status").toggleClass("alert-success")
+                                    .addClass("alert-danger").html("計算時間中...");
+                            container.find(".fqc-id").val(fqcObject.id);
                         },
                         error: function (xhr, ajaxOptions, thrownError) {
                             showMsg(xhr.responseText);
+                            container.find(".pause-timer-btn, .resume-timer-btn, .remove-timer-btn").hide();
+                            container.find(".start-timer-btn").show();
+                            container.find(".timer").timer('remove');
                         }
                     });
                 }
 
-                function fqcComplete(fqc_id, container) {
+                function fqcComplete(fqc_id, timeCost, remark, container) {
                     $.ajax({
                         type: "Post",
                         url: "FqcController/stationComplete",
                         data: {
-                            "fqc.id": fqc_id
+                            "fqc.id": fqc_id,
+                            "timeCost": timeCost,
+                            "remark": remark
                         },
                         dataType: "html",
+                        global: false,
                         success: function (response) {
                             alert(response);
                             if (response == "success") {
                                 modeStopProductivity(container);
                                 container.find(".fqc-status").removeClass("alert-success").html("");
+                                container.find(".po, .timer-destroy").prop("disabled", false);
+                                container.find(".po, .modelName, .fqc-remark").val("");
                             }
                         },
                         error: function (xhr, ajaxOptions, thrownError) {
                             showMsg(xhr.responseText);
+                            container.find(".pause-timer-btn, .remove-timer-btn").show();
+                            container.find(".start-timer-btn").hide();
+                            container.find(".timer").timer({
+                                seconds: timeCost
+                            }).timer('pause');
                         }
                     });
                 }
@@ -373,7 +355,7 @@
                                     $("#lineId").removeAttr("disabled").val(-1);
                                 }
                                 $("#po").val("");
-                                reload();
+                                fqcFormInit();
                             } else {
                                 showMsg(response);
                             }
@@ -408,64 +390,6 @@
                     } else {
                         obj.val("");
                     }
-                }
-
-                function insertCellInfo(data) {
-                    $.ajax({
-                        type: "Post",
-                        url: "<c:url value="/CellScheduleJobServlet/insert" />",
-                        data: data,
-                        dataType: "html",
-                        success: function (response) {
-                            showMsg(response);
-                            if (response == "success") {
-                                addpoInCellCookie($("#po").val());
-                                reload();
-                            }
-                            showProcessing();
-                        },
-                        error: function (xhr, ajaxOptions, thrownError) {
-                            showMsg(xhr.responseText);
-                        }
-                    });
-                }
-
-                function showProcessing() {
-            <%--
-                $("#processingArea").html("");
-                $.ajax({
-                    type: "GET",
-                    url: "<c:url value="/CellScheduleJobServlet/select" />",
-                    success: function (response, status, xhr) {
-                        var ct = xhr.getResponseHeader("content-type") || "";
-                        var obj = response;
-                        if (ct.indexOf('json') > -1) {
-                            for (var i = 0; i < obj.length; i++) {
-                                $("#processingArea").append(JSON.stringify(obj[i]) + "<br />");
-                            }
-                        } else {
-                            $("#processingArea").html(obj);
-                        }
-                    },
-                    error: function () {
-                        $("#serverMsg").html("error");
-                    }
-                });
-            --%>
-                }
-
-                function getCellCookie() {
-                    var fqcCookie = $.cookie(fqcCookieName);
-                    var fqcLoginObj = $.parseJSON(fqcCookie);
-                    return fqcLoginObj;
-                }
-
-                //If po is null will remove key from cookie
-                function addpoInCellCookie(po) {
-                    var fqcLoginObj = getCellCookie();
-                    fqcLoginObj.po = po;
-                    fqcLoginObj.type = (po == null ? null : $("#type").val());
-                    $.cookie(fqcCookieName, JSON.stringify(fqcLoginObj), {expires: getExpireDate()});
                 }
 
                 //看使用者是否存在
@@ -523,19 +447,99 @@
                 }
 
                 function modeStartProductivity(container) {
-                    container.find(".start-timer-btn").hide();
-                    container.find(".resume-timer-btn, .remove-timer-btn").show().attr("disabled", true);
-                    container.find(".po, .start-productivity").attr("disabled", true);
-                    container.find(".stop-productivity").removeAttr("disabled");
+                    container.find(".start-timer-btn, .resume-timer-btn").hide();
+                    container.find(".pause-timer-btn").show();
+                    container.find(".remove-timer-btn, .fqc-remark").show().attr("disabled", true);
+                }
+
+                function modePauseProductivity(container) {
+                    container.find(".start-timer-btn, .pause-timer-btn").hide();
+                    container.find(".resume-timer-btn").show();
+                    container.find(".remove-timer-btn").show().removeAttr("disabled");
+                    container.find(".fqc-remark").show().removeAttr("disabled");
                 }
 
                 function modeStopProductivity(container) {
                     container.find(".start-timer-btn").show();
-                    container.find(".resume-timer-btn, .remove-timer-btn").show().removeAttr("disabled");
-                    container.find(".po, .start-productivity").removeAttr("disabled");
-                    container.find(".stop-productivity").attr("disabled", true);
+                    container.find(".pause-timer-btn, .resume-timer-btn, .remove-timer-btn").hide();
+                    container.find(".remove-timer-btn, .fqc-remark").show().attr("disabled", true);
                 }
 
+                function initProcessingFqc(fqcLine_id) {
+                    if (fqcLine_id == null) {
+                        return false;
+                    }
+                    $.ajax({
+                        type: "Post",
+                        url: "FqcController/findProcessing",
+                        data: {
+                            "fqcLine.id": fqcLine_id
+                        },
+                        dataType: "json",
+                        success: function (response) {
+                            var i = 0;
+                            if (response.length == 0) {
+                                return false;
+                            }
+
+                            var timerTempArray = fqcLoginObj["_tempTimers"];
+
+                            $(".timer-container:not(:first)").each(function () {
+                                var tempObject = timerTempArray[i + 1];
+                                console.log(tempObject);
+                                var fqcData = response[i++];
+                                var container = $(this);
+                                container.find(".fqc-id").val(fqcData.id);
+                                container.find(".po").val(fqcData.po).attr("disabled", true);
+                                container.find(".modelName").val(fqcData.modelName);
+
+                                var tempSecond = 0;
+                                if ('timerPauseTemp' in tempObject) {
+                                    tempSecond = tempObject.timerPauseTemp;
+                                }
+
+                                container.find(".timer").timer({
+                                    seconds: tempSecond //Specify start time in seconds
+                                }).timer('pause');
+
+                                modePauseProductivity(container);
+                            });
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            showMsg(xhr.responseText);
+                        }
+                    });
+                }
+
+            });
+
+            $(window).bind('beforeunload', function () {
+                //If po is null will remove key from cookie
+
+                var fqcCookie = $.cookie(fqcCookieName);
+                var _tempTimers = [];
+                var i = 0;
+                $(".timer-container").each(function () {
+                    var container = $(this);
+                    var fqcId = container.find(".fqc-id").val();
+                    var timer = container.find(".timer").data("seconds");
+                    if (timer != 0 && fqcId != null) {
+                        var _tempTimer = {
+                            "fqc.id": fqcId,
+                            "timerPauseTemp": timer
+                        };
+                        _tempTimers[i] = _tempTimer;
+                    }
+                    i++;
+                });
+
+                var fqcLoginObj = $.parseJSON(fqcCookie);
+                fqcLoginObj["_tempTimers"] = _tempTimers;
+
+                var d = moment().set({hour: 23, minute: 0, second: 0});
+                $.cookie(fqcCookieName, JSON.stringify(fqcLoginObj), {expires: d.toDate()});
+
+                return 'are you sure you want to leave?';
             });
         </script>
     </head>
@@ -582,23 +586,16 @@
                                 <button class="btn btn-success start-timer-btn">Start</button>
                                 <button class="btn btn-success resume-timer-btn">Resume</button>
                                 <button class="btn pause-timer-btn">Pause</button>
-                                <button class="btn btn-danger remove-timer-btn">Remove Timer</button>
+                                <button class="btn btn-danger remove-timer-btn">儲存作業時間到資料庫</button>
                             </div>
                             <div class="col-md-2">
-                                <input type="button" class="btn btn-default start-productivity" value="開始計算效率" />
-                                <input type="button" class="btn btn-default stop-productivity" value="結束計算效率" />
+                                <textarea  class="form-control fqc-remark" placeholder="備註欄位"></textarea>
                                 <input type="button" class="btn btn-default timer-destroy" value="-" />
                             </div>
                             <div class="col-md-3">
                                 <div class="fqc-status alert">This is some message.</div>
                             </div>
                         </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Processing keys</label>
-                        <button id="refresh"><span class="glyphicon glyphicon-repeat"></span></button>
-                        <div id="processingArea"></div>
                     </div>
                 </div>
 

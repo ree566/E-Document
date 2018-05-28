@@ -6,7 +6,6 @@
  */
 package com.advantech.quartzJob;
 
-import com.advantech.model.Bab;
 import com.advantech.model.BabStatus;
 import com.advantech.helper.ApplicationContextHelper;
 import com.advantech.model.Fqc;

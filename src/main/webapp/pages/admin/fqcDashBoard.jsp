@@ -42,11 +42,15 @@
                         {data: "id"},
                         {data: "name"},
                         {data: "po"},
+                        {data: "modelName"},
                         {data: "standardTime"},
-                        {data: "currentPcs"},
-                        {data: "firstPcsTimeCost"},
+                        {data: "pcs"},
+                        {data: "timeCost"},
                         {data: "productivity"},
-                        {data: "processLineName"}
+                        {data: "processLineName"},
+                        {data: "beginTime"},
+                        {data: "lastUpdateTime"},
+                        {data: "remark"}
                     ],
                     "oLanguage": {
                         "sLengthMenu": "顯示 _MENU_ 筆記錄",
@@ -54,13 +58,32 @@
                         "sInfo": "目前記錄：_START_ 至 _END_, 總筆數：_TOTAL_"
                     },
                     bAutoWidth: true,
+                    "columnDefs": [
+                        {
+                            "type": "html",
+                            "targets": 7,
+                            'render': function (data, type, full, meta) {
+                                var productividy = calcProductivity(full.standardTime, full.pcs, full.timeCost);
+                                var p = getPercent(productividy);
+                                return p + "%";
+                            }
+                        },
+                        {
+                            "type": "html",
+                            "targets": 11,
+                            'render': function (data, type, full, meta) {
+                                return data == null ? "n/a" : data;
+                            }
+                        }
+                    ],
                     displayLength: -1,
                     lengthChange: false,
                     filter: true,
-                    paginate: false
+                    paginate: false,
+                    "order": [[0, "desc"]]
                 });
-                
-                $("#standardTime, #nPcs, #firstPcsCost").on("keyup change", calcProductivity);
+
+                $("#standardTime, #nPcs, #firstPcsCost").on("keyup change", textBoxCalcProductivity);
 
                 function refreshRowData(arr) {
                     var d = [];
@@ -70,14 +93,18 @@
                             for (var i = 0; i < data.length; i++) {
                                 var fqcData = data[i];
                                 var obj = {
-                                    id: fqcData.history.fqc.id,
-                                    name: fqcData.history.jobnumber,
-                                    po: fqcData.history.fqc.po,
+                                    id: fqcData.id,
+                                    name: fqcData.jobnumber,
+                                    po: fqcData.po,
+                                    modelName: fqcData.modelName,
                                     standardTime: fqcData.standardTime,
-                                    currentPcs: fqcData.currentPcs,
-                                    firstPcsTimeCost: fqcData.history.fqc.firstPcsTimeCost,
-                                    productivity: getPercent(fqcData.productivity),
-                                    processLineName: fqcData.history.fqc.fqcLine.name
+                                    pcs: fqcData.pcs,
+                                    timeCost: fqcData.timeCost,
+                                    productivity: 1,
+                                    processLineName: fqcData.fqcLineName,
+                                    beginTime: fqcData.beginTime,
+                                    lastUpdateTime: fqcData.lastUpdateTime,
+                                    remark: fqcData.remark
                                 };
                                 d[i] = obj;
                             }
@@ -87,8 +114,7 @@
                 }
 
                 function addDataToTable(data) {
-                    console.log(data);
-                    table.clear().draw();
+                    table.clear().draw(false);
                     if (data.length) {
                         table.rows.add(data).draw();
                     }
@@ -176,13 +202,21 @@
                     var size = Math.pow(10, precision);
                     return Math.round(val * size) / size;
                 }
-                
-                function calcProductivity() {
+
+                function textBoxCalcProductivity() {
                     var standardTime = $("#standardTime").val();
                     var nPcs = $("#nPcs").val();
                     var firstPcsCost = $("#firstPcsCost").val();
-                    var productivity = (standardTime * nPcs) / (firstPcsCost * nPcs);
+                    var productivity = (standardTime * nPcs) / (firstPcsCost);
                     $("#productivity").val(productivity);
+                }
+
+                function calcProductivity(standard, pcs, timeCost) {
+                    if (standard == null || pcs == null || timeCost == null || standard == 0 || pcs == 0 || timeCost == 0) {
+                        return 0;
+                    }
+                    var productivity = (standard * pcs) / timeCost;
+                    return productivity;
                 }
 
             });
@@ -192,32 +226,41 @@
         <!--<button id="fullBtn">Full</button>-->
         <div id="wigetCtrl">
             <div>
-                <h5><label>效率計算公式:</label>檢驗效率 = 標準工時 * N台 / (結束-開始) * N台 </h5>
+                <h5>效率計算器</h5>
+                <h5><label>效率計算公式:</label>檢驗效率 = 標準工時 * N台 / 實際記錄N台檢驗時間 </h5>
                 <div class="form-inline">
                     <label for="standardTime">標準工時:</label>
                     <input type="number" id="standardTime" class="form-control" placeholder="標準工時" />
                     <label for="standardTime">N台:</label>
                     <input type="number" id="nPcs" class="form-control" placeholder="N台" />
-                    <label for="standardTime">結束-開始:</label>
-                    <input type="number" id="firstPcsCost" class="form-control" placeholder="結束-開始" />
+                    <label for="standardTime">實際記錄N台檢驗時間(總):</label>
+                    <input type="number" id="firstPcsCost" class="form-control" placeholder="實際記錄N台檢驗時間(總)" />
                     <label for="standardTime">效率:</label>
                     <input type="number" id="productivity" class="form-control" placeholder="效率" readonly="" disabled="" />
                 </div>
             </div>
-            <table id="fqc-status" class="table table-bordered display cell-border">
-                <thead>
-                    <tr>
-                        <th>id</th>
-                        <th>人員</th>
-                        <th>工單</th>
-                        <th>標工</th>
-                        <th>產出數量</th>
-                        <th>第一台時間</th>
-                        <th>效率(%)</th>
-                        <th>線別名稱</th>
-                    </tr>
-                </thead>
-            </table>
+            <hr />
+            <div>
+                <h3>本日投入列表</h3>
+                <table id="fqc-status" class="table table-bordered display cell-border">
+                    <thead>
+                        <tr>
+                            <th>id</th>
+                            <th>人員</th>
+                            <th>工單</th>
+                            <th>機種</th>
+                            <th>標工</th>
+                            <th>產出數量</th>
+                            <th>時間</th>
+                            <th>效率(%)</th>
+                            <th>線別</th>
+                            <th>開始</th>
+                            <th>結束</th>
+                            <th>備註</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
         </div>
         <div class="clearWiget" />
     </body>

@@ -10,6 +10,8 @@ import com.advantech.model.BabStatus;
 import com.advantech.model.Fqc;
 import com.advantech.model.FqcLine;
 import com.advantech.model.FqcLoginRecord;
+import com.advantech.model.FqcModelStandardTime;
+import com.advantech.model.FqcProducitvityHistory;
 import com.advantech.model.FqcSettingHistory;
 import com.advantech.model.PassStationRecord;
 import com.advantech.webservice.WebServiceRV;
@@ -39,7 +41,13 @@ public class FqcService {
 
     @Autowired
     private PassStationRecordService passStationRecordService;
+
+    @Autowired
+    private FqcProducitvityHistoryService fqcProducitvityHistoryService;
     
+    @Autowired
+    private FqcModelStandardTimeService fqcModelStandardTimeService;
+
     @Autowired
     private WebServiceRV rv;
 
@@ -67,26 +75,43 @@ public class FqcService {
         FqcLoginRecord loginRecord = fqcLoginRecordService.findByFqcLine(fqcLine.getId());
         checkArgument(loginRecord != null, "Can't find login record in this line");
         
-        String jobnumber = loginRecord.getJobnumber();
-        
-        pojo.setBabStatus(BabStatus.CLOSED);
         this.insert(pojo);
         
+        String jobnumber = loginRecord.getJobnumber();
         FqcSettingHistory history = new FqcSettingHistory(pojo, jobnumber);
         history.setBeginTime(pojo.getBeginTime());
         history.setLastUpdateTime(pojo.getLastUpdateTime());
         fqcSettingHistoryService.insert(history);
         
-        List<PassStationRecord> records = rv.getPassStationRecords(pojo.getPo());
-        records.removeIf(rec -> !jobnumber.equals(rec.getUserNo()) || 
-                rec.getCreateDate().before(pojo.getBeginTime()) || 
-                rec.getCreateDate().after(pojo.getLastUpdateTime()));
-        passStationRecordService.insert(records);
-        
         return 1;
     }
 
-    public int stationComplete(Fqc pojo) {
+    public int stationComplete(Fqc pojo, int timeCost) {
+        
+        Date now = new Date();
+        pojo.setBabStatus(BabStatus.CLOSED);
+        pojo.setLastUpdateTime(now);
+        this.update(pojo);
+        
+        FqcSettingHistory history = fqcSettingHistoryService.findByFqc(pojo);
+        history.setLastUpdateTime(now);
+        fqcSettingHistoryService.update(history);
+
+        List<PassStationRecord> records = rv.getPassStationRecords(pojo.getPo());
+        records.removeIf(rec -> !history.getJobnumber().equals(rec.getUserNo())
+                || rec.getCreateDate().before(pojo.getBeginTime())
+                || rec.getCreateDate().after(pojo.getLastUpdateTime()));
+        passStationRecordService.insert(records);
+        
+        String modelName = pojo.getModelName();
+        List<FqcModelStandardTime> l = fqcModelStandardTimeService.findAll();
+        FqcModelStandardTime standardTime = l.stream()
+                .filter(f -> modelName.contains(f.getModelNameCategory()))
+                .findFirst().orElse(null);
+//        checkArgument(standardTime != null, "Can't standardTime setting on modelName: " + modelName);
+        
+        fqcProducitvityHistoryService.insert(new FqcProducitvityHistory(pojo, records.size(), 
+                timeCost, standardTime == null ? 0 : standardTime.getStandardTime()));
         return 1;
     }
 

@@ -36,14 +36,12 @@ function timerInit(element) {
 
     // Remove timer
     remove_btn.on('click', function () {
-        if (confirm('Remove timer?')) {
-            hasTimer = false;
-            timer_obj.timer('remove');
-            $(this).hide();
-            start_btn.show();
-            pause_btn.hide();
-            resume_btn.hide();
-        }
+        hasTimer = false;
+        timer_obj.timer('remove');
+        $(this).hide();
+        start_btn.show();
+        pause_btn.hide();
+        resume_btn.hide();
     });
 
     // Additional focus event for this demo
@@ -61,7 +59,7 @@ function timerInit(element) {
             resume_btn.hide();
         }
     });
-    
+
     pause_btn.hide();
     resume_btn.hide();
     remove_btn.hide();

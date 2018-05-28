@@ -46,6 +46,20 @@
         <property name="jobDetail" ref="DataBaseInit" />
         <property name="cronExpression" value="0 30 6,22 ? * MON-SAT *" />
     </bean>
+    
+    <!--
+        Job2 setting
+        清理資料庫job(Fqc)
+    -->
+    <bean name="FqcInit" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+        <property name="jobClass" value="com.advantech.quartzJob.FqcInit" />
+        <property name="durability" value="true" />
+    </bean>
+    
+    <bean id="FqcInit-Trig" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="FqcInit" />
+        <property name="cronExpression" value="0 30 6,22 ? * MON-SAT *" />
+    </bean>
 
     <!--
         Job3 setting
@@ -195,8 +209,9 @@
         <property name="triggers">
             <list>
                 
-                <!--<ref bean="FqcGenerateData-Trig"/>-->
-                <!--<ref bean="HandleUncloseFqc-Trig"/>-->
+<!--                <ref bean="FqcGenerateData-Trig"/>
+                <ref bean="HandleUncloseFqc-Trig"/>
+                <ref bean="FqcInit-Trig"/>-->
                 
                 <!--
                 <ref bean="BabGenerateData-Trig"/>

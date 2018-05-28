@@ -37,22 +37,27 @@ public class FqcController {
     //FqcLine should not be null
     @RequestMapping(value = "/insert", method = {RequestMethod.POST})
     @ResponseBody
-    public String insert(@Valid @ModelAttribute Fqc fqc) {
+    public Fqc insert(@Valid @ModelAttribute Fqc fqc) {
         fqcService.checkAndInsert(fqc);
-        return "success";
+        return fqc;
     }
 
-    //Save時把MES過站資料存回資料庫
-//    @RequestMapping(value = "/stationComplete", method = {RequestMethod.POST})
-//    @ResponseBody
-//    protected String stationComplete(@RequestParam(name = "fqc.id") int fqc_id) {
-//
-//        Fqc fqc = fqcService.findByPrimaryKey(fqc_id);
-//        checkArgument(fqc != null);
-//
-//        fqcService.stationComplete(fqc);
-//        return "success";
-//    }
+//    Save時把MES過站資料存回資料庫
+    @RequestMapping(value = "/stationComplete", method = {RequestMethod.POST})
+    @ResponseBody
+    protected String stationComplete(
+            @RequestParam(name = "fqc.id") int fqc_id,
+            @RequestParam int timeCost,
+            @RequestParam String remark
+    ) {
+
+        Fqc fqc = fqcService.findByPrimaryKey(fqc_id);
+        checkArgument(fqc != null, "Can't find fqc object in database");
+
+        fqc.setRemark(remark == null || "".equals(remark.trim()) ? null : remark);
+        fqcService.stationComplete(fqc, timeCost);
+        return "success";
+    }
 
     @RequestMapping(value = "/findProcessing", method = {RequestMethod.POST})
     @ResponseBody

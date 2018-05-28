@@ -7,10 +7,10 @@ package com.advantech.facade;
 
 import com.advantech.model.Fqc;
 import com.advantech.model.FqcLine;
-import com.advantech.model.FqcSettingHistory;
+import com.advantech.model.FqcProducitvityHistory;
 import com.advantech.model.PassStationRecord;
 import com.advantech.service.FqcLineService;
-import com.advantech.service.FqcSettingHistoryService;
+import com.advantech.service.FqcProducitvityHistoryService;
 import com.advantech.webservice.WebServiceRV;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,7 +36,7 @@ public class FqcLineTypeFacade extends BasicLineTypeFacade {
     private FqcLineService fqcLineService;
 
     @Autowired
-    private FqcSettingHistoryService fqcSettingHistoryService;
+    private FqcProducitvityHistoryService fqcProducitvityHistoryService;
 
     @Autowired
     private WebServiceRV rv;
@@ -63,36 +63,9 @@ public class FqcLineTypeFacade extends BasicLineTypeFacade {
     protected boolean generateData() {
         processingJsonObject = new JSONObject();
 
-        List<FqcSettingHistory> l = fqcSettingHistoryService.findProcessing();
+        List l = fqcProducitvityHistoryService.findTodayWithComplete();
 
-        List result = new ArrayList();
-
-        l.forEach((history) -> {
-            String jobnumber = history.getJobnumber();
-            Fqc fqc = history.getFqc();
-            String po = fqc.getPo();
-            List<PassStationRecord> records = rv.getPassStationRecords(po);
-            records.removeIf(p -> !jobnumber.equals(p.getUserNo()));
-
-            //currentPcs除了0以外對公式無影響
-            int currentPcs = records.size();
-            
-            double productivity = 0.0;
-            int standardTime = 150;
-
-            if (currentPcs != 0) {
-                productivity = calculateProductivity(standardTime, 1, currentPcs);
-            }
-
-            Map m = new HashMap();
-            m.put("history", history);
-            m.put("productivity", productivity);
-            m.put("currentPcs", currentPcs);
-            m.put("standardTime", standardTime);
-            result.add(m);
-            
-        });
-        processingJsonObject.put("data", result);
+        processingJsonObject.put("data", l);
         return false;
 
     }

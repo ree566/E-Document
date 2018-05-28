@@ -47,9 +47,13 @@ public class Fqc implements Serializable {
     private Date beginTime;
     private Date lastUpdateTime;
     private ReplyStatus replyStatus = ReplyStatus.NO_NEED_TO_REPLY;
+    private String remark;
 
     @JsonIgnore
     private Set<FqcSettingHistory> fqcSettingHistorys = new HashSet<FqcSettingHistory>(0);
+
+    @JsonIgnore
+    private Set<FqcProducitvityHistory> fqcProducitvityHistorys = new HashSet<FqcProducitvityHistory>(0);
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -147,6 +151,24 @@ public class Fqc implements Serializable {
 
     public void setFqcSettingHistorys(Set<FqcSettingHistory> fqcSettingHistorys) {
         this.fqcSettingHistorys = fqcSettingHistorys;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "fqc")
+    public Set<FqcProducitvityHistory> getFqcProducitvityHistorys() {
+        return fqcProducitvityHistorys;
+    }
+
+    public void setFqcProducitvityHistorys(Set<FqcProducitvityHistory> fqcProducitvityHistorys) {
+        this.fqcProducitvityHistorys = fqcProducitvityHistorys;
+    }
+
+    @Column(name = "remark")
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
     }
 
 }
