@@ -8,6 +8,7 @@ package com.advantech.service;
 import com.advantech.model.Line;
 import com.advantech.dao.LineDAO;
 import com.advantech.model.LineType;
+import com.advantech.model.User;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -46,6 +47,10 @@ public class LineService {
 
     public LineType findLineType(int line_id) {
         return lineDAO.findLineType(line_id);
+    }
+
+    public List<Line> findByUser(User user) {
+        return lineDAO.findByUser(user);
     }
 
     public int insert(Line pojo) {

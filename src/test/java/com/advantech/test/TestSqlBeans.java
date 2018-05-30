@@ -30,6 +30,7 @@ import java.util.Set;
 import javax.transaction.Transactional;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Restrictions;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
@@ -183,7 +184,7 @@ public class TestSqlBeans {
         session.save(remark);
     }
 
-    @Test
+//    @Test
     @Rollback(false)
     public void testFqcModelStandardTime() {
         FqcModelStandardTime standardTime = new FqcModelStandardTime();
@@ -191,5 +192,21 @@ public class TestSqlBeans {
         standardTime.setStandardTime(132);
         session.save(standardTime);
         assertTrue(standardTime.getId() != 0);
+    }
+    
+    @Test
+    @Rollback(true)
+    public void testModelSopRemarkRelation(){
+        String lineName = "LD";
+        List<ModelSopRemark> l = session
+                .createCriteria(ModelSopRemark.class)
+                .createAlias("lines", "l")
+                .createAlias("l.users", "u")
+                .add(Restrictions.eq("u.jobnumber", "A-3813"))
+                .list();
+        
+        assertTrue(!l.isEmpty());
+        
+        HibernateObjectPrinter.print(l);
     }
 }

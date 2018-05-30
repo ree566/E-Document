@@ -7,6 +7,7 @@ package com.advantech.dao;
 
 import com.advantech.model.Line;
 import com.advantech.model.LineType;
+import com.advantech.model.User;
 import java.util.List;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Order;
@@ -56,6 +57,13 @@ public class LineDAO extends AbstractDao<Integer, Line> implements BasicDAO_1<Li
         c.createAlias("lineType", "lt");
         Line line = (Line) c.uniqueResult();
         return line.getLineType();
+    }
+    
+    public List<Line> findByUser(User user){
+        return super.createEntityCriteria()
+                .createAlias("users", "u")
+                .add(Restrictions.eq("u.jobnumber", user.getJobnumber()))
+                .list();
     }
 
     @Override

@@ -6,8 +6,10 @@
  */
 package com.advantech.controller;
 
+import static com.advantech.helper.SecurityPropertiesUtils.*;
 import com.advantech.model.Line;
 import com.advantech.model.LineType;
+import com.advantech.model.User;
 import com.advantech.service.LineService;
 import com.advantech.service.LineTypeService;
 import java.util.List;
@@ -28,7 +30,7 @@ public class BabLineController {
 
     @Autowired
     private LineService lineService;
-    
+
     @Autowired
     private LineTypeService lineTypeService;
 
@@ -43,11 +45,18 @@ public class BabLineController {
     protected List<Line> findWithLineType() {
         return lineService.findWithLineType();
     }
-    
+
     @RequestMapping(value = "/findLineType", method = {RequestMethod.GET})
     @ResponseBody
     protected List<LineType> findLineType() {
         return lineTypeService.findAll();
+    }
+
+    @RequestMapping(value = "/findByUser", method = {RequestMethod.GET})
+    @ResponseBody
+    protected List<Line> findByUser() {
+        User user = retrieveAndCheckUserInSession();
+        return lineService.findByUser(user);
     }
 
 }

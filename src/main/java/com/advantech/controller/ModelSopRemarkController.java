@@ -5,15 +5,23 @@
  */
 package com.advantech.controller;
 
+import com.advantech.datatable.DataTableResponse;
+import static com.advantech.helper.SecurityPropertiesUtils.retrieveAndCheckUserInSession;
+import com.advantech.model.Line;
+import com.advantech.model.ModelSopRemark;
+import com.advantech.model.ModelSopRemarkDetail;
+import com.advantech.model.ModelSopRemarkEvent;
 import com.advantech.model.User;
-import com.advantech.service.LineService;
+import com.advantech.service.ModelSopRemarkDetailService;
+import com.advantech.service.ModelSopRemarkEventService;
 import com.advantech.service.ModelSopRemarkService;
-import static com.google.common.base.Preconditions.checkState;
+import java.util.List;
+import javax.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -26,41 +34,92 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 @RequestMapping(value = "/ModelSopRemarkController")
 public class ModelSopRemarkController {
-
+    
+    private static final Logger log = LoggerFactory.getLogger(ModelSopRemarkController.class);
+    
     @Autowired
     private ModelSopRemarkService modelSopRemarkService;
     
     @Autowired
-    private LineService lineService;
-
-    @RequestMapping(value = "/insert", method = {RequestMethod.POST})
+    private ModelSopRemarkDetailService modelSopRemarkDetailService;
+    
+    @Autowired
+    private ModelSopRemarkEventService modelSopRemarkEventService;
+    
+    @RequestMapping(value = "/findAll", method = {RequestMethod.GET})
     @ResponseBody
-    protected String insert(
-            @RequestParam String modelName,
-            @RequestParam(required = false) String remark,
-            @RequestParam(name = "stations[]") int[] stations,
-            @RequestParam(name = "sopNames[]") String[] sopNames,
-            @RequestParam(name = "sopPages[]") String[] sopPages
-    ) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        checkState(!(auth instanceof AnonymousAuthenticationToken), "查無登入紀錄，請重新登入");
-        User user = (User) auth.getPrincipal();
+    protected DataTableResponse findAll() {
         
-//        Line line = lineService.f
+        User user = retrieveAndCheckUserInSession();
         
-//        modelSopRemarkService.insert(pojo);
+        List l = user == null ? modelSopRemarkService.findAll() : modelSopRemarkService.findByUser(user);
+        
+        return new DataTableResponse(l);
+    }
+    
+    @RequestMapping(value = "/findUseLine", method = {RequestMethod.GET})
+    @ResponseBody
+    protected List<Line> findUseLine(@Valid @ModelAttribute ModelSopRemark pojo) {
+        return modelSopRemarkService.findUseLine(pojo.getId());
+    }
+    
+    @RequestMapping(value = "/saveOrUpdate", method = {RequestMethod.POST})
+    @ResponseBody
+    protected String saveOrUpdate(@Valid @ModelAttribute ModelSopRemark pojo) {
+        if (pojo.getId() == 0) {
+            modelSopRemarkService.insert(pojo);
+            addEvent(pojo, "insert");
+        } else {
+            modelSopRemarkService.update(pojo);
+            addEvent(pojo, "update");
+        }
         return "success";
     }
-
-    @RequestMapping(value = "/update", method = {RequestMethod.POST})
-    @ResponseBody
-    protected String update() {
-        return "success";
-    }
-
+    
     @RequestMapping(value = "/delete", method = {RequestMethod.POST})
     @ResponseBody
-    protected String delete() {
+    protected String delete(@RequestParam int id) {
+        ModelSopRemark pojo = modelSopRemarkService.findByPrimaryKey(id);
+        modelSopRemarkService.delete(pojo);
         return "success";
     }
+    
+    @RequestMapping(value = "/findDetail", method = {RequestMethod.GET})
+    @ResponseBody
+    protected DataTableResponse findDetail(@RequestParam int id) {
+        List l = modelSopRemarkService.findDetail(id);
+        return new DataTableResponse(l);
+    }
+    
+    @RequestMapping(value = "/saveOrUpdateDetail", method = {RequestMethod.POST})
+    @ResponseBody
+    protected String saveOrUpdateDetail(@Valid @ModelAttribute ModelSopRemarkDetail detail) {
+        if (detail.getId() == 0) {
+            modelSopRemarkDetailService.insert(detail);
+            addEvent(detail.getModelSopRemark(), "insert");
+        } else {
+            modelSopRemarkDetailService.update(detail);
+            addEvent(detail.getModelSopRemark(), "update");
+        }
+        return "success";
+    }
+    
+    @RequestMapping(value = "/deleteDetail", method = {RequestMethod.POST})
+    @ResponseBody
+    protected String deleteDetail(@RequestParam int id) {
+        ModelSopRemarkDetail pojo = modelSopRemarkDetailService.findByPrimaryKey(id);
+        modelSopRemarkDetailService.delete(pojo);
+        addEvent(pojo.getModelSopRemark(), "delete");
+        return "success";
+    }
+    
+    private void addEvent(ModelSopRemark pojo, String action) {
+        try {
+            User user = retrieveAndCheckUserInSession();
+            modelSopRemarkEventService.insert(new ModelSopRemarkEvent(pojo, user, action));
+        } catch (RuntimeException e) {
+            log.error("Error cause when write event", e);
+        }
+    }
+    
 }

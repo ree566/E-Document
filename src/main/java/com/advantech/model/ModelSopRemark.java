@@ -18,7 +18,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -39,6 +38,9 @@ public class ModelSopRemark implements Serializable {
 
     @JsonIgnore
     private Set<ModelSopRemarkDetail> modelSopRemarkDetails = new HashSet<ModelSopRemarkDetail>(0);
+
+    @JsonIgnore
+    private Set<ModelSopRemarkEvent> modelSopRemarkEvents = new HashSet<ModelSopRemarkEvent>(0);
 
     public ModelSopRemark() {
     }
@@ -89,13 +91,22 @@ public class ModelSopRemark implements Serializable {
         this.remark = remark;
     }
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "modelSopRemark")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "modelSopRemark", orphanRemoval = true)
     public Set<ModelSopRemarkDetail> getModelSopRemarkDetails() {
         return modelSopRemarkDetails;
     }
 
     public void setModelSopRemarkDetails(Set<ModelSopRemarkDetail> modelSopRemarkDetails) {
         this.modelSopRemarkDetails = modelSopRemarkDetails;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "modelSopRemark", orphanRemoval = true)
+    public Set<ModelSopRemarkEvent> getModelSopRemarkEvents() {
+        return modelSopRemarkEvents;
+    }
+
+    public void setModelSopRemarkEvents(Set<ModelSopRemarkEvent> modelSopRemarkEvents) {
+        this.modelSopRemarkEvents = modelSopRemarkEvents;
     }
 
 }

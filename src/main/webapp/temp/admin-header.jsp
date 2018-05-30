@@ -87,6 +87,9 @@
                         <li><a href="BabTotal?lineType=ASSY">線平衡資訊查詢</a></li>
                         <li><a href="BabDetailInfo">各站機台時間查詢</a></li>
                         <li><a href="BabDetailInfo2?lineType=ASSY">各站時間查詢(報表格式)</a></li>
+                            <c:if test="${isAuthenticated}">
+                            <li><a href="modelSopRemark.jsp">Sop維護</a></li>
+                            </c:if>
                     </ul>
                 </li>
                 <li class="dropdown">
@@ -99,6 +102,9 @@
                         <li><a href="BabTotal?lineType=Packing">線平衡資訊查詢</a></li>
                         <li><a href="BabDetailInfo">各站機台時間查詢</a></li>
                         <li><a href="BabDetailInfo2?lineType=Packing">各站時間查詢(報表格式)</a></li>
+                            <c:if test="${isAuthenticated}">
+                            <li><a href="modelSopRemark.jsp">Sop維護</a></li>
+                            </c:if>
                     </ul>
                 </li>
                 <li>
@@ -108,8 +114,7 @@
                         <span class="caret" />
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a href="BabTotal?lineType=Cell">線平衡資訊查詢</a></li>
-                        <li><a href="BabDetailInfo">各站機台時間查詢</a></li>
+                        <li><a href="fqcDashBoard.jsp?sitefloor=6">FQC效率</a></li>
                     </ul>
                 </li>
                 <li>
@@ -129,7 +134,7 @@
                     <ul class="dropdown-menu sensorAdjustSelect"></ul>
                 </li>
             </ul>
-            <ul class="nav navbar-nav navbar-right">
+            <ul class="nav navbar-nav navbar-right pull-right">
                 <c:choose>
                     <c:when test="${!isAuthenticated}">
                         <li>
@@ -140,17 +145,19 @@
                         </li>
                     </c:when>
                     <c:otherwise>
-                        <li>
-                            <a href="#">
-                                <span class="glyphicon glyphicon-user" />
+                        <li class="dropdown">
+                            <a href="properties.php?type=showall" class="dropdown-toggle" data-toggle="dropdown">
                                 <c:out value="${user.username}" />
+                                <b class="caret"></b>
                             </a>
-                        </li>
-                        <li>
-                            <a href="<c:url value="/logout" />">
-                                <span class="glyphicon glyphicon-log-out" />
-                                logout
-                            </a>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a href="<c:url value="/logout" />">
+                                        <span class="glyphicon glyphicon-log-out" />
+                                        logout
+                                    </a>
+                                </li>
+                            </ul>
                         </li>
                     </c:otherwise>
                 </c:choose>

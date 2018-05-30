@@ -140,7 +140,16 @@
     <mvc:default-servlet-handler/>
 
     <!-- Enables the Spring MVC @Controller programming model -->
-    <mvc:annotation-driven>
+    <bean id="conversionService"
+          class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
+        <property name="converters">
+            <list>
+                <bean class="com.advantech.converter.BabLineConverter"/>
+            </list>
+        </property>
+    </bean>
+    
+    <mvc:annotation-driven conversion-service="conversionService">
         <mvc:message-converters>
             <bean class="org.springframework.http.converter.StringHttpMessageConverter">
                 <property name="supportedMediaTypes">

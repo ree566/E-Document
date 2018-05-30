@@ -5,8 +5,14 @@
  */
 package com.advantech.dao;
 
+import com.advantech.model.Line;
 import com.advantech.model.ModelSopRemark;
+import com.advantech.model.ModelSopRemarkDetail;
+import com.advantech.model.User;
+import static com.google.common.collect.Lists.newArrayList;
 import java.util.List;
+import org.hibernate.Criteria;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -24,6 +30,25 @@ public class ModelSopRemarkDAO extends AbstractDao<Integer, ModelSopRemark> impl
     @Override
     public ModelSopRemark findByPrimaryKey(Object obj_id) {
         return super.getByKey((int) obj_id);
+    }
+
+    public List<ModelSopRemark> findByUser(User user) {
+        return super.createEntityCriteria()
+                .createAlias("lines", "l")
+                .createAlias("l.users", "u")
+                .add(Restrictions.eq("u.jobnumber", user.getJobnumber()))
+                .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
+                .list();
+    }
+
+    public List<Line> findUseLine(int id) {
+        ModelSopRemark remark = this.findByPrimaryKey(id);
+        return newArrayList(remark.getLines());
+    }
+
+    public List<ModelSopRemarkDetail> findDetail(int id) {
+        ModelSopRemark remark = this.findByPrimaryKey(id);
+        return newArrayList(remark.getModelSopRemarkDetails());
     }
 
     @Override

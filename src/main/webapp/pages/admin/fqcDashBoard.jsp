@@ -19,6 +19,7 @@
         <link rel="stylesheet" href="<c:url value="/webjars/jquery-ui-themes/1.12.1/redmond/jquery-ui.min.css" />" >
         <link rel="stylesheet" href="<c:url value="/css/tooltipster.bundle.min.css"/>" >
         <link rel="stylesheet" href="<c:url value="/webjars/datatables/1.10.16/css/jquery.dataTables.min.css" />">
+        <link rel="stylesheet" href="<c:url value="/css/fixedHeader.dataTables.min.css" />">
         <style>
             body{
                 font-family: 微軟正黑體;
@@ -31,6 +32,7 @@
         <script src="<c:url value="/js/tooltipster.bundle.min.js"/>"></script>
         <script src="<c:url value="/js/totalMap-setting/${userSitefloor}f.js"/>"></script>
         <script src="<c:url value="/webjars/datatables/1.10.16/js/jquery.dataTables.min.js" /> "></script>
+        <script src="<c:url value="/js/dataTables.fixedHeader.min.js" />"></script>
         <script>
             var maxProductivity = 200;
 
@@ -38,6 +40,9 @@
                 var table = $("#fqc-status").DataTable({
                     "processing": false,
                     "serverSide": false,
+                    fixedHeader: {
+                        headerOffset: 0
+                    },
                     "columns": [
                         {data: "id"},
                         {data: "name"},
@@ -114,7 +119,7 @@
                 }
 
                 function addDataToTable(data) {
-                    table.clear().draw(false);
+                    table.clear();
                     if (data.length) {
                         table.rows.add(data).draw();
                     }

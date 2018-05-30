@@ -38,6 +38,7 @@
         <intercept-url pattern="/pages/testPages/**" access="hasRole('ADMIN')" />
         <intercept-url pattern="/pages/admin/modify/**" access="hasRole('ADMIN')" />
         <intercept-url pattern="/pages/admin/setting/**" access="hasRole('ADMIN')" />
+        <!--<intercept-url pattern="/ModelSopRemarkController/**" access="isAuthenticated()" />-->
         <!--<intercept-url pattern="/socket/**" access="isAuthenticated()" />-->
         
         <!--Controller security role setting-->

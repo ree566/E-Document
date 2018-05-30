@@ -6,6 +6,7 @@
  */
 package com.advantech.controller;
 
+import static com.advantech.helper.SecurityPropertiesUtils.retrieveAndCheckUserInSession;
 import com.advantech.model.ActionCode;
 import com.advantech.model.Bab;
 import com.advantech.model.Countermeasure;
@@ -23,10 +24,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import static com.google.common.base.Preconditions.*;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
  *
@@ -64,9 +61,8 @@ public class CountermeasureController {
             @RequestParam String sop,
             @RequestParam String editor
     ) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        checkState(!(auth instanceof AnonymousAuthenticationToken), "查無登入紀錄，請重新登入");
-        User user = (User) auth.getPrincipal();
+        
+        User user = retrieveAndCheckUserInSession();
 
         Countermeasure c = cService.findByBab(bab_id);
         if (c == null) {

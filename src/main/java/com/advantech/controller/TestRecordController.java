@@ -7,20 +7,17 @@
 package com.advantech.controller;
 
 import com.advantech.datatable.DataTableResponse;
+import static com.advantech.helper.SecurityPropertiesUtils.retrieveAndCheckUserInSession;
 import com.advantech.model.ReplyStatus;
 import com.advantech.model.TestRecord;
 import com.advantech.model.TestRecordRemark;
 import com.advantech.model.User;
 import com.advantech.service.TestRecordRemarkService;
 import com.advantech.service.TestRecordService;
-import static com.google.common.base.Preconditions.checkState;
 import java.io.*;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -63,7 +60,7 @@ public class TestRecordController {
             @RequestParam int recordId,
             @RequestParam String remark
     ) {
-        User user = this.retriveUserInSession();
+        User user = retrieveAndCheckUserInSession();
 
         TestRecord record = testRecordService.findByPrimaryKey(recordId);
 
@@ -80,12 +77,5 @@ public class TestRecordController {
         }
 
         return true;
-    }
-
-    private User retriveUserInSession() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        checkState(!(auth instanceof AnonymousAuthenticationToken), "查無登入紀錄，請重新登入");
-        User user = (User) auth.getPrincipal();
-        return user;
     }
 }
