@@ -172,12 +172,39 @@
     </servlet-mapping>
     
     <servlet>
-        <servlet-name>CellRecord</servlet-name>
-        <jsp-file>/pages/admin/cellRecord.jsp</jsp-file>
+        <servlet-name>FqcDashBoard</servlet-name>
+        <jsp-file>/pages/admin/fqcDashBoard.jsp</jsp-file>
     </servlet>
     <servlet-mapping>
-        <servlet-name>CellRecord</servlet-name>
-        <url-pattern>/pages/admin/CellRecord</url-pattern>  
+        <servlet-name>FqcDashBoard</servlet-name>
+        <url-pattern>/pages/admin/FqcDashBoard</url-pattern>  
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>FqcModelStandardTime</servlet-name>
+        <jsp-file>/pages/admin/fqcModelStandardTime.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>FqcModelStandardTime</servlet-name>
+        <url-pattern>/pages/admin/FqcModelStandardTime</url-pattern>  
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>FqcRecord</servlet-name>
+        <jsp-file>/pages/admin/fqcRecord.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>FqcRecord</servlet-name>
+        <url-pattern>/pages/admin/FqcRecord</url-pattern>  
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>ModelSopRemark</servlet-name>
+        <jsp-file>/pages/admin/modelSopRemark.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ModelSopRemark</servlet-name>
+        <url-pattern>/pages/admin/ModelSopRemark</url-pattern>  
     </servlet-mapping>
     
     <!--Other setting-->

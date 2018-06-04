@@ -7,6 +7,7 @@ package com.advantech.dao;
 
 import com.advantech.model.FqcModelStandardTime;
 import java.util.List;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -24,6 +25,12 @@ public class FqcModelStandardTimeDAO extends AbstractDao<Integer, FqcModelStanda
     @Override
     public FqcModelStandardTime findByPrimaryKey(Object obj_id) {
         return super.getByKey((int) obj_id);
+    }
+    
+    public List<FqcModelStandardTime> findByName(String modelSeries){
+        return super.createEntityCriteria()
+                .add(Restrictions.eq("modelNameCategory", modelSeries))
+                .list();
     }
 
     @Override

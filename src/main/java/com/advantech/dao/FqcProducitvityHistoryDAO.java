@@ -9,6 +9,7 @@ import com.advantech.model.BabStatus;
 import com.advantech.model.FqcProducitvityHistory;
 import java.util.List;
 import java.util.Map;
+import org.hibernate.Criteria;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.transform.Transformers;
@@ -32,15 +33,14 @@ public class FqcProducitvityHistoryDAO extends AbstractDao<Integer, FqcProducitv
         return super.getByKey((int) obj_id);
     }
 
-    public List<Map> findTodayWithComplete() {
+    public List<Map> findComplete(DateTime sD, DateTime eD) {
         DateTime now = new DateTime();
-        return super.createEntityCriteria()
+        Criteria c = super.createEntityCriteria()
                 .createAlias("fqc", "fqc")
                 .createAlias("fqc.fqcLine", "fqcLine")
                 .createAlias("fqc.fqcSettingHistorys", "fqcSettingHistorys")
                 .add(Restrictions.eq("fqc.babStatus", BabStatus.CLOSED))
                 .add(Restrictions.isNotNull("fqc.lastUpdateTime"))
-                .add(Restrictions.between("fqc.beginTime", now.withHourOfDay(0).toDate(), now.withHourOfDay(23).toDate()))
                 .setProjection(Projections.projectionList()
                         .add(Projections.property("fqc.id"), "id")
                         .add(Projections.property("fqcLine.name"), "fqcLineName")
@@ -55,20 +55,15 @@ public class FqcProducitvityHistoryDAO extends AbstractDao<Integer, FqcProducitv
                         .add(Projections.property("fqcSettingHistorys.jobnumber"), "jobnumber")
                         .add(Projections.property("fqc.remark"), "remark")
                 )
-                .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
-                .list();
-        
-//        id: fqcData.fqc.id,
-//        name: "1",
-//        po: fqcData.fqc.po,
-//        modelName: fqcData.fqc.modelName,
-//        standardTime: fqcData.standardTime,
-//        pcs: fqcData.pcs,
-//        timeCost: fqcData.timeCost,
-//        productivity: "q",
-//        processLineName: fqcData.fqc.fqcLine.name,
-//        beginTime: fqcData.fqc.beginTime,
-//        lastUpdateTime: fqcData.fqc.lastUpdateTime
+                .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
+
+        if (sD != null && eD != null) {
+            c.add(Restrictions.between("fqc.beginTime", sD.withHourOfDay(0).toDate(), eD.withHourOfDay(23).toDate()));
+        } else {
+            c.add(Restrictions.between("fqc.beginTime", now.withHourOfDay(0).toDate(), now.withHourOfDay(23).toDate()));
+        }
+
+        return c.list();
     }
 
     @Override

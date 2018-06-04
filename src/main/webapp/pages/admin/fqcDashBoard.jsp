@@ -23,6 +23,7 @@
         <style>
             body{
                 font-family: 微軟正黑體;
+                padding-top: 70px;
             }
         </style>
         <script src="<c:url value="/webjars/jquery/1.12.4/jquery.min.js" />"></script>
@@ -228,7 +229,7 @@
         </script>
     </head>
     <body style="cursor: auto;">
-        <!--<button id="fullBtn">Full</button>-->
+        <c:import url="/temp/admin-header.jsp" />
         <div id="wigetCtrl">
             <div>
                 <h5>效率計算器</h5>
@@ -267,6 +268,6 @@
                 </table>
             </div>
         </div>
-        <div class="clearWiget" />
+        <c:import url="/temp/admin-footer.jsp" />
     </body>
 </html>

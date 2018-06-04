@@ -63,7 +63,7 @@ public class FqcLineTypeFacade extends BasicLineTypeFacade {
     protected boolean generateData() {
         processingJsonObject = new JSONObject();
 
-        List l = fqcProducitvityHistoryService.findTodayWithComplete();
+        List l = fqcProducitvityHistoryService.findComplete();
 
         processingJsonObject.put("data", l);
         return false;

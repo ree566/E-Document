@@ -7,6 +7,7 @@ package com.advantech.service;
 
 import com.advantech.dao.FqcModelStandardTimeDAO;
 import com.advantech.model.FqcModelStandardTime;
+import static com.google.common.base.Preconditions.checkArgument;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,11 +33,18 @@ public class FqcModelStandardTimeService {
     }
 
     public int insert(FqcModelStandardTime pojo) {
+        checkSeriesName(pojo);
         return fqcModelStandardTimeDAO.insert(pojo);
     }
 
     public int update(FqcModelStandardTime pojo) {
+        checkSeriesName(pojo);
         return fqcModelStandardTimeDAO.update(pojo);
+    }
+    
+    private void checkSeriesName(FqcModelStandardTime pojo){
+        List<FqcModelStandardTime> l = fqcModelStandardTimeDAO.findByName(pojo.getModelNameCategory());
+        checkArgument(l.isEmpty(), "Series standardTime is already exist");
     }
 
     public int delete(FqcModelStandardTime pojo) {

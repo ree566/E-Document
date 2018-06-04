@@ -3,6 +3,7 @@
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <sec:authentication var="user" property="principal" />
 <sec:authorize access="isAuthenticated()"  var="isAuthenticated" />
+<sec:authorize access="hasRole('ADMIN')"  var="isAdmin" />
 <link rel="stylesheet" href="<c:url value="/webjars/bootstrap/3.3.7/css/bootstrap.min.css" />">
 <link rel="stylesheet" href="<c:url value="/webjars/font-awesome/4.7.0/css/font-awesome.min.css" />" >
 <style>
@@ -88,7 +89,7 @@
                         <li><a href="BabDetailInfo">各站機台時間查詢</a></li>
                         <li><a href="BabDetailInfo2?lineType=ASSY">各站時間查詢(報表格式)</a></li>
                             <c:if test="${isAuthenticated}">
-                            <li><a href="modelSopRemark.jsp">Sop維護</a></li>
+                            <li><a href="ModelSopRemark">Sop維護</a></li>
                             </c:if>
                     </ul>
                 </li>
@@ -114,7 +115,11 @@
                         <span class="caret" />
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a href="fqcDashBoard.jsp?sitefloor=6">FQC效率</a></li>
+                        <li><a href="FqcDashBoard?sitefloor=6">FQC效率</a></li>
+                        <li><a href="FqcRecord">FQC效率記錄查詢</a></li>
+                            <c:if test="${isAuthenticated && isAdmin}">
+                            <li><a href="FqcModelStandardTime">FQC標工維護</a></li>
+                            </c:if>
                     </ul>
                 </li>
                 <li>

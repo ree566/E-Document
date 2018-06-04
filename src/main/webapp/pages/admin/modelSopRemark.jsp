@@ -116,7 +116,7 @@
                                 }
                             },
                             error: function (xhr, ajaxOptions, thrownError) {
-                                alert("AJAX Save customer error" + thrownError);
+                                alert(xhr.responseText);
                             }
                         });
                     }
@@ -173,7 +173,7 @@
                                 }
                             },
                             error: function (xhr, ajaxOptions, thrownError) {
-                                alert("AJAX Save customer error" + thrownError);
+                                alert(xhr.responseText);
                             }
                         });
                     }
@@ -333,7 +333,7 @@
                             }
                         },
                         error: function (xhr, ajaxOptions, thrownError) {
-                            showMsg(xhr.responseText);
+                            alert(xhr.responseText);
                         }
                     });
                 }
@@ -353,7 +353,7 @@
                             $("#line").val(ids).trigger('change');
                         },
                         error: function (xhr, ajaxOptions, thrownError) {
-                            alert("Load User AJAX Error:" + thrownError);
+                            alert(xhr.responseText);
                         }
                     });
                 }
@@ -378,7 +378,7 @@
                                 }
                             },
                             error: function (xhr, ajaxOptions, thrownError) {
-                                alert("Load User AJAX Error:" + thrownError);
+                                alert(xhr.responseText);
                             }
                         });
                     }
@@ -402,7 +402,7 @@
                                 }
                             },
                             error: function (xhr, ajaxOptions, thrownError) {
-                                alert("Load User AJAX Error:" + thrownError);
+                                alert(xhr.responseText);
                             }
                         });
                     }

@@ -9,6 +9,7 @@ import com.advantech.dao.FqcProducitvityHistoryDAO;
 import com.advantech.model.FqcProducitvityHistory;
 import java.util.List;
 import java.util.Map;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,8 +33,12 @@ public class FqcProducitvityHistoryService {
         return fqcProducitvityHistoryDAO.findByPrimaryKey(obj_id);
     }
 
-    public List<Map> findTodayWithComplete() {
-        return fqcProducitvityHistoryDAO.findTodayWithComplete();
+    public List<Map> findComplete() {
+        return fqcProducitvityHistoryDAO.findComplete(null, null);
+    }
+
+    public List<Map> findComplete(DateTime sD, DateTime eD) {
+        return fqcProducitvityHistoryDAO.findComplete(sD, eD);
     }
 
     public int insert(FqcProducitvityHistory pojo) {
