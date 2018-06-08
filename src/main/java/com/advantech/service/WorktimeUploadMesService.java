@@ -187,6 +187,7 @@ public class WorktimeUploadMesService {
                 || !isEquals(prev.getIrVoltage(), current.getIrVoltage())
                 || !isEquals(prev.getTestProfile(), current.getTestProfile())
                 || !isEquals(prev.getLltValue(), current.getLltValue())
+                || !isEquals(prev.getGndValue(), current.getGndValue())
                 || !isEquals(prev.getWeight(), current.getWeight())
                 || !isEquals(prev.getTolerance(), current.getTolerance())
                 || (current.getPartNoAttributeMaintain() != ' '

@@ -54,6 +54,7 @@ var worktimeCol = [
     {name: "irVoltage"},
     {name: "testProfile"},
     {name: "lltValue"},
+    {name: "gndValue"},
     {name: "weight"},
     {name: "tolerance"},
     {name: "assyStation"},

@@ -112,6 +112,7 @@ public class Worktime implements java.io.Serializable {
     private String irVoltage;
     private String testProfile;
     private String lltValue;
+    private String gndValue;
     private BigDecimal weight = BigDecimal.ZERO;
     private BigDecimal tolerance = BigDecimal.ZERO;
     private BigDecimal assyLeadTime = BigDecimal.ZERO;
@@ -671,6 +672,15 @@ public class Worktime implements java.io.Serializable {
 
     public void setLltValue(String lltValue) {
         this.lltValue = lltValue;
+    }
+
+    @Column(name = "gnd_value", nullable = false, length = 30)
+    public String getGndValue() {
+        return gndValue;
+    }
+
+    public void setGndValue(String gndValue) {
+        this.gndValue = gndValue;
     }
 
     @NotNull
