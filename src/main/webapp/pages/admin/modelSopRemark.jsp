@@ -475,15 +475,15 @@
                             <fieldset>
                                 <!-- Form Name -->
                                 <!-- Text input-->
-                                <label class="control-label col-sm-3" for="modelName">Model Name: </label>
+                                <label class="control-label col-sm-3" for="modelName">機種: </label>
                                 <div class="input-group col-sm-9">
                                     <input id="modelName" name="modelName" type="text" class="input-xlarge form-control">
                                 </div><br />
-                                <label class="control-label col-sm-3" for="remark">Remark: </label>
+                                <label class="control-label col-sm-3" for="remark">備註: </label>
                                 <div class="input-group col-sm-9">
                                     <textarea id="remark" name="remark" class="input-xlarge form-control"></textarea>
                                 </div><br />
-                                <label class="control-label col-sm-3" for="line">Used for: </label>
+                                <label class="control-label col-sm-3" for="line">作用線別: </label>
                                 <div class="input-group col-sm-9">
                                     <select id="line" class="input-xlarge js-example-basic-multiple form-control" multiple="multiple"></select>
                                 </div><br />
@@ -510,7 +510,7 @@
                             <fieldset>
                                 <!-- Form Name -->
                                 <!-- Text input-->
-                                <label class="control-label col-sm-3" for="station">Station: </label>
+                                <label class="control-label col-sm-3" for="station">站別: </label>
                                 <div class="input-group col-sm-9">
                                     <input id="station" name="station" type="number" class="input-xlarge form-control">
                                 </div><br />

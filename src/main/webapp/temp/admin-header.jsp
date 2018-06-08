@@ -4,6 +4,9 @@
 <sec:authentication var="user" property="principal" />
 <sec:authorize access="isAuthenticated()"  var="isAuthenticated" />
 <sec:authorize access="hasRole('ADMIN')"  var="isAdmin" />
+<sec:authorize access="hasRole('OPER_MFG_LINEOWNER')"  var="isMfgLineOwner" />
+<sec:authorize access="hasRole('OPER_MFG')"  var="isMfgOper" />
+<sec:authorize access="hasRole('OPER_FQC')"  var="isFqcOper" />
 <link rel="stylesheet" href="<c:url value="/webjars/bootstrap/3.3.7/css/bootstrap.min.css" />">
 <link rel="stylesheet" href="<c:url value="/webjars/font-awesome/4.7.0/css/font-awesome.min.css" />" >
 <style>
@@ -88,7 +91,7 @@
                         <li><a href="BabTotal?lineType=ASSY">線平衡資訊查詢</a></li>
                         <li><a href="BabDetailInfo">各站機台時間查詢</a></li>
                         <li><a href="BabDetailInfo2?lineType=ASSY">各站時間查詢(報表格式)</a></li>
-                            <c:if test="${isAuthenticated}">
+                            <c:if test="${isMfgLineOwner || isMfgOper || isAdmin}">
                             <li><a href="ModelSopRemark">Sop維護</a></li>
                             </c:if>
                     </ul>
@@ -103,7 +106,7 @@
                         <li><a href="BabTotal?lineType=Packing">線平衡資訊查詢</a></li>
                         <li><a href="BabDetailInfo">各站機台時間查詢</a></li>
                         <li><a href="BabDetailInfo2?lineType=Packing">各站時間查詢(報表格式)</a></li>
-                            <c:if test="${isAuthenticated}">
+                            <c:if test="${isMfgLineOwner || isMfgOper || isAdmin}">
                             <li><a href="modelSopRemark.jsp">Sop維護</a></li>
                             </c:if>
                     </ul>
@@ -117,7 +120,7 @@
                     <ul class="dropdown-menu">
                         <li><a href="FqcDashBoard?sitefloor=6">FQC效率</a></li>
                         <li><a href="FqcRecord">FQC效率記錄查詢</a></li>
-                            <c:if test="${isAuthenticated && isAdmin}">
+                            <c:if test="${isFqcOper || isAdmin}">
                             <li><a href="FqcModelStandardTime">FQC標工維護</a></li>
                             </c:if>
                     </ul>
@@ -130,14 +133,16 @@
                     </a>
                     <ul class="dropdown-menu totalMapSelect"></ul>
                 </li>
-                <li>
-                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                        <span class="glyphicon glyphicon-list-alt" aria-hidden="true" /> 
-                        感應器
-                        <span class="caret" />
-                    </a>
-                    <ul class="dropdown-menu sensorAdjustSelect"></ul>
-                </li>
+                <c:if test="${isMfgLineOwner || isMfgOper || isAdmin}">
+                    <li>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <span class="glyphicon glyphicon-list-alt" aria-hidden="true" /> 
+                            感應器
+                            <span class="caret" />
+                        </a>
+                        <ul class="dropdown-menu sensorAdjustSelect"></ul>
+                    </li>
+                </c:if>
             </ul>
             <ul class="nav navbar-nav navbar-right pull-right">
                 <c:choose>

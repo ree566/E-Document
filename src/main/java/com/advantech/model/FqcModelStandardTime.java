@@ -36,7 +36,7 @@ public class FqcModelStandardTime implements Serializable {
         this.id = id;
     }
 
-    @Column(name = "modelName_category", nullable = false, length = 50)
+    @Column(name = "modelName_category", nullable = false, length = 50, unique = true)
     public String getModelNameCategory() {
         return modelNameCategory;
     }

@@ -32,19 +32,16 @@ public class FqcModelStandardTimeService {
         return fqcModelStandardTimeDAO.findByPrimaryKey(obj_id);
     }
 
+    public List<FqcModelStandardTime> findByName(String modelSeries) {
+        return fqcModelStandardTimeDAO.findByName(modelSeries);
+    }
+
     public int insert(FqcModelStandardTime pojo) {
-        checkSeriesName(pojo);
         return fqcModelStandardTimeDAO.insert(pojo);
     }
 
     public int update(FqcModelStandardTime pojo) {
-        checkSeriesName(pojo);
         return fqcModelStandardTimeDAO.update(pojo);
-    }
-    
-    private void checkSeriesName(FqcModelStandardTime pojo){
-        List<FqcModelStandardTime> l = fqcModelStandardTimeDAO.findByName(pojo.getModelNameCategory());
-        checkArgument(l.isEmpty(), "Series standardTime is already exist");
     }
 
     public int delete(FqcModelStandardTime pojo) {

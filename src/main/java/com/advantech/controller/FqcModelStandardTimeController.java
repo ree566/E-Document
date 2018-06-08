@@ -9,6 +9,8 @@ package com.advantech.controller;
 import com.advantech.datatable.DataTableResponse;
 import com.advantech.model.FqcModelStandardTime;
 import com.advantech.service.FqcModelStandardTimeService;
+import static com.google.common.base.Preconditions.checkArgument;
+import java.util.List;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -38,6 +40,7 @@ public class FqcModelStandardTimeController {
     @RequestMapping(value = "/saveOrUpdate", method = {RequestMethod.POST})
     @ResponseBody
     protected String saveOrUpdate(@Valid @ModelAttribute FqcModelStandardTime pojo) {
+        checkSeriesName(pojo);
         if (pojo.getId() == 0) {
             fqcModelStandardTimeService.insert(pojo);
         } else {
@@ -52,6 +55,15 @@ public class FqcModelStandardTimeController {
         FqcModelStandardTime pojo = fqcModelStandardTimeService.findByPrimaryKey(id);
         fqcModelStandardTimeService.delete(pojo);
         return "success";
+    }
+    
+    private void checkSeriesName(FqcModelStandardTime pojo) {
+        List<FqcModelStandardTime> l = fqcModelStandardTimeService.findByName(pojo.getModelNameCategory());
+        if (!l.isEmpty()) {
+            l.forEach(s -> {
+                checkArgument(s.getId() == pojo.getId(), "Series standardTime is already exist");
+            });
+        }
     }
 
 }

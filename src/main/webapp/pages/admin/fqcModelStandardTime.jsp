@@ -185,7 +185,7 @@
             <div>
                 <div class="row">
                     <div class="col-lg-12 text-right">
-                        <button type="button" class="btn btn-primary btn-lg" id="RemarkInfoPopup">Add Remark</button>              
+                        <button type="button" class="btn btn-primary btn-lg" id="RemarkInfoPopup">Add</button>              
                     </div>
                 </div>
 

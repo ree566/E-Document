@@ -34,9 +34,12 @@
         
         <!--Global system access setting-->
         <!--<intercept-url pattern="/pages/admin/**" access="permitAll" />-->
-        <intercept-url pattern="/pages/admin/SensorAdjust" access="isAuthenticated()" />
-        <intercept-url pattern="/pages/admin/ModelSopRemark" access="isAuthenticated()" />
-        <intercept-url pattern="/pages/admin/FqcModelStandardTime" access="hasRole('ADMIN')" />
+        <intercept-url pattern="/pages/admin/SensorAdjust" access="hasAnyRole('OPER_MFG', 'OPER_MFG_LINEOWNER', 'ADMIN')" />
+        <intercept-url pattern="/pages/admin/sensorAdjust.jsp**" access="hasAnyRole('OPER_MFG', 'OPER_MFG_LINEOWNER', 'ADMIN')" />
+        <intercept-url pattern="/pages/admin/ModelSopRemark" access="hasAnyRole('OPER_MFG', 'OPER_MFG_LINEOWNER', 'ADMIN')" />
+        <intercept-url pattern="/pages/admin/modelSopRemark.jsp**" access="hasAnyRole('OPER_MFG', 'OPER_MFG_LINEOWNER', 'ADMIN')" />
+        <intercept-url pattern="/pages/admin/FqcModelStandardTime" access="hasAnyRole('OPER_FQC', 'ADMIN')" />
+        <intercept-url pattern="/pages/admin/fqcModelStandardTime.jsp**" access="hasAnyRole('OPER_FQC', 'ADMIN')" />
         <intercept-url pattern="/pages/testPages/**" access="hasRole('ADMIN')" />
         <intercept-url pattern="/pages/admin/setting/**" access="hasRole('ADMIN')" />
         <!--<intercept-url pattern="/ModelSopRemarkController/**" access="isAuthenticated()" />-->
