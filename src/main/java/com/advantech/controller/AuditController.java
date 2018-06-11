@@ -82,8 +82,24 @@ public class AuditController {
             } else if (id != null) {
                 l = auditService.findByDate(Worktime.class, id, info, d1.toDate(), d2.toDate());
             }
+        } else if (startDate == null && endDate == null) {
+            if (id != null) {
+                l = auditService.findByPrimaryKey(Worktime.class, id);
+            } else if (modelName != null && !"".equals(modelName)) {
+                PageInfo tempInfo = addModelNameFilterAndGetClone(info, modelName);
+                l = auditService.findAll(Worktime.class, tempInfo);
+            }
         }
         return l;
+    }
+
+    private PageInfo addModelNameFilterAndGetClone(PageInfo p, String modelName) throws CloneNotSupportedException {
+        PageInfo tempInfo = p.clone();
+        tempInfo.setSearchField("modelName");
+        tempInfo.setSearchOper("eq");
+        tempInfo.setSearchString(modelName);
+        tempInfo.setMaxNumOfRows(1);
+        return tempInfo;
     }
 
     @ResponseBody
