@@ -7,6 +7,7 @@
 package com.advantech.controller;
 
 import com.advantech.datatable.DataTableResponse;
+import com.advantech.model.FqcProducitvityHistory;
 import com.advantech.service.FqcProducitvityHistoryService;
 import java.io.*;
 import org.joda.time.DateTime;
@@ -43,5 +44,11 @@ public class FqcProducitvityHistoryController {
 
         return new DataTableResponse(fqcProducitvityHistoryService.findComplete(startDate, endDate));
 
+    }
+    
+    @RequestMapping(value = "/findByFqc", method = {RequestMethod.GET})
+    @ResponseBody
+    public FqcProducitvityHistory findByFqc(int fqc_id){
+        return fqcProducitvityHistoryService.findByFqc(fqc_id);
     }
 }

@@ -5,8 +5,11 @@
  */
 package com.advantech.test;
 
+import static com.google.common.collect.Lists.newArrayList;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,21 +32,14 @@ public class TestClass {
     }
 
     @Test
-    public void testStopWatch() throws InterruptedException {
+    public void testKeywordFilter() throws InterruptedException {
+        List<String> keywords = newArrayList("TPC", "T1PC1", "ABCC", "T1PC1331", "DBB");
+        String modelName = "TPC1331-2213-ZZ";
 
-        for (int i = 0; i < 20; i++) {
-            StopWatch clock = new StopWatch("clock_" + (i + 1));
-            clock.start();
-            temp_L.add(clock);
-        }
-
-        Thread.sleep(5000);
-
-        temp_L.forEach(clock -> {
-            clock.stop();
-            System.out.println(clock.prettyPrint());
-        });
-
+        String key = keywords.stream()
+                .filter(modelName::contains)
+                .max(Comparator.comparing(String::length)).orElse(null);
+        System.out.println(key);
     }
 
 }

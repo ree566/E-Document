@@ -41,6 +41,10 @@ public class FqcProducitvityHistoryService {
         return fqcProducitvityHistoryDAO.findComplete(sD, eD);
     }
 
+    public FqcProducitvityHistory findByFqc(int fqc_id) {
+        return fqcProducitvityHistoryDAO.findByFqc(fqc_id);
+    }
+
     public int insert(FqcProducitvityHistory pojo) {
         return fqcProducitvityHistoryDAO.insert(pojo);
     }

@@ -7,6 +7,13 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+<sec:authorize access="hasRole('ADMIN')"  var="isAdmin" />
+<sec:authorize access="hasRole('OPER_FQC')"  var="isFqcOper" />
+<sec:authorize access="isAuthenticated()"  var="isAuthenticated">
+    <sec:authentication property="principal" var="user" />
+    <sec:authentication property="principal.jobnumber" var="jobnumber" /> 
+</sec:authorize>
 <!DOCTYPE html>
 <html>
     <head>
@@ -74,6 +81,41 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                     }
                 });
 
+                $("body").on("click", ".remarkEdit", function () {
+                    var data = table.row($(this).parents('tr')).data();
+                    $("#myModalLabel").html("正在編輯欄位id: " + data.id + " 資料");
+                    $("#remark").val(data.remark);
+                    $("#currentID").val(data.id);
+                    $('#addEditRemark').modal('show');
+                });
+
+                $("#updateRemark").click(function () {
+                    var reg = /<(.|\n)*?>/g;
+                    if (reg.test($('#remark').val()) == true) {
+                        alert('HTML Tag are not allowed');
+                        return false;
+                    }
+                    $.ajax({
+                        method: "POST",
+                        url: "<c:url value="/FqcController/updateRemark" />",
+                        dataType: "html",
+                        data: {
+                            id: $("#currentID").val(),
+                            remark: $("#remark").val()
+                        },
+                        success: function (response) {
+                            if (response == "success") {
+                                alert("Record update successfully.");
+                                $('#addEditRemark').modal('hide');
+                                table.ajax.reload();
+                            }
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            alert(xhr.responseText);
+                        }
+                    });
+                });
+
                 function initTable() {
                     table = $("#fqcRecord").DataTable({
                         dom: 'lf<"floatright"B>rtip',
@@ -81,19 +123,19 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                             {
                                 extend: 'copyHtml5',
                                 exportOptions: {
-                                    columns: ':visible'
+                                    columns: 'th:not(:last-child)'
                                 }
                             },
                             {
                                 extend: 'excelHtml5',
                                 exportOptions: {
-                                    columns: ':visible'
+                                    columns: 'th:not(:last-child)'
                                 }
                             },
                             {
                                 extend: 'print',
                                 exportOptions: {
-                                    columns: ':visible'
+                                    columns: 'th:not(:last-child)'
                                 }
                             }
                         ],
@@ -122,7 +164,8 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                             {data: "fqcLineName"},
                             {data: "beginTime"},
                             {data: "lastUpdateTime"},
-                            {data: "remark"}
+                            {data: "remark"},
+                            {data: "id"}
                         ],
                         "columnDefs": [
                             {
@@ -147,6 +190,23 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                                 'render': function (data, type, full, meta) {
                                     return data == null ? "n/a" : data;
                                 }
+                            },
+                            {
+                                "type": "html",
+                                "targets": 12,
+                                'render': function (data, type, full, meta) {
+                                    if (${isAuthenticated}) {
+                                        if (${!isFqcOper && !isAdmin}) {
+                                            return "";
+                                        } else if (${isFqcOper && !isAdmin} && full.jobnumber != '${jobnumber}') {
+                                            return "";
+                                        }
+                                        return "<button class='btn btn-default btn-sm remarkEdit'><span class='glyphicon glyphicon-pencil'></span></button";
+                                    } else {
+                                        return "";
+                                    }
+
+                                }
                             }
                         ],
                         "oLanguage": {
@@ -160,6 +220,7 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                         info: true,
                         paginate: true,
                         destroy: true,
+                        stateSave: true,
                         "order": [[0, "desc"]]
                     });
                 }
@@ -226,10 +287,38 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                             <th>開始</th>
                             <th>結束</th>
                             <th>備註</th>
+                            <th>#</th>
                         </tr>
                     </thead>
                 </table>
             </div>
+
+            <!-- add/edit popup window -->
+            <div class="modal fade" id="addEditRemark" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">                
+                            <h4 class="modal-title" id="myModalLabel">Add/Edit Remark</h4>
+                        </div>
+                        <div class="modal-body">
+                            <fieldset>
+                                <!-- Form Name -->
+                                <!-- Text input-->
+                                <label class="control-label col-sm-3" for="standardTime">備註: </label>
+                                <div class="input-group col-sm-9">
+                                    <textarea type="number" id="remark" name="remark" class="input-xlarge form-control"></textarea>
+                                </div><br />
+                                <input type="hidden" id="currentID" value="" />                         
+                            </fieldset>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" id="updateRemark">Save changes</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>    
+            <!-- end popup window -->
         </div>
         <c:import url="/temp/admin-footer.jsp" />
     </body>

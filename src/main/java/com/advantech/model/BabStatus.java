@@ -16,7 +16,8 @@ import java.util.Map;
 public enum BabStatus implements Encodeable{
     CLOSED(1),
     NO_RECORD(-1),
-    UNFINSHED(-2);
+    UNFINSHED(-2),
+    UNFINSHED_RECONNECTABLE(-3);
  
     private final Integer value;
     private static final Map map = new HashMap<>();

@@ -145,6 +145,7 @@
         <property name="converters">
             <list>
                 <bean class="com.advantech.converter.BabLineConverter"/>
+                <bean class="com.advantech.converter.FqcLineConverter"/>
             </list>
         </property>
     </bean>
@@ -205,11 +206,28 @@
         </property>
     </bean>
     
+    <!--M3 WebService port-->
     <bean id="webServiceTemplate" class="org.springframework.ws.client.core.WebServiceTemplate">
         <constructor-arg ref="soapMessageFactory"/>
         <property name="marshaller" ref="marshaller" />
         <property name="unmarshaller" ref="marshaller" />
         <property name="defaultUri" value="http://172.20.131.245/auto_testing_service/Service.asmx?WSDL"/>
+    </bean>
+    
+    <!--M6 WebService port-->
+    <bean id="webServiceTemplate1" class="org.springframework.ws.client.core.WebServiceTemplate">
+        <constructor-arg ref="soapMessageFactory"/>
+        <property name="marshaller" ref="marshaller" />
+        <property name="unmarshaller" ref="marshaller" />
+        <property name="defaultUri" value="http://172.20.131.216/auto_testing_service/Service.asmx?WSDL"/>
+    </bean>
+    
+    <!--M2 WebService port-->
+    <bean id="webServiceTemplate2" class="org.springframework.ws.client.core.WebServiceTemplate">
+        <constructor-arg ref="soapMessageFactory"/>
+        <property name="marshaller" ref="marshaller" />
+        <property name="unmarshaller" ref="marshaller" />
+        <property name="defaultUri" value="http://172.19.5.204/auto_testing_service/Service.asmx?WSDL"/>
     </bean>
     
     <!--Other file import-->

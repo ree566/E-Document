@@ -16,6 +16,7 @@ import com.advantech.model.FqcSettingHistory;
 import com.advantech.model.PassStationRecord;
 import com.advantech.webservice.WebServiceRV;
 import static com.google.common.base.Preconditions.*;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +45,7 @@ public class FqcService {
 
     @Autowired
     private FqcProducitvityHistoryService fqcProducitvityHistoryService;
-    
+
     @Autowired
     private FqcModelStandardTimeService fqcModelStandardTimeService;
 
@@ -67,6 +68,10 @@ public class FqcService {
         return fqcDAO.findProcessing(fqcLine_id);
     }
 
+    public List<Fqc> findReconnectable(int fqcLine_id, String po) {
+        return fqcDAO.findReconnectable(fqcLine_id, po);
+    }
+
     /*
         Check user is login and po is exist or not.
      */
@@ -74,25 +79,34 @@ public class FqcService {
         FqcLine fqcLine = pojo.getFqcLine();
         FqcLoginRecord loginRecord = fqcLoginRecordService.findByFqcLine(fqcLine.getId());
         checkArgument(loginRecord != null, "Can't find login record in this line");
-        
         this.insert(pojo);
-        
         String jobnumber = loginRecord.getJobnumber();
         FqcSettingHistory history = new FqcSettingHistory(pojo, jobnumber);
         history.setBeginTime(pojo.getBeginTime());
-        history.setLastUpdateTime(pojo.getLastUpdateTime());
         fqcSettingHistoryService.insert(history);
-        
+
+        return 1;
+    }
+
+    public int reconnectAbnormal(Fqc fqc) {
+        fqc.setBabStatus(null);
+        fqc.setLastUpdateTime(null);
+        fqcDAO.update(fqc);
+        FqcSettingHistory history = fqcSettingHistoryService.findByFqc(fqc);
+        history.setLastUpdateTime(null);
+        fqcSettingHistoryService.update(history);
+
+        FqcProducitvityHistory pHistory = fqcProducitvityHistoryService.findByFqc(fqc.getId());
+        fqcProducitvityHistoryService.delete(pHistory);
         return 1;
     }
 
     public int stationComplete(Fqc pojo, int timeCost) {
-        
+
         Date now = new Date();
         pojo.setBabStatus(BabStatus.CLOSED);
         pojo.setLastUpdateTime(now);
-        this.update(pojo);
-        
+
         FqcSettingHistory history = fqcSettingHistoryService.findByFqc(pojo);
         history.setLastUpdateTime(now);
         fqcSettingHistoryService.update(history);
@@ -102,16 +116,29 @@ public class FqcService {
                 || rec.getCreateDate().before(pojo.getBeginTime())
                 || rec.getCreateDate().after(pojo.getLastUpdateTime()));
         passStationRecordService.insert(records);
-        
+
         String modelName = pojo.getModelName();
+
+        FqcModelStandardTime standardTime = null;
         List<FqcModelStandardTime> l = fqcModelStandardTimeService.findAll();
-        FqcModelStandardTime standardTime = l.stream()
-                .filter(f -> modelName.contains(f.getModelNameCategory()))
-                .findFirst().orElse(null);
-//        checkArgument(standardTime != null, "Can't standardTime setting on modelName: " + modelName);
-        
-        fqcProducitvityHistoryService.insert(new FqcProducitvityHistory(pojo, records.size(), 
+
+        if (!l.isEmpty()) {
+            standardTime = l.stream()
+                    .filter(f -> modelName.contains(f.getModelNameCategory()))
+                    .max(Comparator.comparing(s -> s.getModelNameCategory().length()))
+                    .orElse(null);
+        }
+
+        this.update(pojo);
+        fqcProducitvityHistoryService.insert(new FqcProducitvityHistory(pojo, records.size(),
                 timeCost, standardTime == null ? 0 : standardTime.getStandardTime()));
+        return 1;
+    }
+
+    public int addAbnormalReconnectableSignAndClose(Fqc pojo, int timeCost) {
+        this.stationComplete(pojo, timeCost);
+        pojo.setBabStatus(BabStatus.UNFINSHED_RECONNECTABLE);
+        this.update(pojo);
         return 1;
     }
 

@@ -65,6 +65,12 @@ public class FqcProducitvityHistoryDAO extends AbstractDao<Integer, FqcProducitv
 
         return c.list();
     }
+    
+    public FqcProducitvityHistory findByFqc(int fqc_id){
+        return (FqcProducitvityHistory) super.createEntityCriteria()
+                .add(Restrictions.eq("fqc.id", fqc_id))
+                .uniqueResult();
+    }
 
     @Override
     public int insert(FqcProducitvityHistory pojo) {

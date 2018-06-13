@@ -73,8 +73,6 @@
                 }
 
                 fqcFormInit();
-                
-                console.log(fqcLoginObj);
 
                 $("#login").click(function () {
                     var lineId = $("#lineId").val();
@@ -155,10 +153,17 @@
                     }
 
                     if (confirm("開始計算效率? 工單: " + po + " 機種: " + modelName)) {
-                        saveFqcInfo({
-                            po: po,
-                            modelName: modelName
-                        }, container);
+                        var cookieInfo = $.parseJSON($.cookie(fqcCookieName));
+                        var fqc = findReconnectable(cookieInfo["fqcLine.id"], po);
+                        if (fqc.id == 0) {
+                            saveFqcInfo({
+                                po: po,
+                                modelName: modelName
+                            }, container);
+                        } else {
+                            reconnectAbnormal(fqc, container);
+                            e.stopImmediatePropagation();
+                        }
                     } else {
                         e.stopImmediatePropagation();
                     }
@@ -168,13 +173,13 @@
                 $(".pause-timer-btn").on("click", function (e) {
                     var container = $(this).parents(".timer-container");
                     container.find(".fqc-status").html("計算時間中...(暫停)");
-                    container.find(".remove-timer-btn, .fqc-remark").removeAttr("disabled");
+                    modePauseProductivity(container);
                 });
 
                 $(".resume-timer-btn").on("click", function (e) {
                     var container = $(this).parents(".timer-container");
                     container.find(".fqc-status").html("計算時間中...");
-                    container.find(".remove-timer-btn, .fqc-remark").attr("disabled", true);
+                    modeStartProductivity(container);
                 });
 
                 $(".remove-timer-btn").on("click", function (e) {
@@ -195,6 +200,41 @@
                         }
                     } else {
                         e.stopImmediatePropagation();
+                    }
+                });
+
+                $(".fqc-abnormal-btn").on("click", function (e) {
+
+                    var container = $(this).parents(".timer-container");
+                    var fqc_id = container.find(".fqc-id").val();
+                    var timeCost = container.find(".timer").data('seconds');
+                    var remark = container.find(".fqc-remark").val();
+
+                    if (confirm("確認異常?")) {
+                        $.ajax({
+                            type: "Post",
+                            url: "FqcController/addAbnormalReconnectableSignAndClose",
+                            data: {
+                                "fqc.id": fqc_id,
+                                "timeCost": timeCost,
+                                "remark": remark
+                            },
+                            dataType: "html",
+                            global: false,
+                            success: function (response) {
+                                alert(response);
+                                if (response == "success") {
+                                    modeStopProductivity(container);
+                                    container.find(".fqc-status").removeClass("alert-success").html("");
+                                    container.find(".po, .timer-destroy").prop("disabled", false);
+                                    container.find(".po, .modelName, .fqc-remark").val("");
+                                    container.find(".timer").timer('remove');
+                                }
+                            },
+                            error: function (xhr, ajaxOptions, thrownError) {
+                                showMsg(xhr.responseText);
+                            }
+                        });
                     }
                 });
 
@@ -264,6 +304,66 @@
                     });
                 }
 
+                function reconnectAbnormal(fqc, container) {
+                    $.ajax({
+                        type: "Post",
+                        url: "FqcController/reconnectAbnormal",
+                        data: JSON.stringify(fqc),
+                        contentType: "application/json",
+                        dataType: "json",
+                        success: function (response) {
+                            var historyRecord = response;
+
+                            var fqcObject = fqc;
+
+                            modeStartProductivity(container);
+                            container.find(".po, .timer-destroy").prop("disabled", true);
+                            container.find(".fqc-status").toggleClass("alert-success")
+                                    .addClass("alert-danger").html("計算時間中...");
+                            container.find(".fqc-id").val(fqcObject.id);
+
+                            var timerLastTime = historyRecord.timeCost;
+
+                            alert("已經接續上次的紀錄(持續時間: " + timerLastTime + " 秒, 製作PCS: " + historyRecord.pcs + ")");
+
+                            console.log(timerLastTime);
+                            console.log(Number.isInteger(timerLastTime));
+
+                            container.find(".timer").timer({
+                                seconds: timerLastTime //Specify start time in seconds
+                            });
+
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            showMsg(xhr.responseText);
+                            container.find(".pause-timer-btn, .resume-timer-btn, .remove-timer-btn").hide();
+                            container.find(".start-timer-btn").show();
+                            container.find(".timer").timer('remove');
+                        }
+                    });
+                }
+
+                function findReconnectable(fqcLine_id, po) {
+                    var result;
+                    $.ajax({
+                        type: "GET",
+                        url: "<c:url value="/FqcController/findReconnectable" />",
+                        data: {
+                            fqcLine_id: fqcLine_id,
+                            po: po
+                        },
+                        dataType: "json",
+                        async: false,
+                        success: function (response) {
+                            result = response;
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            showMsg(xhr.responseText);
+                        }
+                    });
+                    return result;
+                }
+
                 function fqcComplete(fqc_id, timeCost, remark, container) {
                     $.ajax({
                         type: "Post",
@@ -278,10 +378,10 @@
                         success: function (response) {
                             alert(response);
                             if (response == "success") {
-                                modeStopProductivity(container);
                                 container.find(".fqc-status").removeClass("alert-success").html("");
                                 container.find(".po, .timer-destroy").prop("disabled", false);
                                 container.find(".po, .modelName, .fqc-remark").val("");
+                                modeStopProductivity(container);
                             }
                         },
                         error: function (xhr, ajaxOptions, thrownError) {
@@ -449,20 +549,20 @@
                 function modeStartProductivity(container) {
                     container.find(".start-timer-btn, .resume-timer-btn").hide();
                     container.find(".pause-timer-btn").show();
-                    container.find(".remove-timer-btn, .fqc-remark").show().attr("disabled", true);
+                    container.find(".remove-timer-btn, .fqc-remark, .fqc-abnormal-btn").show().attr("disabled", true);
                 }
 
                 function modePauseProductivity(container) {
                     container.find(".start-timer-btn, .pause-timer-btn").hide();
                     container.find(".resume-timer-btn").show();
-                    container.find(".remove-timer-btn").show().removeAttr("disabled");
+                    container.find(".remove-timer-btn, .fqc-abnormal-btn").show().removeAttr("disabled");
                     container.find(".fqc-remark").show().removeAttr("disabled");
                 }
 
                 function modeStopProductivity(container) {
                     container.find(".start-timer-btn").show();
                     container.find(".pause-timer-btn, .resume-timer-btn, .remove-timer-btn").hide();
-                    container.find(".remove-timer-btn, .fqc-remark").show().attr("disabled", true);
+                    container.find(".remove-timer-btn, .fqc-remark, .fqc-abnormal-btn").show().attr("disabled", true);
                 }
 
                 function initProcessingFqc(fqcLine_id) {
@@ -470,7 +570,7 @@
                         return false;
                     }
                     $.ajax({
-                        type: "Post",
+                        type: "Get",
                         url: "FqcController/findProcessing",
                         data: {
                             "fqcLine.id": fqcLine_id
@@ -486,7 +586,6 @@
 
                             $(".timer-container:not(:first)").each(function () {
                                 var tempObject = timerTempArray[i + 1];
-                                console.log(tempObject);
                                 var fqcData = response[i++];
                                 var container = $(this);
                                 container.find(".fqc-id").val(fqcData.id);
@@ -494,7 +593,7 @@
                                 container.find(".modelName").val(fqcData.modelName);
 
                                 var tempSecond = 0;
-                                if ('timerPauseTemp' in tempObject) {
+                                if (tempObject != null && 'timerPauseTemp' in tempObject) {
                                     tempSecond = tempObject.timerPauseTemp;
                                 }
 
@@ -574,27 +673,44 @@
                     </div>
                     <div id="timer-area">
                         <div class="row timer-container">
-                            <div class="col-md-2">
-                                <input type="hidden" class="fqc-id">
-                                <input name="po" class="form-control po upperText" placeholder="Please insert your po" type="text">
-                                <input type="text" name="modelname" class="modelName" placeholder="機種" readonly style="background: #CCC; width: 180px" />
-                            </div>
-                            <div class="col-md-2">
-                                <input name="timer" class="form-control timer" placeholder="0 sec" type="text" readonly="">
-                            </div>
-                            <div class="col-md-3">
-                                <button class="btn btn-success start-timer-btn">Start</button>
-                                <button class="btn btn-success resume-timer-btn">Resume</button>
-                                <button class="btn pause-timer-btn">Pause</button>
-                                <button class="btn btn-danger remove-timer-btn">儲存作業時間到資料庫</button>
-                            </div>
-                            <div class="col-md-2">
-                                <textarea  class="form-control fqc-remark" placeholder="備註欄位"></textarea>
-                                <input type="button" class="btn btn-default timer-destroy" value="-" />
-                            </div>
-                            <div class="col-md-3">
-                                <div class="fqc-status alert">This is some message.</div>
-                            </div>
+                            <table class="table table-condensed">
+                                <tr>
+                                    <td>
+                                        <input type="hidden" class="fqc-id">
+                                        <input name="po" class="form-control po upperText" placeholder="Please insert your po" type="text">
+                                    </td>
+                                    <td>
+                                        <input name="timer" class="form-control timer" placeholder="0 sec" type="text" readonly="">
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-success start-timer-btn">Start</button>
+                                        <button class="btn btn-success resume-timer-btn">Resume</button>
+                                        <button class="btn pause-timer-btn">Pause</button>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-danger remove-timer-btn">儲存作業時間到資料庫</button>
+                                    </td>
+                                    <td rowspan="2">
+                                        <textarea  class="form-control fqc-remark" placeholder="備註欄位"></textarea>
+                                        <input type="button" class="btn btn-default timer-destroy" value="-" />
+                                    </td>
+                                    <td rowspan="2">
+                                        <div class="fqc-status alert">This is some message.</div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <input type="text" name="modelname" class="modelName" placeholder="機種" readonly style="background: #CCC; width: 180px" />
+                                    </td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>
+                                        <button class="btn btn-warning fqc-abnormal-btn">異常</button>
+                                    </td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </table>
                         </div>
                     </div>
                 </div>
