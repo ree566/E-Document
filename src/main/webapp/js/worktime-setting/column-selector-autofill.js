@@ -57,3 +57,20 @@ var businessGroup_select_event = [
         }
     }
 ];
+
+var nsInOneCollectionBox_change_event = [
+    {
+        type: 'change',
+        fn: function (e) {
+            var t = $(this).val();
+            $('input#weightAff').val(t >= 2 ? 0.05 : 0);
+        }
+    },
+    {
+        type: 'keyup',
+        fn: function (e) {
+            var t = $(this).val();
+            $('input#weightAff').val(t >= 2 ? 0.05 : 0);
+        }
+    }
+];

@@ -220,7 +220,7 @@
                 {label: 'FCC', name: "fcc", width: 60, searchrules: number_search_rule, searchoptions: search_string_options, edittype: "select", editoptions: {value: "0:0;1:1"}},
                 {label: 'EAC', name: "eac", width: 60, searchrules: number_search_rule, searchoptions: search_string_options, edittype: "select", editoptions: {value: "0:0;1:1"}},
                 {label: 'KC', name: "kc", width: 60, searchrules: number_search_rule, searchoptions: search_string_options, edittype: "select", editoptions: {value: "0:0;1:1"}},
-                {label: 'N合1集合箱', name: "nsInOneCollectionBox", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, editoptions: {defaultValue: '0'}},
+                {label: 'N合1集合箱', name: "nsInOneCollectionBox", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, editoptions: {defaultValue: '0', dataEvents: nsInOneCollectionBox_change_event}},
                 {label: 'SN是否等於SSN', name: "partNoAttributeMaintain", edittype: "select", editoptions: {value: "N:N; :empty", defaultValue: ' '}, width: 120, searchrules: {required: true}, searchoptions: search_string_options},
                 {label: 'ACW Voltage', name: "acwVoltage", width: 100, search: true, searchrules: {required: true}, searchoptions: search_string_options, edittype: "text", editoptions: {defaultValue: '1776'}, editrules: {required: true}},
                 {label: 'IR Voltage', name: "irVoltage", width: 100, search: true, searchrules: {required: true}, searchoptions: search_string_options, edittype: "text", editoptions: {defaultValue: '500'}, editrules: {required: true}},
@@ -228,6 +228,7 @@
                 {label: 'Test Profile', name: "testProfile", width: 100, search: true, searchrules: {required: true}, searchoptions: search_string_options, edittype: "text", editoptions: {defaultValue: '601'}, editrules: {required: true}},
                 {label: 'LLT Value', name: "lltValue", width: 100, search: true, searchrules: {required: true}, searchoptions: search_string_options, edittype: "text", editoptions: {defaultValue: '100,500,500,1000,500,100,500,500,1000,500'}, editrules: {required: true}},
                 {label: '禮盒總重量(含配件)', name: "weight", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true, required: true}, editoptions: {defaultValue: '0'}},
+                {label: '禮盒總重量(附加屬性質)', name: "weightAff", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true, required: true}, editoptions: {defaultValue: '0'}},
                 {label: '整箱總重量誤差值', name: "tolerance", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true, required: true}, editoptions: {defaultValue: '0'}},
                 {label: '組裝排站人數', name: "assyStation", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: {elmsuffix: addFormulaCheckbox("assyStation")}, editrules: {integer: true}, editoptions: {defaultValue: '0'}},
                 {label: '包裝排站人數', name: "packingStation", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: {elmsuffix: addFormulaCheckbox("packingStation")}, editrules: {integer: true}, editoptions: {defaultValue: '0'}},
@@ -288,7 +289,7 @@
                 {startColumnName: 'assyLeadTime', numberOfColumns: 2, titleText: '<em>組裝看板工時</em>'},
                 {startColumnName: 'packingLeadTime', numberOfColumns: 2, titleText: '<em>包裝看板工時</em>'},
                 {startColumnName: 'acwVoltage', numberOfColumns: 5, titleText: '<em>hi-pot Test</em>'},
-                {startColumnName: 'weight', numberOfColumns: 2, titleText: '<em>包裝重量</em>'}
+                {startColumnName: 'weight', numberOfColumns: 3, titleText: '<em>包裝重量</em>'}
             ]
         });
         grid.jqGrid('navGrid', '#pager',

@@ -21,10 +21,15 @@ import com.advantech.webservice.unmarshallclass.MaterialFlow;
 import com.advantech.webservice.unmarshallclass.MaterialProperty;
 import com.advantech.webservice.unmarshallclass.MaterialPropertyUserPermission;
 import com.advantech.webservice.unmarshallclass.MaterialPropertyValue;
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.transaction.Transactional;
 import static junit.framework.Assert.*;
+import org.apache.commons.lang3.math.NumberUtils;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,7 +50,6 @@ import org.springframework.test.context.web.WebAppConfiguration;
 })
 @RunWith(SpringJUnit4ClassRunner.class)
 @Transactional
-@Rollback(true)
 public class QueryPortTest {
 
     @Autowired
@@ -159,7 +163,7 @@ public class QueryPortTest {
         assertEquals("N", value.getValue());
     }
 
-    @Test
+//    @Test
     public void testRetriveMatPropertyValue() throws Exception {
         List<Worktime> worktimes = worktimeService.findAll();
         for (Worktime worktime : worktimes) {
@@ -183,5 +187,31 @@ public class QueryPortTest {
             }
         }
         worktimeService.update(worktimes);
+    }
+
+    @Autowired
+    private SessionFactory sessionFactory;
+
+    @Test
+    @Rollback(false)
+    public void updateAffValue() throws Exception {
+        Session session = sessionFactory.getCurrentSession();
+        List<Worktime> worktimes = worktimeService.findAll();
+        for (Worktime worktime : worktimes) {
+            System.out.println("Update " + worktime.getModelName());
+            List<MaterialPropertyValue> l = materialPropertyValueQueryPort.query(worktime);
+            MaterialPropertyValue weight = l.stream().filter(we -> "IW".equals(we.getMatPropertyNo())).findFirst().orElse(null);
+            if (weight != null) {
+                String affRemote = weight.getAffPropertyValue();
+                if (NumberUtils.isNumber(affRemote)) {
+                    worktime.setWeightAff(new BigDecimal(affRemote));
+                } else {
+                    worktime.setWeightAff(BigDecimal.ZERO);
+                }
+                session.merge(worktime);
+            } else {
+                System.out.println("IW not found");
+            }
+        }
     }
 }
