@@ -6,13 +6,9 @@
 package com.advantech.webservice;
 
 import com.advantech.model.UserOnMes;
-import java.net.URL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tempuri.Service;
-import org.tempuri.ServiceSoap;
 import static com.google.common.base.Preconditions.*;
-import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tempuri.TxResponse;

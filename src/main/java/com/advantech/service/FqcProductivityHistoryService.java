@@ -5,8 +5,8 @@
  */
 package com.advantech.service;
 
-import com.advantech.dao.FqcProducitvityHistoryDAO;
-import com.advantech.model.FqcProducitvityHistory;
+import com.advantech.dao.FqcProductivityHistoryDAO;
+import com.advantech.model.FqcProductivityHistory;
 import java.util.List;
 import java.util.Map;
 import org.joda.time.DateTime;
@@ -20,16 +20,16 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @Transactional
-public class FqcProducitvityHistoryService {
+public class FqcProductivityHistoryService {
 
     @Autowired
-    private FqcProducitvityHistoryDAO fqcProducitvityHistoryDAO;
+    private FqcProductivityHistoryDAO fqcProducitvityHistoryDAO;
 
-    public List<FqcProducitvityHistory> findAll() {
+    public List<FqcProductivityHistory> findAll() {
         return fqcProducitvityHistoryDAO.findAll();
     }
 
-    public FqcProducitvityHistory findByPrimaryKey(Object obj_id) {
+    public FqcProductivityHistory findByPrimaryKey(Object obj_id) {
         return fqcProducitvityHistoryDAO.findByPrimaryKey(obj_id);
     }
 
@@ -41,19 +41,19 @@ public class FqcProducitvityHistoryService {
         return fqcProducitvityHistoryDAO.findComplete(sD, eD);
     }
 
-    public FqcProducitvityHistory findByFqc(int fqc_id) {
+    public FqcProductivityHistory findByFqc(int fqc_id) {
         return fqcProducitvityHistoryDAO.findByFqc(fqc_id);
     }
 
-    public int insert(FqcProducitvityHistory pojo) {
+    public int insert(FqcProductivityHistory pojo) {
         return fqcProducitvityHistoryDAO.insert(pojo);
     }
 
-    public int update(FqcProducitvityHistory pojo) {
+    public int update(FqcProductivityHistory pojo) {
         return fqcProducitvityHistoryDAO.update(pojo);
     }
 
-    public int delete(FqcProducitvityHistory pojo) {
+    public int delete(FqcProductivityHistory pojo) {
         return fqcProducitvityHistoryDAO.delete(pojo);
     }
 

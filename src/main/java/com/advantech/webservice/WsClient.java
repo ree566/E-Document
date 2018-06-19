@@ -39,14 +39,6 @@ public class WsClient extends WebServiceGatewaySupport {
     @Autowired
     @Qualifier("webServiceTemplate")
     private WebServiceTemplate webServiceTemplate;
-    
-//    @Autowired
-//    @Qualifier("webServiceTemplate1")
-//    private WebServiceTemplate m6WebService;
-//    
-//    @Autowired
-//    @Qualifier("webServiceTemplate2")
-//    private WebServiceTemplate m2WebService;
 
     public TxResponse simpleTxSendAndReceive(String v, UploadType type) throws IOException {
         ObjectFactory factory = new ObjectFactory();

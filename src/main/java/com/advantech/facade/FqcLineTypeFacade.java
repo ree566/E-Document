@@ -7,10 +7,10 @@ package com.advantech.facade;
 
 import com.advantech.model.Fqc;
 import com.advantech.model.FqcLine;
-import com.advantech.model.FqcProducitvityHistory;
+import com.advantech.model.FqcProductivityHistory;
 import com.advantech.model.PassStationRecord;
 import com.advantech.service.FqcLineService;
-import com.advantech.service.FqcProducitvityHistoryService;
+import com.advantech.service.FqcProductivityHistoryService;
 import com.advantech.webservice.WebServiceRV;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,7 +36,7 @@ public class FqcLineTypeFacade extends BasicLineTypeFacade {
     private FqcLineService fqcLineService;
 
     @Autowired
-    private FqcProducitvityHistoryService fqcProducitvityHistoryService;
+    private FqcProductivityHistoryService fqcProducitvityHistoryService;
 
     @Autowired
     private WebServiceRV rv;

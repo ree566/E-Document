@@ -9,7 +9,7 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <sec:authorize access="hasRole('ADMIN')"  var="isAdmin" />
-<sec:authorize access="hasRole('OPER_FQC')"  var="isFqcOper" />
+<sec:authorize access="hasAnyRole('OPER_FQC', 'FQC_USER')"  var="isFqcOper" />
 <sec:authorize access="isAuthenticated()"  var="isAuthenticated">
     <sec:authentication property="principal" var="user" />
     <sec:authentication property="principal.jobnumber" var="jobnumber" /> 
@@ -61,6 +61,10 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                 $(":button").addClass("btn btn-default");
 
                 initTable();
+
+                $.getJSON('<c:url value="/json/fqcRemarkOptions.json" />', function (data) {
+                    initFqcRemarkTemplate(data.fqcRemarkTemplate);
+                });
 
                 $("#search").click(initTable);
 
@@ -114,6 +118,18 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                             alert(xhr.responseText);
                         }
                     });
+                });
+                
+                $("#remark-template").change(function () {
+                    var sel = $(this);
+                    var selVal = sel.val();
+                    var remarkWiget = $("#remark");
+                    if (selVal != -1) {
+                        var selText = sel.children(':selected').text();
+                        remarkWiget.val("").val(selText);
+                    } else {
+                        remarkWiget.val("");
+                    }
                 });
 
                 function initTable() {
@@ -250,6 +266,14 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                     return productivity;
                 }
 
+                function initFqcRemarkTemplate(templateOptions) {
+                    var target = $("#remark-template");
+                    for (var i = 0; i < templateOptions.length; i++) {
+                        var option = templateOptions[i];
+                        target.append("<option value='" + option.id + "'>" + option.val + "</option>");
+                    }
+                }
+
             });
 
 
@@ -308,6 +332,9 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                                 <div class="input-group col-sm-9">
                                     <textarea type="number" id="remark" name="remark" class="input-xlarge form-control"></textarea>
                                 </div><br />
+                                <select id="remark-template">
+                                    <option value="-1">使用範本</option>
+                                </select>
                                 <input type="hidden" id="currentID" value="" />                         
                             </fieldset>
                         </div>

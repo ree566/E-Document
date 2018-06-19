@@ -309,7 +309,7 @@
                         hnd = window.setTimeout(function () {
                             $.ajax({
                                 type: "GET",
-                                url: "BabController/findModelNameByPo",
+                                url: "ModelController/findModelNameByPo",
                                 data: {
                                     po: text.trim()
                                 },

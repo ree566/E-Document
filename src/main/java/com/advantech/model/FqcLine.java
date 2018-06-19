@@ -5,7 +5,9 @@
  */
 package com.advantech.model;
 
+import com.advantech.converter.FactoryConverter;
 import com.advantech.converter.LineStatusConverter;
+import com.advantech.webservice.Factory;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import java.util.HashSet;
@@ -35,6 +37,7 @@ public class FqcLine implements Serializable {
     private Floor floor;
     private LineStatus lineStatus;
     private int lock;
+    private Factory factory;
 
     @JsonIgnore
     private Set<FqcLoginRecord> fqcLoginRecords = new HashSet<FqcLoginRecord>(0);
@@ -95,6 +98,16 @@ public class FqcLine implements Serializable {
 
     public void setFqcLoginRecords(Set<FqcLoginRecord> fqcLoginRecords) {
         this.fqcLoginRecords = fqcLoginRecords;
+    }
+
+    @Column(name = "factory")
+    @Convert(converter = FactoryConverter.class)
+    public Factory getFactory() {
+        return factory;
+    }
+
+    public void setFactory(Factory factory) {
+        this.factory = factory;
     }
 
 }

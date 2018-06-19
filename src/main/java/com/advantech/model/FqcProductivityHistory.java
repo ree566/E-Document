@@ -22,7 +22,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "FqcProducitvityHistory")
-public class FqcProducitvityHistory implements Serializable {
+public class FqcProductivityHistory implements Serializable {
 
     private int id;
     private Fqc fqc;
@@ -30,10 +30,10 @@ public class FqcProducitvityHistory implements Serializable {
     private int timeCost;
     private int standardTime;
 
-    public FqcProducitvityHistory() {
+    public FqcProductivityHistory() {
     }
 
-    public FqcProducitvityHistory(Fqc fqc, int pcs, int timeCost, int standardTime) {
+    public FqcProductivityHistory(Fqc fqc, int pcs, int timeCost, int standardTime) {
         this.fqc = fqc;
         this.pcs = pcs;
         this.timeCost = timeCost;

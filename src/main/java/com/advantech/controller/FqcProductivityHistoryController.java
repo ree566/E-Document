@@ -7,8 +7,8 @@
 package com.advantech.controller;
 
 import com.advantech.datatable.DataTableResponse;
-import com.advantech.model.FqcProducitvityHistory;
-import com.advantech.service.FqcProducitvityHistoryService;
+import com.advantech.model.FqcProductivityHistory;
+import com.advantech.service.FqcProductivityHistoryService;
 import java.io.*;
 import org.joda.time.DateTime;
 import org.quartz.SchedulerException;
@@ -28,12 +28,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
  */
 @Controller
 @RequestMapping("/FqcProducitvityHistoryController")
-public class FqcProducitvityHistoryController {
+public class FqcProductivityHistoryController {
 
-    private static final Logger log = LoggerFactory.getLogger(FqcProducitvityHistoryController.class);
+    private static final Logger log = LoggerFactory.getLogger(FqcProductivityHistoryController.class);
 
     @Autowired
-    private FqcProducitvityHistoryService fqcProducitvityHistoryService;
+    private FqcProductivityHistoryService fqcProducitvityHistoryService;
 
     @RequestMapping(value = "/findByDate", method = {RequestMethod.GET})
     @ResponseBody
@@ -48,7 +48,7 @@ public class FqcProducitvityHistoryController {
     
     @RequestMapping(value = "/findByFqc", method = {RequestMethod.GET})
     @ResponseBody
-    public FqcProducitvityHistory findByFqc(int fqc_id){
+    public FqcProductivityHistory findByFqc(int fqc_id){
         return fqcProducitvityHistoryService.findByFqc(fqc_id);
     }
 }

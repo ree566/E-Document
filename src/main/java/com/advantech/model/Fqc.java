@@ -53,7 +53,7 @@ public class Fqc implements Serializable {
     private Set<FqcSettingHistory> fqcSettingHistorys = new HashSet<FqcSettingHistory>(0);
 
     @JsonIgnore
-    private Set<FqcProducitvityHistory> fqcProducitvityHistorys = new HashSet<FqcProducitvityHistory>(0);
+    private Set<FqcProductivityHistory> fqcProducitvityHistorys = new HashSet<FqcProductivityHistory>(0);
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -154,11 +154,11 @@ public class Fqc implements Serializable {
     }
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "fqc")
-    public Set<FqcProducitvityHistory> getFqcProducitvityHistorys() {
+    public Set<FqcProductivityHistory> getFqcProducitvityHistorys() {
         return fqcProducitvityHistorys;
     }
 
-    public void setFqcProducitvityHistorys(Set<FqcProducitvityHistory> fqcProducitvityHistorys) {
+    public void setFqcProducitvityHistorys(Set<FqcProductivityHistory> fqcProducitvityHistorys) {
         this.fqcProducitvityHistorys = fqcProducitvityHistorys;
     }
 

@@ -9,10 +9,13 @@ package com.advantech.controller;
 import com.advantech.converter.BabStatusControllerConverter;
 import com.advantech.model.BabStatus;
 import com.advantech.model.Fqc;
-import com.advantech.model.FqcProducitvityHistory;
-import com.advantech.service.FqcProducitvityHistoryService;
+import com.advantech.model.FqcModelStandardTime;
+import com.advantech.model.FqcProductivityHistory;
+import com.advantech.service.FqcModelStandardTimeService;
+import com.advantech.service.FqcProductivityHistoryService;
 import com.advantech.service.FqcService;
 import static com.google.common.base.Preconditions.*;
+import java.util.Comparator;
 import java.util.List;
 import javax.validation.Valid;
 import org.slf4j.Logger;
@@ -35,19 +38,22 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 @RequestMapping("/FqcController")
 public class FqcController {
-    
+
     private static final Logger log = LoggerFactory.getLogger(FqcController.class);
-    
+
     @InitBinder
     public void initBinder(WebDataBinder dataBinder) {
         dataBinder.registerCustomEditor(BabStatus.class, new BabStatusControllerConverter());
     }
-    
+
     @Autowired
     private FqcService fqcService;
-    
+
     @Autowired
-    private FqcProducitvityHistoryService productivityService;
+    private FqcProductivityHistoryService productivityService;
+
+    @Autowired
+    private FqcModelStandardTimeService standardTimeService;
 
     //FqcLine should not be null
     @RequestMapping(value = "/insert", method = {RequestMethod.POST})
@@ -56,15 +62,15 @@ public class FqcController {
         fqcService.checkAndInsert(fqc);
         return fqc;
     }
-    
+
     @RequestMapping(value = "/reconnectAbnormal", method = {RequestMethod.POST})
     @ResponseBody
-    public FqcProducitvityHistory reconnectAbnormal(@Valid @RequestBody Fqc fqc) {
-        FqcProducitvityHistory p = productivityService.findByFqc(fqc.getId());
+    public FqcProductivityHistory reconnectAbnormal(@Valid @RequestBody Fqc fqc) {
+        FqcProductivityHistory p = productivityService.findByFqc(fqc.getId());
         fqcService.reconnectAbnormal(fqc);
         return p;
     }
-    
+
     @RequestMapping(value = "/findReconnectable", method = {RequestMethod.GET})
     @ResponseBody
     public Fqc findReconnectable(@RequestParam int fqcLine_id, String po) {
@@ -80,15 +86,10 @@ public class FqcController {
             @RequestParam int timeCost,
             @RequestParam String remark
     ) {
-        
-        Fqc fqc = fqcService.findByPrimaryKey(fqc_id);
-        checkArgument(fqc != null, "Can't find fqc object in database");
-        
-        fqc.setRemark(remark == null || "".equals(remark.trim()) ? null : remark);
-        fqcService.stationComplete(fqc, timeCost);
+        fqcService.stationComplete(fqc_id, remark, timeCost);
         return "success";
     }
-    
+
     @RequestMapping(value = "/addAbnormalReconnectableSignAndClose", method = {RequestMethod.POST})
     @ResponseBody
     protected String addAbnormalReconnectableSignAndClose(
@@ -96,21 +97,16 @@ public class FqcController {
             @RequestParam int timeCost,
             @RequestParam String remark
     ) {
-        
-        Fqc fqc = fqcService.findByPrimaryKey(fqc_id);
-        checkArgument(fqc != null, "Can't find fqc object in database");
-        
-        fqc.setRemark(remark == null || "".equals(remark.trim()) ? null : remark);
-        fqcService.addAbnormalReconnectableSignAndClose(fqc, timeCost);
+        fqcService.addAbnormalReconnectableSignAndClose(fqc_id, remark, timeCost);
         return "success";
     }
-    
+
     @RequestMapping(value = "/findProcessing", method = {RequestMethod.GET})
     @ResponseBody
     protected List<Fqc> findProcessing(@RequestParam(name = "fqcLine.id") int fqcLine_id) {
         return fqcService.findProcessing(fqcLine_id);
     }
-    
+
     @RequestMapping(value = "/updateRemark", method = {RequestMethod.POST})
     @ResponseBody
     protected String updateRemark(@RequestParam int id, @RequestParam(required = false) String remark) {
@@ -119,5 +115,16 @@ public class FqcController {
         fqc.setRemark(remark);
         fqcService.update(fqc);
         return "success";
+    }
+
+    @RequestMapping(value = "/findStandardTime", method = {RequestMethod.POST})
+    @ResponseBody
+    protected FqcModelStandardTime findStandardTime(@RequestParam String modelName) {
+        List<FqcModelStandardTime> l = standardTimeService.findAll();
+        FqcModelStandardTime standardTime = l.stream()
+                .filter(f -> modelName.contains(f.getModelNameCategory()))
+                .max(Comparator.comparing(s -> s.getModelNameCategory().length()))
+                .orElseGet(FqcModelStandardTime::new);
+        return standardTime;
     }
 }

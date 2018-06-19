@@ -389,48 +389,31 @@ public class TestHibernate {
                 .add(Restrictions.eq("b.babStatus", BabStatus.CLOSED))
                 .setMaxResults(10)
                 .list();
-        
-        l.forEach(b ->{
+
+        l.forEach(b -> {
             Hibernate.initialize(b.getBab().getBabAlarmHistorys());
         });
-        
+
         HibernateObjectPrinter.print(l);
 
     }
-    
+
     @Autowired
     private WebServiceRV rv;
-    
+
     @Autowired
     private PassStationRecordService passStationService;
-    
-//    @Test
-    @Transactional
-    @Rollback(false)
-    public void testMergePassStationRecord(){
-        String po = "PII3346ZA";
-        
-        List<PassStationRecord> l = rv.getPassStationRecords(po);
-        List<PassStationRecord> history = passStationService.findByPo(po);
 
-        List<PassStationRecord> newData = (List<PassStationRecord>) CollectionUtils.subtract(l, history);
-
-        if (!newData.isEmpty()) {
-            passStationService.insert(newData);
-        }
-        
-    }
-    
     @Test
     @Transactional
     @Rollback(true)
-    public void testOneToMany(){
+    public void testOneToMany() {
         Session session = sessionFactory.getCurrentSession();
         List<Fqc> l = session
                 .createQuery("from FqcSettingHistory h join h.fqc f order by f.id desc")
                 .setMaxResults(10)
                 .list();
-        
+
         HibernateObjectPrinter.print(l);
     }
 }

@@ -10,7 +10,6 @@ import com.advantech.model.PassStationRecords;
 import com.advantech.model.TestRecord;
 import com.advantech.model.TestRecords;
 import com.advantech.model.UserOnMes;
-import static com.google.common.base.Preconditions.*;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -42,6 +41,9 @@ public class WebServiceRV {
 
     @Autowired
     private WsClient client;
+
+    @Autowired
+    private MultiWsClient mClient;
 
     //Get data from WebService
     private List<Object> getWebServiceData(String queryString) {
@@ -91,11 +93,16 @@ public class WebServiceRV {
         return requestQueueName;
     }
 
-    public String getModelnameByPo(String po) {
+    public String getModelNameByPo(String po, Factory f) {
         String queryString = "<root><METHOD ID='WIPSO.QryWipAtt001'/><WIP_ATT><WIP_NO>"
                 + po
                 + "</WIP_NO><ITEM_NO></ITEM_NO></WIP_ATT></root>";
-        Document doc = this.getWebServiceDataForDocument(queryString);
+        
+        RvResponse response = mClient.simpleRvSendAndReceive(queryString, f);
+        RvResponse.RvResult result = response.getRvResult();
+        List l = result.getAny();
+
+        Document doc = ((Node) l.get(1)).getOwnerDocument();
         String childTagName = "ITEM_NO";
         Element rootElement = doc.getDocumentElement();
         String requestQueueName = getString(childTagName, rootElement);
@@ -122,7 +129,7 @@ public class WebServiceRV {
         }
     }
 
-    public List<PassStationRecord> getPassStationRecords(String po) {
+    public List<PassStationRecord> getPassStationRecords(String po, final Factory f) {
         String stations = "16";
 
         try {
@@ -133,7 +140,10 @@ public class WebServiceRV {
                     + stations
                     + "</STATION_ID></WIP_INFO></root>";
 
-            List l = this.getWebServiceData(queryString);
+            RvResponse response = mClient.simpleRvSendAndReceive(queryString, f);
+            RvResponse.RvResult result = response.getRvResult();
+            List l = result.getAny();
+
             Document doc = ((Node) l.get(1)).getOwnerDocument();
             //Skip the <diffgr:diffgram> tag, read QryData tag directly.
             Node node = doc.getFirstChild().getFirstChild();

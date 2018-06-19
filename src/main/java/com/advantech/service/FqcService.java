@@ -11,9 +11,10 @@ import com.advantech.model.Fqc;
 import com.advantech.model.FqcLine;
 import com.advantech.model.FqcLoginRecord;
 import com.advantech.model.FqcModelStandardTime;
-import com.advantech.model.FqcProducitvityHistory;
+import com.advantech.model.FqcProductivityHistory;
 import com.advantech.model.FqcSettingHistory;
 import com.advantech.model.PassStationRecord;
+import com.advantech.webservice.Factory;
 import com.advantech.webservice.WebServiceRV;
 import static com.google.common.base.Preconditions.*;
 import java.util.Comparator;
@@ -44,7 +45,7 @@ public class FqcService {
     private PassStationRecordService passStationRecordService;
 
     @Autowired
-    private FqcProducitvityHistoryService fqcProducitvityHistoryService;
+    private FqcProductivityHistoryService fqcProducitvityHistoryService;
 
     @Autowired
     private FqcModelStandardTimeService fqcModelStandardTimeService;
@@ -96,22 +97,28 @@ public class FqcService {
         history.setLastUpdateTime(null);
         fqcSettingHistoryService.update(history);
 
-        FqcProducitvityHistory pHistory = fqcProducitvityHistoryService.findByFqc(fqc.getId());
+        FqcProductivityHistory pHistory = fqcProducitvityHistoryService.findByFqc(fqc.getId());
         fqcProducitvityHistoryService.delete(pHistory);
         return 1;
     }
 
-    public int stationComplete(Fqc pojo, int timeCost) {
+    //Update Fqc, FqcSettingHistory, Save passStationRecord
+    public int stationComplete(int fqc_id, String remark, int timeCost) {
+        Fqc pojo = this.findByPrimaryKey(fqc_id);
+        checkArgument(pojo != null, "Can't find fqc object in database");
+
+        FqcLine fqcLine = pojo.getFqcLine();
 
         Date now = new Date();
         pojo.setBabStatus(BabStatus.CLOSED);
         pojo.setLastUpdateTime(now);
+        pojo.setRemark(remark == null || "".equals(remark.trim()) ? null : remark);
 
         FqcSettingHistory history = fqcSettingHistoryService.findByFqc(pojo);
         history.setLastUpdateTime(now);
         fqcSettingHistoryService.update(history);
 
-        List<PassStationRecord> records = rv.getPassStationRecords(pojo.getPo());
+        List<PassStationRecord> records = rv.getPassStationRecords(pojo.getPo(), fqcLine.getFactory());
         records.removeIf(rec -> !history.getJobnumber().equals(rec.getUserNo())
                 || rec.getCreateDate().before(pojo.getBeginTime())
                 || rec.getCreateDate().after(pojo.getLastUpdateTime()));
@@ -130,13 +137,14 @@ public class FqcService {
         }
 
         this.update(pojo);
-        fqcProducitvityHistoryService.insert(new FqcProducitvityHistory(pojo, records.size(),
+        fqcProducitvityHistoryService.insert(new FqcProductivityHistory(pojo, records.size(),
                 timeCost, standardTime == null ? 0 : standardTime.getStandardTime()));
         return 1;
     }
 
-    public int addAbnormalReconnectableSignAndClose(Fqc pojo, int timeCost) {
-        this.stationComplete(pojo, timeCost);
+    public int addAbnormalReconnectableSignAndClose(int fqc_id, String remark, int timeCost) {
+        this.stationComplete(fqc_id, remark, timeCost);
+        Fqc pojo = this.findByPrimaryKey(fqc_id);
         pojo.setBabStatus(BabStatus.UNFINSHED_RECONNECTABLE);
         this.update(pojo);
         return 1;

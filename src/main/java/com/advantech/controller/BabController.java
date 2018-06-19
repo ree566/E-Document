@@ -12,11 +12,8 @@ import com.advantech.model.view.BabAvg;
 import com.advantech.service.BabService;
 import com.advantech.service.LineBalancingService;
 import com.advantech.service.SqlViewService;
-import com.advantech.webservice.WebServiceRV;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -43,9 +40,6 @@ public class BabController {
     @Autowired
     private LineBalancingService lineBalancingService;
 
-    @Autowired
-    private WebServiceRV rv;
-
     @RequestMapping(value = "/findByMultipleClause", method = {RequestMethod.GET})
     @ResponseBody
     protected List<Bab> findByMultipleClause(
@@ -57,27 +51,10 @@ public class BabController {
         return babService.findByMultipleClause(startDate, endDate, lineType_id, sitefloor_id, aboveStandard);
     }
 
-    @RequestMapping(value = "/findModelNameByPo", method = {RequestMethod.GET})
-    @ResponseBody
-    protected String findModelNameByPo(@RequestParam String po) {
-        String modelname = rv.getModelnameByPo(po);
-        return (modelname == null ? "data not found" : convertString(modelname));
-    }
-
     @RequestMapping(value = "/findProcessingByTagName", method = {RequestMethod.GET})
     @ResponseBody
     protected List<Bab> findProcessingByTagName(@RequestParam String tagName) {
         return babService.findProcessingByTagName(tagName);
-    }
-
-    private String convertString(String input) {
-        StringBuilder converstring = new StringBuilder();
-        Pattern p = Pattern.compile("[\\w|-]");
-        Matcher matcher = p.matcher(input);
-        while (matcher.find()) {
-            converstring.append(matcher.group());
-        }
-        return converstring.toString();
     }
 
     @RequestMapping(value = "/findByModelAndDate", method = {RequestMethod.GET})

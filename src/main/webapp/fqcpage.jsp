@@ -51,8 +51,13 @@
             var timerCount = 0;
             var maxTimerCount = 10;
             var fqcLoginObj;
+            var lineArrTemp = [];
 
             $(function () {
+
+                $.getJSON('<c:url value="/json/fqcRemarkOptions.json" />', function (data) {
+                    initFqcRemarkTemplate(data.fqcRemarkTemplate);
+                });
 
                 //Add class to transform the button type to bootstrap.
                 $(":button").addClass("btn btn-default");
@@ -68,7 +73,9 @@
                 var lines = getLine();
                 if (lines != null) {
                     for (var i = 0; i < lines.length; i++) {
-                        setLineOptions(lines[i]);
+                        var line = lines[i];
+                        setLineOptions(line);
+                        lineArrTemp[line.id] = line;
                     }
                 }
 
@@ -95,7 +102,8 @@
                             lineName: lineName,
                             jobnumber: jobnumber,
                             floor: $("#userSitefloorSelect").val(),
-                            action: "LOGIN"
+                            action: "LOGIN",
+                            factory: lineArrTemp[lineId].factory
                         };
                         fqcLineSwitch(obj);
                     }
@@ -153,13 +161,23 @@
                     }
 
                     if (confirm("開始計算效率? 工單: " + po + " 機種: " + modelName)) {
+                        var standardTime = findStandardTime(modelName);
+                        if ((standardTime == null || standardTime.id == 0)) {
+                            if (!confirm("找不到標工，確定投入?")) {
+                                e.stopImmediatePropagation();
+                                return false;
+                            } else {
+                                container.find(".fqc-remark").val("(無標工)");
+                            }
+                        }
+
                         var cookieInfo = $.parseJSON($.cookie(fqcCookieName));
                         var fqc = findReconnectable(cookieInfo["fqcLine.id"], po);
                         if (fqc.id == 0) {
                             saveFqcInfo({
                                 po: po,
                                 modelName: modelName
-                            }, container);
+                            }, container, standardTime);
                         } else {
                             reconnectAbnormal(fqc, container);
                             e.stopImmediatePropagation();
@@ -244,12 +262,25 @@
                 });
 
                 $("#timer-add").trigger("click").hide();
-                $(".timer-destroy").hide();
-                $(".fqc-remark").attr("disabled", true);
+                $(".timer-destroy, .fqc-abnormal-btn").hide();
+                $(".fqc-remark, .remark-template").attr("disabled", true);
 
                 if (fqcLoginObj != null) {
                     initProcessingFqc(fqcLoginObj["fqcLine.id"]);
                 }
+
+                $(".remark-template").change(function () {
+                    var sel = $(this);
+                    var selVal = sel.val();
+                    var container = sel.parents(".timer-container");
+                    var remarkWiget = container.find(".fqc-remark");
+                    if (selVal != -1) {
+                        var selText = sel.children(':selected').text();
+                        remarkWiget.val("").val(selText);
+                    } else {
+                        remarkWiget.val("");
+                    }
+                });
 
                 function fqcFormInit() {
                     var fqcCookie = $.cookie(fqcCookieName);
@@ -277,7 +308,7 @@
                 }
 
                 //站別一對資料庫操作
-                function saveFqcInfo(data, container) {
+                function saveFqcInfo(data, container, standardTime) {
                     var totalUserInfo = $.extend($.parseJSON($.cookie(fqcCookieName)), data);
                     $.ajax({
                         type: "Post",
@@ -325,9 +356,6 @@
                             var timerLastTime = historyRecord.timeCost;
 
                             alert("已經接續上次的紀錄(持續時間: " + timerLastTime + " 秒, 製作PCS: " + historyRecord.pcs + ")");
-
-                            console.log(timerLastTime);
-                            console.log(Number.isInteger(timerLastTime));
 
                             container.find(".timer").timer({
                                 seconds: timerLastTime //Specify start time in seconds
@@ -467,15 +495,17 @@
                 }
 
                 function getModel(text, obj) {
+                    var lineId = $("#lineId").val()
                     var reg = "^[0-9a-zA-Z]+$";
                     if (text != "" && text.match(reg)) {
                         window.clearTimeout(hnd);
                         hnd = window.setTimeout(function () {
                             $.ajax({
                                 type: "GET",
-                                url: "BabController/findModelNameByPo",
+                                url: "ModelController/findModelNameByPoAndFactory",
                                 data: {
-                                    po: text.trim()
+                                    po: text.trim(),
+                                    factory: lineArrTemp[lineId].factory
                                 },
                                 dataType: "html",
                                 success: function (response) {
@@ -549,20 +579,20 @@
                 function modeStartProductivity(container) {
                     container.find(".start-timer-btn, .resume-timer-btn").hide();
                     container.find(".pause-timer-btn").show();
-                    container.find(".remove-timer-btn, .fqc-remark, .fqc-abnormal-btn").show().attr("disabled", true);
+                    container.find(".remove-timer-btn, .fqc-remark, .remark-template, .fqc-abnormal-btn").show().attr("disabled", true);
                 }
 
                 function modePauseProductivity(container) {
                     container.find(".start-timer-btn, .pause-timer-btn").hide();
                     container.find(".resume-timer-btn").show();
                     container.find(".remove-timer-btn, .fqc-abnormal-btn").show().removeAttr("disabled");
-                    container.find(".fqc-remark").show().removeAttr("disabled");
+                    container.find(".fqc-remark, .remark-template").show().removeAttr("disabled");
                 }
 
                 function modeStopProductivity(container) {
                     container.find(".start-timer-btn").show();
                     container.find(".pause-timer-btn, .resume-timer-btn, .remove-timer-btn").hide();
-                    container.find(".remove-timer-btn, .fqc-remark, .fqc-abnormal-btn").show().attr("disabled", true);
+                    container.find(".remove-timer-btn, .fqc-remark, .remark-template, .fqc-abnormal-btn").show().attr("disabled", true);
                 }
 
                 function initProcessingFqc(fqcLine_id) {
@@ -608,6 +638,34 @@
                             showMsg(xhr.responseText);
                         }
                     });
+                }
+
+                function findStandardTime(modelName) {
+                    var result;
+                    $.ajax({
+                        type: "Post",
+                        url: "FqcController/findStandardTime",
+                        data: {
+                            modelName: modelName
+                        },
+                        dataType: "json",
+                        async: false,
+                        success: function (response) {
+                            result = response;
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            showMsg(xhr.responseText);
+                        }
+                    });
+                    return result;
+                }
+
+                function initFqcRemarkTemplate(templateOptions) {
+                    var target = $(".remark-template:first");
+                    for (var i = 0; i < templateOptions.length; i++) {
+                        var option = templateOptions[i];
+                        target.append("<option value='" + option.id + "'>" + option.val + "</option>");
+                    }
                 }
 
             });
@@ -692,6 +750,9 @@
                                     </td>
                                     <td rowspan="2">
                                         <textarea  class="form-control fqc-remark" placeholder="備註欄位"></textarea>
+                                        <select class="remark-template">
+                                            <option value="-1">使用範本</option>
+                                        </select>
                                         <input type="button" class="btn btn-default timer-destroy" value="-" />
                                     </td>
                                     <td rowspan="2">

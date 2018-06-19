@@ -6,7 +6,7 @@
 package com.advantech.dao;
 
 import com.advantech.model.BabStatus;
-import com.advantech.model.FqcProducitvityHistory;
+import com.advantech.model.FqcProductivityHistory;
 import java.util.List;
 import java.util.Map;
 import org.hibernate.Criteria;
@@ -21,15 +21,15 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class FqcProducitvityHistoryDAO extends AbstractDao<Integer, FqcProducitvityHistory> implements BasicDAO_1<FqcProducitvityHistory> {
+public class FqcProductivityHistoryDAO extends AbstractDao<Integer, FqcProductivityHistory> implements BasicDAO_1<FqcProductivityHistory> {
 
     @Override
-    public List<FqcProducitvityHistory> findAll() {
+    public List<FqcProductivityHistory> findAll() {
         return super.createEntityCriteria().list();
     }
 
     @Override
-    public FqcProducitvityHistory findByPrimaryKey(Object obj_id) {
+    public FqcProductivityHistory findByPrimaryKey(Object obj_id) {
         return super.getByKey((int) obj_id);
     }
 
@@ -60,32 +60,32 @@ public class FqcProducitvityHistoryDAO extends AbstractDao<Integer, FqcProducitv
         if (sD != null && eD != null) {
             c.add(Restrictions.between("fqc.beginTime", sD.withHourOfDay(0).toDate(), eD.withHourOfDay(23).toDate()));
         } else {
-            c.add(Restrictions.between("fqc.beginTime", now.withHourOfDay(0).toDate(), now.withHourOfDay(23).toDate()));
+            c.add(Restrictions.between("fqc.lastUpdateTime", now.withHourOfDay(0).toDate(), now.withHourOfDay(23).toDate()));
         }
 
         return c.list();
     }
     
-    public FqcProducitvityHistory findByFqc(int fqc_id){
-        return (FqcProducitvityHistory) super.createEntityCriteria()
+    public FqcProductivityHistory findByFqc(int fqc_id){
+        return (FqcProductivityHistory) super.createEntityCriteria()
                 .add(Restrictions.eq("fqc.id", fqc_id))
                 .uniqueResult();
     }
 
     @Override
-    public int insert(FqcProducitvityHistory pojo) {
+    public int insert(FqcProductivityHistory pojo) {
         super.getSession().save(pojo);
         return 1;
     }
 
     @Override
-    public int update(FqcProducitvityHistory pojo) {
+    public int update(FqcProductivityHistory pojo) {
         super.getSession().update(pojo);
         return 1;
     }
 
     @Override
-    public int delete(FqcProducitvityHistory pojo) {
+    public int delete(FqcProductivityHistory pojo) {
         super.getSession().delete(pojo);
         return 1;
     }

@@ -230,6 +230,13 @@
         <property name="defaultUri" value="http://172.19.5.204/auto_testing_service/Service.asmx?WSDL"/>
     </bean>
     
+    <!--Inject webservice-->
+    <bean id="multiWsClient" class="com.advantech.webservice.MultiWsClient">
+        <constructor-arg ref="webServiceTemplate" />
+        <constructor-arg ref="webServiceTemplate1" />
+        <constructor-arg ref="webServiceTemplate2" />
+    </bean>    
+    
     <!--Other file import-->
     <import resource="classpath:spring-security.xml"/>
     <import resource="classpath:spring-quartz.xml"/>

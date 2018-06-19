@@ -158,12 +158,18 @@ public class TestService {
         }
     }
 
-//    @Test
-//    @Transactional
-//    @Rollback(false)
+    @Test
+    @Transactional
+    @Rollback(false)
     public void testUserService() {
 
-        int[] ids = {23, 24, 25, 26};
+        int[] ids = {
+            33,
+            34,
+            35,
+            36,
+            37
+        };
 
         for (int id : ids) {
             User u = userService.findByPrimaryKey(id);
@@ -172,7 +178,7 @@ public class TestService {
         }
     }
 
-    @Test
+//    @Test
     @Transactional
     @Rollback(true)
     public void testFqc() {
