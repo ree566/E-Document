@@ -19,7 +19,7 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>${initParam.pageTitle}</title>
-        <link rel="shortcut icon" href="../../images/favicon.ico"/>
+        <link rel="shortcut icon" href="<c:url value="/images/favicon.ico" />" />
         <link rel="stylesheet" href="<c:url value="/webjars/datatables/1.10.16/css/jquery.dataTables.min.css" />">
         <link rel="stylesheet" href="<c:url value="/css/bootstrap-datetimepicker.min.css" />">
         <link rel="stylesheet" href="<c:url value="/css/buttons.dataTables.min.css" />">

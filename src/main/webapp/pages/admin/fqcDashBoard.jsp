@@ -16,6 +16,7 @@
         </c:if>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>${userSitefloor}FQC狀態 - ${initParam.pageTitle}</title>
+        <link rel="shortcut icon" href="<c:url value="/images/favicon.ico" />" />
         <link rel="stylesheet" href="<c:url value="/webjars/jquery-ui-themes/1.12.1/redmond/jquery-ui.min.css" />" >
         <link rel="stylesheet" href="<c:url value="/css/tooltipster.bundle.min.css"/>" >
         <link rel="stylesheet" href="<c:url value="/webjars/datatables/1.10.16/css/jquery.dataTables.min.css" />">
