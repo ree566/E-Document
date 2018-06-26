@@ -55,6 +55,9 @@ public class Fqc implements Serializable {
     @JsonIgnore
     private Set<FqcProductivityHistory> fqcProducitvityHistorys = new HashSet<FqcProductivityHistory>(0);
 
+    @JsonIgnore
+    private Set<FqcTimeTemp> fqcTimeTemps = new HashSet<FqcTimeTemp>(0);
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", unique = true, nullable = false, updatable = false)
@@ -169,6 +172,15 @@ public class Fqc implements Serializable {
 
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "fqc")
+    public Set<FqcTimeTemp> getFqcTimeTemps() {
+        return fqcTimeTemps;
+    }
+
+    public void setFqcTimeTemps(Set<FqcTimeTemp> fqcTimeTemps) {
+        this.fqcTimeTemps = fqcTimeTemps;
     }
 
 }

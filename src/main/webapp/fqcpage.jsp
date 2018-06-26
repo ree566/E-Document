@@ -192,12 +192,14 @@
                     var container = $(this).parents(".timer-container");
                     container.find(".fqc-status").html("計算時間中...(暫停)");
                     modePauseProductivity(container);
+                    pauseTimeAndSaveTemp(container.find(".fqc-id").val(), container.find(".timer").data("seconds"));
                 });
 
                 $(".resume-timer-btn").on("click", function (e) {
                     var container = $(this).parents(".timer-container");
                     container.find(".fqc-status").html("計算時間中...");
                     modeStartProductivity(container);
+                    resumeAndRemoveTemp(container.find(".fqc-id").val());
                 });
 
                 $(".remove-timer-btn").on("click", function (e) {
@@ -478,12 +480,13 @@
                                 if (data.action == "LOGIN") {
                                     generateCookie(fqcCookieName, JSON.stringify(data));
                                     $("#lineId").attr("disabled", true);
+                                    initProcessingFqc(data["fqcLine.id"]);
+                                    fqcFormInit();
+                                    $("#po").val("");
                                 } else if (data.action == "LOGOUT") {
                                     removeCookie(fqcCookieName);
-                                    $("#lineId").removeAttr("disabled").val(-1);
+                                    reload();
                                 }
-                                $("#po").val("");
-                                fqcFormInit();
                             } else {
                                 showMsg(response);
                             }
@@ -495,7 +498,7 @@
                 }
 
                 function getModel(text, obj) {
-                    var lineId = $("#lineId").val()
+                    var lineId = $("#lineId").val();
                     var reg = "^[0-9a-zA-Z]+$";
                     if (text != "" && text.match(reg)) {
                         window.clearTimeout(hnd);
@@ -613,9 +616,9 @@
                             }
 
                             var timerTempArray = fqcLoginObj["_tempTimers"];
+                            console.log(timerTempArray);
 
                             $(".timer-container:not(:first)").each(function () {
-                                var tempObject = timerTempArray[i + 1];
                                 var fqcData = response[i++];
                                 var container = $(this);
                                 container.find(".fqc-id").val(fqcData.id);
@@ -623,8 +626,11 @@
                                 container.find(".modelName").val(fqcData.modelName);
 
                                 var tempSecond = 0;
-                                if (tempObject != null && 'timerPauseTemp' in tempObject) {
-                                    tempSecond = tempObject.timerPauseTemp;
+                                if (timerTempArray != null) {
+                                    var tempObject = timerTempArray[i];
+                                    if (tempObject != null && 'timerPauseTemp' in tempObject) {
+                                        tempSecond = tempObject.timerPauseTemp;
+                                    }
                                 }
 
                                 container.find(".timer").timer({
@@ -635,6 +641,47 @@
                             });
                         },
                         error: function (xhr, ajaxOptions, thrownError) {
+                            showMsg(xhr.responseText);
+                        }
+                    });
+                }
+
+                function pauseTimeAndSaveTemp(fqc_id, timePeriod) {
+                    if (fqc_id == null) {
+                        return false;
+                    }
+                    $.ajax({
+                        type: "Post",
+                        url: "FqcController/pauseTimeAndSaveTemp",
+                        data: {
+                            "fqc.id": fqc_id,
+                            "timePeriod": timePeriod
+                        },
+                        dataType: "html",
+                        success: function (response) {
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            alert("Fail to save timePeriod into temp table.");
+                            showMsg(xhr.responseText);
+                        }
+                    });
+                }
+
+                function resumeAndRemoveTemp(fqc_id) {
+                    if (fqc_id == null) {
+                        return false;
+                    }
+                    $.ajax({
+                        type: "Post",
+                        url: "FqcController/resumeAndRemoveTemp",
+                        data: {
+                            "fqc.id": fqc_id
+                        },
+                        dataType: "html",
+                        success: function (response) {
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            alert("Fail to remove timePeriod into temp table.");
                             showMsg(xhr.responseText);
                         }
                     });
@@ -674,29 +721,31 @@
                 //If po is null will remove key from cookie
 
                 var fqcCookie = $.cookie(fqcCookieName);
-                var _tempTimers = [];
-                var i = 0;
-                $(".timer-container").each(function () {
-                    var container = $(this);
-                    var fqcId = container.find(".fqc-id").val();
-                    var timer = container.find(".timer").data("seconds");
-                    if (timer != 0 && fqcId != null) {
-                        var _tempTimer = {
-                            "fqc.id": fqcId,
-                            "timerPauseTemp": timer
-                        };
-                        _tempTimers[i] = _tempTimer;
-                    }
-                    i++;
-                });
+                if (fqcCookie != null) {
+                    var _tempTimers = [];
+                    var i = 0;
+                    $(".timer-container").each(function () {
+                        var container = $(this);
+                        var fqcId = container.find(".fqc-id").val();
+                        var timer = container.find(".timer").data("seconds");
+                        if (timer != 0 && fqcId != null) {
+                            var _tempTimer = {
+                                "fqc.id": fqcId,
+                                "timerPauseTemp": timer
+                            };
+                            _tempTimers[i] = _tempTimer;
+                        }
+                        i++;
+                    });
 
-                var fqcLoginObj = $.parseJSON(fqcCookie);
-                fqcLoginObj["_tempTimers"] = _tempTimers;
+                    var fqcLoginObj = $.parseJSON(fqcCookie);
+                    fqcLoginObj["_tempTimers"] = _tempTimers;
 
-                var d = moment().set({hour: 23, minute: 0, second: 0});
-                $.cookie(fqcCookieName, JSON.stringify(fqcLoginObj), {expires: d.toDate()});
+                    var d = moment().set({hour: 23, minute: 0, second: 0});
+                    $.cookie(fqcCookieName, JSON.stringify(fqcLoginObj), {expires: d.toDate()});
 
-                return 'are you sure you want to leave?';
+                    return 'are you sure you want to leave?';
+                }
             });
         </script>
     </head>

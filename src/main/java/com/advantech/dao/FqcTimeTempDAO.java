@@ -5,7 +5,7 @@
  */
 package com.advantech.dao;
 
-import com.advantech.model.FqcModelStandardTime;
+import com.advantech.model.FqcTimeTemp;
 import java.util.List;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
@@ -15,39 +15,40 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class FqcModelStandardTimeDAO extends AbstractDao<Integer, FqcModelStandardTime> implements BasicDAO_1<FqcModelStandardTime> {
+public class FqcTimeTempDAO extends AbstractDao<Integer, FqcTimeTemp> implements BasicDAO_1<FqcTimeTemp> {
 
     @Override
-    public List<FqcModelStandardTime> findAll() {
+    public List<FqcTimeTemp> findAll() {
         return super.createEntityCriteria().list();
     }
 
     @Override
-    public FqcModelStandardTime findByPrimaryKey(Object obj_id) {
+    public FqcTimeTemp findByPrimaryKey(Object obj_id) {
         return super.getByKey((int) obj_id);
     }
 
-    public List<FqcModelStandardTime> findByName(String modelSeries) {
-        return super.createEntityCriteria()
-                .add(Restrictions.eq("modelNameCategory", modelSeries))
-                .list();
+    public FqcTimeTemp findByFqc(int fqc_id) {
+        return (FqcTimeTemp) super.createEntityCriteria()
+                .add(Restrictions.eq("fqc.id", fqc_id))
+                .uniqueResult();
     }
 
     @Override
-    public int insert(FqcModelStandardTime pojo) {
+    public int insert(FqcTimeTemp pojo) {
         super.getSession().save(pojo);
         return 1;
     }
 
     @Override
-    public int update(FqcModelStandardTime pojo) {
+    public int update(FqcTimeTemp pojo) {
         super.getSession().update(pojo);
         return 1;
     }
 
     @Override
-    public int delete(FqcModelStandardTime pojo) {
+    public int delete(FqcTimeTemp pojo) {
         super.getSession().delete(pojo);
         return 1;
     }
+
 }

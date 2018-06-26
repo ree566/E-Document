@@ -3,7 +3,7 @@ var pYa = 0;
 
 var mapInfo = {
     titleName: "東湖廠6樓",
-    x: 30,
+    x: 555,
     y: 395
 };
 
@@ -17,9 +17,10 @@ var titleGroup = [
     {lineName: "L6", x: 160, y: 175},
     {lineName: "L7", x: 160, y: 90},
     {lineName: "L8", x: 510, y: 160},
-    {lineName: "L9", x: 510, y: 290}
-//    {lineName: "CELL", x: 980, y: 185}
+    {lineName: "L9", x: 510, y: 290},
+    {lineName: "FQC", x: 320, y: 400}
 ];
+
 var testGroup = [
     {people: 1, x: 535, y: 95}, // group 40
     {people: 1, x: 535, y: 50}, // group 39
@@ -30,6 +31,7 @@ var testGroup = [
     {people: 5, x: 590, y: 180}, // group 30-34
     {people: 5, x: 595, y: 275} // group 25-29
 ];
+
 var babGroup = [
     {people: 8, x: 770, y: 260, lineName: "L1"},
     {people: 8, x: 770, y: 165, lineName: "L2"},
@@ -39,6 +41,11 @@ var babGroup = [
     {people: 3, x: 230, y: 110, lineName: "L7"},
     {people: 4, x: 365, y: 175, lineName: "L8"},
     {people: 4, x: 365, y: 275, lineName: "L9"}
+];
+
+var fqcGroup = [
+    {people: 1, x: 410, y: 370, lineName: "FQC_1"},
+    {people: 1, x: 410, y: 440, lineName: "FQC_2"}
 ];
 
 var maxTestTableNo = 40;

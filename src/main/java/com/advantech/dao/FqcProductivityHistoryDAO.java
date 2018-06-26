@@ -10,6 +10,7 @@ import com.advantech.model.FqcProductivityHistory;
 import java.util.List;
 import java.util.Map;
 import org.hibernate.Criteria;
+import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.transform.Transformers;
@@ -41,20 +42,7 @@ public class FqcProductivityHistoryDAO extends AbstractDao<Integer, FqcProductiv
                 .createAlias("fqc.fqcSettingHistorys", "fqcSettingHistorys")
                 .add(Restrictions.eq("fqc.babStatus", BabStatus.CLOSED))
                 .add(Restrictions.isNotNull("fqc.lastUpdateTime"))
-                .setProjection(Projections.projectionList()
-                        .add(Projections.property("fqc.id"), "id")
-                        .add(Projections.property("fqcLine.name"), "fqcLineName")
-                        .add(Projections.property("fqc.po"), "po")
-                        .add(Projections.property("fqc.modelName"), "modelName")
-                        .add(Projections.property("standardTime"), "standardTime")
-                        .add(Projections.property("pcs"), "pcs")
-                        .add(Projections.property("standardTime"), "standardTime")
-                        .add(Projections.property("timeCost"), "timeCost")
-                        .add(Projections.property("fqc.beginTime"), "beginTime")
-                        .add(Projections.property("fqc.lastUpdateTime"), "lastUpdateTime")
-                        .add(Projections.property("fqcSettingHistorys.jobnumber"), "jobnumber")
-                        .add(Projections.property("fqc.remark"), "remark")
-                )
+                .setProjection(specifiedColumnList())
                 .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
 
         if (sD != null && eD != null) {
@@ -65,8 +53,24 @@ public class FqcProductivityHistoryDAO extends AbstractDao<Integer, FqcProductiv
 
         return c.list();
     }
-    
-    public FqcProductivityHistory findByFqc(int fqc_id){
+
+    private ProjectionList specifiedColumnList() {
+        return Projections.projectionList()
+                .add(Projections.property("fqc.id"), "id")
+                .add(Projections.property("fqcLine.name"), "fqcLineName")
+                .add(Projections.property("fqc.po"), "po")
+                .add(Projections.property("fqc.modelName"), "modelName")
+                .add(Projections.property("standardTime"), "standardTime")
+                .add(Projections.property("pcs"), "pcs")
+                .add(Projections.property("standardTime"), "standardTime")
+                .add(Projections.property("timeCost"), "timeCost")
+                .add(Projections.property("fqc.beginTime"), "beginTime")
+                .add(Projections.property("fqc.lastUpdateTime"), "lastUpdateTime")
+                .add(Projections.property("fqcSettingHistorys.jobnumber"), "jobnumber")
+                .add(Projections.property("fqc.remark"), "remark");
+    }
+
+    public FqcProductivityHistory findByFqc(int fqc_id) {
         return (FqcProductivityHistory) super.createEntityCriteria()
                 .add(Restrictions.eq("fqc.id", fqc_id))
                 .uniqueResult();

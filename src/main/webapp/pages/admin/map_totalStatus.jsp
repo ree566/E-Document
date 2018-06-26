@@ -188,12 +188,15 @@
                 initTitleGroup();
                 initTestGroup();
                 initBabGroup();
+                initFqcGroup();
 
                 var testChildElement = $("#testArea>.testWiget div");
                 var babChildElement = $("#babArea>.babWiget div");
+                var fqcChildElement = $("#fqcArea>.fqcWiget div");
 
                 testObjectInit();
                 babObjectInit();
+                fqcObjectInit();
 
                 $("#titleArea>div").not(".clearWiget").addClass("lineTitle");
 
@@ -202,7 +205,7 @@
                 dragableWiget.addClass("adjustPosition");
                 dragableWiget.not(".clearWiget").addClass("ui-helper").draggable({
                     drag: function (e) {
-                        return false;
+//                        return false;
                     }
                 });
 
@@ -279,6 +282,21 @@
                     }
                 }
 
+                function initFqcGroup() {
+                    for (var i = 0; i < fqcGroup.length; i++) {
+                        $("#fqcArea").append("<div></div>");
+                        var groupStatus = fqcGroup[i];
+                        for (var j = 0, k = groupStatus.people; j < k; j++) {
+                            $("#fqcArea>div")
+                                    .eq(i)
+                                    .append("<div></div>")
+                                    .addClass("fqcWiget")
+                                    .attr("id", groupStatus.lineName)
+                                    .css({left: groupStatus.x + pXa, top: groupStatus.y + pYa});
+                        }
+                    }
+                }
+
                 function initWiget(obj) {
                     obj.addClass("blub-empty")
                             .removeClass("blub-alarm blub-normal blub-abnormal blub-prepared")
@@ -303,6 +321,19 @@
                         var childAmount = $(this).children().length;
                         $(this).children().each(function () {
                             $(this).attr({"id": (lineName + "-S-" + childAmount)})
+                                    .addClass("draggable blub-empty divCustomBg")
+                                    .tooltipster({updateAnimation: null});
+                            childAmount--;
+                        });
+                    });
+                }
+
+                function fqcObjectInit() {
+                    $(".fqcWiget").each(function () {
+                        var lineName = $(this).attr("id");
+                        var childAmount = $(this).children().length;
+                        $(this).children().each(function () {
+                            $(this).attr({"id": (lineName + "_" + childAmount)})
                                     .addClass("draggable blub-empty divCustomBg")
                                     .tooltipster({updateAnimation: null});
                             childAmount--;
@@ -368,7 +399,32 @@
                     }
                 }
 
-                var hostname = window.location.host;//Get the host ipaddress to link to the server.
+                function fqcDataToWiget(obj) {
+                    initWiget(fqcChildElement);
+                    fqcChildElement.html("");
+                    if (obj != null) {
+                        var fqcData = obj.data;
+                        if (fqcData != null) {
+                            for (var k = 0, l = fqcData.length; k < l; k++) {
+                                var people = fqcData[k];
+
+                                var childElement = $("#" + people.fqcLineName + "_1");
+                                if (childElement.length) {
+
+                                    childElement.removeClass("blub-empty blub-prepared");
+
+                                    childElement.addClass((people.isPass ? (people.productivity == 0 ?
+                                            "blub-abnormal" : "blub-alarm") : "blub-normal"))
+                                            .html(people.station)
+                                            .tooltipster('content', people.setting + " / 效率:" + getPercent(people.productivity) + "%")
+                                            .html(1);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                var hostname = window.location.host;//Get the host ip address to link to the server.
                 //var hostname = "172.20.131.52:8080";
                 //--------------websocket functions
                 //websocket will reconnect by reconnecting-websocket.min.js when client or server is disconnect
@@ -427,6 +483,18 @@
                         if (jsonArray.length != 0) {
                             testDataToWiget(jsonArray[0]);
                             babDataToWiget(jsonArray[1]);
+                        }
+                    };
+                }
+
+                if (fqcGroup.length != 0) {
+                    ws4 = new ReconnectingWebSocket("ws://" + hostname + "/CalculatorWSApplication/echo4");
+                    setWebSocketClient(ws4);
+                    //Get the server message and transform into table.
+                    ws4.onmessage = function (message) {
+                        var jsonArray = $.parseJSON(message.data);
+                        if (jsonArray.length != 0) {
+                            fqcDataToWiget(jsonArray[0]);
                         }
                     };
                 }
@@ -528,6 +596,10 @@
 
                 <div id="babArea"></div>
                 <!--<div class="clearWiget"></div>-->
+
+                <div id="fqcArea"></div>
+                <!--<div class="clearWiget"></div>-->
+
                 <div id="infoArea" hidden="">
                     <div id="log-toggle">─</div>
                     <div id="log"></div>

@@ -11,9 +11,11 @@ import com.advantech.model.BabStatus;
 import com.advantech.model.Fqc;
 import com.advantech.model.FqcModelStandardTime;
 import com.advantech.model.FqcProductivityHistory;
+import com.advantech.model.FqcTimeTemp;
 import com.advantech.service.FqcModelStandardTimeService;
 import com.advantech.service.FqcProductivityHistoryService;
 import com.advantech.service.FqcService;
+import com.advantech.service.FqcTimeTempService;
 import static com.google.common.base.Preconditions.*;
 import java.util.Comparator;
 import java.util.List;
@@ -54,6 +56,9 @@ public class FqcController {
 
     @Autowired
     private FqcModelStandardTimeService standardTimeService;
+
+    @Autowired
+    private FqcTimeTempService timeTempService;
 
     //FqcLine should not be null
     @RequestMapping(value = "/insert", method = {RequestMethod.POST})
@@ -126,5 +131,26 @@ public class FqcController {
                 .max(Comparator.comparing(s -> s.getModelNameCategory().length()))
                 .orElseGet(FqcModelStandardTime::new);
         return standardTime;
+    }
+
+    @RequestMapping(value = "/pauseTimeAndSaveTemp", method = {RequestMethod.POST})
+    @ResponseBody
+    protected String pauseTimeAndSaveTemp(
+            @RequestParam(name = "fqc.id") int fqc_id,
+            @RequestParam int timePeriod) {
+        Fqc f = fqcService.findByPrimaryKey(fqc_id);
+        timeTempService.insert(new FqcTimeTemp(f, timePeriod));
+        return "success";
+    }
+
+    @RequestMapping(value = "/resumeAndRemoveTemp", method = {RequestMethod.POST})
+    @ResponseBody
+    protected String resumeAndRemoveTemp(
+            @RequestParam(name = "fqc.id") int fqc_id) {
+        FqcTimeTemp temp = timeTempService.findByFqc(fqc_id);
+        if (temp != null) {
+            timeTempService.delete(temp);
+        }
+        return "success";
     }
 }

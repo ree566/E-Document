@@ -19,6 +19,7 @@ import com.advantech.service.BabSensorLoginRecordService;
 import com.advantech.service.BabService;
 import com.advantech.service.BabSettingHistoryService;
 import com.advantech.service.FqcLineService;
+import com.advantech.service.FqcProductivityHistoryService;
 import com.advantech.service.FqcService;
 import com.advantech.service.LineBalancingService;
 import com.advantech.service.TagNameComparisonService;
@@ -82,6 +83,9 @@ public class TestService {
 
     @Value("${endpoint.quartz.trigger}")
     private String endpointPollingCron;
+    
+    @Autowired
+    private FqcProductivityHistoryService productivityService;
 
 //    @Test
     @Transactional
@@ -158,7 +162,7 @@ public class TestService {
         }
     }
 
-    @Test
+//    @Test
     @Transactional
     @Rollback(false)
     public void testUserService() {
@@ -193,6 +197,11 @@ public class TestService {
         assertEquals("L9", fqcLine.getName());
 
         assertEquals(fqc.getFqcLine(), fqcLine);
+    }
+    
+    @Test
+    public void testProductivityService(){
+
     }
 
 }

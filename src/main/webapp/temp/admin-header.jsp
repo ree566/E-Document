@@ -118,7 +118,7 @@
                         <span class="caret" />
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a href="FqcDashBoard?sitefloor=6">FQC效率</a></li>
+                        <!--<li><a href="FqcDashBoard?sitefloor=6">FQC效率</a></li>-->
                         <li><a href="FqcRecord">FQC效率記錄查詢</a></li>
                             <c:if test="${isFqcOper || isAdmin}">
                             <li><a href="FqcModelStandardTime">FQC標工維護</a></li>

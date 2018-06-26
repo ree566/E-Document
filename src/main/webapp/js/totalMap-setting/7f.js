@@ -17,5 +17,9 @@ var babGroup = [
     {people: 3, x: 690, y: 280, lineName: "NA"} // group 1-4
 ];
 
+var fqcGroup = [
+    {people: 1, x: 410, y: 370, lineName: "TEST"}
+];
+
 var maxTestTableNo = 0;
 var sitefloor = 7;

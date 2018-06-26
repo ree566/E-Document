@@ -14,12 +14,12 @@ import com.advantech.model.FqcModelStandardTime;
 import com.advantech.model.FqcProductivityHistory;
 import com.advantech.model.FqcSettingHistory;
 import com.advantech.model.PassStationRecord;
-import com.advantech.webservice.Factory;
 import com.advantech.webservice.WebServiceRV;
 import static com.google.common.base.Preconditions.*;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -69,6 +69,10 @@ public class FqcService {
         return fqcDAO.findProcessing(fqcLine_id);
     }
 
+    public List<Fqc> findProcessingWithLine() {
+        return fqcDAO.findProcessingWithLine();
+    }
+
     public List<Fqc> findReconnectable(int fqcLine_id, String po) {
         return fqcDAO.findReconnectable(fqcLine_id, po);
     }
@@ -77,6 +81,7 @@ public class FqcService {
         Check user is login and po is exist or not.
      */
     public int checkAndInsert(Fqc pojo) {
+        checkProcessingModel(pojo);
         FqcLine fqcLine = pojo.getFqcLine();
         FqcLoginRecord loginRecord = fqcLoginRecordService.findByFqcLine(fqcLine.getId());
         checkArgument(loginRecord != null, "Can't find login record in this line");
@@ -85,8 +90,15 @@ public class FqcService {
         FqcSettingHistory history = new FqcSettingHistory(pojo, jobnumber);
         history.setBeginTime(pojo.getBeginTime());
         fqcSettingHistoryService.insert(history);
-
         return 1;
+    }
+
+    public void checkProcessingModel(Fqc pojo) {
+        FqcLine fqcLine = pojo.getFqcLine();
+        List<Fqc> l = this.findProcessing(fqcLine.getId());
+        Fqc f = l.stream().filter(o -> Objects.equals(pojo.getModelName(), o.getModelName()))
+                .findFirst().orElse(null);
+        checkArgument(f == null, "The modelName: " + pojo.getModelName() + " is already exist.");
     }
 
     public int reconnectAbnormal(Fqc fqc) {
