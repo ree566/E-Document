@@ -416,7 +416,11 @@
                                     childElement.addClass((people.isPass ? (people.productivity == 0 ?
                                             "blub-abnormal" : "blub-alarm") : "blub-normal"))
                                             .html(people.station)
-                                            .tooltipster('content', people.setting + " / 效率:" + getPercent(people.productivity) + "%")
+                                            .tooltipster('content',
+                                                    people.setting + " / 效率:" +
+                                                    getPercent(people.productivity) + "% / 作業時間:" +
+                                                    people.seconds + "秒 / 台數:" +
+                                                    people.records + "台")
                                             .html(1);
                                 }
                             }

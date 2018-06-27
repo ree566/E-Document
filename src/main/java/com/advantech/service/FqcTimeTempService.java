@@ -31,8 +31,8 @@ public class FqcTimeTempService {
         return dao.findByPrimaryKey(obj_id);
     }
 
-    public FqcTimeTemp findByFqc(int fqc_id) {
-        return dao.findByFqc(fqc_id);
+    public List<FqcTimeTemp> findByFqcIdIn(Integer... fqc_id) {
+        return dao.findByFqcIdIn(fqc_id);
     }
 
     public int insert(FqcTimeTemp pojo) {

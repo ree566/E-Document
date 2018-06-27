@@ -5,17 +5,19 @@
  */
 package com.advantech.facade;
 
+import com.advantech.model.BabStatus;
 import com.advantech.model.Fqc;
 import com.advantech.model.FqcLine;
 import com.advantech.model.FqcModelStandardTime;
 import com.advantech.model.FqcSettingHistory;
+import com.advantech.model.FqcTimeTemp;
 import com.advantech.model.LineTypeConfig;
 import com.advantech.model.PassStationRecord;
 import com.advantech.service.FqcLineService;
 import com.advantech.service.FqcModelStandardTimeService;
-import com.advantech.service.FqcProductivityHistoryService;
 import com.advantech.service.FqcService;
 import com.advantech.service.FqcSettingHistoryService;
+import com.advantech.service.FqcTimeTempService;
 import com.advantech.service.LineTypeConfigService;
 import com.advantech.webservice.WebServiceRV;
 import static com.google.common.collect.Maps.newHashMap;
@@ -24,6 +26,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import javax.annotation.PostConstruct;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -50,7 +53,7 @@ public class FqcLineTypeFacade extends BasicLineTypeFacade {
     private FqcModelStandardTimeService standardTimeService;
 
     @Autowired
-    private FqcProductivityHistoryService fqcProducitvityHistoryService;
+    private FqcTimeTempService fqcTimeTempService;
 
     @Autowired
     private FqcSettingHistoryService settingHistoryService;
@@ -97,10 +100,27 @@ public class FqcLineTypeFacade extends BasicLineTypeFacade {
         List<FqcModelStandardTime> standardTimes = standardTimeService.findAll();
         Date now = new Date();
 
+        Integer[] ids = l.stream().map(Fqc::getId).toArray(Integer[]::new);
+        List<FqcTimeTemp> pauseTimeTemps = fqcTimeTempService.findByFqcIdIn(ids);
+        List<FqcSettingHistory> historys = settingHistoryService.findByFqcIdIn(ids);
+
         //找進行的FQC, 抓標工, 抓MES台數, 抓進行時間(btime-now), 算效率
         for (Fqc fqc : l) {
-            FqcSettingHistory history = settingHistoryService.findByFqc(fqc);
             FqcLine line = fqc.getFqcLine();
+            
+            FqcTimeTemp tempLastRecord = pauseTimeTemps.stream()
+                    .filter(o -> Objects.equals(o.getFqc().getId(), fqc.getId()))
+                    .reduce((first, second) -> second)
+                    .orElse(null);
+
+            FqcSettingHistory history = historys.stream()
+                    .filter(o -> Objects.equals(o.getFqc().getId(), fqc.getId()))
+                    .findFirst()
+                    .orElse(null);
+
+            if (history == null) {
+                continue;
+            }
 
             FqcModelStandardTime standardTime = standardTimes.stream()
                     .filter(f -> fqc.getModelName().contains(f.getModelNameCategory()))
@@ -112,9 +132,22 @@ public class FqcLineTypeFacade extends BasicLineTypeFacade {
                     || rec.getCreateDate().before(fqc.getBeginTime())
                     || rec.getCreateDate().after(now));
 
-            long seconds = (now.getTime() - fqc.getBeginTime().getTime()) / 1000;
+            long seconds = 0L;
+
+            if (tempLastRecord != null) {
+                if (Objects.equals(BabStatus.PAUSE, fqc.getBabStatus()) && tempLastRecord.getLastUpdateTime() == null) {
+                    seconds = tempLastRecord.getTimePeriod();
+                } else if (fqc.getBabStatus() == null && tempLastRecord.getLastUpdateTime() != null) {
+                    seconds = tempLastRecord.getTimePeriod() + ((now.getTime() - tempLastRecord.getLastUpdateTime().getTime()) / 1000);
+                } else {
+                    throw new IllegalStateException();
+                }
+            } else {
+                seconds = (now.getTime() - fqc.getBeginTime().getTime()) / 1000;
+            }
 
             Map<String, Object> info = newHashMap();
+            info.put("fqcId", fqc.getId());
             info.put("fqc", fqc.getModelName());
             info.put("fqcLineName", line.getName());
             info.put("setting", history.getJobnumber());

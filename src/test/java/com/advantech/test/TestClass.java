@@ -46,14 +46,9 @@ public class TestClass {
 
     @Test
     public void testEnum() {
-        Factory f = Factory.DEFAULT;
-        System.out.println(f.token());
-        System.out.println(f.toString());
-        System.out.println(f.token() instanceof String);
-        assertEquals(Factory.TEMP2, Encodeable.forToken(Factory.class, "M2"));
-        assertEquals(Factory.TEMP2.token(), "M2");
-        Factory m6 = Factory.getEnum("M6");
-        assertEquals(Factory.TEMP1, m6);
+        int a = 3;
+        long b = a;
+        System.out.println(b);
     }
 
 }

@@ -53,6 +53,12 @@ public class FqcSettingHistoryDAO extends AbstractDao<Integer, FqcSettingHistory
                 .add(Restrictions.eq("fqc.id", fqc.getId()))
                 .uniqueResult();
     }
+    
+    public List<FqcSettingHistory> findByFqcIdIn(Integer... ids){
+        return super.createEntityCriteria()
+                .add(Restrictions.in("fqc.id", ids))
+                .list();
+    }
 
     @Override
     public int insert(FqcSettingHistory pojo) {

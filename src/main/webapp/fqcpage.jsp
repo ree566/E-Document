@@ -199,7 +199,7 @@
                     var container = $(this).parents(".timer-container");
                     container.find(".fqc-status").html("計算時間中...");
                     modeStartProductivity(container);
-                    resumeAndRemoveTemp(container.find(".fqc-id").val());
+                    resumeTime(container.find(".fqc-id").val());
                 });
 
                 $(".remove-timer-btn").on("click", function (e) {
@@ -666,14 +666,14 @@
                         }
                     });
                 }
-
-                function resumeAndRemoveTemp(fqc_id) {
+                
+                function resumeTime(fqc_id) {
                     if (fqc_id == null) {
                         return false;
                     }
                     $.ajax({
                         type: "Post",
-                        url: "FqcController/resumeAndRemoveTemp",
+                        url: "FqcController/resumeTime",
                         data: {
                             "fqc.id": fqc_id
                         },

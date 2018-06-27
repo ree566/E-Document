@@ -13,19 +13,20 @@ import java.util.Map;
  *
  * @author Wei.Cheng
  */
-public enum BabStatus implements Encodeable{
+public enum BabStatus implements Encodeable {
     CLOSED(1),
+    PAUSE(2),
     NO_RECORD(-1),
     UNFINSHED(-2),
     UNFINSHED_RECONNECTABLE(-3);
- 
+
     private final Integer value;
     private static final Map map = new HashMap<>();
- 
+
     private BabStatus(Integer value) {
         this.value = value;
     }
-    
+
     static {
         for (BabStatus b : BabStatus.values()) {
             map.put(b.value, b);

@@ -44,6 +44,10 @@ public class FqcSettingHistoryService {
         return fqcSettingHistoryDAO.findByFqc(fqc);
     }
 
+    public List<FqcSettingHistory> findByFqcIdIn(Integer... ids) {
+        return fqcSettingHistoryDAO.findByFqcIdIn(ids);
+    }
+
     public int insert(FqcSettingHistory pojo) {
         return fqcSettingHistoryDAO.insert(pojo);
     }

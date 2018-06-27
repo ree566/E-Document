@@ -13,6 +13,7 @@ import com.advantech.model.FqcLoginRecord;
 import com.advantech.model.FqcModelStandardTime;
 import com.advantech.model.FqcProductivityHistory;
 import com.advantech.model.FqcSettingHistory;
+import com.advantech.model.FqcTimeTemp;
 import com.advantech.model.PassStationRecord;
 import com.advantech.webservice.WebServiceRV;
 import static com.google.common.base.Preconditions.*;
@@ -49,6 +50,9 @@ public class FqcService {
 
     @Autowired
     private FqcModelStandardTimeService fqcModelStandardTimeService;
+
+    @Autowired
+    private FqcTimeTempService fqcTempService;
 
     @Autowired
     private WebServiceRV rv;
@@ -111,6 +115,9 @@ public class FqcService {
 
         FqcProductivityHistory pHistory = fqcProducitvityHistoryService.findByFqc(fqc.getId());
         fqcProducitvityHistoryService.delete(pHistory);
+        
+        commentOutTempRecord(fqc.getId());
+        
         return 1;
     }
 
@@ -151,6 +158,8 @@ public class FqcService {
         this.update(pojo);
         fqcProducitvityHistoryService.insert(new FqcProductivityHistory(pojo, records.size(),
                 timeCost, standardTime == null ? 0 : standardTime.getStandardTime()));
+        
+        commentOutTempRecord(pojo.getId());
         return 1;
     }
 
@@ -160,6 +169,33 @@ public class FqcService {
         pojo.setBabStatus(BabStatus.UNFINSHED_RECONNECTABLE);
         this.update(pojo);
         return 1;
+    }
+
+    public int pauseAndSaveEvent(int fqc_id, int timePeriod) {
+        Fqc f = this.findByPrimaryKey(fqc_id);
+        fqcTempService.insert(new FqcTimeTemp(f, timePeriod));
+        f.setBabStatus(BabStatus.PAUSE);
+        this.update(f);
+        return 1;
+    }
+
+    public int resumeTime(int fqc_id) {
+        Fqc f = this.findByPrimaryKey(fqc_id);
+        f.setBabStatus(null);
+        this.update(f);
+        commentOutTempRecord(fqc_id);
+        return 1;
+    }
+
+    public void commentOutTempRecord(int fqc_id) {
+        List<FqcTimeTemp> l = fqcTempService.findByFqcIdIn(fqc_id);
+        if (!l.isEmpty()) {
+            FqcTimeTemp t = l.stream().filter(p -> p.getLastUpdateTime() == null).reduce((first, second) -> second).orElse(null);
+            if (t != null) {
+                t.setLastUpdateTime(new Date());
+                fqcTempService.update(t);
+            }
+        }
     }
 
     public int insert(Fqc pojo) {

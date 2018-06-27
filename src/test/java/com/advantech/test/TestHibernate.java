@@ -17,6 +17,7 @@ import com.advantech.model.BabSensorLoginRecord;
 import com.advantech.model.BabStatus;
 import com.advantech.model.CountermeasureEvent;
 import com.advantech.model.Fqc;
+import com.advantech.model.FqcTimeTemp;
 import com.advantech.model.PassStationRecord;
 import com.advantech.model.ReplyStatus;
 import com.advantech.model.SensorTransform;
@@ -31,6 +32,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import org.apache.commons.collections.CollectionUtils;
 import org.hibernate.Criteria;
@@ -409,11 +411,15 @@ public class TestHibernate {
     @Rollback(true)
     public void testOneToMany() {
         Session session = sessionFactory.getCurrentSession();
-        List<Fqc> l = session
-                .createQuery("from FqcSettingHistory h join h.fqc f order by f.id desc")
-                .setMaxResults(10)
-                .list();
-
-        HibernateObjectPrinter.print(l);
+        Fqc fqc = session.get(Fqc.class, 780);
+        List<FqcTimeTemp> pauseTimeTemps = session.createCriteria(FqcTimeTemp.class).list();
+        FqcTimeTemp tempLastRecord = pauseTimeTemps.stream()
+                    .filter(o -> Objects.equals(o.getFqc(), fqc)).reduce((first, second) -> second)
+                    .orElse(null);
+        
+        assertNotNull(tempLastRecord);
+        
+        HibernateObjectPrinter.print(fqc);
     }
+
 }

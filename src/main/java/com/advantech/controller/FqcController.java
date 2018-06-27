@@ -57,9 +57,6 @@ public class FqcController {
     @Autowired
     private FqcModelStandardTimeService standardTimeService;
 
-    @Autowired
-    private FqcTimeTempService timeTempService;
-
     //FqcLine should not be null
     @RequestMapping(value = "/insert", method = {RequestMethod.POST})
     @ResponseBody
@@ -138,19 +135,16 @@ public class FqcController {
     protected String pauseTimeAndSaveTemp(
             @RequestParam(name = "fqc.id") int fqc_id,
             @RequestParam int timePeriod) {
-        Fqc f = fqcService.findByPrimaryKey(fqc_id);
-        timeTempService.insert(new FqcTimeTemp(f, timePeriod));
+        fqcService.pauseAndSaveEvent(fqc_id, timePeriod);
         return "success";
     }
-
-    @RequestMapping(value = "/resumeAndRemoveTemp", method = {RequestMethod.POST})
+    
+    @RequestMapping(value = "/resumeTime", method = {RequestMethod.POST})
     @ResponseBody
-    protected String resumeAndRemoveTemp(
+    protected String resumeTime(
             @RequestParam(name = "fqc.id") int fqc_id) {
-        FqcTimeTemp temp = timeTempService.findByFqc(fqc_id);
-        if (temp != null) {
-            timeTempService.delete(temp);
-        }
+        fqcService.resumeTime(fqc_id);
         return "success";
     }
+    
 }

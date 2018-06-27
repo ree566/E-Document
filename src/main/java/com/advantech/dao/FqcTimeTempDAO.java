@@ -27,10 +27,10 @@ public class FqcTimeTempDAO extends AbstractDao<Integer, FqcTimeTemp> implements
         return super.getByKey((int) obj_id);
     }
 
-    public FqcTimeTemp findByFqc(int fqc_id) {
-        return (FqcTimeTemp) super.createEntityCriteria()
-                .add(Restrictions.eq("fqc.id", fqc_id))
-                .uniqueResult();
+    public List<FqcTimeTemp> findByFqcIdIn(Integer... fqc_id) {
+        return super.createEntityCriteria()
+                .add(Restrictions.in("fqc.id", fqc_id))
+                .list();
     }
 
     @Override
