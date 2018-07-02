@@ -417,10 +417,12 @@
                                             "blub-abnormal" : "blub-alarm") : "blub-normal"))
                                             .html(people.station)
                                             .tooltipster('content',
-                                                    people.setting + " / 效率:" +
-                                                    getPercent(people.productivity) + "% / 作業時間:" +
-                                                    people.seconds + "秒 / 台數:" +
-                                                    people.records + "台")
+                                                    "機種:" + people.modelName + " / " +
+                                                    "工號:" + people.jobnumber + " / " +
+                                                    "總作業時間:" + people.seconds + "秒 / " +
+                                                    "目前台數:" + people.records + "台 / " +
+                                                    "標工" + people.standardTime + "(秒/台) / " + 
+                                                    "效率:" + getPercent(people.productivity) + "% / ")
                                             .html(1);
                                 }
                             }

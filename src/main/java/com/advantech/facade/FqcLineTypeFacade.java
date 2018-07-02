@@ -148,9 +148,9 @@ public class FqcLineTypeFacade extends BasicLineTypeFacade {
 
             Map<String, Object> info = newHashMap();
             info.put("fqcId", fqc.getId());
-            info.put("fqc", fqc.getModelName());
+            info.put("modelName", fqc.getModelName());
             info.put("fqcLineName", line.getName());
-            info.put("setting", history.getJobnumber());
+            info.put("jobnumber", history.getJobnumber());
             info.put("standardTime", standardTime == null ? 0 : standardTime.getStandardTime());
             info.put("records", records.size());
             info.put("seconds", seconds);
