@@ -32,6 +32,14 @@
             tr.shown td.details-control {
                 background: url('<c:url value="/images/details_close.png" />') no-repeat center center;
             }
+            table td {
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            table {
+                table-layout:fixed;
+            }
         </style>
         <script src="<c:url value="/webjars/jquery/1.12.4/jquery.min.js" />"></script>
         <script src="<c:url value="/webjars/datatables/1.10.16/js/jquery.dataTables.min.js" /> "></script>
@@ -239,10 +247,20 @@
                             "url": "<c:url value="/ModelSopRemarkController/findAll" />",
                             "type": "GET"
                         },
-                        "columnDefs": [{//this definition is set so the column with the action buttons is not sortable
+                        "columnDefs": [
+                            {//this definition is set so the column with the action buttons is not sortable
                                 "targets": -1, //this references the last column of the data
                                 "orderable": false
-                            }],
+                            },
+                            {
+                                "width": "45px",
+                                "targets": 0
+                            },
+                            {
+                                "width": "150px",
+                                "targets": [1, 2]
+                            }
+                        ],
                         "columns": [
                             {data: "id"},
                             {data: "modelName"},

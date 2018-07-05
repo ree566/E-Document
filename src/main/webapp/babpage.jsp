@@ -76,6 +76,22 @@
             #otherStationWiget table tr td{
                 padding: 5px;
             }
+            #memo{
+                position: fixed;
+                bottom: 0;
+                right: 5px;
+                background-color: greenyellow;
+                display: inline-block;
+                border-width: 2px;
+                border-style: solid;
+            }
+            #memo-content{
+                width: 200px;
+            }
+            #memo-title{
+                cursor: pointer;
+                text-align: center;
+            }
         </style>
         <script src="<c:url value="/webjars/jquery/1.12.4/jquery.min.js" />"></script>
         <script src="<c:url value="/webjars/jquery-ui/1.12.1/jquery-ui.min.js" />"></script>
@@ -201,7 +217,7 @@
 
                 $("#isNotFirstStation").click(function () {
                     var processData = searchProcessing();
-                    if (processData == null || processData.length == 0 || processData[0].people == 1 
+                    if (processData == null || processData.length == 0 || processData[0].people == 1
                             || checkStation($("#tagName").val(), false) == true) {
                         $(this).attr("disabled", true);
                         $("#isFirstStation").removeAttr("disabled");
@@ -290,6 +306,12 @@
                     }
                     findBabSettingHistory(po);
                 });
+
+                $("#memo-title").click(function () {
+                    $("#memo-content, #memo-footer").toggle("hide");
+                });
+
+                $("#memo-reload").click(findModelSopRemark);
             });
 
             function block() {
@@ -361,6 +383,7 @@
                 var userInfoCookie = $.cookie(userInfoCookieName);
 
                 $("#searchProcessing").attr("disabled", userInfoCookie == null);
+                var memo = $("#memo-content");
 
                 if (userInfoCookie != null) {
                     var obj = $.parseJSON(userInfoCookie);
@@ -369,11 +392,13 @@
                     $("#step2").unblock();
                     firstStationMaxPeopleInit(obj.line_max_people, obj.position);
                     showProcessing();
+                    memo.show();
                 } else {
                     $(".stepAfterLogin").block({
                         message: "請先在步驟一完成相關步驟。",
                         css: {cursor: 'default'},
                         overlayCSS: {cursor: 'default'}});
+                    memo.hide();
                 }
             }
 
@@ -569,6 +594,7 @@
                                 (processingBab.ispre == 1 ? " / 前置" : "") +
                                 "</p>");
                     }
+                    findModelSopRemark();
                 } else {
                     showInfo("No data");
                 }
@@ -699,6 +725,37 @@
                                         " / jobnumber: " + info.jobnumber +
                                         "</h5>");
                             }
+                        }
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        showMsg(xhr.responseText);
+                    }
+                });
+            }
+
+            function findModelSopRemark() {
+                $.ajax({
+                    type: "Get",
+                    url: "ModelSopRemarkController/findByTagName",
+                    data: {
+                        tagName: $("#tagName").val()
+                    },
+                    dataType: "json",
+                    success: function (response) {
+                        var memo = $("#memo-content");
+                        memo.html("");
+                        var d = response;
+                        if (d != null && d.length != 0) {
+                            var modelSopRemark = d[0].modelSopRemark;
+                            memo.append("<p><label>機種: </label>" + modelSopRemark.modelName + "</p>");
+                            memo.append("<p><label>站別: </label>" + d[0].station + "</p>");
+                            memo.append("<p><label>備註: </label>" + modelSopRemark.remark + "</p>");
+                            for (var i = 0, j = d.length; i < j; i++) {
+                                var s = d[i];
+                                memo.append("<p><label>Sop" + (i + 1) + "資訊: </label>" + s.sopName + " ( " + s.sopPage + " )</p>");
+                            }
+                        } else {
+                            memo.append("<p>無資訊</p>");
                         }
                     },
                     error: function (xhr, ajaxOptions, thrownError) {
@@ -920,6 +977,24 @@
             <div id="hintmsg" style="color:red;font-weight: bold;padding-left: 10px">
                 <p>※第一站人員請先Key入相關資料再把機子放到定位(否則會少一台紀錄)</p>
                 <p>機子擋住Sensor即開始計時，休息時間的操作不列入計算範圍之內。</p>
+            </div>
+
+            <div id="memo">
+                <div class="container-fluid">
+                    <div id="memo-title" class="row-fluid">
+                        <h5>
+                            <label>線長Remark</label>
+                        </h5>
+                    </div>
+                    <div id="memo-content" class="row-fluid">
+                        <p>無資訊</p>
+                    </div>
+                    <div id="memo-footer" class="row-fluid">
+                        <button id="memo-reload">
+                            <span class="glyphicon glyphicon-refresh">memo重新整理</span>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
         <jsp:include page="temp/footer.jsp" />

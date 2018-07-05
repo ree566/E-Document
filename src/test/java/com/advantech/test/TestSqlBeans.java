@@ -18,6 +18,7 @@ import com.advantech.model.FqcSettingHistory;
 import com.advantech.model.Line;
 import com.advantech.model.LineType;
 import com.advantech.model.ModelSopRemark;
+import com.advantech.model.ModelSopRemarkDetail;
 import com.advantech.model.TestTable;
 import com.advantech.model.Unit;
 import com.advantech.model.User;
@@ -27,10 +28,17 @@ import static com.google.common.collect.Sets.newHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Projection;
+import org.hibernate.criterion.ProjectionList;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.criterion.Subqueries;
+import org.hibernate.transform.Transformers;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
@@ -53,12 +61,12 @@ import org.springframework.test.context.web.WebAppConfiguration;
 @Transactional
 //@Rollback(true)
 public class TestSqlBeans {
-    
+
     @Autowired
     SessionFactory sessionFactory;
-    
+
     Session session;
-    
+
     @Before
     public void init() {
         session = sessionFactory.getCurrentSession();
@@ -125,12 +133,12 @@ public class TestSqlBeans {
         HibernateObjectPrinter.print(b);
     }
 
-    @Test
+//    @Test
     public void testFqcConverter() {
 //        FqcLine fqcLine = session.get(FqcLine.class, 1);
 //        assertNotNull(fqcLine);
 //        assertEquals(Factory.DEFAULT, fqcLine.getFactory());
-        
+
         List l = session.createCriteria(FqcLine.class).add(Restrictions.eq("factory", Factory.TEMP1)).list();
         assertTrue(!l.isEmpty());
         HibernateObjectPrinter.print(l);
@@ -144,7 +152,7 @@ public class TestSqlBeans {
         session.save(loginRecord);
         assertTrue(loginRecord.getId() != 0);
         System.out.println("Login record's id: " + loginRecord.getId());
-        
+
         Fqc fqc = session.get(Fqc.class, 1);
         assertNotNull(fqc);
         FqcSettingHistory history = new FqcSettingHistory(fqc, "A-Test");
@@ -158,20 +166,20 @@ public class TestSqlBeans {
     public void testRecordCheck() {
         List<FqcLoginRecord> l = session
                 .createCriteria(FqcLoginRecord.class).list();
-        
+
         FqcLine line = session.get(FqcLine.class, 1);
-        
+
         FqcLoginRecord pojo = new FqcLoginRecord(line, "A-8888");
-        
+
         FqcLoginRecord existRecord = l.stream()
                 .filter(p -> Objects.equals(p.getJobnumber(), pojo.getJobnumber())
                 || Objects.equals(p.getFqcLine(), pojo.getFqcLine()))
                 .findFirst().orElse(null);
-        
+
         assertNotNull(existRecord);
-        
+
         HibernateObjectPrinter.print(existRecord);
-        
+
         checkArgument(existRecord == null, "Jobnumber or FqcLine is already in fqcRecord.");
     }
 
@@ -180,10 +188,10 @@ public class TestSqlBeans {
     public void testModelSopRemark() {
         ModelSopRemark remark = session.get(ModelSopRemark.class, 1);
         assertNotNull(remark);
-        
+
         Line line = session.get(Line.class, 1);
         assertNotNull(line);
-        
+
         remark.setLines(newHashSet(line));
         session.save(remark);
     }
@@ -198,20 +206,30 @@ public class TestSqlBeans {
         assertTrue(standardTime.getId() != 0);
     }
 
-//    @Test
-//    @Rollback(true)
+    @Test
+    @Rollback(true)
     public void testModelSopRemarkRelation() {
-        String lineName = "LD";
-        List<ModelSopRemark> l = session
-                .createCriteria(ModelSopRemark.class)
-                .createAlias("lines", "l")
-                .createAlias("l.users", "u")
-                .add(Restrictions.eq("u.jobnumber", "A-3813"))
+        //Find detail which detail group equals 2 and modelName equals :modelName
+
+//        DetachedCriteria modelFetData = DetachedCriteria.forClass(ModelSopRemarkDetail.class)
+//                .createAlias("modelSopRemark", "r")
+//                .add(Restrictions.eq("r.modelName", "UTC-520D-RE"))
+//                .setProjection(Projections.projectionList()
+//                        .add(Projections.distinct(Projections.property("r.id")))
+//                        .add(Projections.property("station"))
+//                );
+//
+//        List l = modelFetData.getExecutableCriteria(session)
+//                .list();
+
+        List l = session.createQuery("select d from ModelSopRemark r join fetch r.modelSopRemarkDetails d "
+                + "where r.modelName = :modelName "
+                + "and count(distinct (concat(r.id, d.station))) = 2")
+                .setParameter("modelName", "UTC-520D-RE")
                 .list();
-        
-        assertTrue(!l.isEmpty());
-        
+
         HibernateObjectPrinter.print(l);
+
     }
 
 }

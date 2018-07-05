@@ -177,6 +177,7 @@
         <script src="<c:url value="/js/jquery.fullscreen-min.js"/>"></script>
         <script src="<c:url value="/js/tooltipster.bundle.min.js"/>"></script>
         <script src="<c:url value="/js/totalMap-setting/${userSitefloor}f.js"/>"></script>
+        <script src="<c:url value="/webjars/momentjs/2.18.1/moment.js" /> "></script>
         <script>
             var maxProductivity = 200;
 
@@ -205,7 +206,7 @@
                 dragableWiget.addClass("adjustPosition");
                 dragableWiget.not(".clearWiget").addClass("ui-helper").draggable({
                     drag: function (e) {
-//                        return false;
+                        return false;
                     }
                 });
 
@@ -350,17 +351,24 @@
                                 var people = testData[k];
                                 var alarmSignal = people.isalarm;
                                 var signalClass;
-                                switch (alarmSignal) {
-                                    case 0:
-                                        signalClass = "blub-normal";
-                                        break;
-                                    case 1:
-                                        signalClass = "blub-alarm";
-                                        break;
-                                    case 2:
-                                        signalClass = "blub-abnormal";
-                                        break;
+                                
+                                //User don't want to see alarm at 9:00-10:00
+                                if (moment().hours() == 9) {
+                                    signalClass = "blub-normal";
+                                } else {
+                                    switch (alarmSignal) {
+                                        case 0:
+                                            signalClass = "blub-normal";
+                                            break;
+                                        case 1:
+                                            signalClass = "blub-alarm";
+                                            break;
+                                        case 2:
+                                            signalClass = "blub-abnormal";
+                                            break;
+                                    }
                                 }
+                                
                                 var productivity = Math.floor(people.PRODUCTIVITY * 100);
                                 $(".testWiget #draggableT" + people.table + "_" + people.sitefloor + "f")
                                         .removeClass("blub-empty")
@@ -421,7 +429,7 @@
                                                     "工號:" + people.jobnumber + " / " +
                                                     "總作業時間:" + people.seconds + "秒 / " +
                                                     "目前台數:" + people.records + "台 / " +
-                                                    "標工" + people.standardTime + "(秒/台) / " + 
+                                                    "標工" + people.standardTime + "(秒/台) / " +
                                                     "效率:" + getPercent(people.productivity) + "% / ")
                                             .html(1);
                                 }

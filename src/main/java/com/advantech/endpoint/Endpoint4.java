@@ -28,6 +28,8 @@ public class Endpoint4 extends BasicHandler implements WebSocketHandler {
 
     @Autowired
     private PollingFqcResult pollingJob;
+    
+    private static boolean isJobScheduled = false;
 
     @PostConstruct
     private void init() {
@@ -51,8 +53,9 @@ public class Endpoint4 extends BasicHandler implements WebSocketHandler {
         //每次當client連接進來時，去看目前session的數量 當有1個session時把下方quartz job加入到schedule裏頭(只要執行一次，不要重複加入)
         synchronized (sessions) {
             int a = sessions.size();
-            if (a == 1) {
+            if (a > 1 && isJobScheduled == false) {
                 pollingDBAndBrocast();
+                isJobScheduled = true;
             }
         }
     }

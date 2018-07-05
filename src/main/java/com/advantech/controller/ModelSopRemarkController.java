@@ -34,35 +34,43 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 @RequestMapping(value = "/ModelSopRemarkController")
 public class ModelSopRemarkController {
-    
+
     private static final Logger log = LoggerFactory.getLogger(ModelSopRemarkController.class);
-    
+
     @Autowired
     private ModelSopRemarkService modelSopRemarkService;
-    
+
     @Autowired
     private ModelSopRemarkDetailService modelSopRemarkDetailService;
-    
+
     @Autowired
     private ModelSopRemarkEventService modelSopRemarkEventService;
-    
+
     @RequestMapping(value = "/findAll", method = {RequestMethod.GET})
     @ResponseBody
     protected DataTableResponse findAll() {
-        
+
         User user = retrieveAndCheckUserInSession();
-        
+
         List l = user == null ? modelSopRemarkService.findAll() : modelSopRemarkService.findByUser(user);
-        
+
         return new DataTableResponse(l);
     }
-    
+
     @RequestMapping(value = "/findUseLine", method = {RequestMethod.GET})
     @ResponseBody
     protected List<Line> findUseLine(@Valid @ModelAttribute ModelSopRemark pojo) {
         return modelSopRemarkService.findUseLine(pojo.getId());
     }
-    
+
+    @RequestMapping(value = "/findByTagName", method = {RequestMethod.GET})
+    @ResponseBody
+    protected List<ModelSopRemarkDetail> findByTagName(
+            @RequestParam String tagName
+    ) {
+        return modelSopRemarkDetailService.findByTagName(tagName);
+    }
+
     @RequestMapping(value = "/saveOrUpdate", method = {RequestMethod.POST})
     @ResponseBody
     protected String saveOrUpdate(@Valid @ModelAttribute ModelSopRemark pojo) {
@@ -75,7 +83,7 @@ public class ModelSopRemarkController {
         }
         return "success";
     }
-    
+
     @RequestMapping(value = "/delete", method = {RequestMethod.POST})
     @ResponseBody
     protected String delete(@RequestParam int id) {
@@ -83,14 +91,14 @@ public class ModelSopRemarkController {
         modelSopRemarkService.delete(pojo);
         return "success";
     }
-    
+
     @RequestMapping(value = "/findDetail", method = {RequestMethod.GET})
     @ResponseBody
     protected DataTableResponse findDetail(@RequestParam int id) {
         List l = modelSopRemarkService.findDetail(id);
         return new DataTableResponse(l);
     }
-    
+
     @RequestMapping(value = "/saveOrUpdateDetail", method = {RequestMethod.POST})
     @ResponseBody
     protected String saveOrUpdateDetail(@Valid @ModelAttribute ModelSopRemarkDetail detail) {
@@ -103,7 +111,7 @@ public class ModelSopRemarkController {
         }
         return "success";
     }
-    
+
     @RequestMapping(value = "/deleteDetail", method = {RequestMethod.POST})
     @ResponseBody
     protected String deleteDetail(@RequestParam int id) {
@@ -112,7 +120,7 @@ public class ModelSopRemarkController {
         addEvent(pojo.getModelSopRemark(), "delete");
         return "success";
     }
-    
+
     private void addEvent(ModelSopRemark pojo, String action) {
         try {
             User user = retrieveAndCheckUserInSession();
@@ -121,5 +129,5 @@ public class ModelSopRemarkController {
             log.error("Error cause when write event", e);
         }
     }
-    
+
 }

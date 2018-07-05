@@ -7,6 +7,7 @@ package com.advantech.dao;
 
 import com.advantech.model.ModelSopRemarkDetail;
 import java.util.List;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -24,6 +25,20 @@ public class ModelSopRemarkDetailDAO extends AbstractDao<Integer, ModelSopRemark
     @Override
     public ModelSopRemarkDetail findByPrimaryKey(Object obj_id) {
         return super.getByKey((int) obj_id);
+    }
+
+    public List<ModelSopRemarkDetail> findByModelAndPeopleAndStation(String modelName, int people, int station) {
+        //Model's sop may be multiple.
+
+        return super.getSession().createQuery(
+                "select d1 from ModelSopRemarkDetail d1 join fetch d1.modelSopRemark r1 where r1.id = "
+                + "(select r2.id from ModelSopRemarkDetail d2 join d2.modelSopRemark r2 "
+                + "where r2.modelName = :modelName group by r2 having count(1) = (cast (:people as long))) "
+                + "and d1.station = :station")
+                .setParameter("modelName", modelName)
+                .setParameter("people", people)
+                .setParameter("station", station)
+                .list();
     }
 
     @Override

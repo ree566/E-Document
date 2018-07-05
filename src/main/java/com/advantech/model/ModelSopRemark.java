@@ -82,7 +82,7 @@ public class ModelSopRemark implements Serializable {
         this.lines = lines;
     }
 
-    @Column(name = "remark", length = 100)
+    @Column(name = "remark", length = 200)
     public String getRemark() {
         return remark;
     }
