@@ -8,6 +8,7 @@ package com.advantech.test;
 import com.advantech.model.view.BabAvg;
 import com.advantech.service.LineBalancingService;
 import com.advantech.service.SqlViewService;
+import java.util.Arrays;
 import java.util.List;
 import static org.junit.Assert.*;
 import org.junit.Test;
@@ -36,9 +37,9 @@ public class TestSpring {
     private LineBalancingService lineBalancingService;
 
     private final double DELTA = 1e-15;
-
-    @Value("${pageTitle}")
-    private String webAppName;
+    
+    @Value("${test.productivity.bypass.hours: 0}")
+    private Integer[] testByPassHours;
 
 //    @Test
     public void testLineBalanceCount() {
@@ -59,7 +60,8 @@ public class TestSpring {
 
     @Test
     public void testContextParam() {
-        assertEquals("無效工時即時管理系統", webAppName);
+//        assertTrue(testByPassHours == null);
+        System.out.println(Arrays.toString(this.testByPassHours));
     }
 
 }

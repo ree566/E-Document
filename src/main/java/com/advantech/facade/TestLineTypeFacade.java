@@ -18,7 +18,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.IntStream;
 import javax.annotation.PostConstruct;
+import org.joda.time.DateTime;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -45,11 +47,12 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
 
     @Autowired
     private PropertiesReader p;
-    
+
     private Integer maxTestTable;
+    private int[] testByPassHours;
     private Double TEST_STANDARD_MIN;
     private Double TEST_STANDARD_MAX;
-    
+
     private Map PEOPLE_NOT_MATCH;
 
     @Autowired
@@ -61,6 +64,7 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
     protected void init() {
         log.info(TestLineTypeFacade.class.getName() + " init inner setting and db object.");
         maxTestTable = p.getMaxTestTables();
+        testByPassHours = p.getTestByPassHours();
         TEST_STANDARD_MIN = p.getTestProductivityStandardMin().doubleValue();
         TEST_STANDARD_MAX = p.getTestProductivityStandardMax().doubleValue();
         PEOPLE_NOT_MATCH = new HashMap();
@@ -90,6 +94,7 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
 
             processingJsonObject = new JSONObject();
             boolean isInTheWebService = false;
+            boolean byPassFlag = isByPassCurrentHours();
 
             for (TestRecord record : kanbanUsersRecord) {
 
@@ -104,7 +109,7 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
                         String tableName = table.getName();
                         int status;
 
-                        if (productivity < TEST_STANDARD_MIN || productivity > TEST_STANDARD_MAX) {
+                        if (byPassFlag == false && (productivity < TEST_STANDARD_MIN || productivity > TEST_STANDARD_MAX)) {
                             status = ALARM_SIGN;
                             dataMap.put(tableName, ALARM_SIGN);
                             isSomeoneUnderStandard = true;
@@ -130,6 +135,11 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
             processingJsonObject = null;
         }
         return isSomeoneUnderStandard;
+    }
+
+    private boolean isByPassCurrentHours() {
+        int hours = new DateTime().getHourOfDay();
+        return IntStream.of(testByPassHours).anyMatch(x -> x == hours);
     }
 
     private JSONArray separateAbnormalUser(List<Test> l, JSONArray j) {

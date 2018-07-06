@@ -177,7 +177,6 @@
         <script src="<c:url value="/js/jquery.fullscreen-min.js"/>"></script>
         <script src="<c:url value="/js/tooltipster.bundle.min.js"/>"></script>
         <script src="<c:url value="/js/totalMap-setting/${userSitefloor}f.js"/>"></script>
-        <script src="<c:url value="/webjars/momentjs/2.18.1/moment.js" /> "></script>
         <script>
             var maxProductivity = 200;
 
@@ -351,24 +350,19 @@
                                 var people = testData[k];
                                 var alarmSignal = people.isalarm;
                                 var signalClass;
-                                
-                                //User don't want to see alarm at 9:00-10:00
-                                if (moment().hours() == 9) {
-                                    signalClass = "blub-normal";
-                                } else {
-                                    switch (alarmSignal) {
-                                        case 0:
-                                            signalClass = "blub-normal";
-                                            break;
-                                        case 1:
-                                            signalClass = "blub-alarm";
-                                            break;
-                                        case 2:
-                                            signalClass = "blub-abnormal";
-                                            break;
-                                    }
+
+                                switch (alarmSignal) {
+                                    case 0:
+                                        signalClass = "blub-normal";
+                                        break;
+                                    case 1:
+                                        signalClass = "blub-alarm";
+                                        break;
+                                    case 2:
+                                        signalClass = "blub-abnormal";
+                                        break;
                                 }
-                                
+
                                 var productivity = Math.floor(people.PRODUCTIVITY * 100);
                                 $(".testWiget #draggableT" + people.table + "_" + people.sitefloor + "f")
                                         .removeClass("blub-empty")

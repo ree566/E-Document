@@ -27,17 +27,13 @@ public class ModelSopRemarkDetailDAO extends AbstractDao<Integer, ModelSopRemark
         return super.getByKey((int) obj_id);
     }
 
-    public List<ModelSopRemarkDetail> findByModelAndPeopleAndStation(String modelName, int people, int station) {
+    public List<ModelSopRemarkDetail> findByModelAndPeople(String modelName, int people) {
         //Model's sop may be multiple.
 
-        return super.getSession().createQuery(
-                "select d1 from ModelSopRemarkDetail d1 join fetch d1.modelSopRemark r1 where r1.id = "
-                + "(select r2.id from ModelSopRemarkDetail d2 join d2.modelSopRemark r2 "
-                + "where r2.modelName = :modelName group by r2 having count(1) = (cast (:people as long))) "
-                + "and d1.station = :station")
+        return super.getSession().createSQLQuery("{CALL usp_GetModelSopRemarkDetail(:modelName, :people)}")
+                .addEntity("d", ModelSopRemarkDetail.class)
                 .setParameter("modelName", modelName)
                 .setParameter("people", people)
-                .setParameter("station", station)
                 .list();
     }
 

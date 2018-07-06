@@ -23,11 +23,14 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class PropertiesReader {
-    
+
     private static final Logger log = LoggerFactory.getLogger(PropertiesReader.class);
 
     @Value("${test.maxTable: 42}")
     private Integer maxTestTables;
+
+    @Value("${test.productivity.bypass.hours: 0}")
+    private int[] testByPassHours;
 
     @Value("${bab.saveToRecord.quantity: 0}")
     private Integer babSaveMininumQuantity;
@@ -139,6 +142,10 @@ public class PropertiesReader {
 
     public Integer getMaxTestTables() {
         return maxTestTables;
+    }
+
+    public int[] getTestByPassHours() {
+        return testByPassHours;
     }
 
     public Integer getBabSaveMininumQuantity() {

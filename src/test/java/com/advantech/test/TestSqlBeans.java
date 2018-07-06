@@ -28,17 +28,13 @@ import static com.google.common.collect.Sets.newHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
+import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.DetachedCriteria;
-import org.hibernate.criterion.Projection;
-import org.hibernate.criterion.ProjectionList;
-import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
-import org.hibernate.criterion.Subqueries;
 import org.hibernate.transform.Transformers;
+import org.hibernate.type.StandardBasicTypes;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
@@ -211,25 +207,17 @@ public class TestSqlBeans {
     public void testModelSopRemarkRelation() {
         //Find detail which detail group equals 2 and modelName equals :modelName
 
-//        DetachedCriteria modelFetData = DetachedCriteria.forClass(ModelSopRemarkDetail.class)
-//                .createAlias("modelSopRemark", "r")
-//                .add(Restrictions.eq("r.modelName", "UTC-520D-RE"))
-//                .setProjection(Projections.projectionList()
-//                        .add(Projections.distinct(Projections.property("r.id")))
-//                        .add(Projections.property("station"))
-//                );
-//
-//        List l = modelFetData.getExecutableCriteria(session)
-//                .list();
-
-        List l = session.createQuery("select d from ModelSopRemark r join fetch r.modelSopRemarkDetails d "
-                + "where r.modelName = :modelName "
-                + "and count(distinct (concat(r.id, d.station))) = 2")
+        List<ModelSopRemarkDetail> l = session.createSQLQuery("{CALL usp_GetModelSopRemarkDetail(:modelName, :people)}")
+                .addEntity("d", ModelSopRemarkDetail.class)
+                //.addJoin("r", "d.modelSopRemark")
                 .setParameter("modelName", "UTC-520D-RE")
+                .setParameter("people", 2)
                 .list();
+        
+        ModelSopRemark m = l.get(0).getModelSopRemark();
+        Hibernate.initialize(m);
 
         HibernateObjectPrinter.print(l);
-
     }
 
 }
