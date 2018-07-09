@@ -276,11 +276,11 @@ public class HibernateEnversTest {
     @Transactional
     @Rollback(true)
     public void tsetEnvers(){
-//        AuditQuery q = reader.createQuery()
-//                .forRevisionsOfEntity(Worktime.class, true, false)
-//                .add(AuditEntity.revisionNumber().maximize().computeAggregationInInstanceContext());
-//        List l = q.list();
+        AuditQuery q = reader.createQuery()
+                .forRevisionsOfEntity(Worktime.class, true, false);
+        List result = q.setMaxResults(5).getResultList();
 //        assertEquals(,l.size());
+        HibernateObjectPrinter.print(result);
     }
 
 }

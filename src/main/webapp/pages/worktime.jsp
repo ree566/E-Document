@@ -143,7 +143,7 @@
                 errorTextFormatF(checkResult); //field // code
                 return [false, "There are some errors in the entered data. Hover over the error icons for details."];
             } else {
-//                return [false, "Saved."]; //--For debug validator
+                //return [false, "Saved."]; //--For debug validator
                 //儲存前再check一次版本，給予覆蓋or取消的選擇
                 var revision_number = getRowRevision();
                 if (revision_number != selected_row_revision) {

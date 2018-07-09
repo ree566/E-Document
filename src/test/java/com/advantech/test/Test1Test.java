@@ -47,13 +47,9 @@ public class Test1Test {
 
     @Test
     public void test2() {
-        Class c = Worktime.class;
-        Field fields[] = c.getDeclaredFields();
-        for (Field field : fields) {
-            if (!Collection.class.isAssignableFrom(field.getType())) {
-                System.out.println(" " + field.getName());
-            }
-        }
+        System.out.println(true || false || true);
+        System.out.println(false || true || false);
+        System.out.println(false || false);
     }
 
 }
