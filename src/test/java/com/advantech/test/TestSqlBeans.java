@@ -8,6 +8,7 @@ package com.advantech.test;
 import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.model.Bab;
 import com.advantech.model.BabAlarmHistory;
+import com.advantech.model.BabStandardTimeHistory;
 import com.advantech.model.Countermeasure;
 import com.advantech.model.Floor;
 import com.advantech.model.Fqc;
@@ -25,6 +26,7 @@ import com.advantech.model.User;
 import com.advantech.webservice.Factory;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.collect.Sets.newHashSet;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -33,8 +35,6 @@ import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
-import org.hibernate.transform.Transformers;
-import org.hibernate.type.StandardBasicTypes;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
@@ -202,7 +202,7 @@ public class TestSqlBeans {
         assertTrue(standardTime.getId() != 0);
     }
 
-    @Test
+//    @Test
     @Rollback(true)
     public void testModelSopRemarkRelation() {
         //Find detail which detail group equals 2 and modelName equals :modelName
@@ -218,6 +218,16 @@ public class TestSqlBeans {
         Hibernate.initialize(m);
 
         HibernateObjectPrinter.print(l);
+    }
+    
+    @Test
+    @Rollback(false)
+    public void testBabStandardTimeHistory(){
+        Bab b = session.get(Bab.class, 173);
+        assertNotNull(b);
+        
+        session.save(new BabStandardTimeHistory(b, new BigDecimal(291.3)));
+        
     }
 
 }

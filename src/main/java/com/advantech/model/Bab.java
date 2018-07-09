@@ -74,7 +74,11 @@ public class Bab implements Serializable {
     private Set<BabBalanceHistory> babBalanceHistorys = new HashSet<BabBalanceHistory>(0);
 
     @JsonIgnore
+    private Set<BabStandardTimeHistory> babStandardTimeHistorys = new HashSet<BabStandardTimeHistory>(0);
+    
+    @JsonIgnore
     private List<BabAvg> babAvgs = new ArrayList();
+
 
     public Bab() {
     }
@@ -248,6 +252,15 @@ public class Bab implements Serializable {
 
     public void setBabBalanceHistorys(Set<BabBalanceHistory> babBalanceHistorys) {
         this.babBalanceHistorys = babBalanceHistorys;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "bab")
+    public Set<BabStandardTimeHistory> getBabStandardTimeHistorys() {
+        return babStandardTimeHistorys;
+    }
+
+    public void setBabStandardTimeHistorys(Set<BabStandardTimeHistory> babStandardTimeHistorys) {
+        this.babStandardTimeHistorys = babStandardTimeHistorys;
     }
 
     @Transient

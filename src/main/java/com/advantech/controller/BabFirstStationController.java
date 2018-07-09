@@ -69,7 +69,7 @@ public class BabFirstStationController {
             @RequestParam(required = false) String recordLineType
     ) {
 
-//        checkArgument(!(bab.getIspre() != 1 && bab.getPeople() == 1), "非前置工單人數不可為1");
+        checkArgument(!(bab.getIspre() != 1 && bab.getPeople() == 1), "非前置工單人數不可為1");
 
         BabSensorLoginRecord loginRecord = babSensorLoginRecordService.findBySensor(tagName);
         checkArgument(loginRecord != null, "Can't find login record on this tagName");

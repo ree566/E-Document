@@ -4,8 +4,10 @@ import com.advantech.model.Bab;
 import com.advantech.dao.BabDAO;
 import com.advantech.helper.PropertiesReader;
 import com.advantech.model.BabSettingHistory;
+import com.advantech.model.BabStandardTimeHistory;
 import com.advantech.model.TagNameComparison;
 import com.advantech.model.view.BabAvg;
+import com.advantech.model.view.Worktime;
 import java.util.List;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +40,9 @@ public class BabService {
 
     @Autowired
     private BabSettingHistoryService babSettingHistoryService;
+
+    @Autowired
+    private BabStandardTimeHistoryService babStandardTimeHistoryService;
 
     @Autowired
     private SqlViewService sqlViewService;
@@ -174,6 +179,9 @@ public class BabService {
 
         if (needToSave) {
             this.closeBabWithSaving(bab);
+            
+            //額外將當下工時紀錄
+            babStandardTimeHistoryService.insertByBab(bab);
         } else {
             this.closeBabDirectly(bab);
         }

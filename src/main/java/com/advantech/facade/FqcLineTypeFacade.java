@@ -97,6 +97,10 @@ public class FqcLineTypeFacade extends BasicLineTypeFacade {
         List<Fqc> l = fqcService.findProcessingWithLine();
         List<Map<String, Object>> result = new ArrayList();
 
+        if (l.isEmpty()) {
+            return false;
+        }
+
         List<FqcModelStandardTime> standardTimes = standardTimeService.findAll();
         Date now = new Date();
 
@@ -107,7 +111,7 @@ public class FqcLineTypeFacade extends BasicLineTypeFacade {
         //找進行的FQC, 抓標工, 抓MES台數, 抓進行時間(btime-now), 算效率
         for (Fqc fqc : l) {
             FqcLine line = fqc.getFqcLine();
-            
+
             FqcTimeTemp tempLastRecord = pauseTimeTemps.stream()
                     .filter(o -> Objects.equals(o.getFqc().getId(), fqc.getId()))
                     .reduce((first, second) -> second)
