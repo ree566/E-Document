@@ -11,15 +11,11 @@ import com.advantech.model.BabStatus;
 import com.advantech.service.BabPcsDetailHistoryService;
 import com.advantech.service.SqlViewService;
 import static com.google.common.base.Preconditions.checkArgument;
-import org.joda.time.DateTime;
-import org.joda.time.Weeks;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
@@ -48,31 +44,4 @@ public class BabPcsDetailHistoryController {
         }
     }
 
-    @RequestMapping(value = "/findReport", method = {RequestMethod.GET})
-    @ResponseBody
-    public DataTableResponse findReport(
-            @RequestParam(required = false) String modelName,
-            @RequestParam(required = false) String lineType,
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime startDate,
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime endDate) {
-
-        if (modelName == null || "".equals(modelName.trim())) {
-            modelName = null;
-        }
-
-        if ("-1".equals(lineType)) {
-            lineType = null;
-        }
-
-        //modelName 或 lineType 為空時一定要設定 startDate & endDate
-        checkArgument(!((modelName == null || lineType == null) && (startDate == null || endDate == null)),
-                "\"ModelName\"或\"類別\"為空時，一定要設定\"startDate\"&\"endDate\"");
-
-        if (modelName == null && startDate != null && endDate != null) {
-            checkArgument(Weeks.weeksBetween(startDate.toLocalDate(), endDate.toLocalDate()).getWeeks()<= 2,
-                    "日期區間不得超過2週");
-        }
-
-        return new DataTableResponse(sqlViewService.findBabPcsDetail(modelName, lineType, startDate, endDate));
-    }
 }

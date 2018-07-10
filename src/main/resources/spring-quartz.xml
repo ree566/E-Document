@@ -222,9 +222,9 @@
         <property name="triggers">
             <list>
                 
-                <ref bean="FqcGenerateData-Trig"/>
+<!--                <ref bean="FqcGenerateData-Trig"/>
                 <ref bean="HandleUncloseFqc-Trig"/>
-                <ref bean="FqcInit-Trig"/>
+                <ref bean="FqcInit-Trig"/>-->
 
 <!--                <ref bean="BabGenerateData-Trig"/>
                 <ref bean="TestGenerateData-Trig"/>

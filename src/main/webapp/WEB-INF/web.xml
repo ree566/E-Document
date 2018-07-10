@@ -172,6 +172,15 @@
     </servlet-mapping>
     
     <servlet>
+        <servlet-name>BabLineProductivity</servlet-name>
+        <jsp-file>/pages/admin/babLineProductivity.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>BabLineProductivity</servlet-name>
+        <url-pattern>/pages/admin/BabLineProductivity</url-pattern>  
+    </servlet-mapping>
+    
+    <servlet>
         <servlet-name>FqcDashBoard</servlet-name>
         <jsp-file>/pages/admin/fqcDashBoard.jsp</jsp-file>
     </servlet>

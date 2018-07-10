@@ -91,6 +91,7 @@
                         <li><a href="BabTotal?lineType=ASSY">線平衡資訊查詢</a></li>
                         <li><a href="BabDetailInfo">各站機台時間查詢</a></li>
                         <li><a href="BabDetailInfo2?lineType=ASSY">各站時間查詢(報表格式)</a></li>
+                        <li><a href="BabLineProductivity">線體效率查詢</a></li>
                             <c:if test="${isMfgLineOwner || isMfgOper || isAdmin}">
                             <li><a href="ModelSopRemark">Sop維護</a></li>
                             </c:if>
@@ -106,6 +107,7 @@
                         <li><a href="BabTotal?lineType=Packing">線平衡資訊查詢</a></li>
                         <li><a href="BabDetailInfo">各站機台時間查詢</a></li>
                         <li><a href="BabDetailInfo2?lineType=Packing">各站時間查詢(報表格式)</a></li>
+                        <li><a href="BabLineProductivity">線體效率查詢</a></li>
                             <c:if test="${isMfgLineOwner || isMfgOper || isAdmin}">
                             <li><a href="modelSopRemark.jsp">Sop維護</a></li>
                             </c:if>

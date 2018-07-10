@@ -161,4 +161,16 @@ public class SqlViewDAO extends AbstractDao<Integer, Object> {
                 .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
                 .list();
     }
+    
+    public List<Map> findBabLineProductivity(String po, String modelName, int line_id, DateTime sD, DateTime eD){
+        return super.getSession()
+                .createSQLQuery("{CALL usp_GetLineProductivity(:po, :modelName, :lineId, :sD, :eD)}")
+                .setParameter("po", po)
+                .setParameter("modelName", modelName)
+                .setParameter("lineId", line_id)
+                .setParameter("sD", sD.withHourOfDay(0).toDate())
+                .setParameter("eD", eD.withHourOfDay(23).toDate())
+                .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
+                .list();
+    }
 }

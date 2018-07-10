@@ -51,6 +51,7 @@
         <script>
             $(function () {
 
+                initLineObject();
                 var momentFormatString = 'YYYY-MM-DD';
                 $(":text,input[type='number'],select").addClass("form-control");
                 $(":button").addClass("btn btn-default");
@@ -68,12 +69,7 @@
                 var table;
 
                 $("#send").click(function () {
-                    var modelName = $('#modelName').val();
-                    var lineType = $('#lineType').val();
-                    var startDate = $('#fini').val();
-                    var endDate = $('#ffin').val();
-
-                    getDetail(modelName, lineType, startDate, endDate);
+                    getDetail();
                 });
 
                 $.ajax({
@@ -81,7 +77,7 @@
                     url: "<c:url value="/BabController/findAllModelName" />",
                     dataType: "json",
                     success: function (data) {
-                        $("input#Model_name").autocomplete({
+                        $("#modelName").autocomplete({
                             width: 300,
                             max: 10,
                             delay: 100,
@@ -113,6 +109,8 @@
                 if (urlLineType != null) {
                     $("#lineType").val(urlLineType);
                 }
+
+
             });
 
             function getDetail(modelName, lineType, startDate, endDate) {
@@ -128,13 +126,14 @@
                         headerOffset: 50
                     },
                     "ajax": {
-                        "url": "<c:url value="/SqlViewController/findBabPcsDetail" />",
+                        "url": "<c:url value="/SqlViewController/findBabLineProductivity" />",
                         "type": "Get",
                         data: {
-                            modelName: modelName,
-                            lineType: lineType,
-                            startDate: startDate,
-                            endDate: endDate
+                            po: $("#po").val(),
+                            modelName: $("#modelName").val(),
+                            line_id: $("#line").val(),
+                            startDate: $('#fini').val(),
+                            endDate: $('#ffin').val()
                         },
                         error: function (xhr, ajaxOptions, thrownError) {
                             alert(xhr.responseText);
@@ -144,32 +143,30 @@
                         {data: "id"},
                         {data: "po"},
                         {data: "modelName"},
+                        {data: "lineName"},
                         {data: "lineType"},
+                        {data: "sitefloor"},
+                        {data: "people"},
                         {data: "btime"},
-                        {data: "tagNameComb"},
-                        {data: "groupid"},
-                        {data: "station1"},
-                        {data: "station2"},
-                        {data: "station3"},
-                        {data: "station4"},
-                        {data: "station5"},
-                        {data: "station6"},
-                        {data: "diffSum"},
-                        {data: "balance"}
+                        {data: "lastUpdateTime"},
+                        {data: "totalPcs"},
+                        {data: "standardTime"},
+                        {data: "timeCost"},
+                        {data: "productivity"}
                     ],
                     "columnDefs": [
                         {
                             "type": "html",
-                            "targets": 4,
+                            "targets": [7, 8],
                             'render': function (data, type, full, meta) {
                                 return formatDate(data);
                             }
                         },
                         {
                             "type": "html",
-                            "targets": [7, 8, 9, 10, 11, 12],
+                            "targets": [12],
                             'render': function (data, type, full, meta) {
-                                return data == null ? "--" : data;
+                                return getPercent(data);
                             }
                         }
                     ],
@@ -191,12 +188,40 @@
                         $("#send").attr("disabled", false);
                         $("#BabDetail").show();
                     },
-                    "order": [[0, "asc"], [6, "asc"]]
+                    "order": [[0, "asc"]]
+                });
+            }
+
+            function initLineObject() {
+                $.ajax({
+                    type: "GET",
+                    url: "<c:url value="/BabLineController/findAll" />",
+                    dataType: "json",
+                    success: function (response) {
+                        var lineWiget = $("#line");
+                        var arr = response;
+                        for (var i = 0; i < arr.length; i++) {
+                            var line = arr[i];
+                            lineWiget.append("<option value=" + line.id + ">" + line.name + "</option>");
+                        }
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        showMsg(xhr.responseText);
+                    }
                 });
             }
 
             function formatDate(dateString) {
-                return moment(dateString).format('YYYY-MM-DD hh:mm');
+                return moment(dateString).format('YYYY-MM-DD HH:mm');
+            }
+            
+            function getPercent(val) {
+                return roundDecimal((val * 100), 2) + '%';
+            }
+
+            function roundDecimal(val, precision) {
+                var size = Math.pow(10, precision);
+                return Math.round(val * size) / size;
             }
         </script>
     </head>
@@ -204,12 +229,16 @@
         <c:import url="/temp/admin-header.jsp" />
         <div class="container form-inline">
             <div style="width:100%">
-                <h3>機種明細查詢</h3>
+                <h3>線體效率查詢</h3>
                 <table id="leaveRequest" class="table">
                     <tr>
                         <td>
                             <div class="form-group form-inline">
-                                <input type="text" id="modelName" placeholder="請輸入機種" />
+                                <input type="text" id="po" placeholder="工單"/>
+                                <input type="text" id="modelName" placeholder="機種"/>
+                                <select id="line">
+                                    <option value="-1">請選擇線別</option>
+                                </select>
                                 <label for="beginTime">日期: 從</label>
                                 <div class='input-group date' id='beginTime'>
                                     <input type="text" id="fini" placeholder="請選擇起始時間"> 
@@ -218,12 +247,6 @@
                                 <div class='input-group date' id='endTime'>
                                     <input type="text" id="ffin" placeholder="請選擇結束時間"> 
                                 </div>
-                                <label for="lineType">類別: </label>
-                                <select id="lineType">
-                                    <option value="-1">All</option>
-                                    <option value="ASSY">ASSY</option>
-                                    <option value="Packing">Packing</option>
-                                </select>
                                 <input type="button" id="send" value="確定(Ok)">
                             </div>
                         </td>
@@ -234,21 +257,19 @@
                     <table id="BabDetail" class="table table-striped" cellspacing="0" width="100%" style="text-align: center" hidden>
                         <thead>
                             <tr>
-                                <th>工單id</th>
+                                <th>id</th>
                                 <th>工單</th>
                                 <th>機種</th>
+                                <th>線別</th>
                                 <th>類別</th>
-                                <th>時間</th>
-                                <th>感應器</th>
-                                <th>組別</th>
-                                <th>站1</th>
-                                <th>站2</th>
-                                <th>站3</th>
-                                <th>站4</th>
-                                <th>站5</th>
-                                <th>站6</th>
-                                <th>總時數</th>
-                                <th>線平衡</th>
+                                <th>樓層</th>
+                                <th>人數</th>
+                                <th>開始</th>
+                                <th>結束</th>
+                                <th>數量</th>
+                                <th>標工</th>
+                                <th>耗時</th>
+                                <th>效率</th>
                             </tr>
                         </thead>
                     </table>

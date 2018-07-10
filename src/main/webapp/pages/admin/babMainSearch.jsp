@@ -355,7 +355,7 @@
                     dom: 'lfrtip',
                     "serverSide": false,
                     "ajax": {
-                        "url": "<c:url value="/BabController/findBabDetail" />",
+                        "url": "<c:url value="/SqlViewController/findBabDetail" />",
                         "type": "GET",
                         "data": {
                             lineTypeName: lineType,
@@ -507,7 +507,7 @@
 
                 if (bab_id == null) {
                     postObj = {
-                        "url": "<c:url value="/BabController/findLineBalanceCompare" />",
+                        "url": "<c:url value="/SqlViewController/findLineBalanceCompare" />",
                         "type": "GET",
                         "data": {
                             "modelName": modelName,
@@ -516,7 +516,7 @@
                     };
                 } else {
                     postObj = {
-                        "url": "<c:url value="/BabController/findLineBalanceCompareByBab" />",
+                        "url": "<c:url value="/SqlViewController/findLineBalanceCompareByBab" />",
                         "type": "GET",
                         "data": {
                             "bab_id": bab_id
