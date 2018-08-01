@@ -16,6 +16,25 @@ var burnIn_select_event = [
     }
 ];
 
+var testProfile_select_event = [
+    {
+        type: 'change',
+        fn: function (e) {
+            var selectOption = $('option:selected', this).text();
+            var defaultValue = {
+                "0": ["0", "0", "0", "0"],
+                "M5": ["1500", "25", "500", "3500,3500,3500,3500"],
+                "601": ["1776", "0", "500", "100,500,500,1000,500,100,500,500,1000,500"],
+                "B-B": ["2500", "0", "0", "0"]
+            };
+            $('input#acwVoltage').val(defaultValue[selectOption][0]);
+            $('input#gndValue').val(defaultValue[selectOption][1]);
+            $('input#irVoltage').val(defaultValue[selectOption][2]);
+            $('input#lltValue').val(defaultValue[selectOption][3]);
+        }
+    }
+];
+
 var pending_select_event = [
     {
         type: 'change',
@@ -28,7 +47,8 @@ var pending_select_event = [
 
 var babFlow_select_event = [
     {
-        type: 'change', fn: function (e) {
+        type: 'change', 
+        fn: function (e) {
             var sel2 = $("#flowByTestFlowId\\.id");
             var sel2Val = sel2.val();
             $.get('../SelectOption/flow-byParent/' + $(this).val(), function (data) {
@@ -45,7 +65,8 @@ var babFlow_select_event = [
 
 var businessGroup_select_event = [
     {
-        type: 'change', fn: function (e) {
+        type: 'change', 
+        fn: function (e) {
             var selectOption = $('option:selected', this).text();
             var defaultValue = {
                 IAG: "ASSY",

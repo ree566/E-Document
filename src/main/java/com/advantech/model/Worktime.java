@@ -644,7 +644,7 @@ public class Worktime implements java.io.Serializable {
     }
 
     public void setWeightAff(BigDecimal weightAff) {
-        this.weightAff = weightAff;
+        this.weightAff = this.autoFixScale(weightAff, 4);
     }
 
 //    @NotNull

@@ -6,20 +6,16 @@ var preAssy = "preAssy\\.id",
         testFlow = "flowByTestFlowId\\.id",
         packingFlow = "flowByPackingFlowId\\.id";
 var AND = "AND", OR = "OR";
-
 //Other field check logic
 var notZeroOrNull = function (obj) {
     return obj != null && obj != 0;
 };
-
 var needBI = function (obj) {
     return obj != null && obj == 'BI';
 };
-
 var needRI = function (obj) {
     return obj != null && obj == 'RI';
 };
-
 //Flow check logic setting
 var flow_check_logic = {
     "PRE-ASSY": [
@@ -30,8 +26,8 @@ var flow_check_logic = {
         {keyword: ["T1"], checkColumn: ["t1"], message: not_null_and_zero_message, prmValid: notZeroOrNull},
         {keyword: ["VB"], checkColumn: ["vibration"], message: not_null_and_zero_message, prmValid: notZeroOrNull},
 //        {keyword: ["H1", " LK"], checkColumn: ["hiPotLeakage"], message: not_null_and_zero_message, prmValid: notZeroOrNull},
-        {keyword: ["H1"], checkColumn: ["gndValue"], message: not_null_and_zero_message, prmValid: notZeroOrNull},
-        {keyword: ["H1", "LK"], checkColumn: ["hiPotLeakage", "acwVoltage"], message: not_null_and_zero_message, prmValid: notZeroOrNull},
+//        {keyword: ["H1"], checkColumn: ["gndValue"], message: not_null_and_zero_message, prmValid: notZeroOrNull},
+        {keyword: ["H1", "LK"], checkColumn: ["hiPotLeakage", "acwVoltage", "testProfile"], message: not_null_and_zero_message, prmValid: notZeroOrNull},
         {keyword: ["LK"], checkColumn: ["acwVoltage", "irVoltage", "testProfile", "lltValue"], message: not_null_and_zero_message, prmValid: notZeroOrNull},
         {keyword: ["CB"], checkColumn: ["coldBoot"], message: not_null_and_zero_message, prmValid: notZeroOrNull},
         {keyword: ["BI", "RI"], checkColumn: ["upBiRi", "downBiRi", "biCost"], message: not_null_and_zero_message, prmValid: notZeroOrNull},
@@ -50,7 +46,6 @@ var flow_check_logic = {
         {keyword: ["PI-PKG(WET)"], checkColumn: ["weight"], message: not_null_and_zero_message, prmValid: notZeroOrNull}
     ]
 };
-
 var field_check_flow_logic = [
     {checkColumn: {name: ["cleanPanel"], equals: false, value: 0}, description: when_not_empty_or_null, targetColumns: [{name: preAssy, keyword: ["PRE_ASSY"]}]},
     {checkColumn: {name: ["totalModule"], equals: false, value: 0}, description: when_not_empty_or_null, targetColumns: [{name: preAssy, keyword: ["PRE_ASSY"]}]},
@@ -60,6 +55,8 @@ var field_check_flow_logic = [
     {checkColumn: {name: ["hiPotLeakage"], equals: false, value: 0}, description: when_not_empty_or_null, targetColumns: [{name: babFlow, keyword: ["H1", "LK"]}]},
     {checkColumn: {name: ["acwVoltage"], equals: false, value: 0}, description: when_not_empty_or_null, targetColumns: [{name: babFlow, keyword: ["H1"]}]},
     //{checkColumn: {name: ["acwVoltage", "irVoltage", "testProfile", "lltValue"], equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: babFlow, keyword: ["LK"]}},
+    {checkColumn: {name: ["gndValue"], equals: false, value: 0}, description: when_not_empty_or_null, targetColumns: [{name: babFlow, keyword: ["H1"]}]},
+    {checkColumn: {name: ["testProfile"], equals: true, value: "601"}, description: "為601時", targetColumns: [{name: babFlow, keyword: ["LK"]}]},
     {checkColumn: {name: ["coldBoot"], equals: false, value: 0}, description: when_not_empty_or_null, targetColumns: [{name: babFlow, keyword: ["CB"]}]},
     {checkColumn: {name: ["upBiRi"], equals: false, value: 0}, description: when_not_empty_or_null, targetColumns: [{name: babFlow, keyword: ["BI", "RI"]}, {name: testFlow, keyword: ["T2B"]}], targetMatchStatement: OR},
     {checkColumn: {name: ["downBiRi"], equals: false, value: 0}, description: when_not_empty_or_null, targetColumns: [{name: babFlow, keyword: ["BI", "RI"]}, {name: testFlow, keyword: ["T2B"]}], targetMatchStatement: OR},
@@ -72,32 +69,24 @@ var field_check_flow_logic = [
     {checkColumn: {name: ["packing"], equals: false, value: 0}, description: when_not_empty_or_null, targetColumns: [{name: packingFlow, keyword: ["PKG"]}]},
     {checkColumn: {name: ["weight"], equals: false, value: 0}, description: when_not_empty_or_null, targetColumns: [{name: packingFlow, keyword: ["PI-PKG(WET)"]}]}
 ];
-
 //Flow check logic
 function fieldCheck(postdata, preAssyVal, babFlowVal, testFlowVal, packingFlowVal) {
     var validationErrors = [];
     for (var i = 0; i < field_check_flow_logic.length; i++) {
         var logic = field_check_flow_logic[i];
         var colInfo = logic.checkColumn;
-
         var col = colInfo.name;
         var checkBool = colInfo.equals;
         var checkVal = colInfo.value;
-
         var description = logic.description;
-
         var targetColInfo = logic.targetColumns;
         var targetMatchStatement = logic.targetMatchStatement;
-
         var checkResult = false;
-
         var tempErrors = [];
-
         for (var j = 0; j < targetColInfo.length; j++) {
             var targetColName = targetColInfo[j].name;
             var targetKeyword = targetColInfo[j].keyword;
             var targetColVal;
-
             switch (targetColName) {
                 case preAssy:
                     targetColVal = preAssyVal;
@@ -114,15 +103,12 @@ function fieldCheck(postdata, preAssyVal, babFlowVal, testFlowVal, packingFlowVa
                 default:
                     throw 'TargetColName not found!';
             }
-
             //Check col array's value all equals or not equals to checkCol.val
             var isMatchesRule = col.every(function (el, index, arr) {
                 var colName = arr[index];
                 var fieldVal = postdata[colName];
                 return fieldVal != null && (checkBool == true ? fieldVal == checkVal : fieldVal != checkVal);
             });
-
-
             if (checkBool != null) {
                 var errorResult = checkFlow(
                         isMatchesRule,
@@ -148,11 +134,9 @@ function fieldCheck(postdata, preAssyVal, babFlowVal, testFlowVal, packingFlowVa
     }
     return validationErrors;
 }
-
 function appendFieldInfo(field, description, error) {
     error.code = field + description + ' , ' + error.code;
 }
-
 function checkFlow(bool, targetColName, targetColVal, keyword) {
     var err = {};
     if (bool) {
@@ -175,19 +159,15 @@ function checkFlow(bool, targetColName, targetColVal, keyword) {
     }
     return err;
 }
-
 //Model
-
 //Check logic setting
 var modelName_check_logic = [
     {keyword: "ES", checkColumn: ["businessGroup\\.id"], message: "Must contain \"ES\""}
 ];
-
 var field_check_modelName_logic = [
     {checkColumn: {label: "BU", name: "businessGroup\\.id", value: "ES"}, description: "內容為ES", targetColumn: {name: "modelName", keyword: ["ES"]}}
 //    {checkColumn: {name: "workCenter", value: "ES"}, description: "內容為ES", targetColumn: {name: "modelName", keyword: ["ES"]}}
 ];
-
 //Check logic
 function modelNameCheckFieldIsValid(data) {
     var validationErrors = [];
@@ -212,7 +192,6 @@ function modelNameCheckFieldIsValid(data) {
     }
     return validationErrors;
 }
-
 function checkModelNameIsValid(data) {
     var validationErrors = [];
     for (var i = 0; i < field_check_modelName_logic.length; i++) {
@@ -234,7 +213,6 @@ function checkModelNameIsValid(data) {
     }
     return validationErrors;
 }
-
 function registerEndsWithIfIe() {
     //https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/String/endsWith
     if (!String.prototype.endsWith) {

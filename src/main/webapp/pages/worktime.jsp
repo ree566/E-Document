@@ -222,11 +222,11 @@
                 {label: 'KC', name: "kc", width: 60, searchrules: number_search_rule, searchoptions: search_string_options, edittype: "select", editoptions: {value: "0:0;1:1"}},
                 {label: 'N合1集合箱', name: "nsInOneCollectionBox", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, editoptions: {defaultValue: '0', dataEvents: nsInOneCollectionBox_change_event}},
                 {label: 'SN是否等於SSN', name: "partNoAttributeMaintain", edittype: "select", editoptions: {value: "N:N; :empty", defaultValue: ' '}, width: 120, searchrules: {required: true}, searchoptions: search_string_options},
-                {label: 'ACW Voltage', name: "acwVoltage", width: 100, search: true, searchrules: {required: true}, searchoptions: search_string_options, edittype: "text", editoptions: {defaultValue: '1776'}, editrules: {required: true}},
-                {label: 'IR Voltage', name: "irVoltage", width: 100, search: true, searchrules: {required: true}, searchoptions: search_string_options, edittype: "text", editoptions: {defaultValue: '500'}, editrules: {required: true}},
-                {label: 'GND Value', name: "gndValue", width: 100, search: true, searchrules: {required: true}, searchoptions: search_string_options, edittype: "text", editoptions: {defaultValue: '40'}, editrules: {required: true}},
-                {label: 'Test Profile', name: "testProfile", width: 100, search: true, searchrules: {required: true}, searchoptions: search_string_options, edittype: "text", editoptions: {defaultValue: '601'}, editrules: {required: true}},
-                {label: 'LLT Value', name: "lltValue", width: 100, search: true, searchrules: {required: true}, searchoptions: search_string_options, edittype: "text", editoptions: {defaultValue: '100,500,500,1000,500,100,500,500,1000,500'}, editrules: {required: true}},
+                {label: 'Test Profile', name: "testProfile", width: 100, search: true, searchrules: {required: true}, searchoptions: search_string_options, edittype: "select", editoptions: {value: "0:0;M5:M5;601:601;B-B:B-B", defaultValue: "601", dataEvents: testProfile_select_event}},
+                {label: 'ACW Voltage', name: "acwVoltage", width: 100, search: true, searchrules: {required: true}, searchoptions: search_string_options, edittype: "text", editrules: {required: true}},
+                {label: 'IR Voltage', name: "irVoltage", width: 100, search: true, searchrules: {required: true}, searchoptions: search_string_options, edittype: "text", editrules: {required: true}},
+                {label: 'GND Value', name: "gndValue", width: 100, search: true, searchrules: {required: true}, searchoptions: search_string_options, edittype: "text", editrules: {required: true}},
+                {label: 'LLT Value', name: "lltValue", width: 100, search: true, searchrules: {required: true}, searchoptions: search_string_options, edittype: "text", editrules: {required: true}},
                 {label: '禮盒總重量(含配件)', name: "weight", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true, required: true}, editoptions: {defaultValue: '0'}},
                 {label: '禮盒總重量(附加屬性質)', name: "weightAff", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true, required: true}, editoptions: {defaultValue: '0'}},
                 {label: '整箱總重量誤差值', name: "tolerance", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true, required: true}, editoptions: {defaultValue: '0'}},
@@ -288,7 +288,7 @@
                 {startColumnName: 'partNoAttributeMaintain', numberOfColumns: 1, titleText: '<em>料號屬性值維護</em>'},
                 {startColumnName: 'assyLeadTime', numberOfColumns: 2, titleText: '<em>組裝看板工時</em>'},
                 {startColumnName: 'packingLeadTime', numberOfColumns: 2, titleText: '<em>包裝看板工時</em>'},
-                {startColumnName: 'acwVoltage', numberOfColumns: 5, titleText: '<em>hi-pot Test</em>'},
+                {startColumnName: 'testProfile', numberOfColumns: 5, titleText: '<em>hi-pot Test</em>'},
                 {startColumnName: 'weight', numberOfColumns: 3, titleText: '<em>包裝重量</em>'}
             ]
         });
@@ -305,8 +305,7 @@
                     beforeShowForm: function (form) {
                         setTimeout(function () {
                             // do here all what you need (like alert('yey');)
-                            $("#flowByBabFlowId\\.id").trigger("change");
-                            $("#businessGroup\\.id").trigger("change");
+                            $("#flowByBabFlowId\\.id, #businessGroup\\.id").trigger("change");
                             settingFormulaCheckbox();
                         }, 50);
                         greyout(form);
@@ -314,9 +313,6 @@
                     afterShowForm: function (form) {
                         modelNameFormat();
                         checkRevision(form);
-                    },
-                    afterclickPgButtons: function (whichbutton, formid, rowid) {
-                        $("#flowByBabFlowId\\.id").trigger("change");
                     },
                     afterSubmit: showServerModifyMessage,
                     recreateForm: true,
@@ -333,13 +329,11 @@
                     closeAfterAdd: closed_after_add,
                     reloadAfterSubmit: true,
                     errorTextFormat: errorTextFormatF,
-                    afterclickPgButtons: clearCheckErrorIcon,
                     beforeSubmit: before_add,
                     beforeShowForm: function (form) {
                         setTimeout(function () {
                             // do here all what you need (like alert('yey');)
-                            $("#flowByBabFlowId\\.id").trigger("change");
-                            $("#businessGroup\\.id").trigger("change");
+                            $("#flowByBabFlowId\\.id, #businessGroup\\.id, #testProfile").trigger("change");
                         }, 50);
                         greyout(form);
                     },
