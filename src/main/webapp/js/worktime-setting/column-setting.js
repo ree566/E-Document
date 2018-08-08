@@ -69,7 +69,8 @@ var worktimeCol = [
     {name: "bwFields.0.assyAvg", editable: false},
     {name: "bwFields.0.packingAvg", editable: false},
     {name: "businessGroup.id"},
-    {name: "workCenter"}
+    {name: "workCenter"},
+    {name: "burnInQuantity"}
 
 ];
 

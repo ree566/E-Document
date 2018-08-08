@@ -138,6 +138,7 @@
                     {label: 'LLT Value', name: "lltValue", jsonmap: "0.lltValue", width: 120, searchrules: {required: true}, searchoptions: search_string_options},
                     {label: '禮盒總重量(含配件)', name: "weight", jsonmap: "0.weight", width: 120, searchrules: {required: true}, searchoptions: search_decimal_options},
                     {label: '整箱總重量誤差值', name: "tolerance", jsonmap: "0.tolerance", width: 120, searchrules: {required: true}, searchoptions: search_decimal_options},
+                    {label: '燒機台車容納數量', name: "burnInQuantity", jsonmap: "0.burnInQuantity", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options},
                     {label: '組裝排站人數', name: "assyStation", jsonmap: "0.assyStation", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options},
                     {label: '包裝排站人數', name: "packingStation", jsonmap: "0.packingStation", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options},
                     {label: '前置時間', name: "assyLeadTime", jsonmap: "0.assyLeadTime", width: 80, searchrules: number_search_rule, searchoptions: search_decimal_options},

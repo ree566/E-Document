@@ -6,7 +6,6 @@
 package com.advantech.test;
 
 import com.advantech.jqgrid.PageInfo;
-import com.advantech.model.Pending;
 import com.advantech.model.Worktime;
 import com.advantech.quartzJob.StandardTimeUpload;
 import com.advantech.service.FlowService;
@@ -22,6 +21,9 @@ import com.advantech.webservice.port.StandardtimeUploadPort;
 import java.util.List;
 import javax.transaction.Transactional;
 import static junit.framework.Assert.*;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Restrictions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -140,11 +142,18 @@ public class UploadPortTest {
 
     }
 
-//    @Test
+    @Autowired
+    private SessionFactory factory;
+
+    @Test
     public void testPartMappingUserUpload() throws Exception {
-//        Map result = mappingUserPort.transformData(w);
-//        assertEquals(1, result.size());
-//        mappingUserPort.upload(w);
+        Session session = factory.getCurrentSession();
+        List<Worktime> l = session.createCriteria(Worktime.class).add(Restrictions.eq("userByQcOwnerId.id", 95)).list();
+        assertEquals(75, l.size());
+
+        for (Worktime wo : l) {
+            mappingUserPort.update(wo);
+        }
     }
 
 //    @Test
@@ -217,8 +226,8 @@ public class UploadPortTest {
         standardTimeUpload.uploadToMes();
     }
 
-    @Test
-    @Rollback(true)
+//    @Test
+//    @Rollback(true)
     public void testStandardTimeUpload() throws Exception {
         Integer[] ids = {6283, 6284, 6285, 6576, 8462, 8505, 8769, 8811, 8812, 8814,
             8815, 8824, 8830, 8901, 8938, 8939, 8949, 8971, 8981, 8984, 9020};

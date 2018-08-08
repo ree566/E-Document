@@ -151,7 +151,7 @@ public class QueryPortTest {
     }
 
 //    @Test
-    public void testMaterialPropertyValueyQueryPort() throws Exception {
+    public void testMaterialPropertyValueQueryPort() throws Exception {
         Worktime w1 = worktimeService.findByModel("2063002307");
         assertNotNull(w1);
         List<MaterialPropertyValue> l = materialPropertyValueQueryPort.query(w1);
@@ -192,8 +192,8 @@ public class QueryPortTest {
     @Autowired
     private SessionFactory sessionFactory;
 
-    @Test
-    @Rollback(false)
+//    @Test
+//    @Rollback(false)
     public void updateAffValue() throws Exception {
         Session session = sessionFactory.getCurrentSession();
         List<Worktime> worktimes = worktimeService.findAll();
@@ -214,4 +214,23 @@ public class QueryPortTest {
             }
         }
     }
+
+    @Test
+    @Rollback(false)
+    public void testRetriveMatPropertyValue2() throws Exception {
+        Session session = sessionFactory.getCurrentSession();
+        List<Worktime> worktimes = worktimeService.findAll();
+        for (Worktime worktime : worktimes) {
+            List<MaterialPropertyValue> l = materialPropertyValueQueryPort.query(worktime);
+            MaterialPropertyValue bq = l.stream().filter(m1 -> "BQ".equals(m1.getMatPropertyNo())).findFirst().orElse(null);
+            if (bq != null) {
+                System.out.printf("ModelName: %s, BQ-Value: %s \n", worktime.getModelName(), bq.getValue());
+                worktime.setBurnInQuantity(Integer.parseInt(bq.getValue()));
+            } else {
+                worktime.setBurnInQuantity(0);
+            }
+            session.merge(worktime);
+        }
+    }
+
 }

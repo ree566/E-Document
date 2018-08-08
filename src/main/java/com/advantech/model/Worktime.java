@@ -122,6 +122,7 @@ public class Worktime implements java.io.Serializable {
     private BigDecimal setupTime = BigDecimal.ZERO;
     private BigDecimal assyToT1 = BigDecimal.ZERO;
     private BigDecimal t2ToPacking = BigDecimal.ZERO;
+    private Integer burnInQuantity = 0;
     private Integer assyStation = 0;
     private Integer packingStation = 0;
     private BigDecimal assyKanbanTime = BigDecimal.ZERO;
@@ -765,6 +766,15 @@ public class Worktime implements java.io.Serializable {
 
     public void setT2ToPacking(BigDecimal t2ToPacking) {
         this.t2ToPacking = autoFixScale(t2ToPacking, 1);
+    }
+
+    @Column(name = "burn_in_quantity")
+    public Integer getBurnInQuantity() {
+        return burnInQuantity;
+    }
+
+    public void setBurnInQuantity(Integer burnInQuantity) {
+        this.burnInQuantity = burnInQuantity;
     }
 
     @Column(name = "assy_station")
