@@ -144,7 +144,6 @@
                         {data: "po"},
                         {data: "modelName"},
                         {data: "lineName"},
-                        {data: "lineType"},
                         {data: "sitefloor"},
                         {data: "people"},
                         {data: "btime"},
@@ -157,14 +156,21 @@
                     "columnDefs": [
                         {
                             "type": "html",
-                            "targets": [7, 8],
+                            "targets": [6, 7],
                             'render': function (data, type, full, meta) {
                                 return formatDate(data);
                             }
                         },
                         {
                             "type": "html",
-                            "targets": [12],
+                            "targets": [10],
+                            'render': function (data, type, full, meta) {
+                                return roundDecimal(data, 2);
+                            }
+                        },
+                        {
+                            "type": "html",
+                            "targets": [11],
                             'render': function (data, type, full, meta) {
                                 return getPercent(data);
                             }
@@ -223,6 +229,11 @@
                 var size = Math.pow(10, precision);
                 return Math.round(val * size) / size;
             }
+            
+            function roundDecimal(val, precision) {
+                var size = Math.pow(10, precision);
+                return Math.round(val * size) / size;
+            }
         </script>
     </head>
     <body>
@@ -253,7 +264,6 @@
                     </tr>
                 </table>
                 <div style="width:100%">
-                    <h3>各站紀錄</h3>
                     <table id="BabDetail" class="table table-striped" cellspacing="0" width="100%" style="text-align: center" hidden>
                         <thead>
                             <tr>
@@ -261,14 +271,13 @@
                                 <th>工單</th>
                                 <th>機種</th>
                                 <th>線別</th>
-                                <th>類別</th>
                                 <th>樓層</th>
                                 <th>人數</th>
                                 <th>開始</th>
                                 <th>結束</th>
                                 <th>數量</th>
                                 <th>標工</th>
-                                <th>耗時</th>
+                                <th>總耗時(分)</th>
                                 <th>效率</th>
                             </tr>
                         </thead>

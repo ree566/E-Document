@@ -246,7 +246,7 @@ https://datatables.net/forums/discussion/20388/trying-to-access-rowdata-in-rende
                 }
 
                 function formatDate(timeStamp) {
-                    return moment(timeStamp).format("YYYY-MM-DD hh:mm");
+                    return moment(timeStamp).format("YYYY-MM-DD HH:mm");
                 }
 
                 function getPercent(val, precision) {
