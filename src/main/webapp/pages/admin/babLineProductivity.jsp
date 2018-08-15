@@ -72,6 +72,30 @@
                     getDetail();
                 });
 
+                var lockDays = 90;
+                beginTimeObj.on("dp.change", function (e) {
+                    endTimeObj.data("DateTimePicker").minDate(e.date);
+                    var beginDate = e.date;
+                    var endDate = endTimeObj.data("DateTimePicker").date();
+                    var dateDiff = endDate.diff(beginDate, 'days');
+                    if (dateDiff > 30) {
+                        endTimeObj.data("DateTimePicker").date(beginDate.add(lockDays, 'days'));
+                    }
+                });
+
+                endTimeObj.on("dp.change", function (e) {
+                    var beginDate = beginTimeObj.data("DateTimePicker").date();
+                    var endDate = e.date;
+                    var dateDiff = endDate.diff(beginDate, 'days');
+                    if (dateDiff > 30) {
+                        beginTimeObj.data("DateTimePicker").date(endDate.add(-lockDays, 'days'));
+                    }
+                });
+
+                $(":text").keyup(function () {
+                    $(this).val($(this).val().toUpperCase());
+                });
+
                 $.ajax({
                     type: "Get",
                     url: "<c:url value="/BabController/findAllModelName" />",
@@ -113,7 +137,7 @@
 
             });
 
-            function getDetail(modelName, lineType, startDate, endDate) {
+            function getDetail() {
                 $("#send").attr("disabled", true);
                 $("#BabDetail").DataTable({
                     dom: 'Bfrtip',
@@ -132,6 +156,7 @@
                             po: $("#po").val(),
                             modelName: $("#modelName").val(),
                             line_id: $("#line").val(),
+                            jobnumber: $("#jobnumber").val(),
                             startDate: $('#fini').val(),
                             endDate: $('#ffin').val()
                         },
@@ -146,31 +171,56 @@
                         {data: "lineName"},
                         {data: "sitefloor"},
                         {data: "people"},
-                        {data: "btime"},
-                        {data: "lastUpdateTime"},
+                        {data: "s1tag", visible: false},
+                        {data: "s1usr", visible: false},
+                        {data: "s1time", visible: false},
+                        {data: "s2tag", visible: false},
+                        {data: "s2usr", visible: false},
+                        {data: "s2time", visible: false},
+                        {data: "s3tag", visible: false},
+                        {data: "s3usr", visible: false},
+                        {data: "s3time", visible: false},
+                        {data: "s4tag", visible: false},
+                        {data: "s4usr", visible: false},
+                        {data: "s4time", visible: false},
+                        {data: "s5tag", visible: false},
+                        {data: "s5usr", visible: false},
+                        {data: "s5time", visible: false},
+                        {data: "s6tag", visible: false},
+                        {data: "s6usr", visible: false},
+                        {data: "s6time", visible: false},
                         {data: "totalPcs"},
                         {data: "standardTime"},
                         {data: "timeCost"},
-                        {data: "productivity"}
+                        {data: "productivity"},
+                        {data: "btime"},
+                        {data: "lastUpdateTime"}
                     ],
                     "columnDefs": [
                         {
                             "type": "html",
-                            "targets": [6, 7],
+                            "targets": [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23],
+                            'render': function (data, type, full, meta) {
+                                return data == null ? 0 : data;
+                            }
+                        },
+                        {
+                            "type": "html",
+                            "targets": [28, 29],
                             'render': function (data, type, full, meta) {
                                 return formatDate(data);
                             }
                         },
                         {
                             "type": "html",
-                            "targets": [10],
+                            "targets": [26],
                             'render': function (data, type, full, meta) {
                                 return roundDecimal(data, 2);
                             }
                         },
                         {
                             "type": "html",
-                            "targets": [11],
+                            "targets": [27],
                             'render': function (data, type, full, meta) {
                                 return getPercent(data);
                             }
@@ -220,7 +270,7 @@
             function formatDate(dateString) {
                 return moment(dateString).format('YYYY-MM-DD HH:mm');
             }
-            
+
             function getPercent(val) {
                 return roundDecimal((val * 100), 2) + '%';
             }
@@ -229,7 +279,7 @@
                 var size = Math.pow(10, precision);
                 return Math.round(val * size) / size;
             }
-            
+
             function roundDecimal(val, precision) {
                 var size = Math.pow(10, precision);
                 return Math.round(val * size) / size;
@@ -238,55 +288,80 @@
     </head>
     <body>
         <c:import url="/temp/admin-header.jsp" />
-        <div class="container form-inline">
-            <div style="width:100%">
-                <h3>線體效率查詢</h3>
-                <table id="leaveRequest" class="table">
-                    <tr>
-                        <td>
-                            <div class="form-group form-inline">
-                                <input type="text" id="po" placeholder="工單"/>
-                                <input type="text" id="modelName" placeholder="機種"/>
-                                <select id="line">
-                                    <option value="-1">請選擇線別</option>
-                                </select>
-                                <label for="beginTime">日期: 從</label>
-                                <div class='input-group date' id='beginTime'>
-                                    <input type="text" id="fini" placeholder="請選擇起始時間"> 
-                                </div> 
-                                <label for="endTime"> 到 </label>
-                                <div class='input-group date' id='endTime'>
-                                    <input type="text" id="ffin" placeholder="請選擇結束時間"> 
-                                </div>
-                                <input type="button" id="send" value="確定(Ok)">
-                            </div>
-                        </td>
-                    </tr>
-                </table>
-                <div style="width:100%">
-                    <table id="BabDetail" class="table table-striped" cellspacing="0" width="100%" style="text-align: center" hidden>
-                        <thead>
-                            <tr>
-                                <th>id</th>
-                                <th>工單</th>
-                                <th>機種</th>
-                                <th>線別</th>
-                                <th>樓層</th>
-                                <th>人數</th>
-                                <th>開始</th>
-                                <th>結束</th>
-                                <th>數量</th>
-                                <th>標工</th>
-                                <th>總耗時(分)</th>
-                                <th>效率</th>
-                            </tr>
-                        </thead>
-                    </table>
+        <div class="container">
+            <h3>線體效率查詢</h3>
+            <div class="row form-inline">
+                <div class="col-1 form-group">
+                    <input type="text" id="jobnumber" placeholder="工號" />
                 </div>
+                <div class="col-2 form-group">
+                    <input type="text" id="po" placeholder="工單" />
+                </div>
+                <div class="col-2 form-group">
+                    <input type="text" id="modelName" placeholder="機種" />
+                </div>
+                <div class="col-2 form-group">
+                    <select id="line" class="form-control">
+                        <option value="-1">請選擇線別</option>
+                    </select>
+                </div>
+                <div class="col-2 form-group">
+                    <label for="beginTime">日期: 從</label>
+                    <div class='input-group date' id='beginTime'>
+                        <input type="text" id="fini" placeholder="請選擇起始時間"> 
+                    </div> 
+                </div>
+                <div class="col-2 form-group">
+                    <label for="endTime"> 到 </label>
+                    <div class='input-group date' id='endTime'>
+                        <input type="text" id="ffin" placeholder="請選擇結束時間"> 
+                    </div>
+                </div>
+                <div class="col-1 form-group">
+                    <input type="button" id="send" value="確定(Ok)">
+                </div>
+            </div>
 
-                <div id="serverMsg"></div>
+            <div class="row">
+                <table id="BabDetail" class="table table-striped" cellspacing="0" width="100%" style="text-align: center" hidden>
+                    <thead>
+                        <tr>
+                            <th>id</th>
+                            <th>工單</th>
+                            <th>機種</th>
+                            <th>線別</th>
+                            <th>樓層</th>
+                            <th>人數</th>
+                            <th>站1</th>
+                            <th>站1人員</th>
+                            <th>站1時間</th>
+                            <th>站2</th>
+                            <th>站2人員</th>
+                            <th>站2時間</th>
+                            <th>站3</th>
+                            <th>站3人員</th>
+                            <th>站3時間</th>
+                            <th>站4</th>
+                            <th>站4人員</th>
+                            <th>站4時間</th>
+                            <th>站5</th>
+                            <th>站5人員</th>
+                            <th>站5時間</th>
+                            <th>站6</th>
+                            <th>站6人員</th>
+                            <th>站6時間</th>
+                            <th>數量</th>
+                            <th>標工</th>
+                            <th>總耗時(分)</th>
+                            <th>效率</th>
+                            <th>開始</th>
+                            <th>結束</th>
+                        </tr>
+                    </thead>
+                </table>
             </div>
         </div>
+
         <c:import url="/temp/admin-footer.jsp" />
     </body>
 </html>

@@ -127,9 +127,10 @@ public class SqlViewController {
             @RequestParam(required = false) String po,
             @RequestParam(required = false) String modelName,
             @RequestParam(required = false) int line_id,
+            @RequestParam(required = false) String jobnumber,
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime startDate,
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime endDate) {
-        return new DataTableResponse(sqlViewService.findBabLineProductivity(po, modelName, line_id, startDate, endDate));
+        return new DataTableResponse(sqlViewService.findBabLineProductivity(po, modelName, line_id, jobnumber, startDate, endDate));
     }
 
 }
