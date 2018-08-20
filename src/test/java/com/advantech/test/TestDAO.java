@@ -9,6 +9,7 @@ import com.advantech.dao.BabDAO;
 import com.advantech.dao.BabPcsDetailHistoryDAO;
 import com.advantech.dao.BabSettingHistoryDAO;
 import com.advantech.dao.SensorTransformDAO;
+import com.advantech.dao.TagNameComparisonDAO;
 import com.advantech.helper.CustomPasswordEncoder;
 import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.model.Bab;
@@ -60,6 +61,9 @@ public class TestDAO {
 
     @Autowired
     private SensorTransformDAO sensorTransformDAO;
+    
+    @Autowired
+    private TagNameComparisonDAO tagDAO;
 
     @Test
     @Transactional
@@ -131,6 +135,14 @@ public class TestDAO {
         assertTrue(l != null);
         assertTrue(!l.isEmpty());
         HibernateObjectPrinter.print(l);
+    }
+    
+    @Test
+    @Transactional
+    @Rollback(true)
+    public void testTagNameCompRange(){
+        SensorTransform sensor = sensorTransformDAO.findByPrimaryKey("L4-S-1");
+        HibernateObjectPrinter.print(this.tagDAO.findInRange(sensor, 5));
     }
 
 }

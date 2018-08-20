@@ -5,13 +5,12 @@
  */
 package com.advantech.dao;
 
-import com.advantech.model.Floor;
 import com.advantech.model.SensorTransform;
 import com.advantech.model.TagNameComparison;
 import com.advantech.model.TagNameComparisonId;
 import java.util.List;
 import org.hibernate.Criteria;
-import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
@@ -63,17 +62,19 @@ public class TagNameComparisonDAO extends AbstractDao<TagNameComparisonId, TagNa
 
     public List<TagNameComparison> findInRange(SensorTransform startPosition, int maxiumStation) {
         TagNameComparison tag = this.findByLampSysTagName(startPosition);
-        Criteria c = super.createEntityCriteria();
-        c.add(Restrictions.eq("line.id", tag.getLine().getId()));
-        c.add(Restrictions.between("position", tag.getPosition(), tag.getPosition() + maxiumStation - 1));
-        return c.list();
+        return super.createEntityCriteria()
+                .add(Restrictions.eq("line.id", tag.getLine().getId()))
+                .add(Restrictions.between("position", tag.getPosition(), tag.getPosition() + maxiumStation - 1))
+                .addOrder(Order.asc("position"))
+                .list();
     }
 
     public List<TagNameComparison> findInRange(TagNameComparison startPosition, int maxiumStation) {
-        Criteria c = super.createEntityCriteria();
-        c.add(Restrictions.eq("line.id", startPosition.getLine().getId()));
-        c.add(Restrictions.between("position", startPosition.getPosition(), startPosition.getPosition() + maxiumStation - 1));
-        return c.list();
+        return super.createEntityCriteria()
+                .add(Restrictions.eq("line.id", startPosition.getLine().getId()))
+                .add(Restrictions.between("position", startPosition.getPosition(), startPosition.getPosition() + maxiumStation - 1))
+                .addOrder(Order.asc("position"))
+                .list();
     }
 
     public List<TagNameComparison> findByFloorName(String floorName) {
