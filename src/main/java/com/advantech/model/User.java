@@ -66,6 +66,8 @@ public class User implements java.io.Serializable, UserDetails {
     @JsonIgnore
     private Set<CountermeasureEvent> countermeasureEvents = new HashSet<CountermeasureEvent>(0);
 
+    private Set<BabLineProductivityExcludeModel> babLineProductivityExcludeModels = new HashSet<BabLineProductivityExcludeModel>(0);
+
     public User() {
     }
 
@@ -210,6 +212,15 @@ public class User implements java.io.Serializable, UserDetails {
 
     public void setCountermeasureEvents(Set<CountermeasureEvent> countermeasureEvents) {
         this.countermeasureEvents = countermeasureEvents;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    public Set<BabLineProductivityExcludeModel> getBabLineProductivityExcludeModels() {
+        return babLineProductivityExcludeModels;
+    }
+
+    public void setBabLineProductivityExcludeModels(Set<BabLineProductivityExcludeModel> babLineProductivityExcludeModels) {
+        this.babLineProductivityExcludeModels = babLineProductivityExcludeModels;
     }
 
     @ManyToMany(fetch = FetchType.LAZY)

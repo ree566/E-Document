@@ -75,8 +75,8 @@ public class TestFacade {
     }
 
     @Test
-//    @Transactional
-//    @Rollback(true)
+    @Transactional
+    @Rollback(true)
     public void testFqcLineTypeFacade() {
         fF.generateData();
     }

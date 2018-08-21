@@ -5,7 +5,6 @@ import com.advantech.dao.CountermeasureDAO;
 import com.advantech.model.Bab;
 import com.advantech.model.CountermeasureSopRecord;
 import com.advantech.model.ReplyStatus;
-import static com.google.common.collect.Sets.newHashSet;
 import java.util.List;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,15 +40,17 @@ public class CountermeasureService {
         return countermeasureDAO.findByPrimaryKey(obj_id);
     }
 
-    public Countermeasure findByBab(int bab_id) {
-        return countermeasureDAO.findByBab(bab_id);
+    public Countermeasure findByBabAndTypeName(int bab_id, String typeName) {
+        return countermeasureDAO.findByBabAndTypeName(bab_id, typeName);
     }
 
     public int insert(Countermeasure pojo) {
         countermeasureDAO.insert(pojo);
-        Bab b = pojo.getBab();
-        b.setReplyStatus(ReplyStatus.REPLIED);
-        babService.update(b);
+        if ("Bab_Abnormal_LineBalance".equals(pojo.getCountermeasureType().getName())) {
+            Bab b = pojo.getBab();
+            b.setReplyStatus(ReplyStatus.REPLIED);
+            babService.update(b);
+        }
         return 1;
     }
 

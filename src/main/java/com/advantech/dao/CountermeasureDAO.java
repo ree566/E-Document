@@ -35,14 +35,16 @@ public class CountermeasureDAO extends AbstractDao<Integer, Countermeasure> impl
         return (Countermeasure) c.uniqueResult();
     }
 
-    public Countermeasure findByBab(int bab_id) {
+    public Countermeasure findByBabAndTypeName(int bab_id, String typeName) {
         Criteria c = super.createEntityCriteria();
+        c.createAlias("countermeasureType", "ct");
         c.setFetchMode("errorCodes", FetchMode.JOIN);
         c.setFetchMode("actionCodes", FetchMode.JOIN);
         c.setFetchMode("lastEditor", FetchMode.JOIN);
         c.setFetchMode("countermeasureEvents", FetchMode.JOIN);
         c.setFetchMode("countermeasureSopRecords", FetchMode.JOIN);
         c.add(Restrictions.eq("bab.id", bab_id));
+        c.add(Restrictions.eq("ct.name", typeName));
         return (Countermeasure) c.uniqueResult();
     }
 

@@ -6,6 +6,9 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+<sec:authentication var="user" property="principal" />
+<sec:authorize access="isAuthenticated()"  var="isAuthenticated" />
 <!DOCTYPE html>
 <html>
     <head>
@@ -32,6 +35,12 @@
             .alarm{
                 color:red;
             }
+            .title, .subTitle{
+                display: inline !important; 
+            }
+            .subTitle{
+                color: red;
+            }
         </style>
         <script src="<c:url value="/webjars/jquery/1.12.4/jquery.min.js" />"></script>
         <script src="<c:url value="/js/jquery-ui-1.10.0.custom.min.js" />"></script>
@@ -47,11 +56,22 @@
         <script src="<c:url value="/js/jquery-datatable-button/buttons.html5.min.js" />"></script>
         <script src="<c:url value="/js/jquery-datatable-button/buttons.print.min.js" />"></script>
         <script src="<c:url value="/js/urlParamGetter.js"/>"></script>
+        <script src="<c:url value="/js/param.check.js" />"></script>
+        <script src="<c:url value="/js/countermeasure.js" />"></script>
 
         <script>
             $(function () {
+                var countermeasureType = "Bab_Abnormal_LineProductivity";
+                var table;
 
                 initLineObject();
+                initCountermeasureDialog({
+                    queryUrl: "<c:url value="/CountermeasureController/findByBab" />",
+                    saveUrl: "<c:url value="/CountermeasureController/update" />",
+                    actionCodeQueryUrl: "<c:url value="/CountermeasureController/getActionCodeOptions" />",
+                    errorCodeQueryUrl: "<c:url value="/CountermeasureController/getErrorCodeOptions" />"
+                }, table, countermeasureType,'${isAuthenticated ? user.jobnumber : null}');
+                
                 var momentFormatString = 'YYYY-MM-DD';
                 $(":text,input[type='number'],select").addClass("form-control");
                 $(":button").addClass("btn btn-default");
@@ -72,7 +92,7 @@
                     getDetail();
                 });
 
-                var lockDays = 90;
+                var lockDays = 180;
                 beginTimeObj.on("dp.change", function (e) {
                     endTimeObj.data("DateTimePicker").minDate(e.date);
                     var beginDate = e.date;
@@ -133,13 +153,18 @@
                 if (urlLineType != null) {
                     $("#lineType").val(urlLineType);
                 }
+                
+                if (${!isAuthenticated}) {
+                    $("#editCountermeasure").off("click").attr("disabled", true);
+                    $("#countermeasureEditHint").show();
+                }
 
 
             });
 
             function getDetail() {
                 $("#send").attr("disabled", true);
-                $("#BabDetail").DataTable({
+                table = $("#BabDetail").DataTable({
                     dom: 'Bfrtip',
                     buttons: [
                         'copy', 'excel', 'print'
@@ -194,7 +219,8 @@
                         {data: "timeCost"},
                         {data: "productivity"},
                         {data: "btime"},
-                        {data: "lastUpdateTime"}
+                        {data: "lastUpdateTime"},
+                        {data: "replyFlag"}
                     ],
                     "columnDefs": [
                         {
@@ -223,6 +249,22 @@
                             "targets": [27],
                             'render': function (data, type, full, meta) {
                                 return getPercent(data);
+                            }
+                        },
+                        {
+                            "type": "html",
+                            "targets": [30],
+                            'render': function (data, type, full, meta) {
+                                switch (data) {
+                                    case 1:
+                                        return "<input type='button' class='cm-detail btn btn-info btn-sm' data-toggle= 'modal' data-target='#myModal' value='檢視詳細' />";
+                                    case - 1:
+                                        return "<input type='button' class='cm-detail btn btn-danger btn-sm' data-toggle= 'modal' data-target='#myModal' value='檢視詳細' />";
+                                    case 0:
+                                        return "達到標準";
+                                    default:
+                                        return "黑人問號";
+                                }
                             }
                         }
                     ],
@@ -288,8 +330,74 @@
     </head>
     <body>
         <c:import url="/temp/admin-header.jsp" />
+        <!-- Modal -->
+        <div id="myModal" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 id="titleMessage" class="modal-title"></h4>
+                    </div>
+                    <div class="modal-body">
+                        <div>
+                            <table id="countermeasureTable" cellspacing="10" class="table table-bordered">
+                                <tr>
+                                    <td class="lab">Error Code</td>
+                                    <td id="errorCode" > 
+                                        <div class="checkbox">
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="lab">Action Code</td>
+                                    <td id="actionCode" > 
+                                        <div class="checkbox">
+                                            <label class="checkbox-inline">
+                                                <input type="checkbox" name="actionCode">
+                                            </label>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="lab">說明</td>
+                                    <td id="errorCon" >
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="lab">SOP資訊</td>
+                                    <td>
+                                        <label id="sopHint" hidden="">※請輸入完整Sop名稱及頁數:</label>
+                                        <div id="sop"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="lab">最後修改人員</td>
+                                    <td id="responseUser" >
+                                    </td>
+                                </tr>
+                            </table>
+                            <div id="dialog-msg" class="alarm"></div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <label id="countermeasureEditHint" for="editCountermeasure" hidden="">請<a href="<c:url value="/login" /> " target='_parent'>登入</a>做異常回覆</label>
+                        <button type="button" id="editCountermeasure" class="btn btn-default" >Edit</button>
+                        <button type="button" id="saveCountermeasure" class="btn btn-default">Save</button>
+                        <button type="button" id="undoContent" class="btn btn-default">Undo</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
         <div class="container">
-            <h3>線體效率查詢</h3>
+            <div>
+                <h3 class="title">線體效率查詢</h3>
+                <h5 class="subTitle">※僅會顯示組裝段&機種未排外的紀錄</h5>
+            </div>
             <div class="row form-inline">
                 <div class="col-1 form-group">
                     <input type="text" id="jobnumber" placeholder="工號" />
@@ -356,6 +464,7 @@
                             <th>效率</th>
                             <th>開始</th>
                             <th>結束</th>
+                            <th>異常回覆</th>
                         </tr>
                     </thead>
                 </table>

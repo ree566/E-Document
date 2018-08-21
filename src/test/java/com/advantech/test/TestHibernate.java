@@ -406,7 +406,7 @@ public class TestHibernate {
     @Autowired
     private PassStationRecordService passStationService;
 
-    @Test
+//    @Test
     @Transactional
     @Rollback(true)
     public void testOneToMany() {

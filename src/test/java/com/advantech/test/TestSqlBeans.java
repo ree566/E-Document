@@ -8,8 +8,10 @@ package com.advantech.test;
 import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.model.Bab;
 import com.advantech.model.BabAlarmHistory;
+import com.advantech.model.BabLineProductivityExcludeModel;
 import com.advantech.model.BabStandardTimeHistory;
 import com.advantech.model.Countermeasure;
+import com.advantech.model.CountermeasureType;
 import com.advantech.model.Floor;
 import com.advantech.model.Fqc;
 import com.advantech.model.FqcLine;
@@ -213,21 +215,44 @@ public class TestSqlBeans {
                 .setParameter("modelName", "UTC-520D-RE")
                 .setParameter("people", 2)
                 .list();
-        
+
         ModelSopRemark m = l.get(0).getModelSopRemark();
         Hibernate.initialize(m);
 
         HibernateObjectPrinter.print(l);
     }
-    
-    @Test
+
+//    @Test
     @Rollback(false)
-    public void testBabStandardTimeHistory(){
+    public void testBabStandardTimeHistory() {
         Bab b = session.get(Bab.class, 173);
         assertNotNull(b);
-        
+
         session.save(new BabStandardTimeHistory(b, new BigDecimal(291.3)));
-        
+
+    }
+
+//    @Test
+    @Rollback(true)
+    public void testBabLineProductivityExcludeModel() {
+        User user = session.get(User.class, 1);
+        assertNotNull(user);
+        BabLineProductivityExcludeModel exM = new BabLineProductivityExcludeModel("testModel", user);
+
+        session.save(exM);
+
+        HibernateObjectPrinter.print(exM);
+    }
+
+//    @Test
+    @Rollback(true)
+    public void testCountermeasureType() {
+        Countermeasure cm = session.get(Countermeasure.class, 1);
+        assertNotNull(cm);
+        CountermeasureType cmT = cm.getCountermeasureType();
+        assertNotNull(cmT);
+        assertTrue(cmT.getId() == 1);
+        HibernateObjectPrinter.print(cmT);
     }
 
 }

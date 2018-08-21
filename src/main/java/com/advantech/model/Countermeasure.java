@@ -36,6 +36,7 @@ public class Countermeasure implements Serializable {
     private String solution;
     private User lastEditor;
     private int lock;
+    private CountermeasureType countermeasureType;
 
     private Set<ErrorCode> errorCodes = new HashSet<ErrorCode>(0);
 
@@ -94,6 +95,16 @@ public class Countermeasure implements Serializable {
 
     public void setLock(int lock) {
         this.lock = lock;
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cType_id", nullable = false)
+    public CountermeasureType getCountermeasureType() {
+        return countermeasureType;
+    }
+
+    public void setCountermeasureType(CountermeasureType countermeasureType) {
+        this.countermeasureType = countermeasureType;
     }
 
     @ManyToMany(fetch = FetchType.LAZY)

@@ -8,12 +8,14 @@ package com.advantech.test;
 import com.advantech.dao.BabDAO;
 import com.advantech.dao.BabPcsDetailHistoryDAO;
 import com.advantech.dao.BabSettingHistoryDAO;
+import com.advantech.dao.CountermeasureDAO;
+import com.advantech.dao.FqcDAO;
 import com.advantech.dao.SensorTransformDAO;
 import com.advantech.dao.TagNameComparisonDAO;
-import com.advantech.helper.CustomPasswordEncoder;
 import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.model.Bab;
 import com.advantech.model.BabSettingHistory;
+import com.advantech.model.Countermeasure;
 import com.advantech.model.Line;
 import com.advantech.model.SensorTransform;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -30,7 +32,6 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -61,11 +62,17 @@ public class TestDAO {
 
     @Autowired
     private SensorTransformDAO sensorTransformDAO;
-    
+
     @Autowired
     private TagNameComparisonDAO tagDAO;
 
-    @Test
+    @Autowired
+    private CountermeasureDAO countermeasureDAO;
+    
+    @Autowired
+    private FqcDAO fqcDAO;
+
+//    @Test
     @Transactional
     @Rollback(true)
     public void testBabDAO() throws JsonProcessingException {
@@ -136,13 +143,31 @@ public class TestDAO {
         assertTrue(!l.isEmpty());
         HibernateObjectPrinter.print(l);
     }
-    
+
+//    @Test
+    @Transactional
+    @Rollback(true)
+    public void testTagNameCompRange() {
+        SensorTransform sensor = sensorTransformDAO.findByPrimaryKey("L4-S-1");
+        HibernateObjectPrinter.print(this.tagDAO.findInRange(sensor, 5));
+    }
+
     @Test
     @Transactional
     @Rollback(true)
-    public void testTagNameCompRange(){
-        SensorTransform sensor = sensorTransformDAO.findByPrimaryKey("L4-S-1");
-        HibernateObjectPrinter.print(this.tagDAO.findInRange(sensor, 5));
+    public void testCountermeasure() {
+        Countermeasure cm = countermeasureDAO.findByBabAndTypeName(23365, "Bab_Abnormal_LineProductivity");
+        assertNotNull(cm);
+        assertNotNull(cm.getCountermeasureType());
+        assertEquals(2, cm.getCountermeasureType().getId());
+    }
+
+//    @Test
+    @Transactional
+    @Rollback(true)
+    public void testFqc() {
+        List l = fqcDAO.findProcessingWithLine();
+        assertTrue(l.isEmpty());
     }
 
 }

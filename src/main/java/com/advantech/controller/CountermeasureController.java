@@ -10,12 +10,15 @@ import static com.advantech.helper.SecurityPropertiesUtils.retrieveAndCheckUserI
 import com.advantech.model.ActionCode;
 import com.advantech.model.Bab;
 import com.advantech.model.Countermeasure;
+import com.advantech.model.CountermeasureType;
 import com.advantech.model.ErrorCode;
 import com.advantech.model.User;
 import com.advantech.service.ActionCodeService;
 import com.advantech.service.BabService;
 import com.advantech.service.CountermeasureService;
+import com.advantech.service.CountermeasureTypeService;
 import com.advantech.service.ErrorCodeService;
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.collect.Sets.newHashSet;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +41,9 @@ public class CountermeasureController {
 
     @Autowired
     private CountermeasureService cService;
+    
+    @Autowired
+    private CountermeasureTypeService cTypeService;
 
     @Autowired
     private ErrorCodeService errorCodeService;
@@ -47,14 +53,18 @@ public class CountermeasureController {
 
     @RequestMapping(value = "/findByBab", method = {RequestMethod.GET})
     @ResponseBody
-    protected Countermeasure findByBab(@RequestParam(value = "bab_id") int bab_id) {
-        return cService.findByBab(bab_id);
+    protected Countermeasure findByBab(
+            @RequestParam(value = "bab_id") int bab_id,
+            @RequestParam String typeName
+    ) {
+        return cService.findByBabAndTypeName(bab_id, typeName);
     }
 
     @RequestMapping(value = "/update", method = {RequestMethod.POST})
     @ResponseBody
     protected boolean update(
             @RequestParam(value = "bab_id") int bab_id,
+            @RequestParam String typeName,
             @RequestParam(value = "errorCodes[]") Integer[] errorCodes,
             @RequestParam(value = "actionCodes[]") Integer[] actionCodes,
             @RequestParam String solution,
@@ -64,11 +74,14 @@ public class CountermeasureController {
         
         User user = retrieveAndCheckUserInSession();
 
-        Countermeasure c = cService.findByBab(bab_id);
+        Countermeasure c = cService.findByBabAndTypeName(bab_id, typeName);
+        CountermeasureType cType = cTypeService.findByName(typeName);
+        checkArgument(cType != null);
         if (c == null) {
             Bab b = babService.findByPrimaryKey(bab_id);
             c = new Countermeasure();
             c.setBab(b);
+            c.setCountermeasureType(cType);
         }
         List<ErrorCode> errorCode = errorCodeService.findByPrimaryKeys(errorCodes);
         List<ActionCode> actionCode = actionCodeService.findByPrimaryKeys(actionCodes);
