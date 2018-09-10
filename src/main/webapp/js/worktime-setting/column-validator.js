@@ -16,6 +16,12 @@ var needBI = function (obj) {
 var needRI = function (obj) {
     return obj != null && obj == 'RI';
 };
+
+var checkBurnIn = true;
+var disabledWhenBiSampleCheck = function (formObj) {
+    return formObj["biSampling"] == "Y";
+};
+
 //Flow check logic setting
 var flow_check_logic = {
     "PRE-ASSY": [
@@ -30,16 +36,15 @@ var flow_check_logic = {
         {keyword: ["H1", "LK"], checkColumn: ["hiPotLeakage", "acwVoltage", "testProfile"], message: not_null_and_zero_message, prmValid: notZeroOrNull},
         {keyword: ["LK"], checkColumn: ["acwVoltage", "irVoltage", "testProfile", "lltValue"], message: not_null_and_zero_message, prmValid: notZeroOrNull},
         {keyword: ["CB"], checkColumn: ["coldBoot"], message: not_null_and_zero_message, prmValid: notZeroOrNull},
-        {keyword: ["BI", "RI"], checkColumn: ["upBiRi", "downBiRi", "biCost"], message: not_null_and_zero_message, prmValid: notZeroOrNull},
-        {keyword: ["BI"], checkColumn: ["burnIn"], message: "內容須為BI", prmValid: needBI},
-        {keyword: ["RI"], checkColumn: ["burnIn"], message: "內容須為RI", prmValid: needRI}
+
+        {keyword: ["BI", "RI"], checkColumn: ["upBiRi", "downBiRi", "biCost"], message: not_null_and_zero_message, prmValid: notZeroOrNull, disabled: disabledWhenBiSampleCheck},
+        {keyword: ["BI"], checkColumn: ["burnIn"], message: "內容須為BI", prmValid: needBI, disabled: disabledWhenBiSampleCheck},
+        {keyword: ["RI"], checkColumn: ["burnIn"], message: "內容須為RI", prmValid: needRI, disabled: disabledWhenBiSampleCheck}
     ],
     TEST: [
         {keyword: ["T2"], checkColumn: ["t2"], message: not_null_and_zero_message, prmValid: notZeroOrNull},
         {keyword: ["T3"], checkColumn: ["t3"], message: not_null_and_zero_message, prmValid: notZeroOrNull},
-        {keyword: ["T4"], checkColumn: ["t4"], message: not_null_and_zero_message, prmValid: notZeroOrNull},
-        {keyword: ["T2B"], checkColumn: ["upBiRi", "downBiRi", "biCost"], message: not_null_and_zero_message, prmValid: notZeroOrNull},
-        {keyword: ["T2B"], checkColumn: ["burnIn"], message: "內容須為BI", prmValid: needBI}
+        {keyword: ["T4"], checkColumn: ["t4"], message: not_null_and_zero_message, prmValid: notZeroOrNull}
     ],
     PKG: [
         {keyword: ["PKG"], checkColumn: ["packing"], message: not_null_and_zero_message, prmValid: notZeroOrNull},
@@ -58,11 +63,13 @@ var field_check_flow_logic = [
     {checkColumn: {name: ["gndValue"], equals: false, value: 0}, description: when_not_empty_or_null, targetColumns: [{name: babFlow, keyword: ["H1"]}]},
     {checkColumn: {name: ["testProfile"], equals: true, value: "601"}, description: "為601時", targetColumns: [{name: babFlow, keyword: ["LK"]}]},
     {checkColumn: {name: ["coldBoot"], equals: false, value: 0}, description: when_not_empty_or_null, targetColumns: [{name: babFlow, keyword: ["CB"]}]},
-    {checkColumn: {name: ["upBiRi"], equals: false, value: 0}, description: when_not_empty_or_null, targetColumns: [{name: babFlow, keyword: ["BI", "RI"]}, {name: testFlow, keyword: ["T2B"]}], targetMatchStatement: OR},
-    {checkColumn: {name: ["downBiRi"], equals: false, value: 0}, description: when_not_empty_or_null, targetColumns: [{name: babFlow, keyword: ["BI", "RI"]}, {name: testFlow, keyword: ["T2B"]}], targetMatchStatement: OR},
-    {checkColumn: {name: ["biCost"], equals: false, value: 0}, description: when_not_empty_or_null, targetColumns: [{name: babFlow, keyword: ["BI", "RI"]}, {name: testFlow, keyword: ["T2B"]}], targetMatchStatement: OR},
-    {checkColumn: {name: ["burnIn"], equals: true, value: "BI"}, description: "內容為BI", targetColumns: [{name: babFlow, keyword: ["BI"]}, {name: testFlow, keyword: ["T2B"]}], targetMatchStatement: OR},
-    {checkColumn: {name: ["burnIn"], equals: true, value: "RI"}, description: "內容為RI", targetColumns: [{name: babFlow, keyword: ["RI"]}]},
+
+    {checkColumn: {name: ["upBiRi"], equals: false, value: 0}, description: when_not_empty_or_null, targetColumns: [{name: babFlow, keyword: ["BI", "RI"]}], disabled: disabledWhenBiSampleCheck},
+    {checkColumn: {name: ["downBiRi"], equals: false, value: 0}, description: when_not_empty_or_null, targetColumns: [{name: babFlow, keyword: ["BI", "RI"]}], disabled: disabledWhenBiSampleCheck},
+    {checkColumn: {name: ["biCost"], equals: false, value: 0}, description: when_not_empty_or_null, targetColumns: [{name: babFlow, keyword: ["BI", "RI"]}], disabled: disabledWhenBiSampleCheck},
+    {checkColumn: {name: ["burnIn"], equals: true, value: "BI"}, description: "內容為BI", targetColumns: [{name: babFlow, keyword: ["BI"]}], disabled: disabledWhenBiSampleCheck},
+    {checkColumn: {name: ["burnIn"], equals: true, value: "RI"}, description: "內容為RI", targetColumns: [{name: babFlow, keyword: ["RI"]}], disabled: disabledWhenBiSampleCheck},
+
     {checkColumn: {name: ["t2"], equals: false, value: 0}, description: when_not_empty_or_null, targetColumns: [{name: testFlow, keyword: ["T2"]}]},
     {checkColumn: {name: ["t3"], equals: false, value: 0}, description: when_not_empty_or_null, targetColumns: [{name: testFlow, keyword: ["T3"]}]},
     {checkColumn: {name: ["t4"], equals: false, value: 0}, description: when_not_empty_or_null, targetColumns: [{name: testFlow, keyword: ["T4"]}]},
@@ -74,6 +81,9 @@ function fieldCheck(postdata, preAssyVal, babFlowVal, testFlowVal, packingFlowVa
     var validationErrors = [];
     for (var i = 0; i < field_check_flow_logic.length; i++) {
         var logic = field_check_flow_logic[i];
+        if ("disabled" in logic && logic.disabled(postdata) == true) {
+            continue;
+        }
         var colInfo = logic.checkColumn;
         var col = colInfo.name;
         var checkBool = colInfo.equals;
@@ -87,6 +97,7 @@ function fieldCheck(postdata, preAssyVal, babFlowVal, testFlowVal, packingFlowVa
             var targetColName = targetColInfo[j].name;
             var targetKeyword = targetColInfo[j].keyword;
             var targetColVal;
+            var targetMatchMode = targetColInfo[j].equals;
             switch (targetColName) {
                 case preAssy:
                     targetColVal = preAssyVal;
@@ -101,7 +112,11 @@ function fieldCheck(postdata, preAssyVal, babFlowVal, testFlowVal, packingFlowVa
                     targetColVal = packingFlowVal;
                     break;
                 default:
-                    throw 'TargetColName not found!';
+                    if (targetColName != null) {
+                        targetColVal = postdata[targetColName];
+                    } else {
+                        throw 'TargetColName not found!';
+                    }
             }
             //Check col array's value all equals or not equals to checkCol.val
             var isMatchesRule = col.every(function (el, index, arr) {
@@ -112,7 +127,7 @@ function fieldCheck(postdata, preAssyVal, babFlowVal, testFlowVal, packingFlowVa
             if (checkBool != null) {
                 var errorResult = checkFlow(
                         isMatchesRule,
-                        targetColName, targetColVal, targetKeyword);
+                        targetColName, targetColVal, targetKeyword, targetMatchMode);
                 if (errorResult.field != null) {
                     appendFieldInfo(col, description, errorResult);
                     tempErrors.push(errorResult);
@@ -137,7 +152,7 @@ function fieldCheck(postdata, preAssyVal, babFlowVal, testFlowVal, packingFlowVa
 function appendFieldInfo(field, description, error) {
     error.code = field + description + ' , ' + error.code;
 }
-function checkFlow(bool, targetColName, targetColVal, keyword) {
+function checkFlow(bool, targetColName, targetColVal, keyword, equals) {
     var err = {};
     if (bool) {
         if (targetColVal != null && targetColVal != "") {
@@ -213,6 +228,69 @@ function checkModelNameIsValid(data) {
     }
     return validationErrors;
 }
+
+var biSamplingCheckFields = [
+    {
+        name: "upBiRi",
+        checkFunc: notZeroOrNull,
+        msg: not_null_and_zero_message
+    },
+    {
+        name: "downBiRi",
+        checkFunc: notZeroOrNull,
+        msg: not_null_and_zero_message
+    },
+    {
+        name: "biCost",
+        checkFunc: notZeroOrNull,
+        msg: not_null_and_zero_message
+    },
+    {
+        name: "burnIn",
+        checkFunc: needBI,
+        msg: "內容須為BI"
+    },
+    {
+        name: babFlow,
+        checkFunc: function (obj) {
+            return obj.indexOf("BI") == -1 && obj.indexOf("RI") == -1;
+        },
+        msg: "When BiSampling, babFlow must not contain BI or RI"
+    }
+];
+
+function checkWhenBiSampling(data, babFlowName) {
+    var validationErrors = [];
+    var biSampling = data["biSampling"];
+
+    for (var i = 0; i < biSamplingCheckFields.length; i++) {
+        var field = biSamplingCheckFields[i];
+        var fieldName = field.name;
+        var func = field.checkFunc;
+        var fieldErrorMsg = field.msg;
+        var fieldVal = fieldName == babFlow ? babFlowName : data[fieldName];
+        if (func(fieldVal) == false) {
+            var err = {};
+            err.field = fieldName;
+            err.code = fieldErrorMsg;
+            validationErrors.push(err);
+        }
+    }
+
+    if (biSampling == "N") {
+        var i = validationErrors.length;
+        validationErrors.length = 0;
+        if (i == 0) {
+            var err = {};
+            err.field = "biSampling";
+            err.code = "內容須為Y";
+            validationErrors.push(err);
+        }
+    }
+
+    return validationErrors;
+}
+
 function registerEndsWithIfIe() {
     //https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/String/endsWith
     if (!String.prototype.endsWith) {

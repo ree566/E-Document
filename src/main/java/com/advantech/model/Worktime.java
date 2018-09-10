@@ -90,6 +90,7 @@ public class Worktime implements java.io.Serializable {
     private BigDecimal coldBoot = BigDecimal.ZERO;
     private BigDecimal warmBoot = BigDecimal.ZERO;
     private BigDecimal pendingTime;
+    private String biSampling;
     private String burnIn;
     private BigDecimal biTime;
     private BigDecimal biTemperature;
@@ -454,6 +455,17 @@ public class Worktime implements java.io.Serializable {
 
     public void setBurnIn(String burnIn) {
         this.burnIn = burnIn;
+    }
+
+    @NotNull
+    @NotEmpty
+    @Column(name = "bi_sampling", nullable = false, length = 10)
+    public String getBiSampling() {
+        return biSampling;
+    }
+
+    public void setBiSampling(String biSampling) {
+        this.biSampling = biSampling;
     }
 
     @NotNull(message = "Bi Time 不可為空")

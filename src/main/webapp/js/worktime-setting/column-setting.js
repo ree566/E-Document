@@ -26,6 +26,7 @@ var worktimeCol = [
     {name: "pending.id"},
     {name: "pendingTime"},
     {name: "burnIn"},
+    {name: "biSampling"},
     {name: "biTime"},
     {name: "biTemperature"},
     {name: "userBySpeOwnerId.id"},

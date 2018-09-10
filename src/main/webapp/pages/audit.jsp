@@ -107,6 +107,7 @@
                     {label: 'Floor', name: "floor_id", jsonmap: "0.floor.id", width: 100, searchrules: {required: true}, searchoptions: search_string_options, formatter: selectOptions["floor_func"]},
                     {label: 'Pending', name: "pending_id", jsonmap: "0.pending.id", formatter: selectOptions["pending_func"], width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options},
                     {label: 'Pending TIME', name: "pendingTime", jsonmap: "0.pendingTime", width: 100, searchrules: {required: true}, searchoptions: search_decimal_options, formoptions: required_form_options},
+                    {label: 'Bi Sampling', name: "biSampling", jsonmap: "0.biSampling", width: 100, searchrules: {required: true}, searchoptions: search_string_options},
                     {label: 'BurnIn', name: "burnIn", jsonmap: "0.pendingTime", width: 100, searchrules: {required: true}, searchoptions: search_string_options},
                     {label: 'B/I Time', name: "biTime", jsonmap: "0.biTime", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: required_form_options},
                     {label: 'BI_Temperature', name: "biTemperature", jsonmap: "0.biTemperature", width: 120, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: required_form_options},

@@ -119,13 +119,20 @@
         var before_add = function (postdata, formid) {
             var formulaFieldInfo = getFormulaCheckboxField();
             clearCheckErrorIcon();
+
             var checkResult = checkFlowIsValid(postdata, formid);
+
             var modelRelativeCheckResult = checkModelIsValid(postdata);
             checkResult = checkResult.concat(modelRelativeCheckResult);
+
+            var biSamplingCheckResult = checkIfBiSampling(postdata);
+            checkResult = checkResult.concat(biSamplingCheckResult);
+
             if (checkResult.length != 0) {
                 errorTextFormatF(checkResult); //field // code
                 return [false, "There are some errors in the entered data. Hover over the error icons for details."];
             } else {
+//                return [false, "Saved."]; //--For debug validator
                 $.extend(postdata, formulaFieldInfo);
                 return [true, "saved"];
             }
@@ -137,13 +144,18 @@
             formulaFieldInfo["worktimeFormulaSettings[0].worktime.id"] = postdata.id;
             clearCheckErrorIcon();
             var checkResult = checkFlowIsValid(postdata, formid);
+
             var modelRelativeCheckResult = checkModelIsValid(postdata);
             checkResult = checkResult.concat(modelRelativeCheckResult);
+
+            var biSamplingCheckResult = checkIfBiSampling(postdata);
+            checkResult = checkResult.concat(biSamplingCheckResult);
+
             if (checkResult.length != 0) {
                 errorTextFormatF(checkResult); //field // code
                 return [false, "There are some errors in the entered data. Hover over the error icons for details."];
             } else {
-                //return [false, "Saved."]; //--For debug validator
+//                return [false, "Saved."]; //--For debug validator
                 //儲存前再check一次版本，給予覆蓋or取消的選擇
                 var revision_number = getRowRevision();
                 if (revision_number != selected_row_revision) {
@@ -161,6 +173,15 @@
                 return [true, ''];
             }
         };
+
+        var biSample_change_event = [
+            {
+                type: 'change',
+                fn: function (e) {
+                    checkBurnIn = $(this).val() == "N";
+                }
+            }
+        ];
 
         //Jqgrid initialize.
         grid.jqGrid({
@@ -197,6 +218,7 @@
                 {label: 'Floor', name: "floor.id", edittype: "select", editoptions: {value: selectOptions["floor"]}, width: 100, formatter: selectOptions["floor_func"], searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["floor"], sopt: ['eq']}},
                 {label: 'Pending', name: "pending.id", edittype: "select", editoptions: {value: selectOptions["pending"], defaultValue: 'N', dataEvents: pending_select_event}, formatter: selectOptions["pending_func"], width: 100, searchrules: number_search_rule, stype: "select", searchoptions: {value: selectOptions["pending"], sopt: ['eq']}},
                 {label: 'Pending TIME', name: "pendingTime", width: 100, searchrules: {required: true}, searchoptions: search_decimal_options, editrules: {required: true, number: true}, editoptions: {defaultValue: '0'}, formoptions: required_form_options},
+                {label: 'BI Sampling', name: "biSampling", edittype: "select", editoptions: {value: "N:N;Y:Y", dataEvents: biSample_change_event}, width: 100, searchrules: {required: true}, searchoptions: search_string_options},
                 {label: 'BurnIn', name: "burnIn", edittype: "select", editoptions: {value: "N:N;BI:BI;RI:RI", dataEvents: burnIn_select_event}, width: 100, searchrules: {required: true}, searchoptions: search_string_options},
                 {label: 'B/I Time', name: "biTime", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {required: true, number: true}, editoptions: {defaultValue: '0'}, formoptions: required_form_options},
                 {label: 'BI_Temperature', name: "biTemperature", width: 120, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {required: true, number: true}, editoptions: {defaultValue: '0'}, formoptions: required_form_options},
@@ -481,6 +503,9 @@
             var validationErrors = [];
             for (var i = 0; i < logicArr.length; i++) {
                 var logic = logicArr[i];
+                if ("disabled" in logic && logic.disabled(formObj) == true) {
+                    continue;
+                }
                 var keyword = logic.keyword;
                 for (var j = 0; j < keyword.length; j++) {
                     if (flowName.indexOf(keyword[j]) > -1) {
@@ -628,6 +653,13 @@
             var modelCheckResult = modelNameCheckFieldIsValid(data);
             var otherFieldCheckResult = checkModelNameIsValid(data);
             return modelCheckResult.concat(otherFieldCheckResult);
+        }
+
+        function checkIfBiSampling(data) {
+            var babOptions = selectOptions["bab_flow_options"];
+            var babFlowName = babOptions.get(parseInt(data["flowByBabFlowId.id"]));
+            var biSamplingCheckResult = checkWhenBiSampling(data, babFlowName);
+            return biSamplingCheckResult;
         }
 
         function getGridRevision() {
