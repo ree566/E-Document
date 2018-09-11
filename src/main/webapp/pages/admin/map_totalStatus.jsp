@@ -205,7 +205,7 @@
                 dragableWiget.addClass("adjustPosition");
                 dragableWiget.not(".clearWiget").addClass("ui-helper").draggable({
                     drag: function (e) {
-                        return false;
+//                        return false;
                     }
                 });
 

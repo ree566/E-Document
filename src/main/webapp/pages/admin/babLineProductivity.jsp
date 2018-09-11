@@ -70,8 +70,8 @@
                     saveUrl: "<c:url value="/CountermeasureController/update" />",
                     actionCodeQueryUrl: "<c:url value="/CountermeasureController/getActionCodeOptions" />",
                     errorCodeQueryUrl: "<c:url value="/CountermeasureController/getErrorCodeOptions" />"
-                }, table, countermeasureType,'${isAuthenticated ? user.jobnumber : null}');
-                
+                }, table, countermeasureType, '${isAuthenticated ? user.jobnumber : null}');
+
                 var momentFormatString = 'YYYY-MM-DD';
                 $(":text,input[type='number'],select").addClass("form-control");
                 $(":button").addClass("btn btn-default");
@@ -153,7 +153,7 @@
                 if (urlLineType != null) {
                     $("#lineType").val(urlLineType);
                 }
-                
+
                 if (${!isAuthenticated}) {
                     $("#editCountermeasure").off("click").attr("disabled", true);
                     $("#countermeasureEditHint").show();
@@ -167,7 +167,14 @@
                 table = $("#BabDetail").DataTable({
                     dom: 'Bfrtip',
                     buttons: [
-                        'copy', 'excel', 'print'
+                        'copy',
+                        {
+                            extend: 'excel',
+                            exportOptions: {
+                                columns: 'th:not(:last-child)'
+                            }
+                        },
+                        'print'
                     ],
                     "processing": true,
                     "serverSide": false,
@@ -182,6 +189,7 @@
                             modelName: $("#modelName").val(),
                             line_id: $("#line").val(),
                             jobnumber: $("#jobnumber").val(),
+                            minPcs: $("#aboveMinPcs").is(":checked") ? 20 : null,
                             startDate: $('#fini').val(),
                             endDate: $('#ffin').val()
                         },
@@ -220,6 +228,9 @@
                         {data: "productivity"},
                         {data: "btime"},
                         {data: "lastUpdateTime"},
+                        {data: "solution", visible: false},
+                        {data: "code", visible: false},
+                        {data: "lastEditor", visible: false},
                         {data: "replyFlag"}
                     ],
                     "columnDefs": [
@@ -253,7 +264,7 @@
                         },
                         {
                             "type": "html",
-                            "targets": [30],
+                            "targets": [33],
                             'render': function (data, type, full, meta) {
                                 switch (data) {
                                     case 1:
@@ -399,33 +410,42 @@
                 <h5 class="subTitle">※僅會顯示組裝段&機種未排外的紀錄</h5>
             </div>
             <div class="row form-inline">
-                <div class="col-1 form-group">
+                <div class="col form-group">
                     <input type="text" id="jobnumber" placeholder="工號" />
                 </div>
-                <div class="col-2 form-group">
+                <div class="col form-group">
                     <input type="text" id="po" placeholder="工單" />
                 </div>
-                <div class="col-2 form-group">
+                <div class="col form-group">
                     <input type="text" id="modelName" placeholder="機種" />
                 </div>
-                <div class="col-2 form-group">
+                <div class="col form-group">
                     <select id="line" class="form-control">
                         <option value="-1">請選擇線別</option>
                     </select>
                 </div>
-                <div class="col-2 form-group">
+                
+                <div class="col form-group">
                     <label for="beginTime">日期: 從</label>
                     <div class='input-group date' id='beginTime'>
                         <input type="text" id="fini" placeholder="請選擇起始時間"> 
                     </div> 
                 </div>
-                <div class="col-2 form-group">
+                <div class="col form-group">
                     <label for="endTime"> 到 </label>
                     <div class='input-group date' id='endTime'>
                         <input type="text" id="ffin" placeholder="請選擇結束時間"> 
                     </div>
                 </div>
-                <div class="col-1 form-group">
+
+            </div>
+
+            <div class="row form-inline">
+                <div class="col form-group">
+                    <input type="checkbox" id="aboveMinPcs" > 
+                    <label for="aboveMinPcs">大於20Pcs</label>
+                </div>
+                <div class="col form-group">
                     <input type="button" id="send" value="確定(Ok)">
                 </div>
             </div>
@@ -464,6 +484,9 @@
                             <th>效率</th>
                             <th>開始</th>
                             <th>結束</th>
+                            <th>異常原因</th>
+                            <th>code</th>
+                            <th>回覆人</th>
                             <th>異常回覆</th>
                         </tr>
                     </thead>
