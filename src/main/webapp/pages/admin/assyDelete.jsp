@@ -171,7 +171,7 @@
                         {
                             extend: 'excel',
                             exportOptions: {
-                                columns: 'th:not(:first-child):not(:last-child)'
+                                columns: 'th:not(:last-child)'
                             }
                         },
                         'print'
@@ -198,7 +198,6 @@
                         }
                     },
                     "columns": [
-                        {data: "id"},
                         {data: "id"},
                         {data: "po"},
                         {data: "modelName"},
@@ -236,45 +235,36 @@
                     ],
                     "columnDefs": [
                         {
-                            'targets': 0,
-                            'searchable': false,
-                            'orderable': false,
-                            'className': 'dt-body-center',
-                            'render': function (data, type, full, meta) {
-                                return '<input type="checkbox" name="id[]" value="' + $('<div/>').text(data).html() + '">';
-                            }
-                        },
-                        {
                             "type": "html",
-                            "targets": [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24],
+                            "targets": [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23],
                             'render': function (data, type, full, meta) {
                                 return data == null ? 0 : data;
                             }
                         },
                         {
                             "type": "html",
-                            "targets": [29, 30],
+                            "targets": [28, 29],
                             'render': function (data, type, full, meta) {
                                 return formatDate(data);
                             }
                         },
                         {
                             "type": "html",
-                            "targets": [27],
+                            "targets": [26],
                             'render': function (data, type, full, meta) {
                                 return roundDecimal(data, 2);
                             }
                         },
                         {
                             "type": "html",
-                            "targets": [28],
+                            "targets": [27],
                             'render': function (data, type, full, meta) {
                                 return getPercent(data);
                             }
                         },
                         {
                             "type": "html",
-                            "targets": [34],
+                            "targets": [33],
                             'render': function (data, type, full, meta) {
                                 switch (data) {
                                     case 1:
@@ -306,30 +296,8 @@
                     "initComplete": function (settings, json) {
                         $("#send").attr("disabled", false);
                         $("#BabDetail").show();
-
-                        // Handle click on "Select all" control
-                        $('#select_all').on('click', function () {
-                            // Get all rows with search applied
-                            var rows = table.rows({'search': 'applied'}).nodes();
-                            // Check/uncheck checkboxes for all rows in the table
-                            $('input[type="checkbox"]', rows).prop('checked', this.checked);
-                        });
-
-                        // Handle click on checkbox to set state of "Select all" control
-                        $('#BabDetail tbody').on('change', 'input[type="checkbox"]', function () {
-                            // If checkbox is not checked
-                            if (!this.checked) {
-                                var el = $('#select_all').get(0);
-                                // If "Select all" control is checked and has 'indeterminate' property
-                                if (el && el.checked && ('indeterminate' in el)) {
-                                    // Set visual state of "Select all" control
-                                    // as 'indeterminate'
-                                    el.indeterminate = true;
-                                }
-                            }
-                        });
                     },
-                    "order": [[1, "asc"]]
+                    "order": [[0, "asc"]]
                 });
             }
 
@@ -373,200 +341,8 @@
     </head>
     <body>
         <c:import url="/temp/admin-header.jsp" />
-        <!-- Modal -->
-        <div id="myModal" class="modal fade" role="dialog">
-            <div class="modal-dialog">
 
-                <!-- Modal content-->
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
-                        <h4 id="titleMessage" class="modal-title"></h4>
-                    </div>
-                    <div class="modal-body">
-                        <div>
-                            <table id="countermeasureTable" cellspacing="10" class="table table-bordered">
-                                <tr>
-                                    <td class="lab">Error Code</td>
-                                    <td id="errorCode" > 
-                                        <div class="checkbox">
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="lab">Action Code</td>
-                                    <td id="actionCode" > 
-                                        <div class="checkbox">
-                                            <label class="checkbox-inline">
-                                                <input type="checkbox" name="actionCode">
-                                            </label>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="lab">說明</td>
-                                    <td id="errorCon" >
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="lab">SOP資訊</td>
-                                    <td>
-                                        <label id="sopHint" hidden="">※請輸入完整Sop名稱及頁數:</label>
-                                        <div id="sop"></div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="lab">最後修改人員</td>
-                                    <td id="responseUser" >
-                                    </td>
-                                </tr>
-                            </table>
-                            <div id="dialog-msg" class="alarm"></div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <label id="countermeasureEditHint" for="editCountermeasure" hidden="">請<a href="<c:url value="/login" /> " target='_parent'>登入</a>做異常回覆</label>
-                        <button type="button" id="editCountermeasure" class="btn btn-default" >Edit</button>
-                        <button type="button" id="saveCountermeasure" class="btn btn-default">Save</button>
-                        <button type="button" id="undoContent" class="btn btn-default">Undo</button>
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-
-        <div class="container">
-            <div>
-                <h3 class="title">線體效率查詢</h3>
-                <h5 class="subTitle">※僅會顯示組裝段&機種未排外的紀錄</h5>
-            </div>
-            <div class="row form-inline">
-                <div class="col form-group">
-                    <input type="text" id="jobnumber" placeholder="工號" />
-                </div>
-                <div class="col form-group">
-                    <input type="text" id="po" placeholder="工單" />
-                </div>
-                <div class="col form-group">
-                    <input type="text" id="modelName" placeholder="機種" />
-                </div>
-                <div class="col form-group">
-                    <select id="line" class="form-control">
-                        <option value="-1">請選擇線別</option>
-                    </select>
-                </div>
-
-                <div class="col form-group">
-                    <label for="beginTime">日期: 從</label>
-                    <div class='input-group date' id='beginTime'>
-                        <input type="text" id="fini" placeholder="請選擇起始時間"> 
-                    </div> 
-                </div>
-                <div class="col form-group">
-                    <label for="endTime"> 到 </label>
-                    <div class='input-group date' id='endTime'>
-                        <input type="text" id="ffin" placeholder="請選擇結束時間"> 
-                    </div>
-                </div>
-
-            </div>
-
-            <div class="row form-inline">
-                <div class="col form-group">
-                    <input type="checkbox" id="aboveMinPcs" > 
-                    <label for="aboveMinPcs">大於20Pcs</label>
-                </div>
-                <div class="col form-group">
-                    <input type="button" id="send" value="確定(Ok)">
-                </div>
-            </div>
-
-            <div class="row">
-                <table id="BabDetail" class="table table-striped" cellspacing="0" width="100%" style="text-align: center" hidden>
-                    <thead>
-                        <tr>
-                            <th><input name="select_all" value="1" id="select_all" type="checkbox"></th>
-                            <th>id</th>
-                            <th>工單</th>
-                            <th>機種</th>
-                            <th>線別</th>
-                            <th>樓層</th>
-                            <th>人數</th>
-                            <th>站1</th>
-                            <th>站1人員</th>
-                            <th>站1時間</th>
-                            <th>站2</th>
-                            <th>站2人員</th>
-                            <th>站2時間</th>
-                            <th>站3</th>
-                            <th>站3人員</th>
-                            <th>站3時間</th>
-                            <th>站4</th>
-                            <th>站4人員</th>
-                            <th>站4時間</th>
-                            <th>站5</th>
-                            <th>站5人員</th>
-                            <th>站5時間</th>
-                            <th>站6</th>
-                            <th>站6人員</th>
-                            <th>站6時間</th>
-                            <th>數量</th>
-                            <th>標工</th>
-                            <th>總耗時(分)</th>
-                            <th>效率</th>
-                            <th>開始</th>
-                            <th>結束</th>
-                            <th>異常原因</th>
-                            <th>code</th>
-                            <th>回覆人</th>
-                            <th>異常回覆</th>
-                        </tr>
-                    </thead>
-                    <tfoot>
-                        <tr>
-                            <th>
-                                <!--<input type="button" value="Del" class="btn btn-danger" />-->
-                            </th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                        </tr>
-                    </tfoot>
-                </table>
-            </div>
-        </div>
+        <h2>This is the backdoor 4876 page.</h2>
 
         <c:import url="/temp/admin-footer.jsp" />
     </body>

@@ -25,6 +25,7 @@ import com.advantech.model.ModelSopRemarkDetail;
 import com.advantech.model.TestTable;
 import com.advantech.model.Unit;
 import com.advantech.model.User;
+import com.advantech.model.view.Worktime;
 import com.advantech.webservice.Factory;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.collect.Sets.newHashSet;

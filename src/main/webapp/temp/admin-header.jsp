@@ -7,6 +7,7 @@
 <sec:authorize access="hasRole('OPER_MFG_LINEOWNER')"  var="isMfgLineOwner" />
 <sec:authorize access="hasRole('OPER_MFG')"  var="isMfgOper" />
 <sec:authorize access="hasRole('OPER_FQC')"  var="isFqcOper" />
+<sec:authorize access="hasRole('BACKDOOR_4876_')"  var="isBackDoor4876" />
 <link rel="stylesheet" href="<c:url value="/webjars/bootstrap/3.3.7/css/bootstrap.min.css" />">
 <link rel="stylesheet" href="<c:url value="/webjars/font-awesome/4.7.0/css/font-awesome.min.css" />" >
 <style>
@@ -94,6 +95,9 @@
                         <li><a href="BabLineProductivity">線體效率查詢</a></li>
                             <c:if test="${isMfgLineOwner || isMfgOper || isAdmin}">
                             <li><a href="ModelSopRemark">Sop維護</a></li>
+                            </c:if>
+                            <c:if test="${isBackDoor4876 || isAdmin}">
+                            <li><a href="AssyDelete">Assy delete</a></li>
                             </c:if>
                     </ul>
                 </li>

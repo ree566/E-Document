@@ -216,6 +216,15 @@
         <url-pattern>/pages/admin/ModelSopRemark</url-pattern>  
     </servlet-mapping>
     
+    <servlet>
+        <servlet-name>AssyDelete</servlet-name>
+        <jsp-file>/pages/admin/assyDelete.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AssyDelete</servlet-name>
+        <url-pattern>/pages/admin/AssyDelete</url-pattern>  
+    </servlet-mapping>
+    
     <!--Other setting-->
     <servlet>
         <servlet-name>appServlet</servlet-name>
