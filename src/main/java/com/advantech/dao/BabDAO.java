@@ -33,6 +33,12 @@ public class BabDAO extends AbstractDao<Integer, Bab> implements BasicDAO_1<Bab>
         return super.getByKey((int) obj_id);
     }
 
+    public List<Bab> findByPrimaryKeys(Integer... obj_ids) {
+        Criteria c = super.createEntityCriteria();
+        c.add(Restrictions.in("id", obj_ids));
+        return c.list();
+    }
+
     public Bab findWithLineInfo(int bab_id) {
         Criteria c = super.createEntityCriteria();
         c.add(Restrictions.eq("id", bab_id));
@@ -77,7 +83,7 @@ public class BabDAO extends AbstractDao<Integer, Bab> implements BasicDAO_1<Bab>
         }
         return c.list();
     }
-    
+
     public List<Bab> findProcessing() {
         Criteria c = super.createEntityCriteria();
         c.createAlias("line", "l");
@@ -86,8 +92,8 @@ public class BabDAO extends AbstractDao<Integer, Bab> implements BasicDAO_1<Bab>
         c.add(Restrictions.gt("beginTime", new DateTime().withHourOfDay(0).toDate()));
         return c.list();
     }
-    
-    public List<Bab> findProcessingAndNotPre(){
+
+    public List<Bab> findProcessingAndNotPre() {
         Criteria c = super.createEntityCriteria();
         c.createAlias("line", "l");
         c.createAlias("l.lineType", "lineType");

@@ -96,9 +96,11 @@
                             <c:if test="${isMfgLineOwner || isMfgOper || isAdmin}">
                             <li><a href="ModelSopRemark">Sop維護</a></li>
                             </c:if>
+                            <%--
                             <c:if test="${isBackDoor4876 || isAdmin}">
                             <li><a href="AssyDelete">Assy delete</a></li>
                             </c:if>
+                            --%>
                     </ul>
                 </li>
                 <li class="dropdown">

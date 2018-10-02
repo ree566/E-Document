@@ -65,6 +65,10 @@ public class BabService {
         return babDAO.findByPrimaryKey(obj_id);
     }
 
+    public List<Bab> findByPrimaryKeys(Integer... obj_ids) {
+        return babDAO.findByPrimaryKeys(obj_ids);
+    }
+
     public Bab findWithLineInfo(int bab_id) {
         return babDAO.findWithLineInfo(bab_id);
     }
@@ -179,7 +183,7 @@ public class BabService {
 
         if (needToSave) {
             this.closeBabWithSaving(bab);
-            
+
             //額外將當下工時紀錄
             babStandardTimeHistoryService.insertByBab(bab);
         } else {

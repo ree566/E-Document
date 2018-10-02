@@ -9,6 +9,7 @@
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <sec:authentication var="user" property="principal" />
 <sec:authorize access="isAuthenticated()"  var="isAuthenticated" />
+<sec:authorize access="hasRole('BACKDOOR_4876_')"  var="isBackDoor4876" />
 <!DOCTYPE html>
 <html>
     <head>
@@ -60,9 +61,9 @@
         <script src="<c:url value="/js/countermeasure.js" />"></script>
 
         <script>
+            var table;
             $(function () {
                 var countermeasureType = "Bab_Abnormal_LineProductivity";
-                var table;
 
                 initLineObject();
                 initCountermeasureDialog({
@@ -85,8 +86,6 @@
 
                 var beginTimeObj = $('#fini').datetimepicker(options);
                 var endTimeObj = $('#ffin').datetimepicker(options);
-
-                var table;
 
                 $("#send").click(function () {
                     getDetail();
@@ -154,11 +153,64 @@
                     $("#lineType").val(urlLineType);
                 }
 
+            <c:if test="${isBackDoor4876 || isAdmin}">
+
+                // Handle click on "Select all" control
+                $('body').on('click', '#select_all', function () {
+                    // Get all rows with search applied
+                    var rows = table.rows({'search': 'applied'}).nodes();
+                    // Check/uncheck checkboxes for all rows in the table
+                    $('input[type="checkbox"]', rows).prop('checked', this.checked);
+                });
+
+                // Handle click on checkbox to set state of "Select all" control
+                $('body').on('change', '#BabDetail tbody', 'input[type="checkbox"]', function () {
+                    // If checkbox is not checked
+                    if (!this.checked) {
+                        var el = $('#select_all').get(0);
+                        // If "Select all" control is checked and has 'indeterminate' property
+                        if (el && el.checked && ('indeterminate' in el)) {
+                            // Set visual state of "Select all" control
+                            // as 'indeterminate'
+                            el.indeterminate = true;
+                        }
+                    }
+                });
+
+                // Handle form submission event
+                $('body').on('click', '#babDel', function () {
+                    var arr = table.$('input[type="checkbox"]:checked').map(function () {
+                        return this.value;
+                    }).get();
+                    var ids = arr.join(",");
+
+                    if (!confirm("確定刪除所選紀錄?\n紀錄將被隱藏")) {
+                        return false;
+                    }
+
+                    $.ajax({
+                        type: "POST",
+                        url: "<c:url value="/BabLineProductivityExcludeController/insert" />",
+                        data: {
+                            "id[]": ids
+                        },
+                        success: function (response) {
+                            if (response == "success") {
+                                table.ajax.reload();
+                            }
+                            alert(response);
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            showMsg(xhr.responseText);
+                        }
+                    });
+                });
+            </c:if>
+
                 if (${!isAuthenticated}) {
                     $("#editCountermeasure").off("click").attr("disabled", true);
                     $("#countermeasureEditHint").show();
                 }
-
 
             });
 
@@ -306,28 +358,6 @@
                     "initComplete": function (settings, json) {
                         $("#send").attr("disabled", false);
                         $("#BabDetail").show();
-
-                        // Handle click on "Select all" control
-                        $('#select_all').on('click', function () {
-                            // Get all rows with search applied
-                            var rows = table.rows({'search': 'applied'}).nodes();
-                            // Check/uncheck checkboxes for all rows in the table
-                            $('input[type="checkbox"]', rows).prop('checked', this.checked);
-                        });
-
-                        // Handle click on checkbox to set state of "Select all" control
-                        $('#BabDetail tbody').on('change', 'input[type="checkbox"]', function () {
-                            // If checkbox is not checked
-                            if (!this.checked) {
-                                var el = $('#select_all').get(0);
-                                // If "Select all" control is checked and has 'indeterminate' property
-                                if (el && el.checked && ('indeterminate' in el)) {
-                                    // Set visual state of "Select all" control
-                                    // as 'indeterminate'
-                                    el.indeterminate = true;
-                                }
-                            }
-                        });
                     },
                     "order": [[1, "asc"]]
                 });
@@ -526,7 +556,9 @@
                     <tfoot>
                         <tr>
                             <th>
-                                <!--<input type="button" value="Del" class="btn btn-danger" />-->
+                                <c:if test="${isBackDoor4876 || isAdmin}">
+                                    <input type="button" value="Del" class="btn btn-danger" id="babDel" />
+                                </c:if>
                             </th>
                             <th></th>
                             <th></th>

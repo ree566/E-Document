@@ -8,6 +8,7 @@ package com.advantech.test;
 import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.model.Bab;
 import com.advantech.model.BabAlarmHistory;
+import com.advantech.model.BabLineProductivityExclude;
 import com.advantech.model.BabLineProductivityExcludeModel;
 import com.advantech.model.BabStandardTimeHistory;
 import com.advantech.model.Countermeasure;
@@ -25,7 +26,6 @@ import com.advantech.model.ModelSopRemarkDetail;
 import com.advantech.model.TestTable;
 import com.advantech.model.Unit;
 import com.advantech.model.User;
-import com.advantech.model.view.Worktime;
 import com.advantech.webservice.Factory;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.collect.Sets.newHashSet;
@@ -254,6 +254,17 @@ public class TestSqlBeans {
         assertNotNull(cmT);
         assertTrue(cmT.getId() == 1);
         HibernateObjectPrinter.print(cmT);
+    }
+
+    @Test
+    @Rollback(false)
+    public void testBabLineProductivityExclude() {
+//        26600
+        Bab b = session.get(Bab.class, 26600);
+        assertNotNull(b);
+        BabLineProductivityExclude e = new BabLineProductivityExclude();
+        e.setBab(b);
+        session.save(e);
     }
 
 }

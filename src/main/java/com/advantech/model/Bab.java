@@ -33,7 +33,6 @@ import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.format.annotation.DateTimeFormat;
 
 /**
@@ -75,10 +74,12 @@ public class Bab implements Serializable {
 
     @JsonIgnore
     private Set<BabStandardTimeHistory> babStandardTimeHistorys = new HashSet<BabStandardTimeHistory>(0);
-    
+
+    @JsonIgnore
+    private Set<BabLineProductivityExclude> babLineProductivityExcludes = new HashSet<BabLineProductivityExclude>(0);
+
     @JsonIgnore
     private List<BabAvg> babAvgs = new ArrayList();
-
 
     public Bab() {
     }
@@ -261,6 +262,15 @@ public class Bab implements Serializable {
 
     public void setBabStandardTimeHistorys(Set<BabStandardTimeHistory> babStandardTimeHistorys) {
         this.babStandardTimeHistorys = babStandardTimeHistorys;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "bab")
+    public Set<BabLineProductivityExclude> getBabLineProductivityExcludes() {
+        return babLineProductivityExcludes;
+    }
+
+    public void setBabLineProductivityExcludes(Set<BabLineProductivityExclude> babLineProductivityExcludes) {
+        this.babLineProductivityExcludes = babLineProductivityExcludes;
     }
 
     @Transient

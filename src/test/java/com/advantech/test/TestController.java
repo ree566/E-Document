@@ -57,17 +57,17 @@ public class TestController {
         System.out.println("--------返回的json = " + responseString);
     }
 
-    @Test
+//    @Test
     public void testM3Model() throws Exception {
         assertEquals("UPOS540FP1801-T", getModel("PSI6484ZA", Factory.DEFAULT)); //Test M3 model
     }
 
-    @Test
+//    @Test
     public void testM2Model() throws Exception {
         assertEquals("APAX-5580-433AE", getModel("FII6245ZA", Factory.TEMP2)); //Test M2 model
     }
 
-    @Test
+//    @Test
     public void testM6Model() throws Exception {
         assertEquals("IDK-C15G-IEXGA2E", getModel("AEI6068RQ", Factory.TEMP1)); //Test M6 model
     }
@@ -83,5 +83,16 @@ public class TestController {
         System.out.println("--------返回的json = " + responseString);
         return responseString;
 //        .andExpect(status().isOk())
+    }
+    
+    @Test
+    public void testArrayParamInput() throws Exception{
+        String responseString = mockMvc.perform(
+                get("/BabLineProductivityExcludeController/insert").contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                        .param("id[]", "1,2,3,4,5,6")
+        ) //返回的状态是200
+                .andDo(print())
+                .andReturn().getResponse().getContentAsString();
+        System.out.println("--------返回的json = " + responseString);
     }
 }
