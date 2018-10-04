@@ -48,6 +48,8 @@ import org.hibernate.envers.query.criteria.AuditProperty;
 import org.hibernate.envers.query.internal.property.EntityPropertyName;
 import org.hibernate.envers.query.internal.property.ModifiedFlagPropertyName;
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -295,8 +297,13 @@ public class HibernateEnversTest {
             Don't send mail when nothing has changed
          */
 
-        DateTime sD = new DateTime("2018-10-02").withHourOfDay(16);
-        DateTime eD = new DateTime("2018-10-03").withHourOfDay(8);
+        DateTime now = new DateTime().withMinuteOfHour(0).withSecondOfMinute(0);
+        int currentHour = now.getHourOfDay();
+
+        DateTimeFormatter dtfOut = DateTimeFormat.forPattern("yyyy/M/d HH:mm:SS");
+        DateTime sD = currentHour <= 11 ? now.minusDays(1).withHourOfDay(16) : now.withHourOfDay(11);
+        DateTime eD = currentHour <= 11 ? now.withHourOfDay(11) : now.withHourOfDay(16);
+
 
         AuditQuery q = reader.createQuery()
                 .forRevisionsOfEntity(Worktime.class, false, false);
