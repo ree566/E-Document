@@ -293,10 +293,10 @@ public class HibernateEnversTest {
             When 11:00, time range prevDay 16:00 to currentDay 11:00
             When 16:00, time range currentDay 11:00 to currentDay 16:00
             Don't send mail when nothing has changed
-        */
-        
-        DateTime sD = new DateTime("2018-10-01").withHourOfDay(8);
-        DateTime eD = new DateTime("2018-10-09").withHourOfDay(16);
+         */
+
+        DateTime sD = new DateTime("2018-10-02").withHourOfDay(16);
+        DateTime eD = new DateTime("2018-10-03").withHourOfDay(8);
 
         AuditQuery q = reader.createQuery()
                 .forRevisionsOfEntity(Worktime.class, false, false);
@@ -312,6 +312,10 @@ public class HibernateEnversTest {
         q.add(AuditEntity.revisionProperty("REVTSTMP").between(sD.getMillis(), eD.getMillis()));
 
         List<Object[]> ws = q.getResultList();
+
+        if (ws.isEmpty()) {
+            System.out.println("Nothing has changed");
+        }
 
         for (int i = 0; i < ws.size(); i++) {
             System.out.println("------------------");

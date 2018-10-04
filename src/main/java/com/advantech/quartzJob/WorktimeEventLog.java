@@ -5,12 +5,13 @@
  */
 package com.advantech.quartzJob;
 
-import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.helper.MailManager;
 import com.advantech.model.AuditedRevisionEntity;
 import com.advantech.model.Flow;
 import com.advantech.model.PreAssy;
+import com.advantech.model.User;
 import com.advantech.model.Worktime;
+import com.advantech.service.UserNotificationService;
 import java.util.List;
 import java.util.Objects;
 import javax.mail.MessagingException;
@@ -36,6 +37,10 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  *
  * @author Wei.Cheng
+ *
+ * Send mail on 11:00 and 16:00 When 11:00, time range prevDay 16:00 to
+ * currentDay 11:00 When 16:00, time range currentDay 11:00 to currentDay 16:00
+ * Don't send mail when nothing has changed
  */
 @Component
 @Transactional
@@ -49,6 +54,9 @@ public class WorktimeEventLog {
     @Autowired
     private MailManager mailManager;
 
+    @Autowired
+    private UserNotificationService userNotificationService;
+
     @Value("#{contextParameters[pageTitle] ?: ''}")
     private String pageTitle;
 
@@ -58,44 +66,46 @@ public class WorktimeEventLog {
     }
 
     public void execute() {
-        String[] to = {"Wei.Cheng@advantech.com.tw"};
-        String[] cc = new String[0];
-
-        String subject = "【" + pageTitle + "系統訊息】大表Update log";
         String text = generateMailBody();
+        if (!"".equals(text)) {
+            String[] to = this.getMailByNotification("worktime_mfg_alarm");
+            String[] cc = this.getMailByNotification("worktime_mfg_alarm_cc");
 
-        try {
-            mailManager.sendMail(to, cc, subject, text);
-        } catch (MessagingException ex) {
-            log.error("Send worktime log job fail." + ex.toString());
+            String subject = "【" + pageTitle + "系統訊息】大表Update log";
+
+            try {
+                mailManager.sendMail(to, cc, subject, text);
+            } catch (MessagingException ex) {
+                log.error("Send worktime log job fail." + ex.toString());
+            }
         }
     }
 
+    private String[] getMailByNotification(String notification) {
+        List<User> users = userNotificationService.findUsersByNotification(notification);
+        String[] mails = new String[users.size()];
+        for (int i = 0; i < mails.length; i++) {
+            String mail = users.get(i).getEmail();
+            if (mail != null && !"".equals(mail)) {
+                mails[i] = mail;
+            }
+        }
+        return mails;
+    }
+
     private String generateMailBody() {
-        StringBuilder sb = new StringBuilder();
 
         String[] checkFields = {
             "totalModule", "cleanPanel", "assy", "t1", "t2", "t3", "t4", "packing",
             "flowByTestFlowId", "flowByPackingFlowId", "flowByBabFlowId", "preAssy"
         };
-        /*
-            Send mail on 11:00 and 16:00
-            When 11:00, time range prevDay 16:00 to currentDay 11:00
-            When 16:00, time range currentDay 11:00 to currentDay 16:00
-            Don't send mail when nothing has changed
-         */
 
-        DateTime now = new DateTime().withHourOfDay(9).withMinuteOfHour(0).withSecondOfMinute(0);
+        DateTime now = new DateTime().withMinuteOfHour(0).withSecondOfMinute(0);
         int currentHour = now.getHourOfDay();
 
         DateTimeFormatter dtfOut = DateTimeFormat.forPattern("yyyy/M/d HH:mm:SS");
-        DateTime sD = currentHour < 11 ? now.minusDays(1).withHourOfDay(16) : now.withHourOfDay(11);
-        DateTime eD = currentHour < 11 ? now.withHourOfDay(11) : now.withHourOfDay(16);
-
-        sb.append("Date ");
-        sb.append(dtfOut.print(sD));
-        sb.append(" - ");
-        sb.append(dtfOut.print(eD));
+        DateTime sD = currentHour <= 11 ? now.minusDays(1).withHourOfDay(16) : now.withHourOfDay(11);
+        DateTime eD = currentHour <= 11 ? now.withHourOfDay(11) : now.withHourOfDay(16);
 
         AuditReader reader = this.getReader();
 
@@ -114,8 +124,19 @@ public class WorktimeEventLog {
 
         List<Object[]> ws = q.getResultList();
 
+        if (ws.isEmpty()) {
+            return "";
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("Date ");
+        sb.append(dtfOut.print(sD));
+        sb.append(" - ");
+        sb.append(dtfOut.print(eD));
+        sb.append("<br/>");
+
         for (int i = 0; i < ws.size(); i++) {
-            sb.append("------------------");
+            sb.append("------------------<br/>");
             Object[] triplet = ws.get(i);
 
             Worktime entity = (Worktime) triplet[0];
@@ -150,7 +171,7 @@ public class WorktimeEventLog {
                 }
 
             }
-            sb.append("------------------");
+            sb.append("------------------<br/>");
         }
         return sb.toString();
     }

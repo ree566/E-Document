@@ -45,6 +45,20 @@
         <property name="jobDetail" ref="jobDetail3"/>
         <property name="cronExpression" value="0 0 18 ? * MON-SAT *"/>
     </bean>
+    
+    <!--job4 setting-->
+    <!--Send worktime log-->
+    <bean id="targetClass4" class="com.advantech.quartzJob.WorktimeEventLog"/>
+    
+    <bean id="jobDetail4" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="targetClass4"/>
+        <property name="targetMethod" value="execute"/>
+    </bean>
+    
+    <bean id="cronTrigger4" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="jobDetail4"/>
+        <property name="cronExpression" value="0 0 11,16 ? * MON-SAT *"/>
+    </bean>
 
     <!--schedule jobs-->
     <bean id="schedulerFactoryBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
@@ -53,6 +67,7 @@
                 <ref bean="cronTrigger"/>
                 <ref bean="cronTrigger2"/>
                 <!--<ref bean="cronTrigger3"/>-->
+                <ref bean="cronTrigger4"/>
             </list>
         </property>
         <property name="schedulerName">
