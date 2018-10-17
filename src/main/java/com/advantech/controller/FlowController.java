@@ -5,6 +5,7 @@
  */
 package com.advantech.controller;
 
+import com.advantech.converter.CrudActionControllerConverter;
 import static com.advantech.helper.JqGridResponseUtils.toJqGridResponse;
 import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.Flow;
@@ -18,6 +19,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -31,6 +34,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 @RequestMapping(value = "/Flow")
 public class FlowController extends CrudController<Flow> {
+    
+    @InitBinder
+    public void initBinder(WebDataBinder dataBinder) {
+        dataBinder.registerCustomEditor(CrudAction.class, new CrudActionControllerConverter());
+    }
 
     @Autowired
     private FlowService flowService;
@@ -105,7 +113,7 @@ public class FlowController extends CrudController<Flow> {
     //編輯subgroup用
     @ResponseBody
     @RequestMapping(value = UPDATE_URL + "_sub", method = {RequestMethod.POST})
-    protected ResponseEntity updateSubFlow(String oper, Flow flow, @RequestParam int parentFlowId) {
+    protected ResponseEntity updateSubFlow(CrudAction oper, Flow flow, @RequestParam int parentFlowId) {
         String modifyMessage;
         int responseFlag;
 
@@ -119,7 +127,7 @@ public class FlowController extends CrudController<Flow> {
             case EDIT:
                 modifyMessage = this.FAIL_MESSAGE;
                 break;
-            case DELETE:
+            case DEL:
                 List deleteSubIds = new ArrayList();
                 deleteSubIds.add(flow.getId());
                 responseFlag = flowService.deleteSub(parentFlowId, deleteSubIds);

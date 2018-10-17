@@ -111,7 +111,7 @@ public class WorktimeBatchModController {
         validateWorktime(hgList);
 
         if (worktimeService.insertByExcel(hgList) == 1) {
-            worktimeMailManager.notifyUser(hgList, "add");
+            worktimeMailManager.notifyUser(hgList, CrudAction.ADD);
             return "success";
         } else {
             return "fail";
@@ -146,7 +146,7 @@ public class WorktimeBatchModController {
         }
 
         if (worktimeService.delete(ids) == 1) {
-            worktimeMailManager.notifyUser(hgList, "del");
+            worktimeMailManager.notifyUser(hgList, CrudAction.DEL);
             return "success";
         } else {
             return "fail";

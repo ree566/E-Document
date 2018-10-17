@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  */
 public abstract class CrudController<T> {
 
-    protected final String ADD = "add", EDIT = "edit", DELETE = "del";
+    protected final CrudAction ADD = CrudAction.ADD, EDIT = CrudAction.EDIT, DELETE = CrudAction.DEL;
     protected final String SUCCESS_MESSAGE = "SUCCESS", FAIL_MESSAGE = "FAIL";
 
     protected final String SELECT_URL = "/read", INSERT_URL = "/create", UPDATE_URL = "/update", DELETE_URL = "/delete";

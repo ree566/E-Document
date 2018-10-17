@@ -5,6 +5,7 @@
  */
 package com.advantech.test;
 
+import com.advantech.controller.CrudAction;
 import com.advantech.model.Worktime;
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -47,9 +48,8 @@ public class Test1Test {
 
     @Test
     public void test2() {
-        System.out.println(true || false || true);
-        System.out.println(false || true || false);
-        System.out.println(false || false);
+        CrudAction action = CrudAction.ADD;
+        System.out.println(action == CrudAction.ADD);
     }
 
 }

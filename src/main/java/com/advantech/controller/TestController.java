@@ -5,6 +5,7 @@
  */
 package com.advantech.controller;
 
+import com.advantech.converter.CrudActionControllerConverter;
 import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.Worktime;
 import com.advantech.service.AuditService;
@@ -21,6 +22,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -36,6 +39,11 @@ import org.springframework.web.servlet.ModelAndView;
 @Secured({"ROLE_ADMIN", "ROLE_GUEST"})
 @RequestMapping(value = "/testCtrl")
 public class TestController {
+    
+    @InitBinder
+    public void initBinder(WebDataBinder dataBinder) {
+        dataBinder.registerCustomEditor(CrudAction.class, new CrudActionControllerConverter());
+    }
 
     @Autowired
     private AuditService auditService;
@@ -128,12 +136,19 @@ public class TestController {
 
         return "get data";
     }
-    
+
     @ResponseBody
     @RequestMapping(value = "/pageTitleTest", method = {RequestMethod.GET})
     @Secured("ROLE_ADMIN")
-    protected String getPageTitle(){
+    protected String getPageTitle() {
         return this.pageTitle;
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/testEnum", method = {RequestMethod.GET})
+    @Secured("ROLE_ADMIN")
+    protected String testEnum(@RequestParam CrudAction action) {
+        return action.toString();
     }
 
 }

@@ -66,17 +66,19 @@ public class WorktimeEventLog {
     }
 
     public void execute() {
-        String text = generateMailBody();
-        if (!"".equals(text)) {
-            String[] to = this.getMailByNotification("worktime_mfg_alarm");
-            String[] cc = this.getMailByNotification("worktime_mfg_alarm_cc");
+        String[] to = this.getMailByNotification("worktime_mfg_alarm");
+        if (to.length != 0) {
+            String text = generateMailBody();
+            if (!"".equals(text)) {
+                String[] cc = this.getMailByNotification("worktime_mfg_alarm_cc");
 
-            String subject = "【" + pageTitle + "系統訊息】大表Update log";
+                String subject = "【" + pageTitle + "系統訊息】大表Update log";
 
-            try {
-                mailManager.sendMail(to, cc, subject, text);
-            } catch (MessagingException ex) {
-                log.error("Send worktime log job fail." + ex.toString());
+                try {
+                    mailManager.sendMail(to, cc, subject, text);
+                } catch (MessagingException ex) {
+                    log.error("Send worktime log job fail." + ex.toString());
+                }
             }
         }
     }

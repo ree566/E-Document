@@ -38,31 +38,26 @@ public class WorktimeMailManager {
     @Value("#{contextParameters[pageTitle] ?: ''}")
     private String pageTitle;
 
-    public void notifyUser(List<Worktime> l, String action) {
-        String[] to = getMailByNotification("worktime_alarm");
-        String[] cc = getMailByNotification("worktime_alarm_cc");
-
-        String subject = "【" + pageTitle + "系統訊息】大表異動";
-        String text = generateTextBody(l, action);
-
-        try {
-            mailManager.sendMail(to, cc, subject, text);
-        } catch (MessagingException ex) {
-            log.error("Send mail fail at action " + action + ":" + ex.toString());
-        }
+    public void notifyUser(List<Worktime> l, CrudAction action) {
+        List<String> modelNames = l.stream().map(w -> w.getModelName()).collect(toList());
+        this.notifyUser2(modelNames, action);
     }
 
-    public void notifyUser2(List<String> modelNames, String action) {
+    //No need to query out the worktime again when user insert data by modelName series.
+    //Only use by WorktimeController.createSeries
+    public void notifyUser2(List<String> modelNames, CrudAction action) {
         String[] to = getMailByNotification("worktime_alarm");
-        String[] cc = getMailByNotification("worktime_alarm_cc");
+        if (to.length != 0) {
+            String[] cc = getMailByNotification("worktime_alarm_cc");
 
-        String subject = "【" + pageTitle + "系統訊息】大表異動";
-        String text = generateTextBody2(modelNames, action);
+            String subject = "【" + pageTitle + "系統訊息】大表異動";
+            String text = generateTextBody(modelNames, action);
 
-        try {
-            mailManager.sendMail(to, cc, subject, text);
-        } catch (MessagingException ex) {
-            log.error("Send mail fail at action " + action + ":" + ex.toString());
+            try {
+                mailManager.sendMail(to, cc, subject, text);
+            } catch (MessagingException ex) {
+                log.error("Send mail fail at action " + action + ":" + ex.toString());
+            }
         }
     }
 
@@ -78,12 +73,7 @@ public class WorktimeMailManager {
         return mails;
     }
 
-    private String generateTextBody(List<Worktime> l, final String action) {
-        List<String> modelNames = l.stream().map(w -> w.getModelName()).collect(toList());
-        return this.generateTextBody2(modelNames, action);
-    }
-
-    private String generateTextBody2(List<String> l, final String action) {
+    private String generateTextBody(List<String> l, final CrudAction action) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         StringBuilder sb = new StringBuilder();
         sb.append("<p>Dear All:</p>");
@@ -97,7 +87,7 @@ public class WorktimeMailManager {
             sb.append(modelName);
             sb.append("</p>");
         }
-        if (action.equals(CrudAction.ADD.toString())) {
+        if (action == CrudAction.ADD) {
             sb.append("<p>請相關人員至本系統維護大表。</p>");
         }
 
