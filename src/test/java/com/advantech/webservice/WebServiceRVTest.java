@@ -111,7 +111,7 @@ public class WebServiceRVTest {
     /**
      * Test of getPassStationRecords method, of class WebServiceRV.
      */
-    @Test
+//    @Test
     public void testGetPassStationRecords() {
         System.out.println("getPassStationRecords");
         String po = "AEI5090ZA";
@@ -139,5 +139,11 @@ public class WebServiceRVTest {
         List<TestRecord> l = rv.getTestLineTypeRecords();
         assertNotEquals(0, l.size());
         HibernateObjectPrinter.print(l);
+    }
+    
+    @Test
+    public void testGetModelNameByBarcode() throws JsonProcessingException{
+        String value = rv.getModelNameByBarcode("TPAB780972", Factory.DEFAULT);
+        assertEquals(value, "TREK-XRX-MDT00A0E");
     }
 }

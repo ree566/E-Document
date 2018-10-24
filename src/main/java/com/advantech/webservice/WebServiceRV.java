@@ -97,7 +97,23 @@ public class WebServiceRV {
         String queryString = "<root><METHOD ID='WIPSO.QryWipAtt001'/><WIP_ATT><WIP_NO>"
                 + po
                 + "</WIP_NO><ITEM_NO></ITEM_NO></WIP_ATT></root>";
-        
+
+        RvResponse response = mClient.simpleRvSendAndReceive(queryString, f);
+        RvResponse.RvResult result = response.getRvResult();
+        List l = result.getAny();
+
+        Document doc = ((Node) l.get(1)).getOwnerDocument();
+        String childTagName = "ITEM_NO";
+        Element rootElement = doc.getDocumentElement();
+        String requestQueueName = getString(childTagName, rootElement);
+        return requestQueueName;
+    }
+
+    public String getModelNameByBarcode(String barcode, Factory f) {
+        String queryString = "<root><METHOD ID='WIPSO.QryBarcodeWip'/><BARCODE_WIP><BARCODE_NO>"
+                + barcode
+                + "</BARCODE_NO></BARCODE_WIP></root>";
+
         RvResponse response = mClient.simpleRvSendAndReceive(queryString, f);
         RvResponse.RvResult result = response.getRvResult();
         List l = result.getAny();

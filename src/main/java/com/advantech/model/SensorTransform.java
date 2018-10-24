@@ -39,6 +39,9 @@ public class SensorTransform implements Serializable {
     @JsonIgnore
     private Set<BabSensorLoginRecord> babSensorLoginRecords = new HashSet<>(0);
 
+    @JsonIgnore
+    private Set<BabPassStationRecord> babPassStationRecords = new HashSet<>(0);
+
     public SensorTransform() {
     }
 
@@ -90,6 +93,15 @@ public class SensorTransform implements Serializable {
 
     public void setBabSensorLoginRecords(Set<BabSensorLoginRecord> babSensorLoginRecords) {
         this.babSensorLoginRecords = babSensorLoginRecords;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "tagName")
+    public Set<BabPassStationRecord> getBabPassStationRecords() {
+        return babPassStationRecords;
+    }
+
+    public void setBabPassStationRecords(Set<BabPassStationRecord> babPassStationRecords) {
+        this.babPassStationRecords = babPassStationRecords;
     }
 
 }
