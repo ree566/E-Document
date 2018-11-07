@@ -8,6 +8,7 @@ package com.advantech.quartzJob;
 
 import com.advantech.model.Test;
 import com.advantech.helper.ApplicationContextHelper;
+import com.advantech.helper.PropertiesReader;
 import com.advantech.model.LineType;
 import com.advantech.model.LineTypeConfig;
 import com.advantech.model.ReplyStatus;
@@ -17,7 +18,6 @@ import com.advantech.service.TestRecordService;
 import com.advantech.service.TestService;
 import com.advantech.webservice.WebServiceRV;
 import static com.google.common.base.Preconditions.checkState;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -34,26 +34,33 @@ import org.springframework.scheduling.quartz.QuartzJobBean;
  * @author Wei.Cheng
  */
 public class TestLineTypeRecord extends QuartzJobBean {
-
+    
     private static final Logger log = LoggerFactory.getLogger(TestLineTypeRecord.class);
     private final int EXCLUDE_HOUR = 12;
-
+    
     private final TestService testService;
     private final TestRecordService testRecordService;
     private final LineTypeService lineTypeService;
     private final LineTypeConfigService lineTypeConfigService;
     private final WebServiceRV rv;
+    private final PropertiesReader p;
     
     private Double minProductivity, maxProductivity;
 
+    //Orign productivity change here
+    private final Double testSaltProductivity;
+    
     public TestLineTypeRecord() {
         testService = (TestService) ApplicationContextHelper.getBean("testService");
         testRecordService = (TestRecordService) ApplicationContextHelper.getBean("testRecordService");
         rv = (WebServiceRV) ApplicationContextHelper.getBean("webServiceRV");
         lineTypeService = (LineTypeService) ApplicationContextHelper.getBean("lineTypeService");
         lineTypeConfigService = (LineTypeConfigService) ApplicationContextHelper.getBean("lineTypeConfigService");
+        p = (PropertiesReader) ApplicationContextHelper.getBean("propertiesReader");
+        testSaltProductivity = p.getTestSaltProductivity();
+        throw new RuntimeException("Please remove trigger on TestLineTypeRecord table first.");
     }
-
+    
     @Override
     public void executeInternal(JobExecutionContext jec) throws JobExecutionException {
         DateTime d = new DateTime();
@@ -64,11 +71,12 @@ public class TestLineTypeRecord extends QuartzJobBean {
             //只存下已經刷入的使用者
             List<com.advantech.model.TestRecord> testLineTypeStatus = separateOfflineUser(rv.getTestLineTypeRecords());
             updateReplyFlag(testLineTypeStatus);
+            addSaltProductivity(testLineTypeStatus);
             testRecordService.insert(testLineTypeStatus);
             log.info("Record success");
         }
     }
-
+    
     private List<com.advantech.model.TestRecord> separateOfflineUser(List<com.advantech.model.TestRecord> l) {
         List<Test> tests = testService.findAll();
         List list = new ArrayList();
@@ -82,16 +90,22 @@ public class TestLineTypeRecord extends QuartzJobBean {
         });
         return list;
     }
-
+    
+    private void addSaltProductivity(List<com.advantech.model.TestRecord> l) {
+        l.forEach((rec) -> {
+            rec.setProductivity(rec.getProductivity() + this.testSaltProductivity);
+        });
+    }
+    
     private void updateReplyFlag(List<com.advantech.model.TestRecord> l) {
         initProductivityStandard();
         l.forEach((rec) -> {
             Double productivity = rec.getProductivity();
-            rec.setReplyStatus(productivity > maxProductivity || productivity < minProductivity ? 
-                    ReplyStatus.UNREPLIED : ReplyStatus.NO_NEED_TO_REPLY);
+            rec.setReplyStatus(productivity > maxProductivity || productivity < minProductivity
+                    ? ReplyStatus.UNREPLIED : ReplyStatus.NO_NEED_TO_REPLY);
         });
     }
-
+    
     private void initProductivityStandard() {
         LineType lineType = lineTypeService.findByName("Test");
         checkState(lineType != null, "Can't find lineType name Test.");
@@ -103,5 +117,5 @@ public class TestLineTypeRecord extends QuartzJobBean {
         checkState(maxConf.getValue() != null, "Can't find PRODUCTIVITY_STANDARD_MAX setting in lineTypeConfig.");
         this.maxProductivity = maxConf.getValue().doubleValue();
     }
-
+    
 }

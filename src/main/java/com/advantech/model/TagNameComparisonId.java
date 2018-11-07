@@ -1,7 +1,6 @@
 package com.advantech.model;
 // Generated 2017/5/25 上午 10:45:32 by Hibernate Tools 4.3.1
 
-import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;

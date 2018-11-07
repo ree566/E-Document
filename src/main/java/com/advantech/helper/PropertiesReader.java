@@ -56,6 +56,12 @@ public class PropertiesReader {
     @Value("${endpoint.quartz.trigger}")
     private String endpointPollingCron;
 
+    @Value("${test.salt.productivity: 0}")
+    private Double testSaltProductivity;
+
+    @Value("${bab.salt.productivity: 0}")
+    private Double babSaltProductivity;
+
     //Settings inject from database
     private BigDecimal assyLineBalanceStandard = new BigDecimal(0.8);
     private BigDecimal packingLineBalanceStandard = new BigDecimal(0.8);
@@ -214,6 +220,22 @@ public class PropertiesReader {
 
     public LineTypeConfigService getLineTypeConfigService() {
         return lineTypeConfigService;
+    }
+
+    public Double getTestSaltProductivity() {
+        return testSaltProductivity;
+    }
+
+    public void setTestSaltProductivity(Double testSaltProductivity) {
+        this.testSaltProductivity = testSaltProductivity;
+    }
+
+    public Double getBabSaltProductivity() {
+        return babSaltProductivity;
+    }
+
+    public void setBabSaltProductivity(Double babSaltProductivity) {
+        this.babSaltProductivity = babSaltProductivity;
     }
 
 }

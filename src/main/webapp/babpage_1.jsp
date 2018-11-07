@@ -117,6 +117,8 @@
             var firstStation = 1;
 
             var tabreg = /^[0-9a-zA-Z-]+$/;//Textbox check regex.
+            
+            var smallWindow;
 
             $(function () {
                 $(document).ajaxSend(function () {
@@ -313,7 +315,6 @@
 
                 $("#memo-reload").click(findModelSopRemark);
 
-                var smallWindow;
                 $("#open-barcode-input").click(function () {
                     var userInfo = $.parseJSON(userInfoCookie);
                     if (userInfo != null) {
@@ -679,6 +680,9 @@
                     success: function (response) {
                         $("#searchProcessing").trigger("click");
                         showMsg(response);
+                        if(smallWindow != null){
+                            smallWindow.close();
+                        }
                     },
                     error: function (xhr, ajaxOptions, thrownError) {
                         showMsg(xhr.responseText);

@@ -143,7 +143,7 @@ public class WebServiceRVTest {
     
     @Test
     public void testGetModelNameByBarcode() throws JsonProcessingException{
-        String value = rv.getModelNameByBarcode("TPAB780972", Factory.DEFAULT);
-        assertEquals(value, "TREK-XRX-MDT00A0E");
+        String value = rv.getPoByBarcode("TPAB780972", Factory.DEFAULT);
+        assertEquals(value, "PSI9412ZA");
     }
 }

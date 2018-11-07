@@ -59,6 +59,8 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
     private WebServiceRV rv;
 
     private final int TEST_USER_NOT_IN_SYSTEM_SIGN = -1, TEST_USER_NOT_IN_XML_SIGN = 2;
+    
+    private Double testSaltProductivity;
 
     @PostConstruct
     protected void init() {
@@ -68,7 +70,10 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
         TEST_STANDARD_MIN = p.getTestProductivityStandardMin().doubleValue();
         TEST_STANDARD_MAX = p.getTestProductivityStandardMax().doubleValue();
         PEOPLE_NOT_MATCH = new HashMap();
+        testSaltProductivity = p.getTestSaltProductivity();
         this.initMap();
+        
+        //Re init the alarm sign again when line name changed or sensor name changed
 //        this.initAlarmSign();
     }
 
@@ -94,6 +99,9 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
 
             processingJsonObject = new JSONObject();
             boolean isInTheWebService = false;
+            
+            //In byPass hours, system show normal sign 
+            //no matter user's productivity is under the standard on browser.
             boolean byPassFlag = isByPassCurrentHours();
 
             for (TestRecord record : kanbanUsersRecord) {
@@ -101,6 +109,9 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
                 String jobnumber = record.getUserId();
                 String userName = record.getUserName();
                 Double productivity = record.getProductivity();
+                
+                //※ Productivity changed here ※
+                productivity = productivity + testSaltProductivity;
 
                 for (Iterator it = tests.iterator(); it.hasNext();) {
                     Test ti = (Test) it.next();

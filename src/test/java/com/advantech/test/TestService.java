@@ -24,6 +24,8 @@ import com.advantech.service.FqcService;
 import com.advantech.service.LineBalancingService;
 import com.advantech.service.TagNameComparisonService;
 import com.advantech.service.UserService;
+import com.advantech.webservice.Factory;
+import com.advantech.webservice.WebServiceRV;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.List;
 import static java.util.stream.Collectors.toList;
@@ -199,9 +201,22 @@ public class TestService {
         assertEquals(fqc.getFqcLine(), fqcLine);
     }
     
-    @Test
+//    @Test
     public void testProductivityService(){
 
+    }
+    
+    @Autowired
+    private WebServiceRV rv;
+    
+    @Test
+    @Transactional
+    @Rollback(true)
+    public void testBarcode(){
+        Bab b = babService.findByPrimaryKey(28683);
+        String barcode = "TPD0292956";
+        String modelName = rv.getPoByBarcode(barcode, Factory.DEFAULT);
+        assertEquals(modelName, b.getModelName());
     }
 
 }
