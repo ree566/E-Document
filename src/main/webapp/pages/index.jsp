@@ -12,6 +12,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <%--<meta http-equiv="refresh" content="${pageContext.session.maxInactiveInterval};url="/> --%>
         <sec:csrfMetaTags/>
         <title>${initParam.pageTitle}</title>
         <link rel="shortcut icon" href="<c:url value="/images/favicon.ico" />"/>

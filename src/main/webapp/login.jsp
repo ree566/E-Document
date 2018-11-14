@@ -4,6 +4,7 @@
 <html>
     <head>
         <!--<META HTTP-EQUIV="REFRESH" CONTENT="10">-->
+        <meta http-equiv="refresh" content="${pageContext.session.maxInactiveInterval};url="/>
         <title>${initParam.pageTitle}</title>
         <link rel="shortcut icon" href="<c:url value="/images/favicon.ico" />"/>
         <link rel="stylesheet" href="<c:url value="/webjars/bootstrap/3.3.7/css/bootstrap.min.css" />">
@@ -141,7 +142,6 @@
             }
         </script>
     </head>
-
     <body class="noscript">
         <script>
             $('body').removeClass('noscript');
