@@ -7,6 +7,7 @@ package com.advantech.test;
 
 import com.advantech.dao.AlarmTestActionDAO;
 import com.advantech.dao.BabDAO;
+import com.advantech.dao.BabPassStationRecordDAO;
 import com.advantech.dao.SqlViewDAO;
 import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.model.AlarmBabAction;
@@ -77,6 +78,9 @@ public class TestHibernate {
 
     @Autowired
     private BabPcsDetailHistoryService pcsHistoryService;
+    
+    @Autowired
+    private BabPassStationRecordDAO passStationDAO;
 
 //    @Test
     @Transactional
@@ -420,6 +424,20 @@ public class TestHibernate {
         assertNotNull(tempLastRecord);
         
         HibernateObjectPrinter.print(fqc);
+    }
+    
+    @Test
+    @Transactional
+    @Rollback(true)
+    public void testBabPassStationRecordDAO(){
+        Bab b = babDAO.findByPrimaryKey(29497);
+        assertNotNull(b);
+        List l = passStationDAO.findByBabAndBarcode(b, "LB-S-1", "TPAB806002");
+        assertEquals(2, l.size());
+        
+        List l2 = passStationDAO.findByBabAndBarcode(b, "LB-S-2", "TPAB806002");
+        
+        assertEquals(1, l2.size());
     }
 
 }

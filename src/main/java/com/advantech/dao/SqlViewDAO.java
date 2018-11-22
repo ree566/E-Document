@@ -5,6 +5,7 @@
  */
 package com.advantech.dao;
 
+import com.advantech.model.Bab;
 import com.advantech.model.Floor;
 import com.advantech.model.view.BabAvg;
 import com.advantech.model.view.BabLastGroupStatus;
@@ -161,11 +162,10 @@ public class SqlViewDAO extends AbstractDao<Integer, Object> {
                 .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
                 .list();
     }
-    
-    public List<Map> findBabLineProductivity(String po, String modelName, Integer line_id, String jobnumber, Integer minPcs, DateTime sD, DateTime eD){
+
+    public List<Map> findBabLineProductivity(String po, String modelName, Integer line_id, String jobnumber, Integer minPcs, DateTime sD, DateTime eD) {
         return super.getSession()
                 .createSQLQuery("{CALL usp_Excel_LineProductivity(:po, :modelName, :lineId, :jobnumber, :minPcs, :sD, :eD)}")
-//                .createSQLQuery("{CALL usp_Excel_LineProductivity(:po, :modelName, :lineId, :jobnumber, :sD, :eD)}")
                 .setParameter("po", po)
                 .setParameter("modelName", modelName)
                 .setParameter("lineId", line_id)
@@ -173,6 +173,17 @@ public class SqlViewDAO extends AbstractDao<Integer, Object> {
                 .setParameter("minPcs", minPcs)
                 .setParameter("sD", sD.withHourOfDay(0).toDate())
                 .setParameter("eD", eD.withHourOfDay(23).toDate())
+                .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
+                .list();
+    }
+
+    public List<Map> findBabPassStationRecord(String po, String modelName, DateTime sD, DateTime eD) {
+        return super.getSession()
+                .createSQLQuery("{CALL usp_GetBabPassStationRecord(:po, :modelName, :sD, :eD)}")
+                .setParameter("po", po)
+                .setParameter("modelName", modelName)
+                .setParameter("sD", sD != null ? sD.withHourOfDay(0).toDate() : null)
+                .setParameter("eD", eD != null ? eD.withHourOfDay(23).toDate() : null)
                 .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
                 .list();
     }

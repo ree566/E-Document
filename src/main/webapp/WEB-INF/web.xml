@@ -225,6 +225,15 @@
         <url-pattern>/pages/admin/AssyDelete</url-pattern>  
     </servlet-mapping>
     
+    <servlet>
+        <servlet-name>BabPassStationRecord</servlet-name>
+        <jsp-file>/pages/admin/babPassStationRecord.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>BabPassStationRecord</servlet-name>
+        <url-pattern>/pages/admin/BabPassStationRecord</url-pattern>  
+    </servlet-mapping>
+    
     <!--Other setting-->
     <servlet>
         <servlet-name>appServlet</servlet-name>

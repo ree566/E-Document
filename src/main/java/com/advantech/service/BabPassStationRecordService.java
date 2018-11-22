@@ -51,7 +51,17 @@ public class BabPassStationRecordService {
         return dao.insert(pojo);
     }
 
+    /**
+     * @param bab
+     * @param tagName
+     * @param barcode
+     * @return Number of the barcode input count in database
+     */
     public int checkStationInfoAndInsert(Bab bab, String tagName, String barcode) {
+        List<BabPassStationRecord> barcodeRecords = dao.findByBabAndBarcode(bab, tagName, barcode);
+        int inputCount = barcodeRecords.size() + 1;
+        checkState(inputCount <= 3, "Barcode(" + barcode + ") input too much times");
+
         BabSettingHistory setting = settingService.findProcessingByTagName(tagName);
         checkState(setting != null, "Can't find processing record");
 
@@ -61,12 +71,6 @@ public class BabPassStationRecordService {
 
         String po = rv.getPoByBarcode(barcode, Factory.DEFAULT);
         boolean poCheckFlag = Objects.equals(po, b.getPo());
-        if (po == null) {
-            log.error("Can't find data info on MES query port.");
-        }
-        if (poCheckFlag == false) {
-            log.error("Bab id: " + b.getId() + " ,Barcode input: " + barcode);
-        }
         checkState(poCheckFlag, "Barcode's SN not match");
 
         BabPassStationRecord rec = new BabPassStationRecord();
@@ -75,7 +79,7 @@ public class BabPassStationRecordService {
         rec.setBarcode(barcode);
         this.insert(rec);
 
-        return 1;
+        return inputCount;
     }
 
     public int update(BabPassStationRecord pojo) {

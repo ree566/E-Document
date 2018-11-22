@@ -42,6 +42,12 @@
             #errorMsg {
                 color: red;
             }
+            .glyphicon-arrow-up {
+                color: red;
+            }
+            .glyphicon-arrow-down {
+                color: green;
+            }
         </style>
         <script src="<c:url value="/webjars/jquery/1.12.4/jquery.min.js" />"></script>
         <script src="<c:url value="/webjars/bootstrap/3.3.7/js/bootstrap.min.js" />"></script>
@@ -86,14 +92,14 @@
                                 },
                                 dataType: "html",
                                 success: function (response) {
-                                    if (response == "success") {
-                                        $status.text("V");
-                                        textbox.val("");
-                                        msgBox.text("");
-                                        lastInput.html("Last input barcode: " + text + " /at: " + moment().format('HH:mm:ss'));
-                                    } else {
-                                        $status.text("X");
-                                    }
+                                    var count = response;
+                                    $status.text("V");
+                                    textbox.val("");
+                                    msgBox.text("");
+//                                    lastInput.html("Last input barcode: " + text + " /at: " + moment().format('HH:mm:ss'));
+                                    lastInput.html("Last input barcode: " + text + " / " +
+                                            ("<span class='glyphicon glyphicon-arrow-" + (count <= 1 ? "down" : "up") + " '>" + 
+                                            (count <= 1 ? "Input" : "Output") + "</span>"));
                                 },
                                 error: function (xhr, ajaxOptions, thrownError) {
                                     msgBox.text(xhr.responseText);

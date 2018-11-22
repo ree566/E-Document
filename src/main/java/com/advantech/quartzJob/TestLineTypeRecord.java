@@ -58,7 +58,6 @@ public class TestLineTypeRecord extends QuartzJobBean {
         lineTypeConfigService = (LineTypeConfigService) ApplicationContextHelper.getBean("lineTypeConfigService");
         p = (PropertiesReader) ApplicationContextHelper.getBean("propertiesReader");
         testSaltProductivity = p.getTestSaltProductivity();
-        throw new RuntimeException("Please remove trigger on TestLineTypeRecord table first.");
     }
     
     @Override

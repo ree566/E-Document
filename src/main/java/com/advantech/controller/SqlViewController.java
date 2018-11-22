@@ -20,6 +20,7 @@ import org.joda.time.Weeks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -132,6 +133,17 @@ public class SqlViewController {
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime startDate,
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime endDate) {
         return new DataTableResponse(sqlViewService.findBabLineProductivity(po, modelName, line_id, jobnumber, minPcs, startDate, endDate));
+    }
+
+    @RequestMapping(value = "/findBabPassStationRecord", method = {RequestMethod.GET})
+    @ResponseBody
+    protected DataTableResponse findBabPassStationRecord(
+            @RequestParam(required = false) String po,
+            @RequestParam(required = false) String modelName,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime startDate,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime endDate
+    ) {
+        return new DataTableResponse(sqlViewService.findBabPassStationRecord(po, modelName, startDate, endDate));
     }
 
 }

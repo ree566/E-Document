@@ -5,8 +5,10 @@
  */
 package com.advantech.dao;
 
+import com.advantech.model.Bab;
 import com.advantech.model.BabPassStationRecord;
 import java.util.List;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -24,6 +26,14 @@ public class BabPassStationRecordDAO extends AbstractDao<Integer, BabPassStation
     @Override
     public BabPassStationRecord findByPrimaryKey(Object obj_id) {
         return super.getByKey((int) obj_id);
+    }
+    
+    public List<BabPassStationRecord> findByBabAndBarcode(Bab b, String tagName, String barcode){
+        return super.createEntityCriteria()
+                .add(Restrictions.eq("bab.id", b.getId()))
+                .add(Restrictions.eq("tagName.name", tagName))
+                .add(Restrictions.eq("barcode", barcode))
+                .list();
     }
 
     @Override

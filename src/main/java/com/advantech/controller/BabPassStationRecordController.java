@@ -5,6 +5,7 @@
  */
 package com.advantech.controller;
 
+import com.advantech.datatable.DataTableResponse;
 import com.advantech.model.Bab;
 import com.advantech.model.BabSettingHistory;
 import com.advantech.service.BabPassStationRecordService;
@@ -44,21 +45,20 @@ public class BabPassStationRecordController {
         ModelAndView mav = new ModelAndView("barcode_input");
         mav.addObject("tagName", tagName);
         mav.addObject("bab_id", setting.getBab().getId());
-        System.out.println(setting.getBab().getId());
         return mav;
     }
 
     @RequestMapping(value = "/insert", method = {RequestMethod.POST})
     @ResponseBody
-    protected String insert(
+    protected int insert(
             @CookieValue(required = true) String userInfo,
             @RequestParam String barcode,
             @RequestParam String tagName,
             @ModelAttribute Bab bab
     ) {
         checkArgument(barcode.length() >= 5, "Barcode length can't under five character!");
-        babPassStationRecordService.checkStationInfoAndInsert(bab, tagName, barcode);
-        return "success";
+        int count = babPassStationRecordService.checkStationInfoAndInsert(bab, tagName, barcode);
+        return count;
     }
 
     @RequestMapping(value = "/delete", method = {RequestMethod.POST})
