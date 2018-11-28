@@ -13,13 +13,13 @@ import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.model.AlarmBabAction;
 import com.advantech.model.Bab;
 import com.advantech.model.BabAlarmHistory;
+import com.advantech.model.BabPassStationRecord;
 import com.advantech.model.BabPcsDetailHistory;
 import com.advantech.model.BabSensorLoginRecord;
 import com.advantech.model.BabStatus;
 import com.advantech.model.CountermeasureEvent;
 import com.advantech.model.Fqc;
 import com.advantech.model.FqcTimeTemp;
-import com.advantech.model.PassStationRecord;
 import com.advantech.model.ReplyStatus;
 import com.advantech.model.SensorTransform;
 import com.advantech.model.TagNameComparison;
@@ -30,12 +30,13 @@ import com.advantech.service.PassStationRecordService;
 import com.advantech.webservice.WebServiceRV;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import org.apache.commons.collections.CollectionUtils;
+import static java.util.stream.Collectors.toList;
 import org.hibernate.Criteria;
 import org.hibernate.Hibernate;
 import org.hibernate.Query;
@@ -78,7 +79,7 @@ public class TestHibernate {
 
     @Autowired
     private BabPcsDetailHistoryService pcsHistoryService;
-    
+
     @Autowired
     private BabPassStationRecordDAO passStationDAO;
 
@@ -418,26 +419,28 @@ public class TestHibernate {
         Fqc fqc = session.get(Fqc.class, 780);
         List<FqcTimeTemp> pauseTimeTemps = session.createCriteria(FqcTimeTemp.class).list();
         FqcTimeTemp tempLastRecord = pauseTimeTemps.stream()
-                    .filter(o -> Objects.equals(o.getFqc(), fqc)).reduce((first, second) -> second)
-                    .orElse(null);
-        
+                .filter(o -> Objects.equals(o.getFqc(), fqc)).reduce((first, second) -> second)
+                .orElse(null);
+
         assertNotNull(tempLastRecord);
-        
+
         HibernateObjectPrinter.print(fqc);
     }
-    
+
     @Test
     @Transactional
     @Rollback(true)
-    public void testBabPassStationRecordDAO(){
-        Bab b = babDAO.findByPrimaryKey(29497);
+    public void testBabPassStationRecordDAO() {
+        Bab b = babDAO.findByPrimaryKey(29710);
         assertNotNull(b);
-        List l = passStationDAO.findByBabAndBarcode(b, "LB-S-1", "TPAB806002");
-        assertEquals(2, l.size());
+        List<BabPassStationRecord> l = passStationDAO.findByBab(b);
         
-        List l2 = passStationDAO.findByBabAndBarcode(b, "LB-S-2", "TPAB806002");
+        List<BabPassStationRecord> l2 = l.stream()
+                .sorted(Comparator.comparing(BabPassStationRecord::getBarcode)) 
+                .collect(toList());
         
-        assertEquals(1, l2.size());
+        HibernateObjectPrinter.print(l2);
+
     }
 
 }

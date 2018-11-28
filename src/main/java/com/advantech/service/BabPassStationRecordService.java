@@ -11,9 +11,14 @@ import com.advantech.model.BabPassStationRecord;
 import com.advantech.model.BabSettingHistory;
 import com.advantech.webservice.Factory;
 import com.advantech.webservice.WebServiceRV;
-import static com.google.common.base.Preconditions.checkState;
+import static com.google.common.base.Preconditions.*;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import static java.util.stream.Collectors.toList;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,10 +39,10 @@ public class BabPassStationRecordService {
     private BabPassStationRecordDAO dao;
 
     @Autowired
-    private BabSettingHistoryService settingService;
+    private WebServiceRV rv;
 
     @Autowired
-    private WebServiceRV rv;
+    private BabSettingHistoryService babSettingService;
 
     public List<BabPassStationRecord> findAll() {
         return dao.findAll();
@@ -58,28 +63,107 @@ public class BabPassStationRecordService {
      * @return Number of the barcode input count in database
      */
     public int checkStationInfoAndInsert(Bab bab, String tagName, String barcode) {
-        List<BabPassStationRecord> barcodeRecords = dao.findByBabAndBarcode(bab, tagName, barcode);
-        int inputCount = barcodeRecords.size() + 1;
-        checkState(inputCount <= 3, "Barcode(" + barcode + ") input too much times");
 
-        BabSettingHistory setting = settingService.findProcessingByTagName(tagName);
-        checkState(setting != null, "Can't find processing record");
+        //Check input bab and barcode is correct or not
+        List<BabSettingHistory> settings = babSettingService.findByBab(bab);
+        BabSettingHistory currentTag = settings.stream()
+                .filter(p -> tagName.equals(p.getTagName().getName())).findFirst()
+                .orElse(null);
+
+        checkState(currentTag != null, "Can't find processing record");
 
         Bab userInput = bab;
-        Bab b = setting.getBab();
+        Bab b = currentTag.getBab();
         checkState(userInput.getId() == b.getId(), "Processing record id not match");
 
-        String po = rv.getPoByBarcode(barcode, Factory.DEFAULT);
-        boolean poCheckFlag = Objects.equals(po, b.getPo());
-        checkState(poCheckFlag, "Barcode's SN not match");
+        checkBarcodeSn(b, barcode);
+
+        //Check barcode rule for hole line is correct or not 
+        List<BabPassStationRecord> barcodeRecords = dao.findByBab(bab);
+        List<BabPassStationRecord> barcodeInCurrentTagName = barcodeRecords.stream()
+                .filter(p -> tagName.equals(p.getTagName().getName()) && barcode.equals(p.getBarcode()))
+                .collect(toList());
+        int inputCount = barcodeInCurrentTagName.size() + 1;
+        checkState(inputCount <= 3, "Barcode(" + barcode + ") input too much times");
+
+        //Check barcode after first station
+        if (currentTag.getStation() > 1) {
+            BabSettingHistory prevTag = settings.stream()
+                    .filter(p -> p.getStation() == currentTag.getStation() - 1).findFirst()
+                    .orElse(null);
+            checkPreviousStation(barcodeRecords, prevTag, barcode);
+        }
+
+        int barcodeInput = (int) barcodeRecords.stream()
+                .filter(p -> tagName.equals(p.getTagName().getName()))
+                .count();
+
+        //Check when current barcode first input
+        if (barcodeInput > 0 && barcodeInCurrentTagName.isEmpty()) {
+            checkPreviousBarcode(barcodeRecords, currentTag, barcode);
+        } else if (!barcodeInCurrentTagName.isEmpty()) {
+//            checkBarcodeIsAfterLastInput(barcodeRecords, currentTag, barcode);
+        }
 
         BabPassStationRecord rec = new BabPassStationRecord();
-        rec.setBab(setting.getBab());
-        rec.setTagName(setting.getTagName());
+        rec.setBab(currentTag.getBab());
+        rec.setTagName(currentTag.getTagName());
         rec.setBarcode(barcode);
         this.insert(rec);
 
         return inputCount;
+    }
+
+    private void checkPreviousStation(List<BabPassStationRecord> barcodeRecords, BabSettingHistory tag, String barcode) {
+        List<BabPassStationRecord> prevBarcodeRecords = barcodeRecords.stream()
+                .filter(p -> Objects.equals(p.getTagName(), tag.getTagName()) && barcode.equals(p.getBarcode()))
+                .collect(toList());
+        checkState(prevBarcodeRecords.size() > 1, "Barcode(" + barcode + ") is not finished yet on " + tag.getTagName().getName());
+    }
+
+    private void checkPreviousBarcode(List<BabPassStationRecord> barcodeRecords, BabSettingHistory tag, String barcode) {
+
+        String prevBarcode = getLastInputBarcode(barcodeRecords, tag);
+
+        List<BabPassStationRecord> prevBarcodes = barcodeRecords.stream()
+                .filter(p -> Objects.equals(tag.getTagName(), p.getTagName()) && prevBarcode.equals(p.getBarcode()))
+                .collect(toList());
+
+        checkState(prevBarcodes.size() > 1, "Barcode(" + prevBarcode + ") is not finished yet");
+    }
+
+    private void checkBarcodeIsAfterLastInput(List<BabPassStationRecord> barcodeRecords, BabSettingHistory tag, String barcode) {
+        String prevBarcode = getLastInputBarcode(barcodeRecords, tag);
+
+        int currentNum = getBarcodeSerialNumber(barcode);
+        int prevNum = getBarcodeSerialNumber(prevBarcode);
+
+        checkState(currentNum >= prevNum, "Barcode number can't less than last input");
+    }
+
+    private String getLastInputBarcode(List<BabPassStationRecord> barcodeRecords, BabSettingHistory tag) {
+        List<BabPassStationRecord> barcodeInCurrentTagName = barcodeRecords.stream()
+                .filter(p -> Objects.equals(tag.getTagName(), p.getTagName()))
+                .sorted(Comparator.comparing(BabPassStationRecord::getBarcode))
+                .collect(toList());
+
+        BabPassStationRecord lastInput = barcodeInCurrentTagName.get(barcodeInCurrentTagName.size() - 1);
+        return lastInput.getBarcode();
+    }
+
+    private void checkBarcodeSn(Bab b, String barcode) {
+        String po = rv.getPoByBarcode(barcode, Factory.DEFAULT);
+        checkState(Objects.equals(po, b.getPo()), "Barcode's SN not match");
+    }
+
+    private int getBarcodeSerialNumber(String barcode) {
+        Pattern p = Pattern.compile("-?\\d+");
+        Matcher m = p.matcher(barcode);
+        String st = null;
+        while (m.find()) {
+            st = m.group();
+        }
+        return NumberUtils.createInteger(st);
     }
 
     public int update(BabPassStationRecord pojo) {

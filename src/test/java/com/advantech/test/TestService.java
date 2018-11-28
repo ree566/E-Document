@@ -15,6 +15,7 @@ import com.advantech.model.FqcLine;
 import com.advantech.model.TagNameComparison;
 import com.advantech.model.User;
 import com.advantech.quartzJob.HandleUncloseBab;
+import com.advantech.service.BabPassStationRecordService;
 import com.advantech.service.BabSensorLoginRecordService;
 import com.advantech.service.BabService;
 import com.advantech.service.BabSettingHistoryService;
@@ -28,8 +29,11 @@ import com.advantech.webservice.Factory;
 import com.advantech.webservice.WebServiceRV;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import static java.util.stream.Collectors.toList;
 import javax.mail.MessagingException;
+import org.apache.commons.lang3.math.NumberUtils;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -85,9 +89,12 @@ public class TestService {
 
     @Value("${endpoint.quartz.trigger}")
     private String endpointPollingCron;
-    
+
     @Autowired
     private FqcProductivityHistoryService productivityService;
+
+    @Autowired
+    private BabPassStationRecordService passStationService;
 
 //    @Test
     @Transactional
@@ -200,23 +207,70 @@ public class TestService {
 
         assertEquals(fqc.getFqcLine(), fqcLine);
     }
-    
+
 //    @Test
-    public void testProductivityService(){
+    public void testProductivityService() {
 
     }
-    
+
     @Autowired
     private WebServiceRV rv;
-    
+
     @Test
     @Transactional
     @Rollback(true)
-    public void testBarcode(){
-        Bab b = babService.findByPrimaryKey(28683);
-        String barcode = "TPD0292956";
-        String modelName = rv.getPoByBarcode(barcode, Factory.DEFAULT);
-        assertEquals(modelName, b.getModelName());
+    public void testBarcode() {
+        Bab b = babService.findByPrimaryKey(29710);
+        assertNotNull(b);
+
+        String tag1 = "NA-S-1";
+        String tag2 = "NA-S-2";
+
+        String barcode = "TPAB810772";
+
+        try {
+            //Assert can't add next barcode when current barcode is not finished.
+            passStationService.checkStationInfoAndInsert(b, tag1, barcode);
+            String nextBc = findBarcode(barcode, 1);
+            passStationService.checkStationInfoAndInsert(b, tag1, nextBc);
+            
+            assertFalse("test1 fail", true);
+        } catch (IllegalStateException e) {
+            System.out.println(e.getMessage());
+        }
+
+        try {
+            //Assert barcode can't insert next station when previous station is not finished
+            passStationService.checkStationInfoAndInsert(b, tag2, barcode);
+            
+            assertFalse("test2 fail", true);
+        } catch (IllegalStateException e) {
+            System.out.println(e.getMessage());
+        }
+        
+        //Test normal insert
+        passStationService.checkStationInfoAndInsert(b, tag1, barcode);
+        passStationService.checkStationInfoAndInsert(b, tag2, barcode);
+        passStationService.checkStationInfoAndInsert(b, tag2, barcode);
+        
+        String nextBc = findBarcode(barcode, 1);
+        
+        passStationService.checkStationInfoAndInsert(b, tag1, nextBc);
+        passStationService.checkStationInfoAndInsert(b, tag1, nextBc);
+        passStationService.checkStationInfoAndInsert(b, tag2, nextBc);
+        passStationService.checkStationInfoAndInsert(b, tag2, nextBc);
+        
+    }
+
+    private String findBarcode(String barcode, int c) {
+        Pattern p = Pattern.compile("-?\\d+");
+        Matcher m = p.matcher(barcode);
+        String st = null;
+        while (m.find()) {
+            st = m.group();
+        }
+        barcode = barcode.replace(st, Integer.toString((NumberUtils.createInteger(st)) + c));
+        return barcode;
     }
 
 }

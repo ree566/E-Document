@@ -28,11 +28,16 @@ public class BabPassStationRecordDAO extends AbstractDao<Integer, BabPassStation
         return super.getByKey((int) obj_id);
     }
     
-    public List<BabPassStationRecord> findByBabAndBarcode(Bab b, String tagName, String barcode){
+    public List<BabPassStationRecord> findByBabAndBarcode(Bab b, String barcode){
         return super.createEntityCriteria()
                 .add(Restrictions.eq("bab.id", b.getId()))
-                .add(Restrictions.eq("tagName.name", tagName))
                 .add(Restrictions.eq("barcode", barcode))
+                .list();
+    }
+    
+    public List<BabPassStationRecord> findByBab(Bab b){
+        return super.createEntityCriteria()
+                .add(Restrictions.eq("bab.id", b.getId()))
                 .list();
     }
 

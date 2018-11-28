@@ -5,13 +5,13 @@
  */
 package com.advantech.test;
 
-import com.advantech.converter.Encodeable;
-import com.advantech.webservice.Factory;
 import static com.google.common.collect.Lists.newArrayList;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import static org.junit.Assert.assertEquals;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,11 +44,24 @@ public class TestClass {
         System.out.println(key);
     }
 
-    @Test
+//    @Test
     public void testEnum() {
         int a = 3;
         long b = a;
         System.out.println(b);
+    }
+
+    @Test
+    public void testString() {
+        String str = "TPAB810807";
+        Pattern p = Pattern.compile("-?\\d+");
+        Matcher m = p.matcher(str);
+        String st = null;
+        while (m.find()) {
+            st = m.group();
+        }
+        str = str.replace(st, Integer.toString((NumberUtils.createInteger(st)) - 1));
+        System.out.println(str);
     }
 
 }
