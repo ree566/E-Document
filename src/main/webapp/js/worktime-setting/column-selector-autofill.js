@@ -47,8 +47,9 @@ var pending_select_event = [
 
 var babFlow_select_event = [
     {
-        type: 'change', 
+        type: 'change',
         fn: function (e) {
+            flow_LK_hint();
             var sel2 = $("#flowByTestFlowId\\.id");
             var sel2Val = sel2.val();
             $.get('../SelectOption/flow-byParent/' + $(this).val(), function (data) {
@@ -63,9 +64,28 @@ var babFlow_select_event = [
     }
 ];
 
+var testFlow_select_event = [
+    {
+        type: 'change',
+        fn: function (e) {
+            flow_LK_hint();
+        }
+    }
+];
+
+var flow_LK_hint = function (sel) {
+    var selVal = $("#flowByBabFlowId\\.id :selected").text();
+    var selVal2 = $("#flowByTestFlowId\\.id :selected").text();
+    var keypartField = $("#keypartB");
+    keypartField.parent().find("b").remove();
+    if ((selVal != null && selVal.includes("LK")) || (selVal2 != null && selVal2.includes("LK"))) {
+        keypartField.after("<b style='color:red'>後段Key part?</b>");
+    }
+};
+
 var businessGroup_select_event = [
     {
-        type: 'change', 
+        type: 'change',
         fn: function (e) {
             var selectOption = $('option:selected', this).text();
             var defaultValue = {
