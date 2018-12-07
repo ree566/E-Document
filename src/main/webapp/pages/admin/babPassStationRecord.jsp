@@ -111,6 +111,8 @@
                             {data: "bab_id"},
                             {data: "barcode"},
                             {data: "tagName"},
+                            {data: "jobnumber"},
+                            {data: "username"},
                             {data: "startDate"},
                             {data: "endDate"},
                             {data: "timeCost"}
@@ -118,14 +120,14 @@
                         "columnDefs": [
                             {
                                 "type": "html",
-                                "targets": [3, 4],
+                                "targets": [5, 6],
                                 'render': function (data, type, full, meta) {
                                     return formatDate(data);
                                 }
                             },
                             {
                                 "type": "html",
-                                "targets": 5,
+                                "targets": 7,
                                 'render': function (data, type, full, meta) {
                                     return data == 0 ? "無結束紀錄" : data;
                                 }
@@ -221,6 +223,8 @@
                                 <th>系統工單id</th>
                                 <th>barcode</th>
                                 <th>站別</th>
+                                <th>工號</th>
+                                <th>姓名</th>
                                 <th>起始時間</th>
                                 <th>結束時間</th>
                                 <th>花費(秒)</th>
