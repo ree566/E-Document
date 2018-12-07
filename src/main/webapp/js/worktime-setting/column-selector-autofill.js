@@ -78,7 +78,7 @@ var flow_LK_hint = function (sel) {
     var selVal2 = $("#flowByTestFlowId\\.id :selected").text();
     var keypartField = $("#keypartB");
     keypartField.parent().find("b").remove();
-    if ((selVal != null && selVal.includes("LK")) || (selVal2 != null && selVal2.includes("LK"))) {
+    if ((selVal != null && selVal.indexOf("LK") != -1) || (selVal2 != null && selVal2.indexOf("LK") != -1)) {
         keypartField.after("<b style='color:red'>後段Key part?</b>");
     }
 };
