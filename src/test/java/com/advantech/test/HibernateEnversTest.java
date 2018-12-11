@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.HashMap;
@@ -304,7 +303,6 @@ public class HibernateEnversTest {
         DateTime sD = currentHour <= 11 ? now.minusDays(1).withHourOfDay(16) : now.withHourOfDay(11);
         DateTime eD = currentHour <= 11 ? now.withHourOfDay(11) : now.withHourOfDay(16);
 
-
         AuditQuery q = reader.createQuery()
                 .forRevisionsOfEntity(Worktime.class, false, false);
 
@@ -379,5 +377,14 @@ public class HibernateEnversTest {
         } else {
             return null;
         }
+    }
+
+    @Test
+    @Transactional
+    @Rollback(true)
+    public void testRevisionEntity() {
+        AuditQuery q = reader.createQuery()
+                .forRevisionsOfEntity(Worktime.class, false, false)
+                .add(AuditEntity.id().eq(9753));
     }
 }

@@ -161,6 +161,7 @@
                 if (revision_number != selected_row_revision) {
                     return [false, "欄位版本已經被修改，請重新整理檢視新版本"];
                 } else {
+                    postdata.standardWorkReason = $("#standardWorkReason").val();
                     $.extend(postdata, formulaFieldInfo);
                     return [true, "saved"];
                 }
@@ -330,6 +331,18 @@
                             // do here all what you need (like alert('yey');)
                             $("#flowByBabFlowId\\.id, #businessGroup\\.id").trigger("change");
                             settingFormulaCheckbox();
+
+                            $.getJSON("<c:url value="/json/changeReason.json" />").done(function (data) {
+                                var sel = "";
+                                sel += "<div id='mod-reason' class='fm-button ui-corner-all fm-button-icon-left'><label>工時修改原因: </label><select id='standardWorkReason'>";
+                                $.each(data, function (i, n) {
+                                    sel += "<option value='" + i + "'>" + n + "</option>";
+                                });
+                                sel += "</select></div>";
+                                $(sel).prependTo("#Act_Buttons>td.EditButton");
+                            }).fail(function () {
+                                console.log("error");
+                            });
                         }, 50);
                         greyout(form);
                     },

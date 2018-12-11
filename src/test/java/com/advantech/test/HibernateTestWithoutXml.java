@@ -6,7 +6,6 @@
 package com.advantech.test;
 
 import com.advantech.helper.HibernateObjectPrinter;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.List;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
@@ -17,7 +16,6 @@ import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.core.io.ResourceLoader;
 
 /**
  *

@@ -9,7 +9,6 @@ import com.advantech.model.Worktime;
 import com.advantech.webservice.root.MaterialPropertyQueryRoot;
 import com.advantech.webservice.unmarshallclass.MaterialProperty;
 import com.advantech.webservice.unmarshallclass.MaterialPropertys;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.xml.bind.JAXBException;

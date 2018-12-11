@@ -6,8 +6,9 @@
 package com.advantech.webservice.port;
 
 import com.advantech.model.Worktime;
-import com.advantech.webservice.root.MaterialPropertyUserPermissionQueryRoot;
-import com.advantech.webservice.unmarshallclass.MaterialPropertyUserPermissions;
+import com.advantech.webservice.root.StandardWorkReasonQueryRoot;
+import com.advantech.webservice.unmarshallclass.StandardWorkReason;
+import com.advantech.webservice.unmarshallclass.StandardWorkReasons;
 import java.util.List;
 import java.util.Map;
 import javax.xml.bind.JAXBException;
@@ -20,24 +21,21 @@ import org.springframework.stereotype.Component;
  * @author Wei.Cheng
  */
 @Component
-public class MaterialPropertyUserPermissionQueryPort extends BasicQueryPort {
+public class StandardWorkReasonQueryPort extends BasicQueryPort {
 
-    private static final Logger logger = LoggerFactory.getLogger(MaterialPropertyUserPermissionQueryPort.class);
+    private static final Logger logger = LoggerFactory.getLogger(StandardWorkReasonQueryPort.class);
 
     @Override
     protected void initJaxb() {
         try {
-            super.initJaxb(MaterialPropertyUserPermissionQueryRoot.class, MaterialPropertyUserPermissions.class);
+            super.initJaxb(StandardWorkReasonQueryRoot.class, StandardWorkReasons.class);
         } catch (JAXBException e) {
             logger.error(e.toString());
         }
     }
 
-    public List query(String jobnumber) throws Exception {
-        MaterialPropertyUserPermissionQueryRoot root = new MaterialPropertyUserPermissionQueryRoot();
-        MaterialPropertyUserPermissionQueryRoot.MATPROPERTYUSER prop = root.getMATPROPERTYUSER();
-        prop.setUSERNO(jobnumber);
-        return this.query(root);
+    public List<StandardWorkReason> query() throws Exception {
+        return this.query(new StandardWorkReasonQueryRoot());
     }
 
     @Override

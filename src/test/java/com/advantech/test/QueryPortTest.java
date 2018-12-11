@@ -8,6 +8,7 @@ package com.advantech.test;
 import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.model.Worktime;
 import com.advantech.service.WorktimeService;
+import com.advantech.webservice.port.StandardWorkReasonQueryPort;
 import com.advantech.webservice.port.FlowRuleQueryPort;
 import com.advantech.webservice.port.MaterialFlowQueryPort;
 import com.advantech.webservice.port.MaterialPropertyQueryPort;
@@ -16,13 +17,13 @@ import com.advantech.webservice.port.MaterialPropertyUserPermissionQueryPort;
 import com.advantech.webservice.port.MesUserInfoQueryPort;
 import com.advantech.webservice.port.ModelResponsorQueryPort;
 import com.advantech.webservice.port.SopQueryPort;
+import com.advantech.webservice.unmarshallclass.StandardWorkReason;
 import com.advantech.webservice.unmarshallclass.FlowRule;
 import com.advantech.webservice.unmarshallclass.MaterialFlow;
 import com.advantech.webservice.unmarshallclass.MaterialProperty;
 import com.advantech.webservice.unmarshallclass.MaterialPropertyUserPermission;
 import com.advantech.webservice.unmarshallclass.MaterialPropertyValue;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.transaction.Transactional;
@@ -75,6 +76,9 @@ public class QueryPortTest {
 
     @Autowired
     private MaterialPropertyValueQueryPort materialPropertyValueQueryPort;
+
+    @Autowired
+    private StandardWorkReasonQueryPort errorGroupQueryPort;
 
     @Autowired
     private WorktimeService worktimeService;
@@ -215,7 +219,7 @@ public class QueryPortTest {
         }
     }
 
-    @Test
+//    @Test
     @Rollback(false)
     public void testRetriveMatPropertyValue2() throws Exception {
         Session session = sessionFactory.getCurrentSession();
@@ -231,6 +235,21 @@ public class QueryPortTest {
             }
             session.merge(worktime);
         }
+    }
+
+    @Test
+    public void testErrorGroupQueryPort() throws Exception {
+        List<StandardWorkReason> l = errorGroupQueryPort.query();
+
+        assertTrue(l != null);
+        assertEquals(1, l.size());
+        
+        StandardWorkReason eg = l.get(0);
+        
+        assertEquals("LC", eg.getId());
+        assertEquals("LC", eg.getName());
+        
+        HibernateObjectPrinter.print(l);
     }
 
 }

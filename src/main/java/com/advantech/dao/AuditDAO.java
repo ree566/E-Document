@@ -20,8 +20,6 @@ import org.hibernate.envers.query.AuditEntity;
 import org.hibernate.envers.query.AuditQuery;
 import org.hibernate.envers.query.criteria.AuditDisjunction;
 import org.hibernate.envers.query.criteria.AuditProperty;
-import org.hibernate.envers.query.internal.property.EntityPropertyName;
-import org.hibernate.envers.query.internal.property.ModifiedFlagPropertyName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 

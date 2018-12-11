@@ -9,7 +9,6 @@ import com.advantech.model.Worktime;
 import com.advantech.webservice.unmarshallclass.ModelResponsor;
 import com.advantech.webservice.root.ModelResponsorQueryRoot;
 import com.advantech.webservice.unmarshallclass.ModelResponsors;
-import com.advantech.webservice.root.SopQueryRoot;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

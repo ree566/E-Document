@@ -5,14 +5,17 @@
  */
 package com.advantech.controller;
 
+import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.helper.WorktimeMailManager;
 import static com.advantech.helper.JqGridResponseUtils.toJqGridResponse;
 import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.Worktime;
 import com.advantech.jqgrid.JqGridResponse;
+import com.advantech.model.WorktimeFormulaSetting;
 import com.advantech.service.WorktimeService;
 import static com.google.common.base.Preconditions.*;
 import static com.google.common.collect.Lists.newArrayList;
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -58,11 +61,11 @@ public class WorktimeController extends CrudController<Worktime> {
         String modifyMessage;
 
         removeModelNameExtraSpaceCharacter(worktime);
-        
+
         worktimeService.checkModelExists(worktime);
-        
+
         resetNullableColumn(worktime);
-        
+
         modifyMessage = worktimeService.insertWithFormulaSetting(worktime) == 1 ? this.SUCCESS_MESSAGE : FAIL_MESSAGE;
         if (SUCCESS_MESSAGE.equals(modifyMessage)) {
             worktimeMailManager.notifyUser(newArrayList(worktime), ADD);
@@ -76,7 +79,7 @@ public class WorktimeController extends CrudController<Worktime> {
             @RequestParam String baseModelName,
             @RequestParam(value = "seriesModelNames[]") String[] seriesModelNames
     ) throws Exception {
-        
+
         checkArgument(baseModelName != null && !"".equals(baseModelName), "BaseModelName illegal");
         checkArgument(seriesModelNames != null && seriesModelNames.length != 0, "SeriesModelNames illegal");
 
@@ -94,25 +97,57 @@ public class WorktimeController extends CrudController<Worktime> {
         return serverResponse(modifyMessage);
     }
 
-    @RequestMapping(value = UPDATE_URL, method = {RequestMethod.POST})
+//    @RequestMapping(value = UPDATE_URL, method = {RequestMethod.POST})
     @Override
     protected ResponseEntity update(@Valid @ModelAttribute Worktime worktime, BindingResult bindingResult) throws Exception {
+        throw new UnsupportedOperationException();
+    }
 
+    @RequestMapping(value = UPDATE_URL, method = {RequestMethod.POST})
+    protected ResponseEntity update(@Valid @ModelAttribute Worktime worktime, @RequestParam String standardWorkReason,
+            BindingResult bindingResult) throws Exception {
         if (bindingResult.hasErrors()) {
             return serverResponse(bindingResult.getFieldErrors());
         }
 
-        String modifyMessage;
+        HibernateObjectPrinter.print(standardWorkReason);
 
-        worktimeService.checkModelExists(worktime);
-        
-        removeModelNameExtraSpaceCharacter(worktime);
-        
-        resetNullableColumn(worktime);
+        boolean flag = checkProductionWtChanged(worktime);
 
-        modifyMessage = worktimeService.merge(worktime) == 1 ? this.SUCCESS_MESSAGE : FAIL_MESSAGE;
+        checkArgument(flag == false || (flag == true && standardWorkReason != null && !"".equals(standardWorkReason)), 
+                "ProductionWt has changed, please select a mod reason code");
 
-        return serverResponse(modifyMessage);
+        return serverResponse(SUCCESS_MESSAGE);
+
+//        String modifyMessage;
+//
+//        worktimeService.checkModelExists(worktime);
+//
+//        removeModelNameExtraSpaceCharacter(worktime);
+//
+//        resetNullableColumn(worktime);
+//
+//        modifyMessage = worktimeService.merge(worktime) == 1 ? this.SUCCESS_MESSAGE : FAIL_MESSAGE;
+//
+//        return serverResponse(modifyMessage);
+    }
+
+    private boolean checkProductionWtChanged(Worktime w) {
+        List<WorktimeFormulaSetting> settings = w.getWorktimeFormulaSettings();
+        WorktimeFormulaSetting setting = settings.stream().filter(p -> p.getWorktime().getId() == w.getId()).findFirst().orElse(null);
+        checkState(setting != null, "Can't find fit setting in input param");
+
+        Worktime existW = worktimeService.findByPrimaryKey(w.getId());
+
+        //Column calculable
+        if (setting.getProductionWt() == 1) {
+            w.setDefaultProductWt();
+        }
+
+        BigDecimal b1 = w.getProductionWt();
+        BigDecimal b2 = existW.getProductionWt();
+
+        return !b1.equals(b2);
     }
 
     @RequestMapping(value = DELETE_URL, method = {RequestMethod.POST})
