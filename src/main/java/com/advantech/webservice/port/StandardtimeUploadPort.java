@@ -47,10 +47,12 @@ public class StandardtimeUploadPort extends BasicUploadPort implements UploadPor
     //Don't forget init setting everytime.
     public void initSettings() {
         settings = settingService.findAll();
+
     }
 
     public void initSettings(List<WorktimeAutouploadSetting> settings) {
         this.settings = settings;
+
     }
 
     @Override
@@ -92,6 +94,7 @@ public class StandardtimeUploadPort extends BasicUploadPort implements UploadPor
         swt.setCT(setting.getCt());
         swt.setSIDE(5010);
         swt.setMIXCT(totalCt); //Temporarily set this column equal to totalCt
+        swt.setCHANGEREASONNO(w.getReasonCode());
 
         if ("B".equals(columnUnit) && setting.getStationId() != null) {
             swt.setMACHINECNT(w.getAssyStation());

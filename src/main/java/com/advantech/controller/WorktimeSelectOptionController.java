@@ -27,7 +27,11 @@ import com.advantech.service.TypeService;
 import com.advantech.service.UnitService;
 import com.advantech.service.UserNotificationService;
 import com.advantech.service.UserProfileService;
+import com.advantech.webservice.port.StandardWorkReasonQueryPort;
+import com.advantech.webservice.unmarshallclass.StandardWorkReason;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -76,6 +80,9 @@ public class WorktimeSelectOptionController {
 
     @Autowired
     private UserNotificationService userNotificationService;
+    
+    @Autowired
+    private StandardWorkReasonQueryPort standardWorkReasonQueryPort;
 
     @ResponseBody
     @RequestMapping(value = "/floor", method = {RequestMethod.GET})
@@ -163,5 +170,15 @@ public class WorktimeSelectOptionController {
     @RequestMapping(value = "/userUserNotifications", method = {RequestMethod.GET})
     protected List<UserNotification> getUserNotificationOption() {
         return userNotificationService.findAll();
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/modReasonCode", method = {RequestMethod.GET})
+    protected List<StandardWorkReason> getModReasonCode() throws Exception {
+        try {
+            return standardWorkReasonQueryPort.query();
+        } catch (Exception ex) {
+            throw new Exception("Error while getting mod reason code select options");
+        }
     }
 }

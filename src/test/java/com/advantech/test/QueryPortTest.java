@@ -242,12 +242,12 @@ public class QueryPortTest {
         List<StandardWorkReason> l = errorGroupQueryPort.query();
 
         assertTrue(l != null);
-        assertEquals(1, l.size());
+        assertEquals(9, l.size());
         
         StandardWorkReason eg = l.get(0);
         
-        assertEquals("LC", eg.getId());
-        assertEquals("LC", eg.getName());
+        assertEquals("A0", eg.getId());
+        assertEquals("預估工時修正", eg.getName());
         
         HibernateObjectPrinter.print(l);
     }

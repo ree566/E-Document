@@ -12,7 +12,9 @@ import com.advantech.model.Worktime;
 import com.advantech.service.AuditService;
 import com.advantech.service.UserNotificationService;
 import com.advantech.service.WorktimeService;
+import com.advantech.webservice.port.StandardWorkReasonQueryPort;
 import com.advantech.webservice.port.StandardtimeUploadPort;
+import com.advantech.webservice.unmarshallclass.StandardWorkReason;
 import static com.google.common.collect.Lists.newArrayList;
 import java.util.ArrayList;
 import java.util.Date;
@@ -92,10 +94,8 @@ public class StandardTimeUpload {
 
         port.initSettings();
 
-        DateTime today = new DateTime();
-
-        Date startDate = today.minusDays(10).toDate();
-        Date endDate = today.toDate();
+        Date startDate = new DateTime(tempInfo.getSearchString()).toDate();
+        Date endDate = new DateTime().toDate();
 
         int failCount = 0;
 
@@ -113,8 +113,10 @@ public class StandardTimeUpload {
                 failCount++;
 
                 if (failCount == uploadFailMaxAllow) {
-                    log.error("Reaching maxinum upload fail allow count "
-                            + uploadFailMaxAllow + ", abort mission.");
+                    String failMissionMessage = "Reaching maxinum upload fail allow count "
+                            + uploadFailMaxAllow + ", abort mission.";
+                    log.error(failMissionMessage);
+                    errorMessages.add(failMissionMessage);
                     break;
                 }
             }

@@ -21,7 +21,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "root")
 public class StandardWorkReasons implements Serializable, QueryResult<StandardWorkReason> {
 
-    @XmlElement(name = "QryErrorGroup", type = StandardWorkReason.class)
+    @XmlElement(name = "QryData", type = StandardWorkReason.class)
     private List<StandardWorkReason> QryData;
 
     @Override

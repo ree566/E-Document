@@ -8,6 +8,7 @@ package com.advantech.controller;
 import com.advantech.helper.WorktimeMailManager;
 import com.advantech.excel.XlsWorkBook;
 import com.advantech.excel.XlsWorkSheet;
+import com.advantech.helper.WorktimeValidator;
 import com.advantech.model.BusinessGroup;
 import com.advantech.model.Floor;
 import com.advantech.model.Flow;
@@ -86,6 +87,9 @@ public class WorktimeBatchModController {
     @Autowired
     private AuditService auditService;
 
+    @Autowired
+    private WorktimeValidator worktimeValidator;
+
     private static Validator validator;
 
     @PostConstruct
@@ -100,12 +104,12 @@ public class WorktimeBatchModController {
     protected String batchInsert(@RequestParam("file") MultipartFile file) throws Exception {
 
         List<Worktime> hgList = this.transToWorktimes(file, false);
-        
-        for (Worktime w : hgList) {
-            w.setId(0);
-        }
 
-        worktimeService.checkModelExists(hgList);
+        hgList.forEach((w) -> {
+            w.setId(0);
+        });
+
+        worktimeValidator.checkModelNameExists(hgList);
 
         //Validate the column, throw exception when false.
         validateWorktime(hgList);
@@ -126,7 +130,14 @@ public class WorktimeBatchModController {
 
         List<Worktime> hgList = this.transToWorktimes(file, true);
 
-        worktimeService.checkModelExists(hgList);
+        worktimeValidator.checkModelNameExists(hgList);
+        worktimeValidator.checkProductionWtChanged(hgList);
+        worktimeValidator.checkReasonCode(hgList);
+        hgList.forEach((w) -> {
+            if (w.getReasonCode() != null) {
+                w.setReasonCode(w.getReasonCode().trim());
+            }
+        });
 
         //Validate the column, throw exception when false.
         validateWorktime(hgList);
@@ -234,7 +245,7 @@ public class WorktimeBatchModController {
     }
 
     private boolean validateWorktime(List<Worktime> l) throws Exception {
-        worktimeService.checkModelExists(l);
+        worktimeValidator.checkModelNameExists(l);
 
         Map<String, Map<String, String>> checkResult = new HashMap();
         int count = 2;

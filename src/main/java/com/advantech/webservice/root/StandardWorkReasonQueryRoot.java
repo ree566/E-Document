@@ -214,9 +214,9 @@ public class StandardWorkReasonQueryRoot {
     })
     public static class STANDARDWORKTIMEREASON {
 
-        @XmlElement(name = "REASON_NO", required = true)
+        @XmlElement(name = "REASON_NO", required = true, nillable = true)
         protected String reasonno;
-        @XmlElement(name = "STATUS_NO", required = true)
+        @XmlElement(name = "STATUS_NO", required = true, nillable = true)
         protected String statusno = "A";
 
         /**

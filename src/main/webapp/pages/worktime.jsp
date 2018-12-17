@@ -81,6 +81,10 @@
 
         var selected_row_formula_id;
 
+        var bottominfo = "Fields marked with (*) are required.<br/>" +
+                "勾選套入公式的欄位將會被重新計算.<br/>" +
+                "<b class='danger'>※當CleanPanel到Warm Boot的欄位有異動，請選擇工時修改原因</b>";
+
         //Set param into jqgrid-custom-select-option-reader.js and get option by param selectOptions
         //You can get the floor select options and it's formatter function
         //ex: floor selector -> floor and floor_func
@@ -98,9 +102,12 @@
                 {name: "flow", nameprefix: "test_", isNullable: true, dataToServer: "3"},
                 {name: "flow", nameprefix: "pkg_", isNullable: true, dataToServer: "2"},
                 {name: "preAssy", isNullable: true},
-                {name: "pending", isNullable: false}
+                {name: "pending", isNullable: false},
+                {name: "modReasonCode", isNullable: true}
             ]
         });
+
+        var modReasonCodes = selectOptions["modReasonCode_options"];
 
         var hideEmptyBabFlow = function (rowId, val, rawObject) {
             if (val == 111) {
@@ -161,7 +168,10 @@
                 if (revision_number != selected_row_revision) {
                     return [false, "欄位版本已經被修改，請重新整理檢視新版本"];
                 } else {
-                    postdata.standardWorkReason = $("#standardWorkReason").val();
+                    var standardWorkReason = $("#standardWorkReason").val();
+                    if (standardWorkReason != "") {
+                        postdata.reasonCode = standardWorkReason;
+                    }
                     $.extend(postdata, formulaFieldInfo);
                     return [true, "saved"];
                 }
@@ -331,24 +341,14 @@
                             // do here all what you need (like alert('yey');)
                             $("#flowByBabFlowId\\.id, #businessGroup\\.id").trigger("change");
                             settingFormulaCheckbox();
-
-                            $.getJSON("<c:url value="/json/changeReason.json" />").done(function (data) {
-                                var sel = "";
-                                sel += "<div id='mod-reason' class='fm-button ui-corner-all fm-button-icon-left'><label>工時修改原因: </label><select id='standardWorkReason'>";
-                                $.each(data, function (i, n) {
-                                    sel += "<option value='" + i + "'>" + n + "</option>";
-                                });
-                                sel += "</select></div>";
-                                $(sel).prependTo("#Act_Buttons>td.EditButton");
-                            }).fail(function () {
-                                console.log("error");
-                            });
+                            addModReasonCode();
                         }, 50);
                         greyout(form);
                     },
                     afterShowForm: function (form) {
                         modelNameFormat();
                         checkRevision(form);
+                        setReasonCodeRelateFieldEvent(form);
                     },
                     afterSubmit: showServerModifyMessage,
                     recreateForm: true,
@@ -356,7 +356,7 @@
                     zIndex: 9999,
                     cols: 20,
                     viewPagerButtons: false,
-                    bottominfo: "Fields marked with (*) are required.<br/>勾選套入公式的欄位將會被重新計算."
+                    bottominfo: bottominfo
                 },
                 {
                     url: '<c:url value="/Worktime/create" />',
@@ -381,7 +381,7 @@
                     recreateForm: true,
                     closeOnEscape: true,
                     zIndex: 9999,
-                    bottominfo: "Fields marked with (*) are required.<br/>勾選套入公式的欄位將會被重新計算."
+                    bottominfo: bottominfo
                 },
                 {
                     url: '<c:url value="/Worktime/delete" />',
@@ -677,6 +677,27 @@
 
         function getGridRevision() {
             table_current_revision = getRowRevision();
+        }
+
+        function addModReasonCode() {
+            var sel = "";
+            sel += "<div id='mod-reason' class='fm-button ui-corner-all fm-button-icon-left ui-state-disabled'><label>工時修改原因: </label><select id='standardWorkReason'>";
+            modReasonCodes.forEach(function (value, key, map) {
+                sel += "<option value='" + key + "'>" + value + "</option>";
+            });
+            sel += "</select></div>";
+            $(sel).prependTo("#Act_Buttons>td.EditButton");
+        }
+
+        function setReasonCodeRelateFieldEvent(form) {
+            var relativeObj = form.find("#productionWt, #setupTime, #cleanPanel, \n\
+                #totalModule, #assy, #t1, #t2, #t3, #t4, #packing, \n\
+                #upBiRi, #downBiRi, #biCost, #vibration, #hiPotLeakage, \n\
+                #coldBoot, #warmBoot");
+            relativeObj.on("keyup, change", function () {
+                $("#mod-reason").removeClass("ui-state-disabled");
+                relativeObj.unbind("keyup, change");
+            });
         }
     });
 </script>

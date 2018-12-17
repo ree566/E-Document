@@ -215,7 +215,8 @@ public class StandardtimeRoot {
         "kptype",
         "machinecnt",
         "mixct",
-        "autoct"
+        "autoct",
+        "changeReasonNo"
     })
     public static class STANDARDWORKTIME {
 
@@ -245,6 +246,8 @@ public class StandardtimeRoot {
         protected BigDecimal mixct;
         @XmlElement(name = "AUTO_CT", required = true, nillable = true)
         protected BigDecimal autoct;
+        @XmlElement(name = "CHANGE_REASON_NO", required = true, nillable = true)
+        protected String changeReasonNo;
 
         /**
          * 取得 unitno 特性的值.
@@ -468,6 +471,18 @@ public class StandardtimeRoot {
          */
         public void setAUTOCT(BigDecimal value) {
             this.autoct = value;
+        }
+
+        /**
+         * 設定 changeReasonNo 特性的值.
+         *
+         */
+        public String getCHANGEREASONNO() {
+            return changeReasonNo;
+        }
+
+        public void setCHANGEREASONNO(String changeReasonNo) {
+            this.changeReasonNo = changeReasonNo;
         }
 
     }

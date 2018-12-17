@@ -83,8 +83,7 @@
             });
         });
         $(document).off('click', '.btn-add').off('click', '.btn-remove');
-        $(document).on('click', '.btn-add', function (e)
-        {
+        $(document).on('click', '.btn-add', function (e) {
             e.preventDefault();
             if (clickTimes >= allowMaxCreate) {
                 alert("Only allow create " + allowMaxCreate + " series models every time.");
@@ -101,8 +100,7 @@
             clickTimes++;
         });
 
-        $(document).on('click', '.btn-remove', function (e)
-        {
+        $(document).on('click', '.btn-remove', function (e) {
             $(this).parents('.voca:first').remove();
             e.preventDefault();
             clickTimes--;
@@ -146,12 +144,12 @@
                             <td>
                                 <div class="row" id="series-modelName">
                                     <div class="voca">
-                                        <div class="col-md-4">
+                                        <div class="col-md-8 form-inline">
                                             <input class="form-control series-modelName" placeholder="Series modelName" name="voca" type="text" >
+                                            <button type="button" class="btn btn-success btn-add" >
+                                                <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> Add more
+                                            </button>
                                         </div>
-                                        <button type="button" class="btn btn-success btn-add" >
-                                            <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> Add more
-                                        </button>
                                     </div>
                                 </div>  
                             </td>

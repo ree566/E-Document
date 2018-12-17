@@ -6,9 +6,11 @@
 package com.advantech.service;
 
 import com.advantech.dao.*;
+import com.advantech.helper.WorktimeValidator;
 import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.Worktime;
 import com.advantech.model.WorktimeFormulaSetting;
+import com.advantech.webservice.port.StandardWorkReasonQueryPort;
 import static com.google.common.base.Preconditions.*;
 import static com.google.common.collect.Lists.newArrayList;
 import java.util.ArrayList;
@@ -41,6 +43,9 @@ public class WorktimeService {
     @Autowired
     private WorktimeUploadMesService uploadMesService;
 
+    @Autowired
+    private WorktimeValidator validator;
+   
     public List<Worktime> findAll() {
         return worktimeDAO.findAll();
     }
@@ -116,7 +121,7 @@ public class WorktimeService {
             l.add(cloneW);
         }
 
-        this.checkModelExists(l);
+        validator.checkModelNameExists(l);
         this.insert(l);
 
         WorktimeFormulaSetting baseWSetting = baseW.getWorktimeFormulaSettings().get(0);
@@ -180,13 +185,13 @@ public class WorktimeService {
         for (Worktime w : l) {
             //Don't need to update formula, but still need to re-calculate the formula field
             this.initUnfilledFormulaColumn(w);
-            
+
             worktimeDAO.merge(w);
             uploadMesService.update(w);
             flushIfReachFetchSize(i++);
         }
         return 1;
-        
+
     }
 
     private void retriveFormulaSetting(List<Worktime> l) {
@@ -291,36 +296,6 @@ public class WorktimeService {
         if (currentRow % batchSize == 0 && currentRow > 0) {
             worktimeDAO.flushSession();
         }
-    }
-
-    public void checkModelExists(Worktime worktime) {
-        Worktime existW = worktimeDAO.findByModel(worktime.getModelName());
-        boolean existFlag;
-        if (worktime.getId() == 0) {
-            existFlag = existW != null;
-        } else {
-            existFlag = existW != null && existW.getId() != worktime.getId();
-        }
-        checkArgument(existFlag == false, "This modelName &lt;" + worktime.getModelName() + "&gt; is already exist.");
-    }
-
-    public void checkModelExists(List<Worktime> worktimes) throws Exception {
-        Map<String, Integer> modelMap = new HashMap();
-        List<Worktime> allWorktime = this.findAll();
-        allWorktime.forEach((w) -> {
-            modelMap.put(w.getModelName(), w.getId());
-        });
-
-        worktimes.forEach((w) -> {
-            boolean existFlag;
-            Integer worktimeId = modelMap.get(w.getModelName());
-            if (w.getId() == 0) {
-                existFlag = worktimeId != null;
-            } else {
-                existFlag = worktimeId != null && worktimeId != w.getId();
-            }
-            checkArgument(existFlag == false, "This modelName &lt;" + w.getModelName() + "&gt; is already exist.");
-        });
     }
 
 }

@@ -132,6 +132,8 @@ public class Worktime implements java.io.Serializable {
     private Date createDate;
     private Date modifiedDate;
 
+    private String reasonCode;
+
     public Worktime() {
     }
 
@@ -889,6 +891,17 @@ public class Worktime implements java.io.Serializable {
         this.bwField = bwFields;
     }
 
+    @Audited(withModifiedFlag = false)
+    @Column(name = "reasonCode", length = 10)
+    public String getReasonCode() {
+        return reasonCode;
+    }
+
+    public void setReasonCode(String reasonCode) {
+        this.reasonCode = reasonCode;
+    }
+
+//---------------------------------------------------------------------
 //  Default formula column caculate
     public void setDefaultProductWt() {
         BigDecimal defaultValue = notEmpty(totalModule).add(notEmpty(cleanPanel))

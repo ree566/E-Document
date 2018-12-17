@@ -19,15 +19,17 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "QryData")
 public class StandardWorkReason implements Serializable {
 
-    public StandardWorkReason() {
-        throw new RuntimeException("Receive object \"StandardWorkReason\" not changed yet");
-    }
-
-    @XmlElement(name = "GROUP_NO")
+    @XmlElement(name = "REASON_NO")
     private String id;
 
-    @XmlElement(name = "GROUP_NAME")
+    @XmlElement(name = "REASON_DESC")
     private String name;
+
+    @XmlElement(name = "MEMO")
+    private String memo;
+
+    @XmlElement(name = "STATUS_NO")
+    private String status;
 
     public String getId() {
         return id == null ? null : id.trim();
@@ -43,6 +45,22 @@ public class StandardWorkReason implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getMemo() {
+        return memo;
+    }
+
+    public void setMemo(String memo) {
+        this.memo = memo;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
 }
