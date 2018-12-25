@@ -79,7 +79,7 @@ public class Worktime implements java.io.Serializable {
     private BigDecimal biTime;
     private BigDecimal biTemperature;
     private User userBySpeOwnerId;
-    private User userByEeOwnerId;
+    private User userByEeOwnerId; //Unit name change "EE" to "BPE"
     private User userByQcOwnerId;
     private String assyPackingSop;
     private String testSop;

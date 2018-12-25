@@ -279,7 +279,7 @@ public class WorktimeBatchModController {
             w.setType(typeOptions.get(sheet.getValue(i, "typeName").toString()));
             w.setFloor(floorOptions.get(sheet.getValue(i, "floorName").toString()));
 
-            String eeUserName = sheet.getValue(i, "eeOwnerName").toString().toUpperCase().trim();
+            String eeUserName = sheet.getValue(i, "bpeOwnerName").toString().toUpperCase().trim();
             String speUserName = sheet.getValue(i, "speOwnerName").toString().toUpperCase().trim();
             String qcUserName = sheet.getValue(i, "qcOwnerName").toString().toUpperCase().trim();
 
