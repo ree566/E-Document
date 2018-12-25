@@ -13,7 +13,9 @@ import com.advantech.model.Flow;
 import com.advantech.model.PreAssy;
 import com.advantech.model.Worktime;
 import com.advantech.service.*;
+import com.advantech.webservice.port.StandardtimeUploadPort;
 import com.google.common.collect.Iterables;
+import static com.google.common.collect.Lists.newArrayList;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -30,6 +32,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
+import static java.util.stream.Collectors.toList;
 import javax.activation.UnsupportedDataTypeException;
 import javax.transaction.Transactional;
 import static junit.framework.Assert.assertEquals;
@@ -39,6 +43,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
+import org.hibernate.envers.RevisionEntity;
 import org.hibernate.envers.RevisionType;
 import org.hibernate.envers.query.AuditEntity;
 import org.hibernate.envers.query.AuditQuery;
@@ -90,6 +95,9 @@ public class HibernateEnversTest {
     private SessionFactory sessionFactory;
 
     private AuditReader reader;
+
+    @Autowired
+    private AuditService auditService;
 
     @Before
     public void setUp() {
@@ -281,7 +289,7 @@ public class HibernateEnversTest {
         HibernateObjectPrinter.print(result);
     }
 
-    @Test
+//    @Test
     @Transactional
     @Rollback(true)
     public void testEnvers() {
@@ -379,12 +387,30 @@ public class HibernateEnversTest {
         }
     }
 
-    @Test
+//    @Test
     @Transactional
     @Rollback(true)
     public void testRevisionEntity() {
         AuditQuery q = reader.createQuery()
                 .forRevisionsOfEntity(Worktime.class, false, false)
                 .add(AuditEntity.id().eq(9753));
+    }
+    
+    @Autowired
+    private StandardtimeUploadPort port;
+
+    @Test
+    @Transactional
+    @Rollback(true)
+    public void testRevisionQuery() throws Exception {
+        Worktime w = (Worktime) reader.createQuery()
+                .forEntitiesAtRevision(Worktime.class, 13208)
+                .add(AuditEntity.id().eq(9295))
+                .getSingleResult();
+        
+        assertNotNull(w);
+        
+        port.initSettings();
+        port.update(w);
     }
 }

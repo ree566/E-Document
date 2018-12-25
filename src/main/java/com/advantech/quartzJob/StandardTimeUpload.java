@@ -6,24 +6,21 @@
 package com.advantech.quartzJob;
 
 import com.advantech.helper.MailManager;
-import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.User;
 import com.advantech.model.Worktime;
 import com.advantech.service.AuditService;
 import com.advantech.service.UserNotificationService;
-import com.advantech.service.WorktimeService;
-import com.advantech.webservice.port.StandardWorkReasonQueryPort;
 import com.advantech.webservice.port.StandardtimeUploadPort;
-import com.advantech.webservice.unmarshallclass.StandardWorkReason;
 import static com.google.common.collect.Lists.newArrayList;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import static java.util.stream.Collectors.toList;
 import javax.annotation.PostConstruct;
 import javax.mail.MessagingException;
+import org.hibernate.envers.RevisionType;
 import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,14 +46,7 @@ public class StandardTimeUpload {
     private MailManager mailManager;
 
     @Autowired
-    private WorktimeService worktimeService;
-
-    @Autowired
     private StandardtimeUploadPort port;
-
-    private DateTimeFormatter df;
-
-    private PageInfo tempInfo;
 
     private List<String> checkField;
 
@@ -67,11 +57,6 @@ public class StandardTimeUpload {
 
     @PostConstruct
     public void init() {
-        df = DateTimeFormat.forPattern("yyyy-MM-dd");
-        tempInfo = new PageInfo();
-        tempInfo.setRows(-1);
-        tempInfo.setSearchField("modifiedDate");
-        tempInfo.setSearchOper("gt");
         initCheckFieldNames();
     }
 
@@ -87,24 +72,17 @@ public class StandardTimeUpload {
 
     public void uploadToMes() {
         List<String> errorMessages = new ArrayList();
-        this.updatePageInfo();
-        List<Worktime> modifiedWorktimes = worktimeService.findAll(tempInfo);
+        List<Worktime> modifiedWorktimes = this.findFieldChangeInDate(new DateTime().minusWeeks(1), new DateTime());
 
         log.info("Begin upload standardtime to mes: " + modifiedWorktimes.size() + " datas.");
 
         port.initSettings();
 
-        Date startDate = new DateTime(tempInfo.getSearchString()).toDate();
-        Date endDate = new DateTime().toDate();
-
         int failCount = 0;
 
         for (Worktime w : modifiedWorktimes) {
             try {
-                boolean isFieldChanged = auditService.isFieldChangedInTime(Worktime.class, w.getId(), checkField, startDate, endDate);
-                if (isFieldChanged) {
-                    port.update(w);
-                }
+                port.update(w);
             } catch (Exception e) {
                 String errorMessage = w.getModelName() + " upload fail: " + e.getMessage();
                 errorMessages.add(errorMessage);
@@ -125,10 +103,6 @@ public class StandardTimeUpload {
         this.notifyUser(errorMessages);
 
         log.info("Upload standardtime job finished.");
-    }
-
-    public void updatePageInfo() {
-        tempInfo.setSearchString(df.print(new DateTime().minusWeeks(1)));
     }
 
     public void notifyUser(List<String> l) {
@@ -174,5 +148,31 @@ public class StandardTimeUpload {
             }
         }
         return mails;
+    }
+
+    private List<Worktime> findFieldChangeInDate(DateTime sD, DateTime eD) {
+        List<Worktime> checkResult = new ArrayList();
+        List<Object[]> result = auditService.findByFieldChangedInDate(Worktime.class, null, checkField, sD.toDate(), eD.toDate());
+
+        Map<Integer, List<Object[]>> g = result.stream().collect(Collectors.groupingBy(o -> ((Worktime) o[0]).getId()));
+
+        g.forEach((k, v) -> {
+            System.out.println("-------------------------");
+            if (!v.isEmpty()) {
+                Object[] rec;
+
+                //Last standardtime mod record(First add or Mod with reason)
+                List<Object[]> withReason = v.stream()
+                        .filter(o -> RevisionType.ADD.equals(o[2]) || (RevisionType.MOD.equals(o[2]) && ((Worktime) o[0]).getReasonCode() != null))
+                        .collect(toList());
+
+                rec = withReason.get(withReason.size() - 1);
+                Worktime w = (Worktime) rec[0];
+
+                checkResult.add(w);
+            }
+        });
+
+        return checkResult;
     }
 }

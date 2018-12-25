@@ -181,12 +181,15 @@ public class AuditDAO implements AuditAction {
         return q.getSingleResult();
     }
 
-    public boolean isFieldChangedInTime(Class clz, Object id, List<String> fieldNames, Date startDate, Date endDate) {
+    public List findByFieldChangedInDate(Class clz, Object id, List<String> fieldNames, Date startDate, Date endDate) {
         AuditQuery q = getReader().createQuery()
-                .forRevisionsOfEntity(clz, true, false)
-                .add(AuditEntity.id().eq(id))
+                .forRevisionsOfEntity(clz, false, false)
                 .add(AuditEntity.revisionProperty("REVTSTMP").between(startDate.getTime(), endDate.getTime()));
-
+        
+        if (id != null) {
+            q.add(AuditEntity.id().eq(id));
+        }
+        
         AuditDisjunction disjunction = AuditEntity.disjunction();
         fieldNames.forEach((fieldName) -> {
             disjunction.add(AuditEntity.property(fieldName).hasChanged());
@@ -196,7 +199,7 @@ public class AuditDAO implements AuditAction {
 
         List l = q.getResultList();
 
-        return !l.isEmpty();
+        return l;
     }
 
 }

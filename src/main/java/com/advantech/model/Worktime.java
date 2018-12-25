@@ -58,7 +58,7 @@ public class Worktime implements java.io.Serializable {
     private Flow flowByTestFlowId;
     private Flow flowByPackingFlowId;
     private Flow flowByBabFlowId;
-    private User userByEeOwnerId;
+    private User userByEeOwnerId; //EE teams name has been changed to BPE
     private User userByQcOwnerId;
     private User userBySpeOwnerId;
     private Pending pending;

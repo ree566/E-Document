@@ -95,7 +95,7 @@ public class FileUploadController {
      * @return
      */
     @ResponseBody
-    @RequestMapping(value = "/uploadFile", method = RequestMethod.POST)
+//    @RequestMapping(value = "/uploadFile", method = RequestMethod.POST)
     public String uploadFileHandler(@RequestParam("file") MultipartFile file) {
         String message = "";
         String flowRegex = "[^a-zA-Z0-9\\_\\-\\\\(\\\\)]+";
