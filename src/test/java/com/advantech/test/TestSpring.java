@@ -5,12 +5,14 @@
  */
 package com.advantech.test;
 
+import com.advantech.helper.PropertiesReader;
+import com.advantech.model.BabDataCollectMode;
 import com.advantech.model.view.BabAvg;
 import com.advantech.service.LineBalancingService;
 import com.advantech.service.SqlViewService;
 import java.util.Arrays;
 import java.util.List;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +42,9 @@ public class TestSpring {
     
     @Value("${test.productivity.bypass.hours: 0}")
     private Integer[] testByPassHours;
+    
+    @Autowired
+    private PropertiesReader reader;
 
 //    @Test
     public void testLineBalanceCount() {
@@ -58,10 +63,16 @@ public class TestSpring {
         System.out.printf("balance: %.3f \n", balance);
     }
 
-    @Test
+//    @Test
     public void testContextParam() {
 //        assertTrue(testByPassHours == null);
         System.out.println(Arrays.toString(this.testByPassHours));
+    }
+    
+    @Test
+    public void testPropertiesReader() {
+        BabDataCollectMode mode = reader.getBabDataCollectMode();
+        assertEquals(BabDataCollectMode.MANUAL, mode);
     }
 
 }

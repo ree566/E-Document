@@ -5,6 +5,7 @@
  */
 package com.advantech.helper;
 
+import com.advantech.model.BabDataCollectMode;
 import com.advantech.model.LineTypeConfig;
 import com.advantech.service.LineTypeConfigService;
 import java.math.BigDecimal;
@@ -61,6 +62,9 @@ public class PropertiesReader {
 
     @Value("${bab.salt.productivity: 0}")
     private Double babSaltProductivity;
+
+    @Value("${bab.data.collect.mode: 1}")
+    private BabDataCollectMode babDataCollectMode;
 
     //Settings inject from database
     private BigDecimal assyLineBalanceStandard = new BigDecimal(0.8);
@@ -234,8 +238,8 @@ public class PropertiesReader {
         return babSaltProductivity;
     }
 
-    public void setBabSaltProductivity(Double babSaltProductivity) {
-        this.babSaltProductivity = babSaltProductivity;
+    public BabDataCollectMode getBabDataCollectMode() {
+        return babDataCollectMode;
     }
 
 }

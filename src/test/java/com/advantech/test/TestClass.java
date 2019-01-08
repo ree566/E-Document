@@ -5,6 +5,7 @@
  */
 package com.advantech.test;
 
+import com.advantech.model.BabDataCollectMode;
 import static com.google.common.collect.Lists.newArrayList;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -51,7 +52,7 @@ public class TestClass {
         System.out.println(b);
     }
 
-    @Test
+//    @Test
     public void testString() {
         String str = "TPAB810807";
         Pattern p = Pattern.compile("-?\\d+");
@@ -62,6 +63,11 @@ public class TestClass {
         }
         str = str.replace(st, Integer.toString((NumberUtils.createInteger(st)) - 1));
         System.out.println(str);
+    }
+
+    @Test
+    public void testEnum2() {
+        System.out.println(BabDataCollectMode.valueOf("MAsNUAL"));
     }
 
 }
