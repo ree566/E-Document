@@ -9,12 +9,15 @@ import com.advantech.facade.BabLineTypeFacade;
 import com.advantech.helper.CustomPasswordEncoder;
 import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.model.Bab;
+import com.advantech.model.BabCollectModeChangeEvent;
+import com.advantech.model.BabDataCollectMode;
 import com.advantech.model.BabSettingHistory;
 import com.advantech.model.Fqc;
 import com.advantech.model.FqcLine;
 import com.advantech.model.TagNameComparison;
 import com.advantech.model.User;
 import com.advantech.quartzJob.HandleUncloseBab;
+import com.advantech.service.BabCollectModeChangeEventService;
 import com.advantech.service.BabPassStationRecordService;
 import com.advantech.service.BabSensorLoginRecordService;
 import com.advantech.service.BabService;
@@ -25,7 +28,6 @@ import com.advantech.service.FqcService;
 import com.advantech.service.LineBalancingService;
 import com.advantech.service.TagNameComparisonService;
 import com.advantech.service.UserService;
-import com.advantech.webservice.Factory;
 import com.advantech.webservice.WebServiceRV;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.List;
@@ -56,45 +58,48 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @RunWith(SpringJUnit4ClassRunner.class)
 public class TestService {
-
+    
     @Autowired
     private BabService babService;
-
+    
     @Autowired
     private LineBalancingService lineBalancingService;
-
+    
     @Autowired
     private BabSettingHistoryService babSettingHistoryService;
-
+    
     @Autowired
     private BabSensorLoginRecordService babSensorLoginRecordService;
-
+    
     @Autowired
     private TagNameComparisonService tagNameComparisonService;
-
+    
     @Autowired
     private UserService userService;
-
+    
     @Autowired
     private BabLineTypeFacade bf;
-
+    
     @Autowired
     private CustomPasswordEncoder encoder;
-
+    
     @Autowired
     private FqcService fqcService;
-
+    
     @Autowired
     private FqcLineService fqcLineService;
-
+    
     @Value("${endpoint.quartz.trigger}")
     private String endpointPollingCron;
-
+    
     @Autowired
     private FqcProductivityHistoryService productivityService;
-
+    
     @Autowired
     private BabPassStationRecordService passStationService;
+    
+    @Autowired
+    private BabCollectModeChangeEventService babCollectModeChangeEventService;
 
 //    @Test
     @Transactional
@@ -107,10 +112,10 @@ public class TestService {
     @Transactional
     @Rollback(true)
     public void testBabSettingHistoryService() {
-
+        
         BabSettingHistory setting2 = babSettingHistoryService.findProcessingByTagName("L8-S-3");
         assertNotNull(setting2);
-
+        
         assertEquals(setting2.getTagName().getName(), "L8-S-3");
     }
 
@@ -118,28 +123,28 @@ public class TestService {
     @Transactional
     @Rollback(true)
     public void testBabSensorLoginRecordService() throws JsonProcessingException {
-
+        
         List l = babSensorLoginRecordService.findByLine(3);
         assertTrue(!l.isEmpty());
-
+        
         HibernateObjectPrinter.print(l);
     }
 
 //    @Test
     public void testBabSettingHistory() throws JsonProcessingException {
-
+        
         List<BabSettingHistory> allSettings = babSettingHistoryService.findProcessing();
         Bab b = babService.findByPrimaryKey(12991);
-
+        
         HibernateObjectPrinter.print(allSettings.get(0));
-
+        
         List<BabSettingHistory> l = allSettings.stream()
                 .filter(rec -> rec.getBab().getId() == b.getId()).collect(toList());
-
+        
         HibernateObjectPrinter.print(l.get(0));
-
+        
         assertTrue(!l.isEmpty());
-
+        
         HibernateObjectPrinter.print(allSettings);
         HibernateObjectPrinter.print(l);
     }
@@ -159,13 +164,13 @@ public class TestService {
 //    @Test
     public void testBabSaving() {
         try {
-
+            
             Bab b = babService.findByPrimaryKey(14227);
-
+            
             lineBalancingService.sendMail(b, 1, 1, 1);
-
+            
         } catch (MessagingException ex) {
-
+            
         } catch (Exception ex1) {
             System.out.println(ex1);
         }
@@ -175,7 +180,7 @@ public class TestService {
     @Transactional
     @Rollback(false)
     public void testUserService() {
-
+        
         int[] ids = {
             33,
             34,
@@ -183,7 +188,7 @@ public class TestService {
             36,
             37
         };
-
+        
         for (int id : ids) {
             User u = userService.findByPrimaryKey(id);
             u.setPassword(encoder.encode(u.getPassword()));
@@ -199,35 +204,35 @@ public class TestService {
         assertNotNull(fqc);
         assertEquals(1, fqc.getId());
         assertEquals("PIGB304ZA", fqc.getPo());
-
+        
         FqcLine fqcLine = fqcLineService.findByPrimaryKey(8);
         assertNotNull(fqcLine);
         assertEquals(8, fqcLine.getId());
         assertEquals("L9", fqcLine.getName());
-
+        
         assertEquals(fqc.getFqcLine(), fqcLine);
     }
 
 //    @Test
     public void testProductivityService() {
-
+        
     }
-
+    
     @Autowired
     private WebServiceRV rv;
 
-    @Test
+//    @Test
     @Transactional
     @Rollback(true)
     public void testBarcode() {
         Bab b = babService.findByPrimaryKey(29710);
         assertNotNull(b);
-
+        
         String tag1 = "NA-S-1";
         String tag2 = "NA-S-2";
-
+        
         String barcode = "TPAB810772";
-
+        
         try {
             //Assert can't add next barcode when current barcode is not finished.
             passStationService.checkStationInfoAndInsert(b, tag1, barcode);
@@ -238,7 +243,7 @@ public class TestService {
         } catch (IllegalStateException e) {
             System.out.println(e.getMessage());
         }
-
+        
         try {
             //Assert barcode can't insert next station when previous station is not finished
             passStationService.checkStationInfoAndInsert(b, tag2, barcode);
@@ -247,7 +252,7 @@ public class TestService {
         } catch (IllegalStateException e) {
             System.out.println(e.getMessage());
         }
-        
+
         //Test normal insert
         passStationService.checkStationInfoAndInsert(b, tag1, barcode);
         passStationService.checkStationInfoAndInsert(b, tag2, barcode);
@@ -261,7 +266,7 @@ public class TestService {
         passStationService.checkStationInfoAndInsert(b, tag2, nextBc);
         
     }
-
+    
     private String findBarcode(String barcode, int c) {
         Pattern p = Pattern.compile("-?\\d+");
         Matcher m = p.matcher(barcode);
@@ -272,5 +277,19 @@ public class TestService {
         barcode = barcode.replace(st, Integer.toString((NumberUtils.createInteger(st)) + c));
         return barcode;
     }
-
+    
+    @Test
+    @Transactional
+    @Rollback(false)
+    public void testBabCollectModeChangeEventService() {
+        List<BabCollectModeChangeEvent> event = babCollectModeChangeEventService.findAll();
+        assertNotNull(event);
+        HibernateObjectPrinter.print(event);
+        
+        BabCollectModeChangeEvent newEvent = new BabCollectModeChangeEvent();
+        newEvent.setMode(BabDataCollectMode.AUTO);
+        babCollectModeChangeEventService.insert(newEvent);
+        
+    }
+    
 }

@@ -8,6 +8,7 @@ package com.advantech.service;
 import com.advantech.dao.SqlViewDAO;
 import com.advantech.model.Bab;
 import com.advantech.model.view.BabAvg;
+import com.advantech.model.view.BabLastBarcodeStatus;
 import com.advantech.model.view.BabLastGroupStatus;
 import com.advantech.model.view.SensorCurrentGroupStatus;
 import com.advantech.model.view.UserInfoRemote;
@@ -63,6 +64,14 @@ public class SqlViewService {
         return l;
     }
 
+    public List<BabLastBarcodeStatus> findBabLastBarcodeStatus(List<Bab> babs) {
+        List<BabLastBarcodeStatus> l = new ArrayList();
+        babs.forEach((b) -> {
+            l.addAll(sqlViewDAO.findBabLastBarcodeStatus(b.getId()));
+        });
+        return l;
+    }
+
     public List<SensorCurrentGroupStatus> findSensorCurrentGroupStatus(int bab_id) {
         return sqlViewDAO.findSensorCurrentGroupStatus(bab_id);
     }
@@ -71,8 +80,16 @@ public class SqlViewService {
         return sqlViewDAO.findSensorStatus(bab_id);
     }
 
+    public List<Map> findBarcodeStatus(int bab_id) {
+        return sqlViewDAO.findBarcodeStatus(bab_id);
+    }
+
     public List<Map> findBalanceDetail(int bab_id) {
         return sqlViewDAO.findBalanceDetail(bab_id);
+    }
+
+    public List<Map> findBalanceDetailWithBarcode(int bab_id) {
+        return sqlViewDAO.findBalanceDetailWithBarcode(bab_id);
     }
 
     public List<Map> findBabDetail(String lineTypeName, String sitefloorName, DateTime sD, DateTime eD, boolean isAboveStandard) {

@@ -7,6 +7,8 @@
 package com.advantech.quartzJob;
 
 import com.advantech.endpoint.Endpoint;
+import com.advantech.helper.PropertiesReader;
+import com.advantech.model.BabDataCollectMode;
 import com.advantech.service.FbnService;
 import com.google.gson.Gson;
 import javax.annotation.PostConstruct;
@@ -20,9 +22,9 @@ import org.springframework.stereotype.Component;
  * @author Wei.Cheng
  */
 @Component
-public class PollingSensorStatus implements EndpointPollingJob {
+public class PollingDataCollectStatus implements EndpointPollingJob {
 
-    private static final Logger log = LoggerFactory.getLogger(PollingSensorStatus.class);
+    private static final Logger log = LoggerFactory.getLogger(PollingDataCollectStatus.class);
 
     private Gson gson;
 
@@ -32,9 +34,15 @@ public class PollingSensorStatus implements EndpointPollingJob {
     @Autowired
     private Endpoint socket;
 
+    @Autowired
+    private PropertiesReader reader;
+
+    private BabDataCollectMode mode;
+
     @PostConstruct
     public void init() {
         gson = new Gson();
+        mode = reader.getBabDataCollectMode();
     }
 
     //抓取資料庫資料並廣播
@@ -54,6 +62,13 @@ public class PollingSensorStatus implements EndpointPollingJob {
     }
 
     public String getData() {
-        return gson.toJson(fbnService.getSensorCurrentStatus());
+        switch (mode) {
+            case AUTO:
+                return gson.toJson(fbnService.getSensorCurrentStatus());
+            case MANUAL:
+                return gson.toJson(fbnService.getBarcodeCurrentStatus());
+            default:
+                return "{}";
+        }
     }
 }

@@ -40,7 +40,11 @@ public class FbnService {
     public List<Map> getSensorCurrentStatus() {
         return fbnDAO.getSensorCurrentStatus();
     }
-    
+
+    public List<Map> getBarcodeCurrentStatus() {
+        return fbnDAO.getBarcodeCurrentStatus();
+    }
+
     public Integer checkLastFBNMinuteDiff() {
         DateTime now = new DateTime();
         Fbn f = this.getLastInputData();

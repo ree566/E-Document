@@ -180,14 +180,14 @@
         <property name="cronExpression" value="10,20,40,50 * 8-20 ? * MON-SAT *" />
     </bean>
     
-    <bean name="PollingSensor" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
-        <property name="targetObject" ref="pollingSensorStatus" />
+    <bean name="PollingStatus" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="pollingDataCollectStatus" />
         <property name="targetMethod" value="dataBrocast"/>  
         <property name="concurrent" value="false"/>
     </bean>
     
-    <bean id="PollingSensor-Trig" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
-        <property name="jobDetail" ref="PollingSensor" />
+    <bean id="PollingStatus-Trig" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="PollingStatus" />
         <property name="cronExpression" value="10,20,40,50 * 8-20 ? * MON-SAT *" />
     </bean>
     

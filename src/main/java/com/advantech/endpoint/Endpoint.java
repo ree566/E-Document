@@ -10,7 +10,7 @@
  */
 package com.advantech.endpoint;
 
-import com.advantech.quartzJob.PollingSensorStatus;
+import com.advantech.quartzJob.PollingDataCollectStatus;
 import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +32,7 @@ public class Endpoint extends BasicHandler implements WebSocketHandler {
     private static final String JOB_NAME = "PollingSensor";
     
     @Autowired
-    private PollingSensorStatus pollingJob;
+    private PollingDataCollectStatus pollingJob;
     
     private static boolean isJobScheduled = false;
 

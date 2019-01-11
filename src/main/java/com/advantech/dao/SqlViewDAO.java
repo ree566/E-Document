@@ -5,9 +5,9 @@
  */
 package com.advantech.dao;
 
-import com.advantech.model.Bab;
 import com.advantech.model.Floor;
 import com.advantech.model.view.BabAvg;
+import com.advantech.model.view.BabLastBarcodeStatus;
 import com.advantech.model.view.BabLastGroupStatus;
 import com.advantech.model.view.SensorCurrentGroupStatus;
 import com.advantech.model.view.UserInfoRemote;
@@ -78,6 +78,15 @@ public class SqlViewDAO extends AbstractDao<Integer, Object> {
                 .list();
     }
 
+    public List<BabLastBarcodeStatus> findBabLastBarcodeStatus(int bab_id) {
+        return super.getSession()
+                .createSQLQuery("{CALL usp_GetLastBarcodeStatus(:bab_id)}")
+                .setParameter("bab_id", bab_id)
+                .setResultTransformer(Transformers.aliasToBean(BabLastBarcodeStatus.class))
+                .list();
+    }
+
+    //For job "CheckSensor.java" check sensor
     public List<SensorCurrentGroupStatus> findSensorCurrentGroupStatus(int bab_id) {
         return super.getSession()
                 .createSQLQuery("{CALL usp_GetSensorCurrentGroupStatus(:bab_id)}")
@@ -94,9 +103,25 @@ public class SqlViewDAO extends AbstractDao<Integer, Object> {
                 .list();
     }
 
+    public List<Map> findBarcodeStatus(int bab_id) {
+        return super.getSession()
+                .createSQLQuery("select * from tbfn_GetBarcodeStatus(:bab_id)")
+                .setParameter("bab_id", bab_id)
+                .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
+                .list();
+    }
+
     public List<Map> findBalanceDetail(int bab_id) {
         return super.getSession()
                 .createSQLQuery("select * from tbfn_BabBalanceDetail(:bab_id)")
+                .setParameter("bab_id", bab_id)
+                .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
+                .list();
+    }
+
+    public List<Map> findBalanceDetailWithBarcode(int bab_id) {
+        return super.getSession()
+                .createSQLQuery("select * from tbfn_BabBalanceDetailWithBarcode(:bab_id)")
                 .setParameter("bab_id", bab_id)
                 .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
                 .list();

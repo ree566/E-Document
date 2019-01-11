@@ -2,7 +2,9 @@ package com.advantech.controller;
 
 import com.advantech.converter.BabStatusControllerConverter;
 import com.advantech.datatable.DataTableResponse;
+import com.advantech.helper.PropertiesReader;
 import com.advantech.model.Bab;
+import com.advantech.model.BabDataCollectMode;
 import com.advantech.model.BabStatus;
 import com.advantech.service.BabBalanceHistoryService;
 import com.advantech.service.BabPcsDetailHistoryService;
@@ -47,9 +49,15 @@ public class BabChartController {
     @Autowired
     private BabBalanceHistoryService babBalanceHistoryService;
 
+    @Autowired
+    private PropertiesReader reader;
+
+    private BabDataCollectMode mode;
+
     @InitBinder
     public void initBinder(WebDataBinder dataBinder) {
         dataBinder.registerCustomEditor(BabStatus.class, new BabStatusControllerConverter());
+        mode = reader.getBabDataCollectMode();
     }
 
     @RequestMapping(value = "/findLineBalanceDetail", method = {RequestMethod.GET})
@@ -62,7 +70,17 @@ public class BabChartController {
             return new DataTableResponse(new ArrayList());
         }
         if (null == b.getBabStatus()) { //Still proccessing
-            l = sqlViewService.findBalanceDetail(b.getId());
+            switch (mode) {
+                case AUTO:
+                    l = sqlViewService.findBalanceDetail(b.getId());
+                    break;
+                case MANUAL:
+                    l = sqlViewService.findBalanceDetailWithBarcode(b.getId());
+                    break;
+                default:
+                    l = new ArrayList();
+                    break;
+            }
         } else {
             switch (b.getBabStatus()) {
                 case CLOSED:
@@ -83,7 +101,17 @@ public class BabChartController {
         BabStatus status = bab.getBabStatus();
         List<Map> l;
         if (null == status) {
-            l = sqlViewService.findSensorStatus(bab.getId());
+            switch (mode) {
+                case AUTO:
+                    l = sqlViewService.findSensorStatus(bab.getId());
+                    break;
+                case MANUAL:
+                    l = sqlViewService.findBarcodeStatus(bab.getId());
+                    break;
+                default:
+                    l = new ArrayList();
+                    break;
+            }
         } else {
             switch (status) {
                 case CLOSED:
