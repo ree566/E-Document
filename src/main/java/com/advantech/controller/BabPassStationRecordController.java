@@ -5,8 +5,8 @@
  */
 package com.advantech.controller;
 
-import com.advantech.datatable.DataTableResponse;
 import com.advantech.model.Bab;
+import com.advantech.model.BabPassStationRecord;
 import com.advantech.model.BabSettingHistory;
 import com.advantech.service.BabPassStationRecordService;
 import com.advantech.service.BabSettingHistoryService;
@@ -46,6 +46,15 @@ public class BabPassStationRecordController {
         mav.addObject("tagName", tagName);
         mav.addObject("bab_id", setting.getBab().getId());
         return mav;
+    }
+
+    @RequestMapping(value = "/findLastProcessByTagName", method = {RequestMethod.GET})
+    @ResponseBody
+    protected BabPassStationRecord findLastProcessByTagName(
+            @CookieValue(required = true) String userInfo,
+            @RequestParam String tagName
+    ) {
+        return babPassStationRecordService.findLastProcessingByTagName(tagName);
     }
 
     @RequestMapping(value = "/insert", method = {RequestMethod.POST})

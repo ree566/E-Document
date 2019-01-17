@@ -101,7 +101,7 @@
                             <li><a href="AssyDelete">Assy delete</a></li>
                             </c:if>
                             --%>
-                        <li><a href="BabPassStationRecord">Barcode過站紀錄</a></li>
+                        <li><a href="BabPassStationRecord?lineType=ASSY">Barcode過站紀錄</a></li>
                     </ul>
                 </li>
                 <li class="dropdown">
@@ -117,7 +117,7 @@
                             <c:if test="${isMfgLineOwner || isMfgOper || isAdmin}">
                             <li><a href="modelSopRemark.jsp">Sop維護</a></li>
                             </c:if>
-                        <li><a href="BabPassStationRecord">Barcode過站紀錄</a></li>
+                        <li><a href="BabPassStationRecord?lineType=Packing">Barcode過站紀錄</a></li>
                     </ul>
                 </li>
                 <li>

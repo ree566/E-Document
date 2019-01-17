@@ -46,9 +46,16 @@
         <script src="<c:url value="/js/jquery-datatable-button/vfs_fonts.js" />"></script>
         <script src="<c:url value="/js/jquery-datatable-button/buttons.html5.min.js" />"></script>
         <script src="<c:url value="/js/jquery-datatable-button/buttons.print.min.js" />"></script>
+        <script src="<c:url value="/js/urlParamGetter.js"/>"></script>
 
         <script>
             $(function () {
+                var urlLineType = getQueryVariable("lineType");
+                if (urlLineType == null) {
+                    window.location.href = 'SysInfo';
+                    return false;
+                }
+
                 var datePickerLockDays = 7;
                 var momentFormatString = 'YYYY-MM-DD';
                 $(":text,input[type='number'],select").addClass("form-control");
@@ -103,7 +110,8 @@
                                 po: po,
                                 modelName: modelName,
                                 startDate: startDate == null ? null : startDate.format(momentFormatString),
-                                endDate: endDate == null ? null : endDate.format(momentFormatString)
+                                endDate: endDate == null ? null : endDate.format(momentFormatString),
+                                lineType: urlLineType
                             }
                         },
 

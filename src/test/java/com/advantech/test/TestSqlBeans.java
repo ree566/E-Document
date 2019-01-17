@@ -10,6 +10,7 @@ import com.advantech.model.Bab;
 import com.advantech.model.BabAlarmHistory;
 import com.advantech.model.BabLineProductivityExclude;
 import com.advantech.model.BabLineProductivityExcludeModel;
+import com.advantech.model.BabPassStationRecord;
 import com.advantech.model.BabStandardTimeHistory;
 import com.advantech.model.Countermeasure;
 import com.advantech.model.CountermeasureType;
@@ -37,6 +38,7 @@ import javax.transaction.Transactional;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import static org.junit.Assert.*;
 import org.junit.Before;
@@ -256,7 +258,7 @@ public class TestSqlBeans {
         HibernateObjectPrinter.print(cmT);
     }
 
-    @Test
+//    @Test
     @Rollback(false)
     public void testBabLineProductivityExclude() {
 //        26600
@@ -265,6 +267,35 @@ public class TestSqlBeans {
         BabLineProductivityExclude e = new BabLineProductivityExclude();
         e.setBab(b);
         session.save(e);
+    }
+
+//    @Test
+    @Rollback(true)
+    public void testQueryBarcode() {
+        Line line = session.get(Line.class, 2);
+
+        List l = session.createCriteria(BabPassStationRecord.class, "bpr")
+                .createAlias("bpr.bab", "b")
+                .add(Restrictions.eq("b.line", line))
+                .list();
+        assertEquals(44950, l.size());
+
+    }
+
+    @Test
+    @Rollback(true)
+    public void testGetLastInputBarcode() {
+        BabPassStationRecord b = (BabPassStationRecord) session.createCriteria(BabPassStationRecord.class)
+                .createAlias("bab", "b")
+                .createAlias("b.babSettingHistorys", "h")
+                .createAlias("h.tagName", "t")
+                .add(Restrictions.eq("t.name", "NA-S-1"))
+                .add(Restrictions.isNull("h.lastUpdateTime"))
+                .setMaxResults(1)
+                .uniqueResult();
+
+        HibernateObjectPrinter.print(b);
+
     }
 
 }

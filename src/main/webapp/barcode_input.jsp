@@ -98,8 +98,8 @@
                                     msgBox.text("");
 //                                    lastInput.html("Last input barcode: " + text + " /at: " + moment().format('HH:mm:ss'));
                                     lastInput.html("Last input barcode: " + text + " / " +
-                                            ("<span class='glyphicon glyphicon-arrow-" + (count <= 1 ? "down" : "up") + " '>" + 
-                                            (count <= 1 ? "Input" : "Output") + "</span>"));
+                                            ("<span class='glyphicon glyphicon-arrow-" + (count <= 1 ? "down" : "up") + " '>" +
+                                                    (count <= 1 ? "Input" : "Output") + "</span>"));
                                 },
                                 error: function (xhr, ajaxOptions, thrownError) {
                                     msgBox.text(xhr.responseText);
@@ -120,6 +120,48 @@
                     });
 
                 });
+
+                $("#add_error").click(function () {
+                    $.ajax({
+                        type: "GET",
+                        url: "<c:url value="/BabPassStationRecordController/findLastProcessByTagName" />",
+                        data: {
+                            tagName: $("#tagName").val()
+                        },
+                        dataType: "json",
+                        success: function (response) {
+                            var data = response;
+                            var barcode = data.barcode;
+                            if (confirm(barcode + " 發生異常?\n(" + barcode + " exception occurred?)")) {
+                                saveErrorRecord({
+                                    id: data.id,
+                                    barcode: data.barcode
+                                }, null);
+                            }
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            msgBox.text(xhr.responseText);
+                            $status.text("X");
+                        }
+                    });
+
+                });
+
+                function saveErrorRecord(record, reason) {
+                    $.ajax({
+                        type: "POST",
+                        url: "<c:url value="/BabPassStationErrorRecordController/insert" />",
+                        data: record,
+                        dataType: "html",
+                        success: function (response) {
+                            alert(record.barcode + " 異常已儲存\n(" + record.barcode + " exception saved)");
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            msgBox.text(xhr.responseText);
+                            $status.text("X");
+                        }
+                    });
+                }
             });
 
         </script>
@@ -132,9 +174,13 @@
             <div class="form-group">
                 <div>
                     <label for="barcode">Please input barcode:</label>
-                    <input type="text" id="barcode" class="form-control" placeholder="Please input barcode" size="20" />
-                    <div id="status">V</div>
-                    <%-- <img id="loading" src="<c:url value="/images/SorrowfulElasticHyracotherium-size_restricted.gif" />" /> --%>
+                    <div class="input-group mb-3">
+                        <input type="text" id="barcode" class="form-control" placeholder="Please input barcode" size="20" />
+                        <span id="status" class="input-group-addon">V</span>
+                        <span class="input-group-btn" >
+                            <input type="button" id="add_error" class="btn btn-danger" value="異常"/>
+                        </span>
+                    </div>
                 </div>
                 <div id="lastInput"></div>
                 <div id="errorMsg"></div>

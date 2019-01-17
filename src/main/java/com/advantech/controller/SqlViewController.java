@@ -141,9 +141,10 @@ public class SqlViewController {
             @RequestParam(required = false) String po,
             @RequestParam(required = false) String modelName,
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime startDate,
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime endDate
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime endDate,
+            @RequestParam String lineType
     ) {
-        return new DataTableResponse(sqlViewService.findBabPassStationRecord(po, modelName, startDate, endDate));
+        return new DataTableResponse(sqlViewService.findBabPassStationRecord(po, modelName, startDate, endDate, lineType));
     }
 
 }

@@ -99,8 +99,8 @@ public class SqlViewService {
         return sqlViewDAO.findBabLineProductivity(po, modelName, line_id, jobnumber, minPcs, sD, eD);
     }
 
-    public List<Map> findBabPassStationRecord(String po, String modelName, DateTime sD, DateTime eD) {
-        return sqlViewDAO.findBabPassStationRecord(po, modelName, sD, eD);
+    public List<Map> findBabPassStationRecord(String po, String modelName, DateTime sD, DateTime eD, String lineType) {
+        return sqlViewDAO.findBabPassStationRecord(po, modelName, sD, eD, lineType);
     }
 
 }

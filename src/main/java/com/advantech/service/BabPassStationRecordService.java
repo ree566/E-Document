@@ -52,6 +52,10 @@ public class BabPassStationRecordService {
         return dao.findByPrimaryKey(obj_id);
     }
 
+    public BabPassStationRecord findLastProcessingByTagName(String tagName) {
+        return dao.findLastProcessingByTagName(tagName);
+    }
+
     public int insert(BabPassStationRecord pojo) {
         return dao.insert(pojo);
     }
@@ -78,9 +82,19 @@ public class BabPassStationRecordService {
 
         checkBarcodeSn(b, barcode);
 
-        //Check barcode rule for hole line is correct or not 
-        List<BabPassStationRecord> barcodeRecords = dao.findByBab(bab);
-        List<BabPassStationRecord> barcodeInCurrentTagName = barcodeRecords.stream()
+        /*
+            Check barcode rule for hole line is correct or not 
+            Current barcode can't exist in current tagName multiple times
+            Same tagName and different bab -> Can't exist more than 1 time
+            Same tagName and same bab -> Can't input more than 3 times
+         */
+        List<BabPassStationRecord> barcodeRecords = dao.findByBarcodeAndTagName(barcode, tagName);
+        List<BabPassStationRecord> diffBabRecords = barcodeRecords.stream().filter(p -> p.getBab().getId() != bab.getId()).collect(toList());
+        List<BabPassStationRecord> sameBabRecords = barcodeRecords.stream().filter(p -> p.getBab().getId() == bab.getId()).collect(toList());
+
+        checkState(diffBabRecords.isEmpty(), "Barcode input too much times(Exist in other bab record)");
+
+        List<BabPassStationRecord> barcodeInCurrentTagName = sameBabRecords.stream()
                 .filter(p -> tagName.equals(p.getTagName().getName()) && barcode.equals(p.getBarcode()))
                 .collect(toList());
         int inputCount = barcodeInCurrentTagName.size() + 1;
@@ -91,10 +105,10 @@ public class BabPassStationRecordService {
             BabSettingHistory prevTag = settings.stream()
                     .filter(p -> p.getStation() == currentTag.getStation() - 1).findFirst()
                     .orElse(null);
-            checkPreviousStation(barcodeRecords, prevTag, barcode);
+            checkPreviousStation(sameBabRecords, prevTag, barcode);
         }
 
-        int barcodeInput = (int) barcodeRecords.stream()
+        int barcodeInput = (int) sameBabRecords.stream()
                 .filter(p -> tagName.equals(p.getTagName().getName()))
                 .count();
 

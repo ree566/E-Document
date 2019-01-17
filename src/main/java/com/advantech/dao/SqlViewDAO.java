@@ -177,13 +177,14 @@ public class SqlViewDAO extends AbstractDao<Integer, Object> {
                 .list();
     }
 
-    public List<Map> findBabPassStationRecord(String po, String modelName, DateTime sD, DateTime eD) {
+    public List<Map> findBabPassStationRecord(String po, String modelName, DateTime sD, DateTime eD, String lineType) {
         return super.getSession()
-                .createSQLQuery("{CALL usp_GetBabPassStationRecord(:po, :modelName, :sD, :eD)}")
+                .createSQLQuery("{CALL usp_GetBabPassStationRecord_1(:po, :modelName, :sD, :eD, :lineType)}")
                 .setParameter("po", po)
                 .setParameter("modelName", modelName)
                 .setParameter("sD", sD != null ? sD.withHourOfDay(0).toDate() : null)
                 .setParameter("eD", eD != null ? eD.withHourOfDay(23).toDate() : null)
+                .setParameter("lineType", lineType)
                 .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
                 .list();
     }
