@@ -6,6 +6,7 @@
 package com.advantech.service;
 
 import com.advantech.dao.SqlViewDAO;
+import com.advantech.helper.PropertiesReader;
 import com.advantech.model.Bab;
 import com.advantech.model.view.BabAvg;
 import com.advantech.model.view.BabLastBarcodeStatus;
@@ -31,6 +32,9 @@ public class SqlViewService {
 
     @Autowired
     private SqlViewDAO sqlViewDAO;
+
+    @Autowired
+    private PropertiesReader reader;
 
     public List<BabAvg> findBabAvg(int bab_id) {
         return sqlViewDAO.findBabAvg(bab_id);
@@ -109,7 +113,14 @@ public class SqlViewService {
     }
 
     public List<Map> findBabPcsDetail(String modelName, String lineType, DateTime startDate, DateTime endDate) {
-        return sqlViewDAO.findBabPcsDetail(modelName, lineType, startDate, endDate);
+        switch (reader.getBabDataCollectMode()) {
+            case AUTO:
+                return sqlViewDAO.findBabPcsDetail(modelName, lineType, startDate, endDate);
+            case MANUAL:
+                return sqlViewDAO.findBabPcsDetailWithBarcode(modelName, lineType, startDate, endDate);
+            default:
+                return new ArrayList();
+        }
     }
 
     public List<Map> findBabLineProductivity(String po, String modelName, int line_id, String jobnumber, Integer minPcs, DateTime sD, DateTime eD) {

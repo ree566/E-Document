@@ -5,15 +5,18 @@
  */
 package com.advantech.test;
 
+import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.quartzJob.CleanSensorData;
 import com.advantech.quartzJob.CountermeasureAlarm;
 import com.advantech.quartzJob.HandleUncloseBab;
 import com.advantech.quartzJob.DataBaseInit;
+import com.advantech.quartzJob.PollingDataCollectStatus;
 import com.advantech.quartzJob.TestLineTypeRecord;
 import com.advantech.quartzJob.TestLineTypeRecordUnrepliedAlarm;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.quartz.JobExecutionException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -28,6 +31,9 @@ import org.springframework.test.context.web.WebAppConfiguration;
 })
 @RunWith(SpringJUnit4ClassRunner.class)
 public class TestQuartzJobs {
+    
+    @Autowired
+    private PollingDataCollectStatus job;
 
 //    @Test
     public void testTestLineTypeRecord() throws JobExecutionException {
@@ -59,9 +65,14 @@ public class TestQuartzJobs {
         c.executeInternal(null);
     }
 
-    @Test
+//    @Test
     public void testRecordUnrepliedAlarm() throws JobExecutionException {
         TestLineTypeRecordUnrepliedAlarm t = new TestLineTypeRecordUnrepliedAlarm();
         System.out.println(t.generateMailBody());
+    }
+
+    @Test
+    public void testPollingData() throws JobExecutionException {
+        HibernateObjectPrinter.print(job.getData());
     }
 }

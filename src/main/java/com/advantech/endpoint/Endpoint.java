@@ -29,7 +29,7 @@ public class Endpoint extends BasicHandler implements WebSocketHandler {
 
     private static final Logger log = LoggerFactory.getLogger(Endpoint.class);
 
-    private static final String JOB_NAME = "PollingSensor";
+    private static final String JOB_NAME = "PollingStatus";
     
     @Autowired
     private PollingDataCollectStatus pollingJob;

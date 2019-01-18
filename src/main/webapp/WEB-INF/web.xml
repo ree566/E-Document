@@ -127,6 +127,15 @@
     </servlet-mapping>
     
     <servlet>
+        <servlet-name>barcodedata</servlet-name>
+        <jsp-file>/pages/admin/barcode.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>barcodedata</servlet-name>
+        <url-pattern>/pages/admin/Barcode</url-pattern>  
+    </servlet-mapping>
+    
+    <servlet>
         <servlet-name>SysInfo</servlet-name>
         <jsp-file>/pages/admin/sysInfo.jsp</jsp-file>
     </servlet>
@@ -142,6 +151,15 @@
     <servlet-mapping>
         <servlet-name>SensorAdjust</servlet-name>
         <url-pattern>/pages/admin/SensorAdjust</url-pattern>  
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>BarcodeAdjust</servlet-name>
+        <jsp-file>/pages/admin/barcodeAdjust.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>BarcodeAdjust</servlet-name>
+        <url-pattern>/pages/admin/BarcodeAdjust</url-pattern>  
     </servlet-mapping>
     
     <servlet>
