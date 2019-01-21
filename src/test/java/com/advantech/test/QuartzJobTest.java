@@ -5,8 +5,12 @@
  */
 package com.advantech.test;
 
+import com.advantech.helper.HibernateObjectPrinter;
+import com.advantech.model.Worktime;
 import com.advantech.quartzJob.StandardTimeUpload;
 import com.advantech.quartzJob.WorktimeEventLog;
+import java.util.List;
+import org.joda.time.DateTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +45,7 @@ public class QuartzJobTest {
   
     @Test
     public void testStandardTimeUpload(){
+        
         job2.uploadToMes();
     }
 

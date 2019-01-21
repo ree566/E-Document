@@ -150,20 +150,21 @@ public class StandardTimeUpload {
         return mails;
     }
 
-    private List<Worktime> findFieldChangeInDate(DateTime sD, DateTime eD) {
+    public List<Worktime> findFieldChangeInDate(DateTime sD, DateTime eD) {
         List<Worktime> checkResult = new ArrayList();
         List<Object[]> result = auditService.findByFieldChangedInDate(Worktime.class, null, checkField, sD.toDate(), eD.toDate());
 
         Map<Integer, List<Object[]>> g = result.stream().collect(Collectors.groupingBy(o -> ((Worktime) o[0]).getId()));
 
         g.forEach((k, v) -> {
-            System.out.println("-------------------------");
             if (!v.isEmpty()) {
                 Object[] rec;
 
                 //Last standardtime mod record(First add or Mod with reason)
                 List<Object[]> withReason = v.stream()
-                        .filter(o -> RevisionType.ADD.equals(o[2]) || (RevisionType.MOD.equals(o[2]) && ((Worktime) o[0]).getReasonCode() != null))
+                        .filter(o -> RevisionType.ADD.equals(o[2])
+                        || (RevisionType.MOD.equals(o[2])
+                        && ((Worktime) o[0]).getReasonCode() != null || !"0".equals(((Worktime) o[0]).getReasonCode())))
                         .collect(toList());
 
                 rec = withReason.get(withReason.size() - 1);

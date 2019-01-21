@@ -29,7 +29,7 @@
     
     <bean id="cronTrigger2" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
         <property name="jobDetail" ref="jobDetail2"/>
-        <property name="cronExpression" value="0 0 0 ? * SAT *"/>
+        <property name="cronExpression" value="0 0 0 ? * SUN *"/>
     </bean>
     
     <!--job3 setting-->
@@ -64,10 +64,12 @@
     <bean id="schedulerFactoryBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
         <property name="triggers">
             <list>
-                <ref bean="cronTrigger"/>
-                <ref bean="cronTrigger2"/>
+<!--                <ref bean="cronTrigger"/>
+                <ref bean="cronTrigger2"/>-->
+                
                 <!--<ref bean="cronTrigger3"/>-->
-                <ref bean="cronTrigger4"/>
+                
+                <!--<ref bean="cronTrigger4"/>-->
             </list>
         </property>
         <property name="schedulerName">
