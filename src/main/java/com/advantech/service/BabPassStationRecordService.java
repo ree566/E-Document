@@ -88,13 +88,16 @@ public class BabPassStationRecordService {
             Same tagName and different bab -> Can't exist more than 1 time
             Same tagName and same bab -> Can't input more than 3 times
          */
-        List<BabPassStationRecord> barcodeRecords = dao.findByBarcodeAndTagName(barcode, tagName);
-        List<BabPassStationRecord> diffBabRecords = barcodeRecords.stream().filter(p -> p.getBab().getId() != bab.getId()).collect(toList());
-        List<BabPassStationRecord> sameBabRecords = barcodeRecords.stream().filter(p -> p.getBab().getId() == bab.getId()).collect(toList());
-
+        
+        //Check barcode exist in other bab record or not
+        List<BabPassStationRecord> tagBarcodeRecords = dao.findByBarcodeAndTagName(barcode, tagName);
+        List<BabPassStationRecord> diffBabRecords = tagBarcodeRecords.stream().filter(p -> p.getBab().getId() != bab.getId()).collect(toList());
         checkState(diffBabRecords.isEmpty(), "Barcode input too much times(Exist in other bab record)");
 
-        List<BabPassStationRecord> barcodeInCurrentTagName = sameBabRecords.stream()
+        
+        List<BabPassStationRecord> barcodeRecords = dao.findByBab(bab);
+
+        List<BabPassStationRecord> barcodeInCurrentTagName = barcodeRecords.stream()
                 .filter(p -> tagName.equals(p.getTagName().getName()) && barcode.equals(p.getBarcode()))
                 .collect(toList());
         int inputCount = barcodeInCurrentTagName.size() + 1;
@@ -105,10 +108,10 @@ public class BabPassStationRecordService {
             BabSettingHistory prevTag = settings.stream()
                     .filter(p -> p.getStation() == currentTag.getStation() - 1).findFirst()
                     .orElse(null);
-            checkPreviousStation(sameBabRecords, prevTag, barcode);
+            checkPreviousStation(barcodeRecords, prevTag, barcode);
         }
 
-        int barcodeInput = (int) sameBabRecords.stream()
+        int barcodeInput = (int) barcodeRecords.stream()
                 .filter(p -> tagName.equals(p.getTagName().getName()))
                 .count();
 

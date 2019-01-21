@@ -117,6 +117,8 @@
 
                         "columns": [
                             {data: "bab_id"},
+                            {data: "po"},
+                            {data: "modelName"},
                             {data: "barcode"},
                             {data: "tagName"},
                             {data: "jobnumber"},
@@ -128,14 +130,14 @@
                         "columnDefs": [
                             {
                                 "type": "html",
-                                "targets": [5, 6],
+                                "targets": [7, 8],
                                 'render': function (data, type, full, meta) {
                                     return formatDate(data);
                                 }
                             },
                             {
                                 "type": "html",
-                                "targets": 7,
+                                "targets": 9,
                                 'render': function (data, type, full, meta) {
                                     return data == 0 ? "無結束紀錄" : data;
                                 }
@@ -229,6 +231,8 @@
                         <thead>
                             <tr>
                                 <th>系統工單id</th>
+                                <th>po</th>
+                                <th>modelName</th>
                                 <th>barcode</th>
                                 <th>站別</th>
                                 <th>工號</th>
