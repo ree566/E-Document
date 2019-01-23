@@ -45,13 +45,13 @@ public class SqlViewController {
     @RequestMapping(value = "/findBabDetail", method = {RequestMethod.GET})
     @ResponseBody
     protected DataTableResponse findBabDetail(
-            @RequestParam String lineTypeName,
-            @RequestParam String floorName,
+            @RequestParam int lineType_id,
+            @RequestParam int floor_id,
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime startDate,
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime endDate,
             @RequestParam boolean isAboveStandard
     ) {
-        List l = sqlViewService.findBabDetail(lineTypeName, floorName, startDate, endDate, isAboveStandard);
+        List l = sqlViewService.findBabDetail(lineType_id, floor_id, startDate, endDate, isAboveStandard);
         return new DataTableResponse(l);
     }
 

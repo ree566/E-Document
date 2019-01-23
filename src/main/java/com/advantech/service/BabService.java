@@ -3,6 +3,7 @@ package com.advantech.service;
 import com.advantech.model.Bab;
 import com.advantech.dao.BabDAO;
 import com.advantech.helper.PropertiesReader;
+import com.advantech.model.BabDataCollectMode;
 import com.advantech.model.BabSettingHistory;
 import com.advantech.model.BabStandardTimeHistory;
 import com.advantech.model.TagNameComparison;
@@ -52,9 +53,12 @@ public class BabService {
 
     private boolean isResultWriteToOldDatabase;
 
+    private BabDataCollectMode mode;
+
     @PostConstruct
     private void init() {
         isResultWriteToOldDatabase = p.getIsResultWriteToOldDatabase();
+        mode = p.getBabDataCollectMode();
     }
 
     public List<Bab> findAll() {
@@ -203,7 +207,16 @@ public class BabService {
     }
 
     public int closeBabWithSaving(Bab b) {
-        babDAO.closeBabWithSaving(b);
+        switch (mode) {
+            case AUTO:
+                babDAO.closeBabWithSaving(b);
+                break;
+            case MANUAL:
+                babDAO.closeBabWithSavingWithBarcode(b);
+                break;
+            default:
+                throw new IllegalStateException("BabDataCollectMode doesn't exist");
+        }
         if (isResultWriteToOldDatabase) {
             lineBalancingService.insert(b);
         }

@@ -111,7 +111,7 @@
         <script src="<c:url value="/js/param.check.js" />"></script>
         <script src="<c:url value="/js/urlParamGetter.js" />"></script>
         <script src="<c:url value="/js/jquery.fileDownload.js" />"></script>
-        <script src="<c:url value="/js/ajax-option-select-loader/babLine.loader.js" />"></script>
+        <script src="<c:url value="/js/ajax-option-select-loader/babLineType.loader.js" />"></script>
         <script src="<c:url value="/js/ajax-option-select-loader/floor.loader.js" />"></script>
         <script src="<c:url value="/js/countermeasure.js" />"></script>
         <script>
@@ -120,15 +120,15 @@
 
             var autoReloadInterval;
 
-            lineLoaderUrl = "<c:url value="/BabLineController/findWithLineType" />";
+            lineTypeLoaderUrl = "<c:url value="/BabLineController/findLineType" />";
             floorLoaderUrl = "<c:url value="/FloorController/findAll" />";
 
             var beginTimeObj, endTimeObj;
-            
+
             var countermeasureType = "Bab_Abnormal_LineBalance";
 
             function initSelectOption() {
-                initLineOptions($("#lineType, #lineType2"));
+                initOptions($("#lineType, #lineType2"));
                 initFloorOptions($("#sitefloor"));
             }
 
@@ -155,7 +155,6 @@
                     "columns": [
                         {data: "bab.id", visible: false},
                         {data: "groupid"},
-                        {data: "barcode"},
                         {data: "balance"},
                         {data: "pass"}
                     ],
@@ -174,14 +173,14 @@
                     "columnDefs": [
                         {
                             "type": "html",
-                            "targets": 3,
+                            "targets": 2,
                             'render': function (data, type, full, meta) {
                                 return getPercent(data, round_digit);
                             }
                         },
                         {
                             "type": "html",
-                            "targets": 4,
+                            "targets": 3,
                             'render': function (data, type, full, meta) {
                                 return data == 1 ? "是" : "否";
                             }
@@ -358,8 +357,8 @@
                         "url": "<c:url value="/SqlViewController/findBabDetail" />",
                         "type": "GET",
                         "data": {
-                            lineTypeName: lineType,
-                            floorName: sitefloor,
+                            lineType_id: lineType,
+                            floor_id: sitefloor,
                             startDate: startDate,
                             endDate: endDate,
                             isAboveStandard: aboveStandard
@@ -369,14 +368,14 @@
                         {data: "id"},
                         {data: "po"},
                         {data: "modelName"},
-                        {data: "lineName"},
-                        {data: "sitefloor"},
+                        {data: "line_name"},
+                        {data: "floor_name"},
                         {data: "people"},
                         {data: "isused"},
-                        {data: "alarmPercent", "sType": "numeric-comma"},
+                        {data: "failPercent", "sType": "numeric-comma"},
                         {data: "btime"},
-                        {data: "needToReply"},
-                        {data: "needToReply"}
+                        {data: "replyFlag"},
+                        {data: "replyFlag"}
                     ],
                     "columnDefs": [
                         {
@@ -387,13 +386,11 @@
                                 switch (data) {
                                     case 1:
                                         return "已經關閉";
-                                        break;
                                     case - 1:
+                                    case - 2:
                                         return "沒有儲存紀錄";
-                                        break;
                                     default:
                                         return "尚未關閉";
-                                        break;
                                 }
                             }
                         },
@@ -417,17 +414,19 @@
                             "targets": 9,
                             'render': function (data, type, row) {
                                 var isCmReply = row.cm_id != null;
-                                var isNeedToReply = (row.needToReply == -1);
+                                var isNeedToReply = (row.replyFlag == -1);
                                 var isBabAvail = row.isused != -1;
 
                                 if (!isBabAvail) {
                                     return "無紀錄";
-                                } else if (!isNeedToReply && row.alarmPercent != null && !isCmReply) {
+                                } else if (!isNeedToReply && row.failPercent != null && !isCmReply) {
                                     return "達到標準";
                                 } else if ((!isCmReply && isNeedToReply)) {
                                     return "<input type='button' class='cm-detail btn btn-danger btn-sm' data-toggle= 'modal' data-target='#myModal' value='檢視詳細' />";
                                 } else if (isCmReply) {
                                     return "<input type='button' class='cm-detail btn btn-info btn-sm' data-toggle= 'modal' data-target='#myModal' value='檢視詳細' />";
+                                } else {
+                                    return data;
                                 }
                             }
                         },
@@ -744,8 +743,8 @@
                     saveUrl: "<c:url value="/CountermeasureController/update" />",
                     actionCodeQueryUrl: "<c:url value="/CountermeasureController/getActionCodeOptions" />",
                     errorCodeQueryUrl: "<c:url value="/CountermeasureController/getErrorCodeOptions" />"
-                }, historyTable, countermeasureType,'${isAuthenticated ? user.jobnumber : null}');
-                
+                }, historyTable, countermeasureType, '${isAuthenticated ? user.jobnumber : null}');
+
                 initDateTimePickerWiget();
                 initSelectOption();
 
@@ -856,7 +855,7 @@
                     var aboveStandard = $("#aboveStandard").is(":checked");
 
                     $(".excel_export").attr("disabled", true);
-                    $.fileDownload('<c:url value="/ExcelExportController/" />' + url + '?startDate=' + startDate + '&endDate=' + endDate + '&lineType=' + lineType + '&sitefloor=' + sitefloor + '&aboveStandard=' + aboveStandard, {
+                    $.fileDownload('<c:url value="/ExcelExportController/" />' + url + '?startDate=' + startDate + '&endDate=' + endDate + '&lineType_id=' + lineType + '&floor_id=' + sitefloor + '&aboveStandard=' + aboveStandard, {
                         preparingMessageHtml: "We are preparing your report, please wait...",
                         failMessageHtml: "No reports generated. No Survey data is available.",
                         successCallback: function (url) {
@@ -893,14 +892,15 @@
                 var startDate = getQueryVariable("startDate");
                 var endDate = getQueryVariable("endDate");
 
-                if (lineType != null && startDate != null && endDate != null) {
-                    $("#lineType, #lineType2").val(lineType);
+                if (startDate != null && endDate != null) {
                     beginTimeObj.data("DateTimePicker").date(startDate);
                     endTimeObj.data("DateTimePicker").date(endDate);
                     $("#searchAvailableBab").trigger("click");
                     historyTable.draw();
-                } else if (lineType != null) {
-                    $("#lineType, #lineType2").val(lineType);
+                }
+
+                if (lineType != null) {
+                    $("#lineType, #lineType2").find('option:contains(' + lineType + ')').attr("selected", "selected");
                 }
 
                 var readonly = getQueryVariable("readonly") == null ? false : (getQueryVariable("readonly").toUpperCase() == "TRUE");
@@ -1047,7 +1047,6 @@
                             <label for="aboveStandard"><input type="checkbox" id="aboveStandard">只顯示數量大於十台</label>
                             <input type="button" id="searchAvailableBab" value="查詢">
                             <input type="button" id="generateExcel" class="excel_export" value="產出excel">
-                            <input type="button" id="excelForEfficiencyReport" class="excel_export" value="效率報表用">
                         </div>
                     </div>
                     <div style="width: 90%; background-color: #F5F5F5">
@@ -1123,14 +1122,13 @@
                                     <tr>
                                         <th>bab_id</th>
                                         <th>組別</th>
-                                        <th>barcode</th>
                                         <th>平衡率</th>
                                         <th>是否合格</th>
                                     </tr>
                                 </thead>
                                 <tfoot>
                                     <tr>
-                                        <th colspan="4" style="text-align:right">Total:</th>
+                                        <th colspan="3" style="text-align:right">Total:</th>
                                         <th></th>
                                     </tr>
                                 </tfoot>
@@ -1150,14 +1148,13 @@
                                     <tr>
                                         <th>bab_id</th>
                                         <th>組別</th>
-                                        <th>barcode</th>
                                         <th>平衡率</th>
                                         <th>是否合格</th>
                                     </tr>
                                 </thead>
                                 <tfoot>
                                     <tr>
-                                        <th colspan="4" style="text-align:right">Total:</th>
+                                        <th colspan="3" style="text-align:right">Total:</th>
                                         <th></th>
                                     </tr>
                                 </tfoot>

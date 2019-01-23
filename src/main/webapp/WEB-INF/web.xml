@@ -110,7 +110,7 @@
     
     <servlet>
         <servlet-name>BabTotal</servlet-name>
-        <jsp-file>/pages/admin/babTotal.jsp</jsp-file>
+        <jsp-file>/pages/admin/babTotal_1.jsp</jsp-file>
     </servlet>
     <servlet-mapping>
         <servlet-name>BabTotal</servlet-name>
