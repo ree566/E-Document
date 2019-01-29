@@ -45,7 +45,7 @@
             for (var i = 0, j = sitefloors.length; i < j; i++) {
                 var sitefloor = sitefloors[i].floor;
                 navbar.find(".totalMapSelect").append("<li><a href='TotalMap?sitefloor=" + sitefloor + "'>狀態平面圖" + sitefloor + "F</a></li>");
-                navbar.find(".sensorAdjustSelect").append("<li><a href='SensorAdjust?sitefloor=" + sitefloor + "'>" + sitefloor + "樓感應器狀態(校正用)</a></li>");
+                navbar.find(".sensorAdjustSelect").append("<li><a href='BarcodeAdjust?sitefloor=" + sitefloor + "'>" + sitefloor + "樓感應器狀態(校正用)</a></li>");
             }
         });
     });
@@ -90,7 +90,7 @@
                     </a>
                     <ul class="dropdown-menu">
                         <li><a href="BabTotal?lineType=ASSY">線平衡資訊查詢</a></li>
-                        <li><a href="BabDetailInfo">各站機台時間查詢</a></li>
+                        <!--<li><a href="BabDetailInfo">各站機台時間查詢</a></li>-->
                         <li><a href="BabDetailInfo2?lineType=ASSY">各站時間查詢(報表格式)</a></li>
                         <li><a href="BabLineProductivity">線體效率查詢</a></li>
                             <c:if test="${isMfgLineOwner || isMfgOper || isAdmin}">
@@ -112,7 +112,7 @@
                     </a>
                     <ul class="dropdown-menu">
                         <li><a href="BabTotal?lineType=Packing">線平衡資訊查詢</a></li>
-                        <li><a href="BabDetailInfo">各站機台時間查詢</a></li>
+                        <!--<li><a href="BabDetailInfo">各站機台時間查詢</a></li>-->
                         <li><a href="BabDetailInfo2?lineType=Packing">各站時間查詢(報表格式)</a></li>
                             <c:if test="${isMfgLineOwner || isMfgOper || isAdmin}">
                             <li><a href="modelSopRemark.jsp">Sop維護</a></li>

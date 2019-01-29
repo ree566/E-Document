@@ -110,7 +110,7 @@
     
     <servlet>
         <servlet-name>BabTotal</servlet-name>
-        <jsp-file>/pages/admin/babTotal.jsp</jsp-file>
+        <jsp-file>/pages/admin/babTotal_1.jsp</jsp-file>
     </servlet>
     <servlet-mapping>
         <servlet-name>BabTotal</servlet-name>
@@ -124,6 +124,15 @@
     <servlet-mapping>
         <servlet-name>sensordata</servlet-name>
         <url-pattern>/pages/admin/Sensor</url-pattern>  
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>barcodedata</servlet-name>
+        <jsp-file>/pages/admin/barcode.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>barcodedata</servlet-name>
+        <url-pattern>/pages/admin/Barcode</url-pattern>  
     </servlet-mapping>
     
     <servlet>
@@ -142,6 +151,15 @@
     <servlet-mapping>
         <servlet-name>SensorAdjust</servlet-name>
         <url-pattern>/pages/admin/SensorAdjust</url-pattern>  
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>BarcodeAdjust</servlet-name>
+        <jsp-file>/pages/admin/barcodeAdjust.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>BarcodeAdjust</servlet-name>
+        <url-pattern>/pages/admin/BarcodeAdjust</url-pattern>  
     </servlet-mapping>
     
     <servlet>

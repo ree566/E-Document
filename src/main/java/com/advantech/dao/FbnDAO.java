@@ -47,6 +47,14 @@ public class FbnDAO extends AbstractDao<Integer, Fbn> {
                 .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
                 .list();
     }
+    
+    //用途同上method comment
+    public List<Map> getBarcodeCurrentStatus() {
+        return super.getSession()
+                .createSQLQuery("SELECT * FROM vw_BarcodeStatusPerStationToday")
+                .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
+                .list();
+    }
 
     public List<Map> getTotalAbnormalData(int bab_id) {
         return super.getSession()

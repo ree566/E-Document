@@ -11,6 +11,7 @@ import com.advantech.dao.BabSettingHistoryDAO;
 import com.advantech.dao.CountermeasureDAO;
 import com.advantech.dao.FqcDAO;
 import com.advantech.dao.SensorTransformDAO;
+import com.advantech.dao.SqlViewDAO;
 import com.advantech.dao.TagNameComparisonDAO;
 import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.model.Bab;
@@ -71,6 +72,9 @@ public class TestDAO {
     
     @Autowired
     private FqcDAO fqcDAO;
+    
+    @Autowired
+    private SqlViewDAO sqlViewDAO;
 
 //    @Test
     @Transactional
@@ -152,7 +156,7 @@ public class TestDAO {
         HibernateObjectPrinter.print(this.tagDAO.findInRange(sensor, 5));
     }
 
-    @Test
+//    @Test
     @Transactional
     @Rollback(true)
     public void testCountermeasure() {
@@ -168,6 +172,15 @@ public class TestDAO {
     public void testFqc() {
         List l = fqcDAO.findProcessingWithLine();
         assertTrue(l.isEmpty());
+    }
+    
+    @Test
+    @Transactional
+    @Rollback(true)
+    public void testSqlView() {
+        List l = sqlViewDAO.findBabAvg(32126);
+//        assertTrue(l.isEmpty());
+        HibernateObjectPrinter.print(l);
     }
 
 }

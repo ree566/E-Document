@@ -175,6 +175,14 @@ public class BabDAO extends AbstractDao<Integer, Bab> implements BasicDAO_1<Bab>
                 .executeUpdate();
         return 1;
     }
+    
+    public int closeBabWithSavingWithBarcode(Bab b) {
+        super.getSession()
+                .createSQLQuery("{CALL usp_CloseBabWithSavingWithBarcode(:bab_id)}")
+                .setParameter("bab_id", b.getId())
+                .executeUpdate();
+        return 1;
+    }
 
     @Override
     public int delete(Bab pojo) {

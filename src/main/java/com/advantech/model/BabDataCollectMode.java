@@ -5,11 +5,18 @@
  */
 package com.advantech.model;
 
+import com.advantech.converter.Encodeable;
+
 /**
  *
  * @author Wei.Cheng
  */
-public enum BabDataCollectMode {
+public enum BabDataCollectMode implements Encodeable {
     MANUAL,
     AUTO;
+
+    @Override
+    public Object token() {
+        return this.toString();
+    }
 }
