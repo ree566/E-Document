@@ -5,10 +5,11 @@
  */
 package com.advantech.test;
 
-import com.advantech.controller.CrudAction;
 import com.advantech.model.Worktime;
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import org.junit.Test;
 
@@ -46,8 +47,9 @@ public class Test1Test {
 
     @Test
     public void test2() {
-        CrudAction action = CrudAction.ADD;
-        System.out.println(action == CrudAction.ADD);
+        BigDecimal b1 = new BigDecimal(1.53);
+        BigDecimal b2 = new BigDecimal(1.53);
+        System.out.println(b1.compareTo(b2) == 0);
     }
 
 }

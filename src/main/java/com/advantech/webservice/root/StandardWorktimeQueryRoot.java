@@ -230,9 +230,9 @@ public class StandardWorktimeQueryRoot {
         @XmlElement(name = "UNIT_NO", required = true, nillable = true)
         protected String unitno;
         @XmlElement(name = "ITEM_NO", nillable = true)
-        protected int itemno;
+        protected String itemno;
         @XmlElement(name = "STATION_ID", nillable = true)
-        protected byte stationid;
+        protected byte stationid = -1;
 
         /**
          * 取得 standardid 特性的值.
@@ -298,7 +298,7 @@ public class StandardWorktimeQueryRoot {
          * 取得 itemno 特性的值.
          *
          */
-        public int getITEMNO() {
+        public String getITEMNO() {
             return itemno;
         }
 
@@ -306,7 +306,7 @@ public class StandardWorktimeQueryRoot {
          * 設定 itemno 特性的值.
          *
          */
-        public void setITEMNO(int value) {
+        public void setITEMNO(String value) {
             this.itemno = value;
         }
 

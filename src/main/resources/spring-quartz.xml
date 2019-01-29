@@ -20,7 +20,7 @@
     
     <!--job2 setting-->
     <!--上傳標工-->
-    <bean id="targetClass2" class="com.advantech.quartzJob.StandardTimeUpload"/>
+    <bean id="targetClass2" class="com.advantech.quartzJob.StandardTimeUpload1"/>
     
     <bean id="jobDetail2" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
         <property name="targetObject" ref="targetClass2"/>
@@ -29,7 +29,7 @@
     
     <bean id="cronTrigger2" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
         <property name="jobDetail" ref="jobDetail2"/>
-        <property name="cronExpression" value="0 0 0 ? * SUN *"/>
+        <property name="cronExpression" value="0 0 23 ? * MON-SAT *"/>
     </bean>
     
     <!--job3 setting-->
@@ -64,12 +64,11 @@
     <bean id="schedulerFactoryBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
         <property name="triggers">
             <list>
-<!--                <ref bean="cronTrigger"/>
-                <ref bean="cronTrigger2"/>-->
+                <ref bean="cronTrigger"/>
+                <ref bean="cronTrigger2"/>
+                <ref bean="cronTrigger4"/>
                 
                 <!--<ref bean="cronTrigger3"/>-->
-                
-                <!--<ref bean="cronTrigger4"/>-->
             </list>
         </property>
         <property name="schedulerName">

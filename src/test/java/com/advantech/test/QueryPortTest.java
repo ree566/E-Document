@@ -17,12 +17,14 @@ import com.advantech.webservice.port.MaterialPropertyUserPermissionQueryPort;
 import com.advantech.webservice.port.MesUserInfoQueryPort;
 import com.advantech.webservice.port.ModelResponsorQueryPort;
 import com.advantech.webservice.port.SopQueryPort;
+import com.advantech.webservice.port.StandardWorkTimeQueryPort;
 import com.advantech.webservice.unmarshallclass.StandardWorkReason;
 import com.advantech.webservice.unmarshallclass.FlowRule;
 import com.advantech.webservice.unmarshallclass.MaterialFlow;
 import com.advantech.webservice.unmarshallclass.MaterialProperty;
 import com.advantech.webservice.unmarshallclass.MaterialPropertyUserPermission;
 import com.advantech.webservice.unmarshallclass.MaterialPropertyValue;
+import com.advantech.webservice.unmarshallclass.StandardWorkTime;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
@@ -85,9 +87,12 @@ public class QueryPortTest {
 
     private Worktime w;
 
+    @Autowired
+    private StandardWorkTimeQueryPort worktimeQueryPort;
+
     @Before
     public void init() {
-        w = worktimeService.findByPrimaryKey(5352);
+//        w = worktimeService.findByPrimaryKey(5352);
     }
 
 //    @Test
@@ -237,17 +242,25 @@ public class QueryPortTest {
         }
     }
 
-    @Test
+//    @Test
     public void testErrorGroupQueryPort() throws Exception {
         List<StandardWorkReason> l = errorGroupQueryPort.query();
 
         assertTrue(l != null);
         assertEquals(9, l.size());
-        
+
         StandardWorkReason eg = l.get(0);
-        
+
         assertEquals("A0", eg.getId());
         assertEquals("預估工時修正", eg.getName());
+
+        HibernateObjectPrinter.print(l);
+    }
+
+    @Test
+    public void testStandardWorkTimeQueryPort() throws Exception {
+        List<StandardWorkTime> l = this.worktimeQueryPort.query("2063002307");
+        assertEquals(25, l.size());
         
         HibernateObjectPrinter.print(l);
     }

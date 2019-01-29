@@ -30,46 +30,46 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(rollbackFor = Exception.class)
 public class WorktimeService {
-
+    
     @Value("${HIBERNATE.JDBC.BATCHSIZE}")
     private Integer batchSize;
-
+    
     @Autowired
     private WorktimeDAO worktimeDAO;
-
+    
     @Autowired
     private WorktimeFormulaSettingDAO worktimeFormulaSettingDAO;
-
+    
     @Autowired
     private WorktimeUploadMesService uploadMesService;
-
+    
     @Autowired
     private WorktimeValidator validator;
-   
+    
     public List<Worktime> findAll() {
         return worktimeDAO.findAll();
     }
-
+    
     public List<Worktime> findAll(PageInfo info) {
         return worktimeDAO.findAll(info);
     }
-
+    
     public Worktime findByPrimaryKey(Object obj_id) {
         return worktimeDAO.findByPrimaryKey(obj_id);
     }
-
+    
     public List<Worktime> findByPrimaryKeys(Integer... ids) {
         return worktimeDAO.findByPrimaryKeys(ids);
     }
-
+    
     public Worktime findByModel(String modelName) {
         return worktimeDAO.findByModel(modelName);
     }
-
+    
     public List<Worktime> findWithFullRelation(PageInfo info) {
         return worktimeDAO.findWithFullRelation(info);
     }
-
+    
     public int insert(List<Worktime> l) throws Exception {
         uploadMesService.portParamInit();
         int i = 1;
@@ -80,7 +80,7 @@ public class WorktimeService {
         }
         return 1;
     }
-
+    
     public int insert(Worktime worktime) throws Exception {
         return this.insert(newArrayList(worktime));
     }
@@ -106,24 +106,25 @@ public class WorktimeService {
     public int insertWithFormulaSetting(Worktime worktime) throws Exception {
         return this.insertWithFormulaSetting(newArrayList(worktime));
     }
-
+    
     public int insertSeries(String baseModelName, List<String> seriesModelNames) throws Exception {
         Worktime baseW = this.findByModel(baseModelName);
         checkArgument(baseW != null, "Can't find modelName: " + baseModelName);
         List<Worktime> l = new ArrayList();
-
+        
         for (String seriesModelName : seriesModelNames) {
             Worktime cloneW = (Worktime) BeanUtils.cloneBean(baseW);
             cloneW.setId(0); //CloneW is a new row, reset id.
             cloneW.setModelName(seriesModelName);
             cloneW.setWorktimeFormulaSettings(null);
             cloneW.setBwFields(null);
+            cloneW.setReasonCode(null); //Don't copy exist reason in base model
             l.add(cloneW);
         }
-
+        
         validator.checkModelNameExists(l);
         this.insert(l);
-
+        
         WorktimeFormulaSetting baseWSetting = baseW.getWorktimeFormulaSettings().get(0);
         checkState(baseWSetting != null, "Can't find formulaSetting on: " + baseModelName);
         for (Worktime w : l) {
@@ -131,10 +132,10 @@ public class WorktimeService {
             cloneSetting.setWorktime(w);
             worktimeFormulaSettingDAO.insert(cloneSetting);
         }
-
+        
         return 1;
     }
-
+    
     public int update(List<Worktime> l) throws Exception {
         uploadMesService.portParamInit();
         int i = 1;
@@ -147,11 +148,11 @@ public class WorktimeService {
         }
         return 1;
     }
-
+    
     public int update(Worktime worktime) throws Exception {
         return this.update(newArrayList(worktime));
     }
-
+    
     public int merge(List<Worktime> l) throws Exception {
         uploadMesService.portParamInit();
         int i = 1;
@@ -164,11 +165,11 @@ public class WorktimeService {
         }
         return 1;
     }
-
+    
     public int merge(Worktime worktime) throws Exception {
         return this.merge(newArrayList(worktime));
     }
-
+    
     public int insertByExcel(List<Worktime> l) throws Exception {
         l.forEach(w -> {
             w.setWorktimeFormulaSettings(newArrayList(new WorktimeFormulaSetting()));
@@ -176,24 +177,24 @@ public class WorktimeService {
         this.insertWithFormulaSetting(l);
         return 1;
     }
-
+    
     public int mergeByExcel(List<Worktime> l) throws Exception {
         retriveFormulaSetting(l);
-
+        
         uploadMesService.portParamInit();
         int i = 1;
         for (Worktime w : l) {
             //Don't need to update formula, but still need to re-calculate the formula field
             this.initUnfilledFormulaColumn(w);
-
+            
             worktimeDAO.merge(w);
             uploadMesService.update(w);
             flushIfReachFetchSize(i++);
         }
         return 1;
-
+        
     }
-
+    
     private void retriveFormulaSetting(List<Worktime> l) {
         //Retrive settings because excel doesn't have formula setting field.
         List<WorktimeFormulaSetting> settings = worktimeFormulaSettingDAO.findWithWorktime();
@@ -201,16 +202,16 @@ public class WorktimeService {
         settings.forEach((setting) -> {
             settingMap.put(setting.getWorktime().getId(), setting);
         });
-
+        
         l.forEach((w) -> {
             w.setWorktimeFormulaSettings(newArrayList(settingMap.get(w.getId())));
         });
     }
-
+    
     public void initUnfilledFormulaColumn(Worktime w) {
         //Lazy loading
         WorktimeFormulaSetting setting = w.getWorktimeFormulaSettings().get(0);
-
+        
         if (isColumnCalculated(setting.getCleanPanelAndAssembly())) {
             w.setDefaultCleanPanelAndAssembly();
         }
@@ -239,7 +240,7 @@ public class WorktimeService {
             w.setDefaultPackingKanbanTime();
         }
     }
-
+    
     private boolean isColumnCalculated(int i) {
         return i == 1;
     }
@@ -258,7 +259,7 @@ public class WorktimeService {
         }
         return 1;
     }
-
+    
     public int delete(List<Worktime> l) throws Exception {
         uploadMesService.portParamInit();
         int i = 1;
@@ -269,16 +270,16 @@ public class WorktimeService {
         }
         return 1;
     }
-
+    
     public int delete(Worktime w) throws Exception {
         return this.delete(newArrayList(w));
     }
-
+    
     public int delete(Integer... ids) throws Exception {
         List<Worktime> worktimes = worktimeDAO.findByPrimaryKeys(ids);
         return this.delete(worktimes);
     }
-
+    
     public int delete(int id) throws Exception {
         Worktime worktime = this.findByPrimaryKey(id);
         worktimeDAO.delete(worktime);
@@ -286,16 +287,16 @@ public class WorktimeService {
         uploadMesService.delete(worktime);
         return 1;
     }
-
+    
     public void reUpdateAllFormulaColumn() throws Exception {
         List<Worktime> l = this.findAll();
         this.merge(l);
     }
-
+    
     private void flushIfReachFetchSize(int currentRow) {
         if (currentRow % batchSize == 0 && currentRow > 0) {
             worktimeDAO.flushSession();
         }
     }
-
+    
 }
