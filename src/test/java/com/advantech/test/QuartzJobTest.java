@@ -5,12 +5,8 @@
  */
 package com.advantech.test;
 
-import com.advantech.helper.HibernateObjectPrinter;
-import com.advantech.model.Worktime;
-import com.advantech.quartzJob.StandardTimeUpload;
+import com.advantech.quartzJob.StandardTimeUpload1;
 import com.advantech.quartzJob.WorktimeEventLog;
-import java.util.List;
-import org.joda.time.DateTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,23 +25,23 @@ import org.springframework.test.context.web.WebAppConfiguration;
 })
 @RunWith(SpringJUnit4ClassRunner.class)
 public class QuartzJobTest {
-    
+
     @Autowired
     @Qualifier("worktimeEventLog")
     private WorktimeEventLog job1;
-    
+
     @Autowired
-     @Qualifier("standardTimeUpload")
-    private StandardTimeUpload job2;
-    
+    @Qualifier("standardTimeUpload1")
+    private StandardTimeUpload1 job2;
+
 //    @Test
-    public void testWorktimeEventLog(){
+    public void testWorktimeEventLog() {
         job1.execute();
     }
-  
+
     @Test
-    public void testStandardTimeUpload(){
-        
+    public void testStandardTimeUpload() {
+
         job2.uploadToMes();
     }
 

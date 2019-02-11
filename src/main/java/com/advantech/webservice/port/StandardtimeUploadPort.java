@@ -72,7 +72,13 @@ public class StandardtimeUploadPort extends BasicUploadPort implements UploadPor
 
         settings.forEach((setting) -> {
             try {
-                this.generateRootAndUpload(setting, standardWorktimes, w);
+                StandardWorkTime worktimeOnMes = standardWorktimes.stream()
+                        .filter(p -> Objects.equals(p.getSTATIONID(), setting.getStationId()) || (p.getSTATIONID() == -1 && setting.getStationId() == null)
+                        && (p.getLINEID() == setting.getLineId())
+                        && Objects.equals(p.getUNITNO(), setting.getColumnUnit())
+                        && Objects.equals(p.getITEMNO(), w.getModelName()))
+                        .findFirst().orElse(null);
+                this.generateRootAndUpload(setting, worktimeOnMes, w);
             } catch (Exception e) {
                 errorFields.put(setting.getColumnName(), e.getMessage());
             }
@@ -87,11 +93,11 @@ public class StandardtimeUploadPort extends BasicUploadPort implements UploadPor
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    private void generateRootAndUpload(WorktimeAutouploadSetting setting, List<StandardWorkTime> standardWorktimes, Worktime w) throws Exception {
+    private void generateRootAndUpload(WorktimeAutouploadSetting setting, StandardWorkTime standardWorktime, Worktime w) throws Exception {
         String columnUnit = setting.getColumnUnit();
         BigDecimal totalCt = (BigDecimal) expressionUtils.getValueFromFormula(w, setting.getFormula());
 
-        if (isCtChanged(totalCt, setting, standardWorktimes, w)) {
+        if (isCtChanged(totalCt, standardWorktime)) {
             StandardtimeRoot root = new StandardtimeRoot();
             StandardtimeRoot.STANDARDWORKTIME swt = root.getSTANDARDWORKTIME();
             swt.setUNITNO(columnUnit);
@@ -108,25 +114,27 @@ public class StandardtimeUploadPort extends BasicUploadPort implements UploadPor
             if ("B".equals(columnUnit) && setting.getStationId() != null) {
                 swt.setMACHINECNT(w.getAssyStation());
                 swt.setOPCNT(w.getAssyStation());
-                swt.setCHANGEREASONNO("A3");
+
+                //Auto fill reason code when only change station number value
+                if (Objects.equals(w.getAssy(), totalCt) && !Objects.equals(w.getAssyStation(), standardWorktime.getOPCNT()) && w.getReasonCode() == null) {
+                    swt.setCHANGEREASONNO("A3");
+                }
             } else if ("P".equals(columnUnit) && setting.getStationId() != null) {
                 swt.setMACHINECNT(w.getPackingStation());
                 swt.setOPCNT(2);
-                swt.setCHANGEREASONNO("A3");
+
+                if (Objects.equals(w.getPacking(), totalCt) && !Objects.equals(w.getPackingStation(), standardWorktime.getOPCNT()) && w.getReasonCode() == null) {
+                    swt.setCHANGEREASONNO("A3");
+                }
             } else {
                 swt.setMACHINECNT(0);
                 swt.setOPCNT(1);
             }
             super.upload(root, UploadType.INSERT);
-        } 
+        }
     }
 
-    private boolean isCtChanged(BigDecimal totalCt, WorktimeAutouploadSetting setting, List<StandardWorkTime> l, Worktime w) {
-        StandardWorkTime s = l.stream().filter(p -> Objects.equals(p.getSTATIONID(), setting.getStationId()) || (p.getSTATIONID() == -1 && setting.getStationId() == null)
-                && (p.getLINEID() == setting.getLineId())
-                && Objects.equals(p.getUNITNO(), setting.getColumnUnit())
-                && Objects.equals(p.getITEMNO(), w.getModelName()))
-                .findFirst().orElse(null);
+    private boolean isCtChanged(BigDecimal totalCt, StandardWorkTime s) {
         return s == null || totalCt.compareTo(s.getTOTALCT()) != 0;
     }
 

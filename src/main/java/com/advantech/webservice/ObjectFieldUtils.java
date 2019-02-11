@@ -9,6 +9,7 @@ import static java.lang.System.out;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Stack;
 
 /**
@@ -25,9 +26,7 @@ public class ObjectFieldUtils {
                     // MZ: Method found, run it
                     try {
                         return method.invoke(o);
-                    } catch (IllegalAccessException e) {
-                        out.println("Could not determine method: " + method.getName());
-                    } catch (InvocationTargetException e) {
+                    } catch (IllegalAccessException | InvocationTargetException e) {
                         out.println("Could not determine method: " + method.getName());
                     }
 
@@ -46,15 +45,13 @@ public class ObjectFieldUtils {
         //{
         //      return classMethodCache.get(type);
         //}
-        Stack<Method> result = new Stack<Method>();
+        Stack<Method> result = new Stack<>();
         try {
             for (Class<?> c = type; c != null; c = c.getSuperclass()) {
                 Method[] methods = c.getDeclaredMethods();
-                for (Method method : methods) {
-                    result.add(method);
-                }
+                result.addAll(Arrays.asList(methods));
             }
-        } catch (Exception e) {
+        } catch (SecurityException e) {
             // MZ: Add your own logger instance here
             // Logger.error("Could not fetch object methods", e);
         }

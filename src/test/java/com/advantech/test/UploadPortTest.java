@@ -232,12 +232,11 @@ public class UploadPortTest {
     @Rollback(true)
     public void testStandardTimeUpload() throws Exception {
         List<Worktime> l = worktimeService.findAll();
-        List<WorktimeAutouploadSetting> settings = worktimeAutouploadSettingService.findByPrimaryKeys(25);
+        List<WorktimeAutouploadSetting> settings = worktimeAutouploadSettingService.findByPrimaryKeys(4, 16);
         standardtimePort.initSettings(settings);
         l.forEach((worktime) -> {
             try {
                 System.out.println(worktime.getModelName());
-                worktime.setReasonCode("A0");
                 standardtimePort.update(worktime);
             } catch (Exception ex) {
                 System.out.println(ex.getMessage());
