@@ -72,7 +72,7 @@ public class StandardTimeUpload1 {
 
     public void uploadToMes() {
         List<String> errorMessages = new ArrayList();
-        List<Worktime> modifiedWorktimes = this.findFieldChangeInDate(new DateTime().minusDays(11), new DateTime());
+        List<Worktime> modifiedWorktimes = this.findFieldChangeInDate(new DateTime().minusDays(1), new DateTime());
 
         log.info("Begin upload standardtime to mes: " + modifiedWorktimes.size() + " datas.");
 
