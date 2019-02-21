@@ -159,4 +159,8 @@ public class SqlViewService {
         return sqlViewDAO.findBabPassStationRecord(po, modelName, sD, eD, lineType);
     }
 
+    public List<Map> findBabPassStationExceptionReport(String po, String modelName, DateTime sD, DateTime eD, int lineType_id) {
+        return sqlViewDAO.findBabPassStationExceptionReport(po, modelName, sD, eD, lineType_id);
+    }
+
 }

@@ -7,6 +7,7 @@ package com.advantech.test;
 
 import com.advantech.dao.BabDAO;
 import com.advantech.dao.BabPcsDetailHistoryDAO;
+import com.advantech.dao.BabPreAssyPcsRecordDAO;
 import com.advantech.dao.BabSettingHistoryDAO;
 import com.advantech.dao.CountermeasureDAO;
 import com.advantech.dao.FqcDAO;
@@ -15,20 +16,28 @@ import com.advantech.dao.SqlViewDAO;
 import com.advantech.dao.TagNameComparisonDAO;
 import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.model.Bab;
+import com.advantech.model.BabPreAssyPcsRecord;
 import com.advantech.model.BabSettingHistory;
 import com.advantech.model.Countermeasure;
 import com.advantech.model.Line;
+import com.advantech.model.MesLine;
+import com.advantech.model.MesPassCountRecord;
 import com.advantech.model.SensorTransform;
+import com.advantech.webservice.Factory;
+import com.advantech.webservice.WebServiceRV;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import static java.util.stream.Collectors.toList;
 import javax.transaction.Transactional;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.joda.time.DateTime;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -69,12 +78,18 @@ public class TestDAO {
 
     @Autowired
     private CountermeasureDAO countermeasureDAO;
-    
+
     @Autowired
     private FqcDAO fqcDAO;
-    
+
     @Autowired
     private SqlViewDAO sqlViewDAO;
+
+    @Autowired
+    private BabPreAssyPcsRecordDAO prePcsRecDAO;
+
+    @Autowired
+    private WebServiceRV rv;
 
 //    @Test
     @Transactional
@@ -173,14 +188,66 @@ public class TestDAO {
         List l = fqcDAO.findProcessingWithLine();
         assertTrue(l.isEmpty());
     }
-    
-    @Test
+
+//    @Test
     @Transactional
     @Rollback(true)
     public void testSqlView() {
-        List l = sqlViewDAO.findBabAvg(32126);
+        DateTime eD = new DateTime();
+        DateTime sD = eD.minusWeeks(1);
+        List l = sqlViewDAO.findBabPassStationExceptionReport(null, null, sD, eD, 1);
 //        assertTrue(l.isEmpty());
         HibernateObjectPrinter.print(l);
+    }
+
+//    @Test
+    @Transactional
+    @Rollback(false)
+    public void testBabPreAssyPcsRecord() {
+        BabSettingHistory history = babSettingHistoryDAO.findByPrimaryKey(1);
+        assertNotNull(history);
+        BabPreAssyPcsRecord pcsRec = new BabPreAssyPcsRecord(history, 50);
+        prePcsRecDAO.insert(pcsRec);
+    }
+
+    @Test
+    @Transactional
+    @Rollback(false)
+    public void testMesCountRecord() {
+        DateTime eD = new DateTime();
+        DateTime sD = eD.minusDays(30);
+
+        Session session = sessionFactory.getCurrentSession();
+
+        List<MesLine> lines = session.createCriteria(MesLine.class).list();
+        List<MesPassCountRecord> existData = session.createCriteria(MesPassCountRecord.class).list();
+
+        List<Integer> lineId = lines.stream().map(MesLine::getId).collect(toList());
+        assertTrue(!lineId.isEmpty());
+
+        List<MesPassCountRecord> l = rv.getMesPassCountRecords(sD, eD, Factory.DEFAULT);
+
+        System.out.println(l.size());
+
+        List<MesPassCountRecord> newData = l.stream()
+                .filter(e -> lineId.contains(e.getMesLineId()) && !existData.contains(e))
+                .collect(toList());
+        
+        System.out.println(newData.size());
+
+        assertTrue(!newData.isEmpty());
+
+        newData.forEach(e -> {
+            e.setId(0);
+            session.merge(e);
+        });
+    }
+
+    private boolean isRecordExist(List<MesPassCountRecord> existData, MesPassCountRecord newData) {
+        List<MesPassCountRecord> l = existData.stream()
+                .filter(e -> e.equals(newData))
+                .collect(toList());
+        return !l.isEmpty();
     }
 
 }

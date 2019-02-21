@@ -93,6 +93,45 @@ public class ExcelExportController {
         }
     }
 
+    @RequestMapping(value = "/getBabPassStationExceptionReportDetails", method = {RequestMethod.GET})
+    @ResponseBody
+    protected void getBabPassStationExceptionReportDetails(
+            @RequestParam String po,
+            @RequestParam String modelName,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime startDate,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime endDate,
+            @RequestParam int lineType_id,
+            HttpServletResponse res) throws IOException {
+
+        startDate = startDate.withHourOfDay(0);
+        endDate = endDate.withHourOfDay(23);
+
+        String sD = fmt.print(startDate);
+        String eD = fmt.print(endDate);
+
+        //http://stackoverflow.com/questions/13853300/jquery-file-download-filedownload
+        //personalAlm記得轉格式才能special Excel generate
+        List<Map> data = reportService.getBabPassStationExceptionReportDetails(po, modelName, sD, eD, lineType_id);
+
+        if (data.isEmpty()) {
+            res.setContentType("text/html");
+            res.getWriter().println("fail");
+        } else {
+            ExcelGenerator generator = new ExcelGenerator();
+            generator.createExcelSheet("sheet1");
+            generator.generateWorkBooks(data);
+            try (Workbook w = generator.getWorkbook()) {
+                String fileExt = ExcelGenerator.getFileExt(w);
+
+                res.setContentType("application/vnd.ms-excel");
+                res.setHeader("Set-Cookie", "fileDownload=true; path=/");
+                res.setHeader("Content-Disposition",
+                        "attachment; filename=sampleData" + new DatetimeGenerator("yyyyMMdd").getToday() + fileExt);
+                w.write(res.getOutputStream());
+            }
+        }
+    }
+
     private Workbook generateBabDetailIntoExcel(List<Map> countermeasures, List<Map> personalAlarms, List<Map> emptyRecords, boolean showAboveOnly) {
 
         String filterColumnName = "測量數量";

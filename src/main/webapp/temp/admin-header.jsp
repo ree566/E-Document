@@ -102,6 +102,7 @@
                             </c:if>
                             --%>
                         <li><a href="BabPassStationRecord?lineType=ASSY">Barcode過站紀錄</a></li>
+                        <li><a href="BabPassStationExceptionReport?lineType=ASSY">異常資料統計</a></li>
                     </ul>
                 </li>
                 <li class="dropdown">

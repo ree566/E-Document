@@ -146,4 +146,16 @@ public class SqlViewController {
         return new DataTableResponse(sqlViewService.findBabPassStationRecord(po, modelName, startDate, endDate, lineType));
     }
 
+    @RequestMapping(value = "/findBabPassStationExceptionReport", method = {RequestMethod.GET})
+    @ResponseBody
+    protected DataTableResponse findBabPassStationExceptionReport(
+            @RequestParam(required = false) String po,
+            @RequestParam(required = false) String modelName,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime startDate,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime endDate,
+            @RequestParam int lineType_id
+    ) {
+        return new DataTableResponse(sqlViewService.findBabPassStationExceptionReport(po, modelName, startDate, endDate, lineType_id));
+    }
+
 }

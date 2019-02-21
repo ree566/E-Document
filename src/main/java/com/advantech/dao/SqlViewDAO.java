@@ -270,4 +270,16 @@ public class SqlViewDAO extends AbstractDao<Integer, Object> {
                 .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
                 .list();
     }
+    
+    public List<Map> findBabPassStationExceptionReport(String po, String modelName, DateTime sD, DateTime eD, int lineType_id) {
+        return super.getSession()
+                .createSQLQuery("{CALL usp_BabPassStation_ExceptionReport(:po, :modelName, :sD, :eD, :lineType_id)}")
+                .setParameter("po", po)
+                .setParameter("modelName", modelName)
+                .setParameter("sD", sD != null ? sD.withHourOfDay(0).toDate() : null)
+                .setParameter("eD", eD != null ? eD.withHourOfDay(23).toDate() : null)
+                .setParameter("lineType_id", lineType_id)
+                .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
+                .list();
+    }
 }

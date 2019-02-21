@@ -85,11 +85,25 @@ public class TestController {
 //        .andExpect(status().isOk())
     }
     
-    @Test
+//    @Test
     public void testArrayParamInput() throws Exception{
         String responseString = mockMvc.perform(
                 get("/BabLineProductivityExcludeController/insert").contentType(MediaType.APPLICATION_FORM_URLENCODED)
                         .param("id[]", "1,2,3,4,5,6")
+        ) //返回的状态是200
+                .andDo(print())
+                .andReturn().getResponse().getContentAsString();
+        System.out.println("--------返回的json = " + responseString);
+    }
+    
+    @Test
+    public void testCloseBab() throws Exception{
+        String responseString = mockMvc.perform(
+                post("/BabOtherStationController/stationComplete").contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                        .param("bab_id", "33428")
+                        .param("tagName", "L3-S-3")
+                        .param("jobnumber", "A-8236")
+                        .param("pcs", "1,1,1")
         ) //返回的状态是200
                 .andDo(print())
                 .andReturn().getResponse().getContentAsString();

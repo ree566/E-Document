@@ -54,4 +54,12 @@ public class SystemReportDao extends BasicDAO {
                 lineTypeId, floorId, startDate, endDate);
     }
 
+    //異常資料details
+    public List<Map> getBabPassStationExceptionReportDetails(String po, String modelName,
+            String startDate, String endDate, int lineTypeId) {
+        return queryProcForMapList(getConn(),
+                "{CALL usp_BabPassStation_ExceptionReport_Details(?, ?, ?, ?, ?)}",
+                po, modelName, startDate, endDate, lineTypeId);
+    }
+
 }

@@ -12,8 +12,8 @@ import com.advantech.model.UserOnMes;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.gson.Gson;
 import static java.lang.System.out;
-import java.util.ArrayList;
 import java.util.List;
+import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -36,7 +36,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 })
 @RunWith(SpringJUnit4ClassRunner.class)
 public class WebServiceRVTest {
-    
+
     @Autowired
     private WebServiceRV rv;
 
@@ -135,15 +135,24 @@ public class WebServiceRVTest {
     }
 
 //    @Test
-    public void testGetTestLineTypeRecord() throws JsonProcessingException{
+    public void testGetTestLineTypeRecord() throws JsonProcessingException {
         List<TestRecord> l = rv.getTestLineTypeRecords();
         assertNotEquals(0, l.size());
         HibernateObjectPrinter.print(l);
     }
-    
-    @Test
-    public void testGetModelNameByBarcode() throws JsonProcessingException{
+
+//    @Test
+    public void testGetModelNameByBarcode() throws JsonProcessingException {
         String value = rv.getPoByBarcode("TPAB780972", Factory.DEFAULT);
         assertEquals(value, "PSI9412ZA");
+    }
+
+    @Test
+    public void testGetMesPassCountRecords() {
+        DateTime eD = new DateTime();
+        DateTime sD = eD.minusDays(1);
+        List l = rv.getMesPassCountRecords(sD, eD, Factory.DEFAULT);
+        assertTrue(!l.isEmpty());
+        HibernateObjectPrinter.print(l);
     }
 }

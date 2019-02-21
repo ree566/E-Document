@@ -7,9 +7,12 @@ package com.advantech.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -18,6 +21,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -40,6 +44,9 @@ public class BabSettingHistory implements Serializable {
     private String jobnumber;
     private Date createTime;
     private Date lastUpdateTime;
+
+    @JsonIgnore
+    private Set<BabPreAssyPcsRecord> babPreAssyPcsRecords = new HashSet<BabPreAssyPcsRecord>(0);
 
     public BabSettingHistory() {
     }
@@ -123,6 +130,15 @@ public class BabSettingHistory implements Serializable {
 
     public void setLastUpdateTime(Date lastUpdateTime) {
         this.lastUpdateTime = lastUpdateTime;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "babSettingHistory")
+    public Set<BabPreAssyPcsRecord> getBabPreAssyPcsRecords() {
+        return babPreAssyPcsRecords;
+    }
+
+    public void setBabPreAssyPcsRecords(Set<BabPreAssyPcsRecord> babPreAssyPcsRecords) {
+        this.babPreAssyPcsRecords = babPreAssyPcsRecords;
     }
 
 }

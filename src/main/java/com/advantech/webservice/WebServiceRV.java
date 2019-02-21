@@ -5,6 +5,8 @@
  */
 package com.advantech.webservice;
 
+import com.advantech.model.MesPassCountRecord;
+import com.advantech.model.MesPassCountRecords;
 import com.advantech.model.PassStationRecord;
 import com.advantech.model.PassStationRecords;
 import com.advantech.model.TestRecord;
@@ -20,6 +22,9 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +49,8 @@ public class WebServiceRV {
 
     @Autowired
     private MultiWsClient mClient;
+
+    private DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd");
 
     //Get data from WebService
     private List<Object> getWebServiceData(String queryString) {
@@ -182,6 +189,39 @@ public class WebServiceRV {
             Object o = this.unmarshalFromList(node, TestRecords.class);
 
             return o == null ? new ArrayList() : ((TestRecords) o).getQryData();
+        } catch (JAXBException ex) {
+            log.error(ex.toString());
+            return new ArrayList();
+        }
+    }
+
+    public List<MesPassCountRecord> getMesPassCountRecords(DateTime sD, DateTime eD, final Factory f) {
+
+        String unit = "B";
+
+        try {
+            String queryString
+                    = "<root>"
+                    + "<METHOD ID='KPISO.QryRPT404'/>"
+                    + "<RPT404>"
+                    + "<WERKS>TWM3</WERKS>"
+                    + "<UNIT_NO>" + unit + "</UNIT_NO>"
+                    + "<START_DATE>" + fmt.print(sD) + "</START_DATE>"
+                    + "<END_DATE>" + fmt.print(eD) + "</END_DATE>"
+                    + "<LINE_ID></LINE_ID>"
+                    + "</RPT404>"
+                    + "</root>";
+
+            RvResponse response = mClient.simpleRvSendAndReceive(queryString, f);
+            RvResponse.RvResult result = response.getRvResult();
+            List l = result.getAny();
+
+            Document doc = ((Node) l.get(1)).getOwnerDocument();
+            //Skip the <diffgr:diffgram> tag, read QryData tag directly.
+            Node node = doc.getFirstChild().getFirstChild();
+
+            Object o = this.unmarshalFromList(node, MesPassCountRecords.class);
+            return o == null ? new ArrayList() : ((MesPassCountRecords) o).getQryData();
         } catch (JAXBException ex) {
             log.error(ex.toString());
             return new ArrayList();

@@ -214,6 +214,19 @@
         <property name="jobDetail" ref="TestRecordAlarm" />
         <property name="cronExpression" value="0 0 11,16 ? * MON-FRI *" />
     </bean>
+    
+    <!--
+        測試紀錄把未回覆異常原因的回覆給欲收到mail的users
+    -->    
+    <bean name="SaveMesCountRecord" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+        <property name="jobClass" value="com.advantech.quartzJob.InsertMesCountRecord" />
+        <property name="durability" value="true" />
+    </bean>
+    
+    <bean id="SaveMesCountRecord-Trig" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="SaveMesCountRecord" />
+        <property name="cronExpression" value="0 0 6 ? * MON-SAT *" />
+    </bean>
 
     <!--schedule jobs-->
     <bean id="schedulerFactoryBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
@@ -232,6 +245,7 @@
                 <ref bean="HandleUncloseBab-Trig"/>
                 <ref bean="CleanSensorData-Trig"/>
                 <ref bean="TestLineTypeRecord-Trig"/>
+                <ref bean="SaveMesCountRecord-Trig"/>
                 <!--<ref bean="CountermeasureAlarm-Trig"/>-->                
                 
                 <!--<ref bean="SensorDetect-Trig"/>-->

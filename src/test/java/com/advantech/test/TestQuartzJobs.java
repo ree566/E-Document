@@ -10,6 +10,7 @@ import com.advantech.quartzJob.CleanSensorData;
 import com.advantech.quartzJob.CountermeasureAlarm;
 import com.advantech.quartzJob.HandleUncloseBab;
 import com.advantech.quartzJob.DataBaseInit;
+import com.advantech.quartzJob.InsertMesCountRecord;
 import com.advantech.quartzJob.PollingDataCollectStatus;
 import com.advantech.quartzJob.TestLineTypeRecord;
 import com.advantech.quartzJob.TestLineTypeRecordUnrepliedAlarm;
@@ -31,7 +32,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 })
 @RunWith(SpringJUnit4ClassRunner.class)
 public class TestQuartzJobs {
-    
+
     @Autowired
     private PollingDataCollectStatus job;
 
@@ -71,8 +72,14 @@ public class TestQuartzJobs {
         System.out.println(t.generateMailBody());
     }
 
-    @Test
+//    @Test
     public void testPollingData() throws JobExecutionException {
         HibernateObjectPrinter.print(job.getData());
+    }
+
+    @Test
+    public void testInsertMesCountRecord() throws JobExecutionException {
+        InsertMesCountRecord i = new InsertMesCountRecord();
+        i.executeInternal(null);
     }
 }

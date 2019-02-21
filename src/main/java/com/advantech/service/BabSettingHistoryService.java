@@ -83,7 +83,6 @@ public class BabSettingHistoryService {
     }
 
     public int insertByBab(Bab b, TagNameComparison tag) {
-        HibernateObjectPrinter.print(b, tag);
         
         List<BabSensorLoginRecord> babLogins = babSensorLoginRecordService.findByLine(b.getLine().getId());
 

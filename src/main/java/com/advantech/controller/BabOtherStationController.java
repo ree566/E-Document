@@ -9,9 +9,11 @@ package com.advantech.controller;
 
 import com.advantech.model.Bab;
 import com.advantech.model.BabAlarmHistory;
+import com.advantech.model.BabPreAssyPcsRecord;
 import com.advantech.model.BabSettingHistory;
 import com.advantech.model.ReplyStatus;
 import com.advantech.service.BabAlarmHistoryService;
+import com.advantech.service.BabPreAssyPcsRecordService;
 import com.advantech.service.BabSensorLoginRecordService;
 import com.advantech.service.BabSettingHistoryService;
 import com.advantech.service.BabService;
@@ -23,6 +25,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import static com.google.common.base.Preconditions.*;
+import com.google.common.base.Predicates;
+import com.google.common.collect.Iterables;
+import java.util.ArrayList;
+import java.util.List;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
@@ -47,6 +53,9 @@ public class BabOtherStationController {
     @Autowired
     private BabService babService;
 
+    @Autowired
+    private BabPreAssyPcsRecordService babPreAssyPcsRecordService;
+
     @RequestMapping(value = "/changeUser", method = {RequestMethod.POST})
     @ResponseBody
     protected String changeUser(
@@ -62,7 +71,8 @@ public class BabOtherStationController {
     protected String stationComplete(
             @RequestParam int bab_id,
             @RequestParam String tagName,
-            @RequestParam String jobnumber
+            @RequestParam String jobnumber,
+            @RequestParam(required = false) List<Integer> pcs
     ) {
         Bab b = babService.findByPrimaryKey(bab_id);
         BabSettingHistory setting = babSettingHistoryService.findProcessingByTagName(tagName);
@@ -71,7 +81,26 @@ public class BabOtherStationController {
         checkStation(b, setting.getStation());
 
         if (setting.getStation() == b.getPeople()) { // if the station is the last station
+            //Save pre pcs record first
+            if (b.getIspre() == 1) {
+                Iterables.removeIf(pcs, Predicates.isNull()); //Remove null element
+                
+                List<BabSettingHistory> settings = babSettingHistoryService.findByBab(b);
+                checkArgument(settings.size() == pcs.size(),
+                        (settings.size() > pcs.size() ? "缺少 " : "多餘 ")
+                        + Math.abs(settings.size() - pcs.size())
+                        + " 個製做筆數, 請重新確認");
+
+                List<BabPreAssyPcsRecord> pcsRecords = new ArrayList();
+                int i = 0;
+                for (BabSettingHistory bsh : settings) {
+                    pcsRecords.add(new BabPreAssyPcsRecord(bsh, pcs.get(i++)));
+                }
+                babPreAssyPcsRecordService.insert(pcsRecords);
+            }
+            
             babService.closeBab(b);
+            
             BabAlarmHistory bah = babAlarmHistoryService.findByBab(bab_id);
             if (bah != null && bah.getTotalPcs() < 10) {
                 //Get object again and set reply flag

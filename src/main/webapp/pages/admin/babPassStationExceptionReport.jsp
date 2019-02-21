@@ -47,9 +47,17 @@
         <script src="<c:url value="/js/jquery-datatable-button/buttons.html5.min.js" />"></script>
         <script src="<c:url value="/js/jquery-datatable-button/buttons.print.min.js" />"></script>
         <script src="<c:url value="/js/urlParamGetter.js"/>"></script>
-
+        <script src="<c:url value="/js/ajax-option-select-loader/babLineType.loader.js" />"></script>
+        <script src="<c:url value="/js/jquery.fileDownload.js" />"></script>
+        
         <script>
+            lineTypeLoaderUrl = "<c:url value="/BabLineController/findLineType" />";
+            var round_digit = 2;
+
             $(function () {
+                setLineObject();
+                initOptions($("#lineType"));
+
                 var urlLineType = getQueryVariable("lineType");
                 if (urlLineType == null) {
                     window.location.href = 'SysInfo';
@@ -61,7 +69,7 @@
                 $(":text,input[type='number'],select").addClass("form-control");
                 $(":button").addClass("btn btn-default");
                 var options = {
-                    defaultDate: moment(),
+                    defaultDate: moment().subtract(1, 'days'),
                     useCurrent: true,
                     //locale: "zh-tw",
                     format: momentFormatString,
@@ -75,8 +83,8 @@
                 $("#send").click(function () {
                     var po = $('#po').val();
                     var modelName = $('#Model_name').val();
-//                    var startDate = $('#fini').val();
-//                    var endDate = $('#ffin').val();
+                    var lineType_id = $('#lineType').val();
+
                     var startDate = beginTimeObj.data("DateTimePicker").date();
                     var endDate = endTimeObj.data("DateTimePicker").date();
 
@@ -104,51 +112,43 @@
                             headerOffset: 50
                         },
                         "ajax": {
-                            "url": "<c:url value="/SqlViewController/findBabPassStationRecord" />",
+                            "url": "<c:url value="/SqlViewController/findBabPassStationExceptionReport" />",
                             "type": "Get",
                             data: {
                                 po: po,
                                 modelName: modelName,
                                 startDate: startDate == null ? null : startDate.format(momentFormatString),
                                 endDate: endDate == null ? null : endDate.format(momentFormatString),
-                                lineType: urlLineType
+                                lineType_id: lineType_id
                             }
                         },
 
                         "columns": [
-                            {data: "bab_id"},
-                            {data: "po"},
-                            {data: "modelName"},
-                            {data: "people"},
-                            {data: "barcode"},
-                            {data: "tagName"},
-                            {data: "jobnumber"},
-                            {data: "username"},
-                            {data: "startDate"},
-                            {data: "endDate"},
-                            {data: "timeCost"},
-                            {data: "abnormal"}
+                            {data: "line_id", visible: false},
+                            {data: "line_name"},
+                            {data: "data_lost_cnt"},
+                            {data: "zero_time_cnt"},
+                            {data: "short_time_cnt"},
+                            {data: "data_lost_cnt"},
+                            {data: "zero_time_cnt"},
+                            {data: "short_time_cnt"},
+                            {data: "pcs_sum"},
+                            {data: "total_qty"},
+                            {data: "total_qty"}
                         ],
                         "columnDefs": [
                             {
                                 "type": "html",
-                                "targets": [8, 9],
+                                "targets": [5, 6, 7],
                                 'render': function (data, type, full, meta) {
-                                    return formatDate(data);
+                                    return getPercent(data / full["pcs_sum"]);
                                 }
                             },
                             {
                                 "type": "html",
-                                "targets": 10,
+                                "targets": [10],
                                 'render': function (data, type, full, meta) {
-                                    return data == 0 ? "無結束紀錄" : data;
-                                }
-                            },
-                            {
-                                "type": "html",
-                                "targets": 11,
-                                'render': function (data, type, full, meta) {
-                                    return data == 0 ? "N" : "Y";
+                                    return getPercent(full["pcs_sum"] / data);
                                 }
                             }
                         ],
@@ -167,7 +167,7 @@
                         "initComplete": function (settings, json) {
                             $("input").removeAttr("disabled");
                         },
-                        "order": [[0, "asc"]]
+                        "order": [[1, "asc"]]
                     });
                 });
 
@@ -202,10 +202,47 @@
                         });
                     }
                 });
+
+                $("#generateExcel").click(function () {
+                    var btn = $(this);
+                    var po = $('#po').val();
+                    var modelName = $('#Model_name').val();
+                    var lineType_id = $('#lineType').val();
+                    var startDate = beginTimeObj.data("DateTimePicker").date();
+                    var endDate = endTimeObj.data("DateTimePicker").date();
+
+
+                    btn.attr("disabled", true);
+                    $.fileDownload('<c:url value="/ExcelExportController/getBabPassStationExceptionReportDetails" />' + '?startDate=' + 
+                            startDate.format(momentFormatString) + '&endDate=' + 
+                            endDate.format(momentFormatString) + '&lineType_id=' + 
+                            lineType_id + '&po=' + po + '&modelName=' + 
+                            modelName, {
+                        preparingMessageHtml: "We are preparing your report, please wait...",
+                        failMessageHtml: "No reports generated. No Survey data is available.",
+                        successCallback: function (url) {
+                            btn.attr("disabled", false);
+                        }
+                        , failCallback: function (html, url) {
+                            btn.attr("disabled", false);
+                        }
+                    });
+                });
+
+                $("#lineType").val($('#lineType option:contains(ASSY)').val());
             });
 
             function formatDate(dateString) {
                 return moment(dateString).format('YYYY-MM-DD hh:mm:ss');
+            }
+
+            function getPercent(val) {
+                return roundDecimal((val * 100), round_digit) + '%';
+            }
+
+            function roundDecimal(val, precision) {
+                var size = Math.pow(10, precision);
+                return Math.round(val * size) / size;
             }
         </script>
     </head>
@@ -213,7 +250,7 @@
         <c:import url="/temp/admin-header.jsp" />
         <div class="container form-inline">
             <div style="width:100%">
-                <h3>工單機種明細查詢</h3>
+                <h3>Barcode異常統計查詢</h3>
                 <h5>※工單、機種、日期若不指定請留空白</h5>
                 <table id="leaveRequest" class="table">
                     <tr>
@@ -221,6 +258,9 @@
                             <div class="form-group form-inline">
                                 <input type="text" id="po" placeholder="請輸入工單" />
                                 <input type="text" id="Model_name" placeholder="請輸入機種" />
+                                <select id="lineType"> 
+                                    <option value="-1">請選擇線別</option>
+                                </select>
                                 日期:從
                                 <div class='input-group date' id='beginTime'>
                                     <input type="text" id="fini" placeholder="請選擇起始時間"> 
@@ -230,28 +270,27 @@
                                     <input type="text" id="ffin" placeholder="請選擇結束時間"> 
                                 </div>
                                 <input type="button" id="send" value="確定(Ok)">
+                                <input type="button" id="generateExcel" value="Details">
                             </div>
                         </td>
                     </tr>
                 </table>
                 <div style="width:100%">
-                    <h3>各站紀錄</h3>
+                    <h3>統計數量</h3>
                     <table id="table1" class="display" cellspacing="0" width="100%" style="text-align: center" >
                         <thead>
                             <tr>
-                                <th>系統工單id</th>
-                                <th>po</th>
-                                <th>modelName</th>
-                                <th>人數</th>
-                                <th>barcode</th>
-                                <th>站別</th>
-                                <th>工號</th>
-                                <th>姓名</th>
-                                <th>起始時間</th>
-                                <th>結束時間</th>
-                                <th>花費(秒)</th>
-                                <th>異常</th>
-                                <th></th>
+                                <th>線別id</th>
+                                <th>線別名稱</th>
+                                <th>漏刷筆數</th>
+                                <th>無資料筆數</th>
+                                <th>連續過筆數</th>
+                                <th>漏刷(%)</th>
+                                <th>無資料(%)</th>
+                                <th>連續過(%)</th>
+                                <th>總數量</th>
+                                <th>MES數量</th>
+                                <th>導入率</th>
                             </tr>
                         </thead>
                     </table>

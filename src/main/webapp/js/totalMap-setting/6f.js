@@ -14,33 +14,35 @@ var titleGroup = [
     {lineName: "L3", x: 1055, y: 90},
     {lineName: "L4", x: 1055, y: 0},
     //pkg
-    {lineName: "L6", x: 160, y: 175},
+    {lineName: "L6", x: 520, y: 285},
     {lineName: "L7", x: 160, y: 90},
-    {lineName: "L8", x: 510, y: 160},
-    {lineName: "L9", x: 510, y: 290},
+    {lineName: "L8", x: 425, y: 155},
+    {lineName: "L9", x: 340, y: 240},
     {lineName: "FQC", x: 320, y: 400}
 ];
 
 var testGroup = [
-    {people: 1, x: 535, y: 95}, // group 40
-    {people: 1, x: 535, y: 50}, // group 39
-    {people: 1, x: 535, y: 10}, // group 38
-    {people: 1, x: 625, y: 95}, // group 37
-    {people: 1, x: 625, y: 50}, // group 36
-    {people: 1, x: 625, y: 5}, // group 35
-    {people: 5, x: 590, y: 180}, // group 30-34
-    {people: 5, x: 595, y: 275} // group 25-29
+    {people: 3, x: 420, y: 100}, // group 40-42
+    {people: 3, x: 420, y: 30}, // group 37-39
+    {people: 1, x: 550, y: 115}, // group 36
+    {people: 1, x: 550, y: 70}, // group 35
+    {people: 1, x: 550, y: 30}, // group 34
+    {people: 1, x: 600, y: 115}, // group 33
+    {people: 1, x: 600, y: 70}, // group 32
+    {people: 1, x: 600, y: 30}, // group 31
+    {people: 3, x: 765, y: 115}, // group 28-30
+    {people: 3, x: 765, y: 20} // group 25-27
 ];
 
 var babGroup = [
-    {people: 8, x: 770, y: 260, lineName: "L1"},
-    {people: 8, x: 770, y: 165, lineName: "L2"},
-    {people: 6, x: 800, y: 105, lineName: "L3"},
-    {people: 6, x: 800, y: 10, lineName: "L4"},
-    {people: 3, x: 220, y: 180, lineName: "L6"},
-    {people: 3, x: 230, y: 110, lineName: "L7"},
-    {people: 4, x: 365, y: 175, lineName: "L8"},
-    {people: 4, x: 365, y: 275, lineName: "L9"}
+    {people: 5, x: 875, y: 265, lineName: "L1"},
+    {people: 5, x: 875, y: 185, lineName: "L2"},
+    {people: 5, x: 875, y: 110, lineName: "L3"},
+    {people: 5, x: 875, y: 20, lineName: "L4"},
+    {people: 3, x: 565, y: 245, lineName: "L6"},
+    {people: 3, x: 235, y: 100, lineName: "L7"},
+    {people: 4, x: 480, y: 170, lineName: "L8"},
+    {people: 3, x: 400, y: 245, lineName: "L9"}
 ];
 
 var fqcGroup = [
@@ -48,6 +50,6 @@ var fqcGroup = [
     {people: 1, x: 410, y: 440, lineName: "FQC_2"}
 ];
 
-var maxTestTableNo = 40;
+var maxTestTableNo = 42;
 var sitefloor = 6;
 

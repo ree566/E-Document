@@ -16,14 +16,14 @@ var titleGroup = [
     //pkg
     {lineName: "LF", x: 365, y: 155},
     {lineName: "LG", x: 365, y: 50},
-    {lineName: "LH", x: 15, y: 120},
+    {lineName: "LH", x: 95, y: 200},
     {lineName: "FQC", x: 210, y: 240}
 ];
 
 var testGroup = [
-    {people: 2, x: 680, y: 30}, // group 19-20
-    {people: 9, x: 450, y: 75}, // group 10-18
-    {people: 9, x: 450, y: 160} // group 1-9
+    {people: 8, x: 500, y: 35}, // group 11-18
+    {people: 5, x: 500, y: 85}, // group 6-10
+    {people: 5, x: 500, y: 165} // group 1-5
 ];
 
 var babGroup = [
@@ -42,5 +42,5 @@ var fqcGroup = [
     {people: 1, x: 300, y: 300, lineName: "FQC_5"}
 ];
 
-var maxTestTableNo = 20;
+var maxTestTableNo = 18;
 var sitefloor = 5;
