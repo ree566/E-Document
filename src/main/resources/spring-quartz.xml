@@ -81,6 +81,7 @@
                 <ref bean="cronTrigger"/>
                 <ref bean="cronTrigger2"/>
                 <ref bean="cronTrigger4"/>
+                <ref bean="cronTrigger5"/>
                 
                 <!--<ref bean="cronTrigger3"/>-->
             </list>

@@ -6,7 +6,7 @@
 package com.advantech.test;
 
 import com.advantech.quartzJob.StandardTimeUpload1;
-import com.advantech.quartzJob.WorktimeEventLog;
+import com.advantech.quartzJob.WorktimeEventLog1;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,19 +27,19 @@ import org.springframework.test.context.web.WebAppConfiguration;
 public class QuartzJobTest {
 
     @Autowired
-    @Qualifier("worktimeEventLog")
-    private WorktimeEventLog job1;
+    @Qualifier("worktimeEventLog1")
+    private WorktimeEventLog1 job1;
 
     @Autowired
     @Qualifier("standardTimeUpload1")
     private StandardTimeUpload1 job2;
 
-//    @Test
+    @Test
     public void testWorktimeEventLog() {
         job1.execute();
     }
 
-    @Test
+//    @Test
     public void testStandardTimeUpload() {
 
         job2.uploadToMes();

@@ -98,7 +98,7 @@ public class WorktimeEventLog1 {
     private String generateMailBody() {
 
         String[] checkFields = {
-            "totalModule", "cleanPanel", "assy", "t1", "t2", "t3", "t4", "packing"
+            "productionWt"
         };
 
         DateTime now = new DateTime().withMinuteOfHour(0).withSecondOfMinute(0);
