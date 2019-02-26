@@ -225,7 +225,7 @@
     
     <bean id="SaveMesCountRecord-Trig" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
         <property name="jobDetail" ref="SaveMesCountRecord" />
-        <property name="cronExpression" value="0 0 6 ? * MON-SAT *" />
+        <property name="cronExpression" value="0 35 8 ? * MON-SAT *" />
     </bean>
 
     <!--schedule jobs-->

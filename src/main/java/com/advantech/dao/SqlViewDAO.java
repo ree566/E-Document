@@ -270,7 +270,7 @@ public class SqlViewDAO extends AbstractDao<Integer, Object> {
                 .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
                 .list();
     }
-    
+
     public List<Map> findBabPassStationExceptionReport(String po, String modelName, DateTime sD, DateTime eD, int lineType_id) {
         return super.getSession()
                 .createSQLQuery("{CALL usp_BabPassStation_ExceptionReport(:po, :modelName, :sD, :eD, :lineType_id)}")
@@ -279,6 +279,17 @@ public class SqlViewDAO extends AbstractDao<Integer, Object> {
                 .setParameter("sD", sD != null ? sD.withHourOfDay(0).toDate() : null)
                 .setParameter("eD", eD != null ? eD.withHourOfDay(23).toDate() : null)
                 .setParameter("lineType_id", lineType_id)
+                .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
+                .list();
+    }
+
+    public List<Map> findBabPreAssyProductivity(int lineType_id, int floor_id, DateTime sD, DateTime eD) {
+        return super.getSession()
+                .createSQLQuery("{CALL usp_GetBabPreAssyProductivity(:lineType_id, :floor_id, :sD, :eD)}")
+                .setParameter("lineType_id", lineType_id)
+                .setParameter("floor_id", floor_id)
+                .setParameter("sD", sD != null ? sD.withHourOfDay(0).toDate() : null)
+                .setParameter("eD", eD != null ? eD.withHourOfDay(23).toDate() : null)
                 .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
                 .list();
     }

@@ -291,12 +291,12 @@
                             if (searchResult.ispre == 1) {
                                 $(".preAssy-pcs-insert").show();
                                 if (pcsCnt == "") {
-                                    alert("前置請輸入製做筆數");
+                                    alert("前置請輸入工單數量");
                                     return false;
                                 }
 
-                                if (/^[0-9,]+$/.test(pcsCnt) == false) {
-                                    alert("前置製做筆數 contains illegal character, please try again");
+                                if (/^[0-9]+$/.test(pcsCnt) == false) {
+                                    alert("前置請工單數量 contains illegal character, please try again");
                                     return false;
                                 }
                             }
@@ -943,10 +943,9 @@
                         <div class="col col-xs-12">
                             <table>
                                 <tr class="preAssy-pcs-insert">
-                                    <td>輸入前置數量</td>
+                                    <td>輸入前置工單數量</td>
                                     <td>
-                                        <input type="text" id="pcsCnt" placeholder="請輸入各站前置數量" />
-                                        ※各站數量請用逗號分開
+                                        <input type="text" id="pcsCnt" placeholder="請輸入工單數量" />
                                     </td>
                                 </tr>
                                 <tr>

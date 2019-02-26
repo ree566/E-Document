@@ -261,6 +261,15 @@
         <url-pattern>/pages/admin/BabPassStationExceptionReport</url-pattern>  
     </servlet-mapping>
     
+    <servlet>
+        <servlet-name>BabPreAssyProductivity</servlet-name>
+        <jsp-file>/pages/admin/babPreAssyProductivity.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>BabPreAssyProductivity</servlet-name>
+        <url-pattern>/pages/admin/BabPreAssyProductivity</url-pattern>  
+    </servlet-mapping>
+    
     <!--Other setting-->
     <servlet>
         <servlet-name>appServlet</servlet-name>

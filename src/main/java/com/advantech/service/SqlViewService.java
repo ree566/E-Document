@@ -163,4 +163,8 @@ public class SqlViewService {
         return sqlViewDAO.findBabPassStationExceptionReport(po, modelName, sD, eD, lineType_id);
     }
 
+    public List<Map> findBabPreAssyProductivity(int lineType_id, int floor_id, DateTime sD, DateTime eD) {
+        return sqlViewDAO.findBabPreAssyProductivity(lineType_id, floor_id, sD, eD);
+    }
+
 }

@@ -103,6 +103,7 @@
                             --%>
                         <li><a href="BabPassStationRecord?lineType=ASSY">Barcode過站紀錄</a></li>
                         <li><a href="BabPassStationExceptionReport?lineType=ASSY">異常資料統計</a></li>
+                        <li><a href="BabPreAssyProductivity?lineType=ASSY">前置資料查詢</a></li>
                     </ul>
                 </li>
                 <li class="dropdown">
@@ -119,6 +120,7 @@
                             <li><a href="modelSopRemark.jsp">Sop維護</a></li>
                             </c:if>
                         <li><a href="BabPassStationRecord?lineType=Packing">Barcode過站紀錄</a></li>
+                        <li><a href="BabPreAssyProductivity?lineType=Packing">前置資料查詢</a></li>
                     </ul>
                 </li>
                 <li>

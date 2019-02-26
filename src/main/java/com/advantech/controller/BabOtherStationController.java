@@ -72,7 +72,7 @@ public class BabOtherStationController {
             @RequestParam int bab_id,
             @RequestParam String tagName,
             @RequestParam String jobnumber,
-            @RequestParam(required = false) List<Integer> pcs
+            @RequestParam(required = false) Integer pcs
     ) {
         Bab b = babService.findByPrimaryKey(bab_id);
         BabSettingHistory setting = babSettingHistoryService.findProcessingByTagName(tagName);
@@ -83,19 +83,12 @@ public class BabOtherStationController {
         if (setting.getStation() == b.getPeople()) { // if the station is the last station
             //Save pre pcs record first
             if (b.getIspre() == 1) {
-                Iterables.removeIf(pcs, Predicates.isNull()); //Remove null element
-                
                 List<BabSettingHistory> settings = babSettingHistoryService.findByBab(b);
-                checkArgument(settings.size() == pcs.size(),
-                        (settings.size() > pcs.size() ? "缺少 " : "多餘 ")
-                        + Math.abs(settings.size() - pcs.size())
-                        + " 個製做筆數, 請重新確認");
 
                 List<BabPreAssyPcsRecord> pcsRecords = new ArrayList();
-                int i = 0;
-                for (BabSettingHistory bsh : settings) {
-                    pcsRecords.add(new BabPreAssyPcsRecord(bsh, pcs.get(i++)));
-                }
+                settings.forEach((bsh) -> {
+                    pcsRecords.add(new BabPreAssyPcsRecord(bsh, pcs));
+                });
                 babPreAssyPcsRecordService.insert(pcsRecords);
             }
             
