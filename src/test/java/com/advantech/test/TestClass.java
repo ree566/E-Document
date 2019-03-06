@@ -67,7 +67,7 @@ public class TestClass {
 
     @Test
     public void testEnum2() {
-        System.out.println(BabDataCollectMode.valueOf("MAsNUAL"));
+        System.out.println(1 >> 1);
     }
 
 }

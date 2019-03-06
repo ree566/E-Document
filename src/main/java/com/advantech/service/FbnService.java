@@ -84,4 +84,9 @@ public class FbnService {
     public int sensorDataClean(String date) {
         return fbnDAO.sensorDataClean(date);
     }
+
+    public List<Fbn> findByTagNameAndDate(String tagName, DateTime sD, DateTime eD) {
+        return fbnDAO.findByTagNameAndDate(tagName, sD, eD);
+    }
+
 }

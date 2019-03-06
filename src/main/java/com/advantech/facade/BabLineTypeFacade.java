@@ -96,7 +96,7 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
     //組測亮燈邏輯type 2(目前使用)
     @Override
     public boolean generateData() {
-        
+
         isSomeBabUnderStandard = false;
 
         List<Bab> processingBabs = babService.findProcessing();
@@ -138,54 +138,52 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
          */
         List<BabLastBarcodeStatus> status = sqlViewService.findBabLastBarcodeStatus(processingBabs);
 
-        for (Bab bab : processingBabs) {
+        processingBabs.forEach((bab) -> {
             List<BabSettingHistory> babSettings = allBabSettings.stream()
                     .filter(rec -> rec.getBab().getId() == bab.getId()).collect(toList());
-
             List<BabLastBarcodeStatus> matchesStatus = status.stream()
-                    .filter(stat -> stat.getBab_id()== bab.getId()).collect(toList());
+                    .filter(stat -> stat.getBab_id() == bab.getId()).collect(toList());
+            if (!(babSettings.isEmpty())) {
+                int currentGroupSum = matchesStatus.size();//看目前組別人數是否有到達bab裏頭設定的人數
+                int peoples = bab.getPeople();
+                if (currentGroupSum == 0 || currentGroupSum != peoples) {
+                    /*
+                    Insert an empty status
+                    BabSettingHistory in allBabSettings are proxy object generate by hibernate
+                    Can't transform to json by google.Gson directly
+                     */
+                    babSettings.forEach((setting) -> {
+                        JSONObject obj = new JSONObject();
+                        obj.put("tagName", setting.getTagName().getName());
+                        obj.put("station", setting.getStation());
+                        transBabData.put(obj);
+                    });
 
-            if (babSettings.isEmpty()) {
-                continue;
-            }
-
-            int currentGroupSum = matchesStatus.size();//看目前組別人數是否有到達bab裏頭設定的人數
-            int peoples = bab.getPeople();
-            if (currentGroupSum == 0 || currentGroupSum != peoples) {
-                /*
-                        Insert an empty status
-                        BabSettingHistory in allBabSettings are proxy object generate by hibernate
-                        Can't transform to json by google.Gson directly
-                 */
-                babSettings.forEach((setting) -> {
-                    JSONObject obj = new JSONObject();
-                    obj.put("tagName", setting.getTagName().getName());
-                    obj.put("station", setting.getStation());
-                    transBabData.put(obj);
-                });
-
-                isSomeBabUnderStandard = true;
-
-            } else {
-                BabLastBarcodeStatus maxStatus = matchesStatus.stream()
-                        .max((p1, p2) -> Double.compare(p1.getDiff(), p2.getDiff())).get();
-                double diffTimeSum = matchesStatus.stream().mapToDouble(BabLastBarcodeStatus::getDiff).sum();
-
-                boolean isUnderBalance = checkIsUnderBalance(bab, maxStatus.getDiff(), diffTimeSum);
-//
-                if (isUnderBalance) {
                     isSomeBabUnderStandard = true;
-                }
 
-                for (BabLastBarcodeStatus bgs : matchesStatus) {
-                    bgs.setIsmax(isUnderBalance && Objects.equals(bgs, maxStatus));
-                    transBabData.put(new JSONObject(bgs));
+                } else {
+                    BabLastBarcodeStatus maxStatus = matchesStatus.stream()
+                            .max((p1, p2) -> Double.compare(p1.getDiff(), p2.getDiff())).get();
+                    double diffTimeSum = matchesStatus.stream().mapToDouble(BabLastBarcodeStatus::getDiff).sum();
+
+                    boolean isUnderBalance = checkIsUnderBalance(bab, maxStatus.getDiff(), diffTimeSum);
+//
+                    if (isUnderBalance) {
+                        isSomeBabUnderStandard = true;
+                    }
+
+                    matchesStatus.stream().map((bgs) -> {
+                        bgs.setIsmax(isUnderBalance && Objects.equals(bgs, maxStatus));
+                        return bgs;
+                    }).forEachOrdered((bgs) -> {
+                        transBabData.put(new JSONObject(bgs));
+                    });
                 }
             }
-        }
+        });
         return transBabData;
     }
-    
+
     private JSONArray getBabLineBalanceResultWithSensor(List<Bab> processingBabs, List<BabSettingHistory> allBabSettings) {
         JSONArray transBabData = new JSONArray();
 
@@ -195,51 +193,49 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
          */
         List<BabLastGroupStatus> status = sqlViewService.findBabLastGroupStatus(processingBabs);
 
-        for (Bab bab : processingBabs) {
+        processingBabs.forEach((bab) -> {
             List<BabSettingHistory> babSettings = allBabSettings.stream()
                     .filter(rec -> rec.getBab().getId() == bab.getId()).collect(toList());
-
             List<BabLastGroupStatus> matchesStatus = status.stream()
                     .filter(stat -> stat.getBab_id() == bab.getId()).collect(toList());
-
-            if (babSettings.isEmpty()) {
-                continue;
-            }
-
-            int currentGroupSum = matchesStatus.size();//看目前組別人數是否有到達bab裏頭設定的人數
-            int peoples = bab.getPeople();
-            if (currentGroupSum == 0 || currentGroupSum != peoples) {
-                /*
-                        Insert an empty status
-                        BabSettingHistory in allBabSettings are proxy object generate by hibernate
-                        Can't transform to json by google.Gson directly
-                 */
-                babSettings.forEach((setting) -> {
-                    JSONObject obj = new JSONObject();
-                    obj.put("tagName", setting.getTagName().getName());
-                    obj.put("station", setting.getStation());
-                    transBabData.put(obj);
-                });
-
-                isSomeBabUnderStandard = true;
-
-            } else {
-                BabLastGroupStatus maxStatus = matchesStatus.stream()
-                        .max((p1, p2) -> Double.compare(p1.getDiff(), p2.getDiff())).get();
-                double diffTimeSum = matchesStatus.stream().mapToDouble(BabLastGroupStatus::getDiff).sum();
-
-                boolean isUnderBalance = checkIsUnderBalance(bab, maxStatus.getDiff(), diffTimeSum);
-
-                if (isUnderBalance) {
+            if (!(babSettings.isEmpty())) {
+                int currentGroupSum = matchesStatus.size();//看目前組別人數是否有到達bab裏頭設定的人數
+                int peoples = bab.getPeople();
+                if (currentGroupSum == 0 || currentGroupSum != peoples) {
+                    /*
+                    Insert an empty status
+                    BabSettingHistory in allBabSettings are proxy object generate by hibernate
+                    Can't transform to json by google.Gson directly
+                    */
+                    babSettings.forEach((setting) -> {
+                        JSONObject obj = new JSONObject();
+                        obj.put("tagName", setting.getTagName().getName());
+                        obj.put("station", setting.getStation());
+                        transBabData.put(obj);
+                    });
+                    
                     isSomeBabUnderStandard = true;
-                }
-
-                for (BabLastGroupStatus bgs : matchesStatus) {
-                    bgs.setIsmax(isUnderBalance && Objects.equals(bgs, maxStatus));
-                    transBabData.put(new JSONObject(bgs));
+                    
+                } else {
+                    BabLastGroupStatus maxStatus = matchesStatus.stream()
+                            .max((p1, p2) -> Double.compare(p1.getDiff(), p2.getDiff())).get();
+                    double diffTimeSum = matchesStatus.stream().mapToDouble(BabLastGroupStatus::getDiff).sum();
+                    
+                    boolean isUnderBalance = checkIsUnderBalance(bab, maxStatus.getDiff(), diffTimeSum);
+                    
+                    if (isUnderBalance) {
+                        isSomeBabUnderStandard = true;
+                    }
+                    
+                    matchesStatus.stream().map((bgs) -> {
+                        bgs.setIsmax(isUnderBalance && Objects.equals(bgs, maxStatus));
+                        return bgs;
+                    }).forEachOrdered((bgs) -> {
+                        transBabData.put(new JSONObject(bgs));
+                    });
                 }
             }
-        }
+        });
         return transBabData;
     }
 

@@ -44,6 +44,9 @@
         <intercept-url pattern="/pages/admin/assyDelete.jsp**" access="hasAnyRole('BACKDOOR_4876_', 'ADMIN')" />
         <intercept-url pattern="/pages/testPages/**" access="hasRole('ADMIN')" />
         <intercept-url pattern="/pages/admin/setting/**" access="hasRole('ADMIN')" />
+        <intercept-url pattern="/pages/admin/setting/**" access="hasRole('ADMIN')" />
+        <intercept-url pattern="/pages/admin/SensorTest" access="hasAnyRole('OPER_MFG', 'ADMIN')" />
+        <intercept-url pattern="/pages/admin/sensorTest.jsp**" access="hasAnyRole('OPER_MFG', 'ADMIN')" />
         <!--<intercept-url pattern="/ModelSopRemarkController/**" access="isAuthenticated()" />-->
         <!--<intercept-url pattern="/socket/**" access="isAuthenticated()" />-->
         

@@ -226,6 +226,8 @@
                         $("#step2Hint").html("")
                                 .append("<li>做完最後一台時點擊<code>Save</code>，告知系統您已經做完了</li>")
                                 .append("<li>如果要更換使用者，請點選<code>換人</code>，填入您的新工號之後進行工號切換</li>");
+                        
+                        $(".preAssy-pcs-insert").toggle(processData.length != 0 && processData[0].ispre == 1);
                     }
                 });
 
@@ -283,12 +285,25 @@
                                 "機種: " + searchResult.modelName + "\n" +
                                 "人數: " + searchResult.people
                                 )) {
+                            var pcsCnt = $("#pcsCnt").val();
+                            if (searchResult.ispre == 1) {
+                                $(".preAssy-pcs-insert").show();
+                                if (pcsCnt == "") {
+                                    alert("前置請輸入工單數量");
+                                    return false;
+                                }
 
+                                if (/^[0-9]+$/.test(pcsCnt) == false) {
+                                    alert("前置請工單數量 contains illegal character, please try again");
+                                    return false;
+                                }
+                            }
                             otherStationUpdate({
                                 bab_id: searchResult.id,
                                 tagName: userInfo.tagName,
                                 jobnumber: userInfo.jobnumber,
-                                action: BAB_END
+                                action: BAB_END,
+                                "pcs": pcsCnt
                             });
                         }
                     }
@@ -593,6 +608,9 @@
                                 " / 人數: " + processingBab.people +
                                 (processingBab.ispre == 1 ? " / 前置" : "") +
                                 "</p>");
+                        if (i == 0 && processingBab.ispre == 1) {
+                            $(".preAssy-pcs-insert").show();
+                        }
                     }
                     findModelSopRemark();
                 } else {
@@ -899,6 +917,12 @@
                     <div id="otherStationWiget" class="row">
                         <div class="col col-xs-12">
                             <table>
+                                <tr class="preAssy-pcs-insert">
+                                    <td>輸入前置工單數量</td>
+                                    <td>
+                                        <input type="text" id="pcsCnt" placeholder="請輸入工單數量" />
+                                    </td>
+                                </tr>
                                 <tr>
                                     <td>儲存結束工單</td>
                                     <td>

@@ -173,7 +173,6 @@
         </script>
     </head>
     <body class="noscript">
-
         <script>
             $("body").removeClass("noscript");
         </script>
@@ -197,9 +196,9 @@
                         <button class="btn btn-default col-xs-2">測試</button>
                     </a>
 
-<!--                    <a class="cell">
-                        <button class="btn btn-default col-xs-2">Cell</button>
-                    </a>-->
+                    <!--                    <a class="cell">
+                                            <button class="btn btn-default col-xs-2">Cell</button>
+                                        </a>-->
                 </div>
             </div>
             <div class="row">

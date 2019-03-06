@@ -1,6 +1,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <sec:authentication var="user" property="principal" />
 <sec:authorize access="isAuthenticated()"  var="isAuthenticated" />
 <sec:authorize access="hasRole('ADMIN')"  var="isAdmin" />
@@ -38,17 +39,24 @@
                 "Sorry, this page require jquery plugin\
                 , please check your system environment or contact system administrator";
     }
+    <fmt:bundle basename="options">
     $(function () {
+        var mode = "<fmt:message key="bab.data.collect.mode" />".toLowerCase();
+
         $.getJSON("../../json/sitefloor.json", function (data) {
             var sitefloors = data.sitefloors;
             var navbar = $("#bs-example-navbar-collapse-1");
             for (var i = 0, j = sitefloors.length; i < j; i++) {
                 var sitefloor = sitefloors[i].floor;
                 navbar.find(".totalMapSelect").append("<li><a href='TotalMap?sitefloor=" + sitefloor + "'>狀態平面圖" + sitefloor + "F</a></li>");
-                navbar.find(".sensorAdjustSelect").append("<li><a href='BarcodeAdjust?sitefloor=" + sitefloor + "'>" + sitefloor + "樓感應器狀態(校正用)</a></li>");
+                navbar.find(".sensorAdjustSelect").append("<li><a href='" + (mode == "auto" ? "Sensor" : "Barcode") + 
+                        "Adjust?sitefloor=" + sitefloor + "'>" + sitefloor + "樓感應器狀態(校正用)</a></li>");
             }
         });
+
+        $(".hide-when-" + mode).remove();
     });
+    </fmt:bundle>
 </script>
 <!-- Navigation -->
 <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
@@ -77,7 +85,6 @@
                         <span class="caret" />
                     </a>
                     <ul class="dropdown-menu">
-                        <!--<li><a href="testTotal.jsp">測試線別狀態</a></li>-->
                         <li><a href="TestTotalDetail">測試線別狀態</a></li>
                         <li><a href="TestTotal">測試線別紀錄</a></li>
                     </ul>
@@ -90,7 +97,7 @@
                     </a>
                     <ul class="dropdown-menu">
                         <li><a href="BabTotal?lineType=ASSY">線平衡資訊查詢</a></li>
-                        <!--<li><a href="BabDetailInfo">各站機台時間查詢</a></li>-->
+                        <li class="hide-when-manual"><a href="BabDetailInfo">各站機台時間查詢</a></li>
                         <li><a href="BabDetailInfo2?lineType=ASSY">各站時間查詢(報表格式)</a></li>
                         <li><a href="BabLineProductivity">線體效率查詢</a></li>
                             <c:if test="${isMfgLineOwner || isMfgOper || isAdmin}">
@@ -101,8 +108,8 @@
                             <li><a href="AssyDelete">Assy delete</a></li>
                             </c:if>
                             --%>
-                        <li><a href="BabPassStationRecord?lineType=ASSY">Barcode過站紀錄</a></li>
-                        <li><a href="BabPassStationExceptionReport?lineType=ASSY">異常資料統計</a></li>
+                        <li class="hide-when-auto"><a href="BabPassStationRecord?lineType=ASSY">Barcode過站紀錄</a></li>
+                        <li class="hide-when-auto"><a href="BabPassStationExceptionReport?lineType=ASSY">異常資料統計</a></li>
                         <li><a href="BabPreAssyProductivity?lineType=ASSY">前置資料查詢</a></li>
                     </ul>
                 </li>
@@ -114,12 +121,12 @@
                     </a>
                     <ul class="dropdown-menu">
                         <li><a href="BabTotal?lineType=Packing">線平衡資訊查詢</a></li>
-                        <!--<li><a href="BabDetailInfo">各站機台時間查詢</a></li>-->
+                        <li class="hide-when-manual"><a href="BabDetailInfo">各站機台時間查詢</a></li>
                         <li><a href="BabDetailInfo2?lineType=Packing">各站時間查詢(報表格式)</a></li>
                             <c:if test="${isMfgLineOwner || isMfgOper || isAdmin}">
                             <li><a href="modelSopRemark.jsp">Sop維護</a></li>
                             </c:if>
-                        <li><a href="BabPassStationRecord?lineType=Packing">Barcode過站紀錄</a></li>
+                        <li class="hide-when-auto"><a href="BabPassStationRecord?lineType=Packing">Barcode過站紀錄</a></li>
                         <li><a href="BabPreAssyProductivity?lineType=Packing">前置資料查詢</a></li>
                     </ul>
                 </li>
@@ -152,7 +159,11 @@
                             感應器
                             <span class="caret" />
                         </a>
-                        <ul class="dropdown-menu sensorAdjustSelect"></ul>
+                        <ul class="dropdown-menu sensorAdjustSelect">
+                            <c:if test="${isAdmin}">
+                                <li><a href="SensorTest">Sensor檢測</a></li>
+                            </c:if>
+                        </ul>
                     </li>
                 </c:if>
             </ul>

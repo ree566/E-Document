@@ -47,7 +47,7 @@ public class FbnDAO extends AbstractDao<Integer, Fbn> {
                 .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
                 .list();
     }
-    
+
     //用途同上method comment
     public List<Map> getBarcodeCurrentStatus() {
         return super.getSession()
@@ -78,6 +78,17 @@ public class FbnDAO extends AbstractDao<Integer, Fbn> {
                 .setParameter("date", date)
                 .executeUpdate();
         return 1;
+    }
+
+    public List<Fbn> findByTagNameAndDate(String tagName, DateTime sD, DateTime eD) {
+        DateTimeFormatter fmt = DateTimeFormat.forPattern("yy/MM/dd");
+        DateTimeFormatter fmt2 = DateTimeFormat.forPattern("HH:mm:ss");
+
+        return super.createEntityCriteria()
+                .add(Restrictions.eq("tagName", tagName))
+                .add(Restrictions.eq("logDate", fmt.print(sD)))
+                .add(Restrictions.between("logTime", fmt2.print(sD), fmt2.print(eD)))
+                .list();
     }
 
 }
