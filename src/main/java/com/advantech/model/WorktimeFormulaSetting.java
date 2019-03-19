@@ -26,10 +26,8 @@ public class WorktimeFormulaSetting implements java.io.Serializable {
     private Worktime worktime;
     private int productionWt = 1;
     private int setupTime = 1;
-    private int assyToT1 = 1;
-    private int t2ToPacking = 1;
-    private int assyLeadTime = 1;
-    private int test = 1;
+    private int assyStation = 1;
+    private int packingStation = 1;
 
     public WorktimeFormulaSetting() {
     }
@@ -38,16 +36,13 @@ public class WorktimeFormulaSetting implements java.io.Serializable {
         this.worktime = worktime;
     }
 
-    public WorktimeFormulaSetting(int id, Worktime worktime, int productionWt, 
-            int setupTime, int assyToT1, int t2ToPacking, int assyLeadTime, int test) {
+    public WorktimeFormulaSetting(int id, Worktime worktime, int productionWt, int setupTime, int assyStation, int packingStation) {
         this.id = id;
         this.worktime = worktime;
         this.productionWt = productionWt;
         this.setupTime = setupTime;
-        this.assyToT1 = assyToT1;
-        this.t2ToPacking = t2ToPacking;
-        this.assyLeadTime = assyLeadTime;
-        this.test = test;
+        this.assyStation = assyStation;
+        this.packingStation = packingStation;
     }
 
     @Id
@@ -89,40 +84,22 @@ public class WorktimeFormulaSetting implements java.io.Serializable {
         this.setupTime = setupTime;
     }
 
-    @Column(name = "assy_to_t1", nullable = false)
-    public int getAssyToT1() {
-        return this.assyToT1;
+    @Column(name = "assy_station", nullable = false)
+    public int getAssyStation() {
+        return this.assyStation;
     }
 
-    public void setAssyToT1(int assyToT1) {
-        this.assyToT1 = assyToT1;
+    public void setAssyStation(int assyStation) {
+        this.assyStation = assyStation;
     }
 
-    @Column(name = "t2_to_packing", nullable = false)
-    public int getT2ToPacking() {
-        return this.t2ToPacking;
+    @Column(name = "packing_station", nullable = false)
+    public int getPackingStation() {
+        return this.packingStation;
     }
 
-    public void setT2ToPacking(int t2ToPacking) {
-        this.t2ToPacking = t2ToPacking;
-    }
-
-    @Column(name = "assy_lead_time", nullable = false)
-    public int getAssyLeadTime() {
-        return assyLeadTime;
-    }
-
-    public void setAssyLeadTime(int assyLeadTime) {
-        this.assyLeadTime = assyLeadTime;
-    }
-
-    @Column(name = "test", nullable = false)
-    public int getTest() {
-        return test;
-    }
-
-    public void setTest(int test) {
-        this.test = test;
+    public void setPackingStation(int packingStation) {
+        this.packingStation = packingStation;
     }
 
 }

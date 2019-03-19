@@ -36,10 +36,6 @@ public class WorkCenterService {
         return workCenterDAO.findByPrimaryKey(obj_id);
     }
 
-    public List<WorkCenter> findByBusinessGroup(int businessGroupId) {
-        return workCenterDAO.findByBusinessGroup(businessGroupId);
-    }
-
     public int insert(WorkCenter pojo) {
         return workCenterDAO.insert(pojo);
     }

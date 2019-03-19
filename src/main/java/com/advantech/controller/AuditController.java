@@ -89,7 +89,8 @@ public class AuditController {
     @ResponseBody
     @RequestMapping(value = "/findLastRevision", method = {RequestMethod.GET, RequestMethod.POST})
     protected Number getAuditRevision(@RequestParam(required = false) Integer id) {
-        return auditService.findLastRevisions(Worktime.class, id);
+        Number rev = auditService.findLastRevisions(Worktime.class, id);
+        return rev == null ? 0 : rev;
     }
 
 }

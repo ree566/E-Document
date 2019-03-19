@@ -5,20 +5,14 @@
  */
 package com.advantech.controller;
 
-import com.advantech.model.Floor;
 import com.advantech.model.Flow;
-import com.advantech.model.Pending;
 import com.advantech.model.User;
-import com.advantech.model.Type;
 import com.advantech.model.Worktime;
-import com.advantech.model.WorktimeFormulaSetting;
 import com.advantech.service.FloorService;
 import com.advantech.service.FlowService;
 import com.advantech.service.UserService;
-import com.advantech.service.PendingService;
 import com.advantech.service.TypeService;
 import com.advantech.service.WorktimeService;
-import static com.google.common.collect.Lists.newArrayList;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -32,8 +26,6 @@ import java.util.List;
 import java.util.Map;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.apache.poi.EncryptedDocumentException;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.DateUtil;
@@ -76,9 +68,6 @@ public class FileUploadController {
 
     @Autowired
     private FloorService floorService;
-
-    @Autowired
-    private PendingService pendingService;
 
     @Autowired
     private TypeService typeService;

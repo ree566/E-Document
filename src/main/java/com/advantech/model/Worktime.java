@@ -55,25 +55,16 @@ public class Worktime implements java.io.Serializable {
     private int id;
     private String modelName;
     private Type type;
-    private BusinessGroup businessGroup;
     private WorkCenter workCenter;
     private BigDecimal productionWt = BigDecimal.ZERO;
     private BigDecimal setupTime = BigDecimal.ZERO;
-    private BigDecimal arFilmAttachment = BigDecimal.ZERO;
-    private BigDecimal seal = BigDecimal.ZERO;
-    private BigDecimal opticalBonding = BigDecimal.ZERO;
-    private String pressureCooker;
-    private BigDecimal cleanPanel = BigDecimal.ZERO;
-    private BigDecimal pi = BigDecimal.ZERO;
     private BigDecimal assy = BigDecimal.ZERO;
-    private BigDecimal t1 = BigDecimal.ZERO;
     private BigDecimal t2 = BigDecimal.ZERO;
     private BigDecimal packing = BigDecimal.ZERO;
     private BigDecimal upBiRi = BigDecimal.ZERO;
     private BigDecimal downBiRi = BigDecimal.ZERO;
     private BigDecimal biCost = BigDecimal.ZERO;
-    private BigDecimal assyToT1 = BigDecimal.ZERO;
-    private BigDecimal t2ToPacking = BigDecimal.ZERO;
+    private BigDecimal hiPotLeakage = BigDecimal.ZERO;
     private Floor floor;
     private String burnIn;
     private BigDecimal biTime;
@@ -85,29 +76,29 @@ public class Worktime implements java.io.Serializable {
     private String testSop;
     private Integer keypartA = 0;
     private Integer keypartB = 0;
-    private PreAssy preAssy;
     private Flow flowByTestFlowId;
     private Flow flowByBabFlowId;
     private Flow flowByPackingFlowId;
     private String partLink;
-    private Remark remark;
     private int ce;
     private int ul;
     private int rohs;
-    private int weee;
     private int madeInTaiwan;
     private int fcc;
     private int eac;
     private int kc;
+    private String poCategory;
     private BigDecimal nsInOneCollectionBox = BigDecimal.ZERO;
     private String partNoAttributeMaintain;
-    private String labelInformation;
+    private String acwVoltage;
+    private String irVoltage;
+    private String testProfile;
+    private String lltValue;
+    private String gndValue;
     private BigDecimal weight = BigDecimal.ZERO;
     private BigDecimal tolerance = BigDecimal.ZERO;
-    private BigDecimal materialVolumeA = BigDecimal.ZERO;
-    private BigDecimal materialVolumeB = BigDecimal.ZERO;
-    private BigDecimal assyLeadTime = BigDecimal.ZERO;
-    private BigDecimal test = BigDecimal.ZERO;
+    private Integer assyStation = 0;
+    private Integer packingStation = 0;
     private Date createDate;
     private Date modifiedDate;
 
@@ -136,7 +127,7 @@ public class Worktime implements java.io.Serializable {
     @Size(min = 0, max = 50)
     @Column(name = "model_name", unique = true, nullable = false, length = 50)
     public String getModelName() {
-        return this.modelName;
+        return this.modelName == null ? null : this.modelName.toUpperCase();
     }
 
     public void setModelName(String modelName) {
@@ -152,16 +143,6 @@ public class Worktime implements java.io.Serializable {
 
     public void setType(Type type) {
         this.type = type;
-    }
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "businessGroup_id")
-    public BusinessGroup getBusinessGroup() {
-        return businessGroup;
-    }
-
-    public void setBusinessGroup(BusinessGroup businessGroup) {
-        this.businessGroup = businessGroup;
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -195,66 +176,6 @@ public class Worktime implements java.io.Serializable {
     }
 
     @Digits(integer = 10 /*precision*/, fraction = 1 /*scale*/)
-    @Column(name = "arFilmAttachment", precision = 10, scale = 1)
-    public BigDecimal getArFilmAttachment() {
-        return arFilmAttachment;
-    }
-
-    public void setArFilmAttachment(BigDecimal arFilmAttachment) {
-        this.arFilmAttachment = autoFixScale(arFilmAttachment, 1);
-    }
-
-    @Digits(integer = 10 /*precision*/, fraction = 1 /*scale*/)
-    @Column(name = "seal", precision = 10, scale = 1)
-    public BigDecimal getSeal() {
-        return seal;
-    }
-
-    public void setSeal(BigDecimal seal) {
-        this.seal = autoFixScale(seal, 1);
-    }
-
-    @Digits(integer = 10 /*precision*/, fraction = 1 /*scale*/)
-    @Column(name = "opticalBonding", precision = 10, scale = 1)
-    public BigDecimal getOpticalBonding() {
-        return opticalBonding;
-    }
-
-    public void setOpticalBonding(BigDecimal opticalBonding) {
-        this.opticalBonding = autoFixScale(opticalBonding, 1);
-    }
-
-    @Size(min = 0, max = 10)
-    @Column(name = "pressureCooker", length = 10)
-    public String getPressureCooker() {
-        return pressureCooker;
-    }
-
-    public void setPressureCooker(String pressureCooker) {
-        this.pressureCooker = pressureCooker;
-    }
-
-    @Digits(integer = 10 /*precision*/, fraction = 1 /*scale*/)
-    @Column(name = "clean_panel", precision = 10, scale = 1)
-    public BigDecimal getCleanPanel() {
-        return this.cleanPanel;
-    }
-
-    public void setCleanPanel(BigDecimal cleanPanel) {
-        this.cleanPanel = autoFixScale(cleanPanel, 1);
-    }
-
-    @Digits(integer = 10 /*precision*/, fraction = 1 /*scale*/)
-    @Column(name = "[pi]", precision = 10, scale = 1)
-    public BigDecimal getPi() {
-        return pi;
-    }
-
-    public void setPi(BigDecimal pi) {
-        this.pi = autoFixScale(pi, 1);
-    }
-
-    @Digits(integer = 10 /*precision*/, fraction = 1 /*scale*/)
     @Column(name = "assy", precision = 10, scale = 1)
     public BigDecimal getAssy() {
         return this.assy;
@@ -262,16 +183,6 @@ public class Worktime implements java.io.Serializable {
 
     public void setAssy(BigDecimal assy) {
         this.assy = autoFixScale(assy, 1);
-    }
-
-    @Digits(integer = 10 /*precision*/, fraction = 1 /*scale*/)
-    @Column(name = "t1", precision = 10, scale = 1)
-    public BigDecimal getT1() {
-        return this.t1;
-    }
-
-    public void setT1(BigDecimal t1) {
-        this.t1 = autoFixScale(t1, 1);
     }
 
     @Digits(integer = 10 /*precision*/, fraction = 1 /*scale*/)
@@ -325,23 +236,13 @@ public class Worktime implements java.io.Serializable {
     }
 
     @Digits(integer = 10 /*precision*/, fraction = 1 /*scale*/)
-    @Column(name = "assy_to_t1", precision = 10, scale = 1)
-    public BigDecimal getAssyToT1() {
-        return assyToT1;
+    @Column(name = "hi_pot_leakage", precision = 10, scale = 1)
+    public BigDecimal getHiPotLeakage() {
+        return hiPotLeakage;
     }
 
-    public void setAssyToT1(BigDecimal assyToT1) {
-        this.assyToT1 = autoFixScale(assyToT1, 1);
-    }
-
-    @Digits(integer = 10 /*precision*/, fraction = 1 /*scale*/)
-    @Column(name = "t2_to_packing", precision = 10, scale = 1)
-    public BigDecimal getT2ToPacking() {
-        return t2ToPacking;
-    }
-
-    public void setT2ToPacking(BigDecimal t2ToPacking) {
-        this.t2ToPacking = autoFixScale(t2ToPacking, 1);
+    public void setHiPotLeakage(BigDecimal hiPotLeakage) {
+        this.hiPotLeakage = hiPotLeakage;
     }
 
 //    @NotNull
@@ -400,7 +301,7 @@ public class Worktime implements java.io.Serializable {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ee_owner_id", nullable = false)
+    @JoinColumn(name = "ee_owner_id", nullable = true)
     public User getUserByEeOwnerId() {
         return this.userByEeOwnerId;
     }
@@ -459,16 +360,6 @@ public class Worktime implements java.io.Serializable {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "pre_assy_id", nullable = true)
-    public PreAssy getPreAssy() {
-        return this.preAssy;
-    }
-
-    public void setPreAssy(PreAssy preAssy) {
-        this.preAssy = preAssy;
-    }
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bab_flow_id", nullable = true)
     public Flow getFlowByBabFlowId() {
         return this.flowByBabFlowId;
@@ -507,16 +398,6 @@ public class Worktime implements java.io.Serializable {
         this.partLink = partLink;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "remark_id", nullable = true)
-    public Remark getRemark() {
-        return remark;
-    }
-
-    public void setRemark(Remark remark) {
-        this.remark = remark;
-    }
-
     @NotNull
     @Column(name = "ce", nullable = false)
     public int getCe() {
@@ -545,16 +426,6 @@ public class Worktime implements java.io.Serializable {
 
     public void setRohs(int rohs) {
         this.rohs = rohs;
-    }
-
-    @NotNull
-    @Column(name = "weee", nullable = false)
-    public int getWeee() {
-        return this.weee;
-    }
-
-    public void setWeee(int weee) {
-        this.weee = weee;
     }
 
     @NotNull
@@ -597,6 +468,16 @@ public class Worktime implements java.io.Serializable {
         this.kc = kc;
     }
 
+    @NotNull
+    @Column(name = "po_category", nullable = false)
+    public String getPoCategory() {
+        return poCategory;
+    }
+
+    public void setPoCategory(String poCategory) {
+        this.poCategory = poCategory;
+    }
+
     @Digits(integer = 10 /*precision*/, fraction = 1 /*scale*/)
     @Column(name = "ns_in_one_collection_box", precision = 10, scale = 1)
     public BigDecimal getNsInOneCollectionBox() {
@@ -616,13 +497,49 @@ public class Worktime implements java.io.Serializable {
         this.partNoAttributeMaintain = partNoAttributeMaintain;
     }
 
-    @Column(name = "label_information", length = 10)
-    public String getLabelInformation() {
-        return labelInformation;
+    @Column(name = "acw_voltage", nullable = false, length = 30)
+    public String getAcwVoltage() {
+        return acwVoltage;
     }
 
-    public void setLabelInformation(String labelInformation) {
-        this.labelInformation = labelInformation;
+    public void setAcwVoltage(String acwVoltage) {
+        this.acwVoltage = acwVoltage;
+    }
+
+    @Column(name = "ir_voltage", nullable = false, length = 30)
+    public String getIrVoltage() {
+        return irVoltage;
+    }
+
+    public void setIrVoltage(String irVoltage) {
+        this.irVoltage = irVoltage;
+    }
+
+    @Column(name = "test_profile", nullable = false, length = 30)
+    public String getTestProfile() {
+        return testProfile;
+    }
+
+    public void setTestProfile(String testProfile) {
+        this.testProfile = testProfile;
+    }
+
+    @Column(name = "llt_value", nullable = false, length = 100)
+    public String getLltValue() {
+        return lltValue;
+    }
+
+    public void setLltValue(String lltValue) {
+        this.lltValue = lltValue;
+    }
+
+    @Column(name = "gnd_value", nullable = false, length = 30)
+    public String getGndValue() {
+        return gndValue;
+    }
+
+    public void setGndValue(String gndValue) {
+        this.gndValue = gndValue;
     }
 
     @NotNull
@@ -647,42 +564,22 @@ public class Worktime implements java.io.Serializable {
         this.tolerance = autoFixScale(tolerance, 4);
     }
 
-    @Column(name = "materialVolumeA")
-    public BigDecimal getMaterialVolumeA() {
-        return materialVolumeA;
+    @Column(name = "assy_station")
+    public Integer getAssyStation() {
+        return assyStation;
     }
 
-    public void setMaterialVolumeA(BigDecimal materialVolumeA) {
-        this.materialVolumeA = materialVolumeA;
+    public void setAssyStation(Integer assyStation) {
+        this.assyStation = assyStation;
     }
 
-    @Column(name = "materialVolumeB")
-    public BigDecimal getMaterialVolumeB() {
-        return materialVolumeB;
+    @Column(name = "packing_station")
+    public Integer getPackingStation() {
+        return packingStation;
     }
 
-    public void setMaterialVolumeB(BigDecimal materialVolumeB) {
-        this.materialVolumeB = materialVolumeB;
-    }
-
-    @Digits(integer = 10 /*precision*/, fraction = 1 /*scale*/)
-    @Column(name = "assy_lead_time", precision = 10, scale = 1)
-    public BigDecimal getAssyLeadTime() {
-        return this.assyLeadTime;
-    }
-
-    public void setAssyLeadTime(BigDecimal assyLeadTime) {
-        this.assyLeadTime = autoFixScale(assyLeadTime, 1);
-    }
-
-    @Digits(integer = 10 /*precision*/, fraction = 1 /*scale*/)
-    @Column(name = "test", precision = 10, scale = 1)
-    public BigDecimal getTest() {
-        return test;
-    }
-
-    public void setTest(BigDecimal test) {
-        this.test = autoFixScale(test, 1);
+    public void setPackingStation(Integer packingStation) {
+        this.packingStation = packingStation;
     }
 
     @NotAudited
@@ -740,47 +637,48 @@ public class Worktime implements java.io.Serializable {
 
 //  Default formula column caculate
     public void setDefaultProductWt() {
-        BigDecimal defaultValue = notEmpty(arFilmAttachment).add(notEmpty(seal))
-                .add(notEmpty(opticalBonding)).add(notEmpty(cleanPanel)).add(notEmpty(pi))
-                .add(notEmpty(assy)).add(notEmpty(t1)).add(notEmpty(t2)).add(notEmpty(packing))
-                .add(notEmpty(upBiRi)).add(notEmpty(downBiRi)).add(notEmpty(biCost));
+        BigDecimal defaultValue = notEmpty(assy).add(notEmpty(t2))
+                .add(notEmpty(packing)).add(notEmpty(upBiRi)).add(notEmpty(downBiRi))
+                .add(notEmpty(biCost)).add(notEmpty(hiPotLeakage));
         this.setProductionWt(defaultValue);
     }
 
     public void setDefaultSetupTime() {
         BigDecimal defaultValue = BigDecimal.ZERO
-                .add(notEmpty(arFilmAttachment).add(notEmpty(cleanPanel)).add(notEmpty(pi)).compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : new BigDecimal(20))
-                .add(notEmpty(assy).compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : new BigDecimal(10))
-                .add(notEmpty(t1).add(notEmpty(t2)).compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : new BigDecimal(5))
+                .add(notEmpty(assy).compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : new BigDecimal(25))
+                .add(notEmpty(t2).compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : new BigDecimal(5))
                 .add(notEmpty(packing).compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : new BigDecimal(10));
         this.setSetupTime(defaultValue);
     }
 
-    public void setDefaultAssyToT1() {
-        BigDecimal defaultValue = notEmpty(arFilmAttachment)
-                .add(notEmpty(seal))
-                .add(notEmpty(opticalBonding))
-                .add(notEmpty(cleanPanel)).add(notEmpty(pi))
-                .add(notEmpty(assy)).add(notEmpty(t1));
-        this.setAssyToT1(defaultValue);
+    public void setDefaultAssyStation() {
+        int defaultValue;
+        if (notEmpty(assy).compareTo(new BigDecimal(5)) <= 0) {
+            defaultValue = 1;
+        } else {
+            BigDecimal b = notEmpty(assy).divide(new BigDecimal(5), 0, RoundingMode.HALF_UP);
+            if (b.compareTo(new BigDecimal(3)) >= 0) {
+                defaultValue = 3;
+            } else {
+                defaultValue = b.intValue();
+            }
+        }
+        this.setAssyStation(defaultValue);
     }
 
-    public void setDefaultT2ToPacking() {
-        BigDecimal defaultValue = notEmpty(t2)
-                .add(notEmpty(packing));
-        this.setT2ToPacking(defaultValue);
-    }
-
-    public void setDefaultAssyLeadTime() {
-        BigDecimal defaultValue = notEmpty(arFilmAttachment)
-                .add(notEmpty(cleanPanel))
-                .add(notEmpty(pi));
-        this.setAssyLeadTime(defaultValue);
-    }
-
-    public void setDefaultTest() {
-        BigDecimal defaultValue = notEmpty(t1).add(notEmpty(t2));
-        this.setTest(defaultValue);
+    public void setDefaultPackingStation() {
+        int defaultValue;
+        if (notEmpty(packing).compareTo(new BigDecimal(5)) <= 0) {
+            defaultValue = 1;
+        } else {
+            BigDecimal b = notEmpty(packing).divide(new BigDecimal(5), 0, RoundingMode.HALF_UP);
+            if (b.compareTo(new BigDecimal(3)) >= 0) {
+                defaultValue = 3;
+            } else {
+                defaultValue = b.intValue();
+            }
+        }
+        this.setPackingStation(defaultValue);
     }
 
     private BigDecimal notEmpty(BigDecimal d) {

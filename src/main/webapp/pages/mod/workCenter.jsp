@@ -12,13 +12,6 @@
     $(function () {
         var grid = $("#list");
         var tableName = "WorkCenter";
-        
-        setSelectOptions({
-            rootUrl: "<c:url value="/" />",
-            columnInfo: [
-                {name: "businessGroup", isNullable: false}
-            ]
-        });
 
         grid.jqGrid({
             url: '<c:url value="/WorkCenter/read" />',
@@ -27,8 +20,7 @@
             autoencode: true,
             colModel: [
                 {label: 'id', name: "id", width: 60, key: true, editable: true, editoptions: {readonly: 'readonly', disabled: true, defaultValue: "0"}},
-                {label: 'name', name: "name", width: 60, editable: true},
-                {label: 'businessGroup', name: "businessGroup.id", width: 60, editable: true, edittype: "select", editoptions: {value: selectOptions["businessGroup"]}, formatter: selectOptions["businessGroup_func"], search: false}
+                {label: 'name', name: "name", width: 60, editable: true}
             ],
             rowNum: 20,
             rowList: [20, 50, 100],

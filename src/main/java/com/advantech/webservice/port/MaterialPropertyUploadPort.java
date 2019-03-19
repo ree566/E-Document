@@ -9,7 +9,6 @@ import com.advantech.helper.SpringExpressionUtils;
 import com.advantech.model.User;
 import com.advantech.model.Worktime;
 import com.advantech.model.WorktimeMaterialPropertyUploadSetting;
-import com.advantech.service.PendingService;
 import com.advantech.service.WorktimeMaterialPropertyUploadSettingService;
 import com.advantech.webservice.root.MaterialPropertyBatchUploadRoot;
 import com.advantech.webservice.unmarshallclass.MaterialProperty;
@@ -52,9 +51,6 @@ public class MaterialPropertyUploadPort extends BasicUploadPort implements Uploa
 
     @Autowired
     private WorktimeMaterialPropertyUploadSettingService propSettingService;
-
-    @Autowired
-    private PendingService pendingService;
 
     @Autowired
     private SpringExpressionUtils expressionUtils;

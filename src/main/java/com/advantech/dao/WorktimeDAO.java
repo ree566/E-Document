@@ -54,9 +54,9 @@ public class WorktimeDAO extends AbstractDao<Integer, Worktime> implements Basic
 
     public List<Worktime> findWithFullRelation(PageInfo info) {
         String[] fetchField = {
-            "type", "businessGroup", "floor", "workCenter", "preAssy",
+            "type", "floor", "workCenter",
             "flowByBabFlowId", "flowByPackingFlowId", "flowByTestFlowId",
-            "userBySpeOwnerId", "userByEeOwnerId", "userByQcOwnerId", "remark"
+            "userBySpeOwnerId", "userByEeOwnerId", "userByQcOwnerId"
         };
 
         Criteria criteria = createEntityCriteria();

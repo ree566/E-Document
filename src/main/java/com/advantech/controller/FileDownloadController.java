@@ -7,10 +7,8 @@ package com.advantech.controller;
 
 import com.advantech.excel.JxlsExcelView;
 import com.advantech.jqgrid.PageInfo;
-import com.advantech.model.SheetView;
 import com.advantech.model.Worktime;
 import com.advantech.service.AuditService;
-import com.advantech.service.SheetViewService;
 import com.advantech.service.WorktimeService;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
@@ -37,30 +35,12 @@ public class FileDownloadController {
     private static final Logger logger = LoggerFactory.getLogger(FileDownloadController.class);
 
     @Autowired
-    private SheetViewService sheetViewService;
-
-    @Autowired
     private WorktimeService worktimeService;
 
     @Autowired
     private AuditService auditService;
 
     private static int fileDownloadCount = 0;
-
-    @ResponseBody
-    @RequestMapping(value = "/excel", method = {RequestMethod.GET})
-    protected ModelAndView generateExcel(PageInfo info) {
-        // create some sample data
-        info.setRows(-1);
-        info.setSidx("id");
-        info.setSord("asc");
-        info.setPage(1); //Override the request param from jqgrid.
-
-        List<SheetView> l = sheetViewService.findAll(info);
-        ModelAndView mav = new ModelAndView("ExcelRevenueSummary");
-        mav.addObject("revenueData", l);
-        return mav;
-    }
 
     @ResponseBody
     @RequestMapping(value = "/excel2", method = {RequestMethod.GET})

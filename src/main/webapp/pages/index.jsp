@@ -215,19 +215,10 @@
                                                 <a class="redirect-link" id="" href="mod/user.jsp">User</a>
                                             </li>
                                             <li>
-                                                <a class="redirect-link" href="mod/preAssy.jsp">PreAssy</a>
-                                            </li>
-                                            <li>
                                                 <a class="redirect-link" href="mod/type.jsp">Type</a>
                                             </li>
                                             <li>
-                                                <a class="redirect-link" href="mod/businessGroup.jsp">BusinessGroup</a>
-                                            </li>
-                                            <li>
                                                 <a class="redirect-link" href="mod/workCenter.jsp">WorkCenter</a>
-                                            </li>
-                                            <li>
-                                                <a class="redirect-link" href="mod/remark.jsp">Remark</a>
                                             </li>
                                             <li>
                                                 <a class="redirect-link" href="mod/batchUpdate.jsp">大表批次更新</a>

@@ -6,8 +6,7 @@ var burnIn_select_event = [
         fn: function (e) {
             var selectOption = $('option:selected', this).text();
             var defaultValue = {
-                BI: [0, 60],
-                RI: [0, 0],
+                BI: [4, 40],
                 N: [0, 0]
             };
             $('input#biTime').val(defaultValue[selectOption][0]);
@@ -16,12 +15,21 @@ var burnIn_select_event = [
     }
 ];
 
-var pending_select_event = [
+var testProfile_select_event = [
     {
         type: 'change',
         fn: function (e) {
             var selectOption = $('option:selected', this).text();
-            $('input#pendingTime').val(selectOption == 'N' ? 0 : '');
+            var defaultValue = {
+                "0": ["0", "0", "0", "0"],
+                "M5": ["1500", "25", "500", "3500,3500,3500,3500"],
+                "601": ["1776", "0", "500", "100,500,500,1000,500,100,500,500,1000,500"],
+                "B-B": ["2500", "0", "0", "0"]
+            };
+            $('input#acwVoltage').val(defaultValue[selectOption][0]);
+            $('input#gndValue').val(defaultValue[selectOption][1]);
+            $('input#irVoltage').val(defaultValue[selectOption][2]);
+            $('input#lltValue').val(defaultValue[selectOption][3]);
         }
     }
 ];
@@ -38,22 +46,6 @@ var babFlow_select_event = [
                     sel2.append("<option role='option' value=" + data[i].id + ">" + data[i].name + "</option>");
                 }
                 sel2.val(sel2Val);
-            });
-        }
-    }
-];
-
-var businessGroup_select_event = [
-    {
-        type: 'change', fn: function (e) {
-            var sel3 = $("#workCenter\\.id");
-            $.get('../SelectOption/workCenter/' + $(this).val(), function (data) {
-                sel3.html("");
-//                sel2.append("<option role='option' value=0>empty</option>");
-                for (var i = 0; i < data.length; i++) {
-                    sel3.append("<option role='option' value=" + data[i].id + ">" + data[i].name + "</option>");
-                }
-                sel3.children().first().attr("selected", "selected");
             });
         }
     }

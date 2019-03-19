@@ -8,7 +8,6 @@ package com.advantech.quartzJob;
 import com.advantech.helper.MailManager;
 import com.advantech.model.AuditedRevisionEntity;
 import com.advantech.model.Flow;
-import com.advantech.model.PreAssy;
 import com.advantech.model.User;
 import com.advantech.model.Worktime;
 import com.advantech.service.UserNotificationService;
@@ -158,10 +157,6 @@ public class WorktimeEventLog1 {
                         if (o1 instanceof Flow) {
                             if (equalsWithId(o1, o2) == false) {
                                 sb.append(String.format("Different on %s %s -> %s <br/>", field, o2 == null ? "null" : ((Flow) o2).getName(), o1 == null ? "null" : ((Flow) o1).getName()));
-                            }
-                        } else if (o1 instanceof PreAssy) {
-                            if (equalsWithId(o1, o2) == false) {
-                                sb.append(String.format("Different on %s %s -> %s <br/>", field, o2 == null ? "null" : ((PreAssy) o2).getName(), o1 == null ? "null" : ((PreAssy) o1).getName()));
                             }
                         } else {
                             sb.append(String.format("Different on %s %s -> %s <br/>", field, o2 == null ? "null" : o2.toString(), o1 == null ? "null" : o1.toString()));

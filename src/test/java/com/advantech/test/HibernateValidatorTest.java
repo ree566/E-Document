@@ -5,9 +5,7 @@
  */
 package com.advantech.test;
 
-import com.advantech.model.BusinessGroup;
 import com.advantech.model.Flow;
-import com.advantech.model.PreAssy;
 import com.advantech.model.Worktime;
 import com.advantech.service.WorktimeService;
 import com.google.gson.Gson;
@@ -57,33 +55,6 @@ public class HibernateValidatorTest {
         Map m = this.validateObject(w);
 
         assertNotEquals(0, m.size());
-    }
-
-//    @Test
-    public void testPreAssy() {
-        Worktime w = new Worktime();
-        PreAssy p = new PreAssy();
-        p.setName("PRE_ASSY");
-        w.setPreAssy(p);
-
-        String[] testFields = {"cleanPanel"}, testFields2 = {"preAssy"};
-
-        System.out.println("Testing when error cleanPanel...");
-        errors = this.validateObject(w);
-        checkError(testFields);
-
-        w.setPreAssy(null);
-        w.setCleanPanel(BigDecimal.TEN);
-
-        System.out.println("Testing when error preAssy...");
-        errors = this.validateObject(w);
-        checkError(testFields2);
-
-        System.out.println("Testing when all setting(no errors)");
-        w.setPreAssy(p);
-        errors = this.validateObject(w);
-        System.out.println(new Gson().toJson(w));
-        assertEquals(10, errors.size());
     }
 
 //    @Test
@@ -163,13 +134,4 @@ public class HibernateValidatorTest {
         PKG | packing | not_null_and_zero_message
      */
     
-//    @Test
-    public void testEsModel(){
-        Worktime w = new Worktime();
-        BusinessGroup bg = new BusinessGroup();
-        bg.setName("ES");
-        w.setBusinessGroup(bg);
-        w.setModelName("S-ESSA");
-        errors = this.validateObject(w);
-    }
 }

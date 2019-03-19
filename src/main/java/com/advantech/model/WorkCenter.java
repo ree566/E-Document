@@ -7,7 +7,6 @@ package com.advantech.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.io.Serializable;
 import java.util.HashSet;
@@ -18,8 +17,6 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -34,7 +31,6 @@ public class WorkCenter implements Serializable {
 
     private int id;
     private String name;
-    private BusinessGroup businessGroup;
     
     @JsonIgnore
     private Set<Worktime> worktimes = new HashSet<>(0);
@@ -57,16 +53,6 @@ public class WorkCenter implements Serializable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "businessGroup_id", nullable = false)
-    public BusinessGroup getBusinessGroup() {
-        return businessGroup;
-    }
-
-    public void setBusinessGroup(BusinessGroup businessGroup) {
-        this.businessGroup = businessGroup;
     }
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "workCenter")

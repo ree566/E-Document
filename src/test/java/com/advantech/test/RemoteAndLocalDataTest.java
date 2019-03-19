@@ -93,7 +93,6 @@ public class RemoteAndLocalDataTest {
         c.setFetchMode("userByEeOwnerId", FetchMode.EAGER);
         c.setFetchMode("userByQcOwnerId", FetchMode.EAGER);
         c.setFetchMode("userBySpeOwnerId", FetchMode.EAGER);
-        c.setFetchMode("preAssy", FetchMode.EAGER);
         c.setFetchMode("flowByBabFlowId", FetchMode.EAGER);
         c.setFetchMode("flowByTestFlowId", FetchMode.EAGER);
         c.setFetchMode("flowByPackingFlowId", FetchMode.EAGER);
@@ -169,7 +168,6 @@ public class RemoteAndLocalDataTest {
             if (!isFlowNameTheSame(w, mesData)) {
                 Map m = new HashMap();
                 m.put("modelName", w.getModelName());
-                m.put("preAssy_local", w.getPreAssy() == null ? na : w.getPreAssy().getName());
                 m.put("babFlow_local", w.getFlowByBabFlowId() == null ? na : ("empty".equals(w.getFlowByBabFlowId().getName()) ? na : w.getFlowByBabFlowId().getName()));
                 m.put("testFlow_local", w.getFlowByTestFlowId() == null ? na : w.getFlowByTestFlowId().getName());
                 m.put("packingFlow_local", w.getFlowByPackingFlowId() == null ? na : w.getFlowByPackingFlowId().getName());
@@ -200,12 +198,6 @@ public class RemoteAndLocalDataTest {
                     .findFirst()
                     .orElse(null);
             switch (section) {
-                case PREASSY:
-                    if (compareFlow(w.getPreAssy(), mf) == false) {
-                        System.out.println(section + " is different");
-                        return false;
-                    }
-                    break;
                 case BAB:
                     if (compareFlow(w.getFlowByBabFlowId(), mf) == false) {
                         System.out.println(section + " is different");

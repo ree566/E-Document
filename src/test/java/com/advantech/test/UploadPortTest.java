@@ -6,12 +6,9 @@
 package com.advantech.test;
 
 import com.advantech.jqgrid.PageInfo;
-import com.advantech.model.Pending;
 import com.advantech.model.Worktime;
 import com.advantech.quartzJob.StandardTimeUpload;
 import com.advantech.service.FlowService;
-import com.advantech.service.PendingService;
-import com.advantech.service.PreAssyService;
 import com.advantech.service.WorktimeAutouploadSettingService;
 import com.advantech.service.WorktimeService;
 import com.advantech.webservice.port.FlowUploadPort;
@@ -67,16 +64,10 @@ public class UploadPortTest {
     private FlowService flowService;
 
     @Autowired
-    private PreAssyService preAssyService;
-
-    @Autowired
     private MaterialPropertyUploadPort materialPropertyUploadPort;
 
     @Autowired
     private WorktimeAutouploadSettingService worktimeAutouploadSettingService;
-
-    @Autowired
-    private PendingService pendingService;
 
     @Before
     public void initTestData() {

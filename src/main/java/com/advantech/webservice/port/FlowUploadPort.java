@@ -6,10 +6,8 @@
 package com.advantech.webservice.port;
 
 import com.advantech.model.Flow;
-import com.advantech.model.PreAssy;
 import com.advantech.model.Worktime;
 import com.advantech.service.FlowService;
-import com.advantech.service.PreAssyService;
 import com.advantech.webservice.root.FlowUploadRoot;
 import com.advantech.webservice.root.Section;
 import com.advantech.webservice.unmarshallclass.FlowRule;
@@ -32,9 +30,6 @@ import org.springframework.stereotype.Component;
 public class FlowUploadPort extends BasicUploadPort implements UploadPort {
 
     private static final Logger logger = LoggerFactory.getLogger(FlowUploadPort.class);
-
-    @Autowired
-    private PreAssyService preAssyService;
 
     @Autowired
     private FlowService flowService;
@@ -65,13 +60,6 @@ public class FlowUploadPort extends BasicUploadPort implements UploadPort {
             try {
                 FlowRule rule = null;
                 switch (section) {
-                    case PREASSY:
-                        PreAssy preAssy = w.getPreAssy();
-                        if (preAssy != null) {
-                            preAssy = preAssyService.findByPrimaryKey(preAssy.getId());
-                            rule = this.getFlowRule(section, preAssy.getName());
-                        }
-                        break;
                     case BAB:
                         Flow babFlow = w.getFlowByBabFlowId();
                         if (babFlow != null) {
@@ -124,10 +112,6 @@ public class FlowUploadPort extends BasicUploadPort implements UploadPort {
                 MaterialFlow mf = l.stream().filter(materialFlow -> materialFlow.getUnitNo().equals(section.getCode())).findFirst().orElse(null);
                 String flowName = null;
                 switch (section) {
-                    case PREASSY:
-                        PreAssy preAssy = w.getPreAssy();
-                        flowName = (preAssy != null ? preAssyService.findByPrimaryKey(preAssy.getId()).getName() : null);
-                        break;
                     case BAB:
                         Flow babFlow = w.getFlowByBabFlowId();
                         flowName = (babFlow != null ? flowService.findByPrimaryKey(babFlow.getId()).getName() : null);

@@ -158,7 +158,6 @@ public class WorktimeUploadMesService {
     //Revision entity relation object are lasy loading.
     private boolean isFlowChanged(Worktime prev, Worktime current) {
         return isModelNameChanged(prev, current)
-                || !isEquals(prev.getPreAssy(), current.getPreAssy())
                 || !isEquals(prev.getFlowByBabFlowId(), current.getFlowByBabFlowId())
                 || !isEquals(prev.getFlowByTestFlowId(), current.getFlowByTestFlowId())
                 || !isEquals(prev.getFlowByPackingFlowId(), current.getFlowByPackingFlowId());
@@ -175,13 +174,11 @@ public class WorktimeUploadMesService {
                 || !isEquals(prev.getCe(), current.getCe())
                 || !isEquals(prev.getUl(), current.getUl())
                 || !isEquals(prev.getRohs(), current.getRohs())
-                || !isEquals(prev.getWeee(), current.getWeee())
                 || !isEquals(prev.getMadeInTaiwan(), current.getMadeInTaiwan())
                 || !isEquals(prev.getFcc(), current.getFcc())
                 || !isEquals(prev.getEac(), current.getEac())
                 || !isEquals(prev.getKc(), current.getKc())
                 || !isEquals(prev.getNsInOneCollectionBox(), current.getNsInOneCollectionBox())
-                || !isEquals(prev.getLabelInformation(), current.getLabelInformation())
                 || !isEquals(prev.getWeight(), current.getWeight())
                 || !isEquals(prev.getTolerance(), current.getTolerance())
                 || !isEquals(prev.getPartNoAttributeMaintain(), current.getPartNoAttributeMaintain())

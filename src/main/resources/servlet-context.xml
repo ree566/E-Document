@@ -56,7 +56,7 @@
     <bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
         <property name="connectionTestQuery" value="SELECT 1" />
         <property name="driverClassName" value="net.sourceforge.jtds.jdbc.Driver" />
-        <property name="jdbcUrl" value="jdbc:jtds:sqlserver://M3-SERVER/E_Document_M6" />
+        <property name="jdbcUrl" value="jdbc:jtds:sqlserver://M3-SERVER/E_Document_M2" />
         <property name="username" value="waychien" />
         <property name="password" value="m3server" />
     </bean>
@@ -175,7 +175,7 @@
         </property>
     </bean>
     
-    <!--M6 webservice wsdl-->
+    <!--M2 webservice wsdl-->
     <bean id="webServiceTemplate" class="org.springframework.ws.client.core.WebServiceTemplate">
         <constructor-arg ref="soapMessageFactory"/>
         <property name="marshaller" ref="marshaller" />

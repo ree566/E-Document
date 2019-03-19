@@ -8,21 +8,15 @@ package com.advantech.controller;
 import com.advantech.helper.WorktimeMailManager;
 import com.advantech.excel.XlsWorkBook;
 import com.advantech.excel.XlsWorkSheet;
-import com.advantech.model.BusinessGroup;
 import com.advantech.model.Floor;
 import com.advantech.model.Flow;
-import com.advantech.model.PreAssy;
-import com.advantech.model.Remark;
 import com.advantech.model.Type;
 import com.advantech.model.User;
 import com.advantech.model.WorkCenter;
 import com.advantech.model.Worktime;
 import com.advantech.service.AuditService;
-import com.advantech.service.BusinessGroupService;
 import com.advantech.service.FloorService;
 import com.advantech.service.FlowService;
-import com.advantech.service.PreAssyService;
-import com.advantech.service.RemarkService;
 import com.advantech.service.TypeService;
 import com.advantech.service.UserService;
 import com.advantech.service.WorkCenterService;
@@ -74,19 +68,10 @@ public class WorktimeBatchModController {
     private FlowService flowService;
 
     @Autowired
-    private PreAssyService preAssyService;
-
-    @Autowired
     private WorktimeService worktimeService;
-
-    @Autowired
-    private BusinessGroupService businessGroupService;
     
     @Autowired
     private WorkCenterService workCenterService;
-    
-    @Autowired
-    private RemarkService remarkService;
 
     @Autowired
     private AuditService auditService;
@@ -268,10 +253,7 @@ public class WorktimeBatchModController {
         Map<String, User> userOptions = toSelectOptions(userService.findAll());
         Map<String, Flow> flowOptions = toSelectOptions(flowService.findAll());
 
-        Map<String, PreAssy> preAssyOptions = toSelectOptions(preAssyService.findAll());
-        Map<String, BusinessGroup> businessGroupOptions = toSelectOptions(businessGroupService.findAll());
         Map<String, WorkCenter> workCenterOptions = toSelectOptions(workCenterService.findAll());
-        Map<String, Remark> remarkOptions = toSelectOptions(remarkService.findAll());
 
         //設定關聯by name
         for (int i = 0; i < hgList.size(); i++) {
@@ -294,19 +276,10 @@ public class WorktimeBatchModController {
             w.setFlowByBabFlowId(valid(babFlowName, flowOptions.get(babFlowName)));
             w.setFlowByPackingFlowId(valid(pkgFlowName, flowOptions.get(pkgFlowName)));
             w.setFlowByTestFlowId(valid(testFlowName, flowOptions.get(testFlowName)));
-
-            String preAssyName = sheet.getValue(i, "preAssyName").toString();
-            w.setPreAssy(valid(preAssyName, preAssyOptions.get(preAssyName)));
-
-            String businessGroupName = sheet.getValue(i, "businessGroupName").toString();
-            w.setBusinessGroup(valid(businessGroupName, businessGroupOptions.get(businessGroupName)));
             
             String workCenterName = sheet.getValue(i, "workCenterName").toString();
             w.setWorkCenter(valid(workCenterName, workCenterOptions.get(workCenterName)));
             
-            String remarkName = sheet.getValue(i, "remarkName").toString();
-            w.setRemark(valid(remarkName, remarkOptions.get(remarkName)));
-
         }
 
         return hgList;

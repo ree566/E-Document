@@ -122,5 +122,6 @@
         <li>僅接受副檔名為xls格式</li>
         <li>若為本系統下載檔，Update時請保留BJ欄欄位名稱"Revision"的值，讓系統可同步版本資訊</li>
         <li>若Update時Excel中無"Revision"欄位資訊，系統將跳過版本檢查直接覆蓋現有資料</li>
+        <li>批次新增機種時，請將id欄位保持為數值0</li>
     </ol>
 </div>

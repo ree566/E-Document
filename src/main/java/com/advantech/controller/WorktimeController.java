@@ -127,9 +127,6 @@ public class WorktimeController extends CrudController<Worktime> {
     }
 
     private void resetNullableColumn(Worktime worktime) {
-        if (worktime.getPreAssy().getId() == 0) {
-            worktime.setPreAssy(null);
-        }
 
         if (worktime.getFlowByBabFlowId().getId() == 0) {
             worktime.setFlowByBabFlowId(null);

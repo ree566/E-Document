@@ -80,6 +80,7 @@
         var table_current_revision;
 
         var selected_row_formula_id;
+        var validator_debug = true;
 
         //Set param into jqgrid-custom-select-option-reader.js and get option by param selectOptions
         //You can get the floor select options and it's formatter function
@@ -88,18 +89,15 @@
         setSelectOptions({
             rootUrl: "<c:url value="/" />",
             columnInfo: [
-                {name: "businessGroup", isNullable: false},
                 {name: "workCenter", isNullable: false},
                 {name: "floor", isNullable: false},
-                {name: "user", nameprefix: "spe_", isNullable: false, dataToServer: "SPE"},
-                {name: "user", nameprefix: "ee_", isNullable: false, dataToServer: "EE"},
+                {name: "user", nameprefix: "spe_", isNullable: false, dataToServer: "EE"},
+                {name: "user", nameprefix: "ee_", isNullable: true, dataToServer: "EE"},
                 {name: "user", nameprefix: "qc_", isNullable: false, dataToServer: "QC"},
                 {name: "type", isNullable: false},
                 {name: "flow", nameprefix: "bab_", isNullable: true, dataToServer: "1"},
                 {name: "flow", nameprefix: "test_", isNullable: true, dataToServer: "3"},
-                {name: "flow", nameprefix: "pkg_", isNullable: true, dataToServer: "2"},
-                {name: "preAssy", isNullable: true},
-                {name: "remark", isNullable: false}
+                {name: "flow", nameprefix: "pkg_", isNullable: true, dataToServer: "2"}
             ]
         });
 
@@ -127,8 +125,12 @@
                 errorTextFormatF(checkResult); //field // code
                 return [false, "There are some errors in the entered data. Hover over the error icons for details."];
             } else {
-                $.extend(postdata, formulaFieldInfo);
-                return [true, "saved"];
+                if (validator_debug) {
+                    return [false, "Saved."]; //--For debug validator
+                } else {
+                    $.extend(postdata, formulaFieldInfo);
+                    return [true, "saved"];
+                }
             }
         };
 
@@ -144,13 +146,17 @@
                 errorTextFormatF(checkResult); //field // code
                 return [false, "There are some errors in the entered data. Hover over the error icons for details."];
             } else {
-                //儲存前再check一次版本，給予覆蓋or取消的選擇
-                var revision_number = getRowRevision();
-                if (revision_number != selected_row_revision) {
-                    return [false, "欄位版本已經被修改，請重新整理檢視新版本"];
+                if (validator_debug) {
+                    return [false, "Saved."]; //--For debug validator
                 } else {
-                    $.extend(postdata, formulaFieldInfo);
-                    return [true, "saved"];
+                    //儲存前再check一次版本，給予覆蓋or取消的選擇
+                    var revision_number = getRowRevision();
+                    if (revision_number != selected_row_revision) {
+                        return [false, "欄位版本已經被修改，請重新整理檢視新版本"];
+                    } else {
+                        $.extend(postdata, formulaFieldInfo);
+                        return [true, "saved"];
+                    }
                 }
             }
         };
@@ -171,27 +177,18 @@
             autoencode: true,
             colModel: [
                 {label: 'id', name: "id", width: 60, frozen: true, hidden: false, key: true, search: true, searchoptions: search_decimal_options, editable: true, editrules: {edithidden: true}, editoptions: {readonly: 'readonly', disabled: true, defaultValue: "0"}},
-                {label: 'Model', name: "modelName", frozen: true, editable: true, searchrules: {required: true}, searchoptions: search_string_options, editrules: {required: true}, formoptions: required_form_options},
+                {label: 'Model', name: "modelName", frozen: true, editable: true, searchrules: {required: true}, searchoptions: search_string_options, editrules: {required: true}, editoptions: {dataInit: autoUpperCase}, formoptions: required_form_options},
                 {label: 'TYPE', name: "type.id", edittype: "select", editoptions: {value: selectOptions["type"]}, formatter: selectOptions["type_func"], width: 100, searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["type"], sopt: ['eq']}},
-                {label: 'BU', name: "businessGroup.id", edittype: "select", editoptions: {value: selectOptions["businessGroup"], dataEvents: businessGroup_select_event}, formatter: selectOptions["businessGroup_func"], width: 100, searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["businessGroup"], sopt: ['eq']}},
                 {label: 'Work Center', name: "workCenter.id", edittype: "select", editoptions: {value: selectOptions["workCenter"]}, formatter: selectOptions["workCenter_func"], width: 100, searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["workCenter"], sopt: ['eq']}},
                 {label: 'ProductionWT', name: "productionWt", width: 120, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: {elmsuffix: addFormulaCheckbox("productionWt")}, editrules: {number: true}, editoptions: {defaultValue: '0'}},
                 {label: 'Setup Time', name: "setupTime", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: {elmsuffix: addFormulaCheckbox("setupTime")}, editrules: {number: true}, editoptions: {defaultValue: '0'}},
-                {label: 'AR film attachment', name: "arFilmAttachment", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, editoptions: {defaultValue: '0'}},
-                {label: 'SEAL', name: "seal", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, editoptions: {defaultValue: '0'}},
-                {label: 'OB', name: "opticalBonding", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, editoptions: {defaultValue: '0'}},
-                {label: '壓力鍋', name: "pressureCooker", width: 100, searchrules: {required: true}, searchoptions: search_string_options, edittype: "select", editoptions: {value: "Y:Y;N:N", defaultValue: 'N'}},
-                {label: 'CleanPanel', name: "cleanPanel", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true, required: true}, editoptions: {defaultValue: '0'}},
-                {label: 'PI', name: "pi", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true, required: true}, editoptions: {defaultValue: '0'}},
                 {label: 'Assembly', name: "assy", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true, required: true}, editoptions: {defaultValue: '0'}},
-                {label: 'T1', name: "t1", width: 60, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true, required: true}, editoptions: {defaultValue: '0'}},
                 {label: 'T2', name: "t2", width: 60, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true, required: true}, editoptions: {defaultValue: '0'}},
                 {label: 'Packing', name: "packing", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true, required: true}, editoptions: {defaultValue: '0'}},
                 {label: 'Up_BI_RI', name: "upBiRi", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true, required: true}, editoptions: {defaultValue: '0'}},
                 {label: 'Down_BI_RI', name: "downBiRi", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true, required: true}, editoptions: {defaultValue: '0'}},
                 {label: 'BI Cost', name: "biCost", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, editoptions: {defaultValue: '0'}},
-                {label: 'ASS_T1', name: "assyToT1", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: {elmsuffix: addFormulaCheckbox("assyToT1")}, editrules: {number: true}, editoptions: {defaultValue: '0'}},
-                {label: 'T2_PACKING', name: "t2ToPacking", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: {elmsuffix: addFormulaCheckbox("t2ToPacking")}, editrules: {number: true}, editoptions: {defaultValue: '0'}},
+                {label: 'Hi-Pot', name: "hiPotLeakage", width: 120, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true, required: true}, editoptions: {defaultValue: '0'}},
                 {label: 'Floor', name: "floor.id", edittype: "select", editoptions: {value: selectOptions["floor"]}, width: 100, formatter: selectOptions["floor_func"], searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["floor"], sopt: ['eq']}},
                 {label: 'BurnIn', name: "burnIn", edittype: "select", editoptions: {value: "N:N;BI:BI", dataEvents: burnIn_select_event}, width: 100, searchrules: {required: true}, searchoptions: search_string_options},
                 {label: 'B/I Time', name: "biTime", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {required: true, number: true}, editoptions: {defaultValue: '0'}, formoptions: required_form_options},
@@ -203,36 +200,36 @@
                 {label: '測試SOP', name: "testSop", width: 100, search: true, searchrules: {required: true}, searchoptions: search_string_options, edittype: "textarea", editoptions: {maxlength: 500}},
                 {label: 'KEYPART_A', name: "keypartA", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, editoptions: {defaultValue: '0'}},
                 {label: 'KEYPART_B', name: "keypartB", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, editoptions: {defaultValue: '0'}},
-                {label: 'PRE-ASSY', name: "preAssy.id", edittype: "select", editoptions: {value: selectOptions["preAssy"]}, formatter: selectOptions["preAssy_func"], width: 100, searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["preAssy"], sopt: ['eq']}},
                 {label: 'BAB_FLOW', name: "flowByBabFlowId.id", edittype: "select", editoptions: {value: selectOptions["bab_flow"]}, formatter: selectOptions["bab_flow_func"], cellattr: hideEmptyBabFlow, width: 100, searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["bab_flow"], sopt: ['eq']}},
                 {label: 'TEST_FLOW', name: "flowByTestFlowId.id", edittype: "select", editoptions: {value: selectOptions["test_flow"]}, formatter: selectOptions["test_flow_func"], width: 100, searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["test_flow"], sopt: ['eq']}},
                 {label: 'PACKING_FLOW', name: "flowByPackingFlowId.id", edittype: "select", editoptions: {value: selectOptions["pkg_flow"]}, formatter: selectOptions["pkg_flow_func"], width: 140, searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["pkg_flow"], sopt: ['eq']}},
                 {label: 'PART-LINK', name: "partLink", edittype: "select", editoptions: {value: "Y:Y;N:N", defaultValue: 'N'}, width: 100, searchrules: {required: true}, searchoptions: search_string_options},
-                {label: 'Remark', name: "remark.id", edittype: "select", editoptions: {value: selectOptions["remark"]}, formatter: selectOptions["remark_func"], width: 100, searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["remark"], sopt: ['eq']}},
                 {label: 'CE', name: "ce", width: 60, searchrules: number_search_rule, searchoptions: search_string_options, edittype: "select", editoptions: {value: "0:0;1:1"}},
                 {label: 'UL', name: "ul", width: 60, searchrules: number_search_rule, searchoptions: search_string_options, edittype: "select", editoptions: {value: "0:0;1:1"}},
                 {label: 'ROHS', name: "rohs", width: 60, searchrules: number_search_rule, searchoptions: search_string_options, edittype: "select", editoptions: {value: "0:0;1:1"}},
-                {label: 'WEEE', name: "weee", width: 60, searchrules: number_search_rule, searchoptions: search_string_options, edittype: "select", editoptions: {value: "0:0;1:1"}},
                 {label: 'Made in Taiwan', name: "madeInTaiwan", width: 120, searchrules: number_search_rule, searchoptions: search_string_options, edittype: "select", editoptions: {value: "0:0;1:1"}},
                 {label: 'FCC', name: "fcc", width: 60, searchrules: number_search_rule, searchoptions: search_string_options, edittype: "select", editoptions: {value: "0:0;1:1"}},
                 {label: 'EAC', name: "eac", width: 60, searchrules: number_search_rule, searchoptions: search_string_options, edittype: "select", editoptions: {value: "0:0;1:1"}},
                 {label: 'KC', name: "kc", width: 60, searchrules: number_search_rule, searchoptions: search_string_options, edittype: "select", editoptions: {value: "0:0;1:1"}},
+                {label: '工單產品別', name: "poCategory", edittype: "select", editoptions: {value: "M/B:M/B", defaultValue: 'M/B'}, width: 120, searchrules: {required: true}, searchoptions: search_string_options},
                 {label: '包裝單箱數量設定', name: "nsInOneCollectionBox", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, editoptions: {defaultValue: '0'}},
                 {label: 'SN是否等於SSN', name: "partNoAttributeMaintain", edittype: "select", editoptions: {value: "Y:Y; :empty", defaultValue: ' '}, width: 120, searchrules: {required: true}, searchoptions: search_string_options},
-                {label: '啟用料號屬性', name: "labelInformation", edittype: "select", editoptions: {value: "Y:Y; :empty", defaultValue: ' '}, width: 120, searchrules: {required: true}, searchoptions: search_string_options},
+                {label: 'Test Profile', name: "testProfile", width: 100, search: true, searchrules: {required: true}, searchoptions: search_string_options, edittype: "select", editoptions: {value: "0:0;M5:M5", defaultValue: "0", dataEvents: testProfile_select_event}},
+                {label: 'ACW Voltage', name: "acwVoltage", width: 100, search: true, searchrules: {required: true}, searchoptions: search_string_options, edittype: "text", editrules: {required: true}},
+                {label: 'GND Value', name: "gndValue", width: 100, search: true, searchrules: {required: true}, searchoptions: search_string_options, edittype: "text", editrules: {required: true}},
+                {label: 'IR Voltage', name: "irVoltage", width: 100, search: true, searchrules: {required: true}, searchoptions: search_string_options, edittype: "text", editrules: {required: true}},
+                {label: 'LLT Value', name: "lltValue", width: 100, search: true, searchrules: {required: true}, searchoptions: search_string_options, edittype: "text", editrules: {required: true}},
                 {label: '禮盒總重量(含配件)(kg)', name: "weight", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true, required: true}, editoptions: {defaultValue: '0'}},
                 {label: '整箱總重量誤差值(kg)', name: "tolerance", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true, required: true}, editoptions: {defaultValue: '0'}},
-                {label: 'A膠溶劑量', name: "materialVolumeA", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true, required: true}, editoptions: {defaultValue: '0'}},
-                {label: 'B膠溶劑量', name: "materialVolumeB", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true, required: true}, editoptions: {defaultValue: '0'}},
-                {label: '前置工時', name: "assyLeadTime", width: 80, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, formoptions: {elmsuffix: addFormulaCheckbox("assyLeadTime")}, editoptions: {defaultValue: '0'}},
-                {label: '測試工時', name: "test", width: 80, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, formoptions: {elmsuffix: addFormulaCheckbox("test")}, editoptions: {defaultValue: '0'}},
+                {label: '組裝排站人數', name: "assyStation", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: {elmsuffix: addFormulaCheckbox("assyStation")}, editrules: {integer: true}, editoptions: {defaultValue: '0'}},
+                {label: '包裝排站人數', name: "packingStation", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: {elmsuffix: addFormulaCheckbox("packingStation")}, editrules: {integer: true}, editoptions: {defaultValue: '0'}},
                 {label: 'Create_Date', width: 200, name: "createDate", index: "createDate", formatter: 'date', formatoptions: {srcformat: 'Y-m-d H:i:s A', newformat: 'Y-m-d H:i:s A'}, stype: 'text', searchrules: date_search_rule, searchoptions: search_date_options, align: 'center'},
                 {label: 'Modified_Date', width: 200, name: "modifiedDate", index: "modifiedDate", formatter: 'date', formatoptions: {srcformat: 'Y-m-d H:i:s A', newformat: 'Y-m-d H:i:s A'}, stype: 'text', searchrules: date_search_rule, searchoptions: search_date_options, align: 'center'}
             ],
             rowNum: 20,
             rowList: [20, 100, 500],
             pager: '#pager',
-            viewrecords: true,
+            viewrecords: false,
             autowidth: true,
             shrinkToFit: false,
             hidegrid: true,
@@ -271,14 +268,11 @@
         grid.jqGrid('setGroupHeaders', {
             useColSpanStyle: true,
             groupHeaders: [
-                {startColumnName: 'seal', numberOfColumns: 2, titleText: '<em>Optical bonding work time</em>'},
-                {startColumnName: 'ce', numberOfColumns: 8, titleText: '<em>外箱Label產品資訊 (1：要印   0：不印)</em>'},
+                {startColumnName: 'ce', numberOfColumns: 7, titleText: '<em>外箱Label產品資訊 (1：要印   0：不印)</em>'},
                 {startColumnName: 'nsInOneCollectionBox', numberOfColumns: 1, titleText: '<em>N合1集合箱</em>'},
                 {startColumnName: 'partNoAttributeMaintain', numberOfColumns: 1, titleText: '<em>料號屬性值維護</em>'},
-                {startColumnName: 'labelInformation', numberOfColumns: 1, titleText: '<em>標籤</em>'},
-                {startColumnName: 'materialVolumeA', numberOfColumns: 2, titleText: '<em>A/B material volume(c.c.)</em>'},
-                {startColumnName: 'assyLeadTime', numberOfColumns: 2, titleText: '<em>組裝效率</em>'},
-                {startColumnName: 'weight', numberOfColumns: 2, titleText: '<em>包裝重量</em>'}
+                {startColumnName: 'weight', numberOfColumns: 2, titleText: '<em>包裝重量</em>'},
+                {startColumnName: 'testProfile', numberOfColumns: 5, titleText: '<em>hi-pot Test</em>'}
             ]
         });
         grid.jqGrid('navGrid', '#pager',
@@ -295,7 +289,6 @@
                         setTimeout(function () {
                             // do here all what you need (like alert('yey');)
                             $("#flowByBabFlowId\\.id").trigger("change");
-                            $("#businessGroup\\.id").trigger("change");
                             settingFormulaCheckbox();
                         }, 50);
                         greyout(form);
@@ -327,8 +320,7 @@
                     beforeShowForm: function (form) {
                         setTimeout(function () {
                             // do here all what you need (like alert('yey');)
-                            $("#flowByBabFlowId\\.id").trigger("change");
-                            $("#businessGroup\\.id").trigger("change");
+                            $("#flowByBabFlowId\\.id, #testProfile").trigger("change");
                         }, 50);
                         greyout(form);
                     },
@@ -386,19 +378,6 @@
                 },
                 position: "last"
             });
-    <%--
-                grid.navButtonAdd('#pager', {
-                    caption: "Export to Excel(SPE)",
-                    buttonicon: "ui-icon-disk",
-                    id: "excelDownload2",
-                    onClickButton: function () {
-                        var button = $("#excelDownload2");
-                        excelDownload(button, "<c:url value="/WorktimeDownload/excelForSpe" />");
-                        return false;
-                    },
-                    position: "last"
-                });
-    --%>
         }
 
         //有可編輯column的人再來分可編輯欄位
@@ -601,26 +580,22 @@
         }
 
         function checkFlowIsValid(postdata, formid) {
-            var preAssyOptions = selectOptions["preAssy_options"],
-                    babOptions = selectOptions["bab_flow_options"],
+            var babOptions = selectOptions["bab_flow_options"],
                     testOptions = selectOptions["test_flow_options"],
                     pkgOptions = selectOptions["pkg_flow_options"];
-            var preAssyName = preAssyOptions.get(parseInt(postdata["preAssy.id"])),
-                    babFlowName = babOptions.get(parseInt(postdata["flowByBabFlowId.id"])),
+            var babFlowName = babOptions.get(parseInt(postdata["flowByBabFlowId.id"])),
                     testFlowName = testOptions.get(parseInt(postdata["flowByTestFlowId.id"])),
                     pkgFlowName = pkgOptions.get(parseInt(postdata["flowByPackingFlowId.id"]));
-            var preAssyCheckLogic = flow_check_logic["PRE-ASSY"],
-                    babCheckLogic = flow_check_logic.BAB,
+            var babCheckLogic = flow_check_logic.BAB,
                     testCheckLogic = flow_check_logic.TEST,
                     pkgCheckLogic = flow_check_logic.PKG;
-            var preAssyCheckMessage = flowCheck(preAssyCheckLogic, preAssyName, postdata);
             var babCheckMessage = flowCheck(babCheckLogic, babFlowName, postdata);
             var testCheckMessage = flowCheck(testCheckLogic, testFlowName, postdata);
             var pkgCheckMessage = flowCheck(pkgCheckLogic, pkgFlowName, postdata);
 
-            var firstCheckResult = babCheckMessage.concat(testCheckMessage).concat(pkgCheckMessage).concat(preAssyCheckMessage);
+            var firstCheckResult = babCheckMessage.concat(testCheckMessage).concat(pkgCheckMessage);
 
-            var secondCheckResult = fieldCheck(postdata, preAssyName, babFlowName, testFlowName, pkgFlowName);
+            var secondCheckResult = fieldCheck(postdata, null, babFlowName, testFlowName, pkgFlowName);
 
             var totalAlert = firstCheckResult.concat(secondCheckResult);
 
@@ -628,13 +603,7 @@
         }
 
         function checkModelIsValid(postdata) {
-            var data = {
-                modelName: postdata["modelName"],
-                "businessGroup\\.id": selectOptions["businessGroup_options"].get(parseInt(postdata["businessGroup.id"]))
-            };
-            var modelCheckResult = modelNameCheckFieldIsValid(data);
-            var otherFieldCheckResult = checkModelNameIsValid(data);
-            return modelCheckResult.concat(otherFieldCheckResult);
+            return [];
         }
 
         function getGridRevision() {
@@ -660,9 +629,4 @@
     </div>
     <table id="list"></table> 
     <div id="pager"></div>
-
-    <c:if test="${isAdmin || isAuthor || isContributor}">
-        <hr />
-        <jsp:include page="pressureCooker.jsp" />
-    </c:if>
 </div>

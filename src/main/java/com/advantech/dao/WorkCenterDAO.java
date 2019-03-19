@@ -6,10 +6,8 @@
 package com.advantech.dao;
 
 import com.advantech.jqgrid.PageInfo;
-import com.advantech.model.BusinessGroup;
 import com.advantech.model.WorkCenter;
 import java.util.List;
-import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -31,13 +29,6 @@ public class WorkCenterDAO extends AbstractDao<Integer, WorkCenter> implements B
     @Override
     public WorkCenter findByPrimaryKey(Object obj_id) {
         return super.getByKey((int) obj_id);
-    }
-
-    public List<WorkCenter> findByBusinessGroup(int businessGroupId) {
-        return super.createEntityCriteria()
-                .createAlias("businessGroup", "b")
-                .add(Restrictions.eq("b.id", businessGroupId))
-                .list();
     }
 
     @Override
