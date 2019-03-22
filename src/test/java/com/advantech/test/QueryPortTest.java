@@ -108,7 +108,7 @@ public class QueryPortTest {
         w = worktimeService.findByPrimaryKey(897);
     }
 
-//    @Test
+    @Test
     public void testSopQueryPort() throws Exception {
         sopQueryPort.setTypes("T1");
         List l = sopQueryPort.query(w);
@@ -135,7 +135,7 @@ public class QueryPortTest {
 //        HibernateObjectPrinter.print(m);
     }
 
-//    @Test
+    @Test
     public void testFlowRuleQueryPort() throws Exception {
         FlowRule rule = flowRuleQueryPort.query("B", "empty");
         assertNull(rule);
@@ -164,7 +164,7 @@ public class QueryPortTest {
         assertEquals("BD", l.get(0).getMaterialPropertyNo());
     }
 
-//    @Test
+    @Test
     public void testMaterialPropertyQueryPort() throws Exception {
         List<MaterialProperty> l = materialPropertyQueryPort.query("FC");
         assertEquals(1, l.size());
@@ -185,7 +185,7 @@ public class QueryPortTest {
         assertEquals("N", value.getValue());
     }
 
-    @Test
+//    @Test
     public void testFlowMappingOnMes() throws FileNotFoundException, IOException, Exception {
 
         String inputLocation = "C:\\Users\\Wei.Cheng\\Desktop\\testXls\\m6_babFlow.xls";

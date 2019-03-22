@@ -80,7 +80,7 @@
         var table_current_revision;
 
         var selected_row_formula_id;
-        var validator_debug = true;
+        var validator_debug = false;
 
         //Set param into jqgrid-custom-select-option-reader.js and get option by param selectOptions
         //You can get the floor select options and it's formatter function

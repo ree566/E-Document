@@ -14,6 +14,7 @@ import com.advantech.webservice.unmarshallclass.MesUserInfos;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import javax.xml.bind.JAXBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,6 +74,10 @@ public class MesUserInfoQueryPort extends BasicQueryPort {
 
         m.put("speOwner", userService.findByPrimaryKey(speOwner.getId()).getJobnumber());
         m.put("qcOwner", userService.findByPrimaryKey(qcOwner.getId()).getJobnumber());
+
+        if (Objects.equals(m.get("speOwner"), m.get("eeOwner"))) {
+            m.remove("speOwner");
+        }
 
         return m;
     }

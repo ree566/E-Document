@@ -142,8 +142,18 @@
                 {label: 'Test', name: "Test"},
                 {label: 'Packing<br/>(不含附件盒)', name: "Packing"},
                 {label: 'Total<br/>(Mins)', name: "Total"},
-                {label: 'Hourly Rate:<br/> NTD 700', name: "Hourly Rate: NTD 700"},
-                {label: '製費<br/>(USD)', name: "製費 (USD)"}
+                {label: 'Hourly Rate:<br/> NTD 700', name: "Hourly Rate: NTD 700",
+                    formatter: function (cellvalue, options, rowObject) {
+                        // do something here
+                        return roundDecimal(700 / 60 * rowObject["Total"], 1);
+                    }
+                },
+                {label: '製費<br/>(USD)', name: "製費 (USD)",
+                    formatter: function (cellvalue, options, rowObject) {
+                        // do something here
+                        return roundDecimal(700 / 60 * rowObject["Total"] / 30, 1);
+                    }
+                }
 
             ],
             rowNum: 20,
@@ -196,6 +206,11 @@
 
         function headerRow(rowId, cellValue, rawObject, cm, rdata) {
             return " class='ui-state-default headerRow'";
+        }
+
+        function roundDecimal(val, precision) {
+            var size = Math.pow(10, precision);
+            return Math.round(val * size) / size;
         }
 
     });

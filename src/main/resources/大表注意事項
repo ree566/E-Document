@@ -14,3 +14,6 @@ Excel download的template file需要加入欄位
 
 5.audit.jsp將欄位加入
 
+6.(※重要)若是料號屬性值欄位需要開啟SYSTEM他MES中的CRUD權限
+
+7.(※重要)步驟1若無法自動更新，請手動增加Worktime.class欄位，並在資料表Worktime、Worktime_AUD增加[欄位]及[欄位_AUD]
