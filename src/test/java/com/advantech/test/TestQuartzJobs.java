@@ -5,10 +5,12 @@
  */
 package com.advantech.test;
 
+import com.advantech.quartzJob.BackupDataToExcel;
 import com.advantech.quartzJob.StandardTimeUpload1;
 import com.advantech.quartzJob.WorktimeEventLog1;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
@@ -24,7 +26,10 @@ import org.springframework.test.context.web.WebAppConfiguration;
     "classpath:servlet-context.xml"
 })
 @RunWith(SpringJUnit4ClassRunner.class)
-public class QuartzJobTest {
+public class TestQuartzJobs {
+
+    @Autowired
+    private BackupDataToExcel backupExcel;
 
     @Autowired
     @Qualifier("worktimeEventLog1")
@@ -34,7 +39,7 @@ public class QuartzJobTest {
     @Qualifier("standardTimeUpload1")
     private StandardTimeUpload1 job2;
 
-    @Test
+//    @Test
     public void testWorktimeEventLog() {
         job1.execute();
     }
@@ -43,6 +48,11 @@ public class QuartzJobTest {
     public void testStandardTimeUpload() {
 
         job2.uploadToMes();
+    }
+
+    @Test
+    public void testTestLineTypeRecord() throws JobExecutionException, Exception {
+        backupExcel.backupToDisk();
     }
 
 }
