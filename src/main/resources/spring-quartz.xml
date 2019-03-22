@@ -77,7 +77,7 @@
         <property name="triggers">
             <list>
                 <ref bean="cronTrigger2"/>
-                <!--<ref bean="cronTrigger3"/>-->
+                <ref bean="cronTrigger3"/>
                 <ref bean="cronTrigger4"/>
             </list>
         </property>
