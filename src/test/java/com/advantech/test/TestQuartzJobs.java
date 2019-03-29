@@ -29,7 +29,7 @@ public class TestQuartzJobs {
     private BackupDataToExcel backupExcel;
 
     @Test
-    public void testTestLineTypeRecord() throws JobExecutionException, Exception {
+    public void testBackupDataToExcel() throws JobExecutionException, Exception {
         backupExcel.backupToDisk();
     }
 

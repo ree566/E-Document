@@ -8,12 +8,14 @@ package com.advantech.quartzJob;
 import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.Worktime;
 import com.advantech.service.WorktimeService;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -60,6 +62,12 @@ public class BackupDataToExcel {
             List<Worktime> l = worktimeService.findWithFullRelation(info);
             try (OutputStream os = new FileOutputStream(filePath + backupFileName)) {
                 this.outputFile(l, is, os);
+                
+                String readMeFilePath = filePath + "_If you need help, please contact system administrator.";
+                if(!Files.exists(Paths.get(readMeFilePath)))
+                try (OutputStream os2 = new FileOutputStream(readMeFilePath)) {
+                    os2.write(0);
+                }
             }
         }
     }
@@ -84,9 +92,11 @@ public class BackupDataToExcel {
         os.close();
     }
 
-    private void checkFilePath() throws FileNotFoundException {
-        if (!Files.isWritable(Paths.get(filePath))) {
-            throw new FileNotFoundException("File path \"" + filePath + "\" not exist.");
+    private void checkFilePath() throws FileNotFoundException, IOException {
+        Path path = Paths.get(filePath);
+        if (!Files.isWritable(path)) {
+            Files.createDirectory(path);
+//            throw new FileNotFoundException("File path \"" + filePath + "\" not exist.");
         }
     }
 
