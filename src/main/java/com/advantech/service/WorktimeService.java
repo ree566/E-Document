@@ -197,6 +197,12 @@ public class WorktimeService {
         if (isColumnCalculated(setting.getSetupTime())) {
             w.setDefaultSetupTime();
         }
+        if (isColumnCalculated(setting.getAssyStation())) {
+            w.setDefaultAssyStation();
+        }
+        if (isColumnCalculated(setting.getPackingStation())) {
+            w.setDefaultPackingStation();
+        }
     }
 
     private boolean isColumnCalculated(int i) {

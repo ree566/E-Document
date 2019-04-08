@@ -14,7 +14,8 @@
 <script src="<c:url value="/js/jqgrid-custom-setting.js" />"></script>
 <script>
     $(function () {
-        var grid = $("#list"), grid2 = $("#list2"), grid3 = $("#list3");
+        var grid = $("#list");
+		//, grid2 = $("#list2"), grid3 = $("#list3");
         var tableName = "燒機成本工時對照表", tableName2 = "吹面板工時對照表", tableName3 = "貼合製程工時對照表";
 
         grid.jqGrid({
@@ -73,7 +74,7 @@
                         );
             }
         });
-
+/*
         grid2.jqGrid({
             url: '<c:url value="/json/cleanPanel.json" />',
             datatype: 'json',
@@ -142,18 +143,8 @@
                 {label: 'Test', name: "Test"},
                 {label: 'Packing<br/>(不含附件盒)', name: "Packing"},
                 {label: 'Total<br/>(Mins)', name: "Total"},
-                {label: 'Hourly Rate:<br/> NTD 700', name: "Hourly Rate: NTD 700",
-                    formatter: function (cellvalue, options, rowObject) {
-                        // do something here
-                        return roundDecimal(700 / 60 * rowObject["Total"], 1);
-                    }
-                },
-                {label: '製費<br/>(USD)', name: "製費 (USD)",
-                    formatter: function (cellvalue, options, rowObject) {
-                        // do something here
-                        return roundDecimal(700 / 60 * rowObject["Total"] / 30, 1);
-                    }
-                }
+                {label: 'Hourly Rate:<br/> NTD 700', name: "Hourly Rate: NTD 700"},
+                {label: '製費<br/>(USD)', name: "製費 (USD)"}
 
             ],
             rowNum: 20,
@@ -203,14 +194,9 @@
             ]
         });
 
-
+*/
         function headerRow(rowId, cellValue, rawObject, cm, rdata) {
             return " class='ui-state-default headerRow'";
-        }
-
-        function roundDecimal(val, precision) {
-            var size = Math.pow(10, precision);
-            return Math.round(val * size) / size;
         }
 
     });
@@ -221,6 +207,7 @@
         <table id="list"></table> 
     </div>
     <hr />
+	<!--
     <div>
         <table id="list2"></table> 
     </div>
@@ -228,4 +215,5 @@
     <div>
         <table id="list3"></table> 
     </div>
+	-->
 </div>

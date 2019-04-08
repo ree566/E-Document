@@ -241,7 +241,7 @@ public class HibernateTest {
         
     }
     
-    @Test
+//    @Test
     @Transactional
     @Rollback(false)
     public void revisionInit() {
@@ -250,6 +250,19 @@ public class HibernateTest {
         for (Worktime w : l) {
             w.setCe(0);
             session.update(w);
+        }
+    }
+    
+    @Test
+    @Transactional
+    @Rollback(false)
+    public void testResetFormulaColumn(){
+        Session session = sessionFactory.getCurrentSession();
+        List<Worktime> l = worktimeService.findAll();
+        for (Worktime w : l) {
+            w.setDefaultAssyStation();
+            w.setDefaultPackingStation();
+            session.merge(w);
         }
     }
     
