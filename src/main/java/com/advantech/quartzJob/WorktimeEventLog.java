@@ -95,8 +95,8 @@ public class WorktimeEventLog {
     private String generateMailBody() {
 
         String[] checkFields = {
-            "setupTime", "arFilmAttachment", "seal", "opticalBonding", "cleanPanel", "pi", "assy", "t1", "t2", "packing",
-            "flowByTestFlowId", "flowByPackingFlowId", "flowByBabFlowId", "preAssy"
+            "setupTime", "assy", "t2", "packing",
+            "flowByTestFlowId", "flowByPackingFlowId", "flowByBabFlowId"
         };
 
         DateTime now = new DateTime().withMinuteOfHour(0).withSecondOfMinute(0);
