@@ -116,14 +116,14 @@ public class StandardtimeUploadPort extends BasicUploadPort implements UploadPor
                 swt.setOPCNT(w.getAssyStation());
 
                 //Auto fill reason code when only change station number value
-                if (Objects.equals(w.getAssy(), totalCt) && !Objects.equals(w.getAssyStation(), standardWorktime.getOPCNT()) && w.getReasonCode() == null) {
+                if (Objects.equals(w.getAssy(), totalCt) && !Objects.equals(w.getAssyStation(), standardWorktime.getOPCNT()) && (w.getReasonCode() == null || "0".equals(w.getReasonCode()))) {
                     swt.setCHANGEREASONNO("A3");
                 }
             } else if ("P".equals(columnUnit) && setting.getStationId() != null) {
                 swt.setMACHINECNT(w.getPackingStation());
                 swt.setOPCNT(2);
 
-                if (Objects.equals(w.getPacking(), totalCt) && !Objects.equals(w.getPackingStation(), standardWorktime.getOPCNT()) && w.getReasonCode() == null) {
+                if (Objects.equals(w.getPacking(), totalCt) && !Objects.equals(w.getPackingStation(), standardWorktime.getOPCNT()) && (w.getReasonCode() == null || "0".equals(w.getReasonCode()))) {
                     swt.setCHANGEREASONNO("A3");
                 }
             } else {

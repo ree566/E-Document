@@ -25,6 +25,7 @@ import javax.transaction.Transactional;
 import static junit.framework.Assert.*;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
 import org.junit.Before;
 import org.junit.Test;
@@ -231,11 +232,14 @@ public class UploadPortTest {
     @Test
     @Rollback(true)
     public void testStandardTimeUpload() throws Exception {
-        List<Worktime> l = worktimeService.findAll();
-        List<WorktimeAutouploadSetting> settings = worktimeAutouploadSettingService.findByPrimaryKeys(4, 16);
+        Session session = factory.getCurrentSession();
+        List<Worktime> l = session.createCriteria(Worktime.class).add(Restrictions.like("modelName", "BB", MatchMode.START)).list();
+        assertEquals(453, l.size());
+        List<WorktimeAutouploadSetting> settings = worktimeAutouploadSettingService.findByPrimaryKeys(2, 4);
         standardtimePort.initSettings(settings);
         l.forEach((worktime) -> {
             try {
+                worktime.setReasonCode("A0");
                 System.out.println(worktime.getModelName());
                 standardtimePort.update(worktime);
             } catch (Exception ex) {

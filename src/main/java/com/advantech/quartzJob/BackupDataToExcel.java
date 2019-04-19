@@ -8,10 +8,15 @@ package com.advantech.quartzJob;
 import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.Worktime;
 import com.advantech.service.WorktimeService;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import org.jxls.common.Context;
@@ -19,7 +24,10 @@ import org.jxls.expression.JexlExpressionEvaluator;
 import org.jxls.transform.Transformer;
 import org.jxls.util.JxlsHelper;
 import org.jxls.util.TransformerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 
@@ -29,7 +37,10 @@ import org.springframework.core.io.ResourceLoader;
  */
 public class BackupDataToExcel {
 
-    private final String filePath = "\\\\ACLOA\\New_Group\\Dong_Hu_Plant_Public\\生產部公用資料夾\\工時資料&產能\\worktime-bak.xls";
+    private static final Logger log = LoggerFactory.getLogger(BackupDataToExcel.class);
+
+    @Value("${WORKTIME.BACKUP.LOCATION}")
+    private String filePath;
 
     @Autowired
     private ResourceLoader resourceLoader;
@@ -37,15 +48,26 @@ public class BackupDataToExcel {
     @Autowired
     private WorktimeService worktimeService;
 
+    //Backup file password: 12345678
+    private final String backupFileName = "worktime-bak.xls";
+
     public void backupToDisk() throws Exception {
-        Resource r = resourceLoader.getResource("classpath:excel-template\\worktime-bak.xls");
+        checkFilePath();
+
+        Resource r = resourceLoader.getResource("classpath:excel-template\\" + backupFileName);
 
         try (InputStream is = r.getInputStream()) {
             PageInfo info = new PageInfo();
             info.setRows(-1);
             List<Worktime> l = worktimeService.findWithFullRelation(info);
-            try (OutputStream os = new FileOutputStream(filePath)) {
+            try (OutputStream os = new FileOutputStream(filePath + backupFileName)) {
                 this.outputFile(l, is, os);
+                
+                String readMeFilePath = filePath + "_If you need help, please contact system administrator.";
+                if(!Files.exists(Paths.get(readMeFilePath)))
+                try (OutputStream os2 = new FileOutputStream(readMeFilePath)) {
+                    os2.write(0);
+                }
             }
         }
     }
@@ -68,6 +90,14 @@ public class BackupDataToExcel {
 
         is.close();
         os.close();
+    }
+
+    private void checkFilePath() throws FileNotFoundException, IOException {
+        Path path = Paths.get(filePath);
+        if (!Files.isWritable(path)) {
+            Files.createDirectory(path);
+//            throw new FileNotFoundException("File path \"" + filePath + "\" not exist.");
+        }
     }
 
 }
