@@ -76,8 +76,8 @@ public class StandardTimeUpload {
     private void initCheckFieldNames() {
         checkField = newArrayList(
                 "modelName",
-                "arFilmAttachment", "cleanPanel", "assy", "pi", "t1", "t2",
-                "packing", "seal", "opticalBonding"
+                "assy", "hiPotLeakage", "t2",
+                "packing", "upBiRi", "downBiRi"
         );
     }
 
@@ -92,7 +92,7 @@ public class StandardTimeUpload {
 
         DateTime today = new DateTime();
 
-        Date startDate = today.minusDays(10).toDate();
+        Date startDate = today.minusDays(1).toDate();
         Date endDate = today.toDate();
 
         int failCount = 0;
@@ -123,11 +123,11 @@ public class StandardTimeUpload {
         log.info("Upload standardtime job finished.");
     }
 
-    public void updatePageInfo() {
-        tempInfo.setSearchString(df.print(new DateTime().minusWeeks(1)));
+    private void updatePageInfo() {
+        tempInfo.setSearchString(df.print(new DateTime().minusDays(1)));
     }
 
-    public void notifyUser(List<String> l) {
+    private void notifyUser(List<String> l) {
         String[] to = getMailByNotification("worktime_upload_alarm");
         String[] cc = new String[0];
 
