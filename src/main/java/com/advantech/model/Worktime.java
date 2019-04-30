@@ -96,6 +96,7 @@ public class Worktime implements java.io.Serializable {
     private String lltValue;
     private String gndValue;
     private BigDecimal weight = BigDecimal.ZERO;
+    private BigDecimal weightAff = BigDecimal.ZERO;
     private BigDecimal tolerance = BigDecimal.ZERO;
     private Integer assyStation = 0;
     private Integer packingStation = 0;
@@ -551,6 +552,18 @@ public class Worktime implements java.io.Serializable {
 
     public void setWeight(BigDecimal weight) {
         this.weight = autoFixScale(weight, 4);
+    }
+
+    //附加屬性質給使用者維護(特例)
+    @NotNull
+    @Digits(integer = 10 /*precision*/, fraction = 4 /*scale*/)
+    @Column(name = "weight_aff", nullable = false, precision = 10, scale = 4)
+    public BigDecimal getWeightAff() {
+        return weightAff;
+    }
+
+    public void setWeightAff(BigDecimal weightAff) {
+        this.weightAff = this.autoFixScale(weightAff, 4);
     }
 
     @NotNull

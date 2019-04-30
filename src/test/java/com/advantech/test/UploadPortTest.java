@@ -138,13 +138,14 @@ public class UploadPortTest {
 //        mappingUserPort.upload(w);
     }
 
-//    @Test
+    @Test
+    @Transactional
+    @Rollback(true)
     public void testSopUpload() throws Exception {
-//        List<Worktime> l = worktimeService.findAll();
-//        for (Worktime worktime : l) {
-//            System.out.println("Upload " + worktime.getModelName());
-//        sopPort.upload(w);
-//        }
+        Worktime w1 = worktimeService.findByPrimaryKey(365);
+
+        sopPort.insert(w1);
+
     }
 
     //暫時用
@@ -202,15 +203,15 @@ public class UploadPortTest {
     @Autowired
     private StandardTimeUpload standardTimeUpload;
 
-    @Test
+//    @Test
     @Rollback(true)
     public void testStandardTimeUploadJob() {
         standardTimeUpload.uploadToMes();
     }
-    
+
 //    @Test
     @Rollback(true)
-    public void testModelResponsorUploadPort() throws Exception{
+    public void testModelResponsorUploadPort() throws Exception {
         Worktime obj = new Worktime();
         obj.setModelName("TEST-MODEL-2");
         modelResponsorUploadPort.delete(obj);
