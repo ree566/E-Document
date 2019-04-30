@@ -4,7 +4,7 @@
 
     <groupId>com.advantech</groupId>
     <artifactId>E-Document</artifactId>
-    <version>1.1.7-b01</version>
+    <version>1.1.8-b01</version>
     <packaging>war</packaging>
 
     <name>E-Document</name>
@@ -284,7 +284,7 @@
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
-            <version>20160810</version>
+            <version>20180813</version>
         </dependency>
 
         <!--http://mvnrepository.com/artifact/com.google.code.gson/gson--> 

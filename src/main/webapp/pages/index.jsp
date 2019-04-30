@@ -197,6 +197,9 @@
                                         <li>
                                             <a class="redirect-link" href="conversion.jsp">工時對照表</a>
                                         </li>
+                                        <li>
+                                            <a class="redirect-link" href="flowPermutations.jsp">重工途程排列組合表</a>
+                                        </li>
                                         <sec:authorize access="hasAnyRole('ADMIN', 'OPER')">
                                             <li>
                                                 <a class="redirect-link" href="mod/flow.jsp">Flow</a>

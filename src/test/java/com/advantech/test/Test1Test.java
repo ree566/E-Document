@@ -5,11 +5,17 @@
  */
 package com.advantech.test;
 
+import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.model.Worktime;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
+import java.util.Map;
 import java.util.stream.Collectors;
 import org.junit.Test;
 
@@ -45,11 +51,29 @@ public class Test1Test {
         return modelName.replaceAll("^\\s+", "").replaceAll("\\s+$", "");
     }
 
-    @Test
+//    @Test
     public void test2() {
         BigDecimal b1 = new BigDecimal(1.53);
         BigDecimal b2 = new BigDecimal(1.53);
         System.out.println(b1.compareTo(b2) == 0);
+    }
+
+    @Test
+    public void testLocalJson() throws IOException {
+        String filePath = "C:\\Users\\wei.cheng\\Documents\\NetBeansProjects\\E-Document\\src\\main\\webapp\\json\\flow.json";
+        ObjectMapper mapper = new ObjectMapper();
+        List<Map> l = Arrays.asList(mapper.readValue(new File(filePath), Map[].class));
+        int index = 0;
+        for (Map m : l) {
+            m.put("id", index++);
+        }
+
+        String json = new Gson().toJson(l);
+
+        try (FileWriter file = new FileWriter(filePath)) {
+            file.write(json);
+            System.out.println("Successfully Copied JSON Object to File...");
+        }
     }
 
 }

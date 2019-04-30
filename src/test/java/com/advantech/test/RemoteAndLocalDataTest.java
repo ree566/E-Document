@@ -16,14 +16,17 @@ import com.advantech.service.WorktimeService;
 import com.advantech.webservice.port.MaterialFlowQueryPort;
 import com.advantech.webservice.port.MaterialPropertyValueQueryPort;
 import com.advantech.webservice.port.ModelResponsorQueryPort;
+import com.advantech.webservice.port.SopQueryPort;
 import com.advantech.webservice.root.Section;
 import com.advantech.webservice.unmarshallclass.MaterialFlow;
 import com.advantech.webservice.unmarshallclass.MaterialPropertyValue;
 import com.advantech.webservice.unmarshallclass.ModelResponsor;
+import com.advantech.webservice.unmarshallclass.SopInfo;
 import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -31,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -87,6 +91,9 @@ public class RemoteAndLocalDataTest {
     @Autowired
     private SpringExpressionUtils expressionUtils;
 
+    @Autowired
+    private SopQueryPort sopQueryPort;
+
     @Before
     public void init() {
         Criteria c = sessionFactory.getCurrentSession().createCriteria(Worktime.class);
@@ -102,12 +109,12 @@ public class RemoteAndLocalDataTest {
     }
 
     //*************************************
-//    @Test
+    @Test
     public void testResponsor() throws Exception {
         ExcelGenerator generator = new ExcelGenerator();
         List<Map> errors = new ArrayList();
         for (Worktime w : l) {
-            System.out.println("ModelName testing: " + w.getModelName());
+            System.out.println("ModelName testing: " + w.getModelName() + " responsor...");
             List<ModelResponsor> mesData = responsorQryPort.query(w);
 
             if (!isUserTheSame(w, mesData)) {
@@ -136,7 +143,7 @@ public class RemoteAndLocalDataTest {
         }
         if (!errors.isEmpty()) {
             generator.generateWorkBooks(errors);
-            generator.outputExcel("conflict");
+            generator.outputExcel("testResponsor_conflict");
         }
     }
 
@@ -157,13 +164,13 @@ public class RemoteAndLocalDataTest {
         return s1.containsAll(s2);
     }
 
-//    @Test
+    @Test
     public void testFlow() throws Exception {
         ExcelGenerator generator = new ExcelGenerator();
         List<Map> errors = new ArrayList();
         String na = "n/a";
         for (Worktime w : l) {
-            System.out.println("ModelName testing: " + w.getModelName());
+            System.out.println("ModelName testing: " + w.getModelName() + " flow...");
             List<MaterialFlow> mesData = materialFlowQueryPort.query(w);
 
             if (!isFlowNameTheSame(w, mesData)) {
@@ -189,7 +196,7 @@ public class RemoteAndLocalDataTest {
         }
         if (!errors.isEmpty()) {
             generator.generateWorkBooks(errors);
-            generator.outputExcel("conflict");
+            generator.outputExcel("testFlow_conflict");
         }
     }
 
@@ -247,7 +254,7 @@ public class RemoteAndLocalDataTest {
         List<Map> errors = new ArrayList();
         ExcelGenerator generator = new ExcelGenerator();
         for (Worktime worktime : l) {
-            System.out.println("Testing " + worktime.getModelName());
+            System.out.println("Testing " + worktime.getModelName() + " materialProperty...");
             List<MaterialPropertyValue> props = materialPropertyValueQueryPort.query(worktime);
 
             Map m = new LinkedHashMap();
@@ -273,12 +280,11 @@ public class RemoteAndLocalDataTest {
                     m.put(setting.getColumnName() + "_affValue_local", "0".equals(affFormulaValue) ? null : affFormulaValue);
                     m.put(setting.getColumnName() + "_affValue_remote", prop == null ? null : prop.getAffPropertyValue());
                 }
-                
+
                 /*
                     remote == null 且 local != default
                     remote != local 且 local != default (remote 可能為 null)
-                */
-
+                 */
                 if (prop == null && ObjectUtils.compare(mainFormulaValue, setting.getDefaultValue()) != 0) {
                     diff = true;
                 } else if (prop != null && (ObjectUtils.compare(mainFormulaValue, prop.getValue()) != 0
@@ -297,7 +303,7 @@ public class RemoteAndLocalDataTest {
         }
         if (!errors.isEmpty()) {
             generator.generateWorkBooks(errors);
-            generator.outputExcel("conflict");
+            generator.outputExcel("testMaterialProperty_conflict");
         }
     }
 
@@ -314,5 +320,73 @@ public class RemoteAndLocalDataTest {
             }
         }
         return null;
+    }
+
+    //*************************************
+    
+    private final String regex = "[(\\r\\n|\\n),\" ]+";
+    
+    @Test
+    public void testSop() throws Exception {
+        List<Map> errors = new ArrayList();
+        ExcelGenerator generator = new ExcelGenerator();
+        String[] testingType = {"ASSY", "T1"};
+        sopQueryPort.setTypes(testingType);
+
+        for (Worktime worktime : l) {
+            System.out.println("Testing " + worktime.getModelName() + " sop...");
+            List<SopInfo> sops = sopQueryPort.query(worktime);
+
+            Map m = new LinkedHashMap();
+            m.put("modelName", worktime.getModelName());
+            boolean diff = false;
+
+            Set<String> totalSop = new HashSet();
+            Set<String> assySop = toSops(worktime.getAssyPackingSop());
+            Set<String> testSop = toSops(worktime.getTestSop());
+            totalSop.addAll(assySop);
+            totalSop.addAll(testSop);
+
+            if (totalSop.size() != sops.size()) {
+
+                totalSop.removeIf(s -> "".equals(s));
+                String localValue = totalSop.stream()
+                        .map(n -> n)
+                        .collect(Collectors.joining(","));
+
+                sops.removeIf(s -> "".equals(s.getSopName()));
+                String remoteValue = sops.stream()
+                        .map(n -> n.getSopName())
+                        .collect(Collectors.joining(","));
+
+                m.put("_sop_local", localValue);
+                m.put("_sop_remote", remoteValue);
+
+                diff = true;
+
+            }
+
+            if (diff) {
+                System.out.println("Diff add");
+                errors.add(m);
+            } else {
+                m.clear();
+                m = null;
+            }
+
+        }
+        if (!errors.isEmpty()) {
+            generator.generateWorkBooks(errors);
+            generator.outputExcel("testSop_conflict");
+        }
+    }
+
+    private Set<String> toSops(String st) {
+        Set s = new HashSet();
+        if (st != null && !"".equals(st)) {
+            String[] sops = st.split(regex);
+            s = new HashSet(Arrays.asList(sops));
+        }
+        return s;
     }
 }

@@ -5,7 +5,7 @@
  */
 package com.advantech.test;
 
-import com.advantech.quartzJob.StandardTimeUpload1;
+import com.advantech.quartzJob.StandardTimeUpload;
 import com.advantech.quartzJob.WorktimeEventLog1;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,14 +32,14 @@ public class QuartzJobTest {
 
     @Autowired
     @Qualifier("standardTimeUpload1")
-    private StandardTimeUpload1 job2;
+    private StandardTimeUpload job2;
 
-    @Test
+//    @Test
     public void testWorktimeEventLog() {
         job1.execute();
     }
 
-//    @Test
+    @Test
     public void testStandardTimeUpload() {
 
         job2.uploadToMes();

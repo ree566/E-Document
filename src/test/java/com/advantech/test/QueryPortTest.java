@@ -95,11 +95,12 @@ public class QueryPortTest {
 //        w = worktimeService.findByPrimaryKey(5352);
     }
 
-//    @Test
+    @Test
     public void testSopQueryPort() throws Exception {
-        sopQueryPort.setTypes("T1");
-        List l = sopQueryPort.query(w);
-        assertEquals(1, l.size());
+        Worktime worktime = worktimeService.findByModel("POCW2431903-T");
+        sopQueryPort.setTypes("ASSY", "T1");
+        List l = sopQueryPort.query(worktime);
+        assertEquals(4, l.size());
 
         HibernateObjectPrinter.print(l);
     }
@@ -257,7 +258,7 @@ public class QueryPortTest {
         HibernateObjectPrinter.print(l);
     }
 
-    @Test
+//    @Test
     public void testStandardWorkTimeQueryPort() throws Exception {
         List<StandardWorkTime> l = this.worktimeQueryPort.query("2063002307");
         assertEquals(25, l.size());
