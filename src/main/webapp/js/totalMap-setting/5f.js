@@ -11,7 +11,7 @@ var titleGroup = [
     //assy
     {lineName: "LA", x: 1090, y: 50},
     {lineName: "LB", x: 1090, y: 160},
-    {lineName: "LD", x: 730, y: 200},
+    {lineName: "LD", x: 730, y: 160},
 //    {lineName: "LE", x: 985, y: 420},
     //pkg
     {lineName: "LF", x: 365, y: 155},

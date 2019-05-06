@@ -167,4 +167,8 @@ public class SqlViewService {
         return sqlViewDAO.findBabPreAssyProductivity(lineType_id, floor_id, sD, eD);
     }
 
+    public List<Map> findBabBestLineBalanceRecord(int lineType_id, DateTime sD, DateTime eD) {
+        return sqlViewDAO.findBabBestLineBalanceRecord(lineType_id, sD, eD);
+    }
+
 }

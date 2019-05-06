@@ -395,10 +395,6 @@
                 return Math.round(val * size) / size;
             }
 
-            function roundDecimal(val, precision) {
-                var size = Math.pow(10, precision);
-                return Math.round(val * size) / size;
-            }
         </script>
     </head>
     <body>

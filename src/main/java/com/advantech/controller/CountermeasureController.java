@@ -41,7 +41,7 @@ public class CountermeasureController {
 
     @Autowired
     private CountermeasureService cService;
-    
+
     @Autowired
     private CountermeasureTypeService cTypeService;
 
@@ -65,13 +65,13 @@ public class CountermeasureController {
     protected boolean update(
             @RequestParam(value = "bab_id") int bab_id,
             @RequestParam String typeName,
-            @RequestParam(value = "errorCodes[]") Integer[] errorCodes,
-            @RequestParam(value = "actionCodes[]") Integer[] actionCodes,
+            @RequestParam(value = "errorCodes[]", required = false) Integer[] errorCodes,
+            @RequestParam(value = "actionCodes[]", required = false) Integer[] actionCodes,
             @RequestParam String solution,
             @RequestParam String sop,
             @RequestParam String editor
     ) {
-        
+
         User user = retrieveAndCheckUserInSession();
 
         Countermeasure c = cService.findByBabAndTypeName(bab_id, typeName);
@@ -83,10 +83,14 @@ public class CountermeasureController {
             c.setBab(b);
             c.setCountermeasureType(cType);
         }
-        List<ErrorCode> errorCode = errorCodeService.findByPrimaryKeys(errorCodes);
-        List<ActionCode> actionCode = actionCodeService.findByPrimaryKeys(actionCodes);
-        c.setErrorCodes(newHashSet(errorCode));
-        c.setActionCodes(newHashSet(actionCode));
+        if (errorCodes != null && errorCodes.length != 0) {
+            List<ErrorCode> errorCode = errorCodeService.findByPrimaryKeys(errorCodes);
+            c.setErrorCodes(newHashSet(errorCode));
+        }
+        if (actionCodes != null && actionCodes.length != 0) {
+            List<ActionCode> actionCode = actionCodeService.findByPrimaryKeys(actionCodes);
+            c.setActionCodes(newHashSet(actionCode));
+        }
         c.setLastEditor(user);
         c.setSolution(solution);
         if (c.getId() == 0) {

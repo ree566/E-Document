@@ -169,4 +169,14 @@ public class SqlViewController {
         return new DataTableResponse(sqlViewService.findBabPreAssyProductivity(lineType_id, floor_id, startDate, endDate));
     }
 
+    @RequestMapping(value = "/findBabBestLineBalanceRecord", method = {RequestMethod.GET})
+    @ResponseBody
+    protected DataTableResponse findBabBestLineBalanceRecord(
+            @RequestParam(required = false) int lineType_id,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime startDate,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime endDate
+    ) {
+        return new DataTableResponse(sqlViewService.findBabBestLineBalanceRecord(lineType_id, startDate, endDate));
+    }
+
 }

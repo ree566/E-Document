@@ -293,4 +293,14 @@ public class SqlViewDAO extends AbstractDao<Integer, Object> {
                 .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
                 .list();
     }
+    
+    public List<Map> findBabBestLineBalanceRecord(int lineType_id, DateTime sD, DateTime eD) {
+        return super.getSession()
+                .createSQLQuery("{CALL usp_GetBabBestLineBalanceRecord(:lineType_id, :sD, :eD)}")
+                .setParameter("lineType_id", lineType_id)
+                .setParameter("sD", sD != null ? sD.withHourOfDay(0).toDate() : null)
+                .setParameter("eD", eD != null ? eD.withHourOfDay(23).toDate() : null)
+                .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
+                .list();
+    }
 }

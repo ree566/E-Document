@@ -45,8 +45,10 @@ function initCountermeasureDialog(urls, dt, cType, userInfo) {
     initTable(dt);
     initUserInfo(userInfo);
     countermeasureType = cType;
-    initActionCodeAndErrorCodeOptions();
-    initErrorCodeCheckbox();
+    if (errorCodeQueryUrl && errorCodeQueryUrl != "" && actionCodeQueryUrl && actionCodeQueryUrl != "") {
+        initActionCodeAndErrorCodeOptions();
+        initErrorCodeCheckbox();
+    }
     registOtherEvents();
 }
 
@@ -321,10 +323,10 @@ function registOtherEvents() {
             if (checkVal(editor) == false) {
                 showDialogMsg("找不到使用者，請重新確認您的工號是否存在");
                 return false;
-            } else if (errorCodes.length == 0) {
+            } else if (errorCodeQueryUrl && errorCodeQueryUrl != "" && errorCodes.length == 0) {
                 showDialogMsg("請選擇至少一項ErrorCode");
                 return false;
-            } else if (actionCodes.length == 0) {
+            } else if (actionCodeQueryUrl && actionCodeQueryUrl != "" && actionCodes.length == 0) {
                 showDialogMsg("請選擇至少一項ActionCode");
                 return false;
             } else if (checkVal(sop) == false) {
