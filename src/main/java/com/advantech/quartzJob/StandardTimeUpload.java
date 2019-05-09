@@ -77,7 +77,7 @@ public class StandardTimeUpload {
         checkField = newArrayList(
                 "modelName",
                 "arFilmAttachment", "cleanPanel", "assy", "pi", "t1", "t2",
-                "packing", "seal", "opticalBonding"
+                "packing", "seal", "opticalBonding", "upBiRi", "downBiRi"
         );
     }
 
@@ -124,7 +124,7 @@ public class StandardTimeUpload {
     }
 
     public void updatePageInfo() {
-        tempInfo.setSearchString(df.print(new DateTime().minusWeeks(1)));
+        tempInfo.setSearchString(df.print(new DateTime().minusDays(1)));
     }
 
     public void notifyUser(List<String> l) {
