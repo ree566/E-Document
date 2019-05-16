@@ -40,6 +40,8 @@
         <intercept-url pattern="/pages/admin/modelSopRemark.jsp**" access="hasAnyRole('OPER_MFG', 'OPER_MFG_LINEOWNER', 'ADMIN')" />
         <intercept-url pattern="/pages/admin/FqcModelStandardTime" access="hasAnyRole('OPER_FQC', 'ADMIN')" />
         <intercept-url pattern="/pages/admin/fqcModelStandardTime.jsp**" access="hasAnyRole('OPER_FQC', 'ADMIN')" />
+        <intercept-url pattern="/pages/admin/PreAssyModuleStandardTime**" access="hasAnyRole('OPER_MFG', 'ADMIN')" />
+        <intercept-url pattern="/pages/admin/preAssyModuleStandardTime.jsp**" access="hasAnyRole('OPER_MFG', 'ADMIN')" />
         <intercept-url pattern="/pages/admin/AssyDelete**" access="hasAnyRole('BACKDOOR_4876_', 'ADMIN')" />
         <intercept-url pattern="/pages/admin/assyDelete.jsp**" access="hasAnyRole('BACKDOOR_4876_', 'ADMIN')" />
         <intercept-url pattern="/pages/testPages/**" access="hasRole('ADMIN')" />

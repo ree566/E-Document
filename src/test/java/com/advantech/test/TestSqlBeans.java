@@ -24,6 +24,8 @@ import com.advantech.model.Line;
 import com.advantech.model.LineType;
 import com.advantech.model.ModelSopRemark;
 import com.advantech.model.ModelSopRemarkDetail;
+import com.advantech.model.PreAssyModuleStandardTime;
+import com.advantech.model.PreAssyModuleType;
 import com.advantech.model.TestTable;
 import com.advantech.model.Unit;
 import com.advantech.model.User;
@@ -38,7 +40,6 @@ import javax.transaction.Transactional;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import static org.junit.Assert.*;
 import org.junit.Before;
@@ -282,7 +283,7 @@ public class TestSqlBeans {
 
     }
 
-    @Test
+//    @Test
     @Rollback(true)
     public void testGetLastInputBarcode() {
         BabPassStationRecord b = (BabPassStationRecord) session.createCriteria(BabPassStationRecord.class)
@@ -295,6 +296,28 @@ public class TestSqlBeans {
                 .uniqueResult();
 
         HibernateObjectPrinter.print(b);
+
+    }
+    
+//    @Test
+    @Rollback(true)
+    public void testPreAssyModuleStandardTime() {
+        PreAssyModuleStandardTime b = (PreAssyModuleStandardTime) session.createCriteria(PreAssyModuleStandardTime.class)
+                .add(Restrictions.idEq(1))
+                .uniqueResult();
+
+        HibernateObjectPrinter.print(b);
+
+    }
+    
+    @Test
+    @Rollback(false)
+    public void testPreAssyModuleType() {
+        PreAssyModuleType t = new PreAssyModuleType();
+        t.setName("IO");
+        session.save(t);
+
+        HibernateObjectPrinter.print(t);
 
     }
 

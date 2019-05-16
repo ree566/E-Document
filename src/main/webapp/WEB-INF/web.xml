@@ -279,6 +279,15 @@
         <url-pattern>/pages/admin/SensorTest</url-pattern>  
     </servlet-mapping>
     
+    <servlet>
+        <servlet-name>PreAssyModuleStandardTime</servlet-name>
+        <jsp-file>/pages/admin/preAssyModuleStandardTime.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>PreAssyModuleStandardTime</servlet-name>
+        <url-pattern>/pages/admin/PreAssyModuleStandardTime</url-pattern>  
+    </servlet-mapping>
+    
     <!--Other setting-->
     <servlet>
         <servlet-name>appServlet</servlet-name>

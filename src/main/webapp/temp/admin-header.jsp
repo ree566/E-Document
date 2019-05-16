@@ -102,6 +102,7 @@
                         <li><a href="BabLineProductivity">線體效率查詢</a></li>
                             <c:if test="${isMfgLineOwner || isMfgOper || isAdmin}">
                             <li><a href="ModelSopRemark">Sop維護</a></li>
+                            <li><a href="PreAssyModuleStandardTime">前置模組工時維護</a></li>
                             </c:if>
                             <%--
                             <c:if test="${isBackDoor4876 || isAdmin}">

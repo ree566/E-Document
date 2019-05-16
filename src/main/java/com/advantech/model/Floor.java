@@ -1,9 +1,7 @@
 package com.advantech.model;
 // Generated 2017/4/7 下午 02:26:06 by Hibernate Tools 4.3.1
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.voodoodyne.jackson.jsog.JSOGGenerator;
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.Column;
@@ -39,6 +37,9 @@ public class Floor implements java.io.Serializable {
 
     @JsonIgnore
     private Set<ActionCodeResponsor> actionCodeMappings = new HashSet<>(0);
+
+    @JsonIgnore
+    private Set<PreAssyModuleStandardTime> preAssyModuleStandardTimes = new HashSet<>(0);
 
     public Floor() {
     }
@@ -111,6 +112,15 @@ public class Floor implements java.io.Serializable {
 
     public void setActionCodeMappings(Set<ActionCodeResponsor> actionCodeMappings) {
         this.actionCodeMappings = actionCodeMappings;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "floor")
+    public Set<PreAssyModuleStandardTime> getPreAssyModuleStandardTimes() {
+        return preAssyModuleStandardTimes;
+    }
+
+    public void setPreAssyModuleStandardTimes(Set<PreAssyModuleStandardTime> preAssyModuleStandardTimes) {
+        this.preAssyModuleStandardTimes = preAssyModuleStandardTimes;
     }
 
 }
