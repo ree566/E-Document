@@ -121,17 +121,18 @@ public class UploadPortTest {
         assertFalse(isUploadMatProp);
     }
 
-//    @Test
+    @Test
     @Rollback(true)
     public void testStandardtimeUpload() throws Exception {
-        List<Worktime> l = worktimeService.findByPrimaryKeys(8768);
+        List<Worktime> l = worktimeService.findByPrimaryKeys(6627);
         assertNotNull(l.get(0));
-//        List<WorktimeAutouploadSetting> settings = worktimeAutouploadSettingService.findByPrimaryKeys(19, 20, 21, 22);
-        standardtimePort.initSettings();
+        List<WorktimeAutouploadSetting> settings = worktimeAutouploadSettingService.findAll();
+        standardtimePort.initSettings(settings);
 
         l.forEach((worktime) -> {
             try {
                 System.out.println("Upload model: " + worktime.getModelName());
+                worktime.setReasonCode("A0");
                 standardtimePort.update(worktime);
             } catch (Exception ex) {
                 System.out.println(ex);
@@ -229,7 +230,7 @@ public class UploadPortTest {
         standardTimeUpload.uploadToMes();
     }
 
-    @Test
+//    @Test
     @Rollback(true)
     public void testStandardTimeUpload() throws Exception {
         Session session = factory.getCurrentSession();

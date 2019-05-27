@@ -38,6 +38,11 @@ public class FlowPermutationsService {
     }
 
     public int insert(FlowPermutations pojo) {
+        List<FlowPermutations> l = dao.findAll();
+        FlowPermutations lastRow = l.get(l.size() - 1);
+        String code = lastRow.getCode();
+        String generateCode = "R" + (Integer.parseInt(code.replace("R", "")) + 1);
+        pojo.setCode(generateCode);
         return dao.insert(pojo);
     }
 

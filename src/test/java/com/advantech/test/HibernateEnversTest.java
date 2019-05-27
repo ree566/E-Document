@@ -41,6 +41,7 @@ import static junit.framework.Assert.assertNotNull;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
 import org.hibernate.envers.RevisionEntity;
@@ -395,11 +396,11 @@ public class HibernateEnversTest {
                 .forRevisionsOfEntity(Worktime.class, false, false)
                 .add(AuditEntity.id().eq(9753));
     }
-    
+
     @Autowired
     private StandardtimeUploadPort port;
 
-    @Test
+//    @Test
     @Transactional
     @Rollback(true)
     public void testRevisionQuery() throws Exception {
@@ -407,10 +408,37 @@ public class HibernateEnversTest {
                 .forEntitiesAtRevision(Worktime.class, 13208)
                 .add(AuditEntity.id().eq(9295))
                 .getSingleResult();
-        
+
         assertNotNull(w);
-        
+
         port.initSettings();
         port.update(w);
     }
+
+    @Test
+    @Transactional
+    @Rollback(true)
+    public void testRevisionQuery2() throws Exception {
+        String seriseModel = "POC";
+        
+        List<Integer> del = reader.createQuery()
+                .forRevisionsOfEntity(Worktime.class, false, true)
+                .addProjection(AuditEntity.id())
+                .add(AuditEntity.property("modelName").like(seriseModel, MatchMode.START))
+                .add(AuditEntity.revisionType().eq(RevisionType.DEL))
+                .getResultList();
+
+        l = reader.createQuery()
+                .forRevisionsOfEntity(Worktime.class, false, false)
+                .addProjection(AuditEntity.property("modelName"))
+                .addProjection(AuditEntity.property("productionWt"))
+                .add(AuditEntity.property("modelName").like(seriseModel, MatchMode.START))
+                .add(AuditEntity.property("productionWt").hasChanged())
+                .add(AuditEntity.not(AuditEntity.id().in(del)))
+                .addOrder(AuditEntity.property("modelName").asc())
+                .getResultList();
+
+        HibernateObjectPrinter.print(l);
+    }
+
 }

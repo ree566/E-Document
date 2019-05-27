@@ -34,7 +34,7 @@
                 {label: 'BAB', name: "babFlow", editable: true},
                 {label: 'TEST', name: "testFlow", editable: true},
                 {label: 'Packing', name: "packingFlow", editable: true},
-                {label: 'Code', name: "code", editable: true},
+                {label: 'Code', name: "code", editable: true, editoptions: {readonly: "readonly"}},
                 {
                     label: "Edit Actions",
                     name: "actions",
@@ -163,7 +163,7 @@
             var textbox = $(this);
             textbox.val(textbox.val().toUpperCase());
         });
-        
+
         function excelDownload(buttonId, url) {
             var button = $(buttonId);
             button.addClass('ui-state-disabled');
