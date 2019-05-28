@@ -17,6 +17,7 @@
         <title>組包裝 ${userSitefloor} 樓 - ${initParam.pageTitle}</title>
         <link rel="shortcut icon" href="<c:url value="/images/favicon.ico" />"/>
         <link href="<c:url value="/webjars/jquery-ui-themes/1.12.1/redmond/jquery-ui.min.css" />" rel="stylesheet">
+        <link rel="stylesheet" href="<c:url value="/css/select2.min.css" />">
         <style>
             #titleAlert{
                 background-color: green;
@@ -100,6 +101,7 @@
         <script src="<c:url value="/js/jquery.cookie.js" /> "></script>
         <script src="<c:url value="/js/param.check.js" /> "></script>
         <script src="<c:url value="/webjars/momentjs/2.18.1/moment.js" /> "></script>
+        <script src="<c:url value="/js/select2.min.js"/>"></script>
 
         <script>
             var hnd;//鍵盤輸入間隔
@@ -226,10 +228,20 @@
                         $("#step2Hint").html("")
                                 .append("<li>做完最後一台時點擊<code>Save</code>，告知系統您已經做完了</li>")
                                 .append("<li>如果要更換使用者，請點選<code>換人</code>，填入您的新工號之後進行工號切換</li>");
-                        
+
                         $(".preAssy-pcs-insert").toggle(processData.length != 0 && processData[0].ispre == 1);
                     }
                 });
+
+                $("#ispre").on("change", function () {
+                    var sel = $("#pre-moduleType");
+                    if ($(this).prop("checked") && !sel.has("option").length) {
+                        initPreAssyModuleType();
+                    }
+                    sel.toggle($(this).prop("checked"));
+                });
+                
+                $("#pre-moduleType").hide();
 
                 //Step 2 event
                 $("#po").on("keyup", function () {
@@ -782,6 +794,29 @@
                 });
             }
 
+            function initPreAssyModuleType() {
+                $.ajax({
+                    type: "GET",
+                    url: "PreAssyModuleTypeController/findAll",
+                    data: {
+                    },
+                    dataType: "json",
+                    success: function (response) {
+                        var sel = $("#pre-moduleType");
+                        var data = response.data;
+                        for (var i = 1; i < data.length; i++) {
+                            var d = data[i];
+                            sel.append("<option value='" + d.id + "'>" + d.name + "</option>");
+                        }
+//                        sel.select2();
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        showMsg(xhr.responseText);
+                    }
+                });
+            }
+
+
             //auto uppercase the textbox value(PO, ModelName)
             function textBoxToUpperCase(obj) {
                 obj.val(obj.val().trim().toLocaleUpperCase());
@@ -880,7 +915,7 @@
 
                     <div id="firstStationWiget" class="row">
                         <div class="col col-xs-12">
-                            <table>
+                            <table class="table table-sm">
                                 <tr>
                                     <td>輸入工單</td>
                                     <td>
@@ -897,6 +932,8 @@
                                             <option value="-1">---請選擇人數---</option>
                                         </select>
                                         <input type="checkbox" id="ispre" /><label for="ispre">前置</label>
+<!--                                        <select id="pre-moduleType" multiple="multiple">
+                                        </select>-->
                                     </td>
                                 </tr>
                                 <tr>

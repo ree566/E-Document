@@ -111,7 +111,7 @@
                             --%>
                         <li class="hide-when-auto"><a href="BabPassStationRecord?lineType=ASSY">Barcode過站紀錄</a></li>
                         <li class="hide-when-auto"><a href="BabPassStationExceptionReport?lineType=ASSY">異常資料統計</a></li>
-                        <li><a href="BabPreAssyProductivity?lineType=ASSY">前置資料查詢</a></li>
+                        <!--<li><a href="BabPreAssyProductivity?lineType=ASSY">前置資料查詢</a></li>-->
                     </ul>
                 </li>
                 <li class="dropdown">
