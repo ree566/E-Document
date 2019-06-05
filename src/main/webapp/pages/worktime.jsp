@@ -427,6 +427,18 @@
                 },
                 position: "last"
             });
+            
+            grid.navButtonAdd('#pager', {
+                caption: "Export to Excel(PMC)",
+                buttonicon: "ui-icon-disk",
+                id: "excelDownload3",
+                onClickButton: function () {
+                    var button = $("#excelDownload3");
+                    excelDownload(button, "<c:url value="/WorktimeDownload/excel3" />");
+                    return false;
+                },
+                position: "last"
+            });
         }
 
         //有可編輯column的人再來分可編輯欄位

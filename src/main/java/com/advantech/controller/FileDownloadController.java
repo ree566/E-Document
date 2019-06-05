@@ -68,6 +68,13 @@ public class FileDownloadController {
         logger.info("Excel download count " + (++fileDownloadCount));
         return this.fileExport("worktime-template.xls", info);
     }
+    
+    @ResponseBody
+    @RequestMapping(value = "/excel3", method = {RequestMethod.GET})
+    protected ModelAndView generateExcel3(PageInfo info) throws Exception {
+        logger.info("Excel download count " + (++fileDownloadCount));
+        return this.fileExport("worktime-PMC.xls", info);
+    }
 
     @ResponseBody
     @RequestMapping(value = "/excelForSpe", method = {RequestMethod.GET})
