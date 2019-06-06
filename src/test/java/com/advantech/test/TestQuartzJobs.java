@@ -6,6 +6,7 @@
 package com.advantech.test;
 
 import com.advantech.quartzJob.BackupDataToExcel;
+import com.advantech.quartzJob.StandardTimeUpload;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.quartz.JobExecutionException;
@@ -27,10 +28,18 @@ public class TestQuartzJobs {
 
     @Autowired
     private BackupDataToExcel backupExcel;
+    
+    @Autowired
+    private StandardTimeUpload standardTimeUpload;
 
-    @Test
+//    @Test
     public void testBackupDataToExcel() throws JobExecutionException, Exception {
         backupExcel.backupToDisk();
+    }
+    
+    @Test
+    public void testStandardTimeUpload() throws JobExecutionException, Exception {
+        standardTimeUpload.uploadToMes();
     }
 
 }

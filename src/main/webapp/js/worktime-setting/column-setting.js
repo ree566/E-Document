@@ -45,6 +45,7 @@ var worktimeCol = [
     {name: "gndValue"},
     {name: "lltValue"},
     {name: "weight"},
+    {name: "weightAff"},
     {name: "tolerance"},
     {name: "assyStation"},
     {name: "packingStation"},

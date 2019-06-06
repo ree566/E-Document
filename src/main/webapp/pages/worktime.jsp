@@ -220,6 +220,7 @@
                 {label: 'IR Voltage', name: "irVoltage", width: 100, search: true, searchrules: {required: true}, searchoptions: search_string_options, edittype: "text", editrules: {required: true}},
                 {label: 'LLT Value', name: "lltValue", width: 100, search: true, searchrules: {required: true}, searchoptions: search_string_options, edittype: "text", editrules: {required: true}},
                 {label: '禮盒總重量(含配件)(kg)', name: "weight", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true, required: true}, editoptions: {defaultValue: '0'}},
+                {label: '禮盒總重量(附加屬性質)(kg)', name: "weightAff", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true, required: true}, editoptions: {defaultValue: '0'}},
                 {label: '整箱總重量誤差值(kg)', name: "tolerance", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true, required: true}, editoptions: {defaultValue: '0'}},
                 {label: '組裝排站人數', name: "assyStation", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: {elmsuffix: addFormulaCheckbox("assyStation")}, editrules: {integer: true}, editoptions: {defaultValue: '0'}},
                 {label: '包裝排站人數', name: "packingStation", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: {elmsuffix: addFormulaCheckbox("packingStation")}, editrules: {integer: true}, editoptions: {defaultValue: '0'}},
@@ -271,7 +272,7 @@
                 {startColumnName: 'ce', numberOfColumns: 7, titleText: '<em>外箱Label產品資訊 (1：要印   0：不印)</em>'},
                 {startColumnName: 'nsInOneCollectionBox', numberOfColumns: 1, titleText: '<em>N合1集合箱</em>'},
                 {startColumnName: 'partNoAttributeMaintain', numberOfColumns: 1, titleText: '<em>料號屬性值維護</em>'},
-                {startColumnName: 'weight', numberOfColumns: 2, titleText: '<em>包裝重量</em>'},
+                {startColumnName: 'weight', numberOfColumns: 3, titleText: '<em>包裝重量</em>'},
                 {startColumnName: 'testProfile', numberOfColumns: 5, titleText: '<em>hi-pot Test</em>'}
             ]
         });

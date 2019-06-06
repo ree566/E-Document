@@ -18,7 +18,7 @@
         <property name="cronExpression" value="0 0 0 ? * SUN *"/>
     </bean>-->
     
-    <bean id="targetClass2" class="com.advantech.quartzJob.StandardTimeUpload1"/>
+    <bean id="targetClass2" class="com.advantech.quartzJob.StandardTimeUpload"/>
     
     <bean id="jobDetail2" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
         <property name="targetObject" ref="targetClass2"/>
@@ -77,7 +77,7 @@
         <property name="triggers">
             <list>
                 <ref bean="cronTrigger2"/>
-                <ref bean="cronTrigger3"/>
+                <!--<ref bean="cronTrigger3"/>-->
                 <ref bean="cronTrigger4"/>
                 <ref bean="cronTrigger5"/>
             </list>
