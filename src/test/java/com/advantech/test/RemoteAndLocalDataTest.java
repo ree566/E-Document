@@ -407,6 +407,9 @@ public class RemoteAndLocalDataTest {
         for (Worktime w : l) {
             List<StandardWorkTime> remoteStandardTime = this.standardTimeQueryPort.query(w.getModelName());
             for (WorktimeAutouploadSetting setting : settings) {
+                if (setting.getId() == 24) {
+                    continue;
+                }
 
                 StandardWorkTime worktimeOnMes = remoteStandardTime.stream()
                         .filter(p -> Objects.equals(p.getSTATIONID(), setting.getStationId()) || (p.getSTATIONID() == -1 && setting.getStationId() == null)
@@ -423,7 +426,7 @@ public class RemoteAndLocalDataTest {
                 } else if (worktimeOnMes.getTOTALCT().compareTo(totalCt) != 0) {
                     System.out.printf("%s: %s remote: %s, local: %s\r\n", w.getModelName(), setting.getColumnName(), worktimeOnMes.getTOTALCT().toString(), totalCt.toString());
                     cnt++;
-                } 
+                }
 
             }
         }

@@ -24,6 +24,12 @@
         var tableName = "重工途程排列組合";
         var editable = ${isAdmin || isOper};
 
+        var beforeAdd = function ($form) {
+            var lastCodeNum = getLastCodeNum();
+            $("#code").val(lastCodeNum);
+            greyout($form);
+        };
+
         grid.jqGrid({
             url: '<c:url value="/FlowPermutationsController/read" />',
             datatype: 'json',
@@ -77,7 +83,7 @@
                     }
                 }
             ],
-            rowNum: 20,
+            rowNum: -1,
             rowList: [20, 50, 100, -1],
             pager: '#pager',
             viewrecords: true,
@@ -105,6 +111,19 @@
                         + "\nthrownError is: " + thrownError
                         + "\najaxOptions is: " + ajaxOptions
                         );
+            },
+            grouping: true,
+            groupingView: {
+                groupField: ["babFlow", "testFlow"],
+                groupColumnShow: [true, true],
+                groupText: [
+                    "<b>{0}</b>",
+                    "<b>{0}</b>"
+                ],
+                groupOrder: ["asc", "asc"],
+                groupSummary: [true, false],
+                groupSummaryPos: ['header', 'header'],
+                groupCollapse: true
             }
         });
 
@@ -129,7 +148,7 @@
                         closeAfterAdd: closed_after_add,
                         reloadAfterSubmit: true,
                         errorTextFormat: customErrorTextFormat,
-                        beforeShowForm: greyout,
+                        beforeShowForm: beforeAdd,
                         zIndex: 9999,
                         recreateForm: true
                     },
@@ -183,12 +202,37 @@
         function headerRow(rowId, cellValue, rawObject, cm, rdata) {
             return " class='ui-state-default headerRow'";
         }
+        
+        function getLastCodeNum() {
+            var result;
+            $.ajax({
+                type: "GET",
+                url: "<c:url value="/FlowPermutationsController/findLastCode" />",
+                data: {
+                },
+                dataType: "json",
+                async: false,
+                success: function (response) {
+                    result = response;
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    closeEditDialogWhenError("查詢Code時發生錯誤，請稍後再試");
+                    console.log(xhr.responseText);
+                }
+            });
+            return result;
+        }
+        
+        function closeEditDialogWhenError(error_message) {
+            alert(error_message);
+            $("#TblGrid_list_2").find("#cData").trigger("click");
+        }
 
     });
 </script>
 
 <div id="flow-content">
-    <h5>編輯完請按 Enter(送出) 或 Esc(取消) 編輯</h5>
+    <h5>編輯完請按 Enter(送出) 或 Esc(取消) 編輯, 若徒程為空請填寫"(空白)"</h5>
     <div>
         <table id="list"></table> 
         <div id="pager"></div>

@@ -31,7 +31,7 @@ public class QuartzJobTest {
     private WorktimeEventLog1 job1;
 
     @Autowired
-    @Qualifier("standardTimeUpload1")
+    @Qualifier("standardTimeUpload")
     private StandardTimeUpload job2;
 
 //    @Test

@@ -41,7 +41,18 @@ public class PaginateDAO {
 
         //Order after groupby
         String sortIdx = info.getSidx();
-        if (sortIdx.length() > 0) {
+        if (sortIdx.contains("asc") || sortIdx.contains("desc")) {
+            String[] sortCols = sortIdx.split(",");
+            for (String sortCol : sortCols) {
+                String col = this.trimLeftRight(sortCol);
+                String[] colInfo = col.split(" ");
+                String colName = colInfo[0];
+                String colSord = colInfo.length == 1 ? "asc" : colInfo[1];
+                if (!"".equals(colName)) {
+                    criteria.addOrder("asc".equals(colSord) ? Order.asc(colName) : Order.desc(colName));
+                }
+            }
+        } else if (sortIdx.length() > 0) {
             if ("asc".equalsIgnoreCase(info.getSord())) {
                 criteria.addOrder(Order.asc(sortIdx));
             } else {
@@ -56,6 +67,10 @@ public class PaginateDAO {
         }
 
         return criteria.list();
+    }
+
+    private String trimLeftRight(String s) {
+        return s.replaceAll("^\\s+", "").replaceAll("\\s+$", "");
     }
 
     private Object autoCaseSearchParam(Class clz, String searchField, String searchParam) {

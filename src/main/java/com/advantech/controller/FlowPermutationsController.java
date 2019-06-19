@@ -64,7 +64,15 @@ public class FlowPermutationsController extends CrudController<FlowPermutations>
         String modifyMessage = service.delete(id) == 1 ? this.SUCCESS_MESSAGE : this.FAIL_MESSAGE;
         return serverResponse(modifyMessage);
     }
-    
+
+    @ResponseBody
+    @RequestMapping(value = "findLastCode", method = {RequestMethod.GET})
+    protected String findLastCode() throws Exception {
+        String lastCode = service.findLastCode();
+        String generateCode = "R" + (Integer.parseInt(lastCode.replace("R", "")) + 1);
+        return generateCode;
+    }
+
     @ResponseBody
     @RequestMapping(value = "excel", method = {RequestMethod.GET})
     protected ModelAndView excel() throws Exception {

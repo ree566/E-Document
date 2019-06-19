@@ -37,12 +37,11 @@ public class FlowPermutationsService {
         return dao.findByPrimaryKey(obj_id);
     }
 
+    public String findLastCode() {
+        return dao.findLastCode();
+    }
+
     public int insert(FlowPermutations pojo) {
-        List<FlowPermutations> l = dao.findAll();
-        FlowPermutations lastRow = l.get(l.size() - 1);
-        String code = lastRow.getCode();
-        String generateCode = "R" + (Integer.parseInt(code.replace("R", "")) + 1);
-        pojo.setCode(generateCode);
         return dao.insert(pojo);
     }
 

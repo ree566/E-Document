@@ -58,7 +58,7 @@ public class Test1Test {
         System.out.println(b1.compareTo(b2) == 0);
     }
 
-    @Test
+//    @Test
     public void testLocalJson() throws IOException {
         String filePath = "C:\\Users\\wei.cheng\\Documents\\NetBeansProjects\\E-Document\\src\\main\\webapp\\json\\flow.json";
         ObjectMapper mapper = new ObjectMapper();
@@ -74,6 +74,25 @@ public class Test1Test {
             file.write(json);
             System.out.println("Successfully Copied JSON Object to File...");
         }
+    }
+    
+    @Test
+    public void testStringSplit() {
+        String sidx = "col1 asc, col2 desc, id";
+        String sidx2 = "id";
+        String sidx3 = "id asc";
+        
+        String[] result = sidx.split(",");
+        String[] result2 = sidx2.split(",");
+        String[] result3 = sidx3.split(",");
+        
+        System.out.println(trimLeftRight(result[0]));
+        System.out.println(trimLeftRight(result[1]));
+        System.out.println(trimLeftRight(result[2]));
+    }
+    
+    private String trimLeftRight(String s){
+        return s.replaceAll("^\\s+","").replaceAll("\\s+$","");
     }
 
 }
