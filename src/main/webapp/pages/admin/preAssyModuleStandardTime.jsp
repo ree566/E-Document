@@ -171,7 +171,8 @@
                             url: "<c:url value="/PreAssyModuleTypeController/saveOrUpdate" />",
                             dataType: "html",
                             data: {
-                                name: $("#preAssyModuleType\\.name").val()
+                                id: $("#currentID2").val(),
+                                name: name
                             },
                             success: function (response) {
                                 if (response == "success") {
@@ -206,6 +207,7 @@
                     var data = typeTable.row($(this).parents('tr')).data();
                     clearForm($("#addEditRemark3"));
 
+                    $("#currentID2").val(data.id);
                     $("#preAssyModuleType\\.name").val(data.name);
 
                     $('#addEditRemark3').modal('show');
@@ -213,7 +215,7 @@
 
                 function clearForm(dialog) {//blank the add/edit popup form
                     dialog.find(":text, textarea, input[type='number']").val("");
-                    dialog.find("#currentID").val(0);
+                    dialog.find("#currentID, #currentID2").val(0);
                 }
 
                 function loadTable() {
@@ -348,8 +350,8 @@
                     });
                 }
 
-                $(document).on('click', '.DeleteButton', function (event) {
-                    if (confirm('This action will delete the selected record. Plese click OK to confirm.')) {
+                $(document).on('click', '#remark-info .DeleteButton', function (event) {
+                    if (confirm('1 This action will delete the selected record. Plese click OK to confirm.')) {
                         var data = table.row($(this).parents('tr')).data();
                         //load from database
                         $.ajax({
@@ -362,6 +364,30 @@
                             success: function (response) {
                                 if (response == "success") {
                                     table.ajax.reload();
+                                    alert("Record deleted successfully.");
+                                }
+                            },
+                            error: function (xhr, ajaxOptions, thrownError) {
+                                alert(xhr.responseText);
+                            }
+                        });
+                    }
+                });
+                
+                $(document).on('click', '#preAssyModuleType-info .DeleteButton', function (event) {
+                    if (confirm('2 This action will delete the selected record. Plese click OK to confirm.')) {
+                        var data = typeTable.row($(this).parents('tr')).data();
+                        //load from database
+                        $.ajax({
+                            method: "POST",
+                            url: "<c:url value="/PreAssyModuleTypeController/delete" />",
+                            dataType: "html",
+                            data: {
+                                id: data.id
+                            },
+                            success: function (response) {
+                                if (response == "success") {
+                                    typeTable.ajax.reload();
                                     alert("Record deleted successfully.");
                                 }
                             },

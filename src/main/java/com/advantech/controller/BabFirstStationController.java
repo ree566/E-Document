@@ -14,11 +14,14 @@ import com.advantech.model.TagNameComparison;
 import com.advantech.model.User;
 import com.advantech.service.BabSensorLoginRecordService;
 import com.advantech.service.BabService;
+import com.advantech.service.PreAssyModuleTypeService;
 import com.advantech.service.TagNameComparisonService;
 import com.advantech.service.UserService;
 import static com.google.common.base.Preconditions.*;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import javax.mail.MessagingException;
 import javax.validation.Valid;
 import org.joda.time.DateTime;
@@ -60,17 +63,31 @@ public class BabFirstStationController {
     @Autowired
     private BabSensorLoginRecordService babSensorLoginRecordService;
 
+    @Autowired
+    private PreAssyModuleTypeService moduleTypeService;
+
     @RequestMapping(value = "/insert", method = {RequestMethod.POST})
     @ResponseBody
     protected String insert(
             @Valid @ModelAttribute Bab bab,
             @RequestParam String tagName,
             @RequestParam String jobnumber,
-            @RequestParam(required = false) String recordLineType
+            @RequestParam(required = false) String recordLineType,
+            @RequestParam(name = "moduleTypes[]", required = false) Integer[] moduleTypes
     ) {
 
+        //Check人數
         checkArgument(!(bab.getIspre() != 1 && bab.getPeople() == 1), "非前置工單人數不可為1");
 
+        //Check是否前置有填moduleType
+        if (bab.getIspre() == 1 && moduleTypes != null && moduleTypes.length > 0) {
+//            checkArgument((bab.getIspre() == 1 && moduleTypes != null && moduleTypes.length != 0), "請至少選擇一項前置模組");
+            List typeList = moduleTypeService.findByPrimaryKeys(moduleTypes);
+            Set typeSet = new HashSet(typeList);
+            bab.setPreAssyModuleTypes(typeSet);
+        }
+
+        //Check是否Login & Check jobnumber & tagName exist or not
         BabSensorLoginRecord loginRecord = babSensorLoginRecordService.findBySensor(tagName);
         checkArgument(loginRecord != null, "Can't find login record on this tagName");
         checkArgument(Objects.equals(loginRecord.getJobnumber(), jobnumber), "Jobnumber is not matches at loginRecord in database");
@@ -78,8 +95,8 @@ public class BabFirstStationController {
         TagNameComparison tag = tagNameComparisonService.findByLampSysTagName(tagName);
         checkArgument(tag != null, "Can't find tagName " + tagName + " in setting.");
 
+        //Check station number is under line max people setting
         Line line = tag.getLine();
-
         checkArgument(bab.getPeople() + tag.getPosition() - 1 <= line.getPeople(),
                 "People out of index(" + line.getPeople() + ")");
 

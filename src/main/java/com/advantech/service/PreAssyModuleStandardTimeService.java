@@ -6,6 +6,7 @@
 package com.advantech.service;
 
 import com.advantech.dao.PreAssyModuleStandardTimeDAO;
+import com.advantech.model.Bab;
 import com.advantech.model.Floor;
 import com.advantech.model.PreAssyModuleStandardTime;
 import static com.google.common.base.Preconditions.checkArgument;
@@ -52,6 +53,10 @@ public class PreAssyModuleStandardTimeService {
             dao.insert(clone);
         }
         return 1;
+    }
+
+    public List<PreAssyModuleStandardTime> findByBab(Bab bab) {
+        return dao.findByBab(bab);
     }
 
     public int insert(PreAssyModuleStandardTime pojo) {

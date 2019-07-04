@@ -37,12 +37,13 @@ public class PreAssyModuleStandardTimeController {
     @ResponseBody
     protected DataTableResponse findAll(HttpServletRequest request) {
         List l;
-        if (request.isUserInRole("ROLE_ADMIN")) {
-            l = service.findAll();
-        } else {
-            User user = SecurityPropertiesUtils.retrieveAndCheckUserInSession();
-            l = service.findByFloor(user.getFloor());
-        }
+        l = service.findAll();
+//        if (request.isUserInRole("ROLE_ADMIN")) {
+//            l = service.findAll();
+//        } else {
+//            User user = SecurityPropertiesUtils.retrieveAndCheckUserInSession();
+//            l = service.findByFloor(user.getFloor());
+//        }
         return new DataTableResponse(l);
     }
 

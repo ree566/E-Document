@@ -5,16 +5,17 @@ import com.advantech.dao.BabDAO;
 import com.advantech.helper.PropertiesReader;
 import com.advantech.model.BabDataCollectMode;
 import com.advantech.model.BabSettingHistory;
-import com.advantech.model.BabStandardTimeHistory;
 import com.advantech.model.TagNameComparison;
 import com.advantech.model.view.BabAvg;
-import com.advantech.model.view.Worktime;
 import java.util.List;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import static com.google.common.base.Preconditions.*;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import javax.annotation.PostConstruct;
 import org.hibernate.Hibernate;
@@ -54,6 +55,9 @@ public class BabService {
     private boolean isResultWriteToOldDatabase;
 
     private BabDataCollectMode mode;
+
+    @Autowired
+    private PreAssyModuleStandardTimeService preStandardTimeService;
 
     @PostConstruct
     private void init() {
@@ -102,8 +106,18 @@ public class BabService {
         return babDAO.findProcessingAndNotPre();
     }
 
-    public List<Bab> findProcessingByTagName(String tagName) {
-        return babDAO.findProcessingByTagName(tagName);
+    public List<Map> findProcessingByTagName(String tagName) {
+        List<Bab> l = babDAO.findProcessingByTagName(tagName);
+        List<Map> result = new ArrayList();
+        l.forEach(b -> {
+            Map m = new HashMap();
+            if (b.getIspre() == 1) {
+                m.put("standardTimes", preStandardTimeService.findByBab(b));
+            }
+            m.put("bab", b);
+            result.add(m);
+        });
+        return result;
     }
 
     public List<String> findAllModelName() {

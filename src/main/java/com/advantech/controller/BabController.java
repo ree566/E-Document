@@ -9,6 +9,7 @@ import com.advantech.datatable.DataTableResponse;
 import com.advantech.model.Bab;
 import com.advantech.service.BabService;
 import java.util.List;
+import java.util.Map;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -42,7 +43,7 @@ public class BabController {
 
     @RequestMapping(value = "/findProcessingByTagName", method = {RequestMethod.GET})
     @ResponseBody
-    protected List<Bab> findProcessingByTagName(@RequestParam String tagName) {
+    protected List<Map> findProcessingByTagName(@RequestParam String tagName) {
         return babService.findProcessingByTagName(tagName);
     }
 

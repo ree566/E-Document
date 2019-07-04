@@ -27,8 +27,16 @@ public class PreAssyModuleTypeService {
         return dao.findAll();
     }
 
+    public List<PreAssyModuleType> findByModelName(String modelName) {
+        return dao.findByModelName(modelName);
+    }
+
     public PreAssyModuleType findByPrimaryKey(Object obj_id) {
         return dao.findByPrimaryKey(obj_id);
+    }
+
+    public List<PreAssyModuleType> findByPrimaryKeys(Integer... obj_ids) {
+        return dao.findByPrimaryKeys(obj_ids);
     }
 
     public int insert(PreAssyModuleType pojo) {

@@ -34,6 +34,13 @@ public class PreAssyModuleTypeController {
     protected DataTableResponse findAll() {
         return new DataTableResponse(service.findAll());
     }
+    
+    
+    @RequestMapping(value = "/findByModelName", method = {RequestMethod.GET})
+    @ResponseBody
+    protected DataTableResponse findByModelName(@RequestParam String modelName) {
+        return new DataTableResponse(service.findByModelName(modelName));
+    }
 
     @RequestMapping(value = "/saveOrUpdate", method = {RequestMethod.POST})
     @ResponseBody

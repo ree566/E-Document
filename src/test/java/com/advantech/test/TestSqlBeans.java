@@ -33,6 +33,7 @@ import com.advantech.webservice.Factory;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.collect.Sets.newHashSet;
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -310,7 +311,7 @@ public class TestSqlBeans {
 
     }
     
-    @Test
+//    @Test
     @Rollback(false)
     public void testPreAssyModuleType() {
         PreAssyModuleType t = new PreAssyModuleType();
@@ -318,6 +319,35 @@ public class TestSqlBeans {
         session.save(t);
 
         HibernateObjectPrinter.print(t);
+
+    }
+    
+//    @Test
+    @Rollback(true)
+    public void testPreAssyModuleType2() {
+        List<PreAssyModuleType> l = session.createCriteria(PreAssyModuleType.class).list();
+        Bab b = session.get(Bab.class, 173);
+        assertNotNull(b);
+        assertTrue(!l.isEmpty());
+        Set s = new HashSet(l);
+        b.setPreAssyModuleTypes(s);
+
+        session.save(b);
+
+    }
+    
+    @Test
+    @Rollback(true)
+    public void testPreAssyModuleStandardTime2() {
+        Bab b = session.get(Bab.class, 38254);
+        assertNotNull(b);
+        
+        List<PreAssyModuleStandardTime> l = session.createCriteria(PreAssyModuleStandardTime.class)
+                .add(Restrictions.eq("modelName", b.getModelName()))
+                .add(Restrictions.in("preAssyModuleType", b.getPreAssyModuleTypes()))
+                .list();
+        
+        HibernateObjectPrinter.print(l);
 
     }
 

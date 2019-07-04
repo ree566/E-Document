@@ -7,6 +7,8 @@ package com.advantech.dao;
 
 import com.advantech.model.PreAssyModuleType;
 import java.util.List;
+import org.hibernate.Criteria;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -20,10 +22,23 @@ public class PreAssyModuleTypeDAO extends AbstractDao<Integer, PreAssyModuleType
     public List<PreAssyModuleType> findAll() {
         return super.createEntityCriteria().list();
     }
+    
+    public List<PreAssyModuleType> findByModelName(String modelName) {
+        return super.createEntityCriteria()
+                .createAlias("preAssyModuleStandardTimes", "st")
+                .add(Restrictions.eq("st.modelName", modelName))
+                .list();
+    }
 
     @Override
     public PreAssyModuleType findByPrimaryKey(Object obj_id) {
         return super.getByKey((int) obj_id);
+    }
+
+    public List<PreAssyModuleType> findByPrimaryKeys(Integer... obj_ids) {
+        Criteria c = super.createEntityCriteria();
+        c.add(Restrictions.in("id", obj_ids));
+        return c.list();
     }
 
     @Override

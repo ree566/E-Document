@@ -37,19 +37,23 @@ public class TestFacade {
     @Autowired
     private FqcLineTypeFacade fF;
 
-//    @Test
+    @Test
     @Transactional
-    @Rollback(true)
+    @Rollback(false)
     public void testBabLineTypeFacade() {
-    }
-
-//    @Test
-    @Transactional
-    @Rollback(true)
-    public void testTestLineTypeFacade() {
+        bF.initMap();
+        bF.initAlarmSign();
     }
 
     @Test
+    @Transactional
+    @Rollback(false)
+    public void testTestLineTypeFacade() {
+        tF.initMap();
+        tF.initAlarmSign();
+    }
+
+//    @Test
     @Transactional
     @Rollback(true)
     public void testFqcLineTypeFacade() {

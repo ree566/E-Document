@@ -10,6 +10,9 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -25,6 +28,9 @@ public class PreAssyModuleType implements java.io.Serializable {
 
     @JsonIgnore
     private Set<PreAssyModuleStandardTime> preAssyModuleStandardTimes = new HashSet<>(0);
+
+    @JsonIgnore
+    private Set<Bab> babs = new HashSet<Bab>(0);
 
     public PreAssyModuleType() {
     }
@@ -61,6 +67,18 @@ public class PreAssyModuleType implements java.io.Serializable {
 
     public void setPreAssyModuleStandardTimes(Set<PreAssyModuleStandardTime> preAssyModuleStandardTimes) {
         this.preAssyModuleStandardTimes = preAssyModuleStandardTimes;
+    }
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "Bab_PreAssyModuleType_REF", joinColumns = {
+        @JoinColumn(name = "preAssyModuleType_id", nullable = false, insertable = false, updatable = false)}, inverseJoinColumns = {
+        @JoinColumn(name = "bab_id", nullable = false, insertable = false, updatable = false)})
+    public Set<Bab> getBabs() {
+        return babs;
+    }
+
+    public void setBabs(Set<Bab> babs) {
+        this.babs = babs;
     }
 
 }

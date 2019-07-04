@@ -206,27 +206,27 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
                     Insert an empty status
                     BabSettingHistory in allBabSettings are proxy object generate by hibernate
                     Can't transform to json by google.Gson directly
-                    */
+                     */
                     babSettings.forEach((setting) -> {
                         JSONObject obj = new JSONObject();
                         obj.put("tagName", setting.getTagName().getName());
                         obj.put("station", setting.getStation());
                         transBabData.put(obj);
                     });
-                    
+
                     isSomeBabUnderStandard = true;
-                    
+
                 } else {
                     BabLastGroupStatus maxStatus = matchesStatus.stream()
                             .max((p1, p2) -> Double.compare(p1.getDiff(), p2.getDiff())).get();
                     double diffTimeSum = matchesStatus.stream().mapToDouble(BabLastGroupStatus::getDiff).sum();
-                    
+
                     boolean isUnderBalance = checkIsUnderBalance(bab, maxStatus.getDiff(), diffTimeSum);
-                    
+
                     if (isUnderBalance) {
                         isSomeBabUnderStandard = true;
                     }
-                    
+
                     matchesStatus.stream().map((bgs) -> {
                         bgs.setIsmax(isUnderBalance && Objects.equals(bgs, maxStatus));
                         return bgs;
@@ -286,7 +286,9 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
     @Override
     public void initAlarmSign() {
         List l = almService.findAll();
-        almService.delete(l);
+        if (!l.isEmpty()) {
+            almService.delete(l);
+        }
         almService.insert(this.mapToAlarmSign(dataMap));
     }
 

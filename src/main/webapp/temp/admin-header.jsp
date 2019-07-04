@@ -161,7 +161,7 @@
                             <span class="caret" />
                         </a>
                         <ul class="dropdown-menu sensorAdjustSelect">
-                            <c:if test="${isAdmin}">
+                            <c:if test="${isAdmin || isMfgOper || isBackDoor4876}">
                                 <li><a href="SensorTest">Sensor檢測</a></li>
                             </c:if>
                         </ul>

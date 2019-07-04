@@ -24,6 +24,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -80,6 +82,9 @@ public class Bab implements Serializable {
 
     @JsonIgnore
     private List<BabAvg> babAvgs = new ArrayList();
+
+//    @JsonIgnore
+    private Set<PreAssyModuleType> preAssyModuleTypes = new HashSet<PreAssyModuleType>(0);
 
     public Bab() {
     }
@@ -271,6 +276,18 @@ public class Bab implements Serializable {
 
     public void setBabLineProductivityExcludes(Set<BabLineProductivityExclude> babLineProductivityExcludes) {
         this.babLineProductivityExcludes = babLineProductivityExcludes;
+    }
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "Bab_PreAssyModuleType_REF", joinColumns = {
+        @JoinColumn(name = "bab_id", nullable = false, insertable = false, updatable = false)}, inverseJoinColumns = {
+        @JoinColumn(name = "preAssyModuleType_id", nullable = false, insertable = false, updatable = false)})
+    public Set<PreAssyModuleType> getPreAssyModuleTypes() {
+        return preAssyModuleTypes;
+    }
+
+    public void setPreAssyModuleTypes(Set<PreAssyModuleType> preAssyModuleTypes) {
+        this.preAssyModuleTypes = preAssyModuleTypes;
     }
 
     @Transient

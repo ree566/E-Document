@@ -219,7 +219,7 @@
 
                 $("#isNotFirstStation").click(function () {
                     var processData = searchProcessing();
-                    if (processData == null || processData.length == 0 || processData[0].people == 1
+                    if (processData == null || processData.length == 0 || processData[0].bab.people == 1
                             || checkStation($("#tagName").val(), false) == true) {
                         $(this).attr("disabled", true);
                         $("#isFirstStation").removeAttr("disabled");
@@ -229,18 +229,23 @@
                                 .append("<li>做完最後一台時點擊<code>Save</code>，告知系統您已經做完了</li>")
                                 .append("<li>如果要更換使用者，請點選<code>換人</code>，填入您的新工號之後進行工號切換</li>");
 
-                        $(".preAssy-pcs-insert").toggle(processData.length != 0 && processData[0].ispre == 1);
+                        $(".preAssy-pcs-insert").toggle(processData.length != 0 && processData[0].bab.ispre == 1);
                     }
                 });
 
-                $("#ispre").on("change", function () {
+                $("#ispre").on("change, click", function () {
                     var sel = $("#pre-moduleType");
-                    if ($(this).prop("checked") && !sel.has("option").length) {
+                    var modelName = $("#modelName").val();
+                    if ($(this).prop("checked") && modelName != "" && modelName != "data not found") {
                         initPreAssyModuleType();
                     }
                     sel.toggle($(this).prop("checked"));
+                    
+                    if(!$(this).prop("checked")){
+                        sel.val([]).trigger('change').next().hide();
+                    }
                 });
-                
+
                 $("#pre-moduleType").hide();
 
                 //Step 2 event
@@ -285,7 +290,7 @@
 
                     if (searchResult == null) {
                         var data = searchProcessing();
-                        searchResult = data[0];//取最先投入的工單做關閉
+                        searchResult = data[0].bab;//取最先投入的工單做關閉
                     }
 
                     if (searchResult == null) { //當查第二次還是沒有結果
@@ -613,13 +618,31 @@
                 var data = searchProcessing();
                 if (data.length != 0) {
                     for (var i = 0; i < data.length; i++) {
-                        var processingBab = data[i];
+                        var processingBab = data[i].bab;
                         $("#processingBab").append(
                                 "<p" + (i == 0 ? " class='alarm'" : "") + ">工單: " + processingBab.po +
                                 " / 機種: " + processingBab.modelName +
                                 " / 人數: " + processingBab.people +
                                 (processingBab.ispre == 1 ? " / 前置" : "") +
                                 "</p>");
+                        if (processingBab.ispre == 1) {
+                            var preModules = data[i].standardTimes;
+                            var str = "";
+                            if (preModules.length == 0) {
+                                str = "<p class='alarm'>無設定模組</p>";
+                            } else {
+                                str += "<ul" + (i == 0 ? " class='alarm'" : "") + ">";
+                                for (var j = 0; j < preModules.length; j++) {
+                                    str += "<li>模組: " + preModules[j].preAssyModuleType.name +
+                                            " / SOP: " + preModules[j].sopName +
+                                            " / 頁數: " + preModules[j].sopPage +
+                                            "</li>";
+                                }
+                                str += "</ul>";
+                            }
+                            $("#processingBab").append(str);
+                        }
+                        $("#processingBab").append("<p>---------------</p>");
                         if (i == 0 && processingBab.ispre == 1) {
                             $(".preAssy-pcs-insert").show();
                         }
@@ -668,12 +691,14 @@
 
                 var people = parseInt($("#people").val());
                 var ispre = $("#ispre").is(":checked") ? 1 : 0;
+                var arr = $("#pre-moduleType").val();
 
                 saveBabInfo({
                     po: po,
                     modelName: modelName,
                     people: people,
-                    ispre: ispre
+                    ispre: ispre,
+                    moduleTypes: arr
                 });
             }
 
@@ -797,18 +822,24 @@
             function initPreAssyModuleType() {
                 $.ajax({
                     type: "GET",
-                    url: "PreAssyModuleTypeController/findAll",
+                    url: "PreAssyModuleTypeController/findByModelName",
                     data: {
+                        modelName: $("#modelName").val()
                     },
                     dataType: "json",
                     success: function (response) {
                         var sel = $("#pre-moduleType");
+                        sel.html("");
                         var data = response.data;
-                        for (var i = 1; i < data.length; i++) {
+                        for (var i = 0; i < data.length; i++) {
                             var d = data[i];
                             sel.append("<option value='" + d.id + "'>" + d.name + "</option>");
                         }
-//                        sel.select2();
+                        sel.select2({
+                            closeOnSelect: false,
+                            allowClear: true,
+                            tags: true
+                        });
                     },
                     error: function (xhr, ajaxOptions, thrownError) {
                         showMsg(xhr.responseText);
@@ -932,8 +963,8 @@
                                             <option value="-1">---請選擇人數---</option>
                                         </select>
                                         <input type="checkbox" id="ispre" /><label for="ispre">前置</label>
-<!--                                        <select id="pre-moduleType" multiple="multiple">
-                                        </select>-->
+                                        <select id="pre-moduleType" multiple="multiple">
+                                        </select>
                                     </td>
                                 </tr>
                                 <tr>

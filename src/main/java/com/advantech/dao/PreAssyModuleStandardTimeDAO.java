@@ -5,9 +5,11 @@
  */
 package com.advantech.dao;
 
+import com.advantech.model.Bab;
 import com.advantech.model.Floor;
 import com.advantech.model.PreAssyModuleStandardTime;
 import com.advantech.model.PreAssyModuleType;
+import java.util.ArrayList;
 import java.util.List;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
@@ -47,6 +49,16 @@ public class PreAssyModuleStandardTimeDAO extends AbstractDao<Integer, PreAssyMo
     public List<PreAssyModuleStandardTime> findByFloor(Floor f) {
         return super.createEntityCriteria()
                 .add(Restrictions.eq("floor.id", f.getId()))
+                .list();
+    }
+
+    public List<PreAssyModuleStandardTime> findByBab(Bab bab) {
+        if (bab.getPreAssyModuleTypes() == null || bab.getPreAssyModuleTypes().isEmpty()) {
+            return new ArrayList();
+        }
+        return super.createEntityCriteria()
+                .add(Restrictions.eq("modelName", bab.getModelName()))
+                .add(Restrictions.in("preAssyModuleType", bab.getPreAssyModuleTypes()))
                 .list();
     }
 
