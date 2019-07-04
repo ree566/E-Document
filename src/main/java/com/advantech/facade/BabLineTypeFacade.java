@@ -82,7 +82,7 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
     }
 
     @Override
-    protected void initMap() {
+    public void initMap() {
         dataMap.clear();
         List<Line> babLineStatus = lineService.findAll();
         babLineStatus.forEach((line) -> {
