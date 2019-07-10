@@ -16,6 +16,7 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import org.junit.Test;
 
@@ -76,7 +77,7 @@ public class Test1Test {
         }
     }
     
-    @Test
+//    @Test
     public void testStringSplit() {
         String sidx = "col1 asc, col2 desc, id";
         String sidx2 = "id";
@@ -93,6 +94,13 @@ public class Test1Test {
     
     private String trimLeftRight(String s){
         return s.replaceAll("^\\s+","").replaceAll("\\s+$","");
+    }
+    
+    @Test
+    public void testString(){
+        String test1 = "IMC-719-2AC";
+        String test2 = "IMC-719-2AC";
+        System.out.println(Objects.equals(test1, test2));
     }
 
 }

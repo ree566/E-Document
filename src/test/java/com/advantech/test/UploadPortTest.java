@@ -124,27 +124,7 @@ public class UploadPortTest {
     @Test
     @Rollback(true)
     public void testStandardtimeUpload() throws Exception {
-        List<Worktime> l = worktimeService.findByPrimaryKeys(
-                9567,
-                5217,
-                5218,
-                7876,
-                5233,
-                5234,
-                7878,
-                7877,
-                8502,
-                7893,
-                7892,
-                8501,
-                8616,
-                8954,
-                10019,
-                8906,
-                8822,
-                8904,
-                8905,
-                8907);
+        List<Worktime> l = worktimeService.findAll();
         assertNotNull(l.get(0));
         List<WorktimeAutouploadSetting> settings = worktimeAutouploadSettingService.findAll();
         standardtimePort.initSettings(settings);

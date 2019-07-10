@@ -412,7 +412,7 @@ public class RemoteAndLocalDataTest {
                 }
 
                 StandardWorkTime worktimeOnMes = remoteStandardTime.stream()
-                        .filter(p -> Objects.equals(p.getSTATIONID(), setting.getStationId()) || (p.getSTATIONID() == -1 && setting.getStationId() == null)
+                        .filter(p -> (Objects.equals(p.getSTATIONID(), setting.getStationId()) || (p.getSTATIONID() == -1 && setting.getStationId() == null))
                         && (p.getLINEID() == setting.getLineId())
                         && Objects.equals(p.getUNITNO(), setting.getColumnUnit())
                         && Objects.equals(p.getITEMNO(), w.getModelName()))

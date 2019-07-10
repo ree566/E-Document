@@ -28,6 +28,7 @@ import com.advantech.webservice.unmarshallclass.StandardWorkTime;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import static java.util.stream.Collectors.toList;
 import javax.transaction.Transactional;
 import static junit.framework.Assert.*;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -95,7 +96,7 @@ public class QueryPortTest {
 //        w = worktimeService.findByPrimaryKey(5352);
     }
 
-    @Test
+//    @Test
     public void testSopQueryPort() throws Exception {
         Worktime worktime = worktimeService.findByModel("POCW2431903-T");
         sopQueryPort.setTypes("ASSY", "T1");
@@ -258,10 +259,10 @@ public class QueryPortTest {
         HibernateObjectPrinter.print(l);
     }
 
-//    @Test
+    @Test
     public void testStandardWorkTimeQueryPort() throws Exception {
-        List<StandardWorkTime> l = this.worktimeQueryPort.query("2063002307");
-        assertEquals(25, l.size());
+        List<StandardWorkTime> l = this.worktimeQueryPort.query("IMC-450-SL");
+        l = l.stream().filter(s -> s.getITEMNO().equals("IMC-450-SL")).collect(toList());
         
         HibernateObjectPrinter.print(l);
     }
