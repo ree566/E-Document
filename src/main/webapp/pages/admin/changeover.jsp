@@ -5,14 +5,15 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>${initParam.pageTitle}</title>
         <link rel="shortcut icon" href="../../images/favicon.ico"/>
-        <link rel="stylesheet" href="../../css/bootstrap.min.css">
-        <link rel="stylesheet" href="../../css/tooltipster.bundle.min.css">
+        <link rel="stylesheet" href="<c:url value="/webjars/bootstrap/3.3.7/css/bootstrap.min.css" />">
+        <link rel="stylesheet" href="<c:url value="/css/tooltipster.bundle.min.css"/>" >
         <style>
             .table td, .table th {
                 text-align: center;   
@@ -45,11 +46,11 @@
                 height: 4000px;
             }
         </style>
-        <script src="../../js/jquery-1.11.3.min.js"></script>
-        <script src="../../js/bootstrap.min.js"></script>
-        <script src="../../js/urlParamGetter.js"></script>
-        <script src="../../js/tooltipster.bundle.min.js"></script>
-        <script src="../../js/moment.js"></script>
+        <script src="<c:url value="/webjars/jquery/1.12.4/jquery.min.js" />"></script>
+        <script src="<c:url value="/webjars/bootstrap/3.3.7/js/bootstrap.min.js" />"></script>
+        <script src="<c:url value="/js/urlParamGetter.js" />"></script>
+        <script src="<c:url value="/js/tooltipster.bundle.min.js"/>"></script>
+        <script src="<c:url value="/webjars/momentjs/2.18.1/moment.js" /> "></script>
 
         <script>
             $(function () {
@@ -102,8 +103,8 @@
                 function getLine() {
                     var obj;
                     $.ajax({
-                        type: "Post",
-                        url: "../../GetLine",
+                        type: "Get",
+                        url: "<c:url value="/BabLineController/findAll" />",
                         data: {
                             sitefloor: sitefloor
                         },
@@ -113,7 +114,7 @@
                             obj = response;
                         },
                         error: function (xhr, ajaxOptions, thrownError) {
-                            showMsg(xhr.responseText);
+                            console.log(xhr.responseText);
                         }
                     });
                     return obj;
@@ -164,7 +165,7 @@
                                             if (prevBab != null) {
                                                 if (prevBab.lastUpdateTime != null) {
                                                     var prevEndTime = moment(prevBab.lastUpdateTime);
-                                                    var currentStartTime = moment(bab.btime);
+                                                    var currentStartTime = moment(bab.beginTime);
                                                     diff = moment.utc(currentStartTime.diff(prevEndTime)).format("HH:mm:ss");
                                                 }
                                             }
@@ -178,10 +179,10 @@
                                                 diff = null;
                                             }
 
-                                            tbbody.append("<tr><td><a id='data_" + bab.lineName + j + "' class='" + (bab.isused == 0 ? "process" : (bab.isused == -1 ? "no-record" : "done")) + "'>" + bab.model_name + "</a></td></tr>");
+                                            tbbody.append("<tr><td><a id='data_" + bab.lineName + j + "' class='" + (bab.isused == 0 ? "process" : (bab.isused == -1 ? "no-record" : "done")) + "'>" + bab.modelName + "</a></td></tr>");
                                             var babStatus = loopObjectParams(bab);
                                             if (bab.lastUpdateTime != null) {
-                                                var startTime = moment(bab.btime);
+                                                var startTime = moment(bab.beginTime);
                                                 var endTime = moment(bab.lastUpdateTime);
                                                 babStatus += "<p>Time processed: " + moment.utc(endTime.diff(startTime)).format("HH:mm:ss") + "</p>";
                                             }
@@ -234,11 +235,11 @@
                 }
 
                 function loopObjectParams(target) {
-                    var str = "<p>PO: " + target.PO + "</p>" +
-                            "<p>ModelName: " + target.model_name + "</p>" +
-                            "<p>line: " + target.lineName + "</p>" +
+                    var str = "<p>PO: " + target.po + "</p>" +
+                            "<p>ModelName: " + target.modelName + "</p>" +
+                            "<p>line: " + target.line.id + "</p>" +
                             "<p>people: " + target.people + "</p>" +
-                            "<p>startTime: " + target.btime + "</p>" +
+                            "<p>startTime: " + target.beginTime + "</p>" +
                             "<p>endTime: " + target.lastUpdateTime + "</p>";
                     return str;
                 }

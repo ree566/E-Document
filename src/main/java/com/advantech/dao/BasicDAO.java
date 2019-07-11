@@ -67,20 +67,10 @@ public class BasicDAO {
                 return null;
             case WebAccess:
                 Session session = sessionFactory.getCurrentSession();
-                conn = session.doReturningWork(new ReturningWork<Connection>() {
-                    @Override
-                    public Connection execute(Connection conn) throws SQLException {
-                        return conn;
-                    }
-                });
+                conn = session.doReturningWork((Connection conn1) -> conn1);
                 break;
             case LineBalancing:
-                conn = sessionFactory2.getCurrentSession().doReturningWork(new ReturningWork<Connection>() {
-                    @Override
-                    public Connection execute(Connection conn) throws SQLException {
-                        return conn;
-                    }
-                });
+                conn = sessionFactory2.getCurrentSession().doReturningWork((Connection conn1) -> conn1);
                 break;
         }
         return conn;

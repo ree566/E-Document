@@ -272,12 +272,22 @@
                         $("#babArea").append("<div></div>");
                         var groupStatus = babGroup[i];
                         for (var j = 0, k = groupStatus.people; j < k; j++) {
+                            var style = {left: groupStatus.x + pXa, top: groupStatus.y + pYa};
+                            if ('straight' in groupStatus) {
+                                style.width = "10px";
+                            }
                             $("#babArea>div")
                                     .eq(i)
                                     .append("<div></div>")
                                     .addClass("babWiget")
                                     .attr("id", groupStatus.lineName)
-                                    .css({left: groupStatus.x + pXa, top: groupStatus.y + pYa});
+                                    .css(style);
+                            if ('reverse' in groupStatus) {
+                                $("#babArea>div")
+                                        .eq(i)
+                                        .attr("reverse", true);
+                            }
+
                         }
                     }
                 }
@@ -318,13 +328,23 @@
                 function babObjectInit() {
                     $(".babWiget").each(function () {
                         var lineName = $(this).attr("id");
-                        var childAmount = $(this).children().length;
-                        $(this).children().each(function () {
-                            $(this).attr({"id": (lineName + "-S-" + childAmount)})
-                                    .addClass("draggable blub-empty divCustomBg")
-                                    .tooltipster({updateAnimation: null});
-                            childAmount--;
-                        });
+                        if ($(this).attr("reverse")) {
+                            var childAmount = 1;
+                            $(this).children().each(function () {
+                                $(this).attr({"id": (lineName + "-S-" + childAmount)})
+                                        .addClass("draggable blub-empty divCustomBg")
+                                        .tooltipster({updateAnimation: null});
+                                childAmount++;
+                            });
+                        } else {
+                            var childAmount = $(this).children().length;
+                            $(this).children().each(function () {
+                                $(this).attr({"id": (lineName + "-S-" + childAmount)})
+                                        .addClass("draggable blub-empty divCustomBg")
+                                        .tooltipster({updateAnimation: null});
+                                childAmount--;
+                            });
+                        }
                     });
                 }
 

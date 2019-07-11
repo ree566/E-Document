@@ -14,10 +14,10 @@ var titleGroup = [
     {lineName: "LD", x: 730, y: 160},
 //    {lineName: "LE", x: 985, y: 420},
     //pkg
-    {lineName: "LF", x: 365, y: 155},
-    {lineName: "LG", x: 365, y: 50},
-    {lineName: "LH", x: 95, y: 200},
-    {lineName: "FQC", x: 210, y: 240}
+    {lineName: "LF", x: 300, y: 40},
+    {lineName: "LG", x: 210, y: 40},
+    {lineName: "LH", x: 125, y: 40}
+//    {lineName: "FQC", x: 210, y: 240}
 ];
 
 var testGroup = [
@@ -31,15 +31,15 @@ var babGroup = [
     {people: 4, x: 930, y: 170, lineName: "LB"},
     {people: 3, x: 795, y: 170, lineName: "LD"},
 //    {people: 4, x: 1045, y: 440, lineName: "LE"},
-    {people: 3, x: 250, y: 155, lineName: "LF"},
-    {people: 3, x: 250, y: 70, lineName: "LG"},
-    {people: 3, x: 90, y: 160, lineName: "LH"}
+    {people: 3, x: 320, y: 100, lineName: "LF", straight: true, reverse: true},
+    {people: 3, x: 230, y: 100, lineName: "LG", straight: true, reverse: true},
+    {people: 3, x: 160, y: 100, lineName: "LH", straight: true, reverse: true}
 ];
 
 var fqcGroup = [
-    {people: 1, x: 300, y: 215, lineName: "FQC_3"},
-    {people: 1, x: 300, y: 255, lineName: "FQC_4"},
-    {people: 1, x: 300, y: 300, lineName: "FQC_5"}
+//    {people: 1, x: 300, y: 215, lineName: "FQC_3"},
+//    {people: 1, x: 300, y: 255, lineName: "FQC_4"},
+//    {people: 1, x: 300, y: 300, lineName: "FQC_5"}
 ];
 
 var maxTestTableNo = 18;

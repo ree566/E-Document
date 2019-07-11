@@ -29,6 +29,7 @@ public class ModelSopRemarkDetail implements Serializable {
     private int station;
     private String sopName;
     private String sopPage;
+    private Integer standardTime;
 
     public ModelSopRemarkDetail() {
     }
@@ -86,6 +87,15 @@ public class ModelSopRemarkDetail implements Serializable {
 
     public void setSopPage(String sopPage) {
         this.sopPage = sopPage;
+    }
+
+    @Column(name = "standardTime")
+    public Integer getStandardTime() {
+        return standardTime;
+    }
+
+    public void setStandardTime(Integer standardTime) {
+        this.standardTime = standardTime;
     }
 
 }

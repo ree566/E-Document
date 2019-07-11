@@ -103,6 +103,7 @@
                             <c:if test="${isMfgLineOwner || isMfgOper || isAdmin}">
                             <li><a href="ModelSopRemark">Sop維護</a></li>
                             <li><a href="PreAssyModuleStandardTime">前置模組工時維護</a></li>
+                            <li><a href="BabPreAssyDetail">前置資料查詢</a></li>
                             </c:if>
                             <%--
                             <c:if test="${isBackDoor4876 || isAdmin}">

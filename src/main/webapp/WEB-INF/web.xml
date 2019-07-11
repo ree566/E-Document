@@ -288,6 +288,15 @@
         <url-pattern>/pages/admin/PreAssyModuleStandardTime</url-pattern>  
     </servlet-mapping>
     
+    <servlet>
+        <servlet-name>BabPreAssyDetail</servlet-name>
+        <jsp-file>/pages/admin/babPreAssyDetail.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>BabPreAssyDetail</servlet-name>
+        <url-pattern>/pages/admin/BabPreAssyDetail</url-pattern>  
+    </servlet-mapping>
+    
     <!--Other setting-->
     <servlet>
         <servlet-name>appServlet</servlet-name>

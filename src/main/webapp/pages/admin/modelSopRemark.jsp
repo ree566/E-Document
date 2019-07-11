@@ -137,6 +137,7 @@
                     var station = $("#station").val();
                     var sopName = $("#sopName").val();
                     var sopPage = $("#sopPage").val();
+                    var standardTime = $("#standardTime").val();
 
                     var errorMsg = "";
                     if (!station) {
@@ -171,7 +172,8 @@
                                 id: $("#subTableCurrentID").val(),
                                 station: station,
                                 sopName: sopName,
-                                sopPage: sopPage
+                                sopPage: sopPage,
+                                standardTime: standardTime
                             },
                             success: function (response) {
                                 if (response == "success") {
@@ -208,6 +210,7 @@
                     $("#station").val(data.station);
                     $("#sopName").val(data.sopName);
                     $("#sopPage").val(data.sopPage);
+                    $("#standardTime").val(data.standardTime);
                     $("#subTableCurrentID").val(data.id);
 
                     $('#addEditRemarkDetail').modal('show');
@@ -299,6 +302,12 @@
                             {data: "station"},
                             {data: "sopName"},
                             {data: "sopPage"},
+                            {
+                                data: "standardTime",
+                                "render": function (data, type, full, meta) { //this column is redefinied to show the action buttons
+                                    return data == null ? 'n/a' : data;
+                                }
+                            },
                             {
                                 "data": "id",
                                 "width": "20%",
@@ -475,6 +484,7 @@
                                 <th>station</th>
                                 <th>sopName</th>
                                 <th>sopPage</th>
+                                <th>標工</th>
                                 <th>action</th>
                             </tr>
                         </thead>
@@ -539,6 +549,10 @@
                                 <label class="control-label col-sm-3" for="line">SopPage: </label>
                                 <div class="input-group col-sm-9">
                                     <input id="sopPage" type="text" class="input-xlarge js-example-basic-multiple form-control" >
+                                </div><br />
+                                <label class="control-label col-sm-3" for="standardTime">標工: </label>
+                                <div class="input-group col-sm-9">
+                                    <input id="standardTime" type="text" class="input-xlarge form-control" >
                                 </div><br />
                                 <input type="hidden" id="subTableCurrentID" value="" />                         
                             </fieldset>

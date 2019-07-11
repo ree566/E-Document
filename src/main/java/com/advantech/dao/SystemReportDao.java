@@ -40,14 +40,14 @@ public class SystemReportDao extends BasicDAO {
     }
 
     //For效率報表
-    public List<Map> getCountermeasureAndPersonalAlm(String startDate, String endDate) {
+    public List<Map> getCountermeasureAndPersonalAlarmForExcel(String startDate, String endDate) {
         return queryProcForMapList(getConn(),
                 "{CALL usp_Excel_CountermeasureAndPersonalAlarm(?,?)}",
                 startDate, endDate);
     }
 
     //沒有儲存紀錄的工單
-    public List<Map> getEmptyRecordDownExcel(int lineTypeId, int floorId,
+    public List<Map> getEmptyRecordForExcel(int lineTypeId, int floorId,
             String startDate, String endDate) {
         return queryProcForMapList(getConn(),
                 "{CALL usp_Excel_EmptyRecord_1(?, ?, ?, ?)}",
@@ -60,6 +60,14 @@ public class SystemReportDao extends BasicDAO {
         return queryProcForMapList(getConn(),
                 "{CALL usp_BabPassStation_ExceptionReport_Details(?, ?, ?, ?, ?)}",
                 po, modelName, startDate, endDate, lineTypeId);
+    }
+
+    //前置模組資料
+    public List<Map> getBabPreAssyDetailForExcel(int lineTypeId, int floorId, String startDate,
+            String endDate) {
+        return queryProcForMapList(getConn(),
+                "{CALL usp_Excel_BabPreAssyDetail(?,?,?,?)}",
+                lineTypeId, floorId, startDate, endDate);
     }
 
 }

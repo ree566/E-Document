@@ -32,16 +32,20 @@ public class SystemReportService {
         return systemReportDao.getPersonalAlmForExcel(lineTypeId, floorId, startDate, endDate, isAboveStandard);
     }
 
-    public List<Map> getCountermeasureAndPersonalAlm(String startDate, String endDate) {
-        return systemReportDao.getCountermeasureAndPersonalAlm(startDate, endDate);
+    public List<Map> getCountermeasureAndPersonalAlarmForExcel(String startDate, String endDate) {
+        return systemReportDao.getCountermeasureAndPersonalAlarmForExcel(startDate, endDate);
     }
 
-    public List<Map> getEmptyRecordDownExcel(int lineTypeId, int floorId, String startDate, String endDate) {
-        return systemReportDao.getEmptyRecordDownExcel(lineTypeId, floorId, startDate, endDate);
+    public List<Map> getEmptyRecordForExcel(int lineTypeId, int floorId, String startDate, String endDate) {
+        return systemReportDao.getEmptyRecordForExcel(lineTypeId, floorId, startDate, endDate);
     }
 
     public List<Map> getBabPassStationExceptionReportDetails(String po, String modelName, String startDate, String endDate, int lineTypeId) {
         return systemReportDao.getBabPassStationExceptionReportDetails(po, modelName, startDate, endDate, lineTypeId);
+    }
+
+    public List<Map> getBabPreAssyDetailForExcel(int lineTypeId, int floorId, String startDate, String endDate) {
+        return systemReportDao.getBabPreAssyDetailForExcel(lineTypeId, floorId, startDate, endDate);
     }
 
 }

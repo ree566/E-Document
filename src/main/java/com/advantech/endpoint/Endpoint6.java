@@ -60,7 +60,7 @@ public class Endpoint6 {
 
     private static void syncCurrentBabStatus() {
         processingBAB.clear();
-        List l = ((BabService) ApplicationContextHelper.getBean("cronTrigMod")).findTodays();
+        List l = ((BabService) ApplicationContextHelper.getBean("babService")).findTodays();
         groupBab(l);
     }
 

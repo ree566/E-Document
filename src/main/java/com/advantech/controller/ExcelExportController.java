@@ -14,7 +14,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -68,7 +67,7 @@ public class ExcelExportController {
         //personalAlm記得轉格式才能special Excel generate
         List<Map> countermeasures = reportService.getCountermeasureForExcel(lineType_id, floor_id, sD, eD, aboveStandard);
         List<Map> personalAlarms = reportService.getPersonalAlmForExcel(lineType_id, floor_id, sD, eD, aboveStandard);
-        List<Map> emptyRecords = reportService.getEmptyRecordDownExcel(lineType_id, floor_id, sD, eD);
+        List<Map> emptyRecords = reportService.getEmptyRecordForExcel(lineType_id, floor_id, sD, eD);
 
         List list = countermeasures;
         List list2 = transformPersonalAlmDataPattern(personalAlarms);//把各站亮燈頻率合併為橫式(類似 sql 的 Group by格式)
@@ -112,6 +111,42 @@ public class ExcelExportController {
         //http://stackoverflow.com/questions/13853300/jquery-file-download-filedownload
         //personalAlm記得轉格式才能special Excel generate
         List<Map> data = reportService.getBabPassStationExceptionReportDetails(po, modelName, sD, eD, lineType_id);
+
+        if (data.isEmpty()) {
+            res.setContentType("text/html");
+            res.getWriter().println("fail");
+        } else {
+            ExcelGenerator generator = new ExcelGenerator();
+            generator.createExcelSheet("sheet1");
+            generator.generateWorkBooks(data);
+            try (Workbook w = generator.getWorkbook()) {
+                String fileExt = ExcelGenerator.getFileExt(w);
+
+                res.setContentType("application/vnd.ms-excel");
+                res.setHeader("Set-Cookie", "fileDownload=true; path=/");
+                res.setHeader("Content-Disposition",
+                        "attachment; filename=sampleData" + new DatetimeGenerator("yyyyMMdd").getToday() + fileExt);
+                w.write(res.getOutputStream());
+            }
+        }
+    }
+    
+    @RequestMapping(value = "/getBabPreAssyDetail", method = {RequestMethod.GET})
+    @ResponseBody
+    protected void getBabPreAssyDetail(
+            @RequestParam int lineType_id,
+            @RequestParam int floor_id,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime startDate,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime endDate,
+            HttpServletResponse res) throws IOException {
+
+        startDate = startDate.withHourOfDay(0);
+        endDate = endDate.withHourOfDay(23);
+
+        String sD = fmt.print(startDate);
+        String eD = fmt.print(endDate);
+
+        List<Map> data = reportService.getBabPreAssyDetailForExcel(lineType_id, floor_id, sD, eD);
 
         if (data.isEmpty()) {
             res.setContentType("text/html");
