@@ -73,9 +73,6 @@ public class ExcelExportController {
         List list2 = transformPersonalAlmDataPattern(personalAlarms);//把各站亮燈頻率合併為橫式(類似 sql 的 Group by格式)
         List list3 = emptyRecords;
 
-        System.out.println(list.isEmpty());
-        System.out.println(list.isEmpty() && list2.isEmpty());
-
         if (list.isEmpty() || (list.isEmpty() && list2.isEmpty())) {
             res.setContentType("text/html");
             res.getWriter().println("fail");
@@ -107,30 +104,11 @@ public class ExcelExportController {
 
         String sD = fmt.print(startDate);
         String eD = fmt.print(endDate);
-
-        //http://stackoverflow.com/questions/13853300/jquery-file-download-filedownload
-        //personalAlm記得轉格式才能special Excel generate
+        
         List<Map> data = reportService.getBabPassStationExceptionReportDetails(po, modelName, sD, eD, lineType_id);
-
-        if (data.isEmpty()) {
-            res.setContentType("text/html");
-            res.getWriter().println("fail");
-        } else {
-            ExcelGenerator generator = new ExcelGenerator();
-            generator.createExcelSheet("sheet1");
-            generator.generateWorkBooks(data);
-            try (Workbook w = generator.getWorkbook()) {
-                String fileExt = ExcelGenerator.getFileExt(w);
-
-                res.setContentType("application/vnd.ms-excel");
-                res.setHeader("Set-Cookie", "fileDownload=true; path=/");
-                res.setHeader("Content-Disposition",
-                        "attachment; filename=sampleData" + new DatetimeGenerator("yyyyMMdd").getToday() + fileExt);
-                w.write(res.getOutputStream());
-            }
-        }
+        quickGenerateExcel(data, res);
     }
-    
+
     @RequestMapping(value = "/getBabPreAssyDetail", method = {RequestMethod.GET})
     @ResponseBody
     protected void getBabPreAssyDetail(
@@ -147,7 +125,24 @@ public class ExcelExportController {
         String eD = fmt.print(endDate);
 
         List<Map> data = reportService.getBabPreAssyDetailForExcel(lineType_id, floor_id, sD, eD);
+        quickGenerateExcel(data, res);
+    }
 
+    @RequestMapping(value = "/getPreAssyModuleStandardTimeSetting", method = {RequestMethod.GET})
+    @ResponseBody
+    protected void getPreAssyModuleStandardTimeSetting(HttpServletResponse res) throws IOException {
+        List<Map> data = reportService.getPreAssyModuleStandardTimeSetting();
+        quickGenerateExcel(data, res);
+    }
+
+    @RequestMapping(value = "/getAssyModelSopStandardTimeSetting", method = {RequestMethod.GET})
+    @ResponseBody
+    protected void getAssyModelSopStandardTimeSetting(HttpServletResponse res) throws IOException {
+        List<Map> data = reportService.getAssyModelSopStandardTimeSetting();
+        quickGenerateExcel(data, res);
+    }
+
+    private void quickGenerateExcel(List<Map> data, HttpServletResponse res) throws IOException {
         if (data.isEmpty()) {
             res.setContentType("text/html");
             res.getWriter().println("fail");

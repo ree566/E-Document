@@ -8,12 +8,17 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <sec:authentication var="user" property="principal" />
+<sec:authorize access="hasRole('ADMIN')"  var="isAdmin" />
+<sec:authorize access="hasRole('OPER_MFG')"  var="isMfgOper" />
+<sec:authorize access="hasRole('BACKDOOR_4876_')"  var="isBackDoor4876" />
+<sec:authorize access="hasRole('OPER_IE')"  var="isIeOper" />
 <!DOCTYPE html>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>${initParam.pageTitle}</title>
         <link rel="shortcut icon" href="<c:url value="/images/favicon.ico" />" />
+        <link rel="stylesheet" href="<c:url value="/webjars/jquery-ui-themes/1.12.1/redmond/jquery-ui.min.css" />" >
         <link rel="stylesheet" href="<c:url value="/webjars/datatables/1.10.16/css/jquery.dataTables.min.css" />">
         <link rel="stylesheet" href="<c:url value="/css/buttons.dataTables.min.css" />">
         <link rel="stylesheet" href="<c:url value="/css/bootstrap-datetimepicker.min.css" />">
@@ -36,6 +41,7 @@
             }
         </style>
         <script src="<c:url value="/webjars/jquery/1.12.4/jquery.min.js" />"></script>
+        <script src="<c:url value="/js/jquery-ui-1.10.0.custom.min.js" />"></script>
         <script src="<c:url value="/webjars/datatables/1.10.16/js/jquery.dataTables.min.js" /> "></script>
         <script src="<c:url value="/js/jquery-datatable-button/dataTables.buttons.min.js" />"></script>
         <script src="<c:url value="/js/jquery-datatable-button/jszip.min.js" />"></script>
@@ -48,11 +54,13 @@
         <script src="<c:url value="/js/param.check.js"/>"></script>
         <script src="<c:url value="/js/dataTables.cellEdit.js"/>"></script>
         <script src="<c:url value="/js/select2.min.js"/>"></script>
+        <script src="<c:url value="/js/jquery.fileDownload.js" />"></script>
 
         <script>
             ﻿$(function () {
                 var table, typeTable;
                 var typeOptions = [];
+                var standardTimeEditable = '${isAdmin || isMfgOper || isBackDoor4876 || isIeOper}';
 
                 setTypeOptions();
 
@@ -76,7 +84,8 @@
                     }
 
                     if (!standardTime) {
-                        errorMsg += "\n* enter the standardTime";
+//                        errorMsg += "\n* enter the standardTime";
+                        standardTime = 999;
                     }
 
                     if (errorMsg != "") {
@@ -213,6 +222,10 @@
                     $('#addEditRemark3').modal('show');
                 });
 
+                if (standardTimeEditable == 'false') {
+                    $("#standardTimeField").hide().attr("disabled", true);
+                }
+
                 function clearForm(dialog) {//blank the add/edit popup form
                     dialog.find(":text, textarea, input[type='number']").val("");
                     dialog.find("#currentID, #currentID2").val(0);
@@ -243,6 +256,24 @@
                                 "action": function (e, dt, node, config) {
                                     clearForm($("#addEditRemark2"));
                                     $('#addEditRemark2').modal('toggle');
+                                }
+                            },
+                            {
+                                "text": 'Download data',
+                                "attr": {
+                                },
+                                "action": function (e, dt, node, config) {
+                                    var btn = $(".dt-button");
+                                    $.fileDownload('<c:url value="/ExcelExportController/getPreAssyModuleStandardTimeSetting" />', {
+                                        preparingMessageHtml: "We are preparing your report, please wait...",
+                                        failMessageHtml: "No reports generated. No Survey data is available.",
+                                        successCallback: function (url) {
+                                            btn.attr("disabled", false);
+                                        }
+                                        , failCallback: function (html, url) {
+                                            btn.attr("disabled", false);
+                                        }
+                                    });
                                 }
                             }
                         ],
@@ -373,7 +404,7 @@
                         });
                     }
                 });
-                
+
                 $(document).on('click', '#preAssyModuleType-info .DeleteButton', function (event) {
                     if (confirm('2 This action will delete the selected record. Plese click OK to confirm.')) {
                         var data = typeTable.row($(this).parents('tr')).data();
@@ -447,7 +478,7 @@
                                             <select id="preAssyModuleType.id" name="preAssyModuleType.id" class="form-control"></select>
                                         </td>
                                     </tr>
-                                    <tr>
+                                    <tr id="standardTimeField">
                                         <td>標工</td>
                                         <td>
                                             <input type="number" id="standardTime" name="standardTime" class="form-control">

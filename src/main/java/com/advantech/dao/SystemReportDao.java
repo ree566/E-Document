@@ -69,5 +69,17 @@ public class SystemReportDao extends BasicDAO {
                 "{CALL usp_Excel_BabPreAssyDetail(?,?,?,?)}",
                 lineTypeId, floorId, startDate, endDate);
     }
+    
+    //前置模組設定
+    public List<Map> getPreAssyModuleStandardTimeSetting() {
+        return queryProcForMapList(getConn(),
+                "{CALL usp_Excel_PreAssyModuleStandardTimeSetting()}");
+    }
+    
+    //組裝sop標工設定
+    public List<Map> getAssyModelSopStandardTimeSetting() {
+        return queryProcForMapList(getConn(),
+                "{CALL usp_Excel_AssyModelSopStandardTimeSetting()}");
+    }
 
 }

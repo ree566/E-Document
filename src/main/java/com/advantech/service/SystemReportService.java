@@ -48,4 +48,12 @@ public class SystemReportService {
         return systemReportDao.getBabPreAssyDetailForExcel(lineTypeId, floorId, startDate, endDate);
     }
 
+    public List<Map> getPreAssyModuleStandardTimeSetting() {
+        return systemReportDao.getPreAssyModuleStandardTimeSetting();
+    }
+
+    public List<Map> getAssyModelSopStandardTimeSetting() {
+        return systemReportDao.getAssyModelSopStandardTimeSetting();
+    }
+
 }

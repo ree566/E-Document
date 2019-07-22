@@ -6,12 +6,19 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+<sec:authentication var="user" property="principal" />
+<sec:authorize access="hasRole('ADMIN')"  var="isAdmin" />
+<sec:authorize access="hasRole('OPER_MFG')"  var="isMfgOper" />
+<sec:authorize access="hasRole('BACKDOOR_4876_')"  var="isBackDoor4876" />
+<sec:authorize access="hasRole('OPER_IE')"  var="isIeOper" />
 <!DOCTYPE html>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>${initParam.pageTitle}</title>
         <link rel="shortcut icon" href="../../images/favicon.ico"/>
+        <link rel="stylesheet" href="<c:url value="/webjars/jquery-ui-themes/1.12.1/redmond/jquery-ui.min.css" />" >
         <link rel="stylesheet" href="<c:url value="/webjars/datatables/1.10.16/css/jquery.dataTables.min.css" />">
         <link rel="stylesheet" href="<c:url value="/css/bootstrap-datetimepicker.min.css" />">
         <link rel="stylesheet" href="<c:url value="/css/buttons.dataTables.min.css" />">
@@ -42,17 +49,20 @@
             }
         </style>
         <script src="<c:url value="/webjars/jquery/1.12.4/jquery.min.js" />"></script>
+        <script src="<c:url value="/js/jquery-ui-1.10.0.custom.min.js" />"></script>
         <script src="<c:url value="/webjars/datatables/1.10.16/js/jquery.dataTables.min.js" /> "></script>
         <script src="<c:url value="/webjars/jquery-blockui/2.70/jquery.blockUI.js" /> "></script>
         <script src="<c:url value="/webjars/momentjs/2.18.1/moment.js" /> "></script>
         <script src="<c:url value="/js/param.check.js"/>"></script>
         <script src="<c:url value="/js/dataTables.cellEdit.js"/>"></script>
         <script src="<c:url value="/js/select2.min.js"/>"></script>
+        <script src="<c:url value="/js/jquery.fileDownload.js" />"></script>
 
         <script>
             ﻿$(function () {
                 var table, subTable;
-                var sopPageRegex = /[^0-9pP\-,]/gm;
+                var sopPageRegex = /[!@#\$%\^\&*\)\(+=_<>]/gm;
+                var standardTimeEditable = '${isAdmin || isMfgOper || isBackDoor4876 || isIeOper}';
 
                 //This function will load the datatable
                 LoadTable();
@@ -228,6 +238,24 @@
                     $("#RemarkDetailPopup").attr("disabled", false);
                 });
 
+                if (standardTimeEditable == 'false') {
+                    $("#standardTimeField").hide().attr("disabled", true);
+                }
+
+                $("#DownloadData").click(function () {
+                    var btn = $(this);
+                    $.fileDownload('<c:url value="/ExcelExportController/getAssyModelSopStandardTimeSetting" />', {
+                        preparingMessageHtml: "We are preparing your report, please wait...",
+                        failMessageHtml: "No reports generated. No Survey data is available.",
+                        successCallback: function (url) {
+                            btn.attr("disabled", false);
+                        }
+                        , failCallback: function (html, url) {
+                            btn.attr("disabled", false);
+                        }
+                    });
+                });
+
                 function ClearForm() {//blank the add/edit popup form
                     var dialog = $("#addEditRemark");
                     dialog.find(":text, textarea").val("");
@@ -283,7 +311,10 @@
                                 }
                             }
                         ],
-                        "pageLength": 5,
+                        "displayLength": 10,
+                        "pageLength": 10,
+                        "lengthChange": true,
+                        "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
                         "order": [[0, 'desc']]
                     });
                 }
@@ -449,6 +480,7 @@
             <div>
                 <div class="row">
                     <div class="col-lg-6 text-right">
+                        <button type="button" class="btn btn-primary btn-lg" id="DownloadData">Download data</button>              
                         <button type="button" class="btn btn-primary btn-lg" id="RemarkInfoPopup">Add Remark</button>              
                     </div>
                     <div class="col-lg-6 text-right">
@@ -538,22 +570,33 @@
                             <fieldset>
                                 <!-- Form Name -->
                                 <!-- Text input-->
-                                <label class="control-label col-sm-3" for="station">站別: </label>
-                                <div class="input-group col-sm-9">
-                                    <input id="station" name="station" type="number" class="input-xlarge form-control">
-                                </div><br />
-                                <label class="control-label col-sm-3" for="sopName">SopName: </label>
-                                <div class="input-group col-sm-9">
-                                    <input type="text" id="sopName" name="sopName" class="input-xlarge form-control">
-                                </div><br />
-                                <label class="control-label col-sm-3" for="line">SopPage: </label>
-                                <div class="input-group col-sm-9">
-                                    <input id="sopPage" type="text" class="input-xlarge js-example-basic-multiple form-control" >
-                                </div><br />
-                                <label class="control-label col-sm-3" for="standardTime">標工: </label>
-                                <div class="input-group col-sm-9">
-                                    <input id="standardTime" type="text" class="input-xlarge form-control" >
-                                </div><br />
+                                <div>
+                                    <label class="control-label col-sm-3" for="station">站別: </label>
+                                    <div class="input-group col-sm-9">
+                                        <input id="station" name="station" type="number" class="input-xlarge form-control">
+                                    </div>
+                                </div>
+                                <br />
+                                <div>
+                                    <label class="control-label col-sm-3" for="sopName">SopName: </label>
+                                    <div class="input-group col-sm-9">
+                                        <input type="text" id="sopName" name="sopName" class="input-xlarge form-control">
+                                    </div>
+                                </div>
+                                <br />
+                                <div>
+                                    <label class="control-label col-sm-3" for="line">SopPage: </label>
+                                    <div class="input-group col-sm-9">
+                                        <input id="sopPage" type="text" class="input-xlarge js-example-basic-multiple form-control" >
+                                    </div>
+                                </div>
+                                <br />
+                                <div id="standardTimeField">
+                                    <label class="control-label col-sm-3" for="standardTime">標工: </label>
+                                    <div class="input-group col-sm-9">
+                                        <input id="standardTime" type="text" class="input-xlarge form-control" >
+                                    </div>
+                                </div>
                                 <input type="hidden" id="subTableCurrentID" value="" />                         
                             </fieldset>
                         </div>

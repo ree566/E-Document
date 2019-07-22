@@ -41,7 +41,6 @@ public class User implements java.io.Serializable, UserDetails {
     private String password;
     private String username;
     private String usernameCh;
-    private Integer permission = 0;
     private String email;
     private State state = State.ACTIVE;
 
@@ -75,14 +74,13 @@ public class User implements java.io.Serializable, UserDetails {
         this.id = id;
     }
 
-    public User(int id, Floor floor, Unit unit, String email, String jobnumber, String password, Integer permission, String username, State state) {
+    public User(int id, Floor floor, Unit unit, String email, String jobnumber, String password, String username, State state) {
         this.id = id;
         this.floor = floor;
         this.unit = unit;
         this.email = email;
         this.jobnumber = jobnumber;
         this.password = password;
-        this.permission = permission;
         this.username = username;
         this.state = state;
     }
@@ -154,15 +152,6 @@ public class User implements java.io.Serializable, UserDetails {
 
     public void setUsernameCh(String usernameCh) {
         this.usernameCh = usernameCh;
-    }
-
-    @Column(name = "permission")
-    public Integer getPermission() {
-        return this.permission;
-    }
-
-    public void setPermission(Integer permission) {
-        this.permission = permission;
     }
 
     @Column(name = "email", length = 100)

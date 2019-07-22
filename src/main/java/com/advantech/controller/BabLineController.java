@@ -13,6 +13,7 @@ import com.advantech.model.User;
 import com.advantech.service.LineService;
 import com.advantech.service.LineTypeService;
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -54,9 +55,13 @@ public class BabLineController {
 
     @RequestMapping(value = "/findByUser", method = {RequestMethod.GET})
     @ResponseBody
-    protected List<Line> findByUser() {
-        User user = retrieveAndCheckUserInSession();
-        return lineService.findByUser(user);
+    protected List<Line> findByUser(HttpServletRequest request) {
+        if (request.isUserInRole("ROLE_ADMIN") || request.isUserInRole("ROLE_OPER_IE")) {
+            return lineService.findAll();
+        } else {
+            User user = retrieveAndCheckUserInSession();
+            return lineService.findByUser(user);
+        }
     }
 
 }

@@ -297,6 +297,15 @@
         <url-pattern>/pages/admin/BabPreAssyDetail</url-pattern>  
     </servlet-mapping>
     
+    <servlet>
+        <servlet-name>ChangePassword</servlet-name>
+        <jsp-file>/pages/admin/changePassword.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ChangePassword</servlet-name>
+        <url-pattern>/pages/admin/ChangePassword</url-pattern>  
+    </servlet-mapping>
+    
     <!--Other setting-->
     <servlet>
         <servlet-name>appServlet</servlet-name>

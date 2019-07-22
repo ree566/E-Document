@@ -9,6 +9,7 @@
 <sec:authorize access="hasRole('OPER_MFG')"  var="isMfgOper" />
 <sec:authorize access="hasRole('OPER_FQC')"  var="isFqcOper" />
 <sec:authorize access="hasRole('BACKDOOR_4876_')"  var="isBackDoor4876" />
+<sec:authorize access="hasRole('OPER_IE')"  var="isIeOper" />
 <link rel="stylesheet" href="<c:url value="/webjars/bootstrap/3.3.7/css/bootstrap.min.css" />">
 <link rel="stylesheet" href="<c:url value="/webjars/font-awesome/4.7.0/css/font-awesome.min.css" />" >
 <style>
@@ -49,7 +50,7 @@
             for (var i = 0, j = sitefloors.length; i < j; i++) {
                 var sitefloor = sitefloors[i].floor;
                 navbar.find(".totalMapSelect").append("<li><a href='TotalMap?sitefloor=" + sitefloor + "'>狀態平面圖" + sitefloor + "F</a></li>");
-                navbar.find(".sensorAdjustSelect").append("<li><a href='" + (mode == "auto" ? "Sensor" : "Barcode") + 
+                navbar.find(".sensorAdjustSelect").append("<li><a href='" + (mode == "auto" ? "Sensor" : "Barcode") +
                         "Adjust?sitefloor=" + sitefloor + "'>" + sitefloor + "樓感應器狀態(校正用)</a></li>");
             }
         });
@@ -72,7 +73,6 @@
             <a class="navbar-brand" href="SysInfo">
                 <span><img id="logoImg" src="<c:url value="/images/bulb.png" />" alt="sysIcon" /></span>
                     ${initParam.pageTitle}
-                <!--<span><img id="logoImg" src="../../images/bulb.png" alt="sysIcon" /></span>-->
             </a>
         </div>
         <!-- Collect the nav links, forms, and other content for toggling -->
@@ -100,19 +100,13 @@
                         <li class="hide-when-manual"><a href="BabDetailInfo">各站機台時間查詢</a></li>
                         <li><a href="BabDetailInfo2?lineType=ASSY">各站時間查詢(報表格式)</a></li>
                         <li><a href="BabLineProductivity">線體效率查詢</a></li>
-                            <c:if test="${isMfgLineOwner || isMfgOper || isAdmin}">
+                            <c:if test="${isIeOper || isBackDoor4876 || isAdmin || isMfgLineOwner}">
                             <li><a href="ModelSopRemark">Sop維護</a></li>
                             <li><a href="PreAssyModuleStandardTime">前置模組工時維護</a></li>
-                            <li><a href="BabPreAssyDetail">前置資料查詢</a></li>
                             </c:if>
-                            <%--
-                            <c:if test="${isBackDoor4876 || isAdmin}">
-                            <li><a href="AssyDelete">Assy delete</a></li>
-                            </c:if>
-                            --%>
+                        <li><a href="BabPreAssyDetail">前置資料查詢</a></li>
                         <li class="hide-when-auto"><a href="BabPassStationRecord?lineType=ASSY">Barcode過站紀錄</a></li>
                         <li class="hide-when-auto"><a href="BabPassStationExceptionReport?lineType=ASSY">異常資料統計</a></li>
-                        <!--<li><a href="BabPreAssyProductivity?lineType=ASSY">前置資料查詢</a></li>-->
                     </ul>
                 </li>
                 <li class="dropdown">
@@ -125,7 +119,7 @@
                         <li><a href="BabTotal?lineType=Packing">線平衡資訊查詢</a></li>
                         <li class="hide-when-manual"><a href="BabDetailInfo">各站機台時間查詢</a></li>
                         <li><a href="BabDetailInfo2?lineType=Packing">各站時間查詢(報表格式)</a></li>
-                            <c:if test="${isMfgLineOwner || isMfgOper || isAdmin}">
+                            <c:if test="${isIeOper || isBackDoor4876 || isAdmin || isMfgLineOwner}">
                             <li><a href="modelSopRemark.jsp">Sop維護</a></li>
                             </c:if>
                         <li class="hide-when-auto"><a href="BabPassStationRecord?lineType=Packing">Barcode過站紀錄</a></li>
@@ -154,7 +148,7 @@
                     </a>
                     <ul class="dropdown-menu totalMapSelect"></ul>
                 </li>
-                <c:if test="${isMfgLineOwner || isMfgOper || isAdmin}">
+                <c:if test="${isMfgOper || isAdmin}">
                     <li>
                         <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                             <span class="glyphicon glyphicon-list-alt" aria-hidden="true" /> 
@@ -164,7 +158,7 @@
                         <ul class="dropdown-menu sensorAdjustSelect">
                             <c:if test="${isAdmin || isMfgOper || isBackDoor4876}">
                                 <li><a href="SensorTest">Sensor檢測</a></li>
-                            </c:if>
+                                </c:if>
                         </ul>
                     </li>
                 </c:if>
@@ -181,12 +175,16 @@
                     </c:when>
                     <c:otherwise>
                         <li class="dropdown">
-                            <a href="properties.php?type=showall" class="dropdown-toggle" data-toggle="dropdown">
+                            <a href="" class="dropdown-toggle" data-toggle="dropdown">
                                 <c:out value="${user.username}" />
                                 <b class="caret"></b>
                             </a>
                             <ul class="dropdown-menu">
                                 <li>
+                                    <a href="ChangePassword">
+                                        <span class="glyphicon glyphicon-lock" />
+                                        更換密碼
+                                    </a>
                                     <a href="<c:url value="/logout" />">
                                         <span class="glyphicon glyphicon-log-out" />
                                         logout

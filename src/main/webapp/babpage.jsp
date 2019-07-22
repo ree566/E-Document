@@ -527,7 +527,7 @@
                 var result;
                 $.ajax({
                     type: "GET",
-                    url: "CheckUser",
+                    url: "<c:url value="/UserController/checkUser" />",
                     data: {
                         jobnumber: jobnumber
                     },

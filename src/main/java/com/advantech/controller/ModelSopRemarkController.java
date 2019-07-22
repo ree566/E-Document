@@ -16,6 +16,7 @@ import com.advantech.service.ModelSopRemarkDetailService;
 import com.advantech.service.ModelSopRemarkEventService;
 import com.advantech.service.ModelSopRemarkService;
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,13 +49,17 @@ public class ModelSopRemarkController {
 
     @RequestMapping(value = "/findAll", method = {RequestMethod.GET})
     @ResponseBody
-    protected DataTableResponse findAll() {
-
-        User user = retrieveAndCheckUserInSession();
-
-        List l = user == null ? modelSopRemarkService.findAll() : modelSopRemarkService.findByUser(user);
+    protected DataTableResponse findAll(HttpServletRequest request) {
+        List l;
+        if (request.isUserInRole("ROLE_ADMIN") || request.isUserInRole("ROLE_OPER_IE")) {
+            l = modelSopRemarkService.findAll();
+        } else {
+            User user = retrieveAndCheckUserInSession();
+            l = user == null ? modelSopRemarkService.findAll() : modelSopRemarkService.findByUser(user);
+        }
 
         return new DataTableResponse(l);
+
     }
 
     @RequestMapping(value = "/findUseLine", method = {RequestMethod.GET})
