@@ -22,7 +22,7 @@
     $(function () {
         var allowMaxCreate = 10;
         var clickTimes = 1;
-        var regex = new RegExp("^[0-9a-zA-Z-]+$");
+        var regex = new RegExp("^[0-9a-zA-Z-+\/]+$");
         var submitBtn = $("#create-series");
         $("#create-series").on("click", function () {
             var baseModel = $("#base-modelName").val();
