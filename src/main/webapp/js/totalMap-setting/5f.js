@@ -11,8 +11,9 @@ var titleGroup = [
     //assy
     {lineName: "LA", x: 1090, y: 50},
     {lineName: "LB", x: 1090, y: 160},
+    {lineName: "LC", x: 1120, y: 375},
     {lineName: "LD", x: 730, y: 160},
-//    {lineName: "LE", x: 985, y: 420},
+    {lineName: "LE", x: 735, y: 80},
     //pkg
     {lineName: "LF", x: 300, y: 40},
     {lineName: "LG", x: 210, y: 40},
@@ -27,10 +28,10 @@ var testGroup = [
 ];
 
 var babGroup = [
-    {people: 7, x: 825, y: 60, lineName: "LA"},
+    {people: 4, x: 930, y: 55, lineName: "LA"},
     {people: 4, x: 930, y: 170, lineName: "LB"},
     {people: 3, x: 795, y: 170, lineName: "LD"},
-//    {people: 4, x: 1045, y: 440, lineName: "LE"},
+    {people: 3, x: 795, y: 55, lineName: "LE"},
     {people: 3, x: 320, y: 100, lineName: "LF", straight: true, reverse: true},
     {people: 3, x: 230, y: 100, lineName: "LG", straight: true, reverse: true},
     {people: 3, x: 160, y: 100, lineName: "LH", straight: true, reverse: true}

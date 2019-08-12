@@ -9,10 +9,14 @@ import com.advantech.datatable.DataTableResponse;
 import com.advantech.model.Bab;
 import com.advantech.model.BabStatus;
 import com.advantech.model.view.BabAvg;
+import com.advantech.model.view.Worktime;
 import com.advantech.service.BabService;
 import com.advantech.service.LineBalancingService;
 import com.advantech.service.SqlViewService;
 import static com.google.common.base.Preconditions.checkArgument;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.joda.time.DateTime;
@@ -41,6 +45,9 @@ public class SqlViewController {
 
     @Autowired
     private LineBalancingService lineBalancingService;
+
+    @Autowired
+    private ModelController modelController;
 
     @RequestMapping(value = "/findBabDetail", method = {RequestMethod.GET})
     @ResponseBody
@@ -177,6 +184,33 @@ public class SqlViewController {
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime endDate
     ) {
         return new DataTableResponse(sqlViewService.findBabBestLineBalanceRecord(lineType_id, startDate, endDate));
+    }
+
+    @RequestMapping(value = "/calculateChangeover", method = {RequestMethod.GET})
+    @ResponseBody
+    protected Map calculateChangeover(
+            @RequestParam String po,
+            @RequestParam int people,
+            @RequestParam int maxChangeover
+    ) {
+        Map m = new HashMap();
+        String modelName = modelController.findModelNameByPo(po);
+        if (modelName != null) {
+            Worktime w = this.sqlViewService.findWorktime(modelName);
+            if (w != null) {
+                BigDecimal assyWorktime = w.getAssyTime();
+                m.put("po", po);
+                m.put("modelName", modelName);
+                m.put("people", people);
+                m.put("maxChangeover", maxChangeover);
+                m.put("assy", assyWorktime);
+                
+                BigDecimal result = assyWorktime.divide(new BigDecimal(people), 2, RoundingMode.HALF_DOWN)
+                        .add(new BigDecimal(maxChangeover).divide(new BigDecimal(people), 2, RoundingMode.HALF_DOWN));
+                m.put("result", result);
+            }
+        }
+        return m;
     }
 
 }

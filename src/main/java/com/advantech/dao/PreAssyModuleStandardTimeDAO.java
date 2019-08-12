@@ -38,11 +38,10 @@ public class PreAssyModuleStandardTimeDAO extends AbstractDao<Integer, PreAssyMo
                 .list();
     }
 
-    public List<PreAssyModuleStandardTime> findByModelNameAndPreAssyModuleType(String modelName, PreAssyModuleType type, Floor f) {
+    public List<PreAssyModuleStandardTime> findByModelNameAndPreAssyModuleType(String modelName, PreAssyModuleType type) {
         return super.createEntityCriteria()
                 .add(Restrictions.eq("modelName", modelName))
                 .add(Restrictions.eq("preAssyModuleType.id", type.getId()))
-                .add(Restrictions.eq("floor.id", f.getId()))
                 .list();
     }
 

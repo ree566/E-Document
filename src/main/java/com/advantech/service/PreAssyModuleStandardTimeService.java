@@ -34,9 +34,13 @@ public class PreAssyModuleStandardTimeService {
         return dao.findByPrimaryKey(obj_id);
     }
 
-    public void checkIsPreAssyModuleTypeExists(PreAssyModuleStandardTime pojo, Floor f) {
-        List l = dao.findByModelNameAndPreAssyModuleType(pojo.getModelName(), pojo.getPreAssyModuleType(), f);
-        checkArgument(l.isEmpty(), "PreAssyModuleType is already exist in " + pojo.getModelName());
+    public void checkIsPreAssyModuleTypeExists(PreAssyModuleStandardTime pojo) {
+        List<PreAssyModuleStandardTime> l = dao.findByModelNameAndPreAssyModuleType(pojo.getModelName(), pojo.getPreAssyModuleType());
+        if (!l.isEmpty()) {
+            PreAssyModuleStandardTime existRecord = l.get(0);
+            checkArgument(!(pojo.getId() != existRecord.getId() && pojo.getPreAssyModuleType().getId() == existRecord.getPreAssyModuleType().getId()),
+                    "PreAssyModuleType is already exist in " + pojo.getModelName());
+        }
     }
 
     public List<PreAssyModuleStandardTime> findByFloor(Floor f) {

@@ -34,21 +34,27 @@
         
         <!--Global system access setting-->
         <!--<intercept-url pattern="/pages/admin/**" access="permitAll" />-->
-        <intercept-url pattern="/pages/admin/SensorAdjust" access="hasAnyRole('OPER_MFG', 'ADMIN', 'BACKDOOR_4876_')" />
-        <intercept-url pattern="/pages/admin/sensorAdjust.jsp**" access="hasAnyRole('OPER_MFG', 'ADMIN', 'BACKDOOR_4876_')" />
-        <intercept-url pattern="/pages/admin/ModelSopRemark" access="hasAnyRole('OPER_MFG', 'OPER_MFG_LINEOWNER', 'OPER_IE', 'ADMIN', 'BACKDOOR_4876_')" />
-        <intercept-url pattern="/pages/admin/modelSopRemark.jsp**" access="hasAnyRole('OPER_MFG', 'OPER_MFG_LINEOWNER', 'OPER_IE', 'ADMIN', 'BACKDOOR_4876_')" />
-        <intercept-url pattern="/pages/admin/FqcModelStandardTime" access="hasAnyRole('OPER_FQC', 'ADMIN')" />
-        <intercept-url pattern="/pages/admin/fqcModelStandardTime.jsp**" access="hasAnyRole('OPER_FQC', 'ADMIN')" />
-        <intercept-url pattern="/pages/admin/PreAssyModuleStandardTime**" access="hasAnyRole('OPER_IE','OPER_MFG', 'OPER_MFG_LINEOWNER', 'ADMIN', 'BACKDOOR_4876_')" />
-        <intercept-url pattern="/pages/admin/preAssyModuleStandardTime.jsp**" access="hasAnyRole('OPER_IE','OPER_MFG', 'OPER_MFG_LINEOWNER', 'ADMIN', 'BACKDOOR_4876_')" />
-        <intercept-url pattern="/pages/admin/AssyDelete**" access="hasAnyRole('BACKDOOR_4876_', 'ADMIN')" />
-        <intercept-url pattern="/pages/admin/assyDelete.jsp**" access="hasAnyRole('BACKDOOR_4876_', 'ADMIN')" />
+        <intercept-url pattern="/pages/admin/SensorAdjust" access="hasAnyRole('OPER_IE','ADMIN', 'BACKDOOR_4876_')" />
+        <intercept-url pattern="/pages/admin/sensorAdjust.jsp**" access="hasAnyRole('OPER_IE','ADMIN', 'BACKDOOR_4876_')" />
+        <intercept-url pattern="/pages/admin/ModelSopRemark" access="hasAnyRole('OPER_IE','OPER_MFG', 'OPER_MFG_LINEOWNER', 'OPER_IE', 'ADMIN', 'BACKDOOR_4876_')" />
+        <intercept-url pattern="/pages/admin/modelSopRemark.jsp**" access="hasAnyRole('OPER_IE','OPER_MFG', 'OPER_MFG_LINEOWNER', 'OPER_IE', 'ADMIN', 'BACKDOOR_4876_')" />
+        <intercept-url pattern="/pages/admin/FqcModelStandardTime" access="hasAnyRole('OPER_IE','OPER_FQC', 'ADMIN')" />
+        <intercept-url pattern="/pages/admin/fqcModelStandardTime.jsp**" access="hasAnyRole('OPER_IE','OPER_FQC', 'ADMIN')" />
+        <intercept-url pattern="/pages/admin/PreAssyModuleStandardTime**" access="hasAnyRole('OPER_IE','OPER_IE','OPER_MFG', 'OPER_MFG_LINEOWNER', 'ADMIN', 'BACKDOOR_4876_')" />
+        <intercept-url pattern="/pages/admin/preAssyModuleStandardTime.jsp**" access="hasAnyRole('OPER_IE','OPER_IE','OPER_MFG', 'OPER_MFG_LINEOWNER', 'ADMIN', 'BACKDOOR_4876_')" />
+        <intercept-url pattern="/pages/admin/AssyDelete**" access="hasAnyRole('OPER_IE','BACKDOOR_4876_', 'ADMIN')" />
+        <intercept-url pattern="/pages/admin/assyDelete.jsp**" access="hasAnyRole('OPER_IE','BACKDOOR_4876_', 'ADMIN')" />
         <intercept-url pattern="/pages/testPages/**" access="hasRole('ADMIN')" />
         <intercept-url pattern="/pages/admin/setting/**" access="hasRole('ADMIN')" />
         <intercept-url pattern="/pages/admin/setting/**" access="hasRole('ADMIN')" />
-        <intercept-url pattern="/pages/admin/SensorTest" access="hasAnyRole('OPER_MFG', 'ADMIN')" />
-        <intercept-url pattern="/pages/admin/sensorTest.jsp**" access="hasAnyRole('OPER_MFG', 'ADMIN')" />
+        <intercept-url pattern="/pages/admin/SensorTest" access="hasAnyRole('BACKDOOR_4876_', 'OPER_IE','ADMIN', 'OPER_MFG')" />
+        <intercept-url pattern="/pages/admin/sensorTest.jsp**" access="hasAnyRole('BACKDOOR_4876_', 'OPER_IE','ADMIN', 'OPER_MFG')" />
+        <intercept-url pattern="/pages/admin/TestTotalDetail" access="hasAnyRole('BACKDOOR_4876_', 'OPER_IE','ADMIN', 'OPER_MFG')" />
+        <intercept-url pattern="/pages/admin/testTotal.jsp" access="hasAnyRole('BACKDOOR_4876_', 'OPER_IE','ADMIN', 'OPER_MFG')" />
+        <intercept-url pattern="/pages/admin/TotalMap" access="permitAll" />
+        <intercept-url pattern="/pages/admin/map_totalStatus.jsp" access="permitAll" />
+        <intercept-url pattern="/pages/admin/changeover.jsp" access="permitAll" />
+        <intercept-url pattern="/pages/admin/**" access="isAuthenticated()" />
         <!--<intercept-url pattern="/ModelSopRemarkController/**" access="isAuthenticated()" />-->
         <!--<intercept-url pattern="/socket/**" access="isAuthenticated()" />-->
         

@@ -36,22 +36,14 @@ public class PreAssyModuleStandardTimeController {
     @RequestMapping(value = "/findAll", method = {RequestMethod.GET})
     @ResponseBody
     protected DataTableResponse findAll(HttpServletRequest request) {
-        List l;
-        l = service.findAll();
-//        if (request.isUserInRole("ROLE_ADMIN")) {
-//            l = service.findAll();
-//        } else {
-//            User user = SecurityPropertiesUtils.retrieveAndCheckUserInSession();
-//            l = service.findByFloor(user.getFloor());
-//        }
+        List l = service.findAll();
         return new DataTableResponse(l);
     }
 
     @RequestMapping(value = "/saveOrUpdate", method = {RequestMethod.POST})
     @ResponseBody
     protected String saveOrUpdate(@Valid @ModelAttribute PreAssyModuleStandardTime pojo) {
-        User user = SecurityPropertiesUtils.retrieveAndCheckUserInSession();
-        service.checkIsPreAssyModuleTypeExists(pojo, user.getFloor());
+        service.checkIsPreAssyModuleTypeExists(pojo);
         if (pojo.getId() == 0) {
             service.insert(pojo);
         } else {

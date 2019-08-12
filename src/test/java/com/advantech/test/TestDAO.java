@@ -210,7 +210,7 @@ public class TestDAO {
         prePcsRecDAO.insert(pcsRec);
     }
 
-    @Test
+//    @Test
     @Transactional
     @Rollback(false)
     public void testMesCountRecord() {
@@ -248,6 +248,15 @@ public class TestDAO {
                 .filter(e -> e.equals(newData))
                 .collect(toList());
         return !l.isEmpty();
+    }
+    
+    @Test
+    @Transactional
+    @Rollback(true)
+    public void testFindBabLastInputPerLine(){
+        List<Bab> l = this.sqlViewDAO.findBabLastInputPerLine();
+        assertEquals(9, l.size());
+        HibernateObjectPrinter.print(l);
     }
 
 }

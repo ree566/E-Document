@@ -5,6 +5,7 @@
  */
 package com.advantech.dao;
 
+import com.advantech.model.Bab;
 import com.advantech.model.view.BabAvg;
 import com.advantech.model.view.BabLastBarcodeStatus;
 import com.advantech.model.view.BabLastGroupStatus;
@@ -301,6 +302,13 @@ public class SqlViewDAO extends AbstractDao<Integer, Object> {
                 .setParameter("sD", sD != null ? sD.withHourOfDay(0).toDate() : null)
                 .setParameter("eD", eD != null ? eD.withHourOfDay(23).toDate() : null)
                 .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
+                .list();
+    }
+    
+    public List<Bab> findBabLastInputPerLine() {
+        return super.getSession()
+                .createSQLQuery("select * from vw_BabLastInputPerLine")
+                .addEntity(Bab.class)
                 .list();
     }
 }

@@ -205,6 +205,7 @@
                     $("#modelName").val(data.modelName);
                     $("#standardTime").val(data.standardTime);
                     $("#currentID").val(data.id);
+                    $("#preAssyModuleType\\.id").val(data.preAssyModuleType.id);
                     $("#sopName").val(data.sopName);
                     $("#sopPage").val(data.sopPage);
 

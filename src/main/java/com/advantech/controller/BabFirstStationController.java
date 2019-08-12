@@ -2,10 +2,11 @@
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
- * 儲存資料到LS_BAB用，負責第一站投工單
+ * 儲存資料到Bab用，負責第一站投工單
  */
 package com.advantech.controller;
 
+import com.advantech.endpoint.Endpoint6;
 import com.advantech.helper.MailManager;
 import com.advantech.model.Bab;
 import com.advantech.model.BabSensorLoginRecord;
@@ -66,6 +67,9 @@ public class BabFirstStationController {
     @Autowired
     private PreAssyModuleTypeService moduleTypeService;
 
+    @Autowired
+    private Endpoint6 ep6;
+
     @RequestMapping(value = "/insert", method = {RequestMethod.POST})
     @ResponseBody
     protected String insert(
@@ -79,9 +83,12 @@ public class BabFirstStationController {
         //Check人數
         checkArgument(!(bab.getIspre() != 1 && bab.getPeople() == 1), "非前置工單人數不可為1");
 
-        //Check是否前置有填moduleType
         if (bab.getIspre() == 1 && moduleTypes != null && moduleTypes.length > 0) {
-//            checkArgument((bab.getIspre() == 1 && moduleTypes != null && moduleTypes.length != 0), "請至少選擇一項前置模組");
+            
+            //Check是否前置有填moduleType
+            List modules = moduleTypeService.findByModelName(bab.getModelName());
+            checkArgument(!(bab.getIspre() == 1 && !modules.isEmpty() && moduleTypes.length == 0), "請至少選擇一項前置模組");
+            
             List typeList = moduleTypeService.findByPrimaryKeys(moduleTypes);
             Set typeSet = new HashSet(typeList);
             bab.setPreAssyModuleTypes(typeSet);
@@ -105,15 +112,15 @@ public class BabFirstStationController {
 
         //Don't show mail send error message when mail error caused.
         try {
-            sendMailAfterBABRunIn(bab);
+            sendMailAfterBabRunIn(bab);
         } catch (MessagingException e) {
             log.error(e.getMessage());
         }
-//                Endpoint6.syncAndEcho();
+        ep6.syncAndEcho();
         return "success";
     }
 
-    private void sendMailAfterBABRunIn(Bab bab) throws MessagingException {
+    private void sendMailAfterBabRunIn(Bab bab) throws MessagingException {
 
         List<User> l = userService.findByUserNotification(notify_name);
 

@@ -38,9 +38,6 @@ public class Floor implements java.io.Serializable {
     @JsonIgnore
     private Set<ActionCodeResponsor> actionCodeMappings = new HashSet<>(0);
 
-    @JsonIgnore
-    private Set<PreAssyModuleStandardTime> preAssyModuleStandardTimes = new HashSet<>(0);
-
     public Floor() {
     }
 
@@ -112,15 +109,6 @@ public class Floor implements java.io.Serializable {
 
     public void setActionCodeMappings(Set<ActionCodeResponsor> actionCodeMappings) {
         this.actionCodeMappings = actionCodeMappings;
-    }
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "floor")
-    public Set<PreAssyModuleStandardTime> getPreAssyModuleStandardTimes() {
-        return preAssyModuleStandardTimes;
-    }
-
-    public void setPreAssyModuleStandardTimes(Set<PreAssyModuleStandardTime> preAssyModuleStandardTimes) {
-        this.preAssyModuleStandardTimes = preAssyModuleStandardTimes;
     }
 
 }

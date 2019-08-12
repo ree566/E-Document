@@ -50,6 +50,7 @@
             for (var i = 0, j = sitefloors.length; i < j; i++) {
                 var sitefloor = sitefloors[i].floor;
                 navbar.find(".totalMapSelect").append("<li><a href='TotalMap?sitefloor=" + sitefloor + "'>狀態平面圖" + sitefloor + "F</a></li>");
+                navbar.find(".totalMapSelect").append("<li><a href='changeover.jsp?sitefloor=" + sitefloor + "'>換線" + sitefloor + "F</a></li>");
                 navbar.find(".sensorAdjustSelect").append("<li><a href='" + (mode == "auto" ? "Sensor" : "Barcode") +
                         "Adjust?sitefloor=" + sitefloor + "'>" + sitefloor + "樓感應器狀態(校正用)</a></li>");
             }
@@ -85,7 +86,9 @@
                         <span class="caret" />
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a href="TestTotalDetail">測試線別狀態</a></li>
+                        <c:if test="${isIeOper || isBackDoor4876 || isAdmin || isMfgOper}">
+                            <li><a href="TestTotalDetail">測試線別狀態</a></li>
+                            </c:if>
                         <li><a href="TestTotal">測試線別紀錄</a></li>
                     </ul>
                 </li>
@@ -100,7 +103,7 @@
                         <li class="hide-when-manual"><a href="BabDetailInfo">各站機台時間查詢</a></li>
                         <li><a href="BabDetailInfo2?lineType=ASSY">各站時間查詢(報表格式)</a></li>
                         <li><a href="BabLineProductivity">線體效率查詢</a></li>
-                            <c:if test="${isIeOper || isBackDoor4876 || isAdmin || isMfgLineOwner}">
+                            <c:if test="${isIeOper || isBackDoor4876 || isAdmin || isMfgLineOwner || isMfgOper}">
                             <li><a href="ModelSopRemark">Sop維護</a></li>
                             <li><a href="PreAssyModuleStandardTime">前置模組工時維護</a></li>
                             </c:if>
@@ -119,7 +122,7 @@
                         <li><a href="BabTotal?lineType=Packing">線平衡資訊查詢</a></li>
                         <li class="hide-when-manual"><a href="BabDetailInfo">各站機台時間查詢</a></li>
                         <li><a href="BabDetailInfo2?lineType=Packing">各站時間查詢(報表格式)</a></li>
-                            <c:if test="${isIeOper || isBackDoor4876 || isAdmin || isMfgLineOwner}">
+                            <c:if test="${isIeOper || isBackDoor4876 || isAdmin || isMfgLineOwner || isMfgOper}">
                             <li><a href="modelSopRemark.jsp">Sop維護</a></li>
                             </c:if>
                         <li class="hide-when-auto"><a href="BabPassStationRecord?lineType=Packing">Barcode過站紀錄</a></li>
@@ -148,7 +151,7 @@
                     </a>
                     <ul class="dropdown-menu totalMapSelect"></ul>
                 </li>
-                <c:if test="${isMfgOper || isAdmin}">
+                <c:if test="${isIeOper || isAdmin || isBackDoor4876}">
                     <li>
                         <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                             <span class="glyphicon glyphicon-list-alt" aria-hidden="true" /> 

@@ -171,4 +171,8 @@ public class SqlViewService {
         return sqlViewDAO.findBabBestLineBalanceRecord(lineType_id, sD, eD);
     }
 
+    public List<Bab> findBabLastInputPerLine() {
+        return sqlViewDAO.findBabLastInputPerLine();
+    }
+
 }

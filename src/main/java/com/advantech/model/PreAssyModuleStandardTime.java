@@ -31,7 +31,6 @@ public class PreAssyModuleStandardTime implements Serializable, Cloneable {
     private BigDecimal standardTime;
     private String sopName;
     private String sopPage;
-    private Floor floor;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -88,16 +87,6 @@ public class PreAssyModuleStandardTime implements Serializable, Cloneable {
 
     public void setSopPage(String sopPage) {
         this.sopPage = sopPage;
-    }
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "floor_id", nullable = false)
-    public Floor getFloor() {
-        return floor;
-    }
-
-    public void setFloor(Floor floor) {
-        this.floor = floor;
     }
 
     @Override

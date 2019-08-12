@@ -45,6 +45,20 @@
                 overflow: auto;
                 height: 4000px;
             }
+            #calc-area {
+                background: white;
+                margin: 0;
+                padding: 0.5em 0.5em 0.5em 0.5em;
+                position: fixed;
+                right: 10px;
+                bottom: 0px;
+                overflow: auto;
+                height: 100px;
+                width: 50%;
+                border-width: 3px;
+                border-style: solid;
+                border-color: #FFAC55;
+            }
         </style>
         <script src="<c:url value="/webjars/jquery/1.12.4/jquery.min.js" />"></script>
         <script src="<c:url value="/webjars/bootstrap/3.3.7/js/bootstrap.min.js" />"></script>
@@ -55,6 +69,7 @@
         <script>
             $(function () {
                 var sitefloor = getQueryVariable("sitefloor");
+                var monitor = getQueryVariable("monitor");
 
                 var msg = $("#sendMessage");
                 var log = $("#log");
@@ -93,7 +108,42 @@
                     log.html("");
                 });
 
+                $("#calc-submit").click(function () {
+                    var po = $("#calc-po").val();
+                    var people = $("#calc-people").val();
+                    var resultArea = $("#calc-result");
+
+                    $.ajax({
+                        type: "Get",
+                        url: "<c:url value="/SqlViewController/calculateChangeover" />",
+                        data: {
+                            po: po,
+                            people: people,
+                            maxChangeover: 40
+                        },
+                        dataType: "json",
+                        success: function (response) {
+                            var obj = response;
+                            var resultStr = "";
+                            resultStr += "<h5>機種: " + obj.modelName + " ";
+                            resultStr += "組裝標工(" + obj.assy + ") ";
+                            resultStr += "人數(" + obj.people + ") ";
+                            resultStr += "最大換線(" + obj.maxChangeover + ")</h5>";
+                            resultStr += "<h5>換算=(" + obj.assy + "/" + obj.people + ")+";
+                            resultStr += "(" + obj.maxChangeover + "/" + obj.people + ")=";
+                            resultStr += obj.result + "</h5>";
+
+                            resultArea.html(resultStr);
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            console.log(xhr.responseText);
+                        }
+                    });
+                });
+
                 init();
+
+                $("#ws-wiget").toggle(monitor == "true");
 
                 function appendLog(message, style) {
                     log.append("<div class='" + (style == null ? '' : style) + "'>" + message + "</div>");
@@ -129,7 +179,7 @@
 
                     var clientId = $("#clientId").val();
 
-                    websocket = new WebSocket("ws://" + hostname + "/CalculatorWSApplication/echo6/" + "test");
+                    websocket = new WebSocket("ws://" + hostname + "/CalculatorWSApplication/echo6");
 
                     websocket.onopen = function () {
                         appendLog("CONNECTED", "active");
@@ -137,89 +187,94 @@
 
                     websocket.onmessage = function (evt) {
                         var data = evt.data;
-
+                        console.log(data);
                         try {
-                            
                             var jsonObject = JSON.parse(data);
-                            var action = jsonObject.action;
-                            var currentStatus = jsonObject.status;
+                        } catch (e) {
+                            appendLog(data);
 
-                            appendLog("Receive data", "active");
-                            
-                            if (action == 'init') {
-                                $(".table > tbody").html("");
-                                for (var i = 0; i < lineObj.length; i++) {
-                                    var line = lineObj[i];
-                                    if (line.id in currentStatus) {
-                                        var tb = $("#tb_" + line.id);
-                                        var tbhead = tb.find("thead");
-                                        var tbbody = tb.find("tbody");
-                                        var jsonArray = currentStatus[line.id];
+                            return false;
+                        }
+                        var action = jsonObject.action;
+                        var currentStatus = jsonObject.status;
 
-                                        var prevBab = null;
+                        appendLog("Receive data", "active");
 
-                                        for (var j = 0; j < jsonArray.length; j++) {
-                                            var bab = jsonArray[j];
+                        if (action == 'init') {
+                            $(".table > tbody").html("");
+                            for (var i = 0; i < lineObj.length; i++) {
+                                var line = lineObj[i];
+                                if (line.id in currentStatus) {
+                                    var tb = $("#tb_" + line.id);
+                                    var tbhead = tb.find("thead");
+                                    var tbbody = tb.find("tbody");
+                                    var jsonArray = currentStatus[line.id];
 
-                                            var diff;
-                                            if (prevBab != null) {
-                                                if (prevBab.lastUpdateTime != null) {
-                                                    var prevEndTime = moment(prevBab.lastUpdateTime);
-                                                    var currentStartTime = moment(bab.beginTime);
-                                                    diff = moment.utc(currentStartTime.diff(prevEndTime)).format("HH:mm:ss");
-                                                }
+                                    var prevBab = null;
+
+                                    for (var j = 0; j < jsonArray.length; j++) {
+                                        var bab = jsonArray[j];
+                                        console.log(bab);
+                                        var STATUS_PROCESSING = (bab.babStatus == null);
+                                        var STATUS_FINISHED = (bab.babStatus != null);
+
+                                        var diff;
+                                        if (prevBab != null) {
+                                            if (prevBab.lastUpdateTime != null) {
+                                                var prevEndTime = moment(prevBab.lastUpdateTime);
+                                                var currentStartTime = moment(bab.beginTime);
+                                                diff = moment.utc(currentStartTime.diff(prevEndTime)).format("HH:mm:ss");
                                             }
-
-                                            if (j < jsonArray.length && j != 0) {
-                                                tbbody.append(
-                                                        "<tr><td><span class='" + (bab.isused == 0 ? "process_arrow" : "") + " glyphicon glyphicon-arrow-down'><strong>" +
-                                                        (diff == null ? "" : diff) +
-                                                        "</strong></span></td></tr>"
-                                                        );
-                                                diff = null;
-                                            }
-
-                                            tbbody.append("<tr><td><a id='data_" + bab.lineName + j + "' class='" + (bab.isused == 0 ? "process" : (bab.isused == -1 ? "no-record" : "done")) + "'>" + bab.modelName + "</a></td></tr>");
-                                            var babStatus = loopObjectParams(bab);
-                                            if (bab.lastUpdateTime != null) {
-                                                var startTime = moment(bab.beginTime);
-                                                var endTime = moment(bab.lastUpdateTime);
-                                                babStatus += "<p>Time processed: " + moment.utc(endTime.diff(startTime)).format("HH:mm:ss") + "</p>";
-                                            }
-
-                                            $("#data_" + bab.lineName + j).tooltipster({trigger: "hover", side: "right", contentAsHTML: true, updateAnimation: null, 'content': babStatus});
-
-                                            prevBab = bab;
                                         }
 
-                                        var lastBab = jsonArray[jsonArray.length - 1];
-                                        if (lastBab.isused != 0) {
-                                            tbbody.append("<tr class='suspend_col'><td><a>閒置: </a><input type='hidden' class='interval_suspend_time' hidden value='" + lastBab.lastUpdateTime + "' /><a></a></td></tr>");
+                                        if (j < jsonArray.length && j != 0) {
+//                                                tbbody.append(
+//                                                        "<tr><td><span class='" + (STATUS_PROCESSING ? "process_arrow" : "") + " glyphicon glyphicon-arrow-down'><strong>" +
+//                                                        (diff == null ? "" : diff) +
+//                                                        "</strong></span></td></tr>"
+//                                                        );
+                                            diff = null;
                                         }
+
+                                        tbbody.append("<tr><td><a id='data_" + bab.line.id + j + "' class='" +
+                                                (STATUS_PROCESSING ? "process" : "done") + "'>" +
+                                                bab.modelName + (bab.ispre == 1 ? "(前置)" : "") + "</a></td></tr>");
+                                        var babStatus = loopObjectParams(bab);
+                                        if (bab.lastUpdateTime != null) {
+                                            var startTime = moment(bab.beginTime);
+                                            var endTime = moment(bab.lastUpdateTime);
+                                            babStatus += "<p>Time processed: " + moment.utc(endTime.diff(startTime)).format("HH:mm:ss") + "</p>";
+                                        }
+
+                                        $("#data_" + bab.line.id + j).tooltipster({trigger: "hover", side: "right", contentAsHTML: true, updateAnimation: null, 'content': babStatus});
+
+                                        prevBab = bab;
+                                    }
+
+                                    var notPreBabs = jsonArray.filter(b => b.ispre == 0);
+                                    var lastBab = notPreBabs[notPreBabs.length - 1];
+                                    if (lastBab != null && lastBab.babStatus != null) {
+                                        tbbody.append("<tr class='suspend_col text-danger'><td><a class='text-danger'>閒置: </a><input type='hidden' class='interval_suspend_time' hidden value='" + lastBab.lastUpdateTime + "' /><a class='text-danger'></a></td></tr>");
+                                    } else {
+                                        tbbody.append("<tr class='col'><td><a>工單進行中...</a></td></tr>");
                                     }
                                 }
-
-
-                            } else if (action == 'update') {
-                                sendMessage("sync");
                             }
 
-                            if ($(".interval_suspend_time").length != 0) {
-                                setInterval(function () {
-                                    $(".interval_suspend_time").each(function () {
-                                        var suspendTime = moment($(this).val());
 
-                                        var now = moment();
-                                        $(this).next().html(moment.utc(now.diff(suspendTime)).format("HH:mm:ss"));
-                                    });
-                                }, 1000);
-                            }
+                        } else if (action == 'update') {
+                            sendMessage("sync");
+                        }
 
-                        } catch (e) {
-                            var messages = data.split('\n');
-                            for (var i = 0; i < messages.length; i++) {
-                                appendLog(messages[i]);
-                            }
+                        if ($(".interval_suspend_time").length != 0) {
+                            setInterval(function () {
+                                $(".interval_suspend_time").each(function () {
+                                    var suspendTime = moment($(this).val());
+
+                                    var now = moment();
+                                    $(this).next().html(moment.utc(now.diff(suspendTime)).format("HH:mm:ss"));
+                                });
+                            }, 1000);
                         }
 
                     };
@@ -235,12 +290,12 @@
                 }
 
                 function loopObjectParams(target) {
-                    var str = "<p>PO: " + target.po + "</p>" +
+                    var str = "<p>Po: " + target.po + "</p>" +
                             "<p>ModelName: " + target.modelName + "</p>" +
-                            "<p>line: " + target.line.id + "</p>" +
-                            "<p>people: " + target.people + "</p>" +
-                            "<p>startTime: " + target.beginTime + "</p>" +
-                            "<p>endTime: " + target.lastUpdateTime + "</p>";
+                            "<p>Line: " + target.line.id + "</p>" +
+                            "<p>People: " + target.people + "</p>" +
+                            "<p>StartTime: " + target.beginTime + "</p>" +
+                            "<p>EndTime: " + (target.babStatus == null ? null : target.lastUpdateTime) + "</p>";
                     return str;
                 }
             });
@@ -254,12 +309,28 @@
         </script>
     </head>
     <body>
-        <input id="clientId" placeholder="id"/><input id="connect" type="button" value="connect">
-        <input id ="sendMessage" placeholder="message" /><input type="button" id="sync" value="sync">
-        <input type="button" id="chatClear" value="chatClear">
-        <div id="output"></div>
-        <div id="log"></div>
-        <div id="tableArea">
+        <div class="container-fluid">
+            <div class="row">
+                <div id="ws-wiget">
+                    <input id="clientId" placeholder="id"/>
+                    <input id="connect" type="button" value="connect">
+                    <input id ="sendMessage" placeholder="message" />
+                    <input type="button" id="sync" value="sync">
+                    <input type="button" id="chatClear" value="chatClear">
+                </div>
+            </div>
+            <div class="row">
+                <div id="output"></div>
+                <div id="log"></div>
+                <div id="tableArea">
+                </div>
+                <div id="calc-area">
+                    <input id="calc-po" type="text" placeholder="請輸入工單"/>
+                    <input id="calc-people" type="text" placeholder="請輸入人數"/>
+                    <input id="calc-submit" type="button" value="確定"/>
+                    <div id="calc-result"></div>
+                </div>
+            </div>
         </div>
     </body>
 </html>
