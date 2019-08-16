@@ -190,22 +190,24 @@ public class SqlViewController {
     @ResponseBody
     protected Map calculateChangeover(
             @RequestParam String po,
-            @RequestParam int people,
-            @RequestParam int maxChangeover
+            @RequestParam int maxChangeover,
+            @RequestParam(required = false) Integer people,
+            @RequestParam int lineType
     ) {
         Map m = new HashMap();
         String modelName = modelController.findModelNameByPo(po);
         if (modelName != null) {
             Worktime w = this.sqlViewService.findWorktime(modelName);
             if (w != null) {
-                BigDecimal assyWorktime = w.getAssyTime();
+                BigDecimal worktime = lineType == 1 ? w.getAssyTime() : w.getPackingTime();
+                people = (people == null ? (lineType == 1 ? w.getAssyPeople() : w.getPackingPeople()) : people);
                 m.put("po", po);
                 m.put("modelName", modelName);
                 m.put("people", people);
                 m.put("maxChangeover", maxChangeover);
-                m.put("assy", assyWorktime);
-                
-                BigDecimal result = assyWorktime.divide(new BigDecimal(people), 2, RoundingMode.HALF_DOWN)
+                m.put("worktime", worktime);
+
+                BigDecimal result = worktime.divide(new BigDecimal(people), 2, RoundingMode.HALF_DOWN)
                         .add(new BigDecimal(maxChangeover).divide(new BigDecimal(people), 2, RoundingMode.HALF_DOWN));
                 m.put("result", result);
             }

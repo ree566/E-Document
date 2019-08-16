@@ -7,6 +7,7 @@
  */
 package com.advantech.controller;
 
+import com.advantech.endpoint.Endpoint6;
 import com.advantech.model.Bab;
 import com.advantech.model.BabAlarmHistory;
 import com.advantech.model.BabPreAssyPcsRecord;
@@ -25,8 +26,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import static com.google.common.base.Preconditions.*;
-import com.google.common.base.Predicates;
-import com.google.common.collect.Iterables;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -55,6 +54,9 @@ public class BabOtherStationController {
 
     @Autowired
     private BabPreAssyPcsRecordService babPreAssyPcsRecordService;
+
+    @Autowired
+    private Endpoint6 ep6;
 
     @RequestMapping(value = "/changeUser", method = {RequestMethod.POST})
     @ResponseBody
@@ -91,9 +93,9 @@ public class BabOtherStationController {
                 });
                 babPreAssyPcsRecordService.insert(pcsRecords);
             }
-            
+
             babService.closeBab(b);
-            
+
             BabAlarmHistory bah = babAlarmHistoryService.findByBab(bab_id);
             if (bah != null && bah.getTotalPcs() < 10) {
                 //Get object again and set reply flag
@@ -103,7 +105,11 @@ public class BabOtherStationController {
                 b.setReplyStatus(ReplyStatus.NO_NEED_TO_REPLY);
                 babService.update(b);
             }
-//                            Endpoint6.syncAndEcho();
+            
+            //If not preAssy, refresh endpoint data when user finished the job
+            if (b.getIspre() == 0) {
+                ep6.syncAndEcho();
+            }
         } else {
             babService.stationComplete(b, setting);
         }

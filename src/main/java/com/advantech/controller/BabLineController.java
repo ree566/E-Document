@@ -6,6 +6,7 @@
  */
 package com.advantech.controller;
 
+import com.advantech.helper.HibernateObjectPrinter;
 import static com.advantech.helper.SecurityPropertiesUtils.*;
 import com.advantech.model.Line;
 import com.advantech.model.LineType;
@@ -62,6 +63,12 @@ public class BabLineController {
             User user = retrieveAndCheckUserInSession();
             return lineService.findByUser(user);
         }
+    }
+
+    @RequestMapping(value = "/findBySitefloorAndLineType", method = {RequestMethod.GET})
+    @ResponseBody
+    protected List<Line> findBySitefloorAndLineType(@RequestParam String floorName, @RequestParam("lineType_id[]") Integer[] lineType_id) {
+        return lineService.findBySitefloorAndLineType(floorName, lineType_id);
     }
 
 }

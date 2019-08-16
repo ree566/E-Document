@@ -83,13 +83,19 @@
 
                 for (var i = 0; i < lineObj.length; i++) {
                     var line = lineObj[i];
+                    var lineTypeId = line.lineType.id;
                     var tableString =
                             "<div class='col-md-2'><table id=tb_" +
                             line.id +
                             " class='table table-bordered'><thead></thead><tbody></tbody></table></div>";
-
-                    $("#tableArea").append(tableString);
-                    $("#tableArea" + " #tb_" + line.id).find("thead").append("<tr><th>" + line.name + "</th></tr>");
+                    var areaSelector = "";
+                    if (lineTypeId == 1) {
+                        areaSelector = "#tableArea>#bab";
+                    } else {
+                        areaSelector = "#tableArea>#pkg";
+                    }
+                    $(areaSelector).append(tableString);
+                    $(areaSelector + " #tb_" + line.id).find("thead").append("<tr><th>" + line.name + "</th></tr>");
                 }
 
                 $("#sendMessage").keydown(function (event) {
@@ -112,6 +118,7 @@
                     var po = $("#calc-po").val();
                     var people = $("#calc-people").val();
                     var resultArea = $("#calc-result");
+                    var lineType = $("#calc-lineType").val();
 
                     $.ajax({
                         type: "Get",
@@ -119,17 +126,18 @@
                         data: {
                             po: po,
                             people: people,
-                            maxChangeover: 40
+                            maxChangeover: 40,
+                            lineType: lineType
                         },
                         dataType: "json",
                         success: function (response) {
                             var obj = response;
                             var resultStr = "";
                             resultStr += "<h5>機種: " + obj.modelName + " ";
-                            resultStr += "組裝標工(" + obj.assy + ") ";
+                            resultStr += (lineType == 1 ? "組裝" : "包裝") + "標工(" + obj.worktime + ") ";
                             resultStr += "人數(" + obj.people + ") ";
                             resultStr += "最大換線(" + obj.maxChangeover + ")</h5>";
-                            resultStr += "<h5>換算=(" + obj.assy + "/" + obj.people + ")+";
+                            resultStr += "<h5>換算=(" + obj.worktime + "/" + obj.people + ")+";
                             resultStr += "(" + obj.maxChangeover + "/" + obj.people + ")=";
                             resultStr += obj.result + "</h5>";
 
@@ -154,9 +162,10 @@
                     var obj;
                     $.ajax({
                         type: "Get",
-                        url: "<c:url value="/BabLineController/findAll" />",
+                        url: "<c:url value="/BabLineController/findBySitefloorAndLineType" />",
                         data: {
-                            sitefloor: sitefloor
+                            floorName: sitefloor,
+                            lineType_id: [1, 3]
                         },
                         dataType: "json",
                         async: false,
@@ -323,10 +332,19 @@
                 <div id="output"></div>
                 <div id="log"></div>
                 <div id="tableArea">
+                    <div id="bab" class="col-md-12"></div>
+                    <div class="col-md-12">
+                        <hr />
+                    </div>
+                    <div id="pkg" class="col-md-12"></div>
                 </div>
                 <div id="calc-area">
                     <input id="calc-po" type="text" placeholder="請輸入工單"/>
                     <input id="calc-people" type="text" placeholder="請輸入人數"/>
+                    <select id="calc-lineType" type="text">
+                        <option value="1">Assy</option>
+                        <option value="2">Packing</option>
+                    </select>
                     <input id="calc-submit" type="button" value="確定"/>
                     <div id="calc-result"></div>
                 </div>

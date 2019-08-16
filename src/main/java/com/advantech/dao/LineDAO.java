@@ -7,6 +7,7 @@ package com.advantech.dao;
 
 import com.advantech.model.Line;
 import com.advantech.model.LineType;
+import com.advantech.model.ModelSopRemark;
 import com.advantech.model.User;
 import java.util.List;
 import org.hibernate.Criteria;
@@ -45,6 +46,24 @@ public class LineDAO extends AbstractDao<Integer, Line> implements BasicDAO_1<Li
         return c.list();
     }
 
+    public List<Line> findBySitefloorAndLineType(String floorName, Integer... lineType_ids) {
+        return super.createEntityCriteria()
+                .createAlias("lineType", "lt")
+                .createAlias("floor", "f")
+                .add(Restrictions.eq("f.name", floorName))
+                .add(Restrictions.in("lt.id", lineType_ids))
+                .addOrder(Order.asc("name"))
+                .list();
+    }
+    
+    public List<Line> findByLineType(Integer... lineType_ids) {
+        return super.createEntityCriteria()
+                .createAlias("lineType", "lt")
+                .add(Restrictions.in("lt.id", lineType_ids))
+                .addOrder(Order.asc("name"))
+                .list();
+    }
+
     public List<Line> findWithLineType() {
         Criteria c = super.createEntityCriteria();
         c.createAlias("lineType", "lt");
@@ -58,11 +77,18 @@ public class LineDAO extends AbstractDao<Integer, Line> implements BasicDAO_1<Li
         Line line = (Line) c.uniqueResult();
         return line.getLineType();
     }
-    
-    public List<Line> findByUser(User user){
+
+    public List<Line> findByUser(User user) {
         return super.createEntityCriteria()
                 .createAlias("users", "u")
                 .add(Restrictions.eq("u.jobnumber", user.getJobnumber()))
+                .list();
+    }
+    
+    public List<Line> findByModelSopRemark(ModelSopRemark m) {
+        return super.createEntityCriteria()
+                .createAlias("modelSopRemarks", "m")
+                .add(Restrictions.eq("m.id", m.getId()))
                 .list();
     }
 

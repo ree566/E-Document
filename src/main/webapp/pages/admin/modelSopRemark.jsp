@@ -67,7 +67,6 @@
                 //This function will load the datatable
                 LoadTable();
                 initSubTable();
-                setUserLine();
 
                 $("#modelName, #sopName").on("keyup change", function () {
                     $(this).val($(this).val().toUpperCase());
@@ -98,15 +97,10 @@
 
                     var modelName = $("#modelName").val();
                     var remark = $("#remark").val();
-                    var lines = $("#line").val();
 
                     var errorMsg = "";
                     if (!modelName) {
                         errorMsg += "\n* enter the customer first name";
-                    }
-
-                    if (lines == null || lines.length == 0) {
-                        errorMsg += "\n* enter at least one line";
                     }
 
                     if (errorMsg != "") {
@@ -121,8 +115,7 @@
                             data: {
                                 id: $("#currentID").val(),
                                 modelName: modelName,
-                                remark: remark,
-                                lines: lines.toString()
+                                remark: remark
                             },
                             success: function (response) {
                                 if (response == "success") {
@@ -208,7 +201,6 @@
                     $("#remark").val(data.remark);
                     $("#currentID").val(data.id);
 
-                    retrieveModelSopUseLine(data);
                     $('#addEditRemark').modal('show');
                 });
 
@@ -260,7 +252,6 @@
                     var dialog = $("#addEditRemark");
                     dialog.find(":text, textarea").val("");
                     dialog.find("#currentID").val(0);
-                    dialog.find("#line").val(0).trigger("change");
                 }
 
                 function ClearSubForm() {//blank the add/edit popup form
@@ -364,51 +355,6 @@
                             if (d.length) {
                                 subTable.rows.add(d).draw();
                             }
-                        },
-                        error: function (xhr, ajaxOptions, thrownError) {
-                            alert(xhr.responseText);
-                        }
-                    });
-                }
-
-                function setUserLine() {
-                    $.ajax({
-                        type: "GET",
-                        url: "<c:url value="/BabLineController/findByUser" />",
-                        dataType: "json",
-                        success: function (response) {
-                            var data = response;
-                            var lineWiget = $("#line");
-                            if (data.length != 0) {
-                                for (var i = 0; i < data.length; i++) {
-                                    var line = data[i];
-                                    lineWiget.append("<option value=" + line.id + ">" + line.name + "</option>");
-                                }
-
-                                lineWiget.select2();
-                            } else {
-                                alert("找不到您所負責的線別，請聯絡系統管理員");
-                            }
-                        },
-                        error: function (xhr, ajaxOptions, thrownError) {
-                            alert(xhr.responseText);
-                        }
-                    });
-                }
-
-                function retrieveModelSopUseLine(rowData) {
-                    $.ajax({
-                        method: "GET",
-                        url: "<c:url value="/ModelSopRemarkController/findUseLine" />",
-                        dataType: "json",
-                        data: rowData,
-                        success: function (response) {
-                            var ids = [];
-                            var d = response;
-                            for (var i = 0; i < d.length; i++) {
-                                ids[i] = d[i].id;
-                            }
-                            $("#line").val(ids).trigger('change');
                         },
                         error: function (xhr, ajaxOptions, thrownError) {
                             alert(xhr.responseText);
@@ -543,10 +489,6 @@
                                 <div class="input-group col-sm-9">
                                     <textarea id="remark" name="remark" class="input-xlarge form-control"></textarea>
                                 </div><br />
-                                <label class="control-label col-sm-3" for="line">作用線別: </label>
-                                <div class="input-group col-sm-9">
-                                    <select id="line" class="input-xlarge js-example-basic-multiple form-control" multiple="multiple"></select>
-                                </div><br />
                                 <input type="hidden" id="currentID" value="" />                         
                             </fieldset>
                         </div>
@@ -585,7 +527,7 @@
                                 </div>
                                 <br />
                                 <div>
-                                    <label class="control-label col-sm-3" for="line">SopPage: </label>
+                                    <label class="control-label col-sm-3" for="sopPage">SopPage: </label>
                                     <div class="input-group col-sm-9">
                                         <input id="sopPage" type="text" class="input-xlarge js-example-basic-multiple form-control" >
                                     </div>

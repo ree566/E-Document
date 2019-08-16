@@ -41,6 +41,14 @@ public class LineService {
         return lineDAO.findBySitefloor(floor_name);
     }
 
+    public List<Line> findBySitefloorAndLineType(String floorName, Integer... lineType_ids) {
+        return lineDAO.findBySitefloorAndLineType(floorName, lineType_ids);
+    }
+
+    public List<Line> findByLineType(Integer... lineType_ids) {
+        return lineDAO.findByLineType(lineType_ids);
+    }
+
     public List<Line> findWithLineType() {
         return lineDAO.findWithLineType();
     }

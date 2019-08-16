@@ -35,8 +35,8 @@ var testGroup = [
 ];
 
 var babGroup = [
-    {people: 5, x: 875, y: 265, lineName: "L1"},
-    {people: 5, x: 875, y: 185, lineName: "L2"},
+    {people: 4, x: 900, y: 265, lineName: "L1"},
+    {people: 4, x: 900, y: 185, lineName: "L2"},
     {people: 4, x: 900, y: 110, lineName: "L3"},
     {people: 4, x: 900, y: 20, lineName: "L4"},
     {people: 3, x: 565, y: 245, lineName: "L6"},

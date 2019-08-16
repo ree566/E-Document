@@ -12,9 +12,11 @@ import com.advantech.model.ModelSopRemark;
 import com.advantech.model.ModelSopRemarkDetail;
 import com.advantech.model.ModelSopRemarkEvent;
 import com.advantech.model.User;
+import com.advantech.service.LineService;
 import com.advantech.service.ModelSopRemarkDetailService;
 import com.advantech.service.ModelSopRemarkEventService;
 import com.advantech.service.ModelSopRemarkService;
+import java.util.HashSet;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -46,6 +48,9 @@ public class ModelSopRemarkController {
 
     @Autowired
     private ModelSopRemarkEventService modelSopRemarkEventService;
+
+    @Autowired
+    private LineService lineService;
 
     @RequestMapping(value = "/findAll", method = {RequestMethod.GET})
     @ResponseBody
@@ -79,6 +84,8 @@ public class ModelSopRemarkController {
     @RequestMapping(value = "/saveOrUpdate", method = {RequestMethod.POST})
     @ResponseBody
     protected String saveOrUpdate(@Valid @ModelAttribute ModelSopRemark pojo) {
+        List l = lineService.findByLineType(1, 3);
+        pojo.setLines(new HashSet(l));
         if (pojo.getId() == 0) {
             modelSopRemarkService.insert(pojo);
             addEvent(pojo, "insert");

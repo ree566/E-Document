@@ -34,6 +34,8 @@ public class Worktime implements Serializable {
     private BigDecimal t1Time;
     private BigDecimal t2Time;
     private BigDecimal packingTime;
+    private int assyPeople;
+    private int packingPeople;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -117,5 +119,25 @@ public class Worktime implements Serializable {
     public void setPackingTime(BigDecimal packingTime) {
         this.packingTime = packingTime;
     }
+
+    @Column(name = "assyPeople", updatable = false)
+    public int getAssyPeople() {
+        return assyPeople;
+    }
+
+    public void setAssyPeople(int assyPeople) {
+        this.assyPeople = assyPeople;
+    }
+
+    @Column(name = "packingPeople", updatable = false)
+    public int getPackingPeople() {
+        return packingPeople;
+    }
+
+    public void setPackingPeople(int packingPeople) {
+        this.packingPeople = packingPeople;
+    }
+    
+    
 
 }
