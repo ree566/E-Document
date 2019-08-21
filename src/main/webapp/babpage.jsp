@@ -836,6 +836,7 @@
                             sel.append("<option value='" + d.id + "'>" + d.name + "</option>");
                         }
                         sel.select2({
+                            placeholder: "請選擇模組",
                             closeOnSelect: false,
                             allowClear: true,
                             tags: true

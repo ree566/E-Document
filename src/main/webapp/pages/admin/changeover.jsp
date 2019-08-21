@@ -116,7 +116,6 @@
 
                 $("#calc-submit").click(function () {
                     var po = $("#calc-po").val();
-                    var people = $("#calc-people").val();
                     var resultArea = $("#calc-result");
                     var lineType = $("#calc-lineType").val();
 
@@ -125,7 +124,6 @@
                         url: "<c:url value="/SqlViewController/calculateChangeover" />",
                         data: {
                             po: po,
-                            people: people,
                             maxChangeover: 40,
                             lineType: lineType
                         },
@@ -232,16 +230,20 @@
                                             if (prevBab.lastUpdateTime != null) {
                                                 var prevEndTime = moment(prevBab.lastUpdateTime);
                                                 var currentStartTime = moment(bab.beginTime);
-                                                diff = moment.utc(currentStartTime.diff(prevEndTime)).format("HH:mm:ss");
+                                                if (prevEndTime.isAfter(currentStartTime)) {
+                                                    diff = "00:00:00";
+                                                } else {
+                                                    diff = moment.utc(currentStartTime.diff(prevEndTime)).format("HH:mm:ss");
+                                                }
                                             }
                                         }
 
                                         if (j < jsonArray.length && j != 0) {
-//                                                tbbody.append(
-//                                                        "<tr><td><span class='" + (STATUS_PROCESSING ? "process_arrow" : "") + " glyphicon glyphicon-arrow-down'><strong>" +
-//                                                        (diff == null ? "" : diff) +
-//                                                        "</strong></span></td></tr>"
-//                                                        );
+                                            tbbody.append(
+                                                    "<tr><td><span class='" + (bab.isused == 0 ? "process_arrow" : "") + " glyphicon glyphicon-arrow-down'><strong>" +
+                                                    (diff == null ? "" : diff) +
+                                                    "</strong></span></td></tr>"
+                                                    );
                                             diff = null;
                                         }
 
@@ -340,7 +342,6 @@
                 </div>
                 <div id="calc-area">
                     <input id="calc-po" type="text" placeholder="請輸入工單"/>
-                    <input id="calc-people" type="text" placeholder="請輸入人數"/>
                     <select id="calc-lineType" type="text">
                         <option value="1">Assy</option>
                         <option value="2">Packing</option>

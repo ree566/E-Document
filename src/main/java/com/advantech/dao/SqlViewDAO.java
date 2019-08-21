@@ -307,7 +307,7 @@ public class SqlViewDAO extends AbstractDao<Integer, Object> {
     
     public List<Bab> findBabLastInputPerLine() {
         return super.getSession()
-                .createSQLQuery("select * from vw_BabLastInputPerLine")
+                .createSQLQuery("select * from vw_BabLastInputPerLine order by line_id, id")
                 .addEntity(Bab.class)
                 .list();
     }

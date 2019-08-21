@@ -83,15 +83,19 @@ public class BabFirstStationController {
         //Check人數
         checkArgument(!(bab.getIspre() != 1 && bab.getPeople() == 1), "非前置工單人數不可為1");
 
-        if (bab.getIspre() == 1 && moduleTypes != null && moduleTypes.length > 0) {
-            
-            //Check是否前置有填moduleType
+        if (bab.getIspre() == 1) {
             List modules = moduleTypeService.findByModelName(bab.getModelName());
-            checkArgument(!(bab.getIspre() == 1 && !modules.isEmpty() && moduleTypes.length == 0), "請至少選擇一項前置模組");
-            
-            List typeList = moduleTypeService.findByPrimaryKeys(moduleTypes);
-            Set typeSet = new HashSet(typeList);
-            bab.setPreAssyModuleTypes(typeSet);
+            checkArgument(
+                    (bab.getIspre() == 1 && !modules.isEmpty() && moduleTypes != null && moduleTypes.length > 0)
+                    || (bab.getIspre() == 1 && modules.isEmpty() && (moduleTypes == null || moduleTypes.length == 0)),
+                    "請至少選擇一項前置模組");
+
+            if (moduleTypes != null && moduleTypes.length > 0) {
+                //Check是否前置有填moduleType
+                List typeList = moduleTypeService.findByPrimaryKeys(moduleTypes);
+                Set typeSet = new HashSet(typeList);
+                bab.setPreAssyModuleTypes(typeSet);
+            }
         }
 
         //Check是否Login & Check jobnumber & tagName exist or not
