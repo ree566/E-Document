@@ -6,6 +6,7 @@
 package com.advantech.service;
 
 import com.advantech.dao.LineTypeDAO;
+import com.advantech.model.ActionCode;
 import com.advantech.model.LineType;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,10 @@ public class LineTypeService {
 
     public LineType findByPrimaryKey(Object obj_id) {
         return lineTypeDAO.findByPrimaryKey(obj_id);
+    }
+
+    public List<LineType> findByPrimaryKeys(Integer... obj_ids) {
+        return lineTypeDAO.findByPrimaryKeys(obj_ids);
     }
 
     public LineType findByName(String lineTypeName) {

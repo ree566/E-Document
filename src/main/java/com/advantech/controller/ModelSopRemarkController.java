@@ -55,16 +55,8 @@ public class ModelSopRemarkController {
     @RequestMapping(value = "/findAll", method = {RequestMethod.GET})
     @ResponseBody
     protected DataTableResponse findAll(HttpServletRequest request) {
-        List l;
-        if (request.isUserInRole("ROLE_ADMIN") || request.isUserInRole("ROLE_OPER_IE")) {
-            l = modelSopRemarkService.findAll();
-        } else {
-            User user = retrieveAndCheckUserInSession();
-            l = user == null ? modelSopRemarkService.findAll() : modelSopRemarkService.findByUser(user);
-        }
-
+        List l = modelSopRemarkService.findAll();
         return new DataTableResponse(l);
-
     }
 
     @RequestMapping(value = "/findUseLine", method = {RequestMethod.GET})

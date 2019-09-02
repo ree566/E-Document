@@ -1,13 +1,16 @@
 package com.advantech.service;
 
-import com.advantech.model.Bab;
 import com.advantech.dao.BabDAO;
+import com.advantech.helper.DateTimeGapFinder;
 import com.advantech.helper.PropertiesReader;
+import com.advantech.model.Bab;
 import com.advantech.model.BabDataCollectMode;
 import com.advantech.model.BabSettingHistory;
+import com.advantech.model.BabStatus;
+import com.advantech.model.LineType;
 import com.advantech.model.TagNameComparison;
 import com.advantech.model.view.BabAvg;
-import java.util.List;
+import com.advantech.model.view.BabProcessDetail;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,10 +18,16 @@ import static com.google.common.base.Preconditions.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import org.hibernate.Hibernate;
+import org.joda.time.Interval;
+import org.joda.time.Minutes;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.springframework.transaction.annotation.Transactional;
 
 /*
@@ -58,6 +67,12 @@ public class BabService {
 
     @Autowired
     private PreAssyModuleStandardTimeService preStandardTimeService;
+
+    @Autowired
+    private DateTimeGapFinder finder;
+
+    @Autowired
+    private LineTypeService lineTypeService;
 
     @PostConstruct
     private void init() {
@@ -131,6 +146,87 @@ public class BabService {
             Hibernate.initialize(b.getLine().getUsers());
         });
         return l;
+    }
+
+    public List<BabProcessDetail> findBabTimeGapPerLine(DateTime sD, DateTime eD) {
+
+        DateTimeFormatter dateOnly_fmt = DateTimeFormat.forPattern("yyyy-MM-dd");
+        sD = sD.withTime(8, 30, 0, 0);
+        eD = eD.withTime(17, 30, 0, 0);
+        List<LineType> lt = lineTypeService.findByPrimaryKeys(1, 3);
+        List<Bab> l = babDAO.findByDateAndLineType(sD, eD, lt);
+
+        Map<Integer, Map<String, List<Bab>>> result = l.stream()
+                .collect(Collectors.groupingBy(b -> b.getLine().getId(),
+                        Collectors.groupingBy(b -> dateOnly_fmt.print(new DateTime(b.getBeginTime()))))
+                );
+
+        List<BabProcessDetail> gapDetailsSum = new ArrayList();
+
+        Interval rest1 = new Interval(new DateTime().withTime(12, 0, 0, 0), new DateTime().withTime(12, 50, 0, 0));
+        Interval rest2 = new Interval(new DateTime().withTime(15, 30, 0, 0), new DateTime().withTime(15, 40, 0, 0));
+
+        result.forEach((k, v) -> {
+            v.forEach((k1, v1) -> {
+                DateTime sDOD = new DateTime(k1).withTime(8, 30, 0, 0);
+                DateTime eDOD = new DateTime(k1).withTime(17, 30, 0, 0);
+                List<Interval> gaps = this.searchGaps(v1, sDOD, eDOD);
+                int totalMinutes = 0;
+
+                //Exclude the rest of time.
+                totalMinutes = gaps.stream().map((i) -> {
+                    int total = Minutes.minutesBetween(i.getStart(), i.getEnd()).getMinutes();
+
+                    if (hasOverlap(i, rest1)) {
+                        total -= Minutes.minutesBetween(rest1.getStart(), rest1.getEnd()).getMinutes();
+                    }
+
+                    if (hasOverlap(i, rest2)) {
+                        total -= Minutes.minutesBetween(rest2.getStart(), rest2.getEnd()).getMinutes();
+                    }
+
+                    return total;
+
+                }).reduce(totalMinutes, Integer::sum);
+
+                BabProcessDetail detail = new BabProcessDetail();
+                detail.setLineId(k);
+                detail.setDateString(k1);
+                detail.setBabs(v1);
+                detail.setIntervals(gaps);
+                detail.setTotalGapsTimeInDay(totalMinutes);
+                gapDetailsSum.add(detail);
+            });
+        });
+
+        return gapDetailsSum;
+    }
+
+    private boolean hasOverlap(Interval t1, Interval t2) {
+        return !t1.getEnd().isBefore(t2.getStart()) && !t1.getStart().isAfter(t2.getEnd());
+    }
+
+    private List<Interval> searchGaps(List<Bab> l, DateTime startTimeOfDay, DateTime endTimeOfDay) {
+
+        //Turn startDate & endDate into Interval object
+        List<Interval> existingIntervals = new ArrayList();
+        l.forEach(b -> {
+            if (!isExcludeRecord(b)) {
+                existingIntervals.add(new Interval(new DateTime(b.getBeginTime()), new DateTime(b.getLastUpdateTime())));
+            }
+        });
+
+        List<Interval> mergedIntervals = finder.mergeIntervals(existingIntervals);
+
+        Interval workTimeInDay = new Interval(startTimeOfDay, endTimeOfDay);
+        List<Interval> bigSearchResults = finder.findGaps(mergedIntervals, workTimeInDay);
+
+        return bigSearchResults;
+    }
+
+    private boolean isExcludeRecord(Bab b) {
+        return b.getBabStatus() == BabStatus.UNFINSHED
+                || (b.getIspre() == 0 && b.getBabStatus() == BabStatus.NO_RECORD);
     }
 
     public int insert(Bab pojo) {

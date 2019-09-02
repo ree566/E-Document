@@ -5,8 +5,10 @@
  */
 package com.advantech.dao;
 
+import com.advantech.model.ActionCode;
 import com.advantech.model.LineType;
 import java.util.List;
+import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
@@ -25,6 +27,12 @@ public class LineTypeDAO extends AbstractDao<Integer, LineType> implements Basic
     @Override
     public LineType findByPrimaryKey(Object obj_id) {
         return super.getByKey((int) obj_id);
+    }
+    
+    public List<LineType> findByPrimaryKeys(Integer... obj_ids) {
+        Criteria c = super.createEntityCriteria();
+        c.add(Restrictions.in("id", obj_ids));
+        return c.list();
     }
     
     public LineType findByName(String lineTypeName){

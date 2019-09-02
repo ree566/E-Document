@@ -34,10 +34,6 @@ public class ModelSopRemarkService {
         return modelSopRemarkDAO.findByPrimaryKey(obj_id);
     }
 
-    public List<ModelSopRemark> findByUser(User user) {
-        return modelSopRemarkDAO.findByUser(user);
-    }
-
     public List<Line> findUseLine(int id) {
         return modelSopRemarkDAO.findUseLine(id);
     }

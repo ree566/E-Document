@@ -62,4 +62,13 @@ public class BabController {
         return babService.findAllModelName();
     }
 
+    @RequestMapping(value = "/findBabTimeGapPerLine", method = {RequestMethod.GET})
+    @ResponseBody
+    public DataTableResponse findBabTimeGapPerLine(
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime startDate,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime endDate
+    ) {
+        return new DataTableResponse(babService.findBabTimeGapPerLine(startDate, endDate));
+    }
+
 }

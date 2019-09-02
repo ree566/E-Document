@@ -32,15 +32,6 @@ public class ModelSopRemarkDAO extends AbstractDao<Integer, ModelSopRemark> impl
         return super.getByKey((int) obj_id);
     }
 
-    public List<ModelSopRemark> findByUser(User user) {
-        return super.createEntityCriteria()
-                .createAlias("lines", "l")
-                .createAlias("l.users", "u")
-                .add(Restrictions.eq("u.jobnumber", user.getJobnumber()))
-                .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
-                .list();
-    }
-
     public List<Line> findUseLine(int id) {
         ModelSopRemark remark = this.findByPrimaryKey(id);
         return newArrayList(remark.getLines());

@@ -14,6 +14,7 @@ import com.advantech.dao.FqcDAO;
 import com.advantech.dao.SensorTransformDAO;
 import com.advantech.dao.SqlViewDAO;
 import com.advantech.dao.TagNameComparisonDAO;
+import com.advantech.helper.DateTimeGapFinder;
 import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.model.Bab;
 import com.advantech.model.BabPreAssyPcsRecord;
@@ -23,21 +24,27 @@ import com.advantech.model.Line;
 import com.advantech.model.MesLine;
 import com.advantech.model.MesPassCountRecord;
 import com.advantech.model.SensorTransform;
+import com.advantech.model.view.BabProcessDetail;
 import com.advantech.webservice.Factory;
 import com.advantech.webservice.WebServiceRV;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+import java.util.stream.Collectors;
 import static java.util.stream.Collectors.toList;
 import javax.transaction.Transactional;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.joda.time.DateTime;
+import org.joda.time.Interval;
+import org.joda.time.Minutes;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -232,7 +239,7 @@ public class TestDAO {
         List<MesPassCountRecord> newData = l.stream()
                 .filter(e -> lineId.contains(e.getMesLineId()) && !existData.contains(e))
                 .collect(toList());
-        
+
         System.out.println(newData.size());
 
         assertTrue(!newData.isEmpty());
@@ -249,14 +256,81 @@ public class TestDAO {
                 .collect(toList());
         return !l.isEmpty();
     }
-    
-    @Test
+
+//    @Test
     @Transactional
     @Rollback(true)
-    public void testFindBabLastInputPerLine(){
+    public void testFindBabLastInputPerLine() {
         List<Bab> l = this.sqlViewDAO.findBabLastInputPerLine();
         assertEquals(9, l.size());
         HibernateObjectPrinter.print(l);
+    }
+
+    @Autowired
+    private DateTimeGapFinder finder;
+
+    @Test
+    @Transactional
+    @Rollback(true)
+    public void testFindDateGap() {
+        DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
+        DateTimeFormatter dateOnly_fmt = DateTimeFormat.forPattern("yyyy-MM-dd");
+        DateTime sD = fmt.parseDateTime("2018-08-20 08:30:00");
+        DateTime eD = fmt.parseDateTime("2018-08-24 17:30:00");
+        List<Bab> l = babDAO.findByDate(sD, eD);
+        assertTrue(!l.isEmpty());
+
+        Map<Integer, Map<String, List<Bab>>> result = l.stream()
+                .collect(Collectors.groupingBy(b -> b.getLine().getId(),
+                        Collectors.groupingBy(b -> dateOnly_fmt.print(new DateTime(b.getBeginTime()))))
+                );
+
+        List<BabProcessDetail> gapDetailsSum = new ArrayList();
+
+        result.forEach((k, v) -> {
+            v.forEach((k1, v1) -> {
+                DateTime sDOD = new DateTime(k1).withTime(8, 30, 0, 0);
+                DateTime eDOD = new DateTime(k1).withTime(17, 30, 0, 0);
+                List<Interval> gaps = this.searchGaps(v1, sDOD, eDOD);
+                int totalMinutes = 0;
+                totalMinutes = gaps.stream().map((i) -> Minutes.minutesBetween(i.getStart(), i.getEnd()).getMinutes()).reduce(totalMinutes, Integer::sum);
+                BabProcessDetail detail = new BabProcessDetail();
+                detail.setLineId(k);
+                detail.setDateString(k1);
+                detail.setBabs(v1);
+                detail.setIntervals(gaps);
+                detail.setTotalGapsTimeInDay(totalMinutes);
+                gapDetailsSum.add(detail);
+            });
+        });
+
+        gapDetailsSum.forEach(b -> {
+            System.out.printf("Date: %s, line_id: %d, times: %d\r\n",
+                    b.getDateString(), b.getLineId(), b.getTotalGapsTimeInDay());
+        });
+    }
+
+    private List<Interval> searchGaps(List<Bab> l, DateTime startTimeOfDay, DateTime endTimeOfDay) {
+
+        //Turn startDate & endDate into Interval object
+        List<Interval> existingIntervals = new ArrayList();
+        l.forEach(b -> {
+            existingIntervals.add(new Interval(new DateTime(b.getBeginTime()), new DateTime(b.getLastUpdateTime())));
+        });
+
+        List<Interval> mergedIntervals = finder.mergeIntervals(existingIntervals);
+
+//        System.out.println("The Merged Intervals are: ");
+//        mergedIntervals.forEach(i -> {
+//            System.out.println("[" + i.getStart() + " --- " + i.getEnd() + "] ");
+//        });
+        Interval workTimeInDay = new Interval(startTimeOfDay, endTimeOfDay);
+        List<Interval> bigSearchResults = finder.findGaps(mergedIntervals, workTimeInDay);
+
+        return bigSearchResults;
+//        bigSearchResults.forEach(i -> {
+//            System.out.printf("Start: %s --- End: %s \r\n", fmt.print(i.getStart()), fmt.print(i.getEnd()));
+//        });
     }
 
 }

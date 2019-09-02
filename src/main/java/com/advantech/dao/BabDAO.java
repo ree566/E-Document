@@ -6,6 +6,7 @@
 package com.advantech.dao;
 
 import com.advantech.model.Bab;
+import com.advantech.model.LineType;
 import com.advantech.model.ReplyStatus;
 import java.util.List;
 import org.hibernate.Criteria;
@@ -63,6 +64,17 @@ public class BabDAO extends AbstractDao<Integer, Bab> implements BasicDAO_1<Bab>
         Criteria c = super.createEntityCriteria();
         c.add(Restrictions.between("beginTime", sD.toDate(), eD.toDate()));
         return c.list();
+    }
+
+    public List<Bab> findByDateAndLineType(DateTime sD, DateTime eD, List<LineType> l) {
+        sD = sD.withHourOfDay(0);
+        eD = eD.withHourOfDay(23);
+        return super.createEntityCriteria()
+                .createAlias("line", "l")
+                .add(Restrictions.between("beginTime", sD.toDate(), eD.toDate()))
+                .add(Restrictions.in("l.lineType", l))
+                .add(Restrictions.ne("l.id", 7))
+                .list();
     }
 
     public List<Bab> findByMultipleClause(DateTime sD, DateTime eD, int lineType_id, int floor_id, boolean isAboveTenPcs) {
@@ -175,7 +187,7 @@ public class BabDAO extends AbstractDao<Integer, Bab> implements BasicDAO_1<Bab>
                 .executeUpdate();
         return 1;
     }
-    
+
     public int closeBabWithSavingWithBarcode(Bab b) {
         super.getSession()
                 .createSQLQuery("{CALL usp_CloseBabWithSavingWithBarcode(:bab_id)}")
