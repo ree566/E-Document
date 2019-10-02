@@ -97,8 +97,8 @@
 
                 $("#send").click(generateExcel);
 
-                $("#lineType").val($('#lineType option:contains(ASSY)').val());
-                $("#sitefloor").val($('#sitefloor option:contains(5F)').val());
+                $("#lineType").val(-1);
+                $("#sitefloor").val(-1);
             });
 
             function formatDate(dateString) {
@@ -125,10 +125,12 @@
                         <td>
                             <div class="form-group form-inline">
                                 <select id="sitefloor"> 
-                                    <option value="-1">請選擇樓層</option>
+                                    <option value="-2">請選擇樓層</option>
+									<option value="-1">All</option>
                                 </select>
                                 <select id="lineType"> 
-                                    <option value="-1">請選擇製程</option>
+                                    <option value="-2">請選擇製程</option>
+									<option value="-1">All</option>
                                 </select>
                                 日期:從
                                 <div class='input-group date' id='beginTime'>

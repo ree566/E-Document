@@ -17,7 +17,8 @@ var titleGroup = [
     //pkg
     {lineName: "LF", x: 300, y: 40},
     {lineName: "LG", x: 210, y: 40},
-    {lineName: "LH", x: 125, y: 40}
+    {lineName: "LH", x: 125, y: 40},
+    {lineName: "5F_CELL", x: 1060, y: 275}
 //    {lineName: "FQC", x: 210, y: 240}
 ];
 
@@ -30,11 +31,14 @@ var testGroup = [
 var babGroup = [
     {people: 4, x: 930, y: 55, lineName: "LA"},
     {people: 4, x: 930, y: 170, lineName: "LB"},
+    {people: 3, x: 1000, y: 345, lineName: "LC_1"},
+    {people: 3, x: 1000, y: 410, lineName: "LC_2"},
     {people: 3, x: 795, y: 170, lineName: "LD"},
     {people: 3, x: 795, y: 55, lineName: "LE"},
     {people: 3, x: 320, y: 100, lineName: "LF", straight: true, reverse: true},
     {people: 3, x: 230, y: 100, lineName: "LG", straight: true, reverse: true},
-    {people: 3, x: 160, y: 100, lineName: "LH", straight: true, reverse: true}
+    {people: 3, x: 160, y: 100, lineName: "LH", straight: true, reverse: true},
+    {people: 6, x: 850, y: 290, lineName: "5F_CELL"}
 ];
 
 var fqcGroup = [

@@ -45,7 +45,7 @@ public class PreAssyModuleStandardTime implements Serializable, Cloneable {
 
     @Column(name = "modelName", nullable = false, length = 50, unique = true)
     public String getModelName() {
-        return modelName;
+        return modelName == null ? null : modelName.trim();
     }
 
     public void setModelName(String modelName) {
