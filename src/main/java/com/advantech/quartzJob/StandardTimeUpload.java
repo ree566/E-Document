@@ -72,7 +72,7 @@ public class StandardTimeUpload {
 
     public void uploadToMes() {
         List<String> errorMessages = new ArrayList();
-        List<Worktime> modifiedWorktimes = this.findFieldChangeInDate(new DateTime().minusDays(1), new DateTime());
+        List<Worktime> modifiedWorktimes = this.findFieldChangeInDate(new DateTime().minusDays(4).withTime(0, 0, 0, 0), new DateTime().withTime(0, 0, 0, 0));
 
         log.info("Begin upload standardtime to mes: " + modifiedWorktimes.size() + " datas.");
 
@@ -82,6 +82,9 @@ public class StandardTimeUpload {
 
         for (Worktime w : modifiedWorktimes) {
             try {
+                if (w.getReasonCode() == null || "".equals(w.getReasonCode()) || "0".equals(w.getReasonCode())) {
+                    w.setReasonCode("A6");
+                }
                 port.update(w);
             } catch (Exception e) {
                 String errorMessage = w.getModelName() + " upload fail: " + e.getMessage();
