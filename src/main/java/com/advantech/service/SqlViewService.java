@@ -175,4 +175,8 @@ public class SqlViewService {
         return sqlViewDAO.findBabLastInputPerLine();
     }
 
+    public List<Bab> findPreAssyModuleUnexecuted(DateTime sD, DateTime eD) {
+        return sqlViewDAO.findPreAssyModuleUnexecuted(sD, eD);
+    }
+
 }

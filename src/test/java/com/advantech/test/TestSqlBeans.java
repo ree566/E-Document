@@ -29,6 +29,7 @@ import com.advantech.model.PreAssyModuleType;
 import com.advantech.model.TestTable;
 import com.advantech.model.Unit;
 import com.advantech.model.User;
+import com.advantech.model.UserAttendant;
 import com.advantech.webservice.Factory;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.collect.Sets.newHashSet;
@@ -336,7 +337,7 @@ public class TestSqlBeans {
 
     }
     
-    @Test
+//    @Test
     @Rollback(true)
     public void testPreAssyModuleStandardTime2() {
         Bab b = session.get(Bab.class, 38254);
@@ -348,6 +349,16 @@ public class TestSqlBeans {
                 .list();
         
         HibernateObjectPrinter.print(l);
+
+    }
+    
+    @Test
+    @Rollback(true)
+    public void testUserAttendant() {
+        UserAttendant b = session.get(UserAttendant.class, 1);
+        assertNotNull(b);
+
+        HibernateObjectPrinter.print(b);
 
     }
 

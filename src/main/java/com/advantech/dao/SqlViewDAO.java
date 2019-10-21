@@ -9,6 +9,7 @@ import com.advantech.model.Bab;
 import com.advantech.model.view.BabAvg;
 import com.advantech.model.view.BabLastBarcodeStatus;
 import com.advantech.model.view.BabLastGroupStatus;
+import com.advantech.model.view.PreAssyModuleUnexecuted;
 import com.advantech.model.view.SensorCurrentGroupStatus;
 import com.advantech.model.view.UserInfoRemote;
 import com.advantech.model.view.Worktime;
@@ -294,7 +295,7 @@ public class SqlViewDAO extends AbstractDao<Integer, Object> {
                 .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
                 .list();
     }
-    
+
     public List<Map> findBabBestLineBalanceRecord(int lineType_id, DateTime sD, DateTime eD) {
         return super.getSession()
                 .createSQLQuery("{CALL usp_GetBabBestLineBalanceRecord(:lineType_id, :sD, :eD)}")
@@ -304,11 +305,20 @@ public class SqlViewDAO extends AbstractDao<Integer, Object> {
                 .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
                 .list();
     }
-    
+
     public List<Bab> findBabLastInputPerLine() {
         return super.getSession()
                 .createSQLQuery("select * from vw_BabLastInputPerLine order by line_id, id")
                 .addEntity(Bab.class)
+                .list();
+    }
+
+    public List<Bab> findPreAssyModuleUnexecuted(DateTime sD, DateTime eD) {
+        return super.getSession()
+                .createSQLQuery("{CALL usp_GetPreAssyModuleUnexecuted(:sD, :eD)}")
+                .setParameter("sD", sD != null ? sD.withHourOfDay(0).toDate() : null)
+                .setParameter("eD", eD != null ? eD.withHourOfDay(23).toDate() : null)
+                .setResultTransformer(Transformers.aliasToBean(PreAssyModuleUnexecuted.class))
                 .list();
     }
 }

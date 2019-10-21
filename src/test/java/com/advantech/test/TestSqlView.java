@@ -58,11 +58,21 @@ public class TestSqlView {
 //        System.out.println(l.size());
     }
     
-    @Test
+//    @Test
     @Transactional
     @Rollback(true)
     public void testBabPcsDetailHistory() {
         List l = babPcsDetailHistoryDAO.findByBabForMap(14223);
+        HibernateObjectPrinter.print(l);
+    }
+    
+    @Test
+    @Transactional
+    @Rollback(true)
+    public void testFindPreAssyModuleUnexecuted() {
+        DateTime sD = new DateTime().minusDays(1).withTime(0, 0, 0, 0);
+        DateTime eD = new DateTime().withTime(0, 0, 0, 0);
+        List l = sqlViewDAO.findPreAssyModuleUnexecuted(sD, eD);
         HibernateObjectPrinter.print(l);
     }
 }

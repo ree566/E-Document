@@ -6,6 +6,7 @@
  */
 package com.advantech.controller;
 
+import com.advantech.datatable.DataTableResponse;
 import com.advantech.helper.CustomPasswordEncoder;
 import com.advantech.helper.SecurityPropertiesUtils;
 import com.advantech.model.User;
@@ -38,6 +39,12 @@ public class UserController {
     @Autowired
     private CustomPasswordEncoder pswEncoder;
 
+    @RequestMapping(value = "/findAll", method = {RequestMethod.GET})
+    @ResponseBody
+    public DataTableResponse findAll() {
+        return new DataTableResponse(userService.findAll());
+    }
+    
     @RequestMapping(value = "/checkUser", method = {RequestMethod.GET})
     @ResponseBody
     public boolean checkUser(@RequestParam String jobnumber) {
