@@ -14,8 +14,8 @@
 <script src="<c:url value="/js/jqgrid-custom-setting.js" />"></script>
 <script>
     $(function () {
-        var grid = $("#list"), grid2 = $("#list2");
-        var tableName = "燒機成本工時對照表", tableName2 = "吹面板工時對照表";
+        var grid = $("#list"), grid2 = $("#list2"), grid3 = $("#list3");
+        var tableName = "燒機成本工時對照表", tableName2 = "吹面板工時對照表", tableName3 = "工時異動表";
 
         grid.jqGrid({
             url: '<c:url value="/json/biCost.json" />',
@@ -129,6 +129,56 @@
             ]
         });
 
+        grid3.jqGrid({
+            url: '<c:url value="/json/reasonCode.json" />',
+            datatype: 'json',
+            mtype: 'GET',
+            autoencode: true,
+            colModel: [
+                {label: '代碼', name: "代碼", cellattr: headerRow, frozen: true},
+                {label: '工時異動原因', name: "工時異動原因", cellattr: headerRow, frozen: true},
+                {label: '說明', name: "說明"},
+                {
+                    label: '備註', name: "備註", 
+                    formatter: function (cellvalue, options, rowObject) {
+                        return cellvalue;
+                    }
+                }
+            ],
+            rowNum: 20,
+            rowList: [20, 50, 100],
+            pager: '#pager',
+            viewrecords: true,
+            autowidth: true,
+            shrinkToFit: true,
+            hidegrid: true,
+            stringResult: true,
+            gridview: true,
+            loadonce: true,
+            jsonReader: {
+                root: "rows",
+                page: "page",
+                total: "total",
+                records: "records",
+                repeatitems: false
+            },
+            afterSubmit: function () {
+                $(this).jqGrid("setGridParam", {datatype: 'json'});
+                return [true];
+            },
+            navOptions: {reloadGridOptions: {fromServer: true}},
+            caption: tableName3,
+//            height: 450,
+            sortname: '代碼', sortorder: 'asc',
+            error: function (xhr, ajaxOptions, thrownError) {
+                alert("Ajax Error occurred\n"
+                        + "\nstatus is: " + xhr.status
+                        + "\nthrownError is: " + thrownError
+                        + "\najaxOptions is: " + ajaxOptions
+                        );
+            }
+        });
+
         function headerRow(rowId, cellValue, rawObject, cm, rdata) {
             return " class='ui-state-default headerRow'";
         }
@@ -143,5 +193,9 @@
     <hr />
     <div>
         <table id="list2"></table> 
+    </div>
+    <hr />
+    <div>
+        <table id="list3"></table> 
     </div>
 </div>

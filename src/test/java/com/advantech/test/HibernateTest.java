@@ -8,6 +8,7 @@ package com.advantech.test;
 import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.Worktime;
+import com.advantech.model.WorktimeFormulaSetting;
 import com.advantech.service.AuditService;
 import com.advantech.service.WorktimeService;
 import com.advantech.service.WorktimeUploadMesService;
@@ -15,6 +16,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -32,6 +34,7 @@ import org.hibernate.envers.query.AuditEntity;
 import org.hibernate.envers.query.AuditQuery;
 import org.joda.time.DateTime;
 import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
@@ -239,6 +242,26 @@ public class HibernateTest {
         assertNotNull(t1);
         assertTrue(new BigDecimal(50).compareTo((BigDecimal) t1) == 0);
 
+    }
+
+    @Test
+    @Transactional
+    @Rollback(false)
+    public void testUpdateSetupTime() throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+
+        Session session = sessionFactory.getCurrentSession();
+        List<Worktime> l = session.createCriteria(Worktime.class).list();
+
+        for (Worktime w : l) {
+            System.out.println(w.getModelName());
+            w.setDefaultSetupTime();
+            session.merge(w);
+        }
+
+    }
+
+    public String currencyFormat(BigDecimal n) {
+        return NumberFormat.getNumberInstance().format(n);
     }
 
 }

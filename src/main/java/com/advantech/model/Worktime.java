@@ -916,12 +916,12 @@ public class Worktime implements java.io.Serializable {
     public void setDefaultSetupTime() {
         BigDecimal defaultValue = BigDecimal.ZERO
                 .add(notEmpty(totalModule).compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : new BigDecimal(5))
-                .add((notEmpty(assy)).compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : new BigDecimal(25))
+                .add((notEmpty(assy)).compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : new BigDecimal(22))
                 .add(notEmpty(t1).compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : new BigDecimal(10))
                 .add(notEmpty(t2).compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : new BigDecimal(10))
                 .add(notEmpty(t3).compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : new BigDecimal(5))
                 .add(notEmpty(t4).compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : new BigDecimal(5))
-                .add((notEmpty(packing)).compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : new BigDecimal(15));
+                .add((notEmpty(packing)).compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : new BigDecimal(7));
         this.setSetupTime(defaultValue);
     }
 
