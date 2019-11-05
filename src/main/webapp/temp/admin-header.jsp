@@ -90,6 +90,7 @@
                             <li><a href="TestTotalDetail">測試線別狀態</a></li>
                             </c:if>
                         <li><a href="TestTotal">測試線別紀錄</a></li>
+                        <li><a href="testPassStationProductivity.jsp">MES測試過站查詢</a></li>
                     </ul>
                 </li>
                 <li class="dropdown">

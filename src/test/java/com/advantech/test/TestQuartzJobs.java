@@ -12,6 +12,7 @@ import com.advantech.quartzJob.HandleUncloseBab;
 import com.advantech.quartzJob.DataBaseInit;
 import com.advantech.quartzJob.InsertMesCountRecord;
 import com.advantech.quartzJob.PollingDataCollectStatus;
+import com.advantech.quartzJob.SyncTestPassStationData;
 import com.advantech.quartzJob.TestLineTypeRecord;
 import com.advantech.quartzJob.TestLineTypeRecordUnrepliedAlarm;
 import org.junit.Test;
@@ -35,6 +36,9 @@ public class TestQuartzJobs {
 
     @Autowired
     private PollingDataCollectStatus job;
+    
+    @Autowired
+    private SyncTestPassStationData job2;
 
 //    @Test
     public void testTestLineTypeRecord() throws JobExecutionException {
@@ -77,9 +81,14 @@ public class TestQuartzJobs {
         HibernateObjectPrinter.print(job.getData());
     }
 
-    @Test
+//    @Test
     public void testInsertMesCountRecord() throws JobExecutionException {
         InsertMesCountRecord i = new InsertMesCountRecord();
         i.executeInternal(null);
+    }
+    
+    @Test
+    public void testSyncTestPassStationData() throws JobExecutionException {
+        job2.execute();
     }
 }

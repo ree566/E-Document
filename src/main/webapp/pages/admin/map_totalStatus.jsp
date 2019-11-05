@@ -11,6 +11,7 @@
 <html>
     <head>
         <c:set var="userSitefloor" value="${param.sitefloor}" />
+        <%--<c:set var="userLineType" value="${param.lineType2}" />--%>
         <c:if test="${(userSitefloor == null) || (userSitefloor == '' || userSitefloor < 1 || userSitefloor > 7)}">
             <c:redirect url="/SysInfo" />
         </c:if>
@@ -77,7 +78,7 @@
             #mapGroup{
                 width: 1200px;
                 height: 500px;
-                background-image: url(../../images/totalMap_${userSitefloor}f.png);
+                background-image: url(../../images/totalMap_${userSitefloor + (userLineType == null ? '' : userLineType)}f.png);
                 background-repeat: no-repeat;
                 -o-background-size: 100% 100%, auto;
                 -moz-background-size: 100% 100%, auto;
@@ -205,7 +206,7 @@
                 dragableWiget.addClass("adjustPosition");
                 dragableWiget.not(".clearWiget").addClass("ui-helper").draggable({
                     drag: function (e) {
-                        return false;
+//                        return false;
                     }
                 });
 
@@ -595,6 +596,8 @@
     <body style="cursor: auto;">
         <!--<button id="fullBtn">Full</button>-->
         <div id="wigetCtrl">
+            <%--<c:out value="${userLineType == null ? 'N/A' : userLineType}" />--%>
+            <%--<c:out value="${userSitefloor}" />--%>
             <div id="mapGroup">
                 <div id="wigetInfo">
                     <label for="empty" style="float:left">空</label>
@@ -614,19 +617,19 @@
                 </div>
 
                 <div id="mapInfo"></div>
-                <!--<div class="clearWiget" /></div>-->
+                <div class="clearWiget" /></div>
 
                 <div id="titleArea"></div>
-                <!--<div class="clearWiget" /></div>-->
+                <div class="clearWiget" /></div>
 
                 <div id="testArea"></div>
-                <!--<div class="clearWiget" /></div>-->
+                <div class="clearWiget" /></div>
 
                 <div id="babArea"></div>
-                <!--<div class="clearWiget"></div>-->
+                <div class="clearWiget"></div>
 
                 <div id="fqcArea"></div>
-                <!--<div class="clearWiget"></div>-->
+                <div class="clearWiget"></div>
 
                 <div id="infoArea" hidden="">
                     <div id="log-toggle">─</div>

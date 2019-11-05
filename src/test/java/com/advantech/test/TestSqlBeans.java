@@ -26,23 +26,31 @@ import com.advantech.model.ModelSopRemark;
 import com.advantech.model.ModelSopRemarkDetail;
 import com.advantech.model.PreAssyModuleStandardTime;
 import com.advantech.model.PreAssyModuleType;
+import com.advantech.model.TestPassStationDetail;
 import com.advantech.model.TestTable;
 import com.advantech.model.Unit;
 import com.advantech.model.User;
 import com.advantech.model.UserAttendant;
+import com.advantech.service.TestPassStationDetailService;
 import com.advantech.webservice.Factory;
+import com.advantech.webservice.Section;
+import com.advantech.webservice.WebServiceRV;
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Sets.newHashSet;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import javax.transaction.Transactional;
+import org.apache.commons.collections.CollectionUtils;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
+import org.joda.time.DateTime;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
@@ -300,7 +308,7 @@ public class TestSqlBeans {
         HibernateObjectPrinter.print(b);
 
     }
-    
+
 //    @Test
     @Rollback(true)
     public void testPreAssyModuleStandardTime() {
@@ -311,7 +319,7 @@ public class TestSqlBeans {
         HibernateObjectPrinter.print(b);
 
     }
-    
+
 //    @Test
     @Rollback(false)
     public void testPreAssyModuleType() {
@@ -322,7 +330,7 @@ public class TestSqlBeans {
         HibernateObjectPrinter.print(t);
 
     }
-    
+
 //    @Test
     @Rollback(true)
     public void testPreAssyModuleType2() {
@@ -336,29 +344,69 @@ public class TestSqlBeans {
         session.save(b);
 
     }
-    
+
 //    @Test
     @Rollback(true)
     public void testPreAssyModuleStandardTime2() {
         Bab b = session.get(Bab.class, 38254);
         assertNotNull(b);
-        
+
         List<PreAssyModuleStandardTime> l = session.createCriteria(PreAssyModuleStandardTime.class)
                 .add(Restrictions.eq("modelName", b.getModelName()))
                 .add(Restrictions.in("preAssyModuleType", b.getPreAssyModuleTypes()))
                 .list();
-        
+
         HibernateObjectPrinter.print(l);
 
     }
-    
-    @Test
+
+//    @Test
     @Rollback(true)
     public void testUserAttendant() {
         UserAttendant b = session.get(UserAttendant.class, 1);
         assertNotNull(b);
 
         HibernateObjectPrinter.print(b);
+
+    }
+
+    @Autowired
+    private WebServiceRV rv;
+
+    @Autowired
+    private com.advantech.service.TestService testService;
+
+    @Autowired
+    private TestPassStationDetailService testPassStationDetailService;
+
+    @Test
+    @Rollback(false)
+    public void testPassStationDetails() {
+        List<TestPassStationDetail> result = new ArrayList();
+
+        List<TestPassStationDetail> dbData = testPassStationDetailService.findAll();
+
+        DateTime eD = new DateTime().withTime(8, 0, 0, 0);
+        DateTime sD = eD.minusMonths(8).withTime(8, 0, 0, 0);
+        List<com.advantech.model.Test> users = testService.findAll();
+
+        List<Integer> stations = newArrayList(3, 11, 30, 151);
+
+        stations.forEach(s -> {
+            Section section = (s == 3 ? Section.BAB : Section.TEST);
+            List<TestPassStationDetail> l = rv.getTestPassStationDetails2(users, section, s, sD, eD, Factory.DEFAULT);
+            result.addAll(l);
+        });
+
+        assertTrue(!result.isEmpty());
+
+        List<TestPassStationDetail> delData = (List<TestPassStationDetail>) CollectionUtils.subtract(dbData, result);
+        testPassStationDetailService.delete(delData);
+        System.out.println("Delete data cnt " + delData.size());
+
+        List<TestPassStationDetail> newData = (List<TestPassStationDetail>) CollectionUtils.subtract(result, dbData);
+        testPassStationDetailService.insert(newData);
+        System.out.println("New data cnt " + newData.size());
 
     }
 

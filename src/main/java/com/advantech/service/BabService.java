@@ -218,6 +218,10 @@ public class BabService {
 
         List<Interval> mergedIntervals = finder.mergeIntervals(existingIntervals);
 
+        if (mergedIntervals == null) {
+            mergedIntervals = new ArrayList();
+        }
+
         Interval workTimeInDay = new Interval(startTimeOfDay, endTimeOfDay);
         List<Interval> bigSearchResults = finder.findGaps(mergedIntervals, workTimeInDay);
 

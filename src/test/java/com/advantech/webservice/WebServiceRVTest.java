@@ -7,8 +7,10 @@ package com.advantech.webservice;
 
 import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.model.PassStationRecord;
+import com.advantech.model.TestPassStationDetail;
 import com.advantech.model.TestRecord;
 import com.advantech.model.UserOnMes;
+import com.advantech.service.TestService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.gson.Gson;
 import static java.lang.System.out;
@@ -147,12 +149,26 @@ public class WebServiceRVTest {
         assertEquals(value, "PSI9412ZA");
     }
 
-    @Test
+//    @Test
     public void testGetMesPassCountRecords() {
         DateTime eD = new DateTime();
         DateTime sD = eD.minusDays(1);
         List l = rv.getMesPassCountRecords(sD, eD, Factory.DEFAULT);
         assertTrue(!l.isEmpty());
         HibernateObjectPrinter.print(l);
+    }
+
+    @Autowired
+    private TestService testService;
+
+    @Test
+    public void testGetTestPassStationDetails() {
+        DateTime eD = new DateTime().withTime(8, 0, 0, 0);
+        DateTime sD = eD.minusMonths(2).withTime(8, 0, 0, 0);
+        List<com.advantech.model.Test> users = testService.findAll();
+
+        List<TestPassStationDetail> l = rv.getTestPassStationDetails2(users, Section.BAB, 3, sD, eD, Factory.DEFAULT);
+        assertTrue(!l.isEmpty());
+        HibernateObjectPrinter.print(l.get(0));
     }
 }

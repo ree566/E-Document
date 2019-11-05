@@ -227,6 +227,20 @@
         <property name="jobDetail" ref="SaveMesCountRecord" />
         <property name="cronExpression" value="0 35 8 ? * MON-SAT *" />
     </bean>
+    
+    <!--
+        將MES的測試記錄儲存到DB
+    -->    
+    <bean name="SyncTestPassStationData-Job" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="syncTestPassStationData" />
+        <property name="targetMethod" value="execute"/>  
+        <property name="concurrent" value="false"/>
+    </bean>
+    
+    <bean id="SyncTestPassStationData-Trig" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="SyncTestPassStationData-Job" />
+        <property name="cronExpression" value="0 0 7 ? * MON-FRI *" />
+    </bean>
 
     <!--schedule jobs-->
     <bean id="schedulerFactoryBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
@@ -245,6 +259,7 @@
                 <ref bean="HandleUncloseBab-Trig"/>
                 <ref bean="CleanSensorData-Trig"/>
                 <ref bean="TestLineTypeRecord-Trig"/>
+                <ref bean="SyncTestPassStationData-Trig"/>
                 
                 <!--<ref bean="SaveMesCountRecord-Trig"/>-->
                 <!--<ref bean="CountermeasureAlarm-Trig"/>-->                

@@ -321,4 +321,13 @@ public class SqlViewDAO extends AbstractDao<Integer, Object> {
                 .setResultTransformer(Transformers.aliasToBean(PreAssyModuleUnexecuted.class))
                 .list();
     }
+
+    public List<Map> findTestPassStationProductivity(DateTime sD, DateTime eD) {
+        return super.getSession()
+                .createSQLQuery("{CALL usp_Excel_TestPassStationProductivity(:sD, :eD)}")
+                .setParameter("sD", sD != null ? sD.withHourOfDay(0).toDate() : null)
+                .setParameter("eD", eD != null ? eD.withHourOfDay(23).toDate() : null)
+                .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
+                .list();
+    }
 }

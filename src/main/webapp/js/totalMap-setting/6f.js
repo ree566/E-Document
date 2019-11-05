@@ -43,6 +43,24 @@ var babGroup = [
     {people: 3, x: 235, y: 100, lineName: "L7"},
     {people: 3, x: 510, y: 170, lineName: "L8"},
     {people: 3, x: 400, y: 245, lineName: "L9"}
+//    {people: 1, x: 400, y: 245, lineName: "6F_CELL-1"},
+//    {people: 1, x: 400, y: 245, lineName: "6F_CELL-2"},
+//    {people: 1, x: 400, y: 245, lineName: "6F_CELL-3"},
+//    {people: 1, x: 400, y: 245, lineName: "6F_CELL-4"},
+//    {people: 1, x: 400, y: 245, lineName: "6F_CELL-5"},
+//    {people: 1, x: 400, y: 245, lineName: "6F_CELL-6"},
+//    {people: 1, x: 400, y: 245, lineName: "6F_CELL-7"},
+//    {people: 1, x: 400, y: 245, lineName: "6F_CELL-8"},
+//    {people: 1, x: 400, y: 245, lineName: "6F_CELL-9"},
+//    {people: 1, x: 400, y: 245, lineName: "6F_CELL-10"},
+//    {people: 1, x: 400, y: 245, lineName: "6F_CELL-11"},
+//    {people: 1, x: 400, y: 245, lineName: "6F_CELL-12"},
+//    {people: 1, x: 400, y: 245, lineName: "6F_CELL-13"},
+//    {people: 1, x: 400, y: 245, lineName: "6F_CELL-14"},
+//    {people: 1, x: 400, y: 245, lineName: "6F_CELL-15"},
+//    {people: 1, x: 400, y: 245, lineName: "6F_CELL-16"},
+//    {people: 1, x: 400, y: 245, lineName: "6F_CELL-17"},
+//    {people: 1, x: 400, y: 245, lineName: "6F_CELL-18"}
 ];
 
 var fqcGroup = [

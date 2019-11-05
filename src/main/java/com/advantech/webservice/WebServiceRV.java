@@ -9,6 +9,9 @@ import com.advantech.model.MesPassCountRecord;
 import com.advantech.model.MesPassCountRecords;
 import com.advantech.model.PassStationRecord;
 import com.advantech.model.PassStationRecords;
+import com.advantech.model.Test;
+import com.advantech.model.TestPassStationDetail;
+import com.advantech.model.TestPassStationDetails;
 import com.advantech.model.TestRecord;
 import com.advantech.model.TestRecords;
 import com.advantech.model.UserOnMes;
@@ -17,6 +20,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
@@ -193,6 +197,45 @@ public class WebServiceRV {
             log.error(ex.toString());
             return new ArrayList();
         }
+    }
+
+    public List<TestPassStationDetail> getTestPassStationDetails(List<String> jobnumbers, Section section, int station, DateTime sD, DateTime eD, final Factory f) {
+
+        try {
+            String jobnumberStr = String.join(",", jobnumbers);
+
+            String queryString
+                    = "<root>"
+                    + "<METHOD ID='RPTSO.QryKPIUserPassStationDetail'/>"
+                    + "<RPT404>"
+                    + "<UNIT_NO>" + section.getCode() + "</UNIT_NO>"
+                    + "<STATION_ID>" + station + "</STATION_ID>"
+                    + "<USER_NO>" + jobnumberStr + "</USER_NO>"
+                    + "<START_DATE>" + fmt.print(sD) + "</START_DATE>"
+                    + "<END_DATE>" + fmt.print(eD) + "</END_DATE>"
+                    + "<WERKS>TWM3</WERKS>"
+                    + "</RPT404>"
+                    + "</root>";
+
+            RvResponse response = mClient.simpleRvSendAndReceive(queryString, f);
+            RvResponse.RvResult result = response.getRvResult();
+            List l = result.getAny();
+
+            Document doc = ((Node) l.get(1)).getOwnerDocument();
+            //Skip the <diffgr:diffgram> tag, read QryData tag directly.
+            Node node = doc.getFirstChild().getFirstChild();
+
+            Object o = this.unmarshalFromList(node, TestPassStationDetails.class);
+            return o == null ? new ArrayList() : ((TestPassStationDetails) o).getQryData();
+        } catch (JAXBException ex) {
+            log.error(ex.toString());
+            return new ArrayList();
+        }
+    }
+
+    public List<TestPassStationDetail> getTestPassStationDetails2(List<Test> users, Section section, int station, DateTime sD, DateTime eD, final Factory f) {
+        List<String> jobnumbers = users.stream().map(t -> "'" + t.getUserId() + "'").collect(Collectors.toList());
+        return getTestPassStationDetails(jobnumbers, section, station, sD, eD, f);
     }
 
     public List<MesPassCountRecord> getMesPassCountRecords(DateTime sD, DateTime eD, final Factory f) {

@@ -179,4 +179,8 @@ public class SqlViewService {
         return sqlViewDAO.findPreAssyModuleUnexecuted(sD, eD);
     }
 
+    public List<Map> findTestPassStationProductivity(DateTime sD, DateTime eD) {
+        return sqlViewDAO.findTestPassStationProductivity(sD, eD);
+    }
+
 }

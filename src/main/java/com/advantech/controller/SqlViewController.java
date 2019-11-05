@@ -214,5 +214,14 @@ public class SqlViewController {
         }
         return m;
     }
+    
+    @RequestMapping(value = "/findTestPassStationProductivity", method = {RequestMethod.GET})
+    @ResponseBody
+    protected DataTableResponse findTestPassStationProductivity(
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime startDate,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime endDate
+    ) {
+        return new DataTableResponse(sqlViewService.findTestPassStationProductivity(startDate, endDate));
+    }
 
 }
