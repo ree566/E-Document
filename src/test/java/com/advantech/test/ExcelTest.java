@@ -91,12 +91,12 @@ public class ExcelTest {
         }
     }
 
-//    @Test
+    @Test
     @Transactional
-    @Rollback(true)
+    @Rollback(false)
     public void testFileSyncToDb() throws Exception {
 
-        String syncFilePath = "C:\\Users\\Wei.Cheng\\Desktop\\m6.xlsx";
+        String syncFilePath = "C:\\Users\\Wei.Cheng\\Desktop\\worktime-template_加SAP工時.xls";
         try (InputStream is = new FileInputStream(new File(syncFilePath))) {
 
             Session session = sessionFactory.getCurrentSession();
@@ -110,21 +110,20 @@ public class ExcelTest {
 
                     //Because cell_A will auto convert to number if modelName only contains numbers.
                     //Search will cause exception when not add convert lines
-                    Cell cell_A = CellUtil.getCell(row, CellReference.convertColStringToIndex("A"));
-                    cell_A.setCellType(CellType.STRING);
+                    Cell model_cell = CellUtil.getCell(row, CellReference.convertColStringToIndex("B"));
+                    model_cell.setCellType(CellType.STRING);
 
-                    String modelName = ((String) getCellValue(row, "A")).trim();
+                    String modelName = ((String) getCellValue(row, "B")).trim();
 
                     Worktime w = l.stream().filter(o -> Objects.equals(o.getModelName(), modelName)).findFirst().orElse(null);
 
                     if (w == null) {
-                        System.out.println("Can't find modelName: " + modelName + " in worktime");
+                        System.out.println("\tCan't find modelName: " + modelName + " in worktime");
                         continue;
                     }
 
-                    w.setWeight(objToBigDecimal(getCellValue(row, "B")));
-                    w.setTolerance(objToBigDecimal(getCellValue(row, "C")));
-
+                    w.setSapWt(objToBigDecimal(getCellValue(row, "BX")));
+                    System.out.println("Update modelName: " + modelName);
                     session.update(w);
 
                 }
@@ -169,7 +168,7 @@ public class ExcelTest {
         return o != null && NumberUtils.isNumber(o.toString()) ? new BigDecimal(o.toString()) : null;
     }
 
-    @Test
+//    @Test
     public void testJxlsReader() throws Exception {
         Resource r = resourceLoader.getResource("classpath:worktime.xml");
         String filePath = "C:\\Users\\Wei.Cheng\\Desktop\\worktime-template.xls";

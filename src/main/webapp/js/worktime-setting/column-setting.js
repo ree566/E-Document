@@ -71,8 +71,8 @@ var worktimeCol = [
     {name: "bwFields.0.packingAvg", editable: false},
     {name: "businessGroup.id"},
     {name: "workCenter"},
-    {name: "burnInQuantity"}
-
+    {name: "burnInQuantity"},
+    {name: "sapWt"}
 ];
 
 //不受show / hide 影響

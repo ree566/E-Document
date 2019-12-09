@@ -134,6 +134,9 @@ public class Worktime implements java.io.Serializable {
 
     private String reasonCode;
 
+    //This value almost equals to productionWt in sap
+    private BigDecimal sapWt = BigDecimal.ZERO;
+
     public Worktime() {
     }
 
@@ -899,6 +902,16 @@ public class Worktime implements java.io.Serializable {
 
     public void setReasonCode(String reasonCode) {
         this.reasonCode = reasonCode;
+    }
+
+    @Digits(integer = 10 /*precision*/, fraction = 1 /*scale*/)
+    @Column(name = "sapWt", precision = 10, scale = 1)
+    public BigDecimal getSapWt() {
+        return sapWt;
+    }
+
+    public void setSapWt(BigDecimal sapWt) {
+        this.sapWt = sapWt;
     }
 
 //---------------------------------------------------------------------
