@@ -11,6 +11,7 @@ import com.advantech.model.Bab;
 import com.advantech.model.view.BabAvg;
 import com.advantech.model.view.BabLastBarcodeStatus;
 import com.advantech.model.view.BabLastGroupStatus;
+import com.advantech.model.view.PreAssyModuleUnexecuted;
 import com.advantech.model.view.SensorCurrentGroupStatus;
 import com.advantech.model.view.UserInfoRemote;
 import com.advantech.model.view.Worktime;
@@ -175,7 +176,7 @@ public class SqlViewService {
         return sqlViewDAO.findBabLastInputPerLine();
     }
 
-    public List<Bab> findPreAssyModuleUnexecuted(DateTime sD, DateTime eD) {
+    public List<PreAssyModuleUnexecuted> findPreAssyModuleUnexecuted(DateTime sD, DateTime eD) {
         return sqlViewDAO.findPreAssyModuleUnexecuted(sD, eD);
     }
 

@@ -6,12 +6,14 @@
 package com.advantech.test;
 
 import com.advantech.helper.HibernateObjectPrinter;
+import com.advantech.quartzJob.ArrangePrepareSchedule;
 import com.advantech.quartzJob.CleanSensorData;
 import com.advantech.quartzJob.CountermeasureAlarm;
 import com.advantech.quartzJob.HandleUncloseBab;
 import com.advantech.quartzJob.DataBaseInit;
 import com.advantech.quartzJob.InsertMesCountRecord;
 import com.advantech.quartzJob.PollingDataCollectStatus;
+import com.advantech.quartzJob.SyncPrepareSchedule;
 import com.advantech.quartzJob.SyncTestPassStationData;
 import com.advantech.quartzJob.TestLineTypeRecord;
 import com.advantech.quartzJob.TestLineTypeRecordUnrepliedAlarm;
@@ -87,8 +89,21 @@ public class TestQuartzJobs {
         i.executeInternal(null);
     }
     
-    @Test
+//    @Test
     public void testSyncTestPassStationData() throws JobExecutionException {
         job2.execute();
     }
+    
+    @Autowired
+    private SyncPrepareSchedule sps;
+    
+    @Autowired
+    private ArrangePrepareSchedule aps;
+    
+    @Test
+    public void testSyncPrepareSchedule1() throws Exception {
+        sps.execute();
+        aps.execute();
+    }
+    
 }

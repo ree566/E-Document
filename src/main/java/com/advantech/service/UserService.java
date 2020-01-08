@@ -6,6 +6,7 @@
 package com.advantech.service;
 
 import com.advantech.dao.UserDAO;
+import com.advantech.model.Floor;
 import com.advantech.model.User;
 import java.util.List;
 import org.hibernate.Hibernate;
@@ -38,8 +39,8 @@ public class UserService {
         if (i == null) {
             return null;
         }
-        
-         //Initialize the lazy loading relative object
+
+        //Initialize the lazy loading relative object
         Hibernate.initialize(i.getUnit());
         Hibernate.initialize(i.getFloor());
         Hibernate.initialize(i.getUserProfiles());
@@ -64,6 +65,14 @@ public class UserService {
 
     public List<User> findByUserNotificationAndNotLineOwner(int floor_id, String notification_name) {
         return userDAO.findByUserNotificationAndNotLineOwner(floor_id, notification_name);
+    }
+
+    public List<User> findByFloor(Floor f) {
+        return userDAO.findByFloor(f);
+    }
+
+    public List<User> findByFloorAndRole(Floor f, String roleName) {
+        return userDAO.findByFloorAndRole(f, roleName);
     }
 
     public int insert(User pojo) {

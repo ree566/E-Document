@@ -65,7 +65,7 @@
 
         <script>
             var table;
-            var worktimeInDay = 470;
+            var worktimeInDay = 480;
             var lockDays = 45;
             $(function () {
 

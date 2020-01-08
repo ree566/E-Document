@@ -46,7 +46,6 @@ import org.joda.time.Minutes;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import static org.junit.Assert.*;
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
@@ -269,7 +268,7 @@ public class TestDAO {
     @Autowired
     private DateTimeGapFinder finder;
 
-    @Test
+//    @Test
     @Transactional
     @Rollback(true)
     public void testFindDateGap() {
@@ -332,5 +331,6 @@ public class TestDAO {
 //            System.out.printf("Start: %s --- End: %s \r\n", fmt.print(i.getStart()), fmt.print(i.getEnd()));
 //        });
     }
+   
 
 }

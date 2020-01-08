@@ -206,7 +206,7 @@
                 dragableWiget.addClass("adjustPosition");
                 dragableWiget.not(".clearWiget").addClass("ui-helper").draggable({
                     drag: function (e) {
-//                        return false;
+                        return false;
                     }
                 });
 
@@ -259,11 +259,20 @@
                         $("#testArea").append("<div></div>");
                         var groupStatus = testGroup[i];
                         for (var j = 0, k = groupStatus.people; j < k; j++) {
+							var style = {left: groupStatus.x + pXa, top: groupStatus.y + pYa};
+							if ('straight' in groupStatus) {
+                                style.width = "10px";
+                            }
                             $("#testArea>div")
                                     .eq(i)
                                     .append("<div></div>")
                                     .addClass("testWiget")
-                                    .css({left: groupStatus.x + pXa, top: groupStatus.y + pYa});
+                                    .css(style);
+							if ('reverse' in groupStatus) {
+                                $("#testArea>div")
+                                        .eq(i)
+                                        .attr("reverse", true);
+                            }
                         }
                     }
                 }
@@ -315,15 +324,30 @@
                 }
 
                 function testObjectInit() {
-                    var object = $("#testArea>.testWiget div");
                     var loopCount = maxTestTableNo;
-                    object.each(function () {
-                        $(this).attr({"id": "draggable" + "T" + loopCount + "_" + sitefloor + "f"})
-                                .addClass("draggable blub-empty divCustomBg")
-                                .html(loopCount)
-                                .tooltipster({updateAnimation: null});
-                        loopCount--;
-                    });
+					$(".testWiget").each(function () {
+						if ($(this).attr("reverse")) {
+							var childAmount = $(this).children().length;
+							var startCount = loopCount - childAmount + 1;
+							
+							$(this).children().each(function () {
+								$(this).attr({"id": "draggable" + "T" + startCount + "_" + sitefloor + "f"})
+											.addClass("draggable blub-empty divCustomBg")
+											.html(startCount)
+											.tooltipster({updateAnimation: null});
+								startCount++;
+							});
+							loopCount-=childAmount;
+						} else {
+							$(this).children().each(function () {
+								$(this).attr({"id": "draggable" + "T" + loopCount + "_" + sitefloor + "f"})
+										.addClass("draggable blub-empty divCustomBg")
+										.html(loopCount)
+										.tooltipster({updateAnimation: null});
+								loopCount--;
+							});
+						}
+					});
                 }
 
                 function babObjectInit() {
@@ -617,19 +641,19 @@
                 </div>
 
                 <div id="mapInfo"></div>
-                <div class="clearWiget" /></div>
+                <!--<div class="clearWiget" /></div>-->
 
                 <div id="titleArea"></div>
-                <div class="clearWiget" /></div>
+                <!--<div class="clearWiget" /></div>-->
 
                 <div id="testArea"></div>
-                <div class="clearWiget" /></div>
+                <!--<div class="clearWiget" /></div>-->
 
                 <div id="babArea"></div>
-                <div class="clearWiget"></div>
+                <!--<div class="clearWiget"></div>-->
 
                 <div id="fqcArea"></div>
-                <div class="clearWiget"></div>
+                <!--<div class="clearWiget"></div>-->
 
                 <div id="infoArea" hidden="">
                     <div id="log-toggle">─</div>

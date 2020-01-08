@@ -313,7 +313,7 @@ public class SqlViewDAO extends AbstractDao<Integer, Object> {
                 .list();
     }
 
-    public List<Bab> findPreAssyModuleUnexecuted(DateTime sD, DateTime eD) {
+    public List<PreAssyModuleUnexecuted> findPreAssyModuleUnexecuted(DateTime sD, DateTime eD) {
         return super.getSession()
                 .createSQLQuery("{CALL usp_GetPreAssyModuleUnexecuted(:sD, :eD)}")
                 .setParameter("sD", sD != null ? sD.withHourOfDay(0).toDate() : null)
@@ -330,4 +330,5 @@ public class SqlViewDAO extends AbstractDao<Integer, Object> {
                 .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
                 .list();
     }
+
 }

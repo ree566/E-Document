@@ -89,7 +89,6 @@
                     //open modal window
                     $('#addEditRemarkDetail').modal('toggle');
                 }).attr("disabled", true);
-                ;
 
                 //Hook up the click event for the save button on the add/edit popup window
                 $("#AddRemarkButton").click(function () {

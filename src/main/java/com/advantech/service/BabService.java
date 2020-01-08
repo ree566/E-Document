@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import static java.util.stream.Collectors.toList;
 import javax.annotation.PostConstruct;
 import org.hibernate.Hibernate;
 import org.joda.time.Interval;
@@ -156,6 +157,8 @@ public class BabService {
         List<LineType> lt = lineTypeService.findByPrimaryKeys(1, 3);
         List<Bab> l = babDAO.findByDateAndLineType(sD, eD, lt);
 
+        l = l.stream().filter(b -> !isExcludeRecord(b)).collect(toList());
+
         Map<Integer, Map<String, List<Bab>>> result = l.stream()
                 .collect(Collectors.groupingBy(b -> b.getLine().getId(),
                         Collectors.groupingBy(b -> dateOnly_fmt.print(new DateTime(b.getBeginTime()))))
@@ -163,28 +166,30 @@ public class BabService {
 
         List<BabProcessDetail> gapDetailsSum = new ArrayList();
 
-        Interval rest1 = new Interval(new DateTime().withTime(12, 0, 0, 0), new DateTime().withTime(12, 50, 0, 0));
-        Interval rest2 = new Interval(new DateTime().withTime(15, 30, 0, 0), new DateTime().withTime(15, 40, 0, 0));
-
         result.forEach((k, v) -> {
             v.forEach((k1, v1) -> {
+                Interval rest1 = new Interval(new DateTime(k1).withTime(12, 0, 0, 0), new DateTime(k1).withTime(12, 50, 0, 0));
+                Interval rest2 = new Interval(new DateTime(k1).withTime(15, 30, 0, 0), new DateTime(k1).withTime(15, 40, 0, 0));
+
                 DateTime sDOD = new DateTime(k1).withTime(8, 30, 0, 0);
                 DateTime eDOD = new DateTime(k1).withTime(17, 30, 0, 0);
+//                int minInDay = Minutes.minutesBetween(sDOD, eDOD).getMinutes();
+
                 List<Interval> gaps = this.searchGaps(v1, sDOD, eDOD);
                 int totalMinutes = 0;
 
                 //Exclude the rest of time.
                 totalMinutes = gaps.stream().map((i) -> {
                     int total = Minutes.minutesBetween(i.getStart(), i.getEnd()).getMinutes();
-
-                    if (hasOverlap(i, rest1)) {
-                        total -= Minutes.minutesBetween(rest1.getStart(), rest1.getEnd()).getMinutes();
+                    if (i.overlaps(rest1)) {
+                        Interval ri = i.overlap(rest1);
+                        total -= Minutes.minutesBetween(ri.getStart(), ri.getEnd()).getMinutes();
                     }
 
-                    if (hasOverlap(i, rest2)) {
-                        total -= Minutes.minutesBetween(rest2.getStart(), rest2.getEnd()).getMinutes();
+                    if (i.overlaps(rest2)) {
+                        Interval ri = i.overlap(rest2);
+                        total -= Minutes.minutesBetween(ri.getStart(), ri.getEnd()).getMinutes();
                     }
-
                     return total;
 
                 }).reduce(totalMinutes, Integer::sum);
@@ -202,18 +207,12 @@ public class BabService {
         return gapDetailsSum;
     }
 
-    private boolean hasOverlap(Interval t1, Interval t2) {
-        return !t1.getEnd().isBefore(t2.getStart()) && !t1.getStart().isAfter(t2.getEnd());
-    }
-
-    private List<Interval> searchGaps(List<Bab> l, DateTime startTimeOfDay, DateTime endTimeOfDay) {
+    public List<Interval> searchGaps(List<Bab> l, DateTime startTimeOfDay, DateTime endTimeOfDay) {
 
         //Turn startDate & endDate into Interval object
         List<Interval> existingIntervals = new ArrayList();
         l.forEach(b -> {
-            if (!isExcludeRecord(b)) {
-                existingIntervals.add(new Interval(new DateTime(b.getBeginTime()), new DateTime(b.getLastUpdateTime())));
-            }
+            existingIntervals.add(new Interval(new DateTime(b.getBeginTime()), new DateTime(b.getLastUpdateTime())));
         });
 
         List<Interval> mergedIntervals = finder.mergeIntervals(existingIntervals);
@@ -229,8 +228,12 @@ public class BabService {
     }
 
     private boolean isExcludeRecord(Bab b) {
+        DateTime t = new DateTime(b.getBeginTime());
+        DateTime sT = t.withTime(8, 30, 0, 0);
+        DateTime eT = t.withTime(17, 30, 0, 0);
         return b.getBabStatus() == BabStatus.UNFINSHED
-                || (b.getIspre() == 0 && b.getBabStatus() == BabStatus.NO_RECORD);
+                || (b.getIspre() == 0 && b.getBabStatus() == BabStatus.NO_RECORD) 
+                || !new Interval(sT, eT).contains(t);
     }
 
     public int insert(Bab pojo) {

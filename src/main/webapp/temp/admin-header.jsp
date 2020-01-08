@@ -101,17 +101,24 @@
                     </a>
                     <ul class="dropdown-menu">
                         <li><a href="BabTotal?lineType=ASSY">線平衡資訊查詢</a></li>
+                        <li class="divider"></li>
                         <li class="hide-when-manual"><a href="BabDetailInfo">各站機台時間查詢</a></li>
                         <li><a href="BabDetailInfo2?lineType=ASSY">各站時間查詢(報表格式)</a></li>
+                        <li class="divider"></li>
                         <li><a href="BabLineProductivity">線體效率查詢</a></li>
+                        <li><a href="babLineUsageRate.jsp">線體使用率統計</a></li>
+                        <li class="divider"></li>
                             <c:if test="${isIeOper || isBackDoor4876 || isAdmin || isMfgLineOwner || isMfgOper}">
                             <li><a href="ModelSopRemark">Sop維護</a></li>
+                            <li class="divider"></li>
                             <li><a href="PreAssyModuleStandardTime">前置模組工時維護</a></li>
                             </c:if>
                         <li><a href="BabPreAssyDetail">前置資料查詢</a></li>
+                        <li class="divider"></li>
                         <li class="hide-when-auto"><a href="BabPassStationRecord?lineType=ASSY">Barcode過站紀錄</a></li>
                         <li class="hide-when-auto"><a href="BabPassStationExceptionReport?lineType=ASSY">異常資料統計</a></li>
-                        <li><a href="babLineUsageRate.jsp">線體使用率統計</a></li>
+                        <li><a href="lineUserReference.jsp">當日線別人員維護</a></li>
+                        <li><a href="prepareSchedule.jsp">當日自動排站</a></li>
                     </ul>
                 </li>
                 <li class="dropdown">
@@ -122,13 +129,17 @@
                     </a>
                     <ul class="dropdown-menu">
                         <li><a href="BabTotal?lineType=Packing">線平衡資訊查詢</a></li>
+                        <li class="divider"></li>
                         <li class="hide-when-manual"><a href="BabDetailInfo">各站機台時間查詢</a></li>
                         <li><a href="BabDetailInfo2?lineType=Packing">各站時間查詢(報表格式)</a></li>
+                        <li class="divider"></li>
                             <c:if test="${isIeOper || isBackDoor4876 || isAdmin || isMfgLineOwner || isMfgOper}">
                             <li><a href="modelSopRemark.jsp">Sop維護</a></li>
+                            <li class="divider"></li>
                             </c:if>
                         <li class="hide-when-auto"><a href="BabPassStationRecord?lineType=Packing">Barcode過站紀錄</a></li>
                         <li><a href="BabPreAssyProductivity?lineType=Packing">前置資料查詢</a></li>
+                        <li class="divider"></li>
                         <li><a href="babLineUsageRate.jsp">線體使用率統計</a></li>
                     </ul>
                 </li>

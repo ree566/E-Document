@@ -6,13 +6,15 @@
 package com.advantech.test;
 
 import com.advantech.dao.BabPcsDetailHistoryDAO;
+import com.advantech.dao.LineDAO;
+import com.advantech.dao.LineUserReferenceDAO;
 import com.advantech.dao.SqlViewDAO;
 import com.advantech.helper.HibernateObjectPrinter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.List;
 import org.joda.time.DateTime;
+import org.joda.time.Interval;
 import static org.junit.Assert.*;
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
@@ -34,7 +36,7 @@ public class TestSqlView {
 
     @Autowired
     private SqlViewDAO sqlViewDAO;
-    
+
     @Autowired
     private BabPcsDetailHistoryDAO babPcsDetailHistoryDAO;
 
@@ -57,7 +59,7 @@ public class TestSqlView {
 //        assertNotEquals(0, l.size());
 //        System.out.println(l.size());
     }
-    
+
 //    @Test
     @Transactional
     @Rollback(true)
@@ -65,8 +67,8 @@ public class TestSqlView {
         List l = babPcsDetailHistoryDAO.findByBabForMap(14223);
         HibernateObjectPrinter.print(l);
     }
-    
-    @Test
+
+//    @Test
     @Transactional
     @Rollback(true)
     public void testFindPreAssyModuleUnexecuted() {
@@ -75,4 +77,5 @@ public class TestSqlView {
         List l = sqlViewDAO.findPreAssyModuleUnexecuted(sD, eD);
         HibernateObjectPrinter.print(l);
     }
+  
 }

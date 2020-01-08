@@ -5,7 +5,6 @@
  */
 package com.advantech.test;
 
-import com.advantech.model.BabDataCollectMode;
 import static com.google.common.collect.Lists.newArrayList;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -13,6 +12,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.joda.time.DateTime;
+import org.joda.time.Interval;
+import org.joda.time.Minutes;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,9 +67,22 @@ public class TestClass {
         System.out.println(str);
     }
 
-    @Test
+//    @Test
     public void testEnum2() {
         System.out.println(1 >> 1);
+    }
+    
+    @Test
+    public void testInterval() {
+        Interval rest1 = new Interval(new DateTime().withTime(12, 0, 0, 0), new DateTime().withTime(12, 50, 0, 0));
+        Interval testRange = new Interval(new DateTime().withTime(9, 40, 2, 983), new DateTime().withTime(17, 8, 38, 470));
+        
+        System.out.println(testRange.overlaps(rest1));
+        Interval overlap = testRange.overlap(rest1);
+        System.out.println(
+                Minutes.minutesBetween(testRange.getStart(), testRange.getEnd()).getMinutes() - 
+                Minutes.minutesBetween(overlap.getStart(), overlap.getEnd()).getMinutes()
+        );
     }
 
 }

@@ -5,9 +5,11 @@
  */
 package com.advantech.dao;
 
+import com.advantech.model.Floor;
 import com.advantech.model.User;
 import java.util.List;
 import org.hibernate.Criteria;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
@@ -71,6 +73,21 @@ public class UserDAO extends AbstractDao<Integer, User> implements BasicDAO_1<Us
                         + "and floor.id = floor_id "
                         + "and u.lines IS EMPTY")
                 .setParameter("notification_id", notification_name)
+                .list();
+    }
+    
+    public List<User> findByFloor(Floor f) {
+        return super.createEntityCriteria()
+                .add(Restrictions.eq("floor", f))
+                .list();
+    }
+    
+    public List<User> findByFloorAndRole(Floor f, String roleName) {
+        return super.createEntityCriteria()
+                .createAlias("userProfiles", "up")
+                .add(Restrictions.eq("floor", f))
+                .add(Restrictions.eq("up.name", roleName))
+                .addOrder(Order.asc("usernameCh"))
                 .list();
     }
 

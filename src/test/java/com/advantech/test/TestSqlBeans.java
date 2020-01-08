@@ -5,6 +5,8 @@
  */
 package com.advantech.test;
 
+import com.advantech.dao.LineDAO;
+import com.advantech.dao.LineUserReferenceDAO;
 import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.model.Bab;
 import com.advantech.model.BabAlarmHistory;
@@ -22,10 +24,13 @@ import com.advantech.model.FqcModelStandardTime;
 import com.advantech.model.FqcSettingHistory;
 import com.advantech.model.Line;
 import com.advantech.model.LineType;
+import com.advantech.model.LineUserReference;
+import com.advantech.model.LineUserReferenceId;
 import com.advantech.model.ModelSopRemark;
 import com.advantech.model.ModelSopRemarkDetail;
 import com.advantech.model.PreAssyModuleStandardTime;
 import com.advantech.model.PreAssyModuleType;
+import com.advantech.model.PrepareSchedule;
 import com.advantech.model.TestPassStationDetail;
 import com.advantech.model.TestTable;
 import com.advantech.model.Unit;
@@ -44,6 +49,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import static java.util.stream.Collectors.toList;
 import javax.transaction.Transactional;
 import org.apache.commons.collections.CollectionUtils;
 import org.hibernate.Hibernate;
@@ -379,7 +385,7 @@ public class TestSqlBeans {
     @Autowired
     private TestPassStationDetailService testPassStationDetailService;
 
-    @Test
+//    @Test
     @Rollback(false)
     public void testPassStationDetails() {
         List<TestPassStationDetail> result = new ArrayList();
@@ -408,6 +414,108 @@ public class TestSqlBeans {
         testPassStationDetailService.insert(newData);
         System.out.println("New data cnt " + newData.size());
 
+    }
+
+//    @Test
+    @Rollback(true)
+    public void testLineUserReference() {
+        User user = session.get(User.class, 15);
+
+        List<LineUserReference> l = session.createCriteria(LineUserReference.class)
+                .add(Restrictions.eq("id.user", user))
+                .list();
+        assertEquals(2, l.size());
+
+        l.forEach(ref -> {
+            HibernateObjectPrinter.print(ref.getId().getLine().getName());
+            HibernateObjectPrinter.print(ref.getId().getUser().getUsername());
+        });
+    }
+
+//    @Test
+    @Rollback(true)
+    public void testPrepareSchedule() {
+        PrepareSchedule p = session.get(PrepareSchedule.class, 1);
+
+        assertNotNull(p);
+
+        HibernateObjectPrinter.print(p);
+    }
+
+//    @Test
+    @Rollback(true)
+    public void testLineUserReference2() {
+        User user = session.get(User.class, 11);
+
+        Set<Line> manageLines = user.getLines();
+
+        manageLines.forEach(l -> {
+            System.out.println(l.getName());
+
+            List<LineUserReference> users = session
+                    .createCriteria(LineUserReference.class)
+                    .add(Restrictions.eq("id.line", l))
+                    .list();
+
+            users.forEach(u -> System.out.println(u.getId().getUser().getUsername()));
+        });
+
+    }
+
+    @Autowired
+    private LineDAO lineDAO;
+
+    @Autowired
+    private LineUserReferenceDAO lineUserRefDAO;
+
+//    @Test
+    @Rollback(true)
+    public void testFindBabSettings() {
+//        String modelName = "DMS-SJ03-00A1E";
+//        List<BabSettingHistory> l = session.createCriteria(BabSettingHistory.class)
+//                .createAlias("bab", modelName)
+//                .add(Restrictions.eq("bab.modelName", modelName))
+//                .list();
+//
+//        Map<Integer, List<BabSettingHistory>> m = l.stream()
+//                .collect(groupingBy(BabSettingHistory::getStation, toList()));
+//
+//        m.forEach((k, v) -> {
+//            System.out.println("站別: " + k);
+//            v.stream().map(b -> b.getJobnumber()).distinct().forEach(System.out::println);
+//        });
+        Line line = session.get(Line.class, 1);
+
+        List<Line> cellLine = lineDAO.findBySitefloorAndLineType(line.getFloor().getName(), 2);
+
+        HibernateObjectPrinter.print(cellLine);
+
+        List<LineUserReference> cellUsers = lineUserRefDAO.findByLines(cellLine);
+        List<User> settingUsers = cellUsers.stream().map(u -> u.getId().getUser()).collect(toList());
+
+        HibernateObjectPrinter.print(settingUsers);
+    }
+
+    @Test
+    @Rollback(false)
+    public void testChangePrimaryKey() {
+        Line line = session.get(Line.class, 1);
+        List<LineUserReference> ref = session.createCriteria(LineUserReference.class).add(Restrictions.eq("id.line", line)).list();
+        LineUserReference obj1 = ref.get(0);
+        LineUserReference obj2 = ref.get(1);
+        
+        LineUserReferenceId id1 = obj1.getId();
+        LineUserReferenceId id2 = obj2.getId();
+        
+        obj1.setId(id2);
+        obj2.setId(id1);
+        
+        session.delete(obj1);
+        session.delete(obj2);
+        
+        session.save(obj1);
+        session.save(obj2);
+        
     }
 
 }

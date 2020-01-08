@@ -7,17 +7,15 @@ package com.advantech.dao;
 
 import com.advantech.model.Bab;
 import com.advantech.model.BabSettingHistory;
+import com.advantech.model.BabStatus;
 import com.advantech.model.SensorTransform;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
-import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
-import org.hibernate.criterion.Subqueries;
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Repository;
 
@@ -134,6 +132,15 @@ public class BabSettingHistoryDAO extends AbstractDao<Integer, BabSettingHistory
                 .add(Restrictions.gt("b.beginTime", new DateTime().withHourOfDay(0).toDate()))
                 .add(Restrictions.eq("l.id", line_id))
                 .addOrder(Order.asc("b.id"))
+                .list();
+    }
+
+    public List<BabSettingHistory> findByBabModelNames(List<String> modelNames) {
+        return super.createEntityCriteria()
+                .createAlias("bab", "b")
+                .add(Restrictions.in("b.modelName", modelNames))
+                .add(Restrictions.eq("b.ispre", 0))
+                .add(Restrictions.eq("b.babStatus", BabStatus.CLOSED))
                 .list();
     }
 

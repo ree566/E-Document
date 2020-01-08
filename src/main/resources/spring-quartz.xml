@@ -239,7 +239,22 @@
     
     <bean id="SyncTestPassStationData-Trig" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
         <property name="jobDetail" ref="SyncTestPassStationData-Job" />
-        <property name="cronExpression" value="0 0 7 ? * MON-FRI *" />
+        <property name="cronExpression" value="0 0 18 ? * MON-FRI *" />
+    </bean>
+    <!--<property name="cronExpression" value="0 0 12, 18 ? * MON-FRI *" />-->
+    
+    <!--
+        將PMC排程exce儲存到DB
+    -->    
+    <bean name="SyncPrepareSchedule-Job" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="syncPrepareSchedule" />
+        <property name="targetMethod" value="execute"/>  
+        <property name="concurrent" value="false"/>
+    </bean>
+    
+    <bean id="SyncPrepareSchedule-Trig" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="SyncPrepareSchedule-Job" />
+        <property name="cronExpression" value="0 30 6 ? * MON-FRI *" />
     </bean>
 
     <!--schedule jobs-->
@@ -249,7 +264,7 @@
         <property name="triggers">
             <list>
                 
-<!--                <ref bean="FqcGenerateData-Trig"/>
+                <!--                <ref bean="FqcGenerateData-Trig"/>
                 <ref bean="HandleUncloseFqc-Trig"/>
                 <ref bean="FqcInit-Trig"/>-->
 
@@ -260,6 +275,7 @@
                 <ref bean="CleanSensorData-Trig"/>
                 <ref bean="TestLineTypeRecord-Trig"/>
                 <ref bean="SyncTestPassStationData-Trig"/>
+                <ref bean="SyncPrepareSchedule-Trig"/>
                 
                 <!--<ref bean="SaveMesCountRecord-Trig"/>-->
                 <!--<ref bean="CountermeasureAlarm-Trig"/>-->                

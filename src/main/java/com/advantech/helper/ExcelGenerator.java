@@ -27,6 +27,7 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -213,7 +214,7 @@ public class ExcelGenerator {
     private CellStyle createTestCell() {
         CellStyle style = workbook.createCellStyle();
         Font font = workbook.createFont();
-        font.setColor(HSSFColor.RED.index);
+        font.setColor(IndexedColors.RED.getIndex());
         style.setFont(font);
         return style;
     }
@@ -304,7 +305,7 @@ public class ExcelGenerator {
             }
 
             CellStyle style = workbook.createCellStyle();
-            style.setFillForegroundColor(dataCount++ % 2 == 0 ? HSSFColor.LIGHT_TURQUOISE.index : HSSFColor.LIGHT_GREEN.index);
+            style.setFillForegroundColor(dataCount++ % 2 == 0 ? IndexedColors.LIGHT_TURQUOISE.getIndex() : IndexedColors.LIGHT_GREEN.getIndex());
             style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
             setData(spreadsheet, style, oMapper.convertValue(bab, Map.class));

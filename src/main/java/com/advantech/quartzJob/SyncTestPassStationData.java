@@ -5,12 +5,10 @@
  */
 package com.advantech.quartzJob;
 
-import com.advantech.model.Test;
 import com.advantech.model.TestPassStationDetail;
 import com.advantech.model.TestRecord;
 import com.advantech.service.TestPassStationDetailService;
 import com.advantech.service.TestRecordService;
-import com.advantech.service.TestService;
 import com.advantech.webservice.Factory;
 import com.advantech.webservice.Section;
 import com.advantech.webservice.WebServiceRV;
@@ -33,46 +31,48 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Component
 public class SyncTestPassStationData {
-
+    
     private static final Logger logger = LoggerFactory.getLogger(SyncTestPassStationData.class);
-
+    
     @Autowired
     private WebServiceRV rv;
-
+    
     @Autowired
     private TestRecordService testRecordService;
-
+    
     @Autowired
     private TestPassStationDetailService testPassStationDetailService;
-
+    
     private final List<Integer> stations = newArrayList(3, 11, 30, 151);
-
+    
     @Transactional
     public void execute() {
         List<TestPassStationDetail> result = new ArrayList();
-
-        DateTime sD = new DateTime().minusDays(1).withTime(8, 0, 0, 0);
+        
+        DateTime today = new DateTime();
+        
+        DateTime sD = new DateTime().minusDays(today.getDayOfWeek() == 1 ? 3 : 1).withTime(8, 0, 0, 0);
         DateTime eD = new DateTime().withTime(8, 0, 0, 0);
-
+        
         List<TestPassStationDetail> dbData = testPassStationDetailService.findByDate(sD, eD);
         List<TestRecord> records = testRecordService.findByDate(sD, eD, false);
         List<String> jobnumbers = records.stream().map(t -> "'" + t.getUserId() + "'").distinct().collect(Collectors.toList());
-
+        
         stations.forEach(s -> {
             Section section = (s == 3 ? Section.BAB : Section.TEST);
             List<TestPassStationDetail> l = rv.getTestPassStationDetails(jobnumbers, section, s, sD, eD, Factory.DEFAULT);
             result.addAll(l);
         });
-
+        
         if (!result.isEmpty()) {
             List<TestPassStationDetail> delData = (List<TestPassStationDetail>) CollectionUtils.subtract(dbData, result);
             testPassStationDetailService.delete(delData);
             logger.info("Delete data cnt " + delData.size());
-
+            
             List<TestPassStationDetail> newData = (List<TestPassStationDetail>) CollectionUtils.subtract(result, dbData);
             testPassStationDetailService.insert(newData);
             logger.info("New data cnt " + newData.size());
         }
     }
-
+    
 }
