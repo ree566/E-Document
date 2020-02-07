@@ -82,6 +82,13 @@ public class UserDAO extends AbstractDao<Integer, User> implements BasicDAO_1<Us
                 .list();
     }
     
+    public List<User> findByRole(String roleName) {
+        return super.createEntityCriteria()
+                .createAlias("userProfiles", "up")
+                .add(Restrictions.eq("up.name", roleName))
+                .list();
+    }
+    
     public List<User> findByFloorAndRole(Floor f, String roleName) {
         return super.createEntityCriteria()
                 .createAlias("userProfiles", "up")

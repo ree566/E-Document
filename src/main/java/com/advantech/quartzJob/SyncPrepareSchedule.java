@@ -33,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Wei.Cheng
  */
 @Component
+@Transactional
 public class SyncPrepareSchedule {
 
     private static final Logger logger = LoggerFactory.getLogger(SyncPrepareSchedule.class);
@@ -43,17 +44,18 @@ public class SyncPrepareSchedule {
     @Autowired
     private ArrangePrepareSchedule aps;
 
-    @Transactional
     public void execute() throws Exception {
-        DateTime d = new DateTime().withTime(0, 0, 0, 0);
+        DateTime d = new DateTime();
         if (d.getHourOfDay() >= 17) {
-            d = d.plusDays(d.getDayOfWeek() == 5 ? 3 : 1);
+            d = d.plusDays(d.getDayOfWeek() == 6 ? 2 : 1);
         }
         this.execute(d);
         aps.execute(d);
     }
 
     public void execute(DateTime d) throws Exception {
+        d = d.withTime(0, 0, 0, 0);
+
         int[] floors = {5, 6};
 
         for (int floor : floors) {

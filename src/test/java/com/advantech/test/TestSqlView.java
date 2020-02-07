@@ -6,15 +6,14 @@
 package com.advantech.test;
 
 import com.advantech.dao.BabPcsDetailHistoryDAO;
-import com.advantech.dao.LineDAO;
-import com.advantech.dao.LineUserReferenceDAO;
 import com.advantech.dao.SqlViewDAO;
 import com.advantech.helper.HibernateObjectPrinter;
+import com.advantech.model.view.UserInfoRemote;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.List;
 import org.joda.time.DateTime;
-import org.joda.time.Interval;
 import static org.junit.Assert.*;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
@@ -77,5 +76,14 @@ public class TestSqlView {
         List l = sqlViewDAO.findPreAssyModuleUnexecuted(sD, eD);
         HibernateObjectPrinter.print(l);
     }
+    
+    @Test
+    @Transactional
+    @Rollback(true)
+    public void testUserInfoRemote() {
+        UserInfoRemote l = sqlViewDAO.findUserInfoRemote("A-7568");
+        HibernateObjectPrinter.print(l);
+    }
   
+    
 }

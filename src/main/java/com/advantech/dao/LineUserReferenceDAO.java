@@ -7,10 +7,10 @@ package com.advantech.dao;
 
 import com.advantech.model.Line;
 import com.advantech.model.LineUserReference;
-import com.advantech.model.LineUserReferenceId;
 import java.util.List;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.joda.time.DateTime;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -18,7 +18,7 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class LineUserReferenceDAO extends AbstractDao<LineUserReferenceId, LineUserReference> implements BasicDAO_1<LineUserReference> {
+public class LineUserReferenceDAO extends AbstractDao<Integer, LineUserReference> implements BasicDAO_1<LineUserReference> {
 
     @Override
     public List<LineUserReference> findAll() {
@@ -27,20 +27,42 @@ public class LineUserReferenceDAO extends AbstractDao<LineUserReferenceId, LineU
 
     @Override
     public LineUserReference findByPrimaryKey(Object obj_id) {
-        return super.getByKey((LineUserReferenceId) obj_id);
+        return super.getByKey((Integer) obj_id);
     }
 
     public List<LineUserReference> findByLine(Line line) {
         return super.createEntityCriteria()
-                .add(Restrictions.eq("id.line", line))
+                .add(Restrictions.eq("line", line))
+                .addOrder(Order.asc("station"))
+                .list();
+    }
+
+    public List<LineUserReference> findByLines(List<Line> line) {
+        return super.createEntityCriteria()
+                .add(Restrictions.in("line", line))
+                .addOrder(Order.asc("station"))
+                .list();
+    }
+
+    public List<LineUserReference> findByLineAndDate(Line line, DateTime d) {
+        return super.createEntityCriteria()
+                .add(Restrictions.eq("line", line))
+                .add(Restrictions.eq("onboardDate", d.toDate()))
+                .addOrder(Order.asc("station"))
+                .list();
+    }
+
+    public List<LineUserReference> findByLinesAndDate(List<Line> line, DateTime d) {
+        return super.createEntityCriteria()
+                .add(Restrictions.in("line", line))
+                .add(Restrictions.eq("onboardDate", d.toDate()))
                 .addOrder(Order.asc("station"))
                 .list();
     }
     
-    public List<LineUserReference> findByLines(List<Line> line) {
+    public List<LineUserReference> findByDate(DateTime d) {
         return super.createEntityCriteria()
-                .add(Restrictions.in("id.line", line))
-                .addOrder(Order.asc("station"))
+                .add(Restrictions.eq("onboardDate", d.toDate()))
                 .list();
     }
 

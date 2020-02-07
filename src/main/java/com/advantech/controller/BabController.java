@@ -70,5 +70,5 @@ public class BabController {
     ) {
         return new DataTableResponse(babService.findBabTimeGapPerLine(startDate, endDate));
     }
-
+    
 }

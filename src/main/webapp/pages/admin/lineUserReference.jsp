@@ -79,16 +79,27 @@
                     $(this).val($(this).val().toUpperCase());
                 });
 
+                var options = {
+                    defaultDate: moment(),
+                    useCurrent: true,
+                    //locale: "zh-tw",
+                    format: momentFormatString,
+                    extraFormats: [momentFormatString]
+                };
+
+                $('#fini').datetimepicker(options);
+
                 setUserOptions();
-                getDetail();
+                $("#send").click(getDetail);
 
                 //hook up event for edit record buttons
                 $(document).on('click', '.editButton', function (event) { //any element with the class EditButton will be handled here
                     var table = tableMap.get($(this).parents("table").attr("id"));
                     var data = table.row($(this).parents('tr')).data();
 
-                    $("#editRemark .user_id").val(data.id.user.id);
-                    $("#editRemark .currentID").val(data.id.line.id);
+                    $("#editRemark .currentID").val(data.id);
+                    $("#editRemark .user_id").val(data.user.id);
+                    $("#editRemark .currentLineID").val(data.line.id);
                     $("#editRemark .station").val(data.station);
 
                     $('#editRemark').modal('show');
@@ -96,8 +107,8 @@
 
                 $(document).on('click', '#addRemarkButton', function (event) { //any element with the class EditButton will be handled here
 
-                    var id = $("#addRemark .currentID").val();
                     var user_id = $("#addRemark .user_id").val();
+                    var line_id = $("#addRemark .currentLineID").val();
                     var station = $("#addRemark .station").val();
 
                     $.ajax({
@@ -105,14 +116,15 @@
                         url: "<c:url value="/LineUserReferenceController/insert" />",
                         dataType: "html",
                         data: {
-                            "id.line.id": id,
-                            "id.user.id": user_id,
-                            "station": station
+                            "line.id": line_id,
+                            "user.id": user_id,
+                            "station": station,
+                            onboardDate: $("#fini").val()
                         },
                         success: function (response) {
                             if (response == "success") {
                                 $('#addRemark').modal('hide');
-                                var table = tableMap.get("tb" + id);
+                                var table = tableMap.get("tb" + line_id);
                                 table.ajax.reload();
                             }
                         },
@@ -125,6 +137,7 @@
                 $(document).on('click', '#editRemarkButton', function (event) { //any element with the class EditButton will be handled here
 
                     var id = $("#editRemark .currentID").val();
+                    var line_id = $("#editRemark .currentLineID").val();
                     var user_id = $("#editRemark .user_id").val();
                     var station = $("#editRemark .station").val();
 
@@ -133,14 +146,16 @@
                         url: "<c:url value="/LineUserReferenceController/update" />",
                         dataType: "html",
                         data: {
-                            "id.line.id": id,
-                            "id.user.id": user_id,
-                            "station": station
+                            "id": id,
+                            "line.id": line_id,
+                            "user.id": user_id,
+                            "station": station,
+                            onboardDate: $("#fini").val()
                         },
                         success: function (response) {
                             if (response == "success") {
                                 $('#editRemark').modal('hide');
-                                var table = tableMap.get("tb" + id);
+                                var table = tableMap.get("tb" + line_id);
                                 table.ajax.reload();
                             }
                         },
@@ -163,8 +178,9 @@
                         type: "POST",
                         url: "<c:url value="/LineUserReferenceController/delete" />",
                         data: {
-                            "id.user.id": data.id.user.id,
-                            "id.line.id": data.id.line.id,
+                            "id": data.id,
+                            "user.id": data.user.id,
+                            "line.id": data.line.id,
                             "station": data.station
                         },
                         dataType: "html",
@@ -179,9 +195,12 @@
 
             });
 
+            var initCnt = 0;
+
             function getDetail() {
+                $("#send").attr("disabled", "disabled");
                 var area = $("#tableArea");
-                var table = area.find("table").detach();
+                var table = area.find("table").eq(0).clone();
                 $.ajax({
                     type: "GET",
                     url: "<c:url value="/BabLineController/findByUser" />",
@@ -190,12 +209,18 @@
                         var arr = response;
                         for (var i = 0; i < arr.length; i++) {
                             var o = arr[i];
-                            var cloneTb = table.clone().prop('id', 'tb' + o.id);
-                            area.append("<h3>線別: " + o.name + "</h3>");
-                            area.append(cloneTb);
-                            area.append("<hr />");
+                            var cloneTb;
+                            if ($('#tb' + o.id).length == 0) {
+                                cloneTb = table.clone().prop('id', 'tb' + o.id);
+                                area.append("<h3>線別: " + o.name + "</h3>");
+                                area.append(cloneTb);
+                                area.append("<hr />");
+                            } else {
+                                cloneTb = $('#tb' + o.id);
+                            }
                             initTable(cloneTb, o.id);
                         }
+                        $("#send").removeAttr("disabled");
                     },
                     error: function (xhr, ajaxOptions, thrownError) {
                         showMsg(xhr.responseText);
@@ -216,24 +241,26 @@
                             },
                             "action": function (e, dt, node, config) {
                                 clearForm($("#addRemark"));
-                                $("#addRemark .currentID").val(d);
+                                $("#addRemark .currentLineID").val(d);
                                 $('#addRemark').modal('toggle');
                             }
                         }
                     ],
                     "ajax": {
-                        "url": "<c:url value="/LineUserReferenceController/findByLine" />",
+                        "url": "<c:url value="/LineUserReferenceController/findByLineAndDate" />",
                         "type": "Get",
                         data: {
-                            id: d
+                            id: d,
+                            onboardDate: $("#fini").val()
                         },
                         error: function (xhr, ajaxOptions, thrownError) {
                             alert(xhr.responseText);
                         }
                     },
                     "columns": [
-                        {data: "id.line.id", title: "line_id", visible: false},
-                        {data: "id.user.id", title: "user_id"},
+                        {data: "id", title: "id", visible: false},
+                        {data: "line.id", title: "line_id", visible: false},
+                        {data: "user.id", title: "user_id"},
                         {data: "station", title: "station"},
                         {
                             "data": "id",
@@ -250,13 +277,13 @@
                     "columnDefs": [
                         {
                             "type": "html",
-                            "targets": [1],
+                            "targets": [2],
                             'render': function (data, type, full, meta) {
                                 return userMap.has(data) ? userMap.get(data) : data;
                             }
                         }
                     ],
-                    "order": [[0, "asc"]],
+                    "order": [[3, "asc"]],
                     "oLanguage": {
                         "sLengthMenu": "顯示 _MENU_ 筆記錄",
                         "sZeroRecords": "無符合資料",
@@ -268,6 +295,7 @@
 
                     },
                     filter: false,
+                    destroy: true,
                     paginate: false,
                     info: false
                 });
@@ -276,7 +304,7 @@
 
             function clearForm(dialog) {//blank the add/edit popup form
                 dialog.find(":text, textarea, input[type='number']").val("");
-                dialog.find("#currentID, #currentID2").val(0);
+                dialog.find("#currentID, #currentLineID, #currentID2").val(0);
             }
 
             function setUserOptions() {
@@ -342,7 +370,8 @@
                                 <label class="control-label col-sm-3" for="user_id">站別: </label>
                                 <div class="input-group col-sm-9">
                                     <input class="station" name="station" type="text" class="input-xlarge form-control">
-                                </div>
+                                </div>                     
+                                <input type="hidden" class="currentLineID" value="" />                         
                                 <input type="hidden" class="currentID" value="" />                         
                             </fieldset>
                         </div>
@@ -378,6 +407,7 @@
                                     <input class="station" name="station" type="text" class="input-xlarge form-control" readonly="">
                                 </div>
                                 <input type="hidden" class="currentID" value="" />                         
+                                <input type="hidden" class="currentLineID" value="" />                         
                             </fieldset>
                         </div>
                         <div class="modal-footer">
@@ -391,6 +421,18 @@
 
             <div class="row">
                 <h3 class="title">設定各線人員</h3>
+            </div>
+
+            <div class="row form-inline">
+                <div class="col form-group">
+                    <label for="beginTime">日期: 從</label>
+                    <div class='input-group date' id='onboardDate'>
+                        <input type="text" id="fini" placeholder="請選擇時間"> 
+                    </div> 
+                </div>
+                <div class="col form-group">
+                    <input type="button" id="send" value="確定(Ok)">
+                </div>
             </div>
 
             <div id="tableArea" class="row">

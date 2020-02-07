@@ -81,6 +81,12 @@ public class SqlViewDAO extends AbstractDao<Integer, Object> {
                 .uniqueResult();
     }
 
+    public List<UserInfoRemote> findUserInfoRemote() {
+        return super.getSession()
+                .createCriteria(UserInfoRemote.class)
+                .list();
+    }
+
     public List<BabLastGroupStatus> findBabLastGroupStatus(int bab_id) {
         return super.getSession()
                 .createSQLQuery("{CALL usp_GetLastGroupStatus(:bab_id)}")

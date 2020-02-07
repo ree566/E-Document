@@ -59,9 +59,7 @@ public class PrepareScheduleService1 {
     @Autowired
     private BabSettingHistoryDAO settingHistoryDAO;
 
-    private Interval rest1;
-    private Interval rest2;
-    private Interval rest3;
+    private List<Interval> restTimes;
     private DateTime scheduleStartTime;
     private DateTime scheduleEndTime;
 
@@ -93,27 +91,49 @@ public class PrepareScheduleService1 {
 
         updateDateParamater(d);
 
-        List<Line> line = lineDAO.findBySitefloorAndLineType(f.getName(), 1);
+        List<Line> lines = lineDAO.findBySitefloorAndLineType(f.getName(), 1);
+        List<Line> cellLines = lineDAO.findBySitefloorAndLineType(f.getName(), 2);
 
         List<PrepareSchedule> l = dao.findByFloorAndDate(f, d);
-        l = l.stream().sorted(comparing(PrepareSchedule::getTimeCost).reversed()).collect(toList());
-        List<LineUserReference> users = lineUserRefDAO.findByLines(line);
+
+        List<PrepareSchedule> noneCellableSchedules = l.stream()
+                .filter(p -> p.getTimeCost().compareTo(new BigDecimal(100)) >= 0)
+                .collect(toList());
+
+        List<PrepareSchedule> cellableSchedules = l.stream()
+                .filter(p -> p.getTimeCost().compareTo(new BigDecimal(100)) == -1)
+                .collect(toList());
+
+        noneCellableSchedules = noneCellableSchedules.stream()
+                .sorted(comparing(PrepareSchedule::getTimeCost).reversed())
+                .collect(toList());
+
+        List<LineUserReference> users = lineUserRefDAO.findByLinesAndDate(lines, d);
+        List<LineUserReference> cellUsers = lineUserRefDAO.findByLinesAndDate(cellLines, d);
 
         emptyLine = lineDAO.findByPrimaryKey(7);
 
-        if (!l.isEmpty()) {
-            l = setScheduleLine(users, l);
+        List<PrepareSchedule> result = new ArrayList();
+        if (!noneCellableSchedules.isEmpty()) {
+            result.addAll(setScheduleLine(users, noneCellableSchedules));
         }
-        return l;
+        if (!cellableSchedules.isEmpty()) {
+            result.addAll(setScheduleLine(cellUsers, cellableSchedules));
+        }
+        return result;
     }
 
     private void updateDateParamater(DateTime d) {
         scheduleStartTime = new DateTime(d).withTime(8, 30, 0, 0);
 //        scheduleEndTime = new DateTime(d).withTime(21, 0, 0, 0);
         scheduleEndTime = new DateTime(d).withTime(23, 59, 59, 0);
-        rest1 = new Interval(new DateTime(d).withTime(12, 0, 0, 0), new DateTime(d).withTime(12, 50, 0, 0));
-        rest2 = new Interval(new DateTime(d).withTime(15, 30, 0, 0), new DateTime(d).withTime(15, 40, 0, 0));
-        rest3 = new Interval(new DateTime(d).withTime(17, 30, 0, 0), new DateTime(d).withTime(18, 0, 0, 0));
+
+        restTimes = newArrayList(
+                new Interval(new DateTime(d).withTime(12, 0, 0, 0), new DateTime(d).withTime(12, 50, 0, 0)),
+                new Interval(new DateTime(d).withTime(15, 30, 0, 0), new DateTime(d).withTime(15, 40, 0, 0)),
+                new Interval(new DateTime(d).withTime(17, 30, 0, 0), new DateTime(d).withTime(18, 0, 0, 0))
+        );
+
     }
 
     private List<PrepareSchedule> setScheduleLine(List<LineUserReference> users, List<PrepareSchedule> l) {
@@ -131,13 +151,13 @@ public class PrepareScheduleService1 {
 //        }).collect(toList());
         List<BabSettingHistory> jSettings = settings.stream().filter(s -> {
             LineUserReference fitSettings = users.stream()
-                    .filter(fw -> fw.getId().getUser().getJobnumber().equals(s.getJobnumber()))
+                    .filter(fw -> fw.getUser().getJobnumber().equals(s.getJobnumber()))
                     .findFirst().orElse(null);
             return fitSettings != null;
         }).collect(toList());
 
         Map<Line, List<PrepareSchedule>> result = new HashMap();
-        List<Line> lines = users.stream().map(u -> u.getId().getLine()).distinct().collect(toList());
+        List<Line> lines = users.stream().map(u -> u.getLine()).distinct().collect(toList());
         lines = lines.stream().sorted(comparing(Line::getName)).collect(toList());
 
         //Add empty List into result
@@ -158,9 +178,9 @@ public class PrepareScheduleService1 {
             //jSettings group by line & find max number of model experience
             //Map<Line, Integer cnt of users>
             Map<Line, List<Boolean>> historyFitUserSetting = users.stream()
-                    .collect(groupingBy(x -> x.getId().getLine(), mapping(f -> {
+                    .collect(groupingBy(x -> x.getLine(), mapping(f -> {
                         BabSettingHistory obj = modelNameFitSetting.stream()
-                                .filter(bsh -> bsh.getJobnumber().equals(f.getId().getUser().getJobnumber()))
+                                .filter(bsh -> bsh.getJobnumber().equals(f.getUser().getJobnumber()))
                                 .findFirst().orElse(null);
                         return obj != null;
                     }, toList())));
@@ -177,8 +197,8 @@ public class PrepareScheduleService1 {
                 p.setPriority(i++);
             }
 
-            List<User> settingUsers = users.stream().filter(u -> u.getId().getLine().equals(k))
-                    .map(u -> u.getId().getUser())
+            List<User> settingUsers = users.stream().filter(u -> u.getLine().equals(k))
+                    .map(u -> u.getUser())
                     .collect(toList());
 
             v.forEach(s -> {
@@ -279,28 +299,15 @@ public class PrepareScheduleService1 {
     }
 
     private Interval byPassRestTime(Interval i) {
-        int rest1Min = Minutes.minutesBetween(rest1.getStart(), rest1.getEnd()).getMinutes();
-        int rest2Min = Minutes.minutesBetween(rest2.getStart(), rest2.getEnd()).getMinutes();
-        int rest3Min = Minutes.minutesBetween(rest3.getStart(), rest3.getEnd()).getMinutes();
-        if (isInRestTime(i.getStart())) {
-            return new Interval(rest1.getStart(), rest1.getStart().plusMinutes(rest1Min));
+        for (Interval restTime : restTimes) {
+            int restMin = Minutes.minutesBetween(restTime.getStart(), restTime.getEnd()).getMinutes();
+            if (isInRestTime(restTime, i.getStart())) {
+                return new Interval(restTime.getStart(), restTime.getStart().plusMinutes(restMin));
+            }
+            if (hasOverlap(i, restTime)) {
+                return new Interval(i.getStart(), i.getEnd().plusMinutes(restMin));
+            }
         }
-        if (isInRestTime2(i.getStart())) {
-            return new Interval(rest2.getStart(), rest2.getStart().plusMinutes(rest2Min));
-        }
-        if (isInRestTime3(i.getStart())) {
-            return new Interval(rest3.getStart(), rest3.getStart().plusMinutes(rest2Min));
-        }
-        if (hasOverlap(i, rest1)) {
-            return new Interval(i.getStart(), i.getEnd().plusMinutes(rest1Min));
-        }
-        if (hasOverlap(i, rest2)) {
-            return new Interval(i.getStart(), i.getEnd().plusMinutes(rest2Min));
-        }
-        if (hasOverlap(i, rest3)) {
-            return new Interval(i.getStart(), i.getEnd().plusMinutes(rest3Min));
-        }
-
         return i;
     }
 
@@ -308,16 +315,8 @@ public class PrepareScheduleService1 {
         return !t1.getEnd().isBefore(t2.getStart()) && !t1.getStart().isAfter(t2.getEnd());
     }
 
-    private boolean isInRestTime(DateTime d) {
-        return rest1.getStart().compareTo(d) * d.compareTo(rest1.getEnd()) >= 0;
-    }
-
-    private boolean isInRestTime2(DateTime d) {
-        return rest2.getStart().compareTo(d) * d.compareTo(rest2.getEnd()) >= 0;
-    }
-
-    private boolean isInRestTime3(DateTime d) {
-        return rest3.getStart().compareTo(d) * d.compareTo(rest3.getEnd()) >= 0;
+    private boolean isInRestTime(Interval rest, DateTime d) {
+        return rest.getStart().compareTo(d) * d.compareTo(rest.getEnd()) >= 0;
     }
 
     public int separateCnt(PrepareSchedule pojo, List<Integer> cnt) {

@@ -23,6 +23,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.format.annotation.DateTimeFormat;
 
 /**
@@ -50,6 +51,7 @@ public class PrepareSchedule implements Serializable {
     private Date onBoardDate;
     private Floor floor;
     private int priority = 0;
+    private Date createDate;
 
     private Map otherInfo;
 
@@ -192,6 +194,7 @@ public class PrepareSchedule implements Serializable {
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", iso = DateTimeFormat.ISO.DATE)
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "GMT+8")
     @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "onBoardDate", length = 23)
     public Date getOnBoardDate() {
         return onBoardDate;
     }
@@ -219,6 +222,19 @@ public class PrepareSchedule implements Serializable {
         this.priority = priority;
     }
 
+    @CreationTimestamp
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", iso = DateTimeFormat.ISO.DATE)
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "GMT+8")
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "createDate", length = 23, insertable = true, updatable = false)
+    public Date getCreateDate() {
+        return createDate;
+    }
+
+    public void setCreateDate(Date createDate) {
+        this.createDate = createDate;
+    }
+    
     @Transient
     public Map getOtherInfo() {
         return otherInfo;

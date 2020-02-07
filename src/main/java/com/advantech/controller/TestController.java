@@ -11,6 +11,8 @@ import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.model.TagNameComparison;
 import com.advantech.quartzJob.CountermeasureAlarm;
 import com.advantech.service.LineService;
+import java.io.File;
+import java.io.FileInputStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -70,5 +72,14 @@ public class TestController {
     ) throws Exception {
         HibernateObjectPrinter.print(p1, p2, p3);
         return "Test";
+    }
+
+    @RequestMapping(value = "/testReadNetworkDriveFile", method = {RequestMethod.GET, RequestMethod.POST})
+    @ResponseBody
+    public String testReadNetworkDriveFile(@RequestParam String path) throws Exception {
+        System.out.println(path);
+        FileInputStream is = new FileInputStream(new File(path));
+        is.close();
+        return "OK";
     }
 }

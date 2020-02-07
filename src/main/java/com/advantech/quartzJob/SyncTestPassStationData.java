@@ -51,8 +51,8 @@ public class SyncTestPassStationData {
         
         DateTime today = new DateTime();
         
-        DateTime sD = new DateTime().minusDays(today.getDayOfWeek() == 1 ? 3 : 1).withTime(8, 0, 0, 0);
-        DateTime eD = new DateTime().withTime(8, 0, 0, 0);
+        DateTime sD = new DateTime(today).minusDays(today.getDayOfWeek() == 1 ? 3 : 1).withTime(8, 0, 0, 0);
+        DateTime eD = new DateTime(today).withTime(8, 0, 0, 0);
         
         List<TestPassStationDetail> dbData = testPassStationDetailService.findByDate(sD, eD);
         List<TestRecord> records = testRecordService.findByDate(sD, eD, false);

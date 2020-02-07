@@ -239,7 +239,7 @@
     
     <bean id="SyncTestPassStationData-Trig" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
         <property name="jobDetail" ref="SyncTestPassStationData-Job" />
-        <property name="cronExpression" value="0 0 18 ? * MON-FRI *" />
+        <property name="cronExpression" value="0 30 7 ? * MON-FRI *" />
     </bean>
     <!--<property name="cronExpression" value="0 0 12, 18 ? * MON-FRI *" />-->
     
@@ -254,7 +254,35 @@
     
     <bean id="SyncPrepareSchedule-Trig" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
         <property name="jobDetail" ref="SyncPrepareSchedule-Job" />
-        <property name="cronExpression" value="0 30 6 ? * MON-FRI *" />
+        <property name="cronExpression" value="0 30 18 ? * MON-SAT *" />
+    </bean>
+    
+    <!--
+        將Line_User_REF2人員資料複製到隔日
+    -->    
+    <bean name="SyncLineUserReference-Job" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="syncLineUserReference" />
+        <property name="targetMethod" value="execute"/>  
+        <property name="concurrent" value="false"/>
+    </bean>
+    
+    <bean id="SyncLineUserReference-Trig" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="SyncLineUserReference-Job" />
+        <property name="cronExpression" value="0 0 14 ? * MON-SAT *" />
+    </bean>
+    
+    <!--
+        將User_Profile, 人員製成段更新為跟出缺勤相同
+    -->    
+    <bean name="SyncUserFromRemote-Job" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="syncUserFromRemote" />
+        <property name="targetMethod" value="execute"/>  
+        <property name="concurrent" value="false"/>
+    </bean>
+    
+    <bean id="SyncUserFromRemote-Trig" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="SyncUserFromRemote-Job" />
+        <property name="cronExpression" value="0 30 14 ? * MON-SAT *" />
     </bean>
 
     <!--schedule jobs-->

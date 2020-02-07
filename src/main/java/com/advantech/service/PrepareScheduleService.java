@@ -10,12 +10,12 @@ import com.advantech.dao.LineDAO;
 import com.advantech.dao.LineUserReferenceDAO;
 import com.advantech.model.PrepareSchedule;
 import com.advantech.dao.PrepareScheduleDAO;
-import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.model.BabSettingHistory;
 import com.advantech.model.Floor;
 import com.advantech.model.Line;
 import com.advantech.model.LineUserReference;
 import com.advantech.model.User;
+import static com.google.common.collect.Lists.newArrayList;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -53,7 +53,7 @@ public class PrepareScheduleService {
     @Autowired
     private BabSettingHistoryDAO settingHistoryDAO;
 
-    private Interval rest1, rest2, rest3;
+    private List<Interval> restTimes;
     private DateTime scheduleStartTime, scheduleEndTime;
 
     public List<PrepareSchedule> findAll() {
@@ -68,9 +68,11 @@ public class PrepareScheduleService {
         scheduleStartTime = new DateTime(d).withTime(8, 30, 0, 0);
 //        scheduleEndTime = new DateTime(d).withTime(21, 0, 0, 0);
         scheduleEndTime = new DateTime(d).withTime(23, 59, 59, 0);
-        rest1 = new Interval(new DateTime(d).withTime(12, 0, 0, 0), new DateTime(d).withTime(12, 50, 0, 0));
-        rest2 = new Interval(new DateTime(d).withTime(15, 30, 0, 0), new DateTime(d).withTime(15, 40, 0, 0));
-        rest3 = new Interval(new DateTime(d).withTime(17, 30, 0, 0), new DateTime(d).withTime(18, 0, 0, 0));
+        restTimes = newArrayList(
+                new Interval(new DateTime(d).withTime(12, 0, 0, 0), new DateTime(d).withTime(12, 50, 0, 0)),
+                new Interval(new DateTime(d).withTime(15, 30, 0, 0), new DateTime(d).withTime(15, 40, 0, 0)),
+                new Interval(new DateTime(d).withTime(17, 30, 0, 0), new DateTime(d).withTime(18, 0, 0, 0))
+        );
     }
 
     public List<PrepareSchedule> findPrepareSchedule(Floor f, DateTime d) {
@@ -82,13 +84,13 @@ public class PrepareScheduleService {
 
         List<Line> lines = lineDAO.findBySitefloorAndLineType(f.getName(), 1, 2);
 
-        List<LineUserReference> users = lineUserRefDAO.findByLines(lines);
+        List<LineUserReference> users = lineUserRefDAO.findByLinesAndDate(lines, d);
 
         List<PrepareSchedule> result = new ArrayList();
 
         lines.forEach((line) -> {
             List<LineUserReference> lineUsers = users.stream()
-                    .filter(lr -> Objects.equals(line, lr.getId().getLine()))
+                    .filter(lr -> Objects.equals(line, lr.getLine()))
                     .collect(toList());
 
             List<PrepareSchedule> lineSchedule = l.stream()
@@ -109,7 +111,7 @@ public class PrepareScheduleService {
     private List<PrepareSchedule> addUser(List<LineUserReference> users, List<PrepareSchedule> l) {
 
         int maxPeopleCnt = users.size();
-        List<User> settingUsers = users.stream().map(u -> u.getId().getUser()).collect(toList());
+        List<User> settingUsers = users.stream().map(u -> u.getUser()).collect(toList());
 
         int peopleFlag = 0;
         int settingUsersCnt = settingUsers.size();
@@ -135,7 +137,7 @@ public class PrepareScheduleService {
 
         List<Line> cellLine = lineDAO.findBySitefloorAndLineType(line.getFloor().getName(), 2);
         List<LineUserReference> cellUsers = lineUserRefDAO.findByLines(cellLine);
-        List<User> settingUsers = cellUsers.stream().map(u -> u.getId().getUser()).collect(toList());
+        List<User> settingUsers = cellUsers.stream().map(u -> u.getUser()).collect(toList());
 
         int peopleFlag = 0;
 
@@ -199,7 +201,7 @@ public class PrepareScheduleService {
 
         l = l.stream().sorted(comparing(PrepareSchedule::getPriority)).collect(toList());
 
-        int maxPeopleCnt = users.get(0).getId().getLine().getPeople();
+        int maxPeopleCnt = users.get(0).getLine().getPeople();
 
         PrepareSchedule prev = null;
         int cnt = 0;
@@ -224,28 +226,15 @@ public class PrepareScheduleService {
     }
 
     private Interval byPassRestTime(Interval i) {
-        int rest1Min = Minutes.minutesBetween(rest1.getStart(), rest1.getEnd()).getMinutes();
-        int rest2Min = Minutes.minutesBetween(rest2.getStart(), rest2.getEnd()).getMinutes();
-        int rest3Min = Minutes.minutesBetween(rest3.getStart(), rest3.getEnd()).getMinutes();
-        if (isInRestTime(i.getStart())) {
-            return new Interval(rest1.getStart(), rest1.getStart().plusMinutes(rest1Min));
+        for (Interval restTime : restTimes) {
+            int restMin = Minutes.minutesBetween(restTime.getStart(), restTime.getEnd()).getMinutes();
+            if (isInRestTime(restTime, i.getStart())) {
+                return new Interval(restTime.getStart(), restTime.getStart().plusMinutes(restMin));
+            }
+            if (hasOverlap(i, restTime)) {
+                return new Interval(i.getStart(), i.getEnd().plusMinutes(restMin));
+            }
         }
-        if (isInRestTime2(i.getStart())) {
-            return new Interval(rest1.getStart(), rest1.getStart().plusMinutes(rest2Min));
-        }
-        if (isInRestTime3(i.getStart())) {
-            return new Interval(rest3.getStart(), rest3.getStart().plusMinutes(rest2Min));
-        }
-        if (hasOverlap(i, rest1)) {
-            return new Interval(i.getStart(), i.getEnd().plusMinutes(rest1Min));
-        }
-        if (hasOverlap(i, rest2)) {
-            return new Interval(i.getStart(), i.getEnd().plusMinutes(rest2Min));
-        }
-        if (hasOverlap(i, rest3)) {
-            return new Interval(i.getStart(), i.getEnd().plusMinutes(rest3Min));
-        }
-
         return i;
     }
 
@@ -253,16 +242,8 @@ public class PrepareScheduleService {
         return !t1.getEnd().isBefore(t2.getStart()) && !t1.getStart().isAfter(t2.getEnd());
     }
 
-    private boolean isInRestTime(DateTime d) {
-        return rest1.getStart().compareTo(d) * d.compareTo(rest1.getEnd()) >= 0;
-    }
-
-    private boolean isInRestTime2(DateTime d) {
-        return rest2.getStart().compareTo(d) * d.compareTo(rest2.getEnd()) >= 0;
-    }
-
-    private boolean isInRestTime3(DateTime d) {
-        return rest3.getStart().compareTo(d) * d.compareTo(rest3.getEnd()) >= 0;
+    private boolean isInRestTime(Interval rest, DateTime d) {
+        return rest.getStart().compareTo(d) * d.compareTo(rest.getEnd()) >= 0;
     }
 
     public int separateCnt(PrepareSchedule pojo, List<Integer> cnt) {

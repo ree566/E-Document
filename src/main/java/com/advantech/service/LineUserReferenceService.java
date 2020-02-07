@@ -8,9 +8,9 @@ package com.advantech.service;
 import com.advantech.model.LineUserReference;
 import com.advantech.dao.LineUserReferenceDAO;
 import com.advantech.model.Line;
-import com.advantech.model.LineUserReferenceId;
 import java.util.List;
 import java.util.Objects;
+import org.joda.time.DateTime;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -42,6 +42,10 @@ public class LineUserReferenceService {
         return dao.findByLines(lines);
     }
 
+    public List<LineUserReference> findByLineAndDate(Line line, DateTime d) {
+        return dao.findByLineAndDate(line, d);
+    }
+
     public int insert(LineUserReference pojo) {
         return dao.insert(pojo);
     }
@@ -51,28 +55,28 @@ public class LineUserReferenceService {
     }
 
     public int updateStationPeople(LineUserReference pojo) {
-        List<LineUserReference> existSettings = this.findByLine(pojo.getId().getLine());
+        List<LineUserReference> existSettings = this.findByLine(pojo.getLine());
 
         LineUserReference userSetting = existSettings.stream()
-                .filter(s -> Objects.equals(s.getId().getUser().getId(), pojo.getId().getUser().getId()))
+                .filter(s -> Objects.equals(s.getUser().getId(), pojo.getUser().getId()))
                 .findFirst()
                 .orElse(null);
-        
+
         LineUserReference currentSetting = existSettings.stream()
-                    .filter(s -> s.getStation() == pojo.getStation())
-                    .findFirst()
-                    .orElse(null);
+                .filter(s -> s.getStation() == pojo.getStation())
+                .findFirst()
+                .orElse(null);
 
         if (userSetting != null) {
             dao.delete(currentSetting);
             dao.delete(userSetting);
-            
-            LineUserReferenceId id1 = currentSetting.getId();
-            LineUserReferenceId id2 = userSetting.getId();
-            
+
+            int id1 = currentSetting.getId();
+            int id2 = userSetting.getId();
+
             currentSetting.setId(id2);
             userSetting.setId(id1);
-            
+
             dao.insert(currentSetting);
             dao.insert(userSetting);
         } else {

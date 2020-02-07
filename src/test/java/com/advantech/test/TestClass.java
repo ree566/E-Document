@@ -71,18 +71,40 @@ public class TestClass {
     public void testEnum2() {
         System.out.println(1 >> 1);
     }
-    
-    @Test
+
+//    @Test
     public void testInterval() {
         Interval rest1 = new Interval(new DateTime().withTime(12, 0, 0, 0), new DateTime().withTime(12, 50, 0, 0));
         Interval testRange = new Interval(new DateTime().withTime(9, 40, 2, 983), new DateTime().withTime(17, 8, 38, 470));
-        
+
         System.out.println(testRange.overlaps(rest1));
         Interval overlap = testRange.overlap(rest1);
         System.out.println(
-                Minutes.minutesBetween(testRange.getStart(), testRange.getEnd()).getMinutes() - 
-                Minutes.minutesBetween(overlap.getStart(), overlap.getEnd()).getMinutes()
+                Minutes.minutesBetween(testRange.getStart(), testRange.getEnd()).getMinutes()
+                - Minutes.minutesBetween(overlap.getStart(), overlap.getEnd()).getMinutes()
         );
+    }
+
+    @Test
+    public void testRegex() {
+        String[] strs = {
+            "測試",
+            "包裝",
+            "前置",
+            "間接人員",
+            "間接人員",
+            "包裝",
+            "測試",
+            "組裝",
+            "包裝",
+            "測試"
+        };
+
+        for (String str : strs) {
+            if (str.matches("(前置|組裝|測試|包裝)")) {
+                System.out.println(str);
+            }
+        }
     }
 
 }

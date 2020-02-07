@@ -12,6 +12,7 @@ import com.advantech.model.AlarmTestAction;
 import com.advantech.model.TestTable;
 import com.advantech.service.AlarmTestActionService;
 import com.advantech.service.TestService;
+import com.advantech.service.TestTableService;
 import com.advantech.webservice.WebServiceRV;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -48,7 +49,9 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
     @Autowired
     private PropertiesReader p;
 
-    private Integer maxTestTable;
+    @Autowired
+    private TestTableService tableService;
+
     private int[] testByPassHours;
     private Double TEST_STANDARD_MIN;
     private Double TEST_STANDARD_MAX;
@@ -65,7 +68,6 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
     @PostConstruct
     protected void init() {
         log.info(TestLineTypeFacade.class.getName() + " init inner setting and db object.");
-        maxTestTable = p.getMaxTestTables();
         testByPassHours = p.getTestByPassHours();
         TEST_STANDARD_MIN = p.getTestProductivityStandardMin().doubleValue();
         TEST_STANDARD_MAX = p.getTestProductivityStandardMax().doubleValue();
@@ -82,9 +84,10 @@ public class TestLineTypeFacade extends BasicLineTypeFacade {
         super.dataMap.clear();
         PEOPLE_NOT_MATCH.clear();
 
-        for (int i = 1; i <= maxTestTable; i++) {
-            dataMap.put(("T" + i), NORMAL_SIGN);
-        }
+        List<TestTable> l = tableService.findAll();
+        l.forEach(table -> {
+            dataMap.put(table.getName(), NORMAL_SIGN);
+        });
     }
 
     @Override

@@ -13,10 +13,13 @@ import com.advantech.quartzJob.HandleUncloseBab;
 import com.advantech.quartzJob.DataBaseInit;
 import com.advantech.quartzJob.InsertMesCountRecord;
 import com.advantech.quartzJob.PollingDataCollectStatus;
+import com.advantech.quartzJob.SyncLineUserReference;
 import com.advantech.quartzJob.SyncPrepareSchedule;
 import com.advantech.quartzJob.SyncTestPassStationData;
+import com.advantech.quartzJob.SyncUserFromRemote;
 import com.advantech.quartzJob.TestLineTypeRecord;
 import com.advantech.quartzJob.TestLineTypeRecordUnrepliedAlarm;
+import org.joda.time.DateTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.quartz.JobExecutionException;
@@ -102,8 +105,29 @@ public class TestQuartzJobs {
     
     @Test
     public void testSyncPrepareSchedule1() throws Exception {
-        sps.execute();
-        aps.execute();
+        //先設定好當日出勤名單, 才會給予字動排站
+        DateTime d = new DateTime("2020-02-07");
+        sps.execute(d);
+        aps.execute(d);
+    }
+    
+    @Autowired
+    private SyncLineUserReference sur;
+    
+//    @Test
+    public void testSyncLineUserReference() throws Exception {
+
+        DateTime d3 = new DateTime("2020-02-03");
+        sur.execute(d3);
+    }
+    
+    @Autowired
+    private SyncUserFromRemote suf;
+    
+//    @Test
+    public void testSyncUserFromRemote() throws Exception {
+
+        suf.execute();
     }
     
 }

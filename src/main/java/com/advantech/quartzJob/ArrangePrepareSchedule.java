@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Wei.Cheng
  */
 @Component
+@Transactional
 public class ArrangePrepareSchedule {
 
     private static final Logger logger = LoggerFactory.getLogger(ArrangePrepareSchedule.class);
@@ -33,17 +34,17 @@ public class ArrangePrepareSchedule {
     @Autowired
     private FloorService floorService;
 
-    @Transactional
     public void execute() throws Exception {
-        DateTime d = new DateTime().withTime(0, 0, 0, 0);
-        this.execute(d);
+        this.execute(new DateTime());
     }
-    
+
     public void execute(DateTime d) throws Exception {
+        d = d.withTime(0, 0, 0, 0);
+
         List<Floor> floors = floorService.findAll();
         floors = floors.stream()
                 .filter(f -> f.getId() == 1 || f.getId() == 2)
-                .collect(toList());        
+                .collect(toList());
 
         for (Floor f : floors) {
             List<PrepareSchedule> ps = psService.findPrepareSchedule(f, d);

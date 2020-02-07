@@ -25,7 +25,7 @@
             }
             .draggable { 
                 width: 25px; 
-                height: 25px; 
+                height: 20px; 
                 padding: 0.3em; 
                 float: left;
                 /*background-color: red;*/
@@ -525,6 +525,7 @@
                     else
                         reason = "Unknown reason";
                     console.log("The connection was closed for reason: " + reason);
+                    closeConnect();
                 };
 
                 if (testGroup.length != 0 || babGroup.length != 0) {

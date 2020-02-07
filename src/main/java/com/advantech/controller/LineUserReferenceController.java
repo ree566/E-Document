@@ -18,7 +18,9 @@ import static java.util.Comparator.comparing;
 import java.util.List;
 import static java.util.stream.Collectors.toList;
 import javax.servlet.http.HttpServletRequest;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -43,12 +45,16 @@ public class LineUserReferenceController {
     @Autowired
     private UserService userService;
 
-    @RequestMapping(value = "/findByLine", method = {RequestMethod.GET})
+    @RequestMapping(value = "/findByLineAndDate", method = {RequestMethod.GET})
     @ResponseBody
-    protected DataTableResponse findByLine(@ModelAttribute Line line) {
+    protected DataTableResponse findByLineAndDate(
+            @ModelAttribute Line line, 
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime onboardDate) {
+        
         Line lineInDb = lineService.findByPrimaryKey(line.getId());
-        List<LineUserReference> l = service.findByLine(lineInDb);
+        List<LineUserReference> l = service.findByLineAndDate(lineInDb, onboardDate);
         return new DataTableResponse(l);
+        
     }
     
     @RequestMapping(value = "/insert", method = {RequestMethod.POST})
