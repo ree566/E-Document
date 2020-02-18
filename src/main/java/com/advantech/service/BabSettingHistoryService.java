@@ -78,12 +78,16 @@ public class BabSettingHistoryService {
         return babSettingHistoryDAO.findByBabAndStation(b, station);
     }
 
+    public List<BabSettingHistory> findByBabModelNames(List<String> modelNames) {
+        return babSettingHistoryDAO.findByBabModelNames(modelNames);
+    }
+
     public int insert(BabSettingHistory pojo) {
         return babSettingHistoryDAO.insert(pojo);
     }
 
     public int insertByBab(Bab b, TagNameComparison tag) {
-        
+
         List<BabSensorLoginRecord> babLogins = babSensorLoginRecordService.findByLine(b.getLine().getId());
 
         //Find setting in setting and check users in lists are login or not

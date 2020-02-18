@@ -33,15 +33,19 @@ import com.advantech.service.FqcService;
 import com.advantech.service.LineBalancingService;
 import com.advantech.service.LineService;
 import com.advantech.service.LineUserReferenceService;
-import com.advantech.service.PrepareScheduleService1;
+import com.advantech.service.PrepareScheduleService;
 import com.advantech.service.TagNameComparisonService;
 import com.advantech.service.UserService;
 import com.advantech.webservice.WebServiceRV;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.mapping;
 import static java.util.stream.Collectors.toList;
 import javax.mail.MessagingException;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -346,27 +350,41 @@ public class TestService {
     }
 
     @Autowired
-    private PrepareScheduleService1 psService;
+    private PrepareScheduleService psService;
 
     @Autowired
     private FloorService floorService;
 
     @Test
     @Transactional
-    @Rollback(false)
-    public void testFindPrepareSchedule() {
-        List<Floor> floors = floorService.findAll();
-        floors = floors.stream()
-                .filter(f -> f.getId() == 1 || f.getId() == 2)
-                .collect(toList());
+    @Rollback(true)
+    public void testGroupBy() {
 
+        Floor floor = floorService.findByPrimaryKey(1);
         DateTime d = new DateTime().withTime(0, 0, 0, 0);
 
-        for (Floor f : floors) {
-            List<PrepareSchedule> ps = psService.findPrepareSchedule(f, d);
-            ps.forEach((p) -> {
-                psService.update(p);
-            });
-        }
+        List<PrepareSchedule> l = psService.findByFloorAndDate(floor, d);
+        List<String> modelNames = l.stream().map(s -> s.getModelName()).collect(toList());
+        List<Bab> babs = babService.findByModelNames(modelNames);
+
+         Map<String, Map<Line, Long>> historyFitUserSetting = babs.stream()
+//                    .filter(b -> b.getModelName().equals(s.getModelName()))
+                    .collect(groupingBy(Bab::getModelName,
+                            Collectors.groupingBy(Bab::getLine,
+                                    Collectors.mapping(Bab::getId,
+                                            Collectors.counting()))));
+         
+         Map m = historyFitUserSetting.get("bbbb");
+         System.out.println(m == null || m.isEmpty() ? "Object not exists" : "Object exists");
+        
+//        for (PrepareSchedule s : l) {
+            
+            //Map<ModelName, Map<Line, Count>>
+           
+
+//            HibernateObjectPrinter.print(historyFitUserSetting);
+//            break;
+//        }
     }
+
 }

@@ -46,6 +46,10 @@ public class LineUserReferenceService {
         return dao.findByLineAndDate(line, d);
     }
 
+    public List<LineUserReference> findByLinesAndDate(List<Line> line, DateTime d) {
+        return dao.findByLinesAndDate(line, d);
+    }
+
     public int insert(LineUserReference pojo) {
         return dao.insert(pojo);
     }

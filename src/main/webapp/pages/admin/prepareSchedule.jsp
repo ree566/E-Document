@@ -209,20 +209,20 @@
                     "columns": [
                         {data: "id", title: "id"},
                         {data: "po", title: "工單"},
-                        {data: "modelName", title: "機種"},
+                        {data: "modelName", title: "機種", width: "7%"},
                         {data: "totalQty", title: "工單數"},
                         {data: "scheduleQty", title: "排程數"},
                         {data: "floor.id", title: "樓層"},
-                        {data: "timeCost", title: "timeCost"},
+                        {data: "timeCost", title: "workTime"},
                         {data: "cycleTime", title: "cycleTime", visible: false},
                         {data: "line.id", title: "線別"},
+                        {data: "priority", title: "順序", width: "5%"},
                         {data: "startDate", title: "開始時間"},
                         {data: "endDate", title: "結束時間"},
-                        {data: "users", title: "站1"},
-                        {data: "users", title: "站2"},
-                        {data: "users", title: "站3"},
-                        {data: "users", title: "站4"},
-                        {data: "priority", title: "順序"},
+                        {data: "users", title: "站1", width: "7%"},
+                        {data: "users", title: "站2", width: "7%"},
+                        {data: "users", title: "站3", width: "7%"},
+                        {data: "users", title: "站4", width: "7%"},
                         {data: "undoneQty", title: "未完成", width: "5%", visible: false},
                         {data: "memo", title: "備註", width: "5%"}
                     ],
@@ -258,16 +258,16 @@
                         },
                         {
                             "type": "html",
-                            "targets": [9, 10],
+                            "targets": [10, 11],
                             'render': function (data, type, full, meta) {
                                 return data == null ? 'n/a' : formatDate(data);
                             }
                         },
                         {
                             "type": "html",
-                            "targets": [11, 12, 13, 14],
+                            "targets": [12, 13, 14, 15],
                             'render': function (data, type, full, meta) {
-                                var col = meta.col % 11;
+                                var col = meta.col % 12;
                                 var arr = data;
                                 if (arr == null) {
                                     return 'n/a';
@@ -285,7 +285,7 @@
                         },
                         {
                             "type": "html",
-                            "targets": [15],
+                            "targets": [9],
                             'render': function (data, type, full, meta) {
                                 var disabled = full.line == null;
                                 return "<input type='number' class='form-control priority' min=1 value='" + (data == null ? 0 : data) + "' " + (disabled ? "disabled" : "") + ">";

@@ -15,6 +15,8 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
 import org.joda.time.Minutes;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,9 +27,9 @@ import org.springframework.util.StopWatch;
  * @author Wei.Cheng
  */
 public class TestClass {
-
+    
     private static final Logger log = LoggerFactory.getLogger(TestClass.class);
-
+    
     List<StopWatch> temp_L = new ArrayList();
 
 //    @Test
@@ -40,7 +42,7 @@ public class TestClass {
     public void testKeywordFilter() throws InterruptedException {
         List<String> keywords = newArrayList("TPC", "T1PC1", "ABCC", "T1PC1331", "DBB");
         String modelName = "TPC1331-2213-ZZ";
-
+        
         String key = keywords.stream()
                 .filter(modelName::contains)
                 .max(Comparator.comparing(String::length)).orElse(null);
@@ -76,7 +78,7 @@ public class TestClass {
     public void testInterval() {
         Interval rest1 = new Interval(new DateTime().withTime(12, 0, 0, 0), new DateTime().withTime(12, 50, 0, 0));
         Interval testRange = new Interval(new DateTime().withTime(9, 40, 2, 983), new DateTime().withTime(17, 8, 38, 470));
-
+        
         System.out.println(testRange.overlaps(rest1));
         Interval overlap = testRange.overlap(rest1);
         System.out.println(
@@ -85,7 +87,7 @@ public class TestClass {
         );
     }
 
-    @Test
+//    @Test
     public void testRegex() {
         String[] strs = {
             "測試",
@@ -99,12 +101,91 @@ public class TestClass {
             "包裝",
             "測試"
         };
-
+        
         for (String str : strs) {
             if (str.matches("(前置|組裝|測試|包裝)")) {
                 System.out.println(str);
             }
         }
     }
+    
+    DateTimeFormatter df = DateTimeFormat.forPattern("yyyy/MM/dd HH:mm:ss");
+    List<Interval> restTimes = newArrayList(new Interval(new DateTime().withTime(15, 30, 0, 0), new DateTime().withTime(15, 45, 0, 0)));
+    
+    @Test
+    public void testDateTime() {
+        DateTime dS = new DateTime().withTime(15, 20, 0, 0);
+        DateTime dE = new DateTime().withTime(15, 25, 0, 0);
+        
+        DateTime dS1 = new DateTime().withTime(15, 20, 0, 0);
+        DateTime dE1 = new DateTime().withTime(15, 35, 0, 0);
+        
+        DateTime dS2 = new DateTime().withTime(15, 20, 0, 0);
+        DateTime dE2 = new DateTime().withTime(15, 50, 0, 0);
+        
+        DateTime dS3 = new DateTime().withTime(15, 40, 0, 0);
+        DateTime dE3 = new DateTime().withTime(15, 42, 0, 0);
+        
+        DateTime dS4 = new DateTime().withTime(15, 40, 0, 0);
+        DateTime dE4 = new DateTime().withTime(15, 55, 0, 0);
+        
+        Interval i = byPassRestTime(new Interval(dS, dE));
+        Interval i1 = byPassRestTime(new Interval(dS1, dE1));
+        Interval i2 = byPassRestTime(new Interval(dS2, dE2));
+        Interval i3 = byPassRestTime(new Interval(dS3, dE3));
+        Interval i4 = byPassRestTime(new Interval(dS4, dE4));
 
+        System.out.printf("Interval 1: %s --- %s\r\n", df.print(i.getStart()), df.print(i.getEnd()));
+        System.out.printf("Interval 2: %s --- %s\r\n", df.print(i1.getStart()), df.print(i1.getEnd()));
+        System.out.printf("Interval 3: %s --- %s\r\n", df.print(i2.getStart()), df.print(i2.getEnd()));
+        System.out.printf("Interval 4: %s --- %s\r\n", df.print(i3.getStart()), df.print(i3.getEnd()));
+        System.out.printf("Interval 5: %s --- %s\r\n", df.print(i4.getStart()), df.print(i4.getEnd()));
+        
+    }
+    
+    private Interval byPassRestTime(Interval i) {
+        for (Interval restTime : restTimes) {
+            int iMin = Minutes.minutesBetween(i.getStart(), i.getEnd()).getMinutes();
+            int restMin = Minutes.minutesBetween(restTime.getStart(), restTime.getEnd()).getMinutes();
+            if (hasOverlap(i, restTime)) {
+                if (isInRestTime(restTime, i.getStart()) && isInRestTime(restTime, i.getEnd())) {
+                    /*
+                        i   |----|
+                        r |--------|   
+                    */
+                    return new Interval(restTime.getEnd(), restTime.getEnd().plusMinutes(iMin));
+                } else if (isInRestTime(restTime, i.getStart()) && !isInRestTime(restTime, i.getEnd())) {
+                    /*
+                        i    |--------|
+                        r |----|   
+                    */
+                    int overlap = Minutes.minutesBetween(i.getStart(), restTime.getEnd()).getMinutes();
+                    return new Interval(restTime.getEnd(), i.getEnd().plusMinutes(overlap));
+                } else if (!isInRestTime(restTime, i.getStart()) && isInRestTime(restTime, i.getEnd())) {
+                    /*
+                        i |----|
+                        r   |--------|   
+                    */
+                    int overlap = Minutes.minutesBetween(restTime.getStart(), i.getEnd()).getMinutes();
+                    return new Interval(i.getStart(), restTime.getEnd().plusMinutes(overlap));
+                } else {
+                    /*
+                        i |--------|
+                        r   |----|   
+                    */
+                    return new Interval(i.getStart(), i.getEnd().plusMinutes(restMin));
+                }
+            }
+        }
+        return i;
+    }
+
+    private boolean hasOverlap(Interval t1, Interval t2) {
+        return !t1.getEnd().isBefore(t2.getStart()) && !t1.getStart().isAfter(t2.getEnd());
+    }
+
+    private boolean isInRestTime(Interval rest, DateTime d) {
+        return rest.getStart().compareTo(d) * d.compareTo(rest.getEnd()) >= 0;
+    }
+    
 }

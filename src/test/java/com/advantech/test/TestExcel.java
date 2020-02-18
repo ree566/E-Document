@@ -5,6 +5,7 @@
  */
 package com.advantech.test;
 
+import com.advantech.helper.ExampleEventUserModel;
 import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.model.Bab;
 import com.advantech.model.BabStatus;
@@ -12,6 +13,7 @@ import com.advantech.model.Floor;
 import com.advantech.model.FqcModelStandardTime;
 import com.advantech.model.LineType;
 import com.advantech.model.PrepareSchedule;
+import com.monitorjbl.xlsx.StreamingReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -197,7 +199,7 @@ public class TestExcel {
         }
     }
 
-    @Test
+//    @Test
     @Transactional
     @Rollback(false)
     public void testReadExcel2() throws Exception {
@@ -263,7 +265,7 @@ public class TestExcel {
                                     p.setOnBoardDate(d.toDate());
                                     p.setFloor(f);
 //                            prepareSchedules.add(p);
-                                    session.save(p);
+//                                    session.save(p);
                                 }
                             }
                         }
@@ -310,4 +312,36 @@ public class TestExcel {
         return patchColumn;
     }
 
+    @Test
+    public void testStreamReader() throws Exception {
+        InputStream is = new FileInputStream(new File("C:\\Users\\wei.cheng\\Desktop\\excel_test\\APS 5F 組裝排程.xlsx"));
+        Workbook workbook = StreamingReader.builder()
+                .password("234")
+                .rowCacheSize(100) // number of rows to keep in memory (defaults to 10)
+                .bufferSize(4096) // buffer size to use when reading InputStream to file (defaults to 1024)
+                .open(is);            // InputStream or File for XLSX file (required)
+
+        Sheet sheet = workbook.getSheet(5 + "F--前置&組裝");
+        
+//        for (Sheet sheet : workbook) {
+//            System.out.println(sheet.getSheetName());
+            for (Row r : sheet) {
+                for (Cell c : r) {
+                    System.out.println(c.getStringCellValue());
+                }
+            }
+//        }
+    }
+    
+//    @Test
+    public void testExampleEventUserModel() throws Exception {
+        ExampleEventUserModel example = new ExampleEventUserModel();
+
+        String filePath = "‪C:\\Users\\wei.cheng\\Desktop\\excel_test\\活頁簿1.xlsx";
+
+//        example.processOneSheet(filePath);
+//        example.processAllSheets(filePath);
+        Workbook workbook = WorkbookFactory.create(new File(filePath));
+        workbook.close();
+    }
 }

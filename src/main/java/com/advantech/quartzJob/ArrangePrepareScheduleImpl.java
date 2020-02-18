@@ -3,18 +3,19 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.advantech.service;
+package com.advantech.quartzJob;
 
-import com.advantech.dao.BabSettingHistoryDAO;
-import com.advantech.dao.LineDAO;
-import com.advantech.dao.LineUserReferenceDAO;
-import com.advantech.model.PrepareSchedule;
-import com.advantech.dao.PrepareScheduleDAO;
 import com.advantech.model.BabSettingHistory;
 import com.advantech.model.Floor;
 import com.advantech.model.Line;
 import com.advantech.model.LineUserReference;
+import com.advantech.model.PrepareSchedule;
 import com.advantech.model.User;
+import com.advantech.service.BabSettingHistoryService;
+import com.advantech.service.FloorService;
+import com.advantech.service.LineService;
+import com.advantech.service.LineUserReferenceService;
+import com.advantech.service.PrepareScheduleService;
 import static com.google.common.collect.Lists.newArrayList;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -29,35 +30,41 @@ import static java.util.stream.Collectors.mapping;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import java.util.stream.IntStream;
-import org.apache.commons.lang3.SerializationUtils;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
 import org.joda.time.Minutes;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.springframework.transaction.annotation.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
  * @author Wei.Cheng
  */
-@Service
+@Component
 @Transactional
-public class PrepareScheduleService1 {
+public class ArrangePrepareScheduleImpl {
+
+    private static final Logger logger = LoggerFactory.getLogger(ArrangePrepareScheduleImpl.class);
 
     @Autowired
-    private PrepareScheduleDAO dao;
+    private FloorService floorService;
+    
+    @Autowired
+    private PrepareScheduleService psService;
 
     @Autowired
-    private LineUserReferenceDAO lineUserRefDAO;
+    private LineUserReferenceService lineUserRefService;
 
     @Autowired
-    private LineDAO lineDAO;
+    private LineService lineService;
 
     @Autowired
-    private BabSettingHistoryDAO settingHistoryDAO;
+    private BabSettingHistoryService settingHistoryService;
 
     private List<Interval> restTimes;
     private DateTime scheduleStartTime;
@@ -67,12 +74,26 @@ public class PrepareScheduleService1 {
 
     Line emptyLine;
 
-    public List<PrepareSchedule> findAll() {
-        return dao.findAll();
+    public void execute() throws Exception {
+        this.execute(new DateTime());
     }
 
-    public PrepareSchedule findByPrimaryKey(Object obj_id) {
-        return dao.findByPrimaryKey(obj_id);
+    public void execute(DateTime d) throws Exception {
+        d = d.withTime(0, 0, 0, 0);
+
+        List<Floor> floors = floorService.findAll();
+        floors = floors.stream()
+                .filter(f -> f.getId() == 1 || f.getId() == 2)
+                .collect(toList());
+
+        for (Floor f : floors) {
+            List<PrepareSchedule> ps = this.findPrepareSchedule(f, d);
+            ps.forEach((p) -> {
+                psService.update(p);
+            });
+        }
+
+        logger.info("Update prepareSchedule finish");
     }
 
     public List<PrepareSchedule> findPrepareSchedule(Floor f, DateTime d) {
@@ -91,10 +112,10 @@ public class PrepareScheduleService1 {
 
         updateDateParamater(d);
 
-        List<Line> lines = lineDAO.findBySitefloorAndLineType(f.getName(), 1);
-        List<Line> cellLines = lineDAO.findBySitefloorAndLineType(f.getName(), 2);
+        List<Line> lines = lineService.findBySitefloorAndLineType(f.getName(), 1);
+        List<Line> cellLines = lineService.findBySitefloorAndLineType(f.getName(), 2);
 
-        List<PrepareSchedule> l = dao.findByFloorAndDate(f, d);
+        List<PrepareSchedule> l = psService.findByFloorAndDate(f, d);
 
         List<PrepareSchedule> noneCellableSchedules = l.stream()
                 .filter(p -> p.getTimeCost().compareTo(new BigDecimal(100)) >= 0)
@@ -108,10 +129,10 @@ public class PrepareScheduleService1 {
                 .sorted(comparing(PrepareSchedule::getTimeCost).reversed())
                 .collect(toList());
 
-        List<LineUserReference> users = lineUserRefDAO.findByLinesAndDate(lines, d);
-        List<LineUserReference> cellUsers = lineUserRefDAO.findByLinesAndDate(cellLines, d);
+        List<LineUserReference> users = lineUserRefService.findByLinesAndDate(lines, d);
+        List<LineUserReference> cellUsers = lineUserRefService.findByLinesAndDate(cellLines, d);
 
-        emptyLine = lineDAO.findByPrimaryKey(7);
+        emptyLine = lineService.findByPrimaryKey(7);
 
         List<PrepareSchedule> result = new ArrayList();
         if (!noneCellableSchedules.isEmpty()) {
@@ -126,7 +147,7 @@ public class PrepareScheduleService1 {
     private void updateDateParamater(DateTime d) {
         scheduleStartTime = new DateTime(d).withTime(8, 30, 0, 0);
 //        scheduleEndTime = new DateTime(d).withTime(21, 0, 0, 0);
-        scheduleEndTime = new DateTime(d).withTime(23, 59, 59, 0);
+        scheduleEndTime = new DateTime(d).withTime(20, 0, 0, 0);
 
         restTimes = newArrayList(
                 new Interval(new DateTime(d).withTime(12, 0, 0, 0), new DateTime(d).withTime(12, 50, 0, 0)),
@@ -140,7 +161,7 @@ public class PrepareScheduleService1 {
 
         //Find modelName fit in settings
         List<String> modelNames = l.stream().map(s -> s.getModelName()).collect(toList());
-        List<BabSettingHistory> settings = settingHistoryDAO.findByBabModelNames(modelNames);
+        List<BabSettingHistory> settings = settingHistoryService.findByBabModelNames(modelNames);
 
         //Find jobnumber fit in settings
 //        List<BabSettingHistory> jSettings = settings.stream().filter(s -> {
@@ -300,12 +321,36 @@ public class PrepareScheduleService1 {
 
     private Interval byPassRestTime(Interval i) {
         for (Interval restTime : restTimes) {
+            int iMin = Minutes.minutesBetween(i.getStart(), i.getEnd()).getMinutes();
             int restMin = Minutes.minutesBetween(restTime.getStart(), restTime.getEnd()).getMinutes();
-            if (isInRestTime(restTime, i.getStart())) {
-                return new Interval(restTime.getStart(), restTime.getStart().plusMinutes(restMin));
-            }
             if (hasOverlap(i, restTime)) {
-                return new Interval(i.getStart(), i.getEnd().plusMinutes(restMin));
+                if (isInRestTime(restTime, i.getStart()) && isInRestTime(restTime, i.getEnd())) {
+                    /*
+                        i   |----|
+                        r |--------|   
+                    */
+                    return new Interval(restTime.getEnd(), restTime.getEnd().plusMinutes(iMin));
+                } else if (isInRestTime(restTime, i.getStart()) && !isInRestTime(restTime, i.getEnd())) {
+                    /*
+                        i    |--------|
+                        r |----|   
+                    */
+                    int overlap = Minutes.minutesBetween(i.getStart(), restTime.getEnd()).getMinutes();
+                    return new Interval(restTime.getEnd(), i.getEnd().plusMinutes(overlap));
+                } else if (!isInRestTime(restTime, i.getStart()) && isInRestTime(restTime, i.getEnd())) {
+                    /*
+                        i |----|
+                        r   |--------|   
+                    */
+                    int overlap = Minutes.minutesBetween(restTime.getStart(), i.getEnd()).getMinutes();
+                    return new Interval(i.getStart(), restTime.getEnd().plusMinutes(overlap));
+                } else {
+                    /*
+                        i |--------|
+                        r   |----|   
+                    */
+                    return new Interval(i.getStart(), i.getEnd().plusMinutes(restMin));
+                }
             }
         }
         return i;
@@ -317,51 +362,6 @@ public class PrepareScheduleService1 {
 
     private boolean isInRestTime(Interval rest, DateTime d) {
         return rest.getStart().compareTo(d) * d.compareTo(rest.getEnd()) >= 0;
-    }
-
-    public int separateCnt(PrepareSchedule pojo, List<Integer> cnt) {
-        int rowCnt = 0;
-        int baseCnt = pojo.getScheduleQty();
-        BigDecimal baseTimeCost = pojo.getTimeCost();
-
-        Integer sum = cnt.stream().reduce(0, Integer::sum);
-        if (baseCnt - sum > 0) {
-            cnt.add(baseCnt - sum);
-        } else if (sum > baseCnt) {
-            return 1;
-        }
-
-        for (int c : cnt) {
-            if (rowCnt++ == 0) {
-                pojo.setScheduleQty(c);
-                pojo.setTimeCost(baseTimeCost.divide(new BigDecimal(baseCnt), 2, BigDecimal.ROUND_UP)
-                        .multiply(new BigDecimal(c))
-                        .setScale(2, BigDecimal.ROUND_UP));
-                dao.update(pojo);
-            } else {
-                PrepareSchedule clone = SerializationUtils.clone(pojo);
-                clone.setId(0);
-                clone.setScheduleQty(c);
-                clone.setTimeCost(baseTimeCost.divide(new BigDecimal(baseCnt), 2, BigDecimal.ROUND_UP)
-                        .multiply(new BigDecimal(c))
-                        .setScale(2, BigDecimal.ROUND_UP));
-                dao.insert(clone);
-            }
-        }
-
-        return 1;
-    }
-
-    public int insert(PrepareSchedule pojo) {
-        return dao.insert(pojo);
-    }
-
-    public int update(PrepareSchedule pojo) {
-        return dao.update(pojo);
-    }
-
-    public int delete(PrepareSchedule pojo) {
-        return dao.delete(pojo);
     }
 
 }

@@ -312,7 +312,7 @@
                     type: "GET",
                     url: "<c:url value="/LineUserReferenceController/findUserByRole" />",
                     data: {
-                        userRole: "ASSY"
+                        userRole: ["PREASSY", "ASSY"]
                     },
                     dataType: "json",
                     async: false,

@@ -17,9 +17,11 @@ import com.advantech.model.User;
 import com.advantech.model.UserProfile;
 import com.advantech.model.view.UserInfoRemote;
 import com.advantech.security.State;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import static java.util.stream.Collectors.toList;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,34 +56,37 @@ public class SyncUserFromRemote {
     @Autowired
     private UserProfileDAO userProfileDAO;
 
+    private List<UserProfile> userProfiles;
+
     public void execute() throws Exception {
         List<UserInfoRemote> l = sqlViewDAO.findUserInfoRemote();
-        List<UserInfoRemote> remoteAssyUser = l.stream()
-                .filter(ur -> (ur.getDepartment().matches("(前置|組裝|測試|包裝)")) && ur.getDep1().contains("東湖"))
+        List<UserInfoRemote> remoteDirectUser = l.stream()
+                .filter(ur -> (ur.getDepartment().matches("(前置|組裝|測試|包裝)"))
+                && ur.getDep1().contains("東湖"))
                 .collect(toList());
 
-        List<User> assyUser = userDAO.findByRole("ASSY_USER");
+        List<User> users = userDAO.findAll();
 
         List<Floor> floors = floorDAO.findAll();
 
         Unit mfg = unitDAO.findByPrimaryKey(1);
 
-        UserProfile preAssyRole = userProfileDAO.findByPrimaryKey(19);
-        UserProfile assyRole = userProfileDAO.findByPrimaryKey(14);
-        UserProfile pkgRole = userProfileDAO.findByPrimaryKey(15);
-        UserProfile testRole = userProfileDAO.findByPrimaryKey(16);
+        userProfiles = userProfileDAO.findAll();
 
         //Compare which jobnumber is new and which number is old
-        if (!remoteAssyUser.isEmpty() && !assyUser.isEmpty()) {
+        //沒在User_Profile_REF的User會被insert進去
+        if (!remoteDirectUser.isEmpty() && !users.isEmpty()) {
 
-            remoteAssyUser.forEach(ru -> {
-                User matchesUser = assyUser.stream()
+            remoteDirectUser.forEach(ru -> {
+                User matchesUser = users.stream()
                         .filter(a -> a.getJobnumber().equals(ru.getJobnumber()))
                         .findFirst()
                         .orElse(null);
 
                 if (matchesUser == null) {
                     //insert new one
+                    User userWithoutRole = userDAO.findByJobnumber(ru.getJobnumber());
+
                     Floor floor = floors.stream()
                             .filter(f -> f.getName().equals(ru.getSitefloor()))
                             .findFirst()
@@ -98,42 +103,62 @@ public class SyncUserFromRemote {
                         user.setFloor(floor);
                         user.setUnit(mfg);
 
+                        setUserProfle(user, ru.getDepartment());
+
                         userDAO.insert(user);
+                        System.out.println("insert" + " " + ru.getJobnumber());
                     }
                 } else {
                     //Find user's department is matches or not
                     //if not match, update department
-                    Set<UserProfile> roles = matchesUser.getUserProfiles();
-                    roles.remove(preAssyRole);
-                    roles.remove(assyRole);
-                    roles.remove(testRole);
-                    roles.remove(pkgRole);
+                    setUserProfle(matchesUser, ru.getDepartment());
+                    
+                    matchesUser.setUsername(ru.getName());
+                    matchesUser.setUsernameCh(ru.getName());
 
-                    switch (ru.getDepartment()) {
-                        case "前置":
-                            roles.add(preAssyRole);
-                            break;
-                        case "組裝":
-                            roles.add(assyRole);
-                            break;
-                        case "測試":
-                            roles.add(testRole);
-                            break;
-                        case "包裝":
-                            roles.add(pkgRole);
-                            break;
-                        default:
-                            break;
-                    }
-
-                    matchesUser.setUserProfiles(roles);
-
-                    matchesUser.setState("1".equals(ru.getActive()) ? State.ACTIVE : State.DELETED);
+                    matchesUser.setState("1".equals(ru.getActive()) && isDateInRecent(ru.getLastUpdateTime()) ? State.ACTIVE : State.DELETED);
                     userDAO.update(matchesUser);
+                    System.out.println("update" + " " + ru.getJobnumber());
                 }
             });
         }
+    }
 
+    private void setUserProfle(User user, String department) {
+        UserProfile preAssyRole = userProfiles.stream().filter(p -> p.getId() == 19).findFirst().orElse(null);
+        UserProfile assyRole = userProfiles.stream().filter(p -> p.getId() == 14).findFirst().orElse(null);
+        UserProfile pkgRole = userProfiles.stream().filter(p -> p.getId() == 15).findFirst().orElse(null);
+        UserProfile testRole = userProfiles.stream().filter(p -> p.getId() == 16).findFirst().orElse(null);
+
+        Set<UserProfile> roles = user.getUserProfiles();
+        roles.remove(preAssyRole);
+        roles.remove(assyRole);
+        roles.remove(testRole);
+        roles.remove(pkgRole);
+//"ASSY_USER", "PREASSY_USER", "PACKING_USER"
+
+        switch (department) {
+            case "前置":
+                roles.add(preAssyRole);
+                break;
+            case "組裝":
+                roles.add(assyRole);
+                break;
+            case "測試":
+                roles.add(testRole);
+                break;
+            case "包裝":
+                roles.add(pkgRole);
+                break;
+            default:
+                break;
+        }
+
+        user.setUserProfiles(roles);
+    }
+
+    private boolean isDateInRecent(Date d) {
+        return new DateTime(d).isAfter(new DateTime().minusDays(7));
     }
 
 }

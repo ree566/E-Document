@@ -42,7 +42,7 @@ public class SyncPrepareSchedule {
     private SessionFactory sessionFactory;
 
     @Autowired
-    private ArrangePrepareSchedule aps;
+    private ArrangePrepareScheduleImpl aps;
 
     public void execute() throws Exception {
         DateTime d = new DateTime();

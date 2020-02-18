@@ -7,6 +7,7 @@ package com.advantech.dao;
 
 import com.advantech.model.Floor;
 import com.advantech.model.User;
+import com.advantech.security.State;
 import java.util.List;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Order;
@@ -75,25 +76,34 @@ public class UserDAO extends AbstractDao<Integer, User> implements BasicDAO_1<Us
                 .setParameter("notification_id", notification_name)
                 .list();
     }
-    
+
     public List<User> findByFloor(Floor f) {
         return super.createEntityCriteria()
                 .add(Restrictions.eq("floor", f))
                 .list();
     }
-    
-    public List<User> findByRole(String roleName) {
+
+    public List<User> findByRole(String... roleName) {
         return super.createEntityCriteria()
                 .createAlias("userProfiles", "up")
-                .add(Restrictions.eq("up.name", roleName))
+                .add(Restrictions.in("up.name", roleName))
+                .add(Restrictions.eq("state", State.ACTIVE))
                 .list();
     }
-    
-    public List<User> findByFloorAndRole(Floor f, String roleName) {
+
+    public List<User> findByFloorAndRole(Floor f, String... roleName) {
         return super.createEntityCriteria()
                 .createAlias("userProfiles", "up")
                 .add(Restrictions.eq("floor", f))
-                .add(Restrictions.eq("up.name", roleName))
+                .add(Restrictions.in("up.name", roleName))
+                .add(Restrictions.eq("state", State.ACTIVE))
+                .addOrder(Order.asc("usernameCh"))
+                .list();
+    }
+
+    public List<User> findByState(State state) {
+        return super.createEntityCriteria()
+                .add(Restrictions.eq("state", state))
                 .addOrder(Order.asc("usernameCh"))
                 .list();
     }

@@ -6,7 +6,7 @@
 package com.advantech.test;
 
 import com.advantech.helper.HibernateObjectPrinter;
-import com.advantech.quartzJob.ArrangePrepareSchedule;
+import com.advantech.quartzJob.ArrangePrepareScheduleImpl;
 import com.advantech.quartzJob.CleanSensorData;
 import com.advantech.quartzJob.CountermeasureAlarm;
 import com.advantech.quartzJob.HandleUncloseBab;
@@ -19,6 +19,7 @@ import com.advantech.quartzJob.SyncTestPassStationData;
 import com.advantech.quartzJob.SyncUserFromRemote;
 import com.advantech.quartzJob.TestLineTypeRecord;
 import com.advantech.quartzJob.TestLineTypeRecordUnrepliedAlarm;
+import com.advantech.helper.XLSX2CSV;
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -101,13 +102,13 @@ public class TestQuartzJobs {
     private SyncPrepareSchedule sps;
     
     @Autowired
-    private ArrangePrepareSchedule aps;
+    private ArrangePrepareScheduleImpl aps;
     
     @Test
     public void testSyncPrepareSchedule1() throws Exception {
         //先設定好當日出勤名單, 才會給予字動排站
-        DateTime d = new DateTime("2020-02-07");
-        sps.execute(d);
+        DateTime d = new DateTime("2020-02-18");
+//        sps.execute(d);
         aps.execute(d);
     }
     
@@ -117,7 +118,7 @@ public class TestQuartzJobs {
 //    @Test
     public void testSyncLineUserReference() throws Exception {
 
-        DateTime d3 = new DateTime("2020-02-03");
+        DateTime d3 = new DateTime("2020-02-14");
         sur.execute(d3);
     }
     

@@ -10,6 +10,7 @@ import com.advantech.helper.SecurityPropertiesUtils;
 import com.advantech.model.Floor;
 import com.advantech.model.PrepareSchedule;
 import com.advantech.model.User;
+import com.advantech.quartzJob.ArrangePrepareSchedule1Impl;
 import com.advantech.service.FloorService;
 import com.advantech.service.PrepareScheduleService;
 import static com.google.common.base.Preconditions.checkState;
@@ -39,6 +40,9 @@ public class PrepareScheduleController {
 
     @Autowired
     private FloorService floorService;
+    
+    @Autowired
+    private ArrangePrepareSchedule1Impl aps1;
 
     @RequestMapping(value = "/findPrepareSchedule", method = {RequestMethod.GET})
     @ResponseBody
@@ -62,7 +66,7 @@ public class PrepareScheduleController {
             f = user.getFloor();
         }
 
-        List l = wService.findPrepareSchedule(f, d);
+        List l = aps1.findPrepareSchedule(f, d);
         return new DataTableResponse(l);
     }
 

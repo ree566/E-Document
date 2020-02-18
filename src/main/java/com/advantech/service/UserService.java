@@ -8,6 +8,7 @@ package com.advantech.service;
 import com.advantech.dao.UserDAO;
 import com.advantech.model.Floor;
 import com.advantech.model.User;
+import com.advantech.security.State;
 import java.util.List;
 import org.hibernate.Hibernate;
 import org.springframework.transaction.annotation.Transactional;
@@ -71,8 +72,16 @@ public class UserService {
         return userDAO.findByFloor(f);
     }
 
-    public List<User> findByFloorAndRole(Floor f, String roleName) {
+    public List<User> findByRole(String... roleName) {
+        return userDAO.findByRole(roleName);
+    }
+
+    public List<User> findByFloorAndRole(Floor f, String... roleName) {
         return userDAO.findByFloorAndRole(f, roleName);
+    }
+
+    public List<User> findByState(State state) {
+        return userDAO.findByState(state);
     }
 
     public int insert(User pojo) {

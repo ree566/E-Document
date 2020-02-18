@@ -207,6 +207,10 @@ public class BabService {
         return gapDetailsSum;
     }
 
+    public List<Bab> findByModelNames(List<String> modelNames) {
+        return babDAO.findByModelNames(modelNames);
+    }
+
     public List<Interval> searchGaps(List<Bab> l, DateTime startTimeOfDay, DateTime endTimeOfDay) {
 
         //Turn startDate & endDate into Interval object
@@ -232,7 +236,7 @@ public class BabService {
         DateTime sT = t.withTime(8, 30, 0, 0);
         DateTime eT = t.withTime(17, 30, 0, 0);
         return b.getBabStatus() == BabStatus.UNFINSHED
-                || (b.getIspre() == 0 && b.getBabStatus() == BabStatus.NO_RECORD) 
+                || (b.getIspre() == 0 && b.getBabStatus() == BabStatus.NO_RECORD)
                 || !new Interval(sT, eT).contains(t);
     }
 

@@ -5,14 +5,19 @@
  */
 package com.advantech.model.view;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.io.Serializable;
+import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import org.hibernate.annotations.Immutable;
+import org.springframework.format.annotation.DateTimeFormat;
 
 /**
  *
@@ -29,6 +34,7 @@ public class UserInfoRemote implements Serializable {
     private String department;
     private String dep1;
     private String active;
+    private Date lastUpdateTime;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -84,6 +90,18 @@ public class UserInfoRemote implements Serializable {
 
     public void setActive(String active) {
         this.active = active;
+    }
+
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    @JsonFormat(pattern = "yyyy-MM-dd'T'kk:mm:ss.SSS'Z'", timezone = "GMT+8")
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "Up_Time", length = 23, insertable = false, updatable = false)
+    public Date getLastUpdateTime() {
+        return lastUpdateTime;
+    }
+
+    public void setLastUpdateTime(Date lastUpdateTime) {
+        this.lastUpdateTime = lastUpdateTime;
     }
 
 }

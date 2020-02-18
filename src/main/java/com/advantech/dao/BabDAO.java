@@ -160,6 +160,12 @@ public class BabDAO extends AbstractDao<Integer, Bab> implements BasicDAO_1<Bab>
         return (Bab) q.uniqueResult();
     }
 
+    public List<Bab> findByModelNames(List<String> modelNames) {
+        return super.createEntityCriteria()
+                .add(Restrictions.in("modelName", modelNames))
+                .list();
+    }
+
     @Override
     public int insert(Bab pojo) {
         this.getSession().save(pojo);

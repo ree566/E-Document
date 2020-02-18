@@ -5,12 +5,14 @@
  */
 package com.advantech.quartzJob;
 
+import com.advantech.model.Bab;
 import com.advantech.model.BabSettingHistory;
 import com.advantech.model.Floor;
 import com.advantech.model.Line;
 import com.advantech.model.LineUserReference;
 import com.advantech.model.PrepareSchedule;
 import com.advantech.model.User;
+import com.advantech.service.BabService;
 import com.advantech.service.BabSettingHistoryService;
 import com.advantech.service.FloorService;
 import com.advantech.service.LineService;
@@ -25,11 +27,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.mapping;
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
-import java.util.stream.IntStream;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
 import org.joda.time.Minutes;
@@ -47,13 +47,13 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Component
 @Transactional
-public abstract class ArrangePrepareSchedule {
+public class ArrangePrepareScheduleImpl2 {
 
-    private static final Logger logger = LoggerFactory.getLogger(ArrangePrepareSchedule.class);
+    private static final Logger logger = LoggerFactory.getLogger(ArrangePrepareScheduleImpl2.class);
 
     @Autowired
     private FloorService floorService;
-    
+
     @Autowired
     private PrepareScheduleService psService;
 
@@ -65,6 +65,9 @@ public abstract class ArrangePrepareSchedule {
 
     @Autowired
     private BabSettingHistoryService settingHistoryService;
+
+    @Autowired
+    private BabService babService;
 
     private List<Interval> restTimes;
     private DateTime scheduleStartTime;
@@ -161,7 +164,6 @@ public abstract class ArrangePrepareSchedule {
 
         //Find modelName fit in settings
         List<String> modelNames = l.stream().map(s -> s.getModelName()).collect(toList());
-        List<BabSettingHistory> settings = settingHistoryService.findByBabModelNames(modelNames);
 
         //Find jobnumber fit in settings
 //        List<BabSettingHistory> jSettings = settings.stream().filter(s -> {
@@ -170,13 +172,6 @@ public abstract class ArrangePrepareSchedule {
 //                    .findFirst().orElse(null);
 //            return fitSettings != null;
 //        }).collect(toList());
-        List<BabSettingHistory> jSettings = settings.stream().filter(s -> {
-            LineUserReference fitSettings = users.stream()
-                    .filter(fw -> fw.getUser().getJobnumber().equals(s.getJobnumber()))
-                    .findFirst().orElse(null);
-            return fitSettings != null;
-        }).collect(toList());
-
         Map<Line, List<PrepareSchedule>> result = new HashMap();
         List<Line> lines = users.stream().map(u -> u.getLine()).distinct().collect(toList());
         lines = lines.stream().sorted(comparing(Line::getName)).collect(toList());
@@ -188,27 +183,27 @@ public abstract class ArrangePrepareSchedule {
 
         result.put(emptyLine, new ArrayList());
 
-        for (PrepareSchedule s : l) {
-//            HibernateObjectPrinter.print(s);
+        List<Bab> babs = babService.findByModelNames(modelNames);
+        Map<String, Map<Line, Long>> modelUsageHistory = babs.stream()
+                .collect(groupingBy(Bab::getModelName,
+                        Collectors.groupingBy(Bab::getLine,
+                                Collectors.mapping(Bab::getId,
+                                        Collectors.counting()))));
 
-            String modelName = s.getModelName();
-            List<BabSettingHistory> modelNameFitSetting = jSettings.stream()
-                    .filter(bsh -> bsh.getBab().getModelName().equals(modelName))
-                    .collect(toList());
+        l.forEach((s) -> {
+            //            HibernateObjectPrinter.print(s);
 
-            //jSettings group by line & find max number of model experience
-            //Map<Line, Integer cnt of users>
-            Map<Line, List<Boolean>> historyFitUserSetting = users.stream()
-                    .collect(groupingBy(x -> x.getLine(), mapping(f -> {
-                        BabSettingHistory obj = modelNameFitSetting.stream()
-                                .filter(bsh -> bsh.getJobnumber().equals(f.getUser().getJobnumber()))
-                                .findFirst().orElse(null);
-                        return obj != null;
-                    }, toList())));
+            Map<Line, Long> modelNameFitHistory = modelUsageHistory.get(s.getModelName());
+
+            if (modelNameFitHistory == null || modelNameFitHistory.isEmpty()) {
+                //Set the schedule to the first order line(order by name)
+            } else {
+                //Find best setting which with the maxinum counting
+            }
 
             //Check line to add schedule(must schedule time and before 21:30)
-            findFitLineSetting(s, historyFitUserSetting, result, new ArrayList());
-        }
+            findFitLineSetting(s, users, modelNameFitHistory, result, new ArrayList());
+        });
 
         List<PrepareSchedule> result2 = new ArrayList();
 
@@ -232,9 +227,9 @@ public abstract class ArrangePrepareSchedule {
         return result2;
     }
 
-    private void findFitLineSetting(PrepareSchedule currentSchedule, Map<Line, List<Boolean>> lineUserSetting, Map<Line, List<PrepareSchedule>> result, List<Line> removeLine) {
+    private void findFitLineSetting(PrepareSchedule currentSchedule, List<LineUserReference> users, Map<Line, Long> lineUserSetting, Map<Line, List<PrepareSchedule>> result, List<Line> removeLine) {
 
-        Map<Line, List<Boolean>> settingClone = new HashMap(lineUserSetting);
+        Map<Line, Long> settingClone = new HashMap(lineUserSetting);
 
         removeLine.forEach((line) -> {
             settingClone.remove(line);
@@ -253,10 +248,8 @@ public abstract class ArrangePrepareSchedule {
         //Find best line setting
         Line line = settingClone.entrySet()
                 .stream()
-                .max((Map.Entry<Line, List<Boolean>> e1, Map.Entry<Line, List<Boolean>> e2) -> {
-                    int v1 = e1.getValue().stream().mapToInt(b -> b == true ? 1 : 0).sum();
-                    int v2 = e2.getValue().stream().mapToInt(b -> b == true ? 1 : 0).sum();
-                    int c1 = Integer.compare(v1, v2);
+                .max((Map.Entry<Line, Long> e1, Map.Entry<Line, Long> e2) -> {
+                    int c1 = Long.compare(e1.getValue(), e2.getValue());
                     if (c1 != 0) {
                         return c1;
                     } else {
@@ -272,14 +265,10 @@ public abstract class ArrangePrepareSchedule {
 
         //Test and check last schedule time
         List<PrepareSchedule> lineSchedule = result.get(line);
-        int usersCnt = lineUserSetting.get(line).size();
+        int usersCnt = (int) users.stream().filter(u -> u.getLine().getId() == line.getId()).count();
         List<PrepareSchedule> testScheduleList = newArrayList(lineSchedule);
-        List<Boolean> fitStatus = lineUserSetting.get(line);
-        Map<Integer, Boolean> fitStatusMap = IntStream.range(0, fitStatus.size())
-                .boxed()
-                .collect(toMap(i -> i, fitStatus::get));
         currentSchedule.setLine(line);
-        currentSchedule.setOtherInfo(fitStatusMap);
+
         testScheduleList.add(currentSchedule);
         testScheduleList = scheduleTime(usersCnt, testScheduleList);
 
@@ -287,7 +276,7 @@ public abstract class ArrangePrepareSchedule {
         Date lastScheduleDate = testScheduleList.get(testScheduleList.size() - 1).getEndDate();
         if (new DateTime(lastScheduleDate).isAfter(scheduleEndTime)) {
             removeLine.add(line);
-            findFitLineSetting(currentSchedule, lineUserSetting, result, removeLine);
+            findFitLineSetting(currentSchedule, users, lineUserSetting, result, removeLine);
         } else {
             result.replace(line, testScheduleList);
         }
