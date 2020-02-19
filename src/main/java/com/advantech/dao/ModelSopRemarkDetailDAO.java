@@ -30,7 +30,7 @@ public class ModelSopRemarkDetailDAO extends AbstractDao<Integer, ModelSopRemark
     public List<ModelSopRemarkDetail> findByModelAndPeople(String modelName, int people) {
         //Model's sop may be multiple.
 
-        return super.getSession().createSQLQuery("{CALL usp_GetModelSopRemarkDetail(:modelName, :people)}")
+        return super.getSession().createSQLQuery("{CALL {h-schema}usp_GetModelSopRemarkDetail(:modelName, :people)}")
                 .addEntity("d", ModelSopRemarkDetail.class)
                 .setParameter("modelName", modelName)
                 .setParameter("people", people)

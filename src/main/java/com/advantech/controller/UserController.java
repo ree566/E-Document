@@ -65,8 +65,8 @@ public class UserController {
 
     private boolean isUserExist(String jobnumber) {
         //change the sql query(password not check)
-        UserInfoRemote i = sqlViewService.findUserInfoRemote(jobnumber);
-        return !(i == null);
+        User user = userService.findByJobnumber(jobnumber);
+        return user != null;
     }
 
     @RequestMapping(value = "/updatePassword", method = {RequestMethod.POST})

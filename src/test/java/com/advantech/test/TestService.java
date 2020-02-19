@@ -123,7 +123,7 @@ public class TestService {
         new HandleUncloseBab().executeInternal(null);
     }
 
-//    @Test
+    @Test
     @Transactional
     @Rollback(true)
     public void testBabSettingHistoryService() {
@@ -355,7 +355,7 @@ public class TestService {
     @Autowired
     private FloorService floorService;
 
-    @Test
+//    @Test
     @Transactional
     @Rollback(true)
     public void testGroupBy() {
@@ -385,6 +385,15 @@ public class TestService {
 //            HibernateObjectPrinter.print(historyFitUserSetting);
 //            break;
 //        }
+    }
+    
+//    @Test
+    public void testUserRole(){
+        List<User> users = userService.findByRole("ASSY_USER");
+        
+        assertTrue(!users.isEmpty());
+        
+        HibernateObjectPrinter.print(users.get(0));
     }
 
 }

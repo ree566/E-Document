@@ -125,7 +125,7 @@ public class User implements java.io.Serializable, UserDetails {
         this.jobnumber = jobnumber;
     }
 
-    @Column(name = "password", length = 50)
+    @Column(name = "[password]", length = 50)
     @Override
     public String getPassword() {
         return this.password;
@@ -135,7 +135,7 @@ public class User implements java.io.Serializable, UserDetails {
         this.password = password;
     }
 
-    @Column(name = "name", length = 50)
+    @Column(name = "[name]", length = 50)
     @Override
     public String getUsername() {
         return this.username;
@@ -214,7 +214,7 @@ public class User implements java.io.Serializable, UserDetails {
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "User_Profile_REF", joinColumns = {
-        @JoinColumn(name = "user_id", nullable = false, insertable = false, updatable = false)}, inverseJoinColumns = {
+        @JoinColumn(name = "[user_id]", nullable = false, insertable = false, updatable = false)}, inverseJoinColumns = {
         @JoinColumn(name = "user_profile_id", nullable = false, insertable = false, updatable = false)})
     public Set<UserProfile> getUserProfiles() {
         return this.userProfiles;
@@ -226,7 +226,7 @@ public class User implements java.io.Serializable, UserDetails {
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "User_Notification_REF", joinColumns = {
-        @JoinColumn(name = "user_id", nullable = false, insertable = false, updatable = false)}, inverseJoinColumns = {
+        @JoinColumn(name = "[user_id]", nullable = false, insertable = false, updatable = false)}, inverseJoinColumns = {
         @JoinColumn(name = "user_notification_id", nullable = false, insertable = false, updatable = false)})
     public Set<UserNotification> getUserNotifications() {
         return this.userNotifications;

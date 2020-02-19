@@ -30,7 +30,7 @@ public class SqlViewDAO extends AbstractDao<Integer, Object> {
 
     public List<BabAvg> findBabAvg(int bab_id) {
         return super.getSession()
-                .createSQLQuery("select * from tbfn_BabAvg(:bab_id)")
+                .createSQLQuery("select * from {h-schema}tbfn_BabAvg(:bab_id)")
                 .addScalar("bab_id", StandardBasicTypes.INTEGER)
                 .addScalar("station", StandardBasicTypes.INTEGER)
                 .addScalar("average", StandardBasicTypes.DOUBLE)
@@ -41,7 +41,7 @@ public class SqlViewDAO extends AbstractDao<Integer, Object> {
 
     public List<BabAvg> findBabAvgWithBarcode(int bab_id) {
         return super.getSession()
-                .createSQLQuery("select * from tbfn_BabAvg_WithBarcode(:bab_id)")
+                .createSQLQuery("select * from {h-schema}tbfn_BabAvg_WithBarcode(:bab_id)")
                 .addScalar("bab_id", StandardBasicTypes.INTEGER)
                 .addScalar("station", StandardBasicTypes.INTEGER)
                 .addScalar("average", StandardBasicTypes.DOUBLE)
@@ -52,7 +52,7 @@ public class SqlViewDAO extends AbstractDao<Integer, Object> {
 
     public List<BabAvg> findBabAvgInHistory(int bab_id) {
         return super.getSession()
-                .createSQLQuery("select * from tbfn_BabAvg_history(:bab_id)")
+                .createSQLQuery("select * from {h-schema}tbfn_BabAvg_history(:bab_id)")
                 .addScalar("bab_id", StandardBasicTypes.INTEGER)
                 .addScalar("station", StandardBasicTypes.INTEGER)
                 .addScalar("average", StandardBasicTypes.DOUBLE)
@@ -89,7 +89,7 @@ public class SqlViewDAO extends AbstractDao<Integer, Object> {
 
     public List<BabLastGroupStatus> findBabLastGroupStatus(int bab_id) {
         return super.getSession()
-                .createSQLQuery("{CALL usp_GetLastGroupStatus(:bab_id)}")
+                .createSQLQuery("{CALL {h-schema}usp_GetLastGroupStatus(:bab_id)}")
                 .setParameter("bab_id", bab_id)
                 .setResultTransformer(Transformers.aliasToBean(BabLastGroupStatus.class))
                 .list();
@@ -97,7 +97,7 @@ public class SqlViewDAO extends AbstractDao<Integer, Object> {
 
     public List<BabLastBarcodeStatus> findBabLastBarcodeStatus(int bab_id) {
         return super.getSession()
-                .createSQLQuery("{CALL usp_GetLastBarcodeStatus(:bab_id)}")
+                .createSQLQuery("{CALL {h-schema}usp_GetLastBarcodeStatus(:bab_id)}")
                 .setParameter("bab_id", bab_id)
                 .setResultTransformer(Transformers.aliasToBean(BabLastBarcodeStatus.class))
                 .list();
@@ -106,7 +106,7 @@ public class SqlViewDAO extends AbstractDao<Integer, Object> {
     //For job "CheckSensor.java" check sensor
     public List<SensorCurrentGroupStatus> findSensorCurrentGroupStatus(int bab_id) {
         return super.getSession()
-                .createSQLQuery("{CALL usp_GetSensorCurrentGroupStatus(:bab_id)}")
+                .createSQLQuery("{CALL {h-schema}usp_GetSensorCurrentGroupStatus(:bab_id)}")
                 .setParameter("bab_id", bab_id)
                 .setResultTransformer(Transformers.aliasToBean(SensorCurrentGroupStatus.class))
                 .list();
@@ -114,7 +114,7 @@ public class SqlViewDAO extends AbstractDao<Integer, Object> {
 
     public List<Map> findSensorStatus(int bab_id) {
         return super.getSession()
-                .createSQLQuery("select * from tbfn_GetSensorStatus(:bab_id)")
+                .createSQLQuery("select * from {h-schema}tbfn_GetSensorStatus(:bab_id)")
                 .setParameter("bab_id", bab_id)
                 .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
                 .list();
@@ -122,7 +122,7 @@ public class SqlViewDAO extends AbstractDao<Integer, Object> {
 
     public List<Map> findBarcodeStatus(int bab_id) {
         return super.getSession()
-                .createSQLQuery("select * from tbfn_GetBarcodeStatus(:bab_id)")
+                .createSQLQuery("select * from {h-schema}tbfn_GetBarcodeStatus(:bab_id)")
                 .setParameter("bab_id", bab_id)
                 .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
                 .list();
@@ -130,7 +130,7 @@ public class SqlViewDAO extends AbstractDao<Integer, Object> {
 
     public List<Map> findBalanceDetail(int bab_id) {
         return super.getSession()
-                .createSQLQuery("select * from tbfn_BabBalanceDetail(:bab_id)")
+                .createSQLQuery("select * from {h-schema}tbfn_BabBalanceDetail(:bab_id)")
                 .setParameter("bab_id", bab_id)
                 .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
                 .list();
@@ -138,7 +138,7 @@ public class SqlViewDAO extends AbstractDao<Integer, Object> {
 
     public List<Map> findBalanceDetailWithBarcode(int bab_id) {
         return super.getSession()
-                .createSQLQuery("select * from tbfn_BabBalanceDetailWithBarcode(:bab_id)")
+                .createSQLQuery("select * from {h-schema}tbfn_BabBalanceDetailWithBarcode(:bab_id)")
                 .setParameter("bab_id", bab_id)
                 .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
                 .list();
@@ -147,7 +147,7 @@ public class SqlViewDAO extends AbstractDao<Integer, Object> {
     //Join detail with alarmPercent in /pages/admin/BabTotal page
     public List<Map> findBabDetail(int lineType_id, int floor_id, DateTime sD, DateTime eD, boolean isAboveStandard) {
         return super.getSession()
-                .createSQLQuery("{CALL usp_GetBabDetail_1(:lineType_id, :floor_id, :sD, :eD, :minPcs)}")
+                .createSQLQuery("{CALL {h-schema}usp_GetBabDetail_1(:lineType_id, :floor_id, :sD, :eD, :minPcs)}")
                 .setParameter("lineType_id", lineType_id)
                 .setParameter("floor_id", floor_id)
                 .setParameter("sD", sD.withHourOfDay(0).toDate())
@@ -160,7 +160,7 @@ public class SqlViewDAO extends AbstractDao<Integer, Object> {
     //Join detail with alarmPercent in /pages/admin/BabTotal page
     public List<Map> findBabDetailWithBarcode(int lineType_id, int floor_id, DateTime sD, DateTime eD, boolean isAboveStandard) {
         return super.getSession()
-                .createSQLQuery("{CALL usp_GetBabDetail_WithBarcode(:lineType_id, :floor_id, :sD, :eD, :minPcs)}")
+                .createSQLQuery("{CALL {h-schema}usp_GetBabDetail_WithBarcode(:lineType_id, :floor_id, :sD, :eD, :minPcs)}")
                 .setParameter("lineType_id", lineType_id)
                 .setParameter("floor_id", floor_id)
                 .setParameter("sD", sD.withHourOfDay(0).toDate())
@@ -173,7 +173,7 @@ public class SqlViewDAO extends AbstractDao<Integer, Object> {
     //Get bananceCompare with alarmPercent in /pages/admin/BabTotal page
     public List<Map> findLineBalanceCompareByBab(int bab_id) {
         return super.getSession()
-                .createSQLQuery("{CALL usp_GetLineBalanceCompareByBab(:bab_id)}")
+                .createSQLQuery("{CALL {h-schema}usp_GetLineBalanceCompareByBab(:bab_id)}")
                 .setParameter("bab_id", bab_id)
                 .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
                 .list();
@@ -182,7 +182,7 @@ public class SqlViewDAO extends AbstractDao<Integer, Object> {
     //Get bananceCompare with alarmPercent in /pages/admin/BabTotal page
     public List<Map> findLineBalanceCompareByBabWithBarcode(int bab_id) {
         return super.getSession()
-                .createSQLQuery("{CALL usp_GetLineBalanceCompareByBab_WithBarcode(:bab_id)}")
+                .createSQLQuery("{CALL {h-schema}usp_GetLineBalanceCompareByBab_WithBarcode(:bab_id)}")
                 .setParameter("bab_id", bab_id)
                 .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
                 .list();
@@ -191,7 +191,7 @@ public class SqlViewDAO extends AbstractDao<Integer, Object> {
     //Get bananceCompare with alarmPercent in /pages/admin/BabTotal page
     public List<Map> findLineBalanceCompare(String modelName, String lineTypeName) {
         return super.getSession()
-                .createSQLQuery("{CALL usp_GetLineBalanceCompare(:modelName, :lineTypeName)}")
+                .createSQLQuery("{CALL {h-schema}usp_GetLineBalanceCompare(:modelName, :lineTypeName)}")
                 .setParameter("modelName", modelName)
                 .setParameter("lineTypeName", lineTypeName)
                 .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
@@ -200,7 +200,7 @@ public class SqlViewDAO extends AbstractDao<Integer, Object> {
 
     public List<Map> findSensorStatusPerStationToday() {
         return super.getSession()
-                .createSQLQuery("select * from vw_SensorStatusPerStationToday")
+                .createSQLQuery("select * from {h-schema}vw_SensorStatusPerStationToday")
                 .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
                 .list();
     }
@@ -213,7 +213,7 @@ public class SqlViewDAO extends AbstractDao<Integer, Object> {
         }
 
         return super.getSession()
-                .createSQLQuery("{CALL usp_Excel_PcsDetail(:modelName, :lineType, :startDate, :endDate)}")
+                .createSQLQuery("{CALL {h-schema}usp_Excel_PcsDetail(:modelName, :lineType, :startDate, :endDate)}")
                 .setParameter("modelName", modelName)
                 .setParameter("lineType", "-1".equals(lineType) ? null : lineType)
                 .setParameter("startDate", startDate != null ? startDate.toDate() : startDate)
@@ -230,7 +230,7 @@ public class SqlViewDAO extends AbstractDao<Integer, Object> {
         }
 
         return super.getSession()
-                .createSQLQuery("{CALL usp_Excel_PcsDetail_WithBarcode(:modelName, :lineType, :startDate, :endDate)}")
+                .createSQLQuery("{CALL {h-schema}usp_Excel_PcsDetail_WithBarcode(:modelName, :lineType, :startDate, :endDate)}")
                 .setParameter("modelName", modelName)
                 .setParameter("lineType", "-1".equals(lineType) ? null : lineType)
                 .setParameter("startDate", startDate != null ? startDate.toDate() : startDate)
@@ -241,7 +241,7 @@ public class SqlViewDAO extends AbstractDao<Integer, Object> {
 
     public List<Map> findBabLineProductivity(String po, String modelName, Integer line_id, String jobnumber, Integer minPcs, DateTime sD, DateTime eD) {
         return super.getSession()
-                .createSQLQuery("{CALL usp_Excel_LineProductivity(:po, :modelName, :lineId, :jobnumber, :minPcs, :sD, :eD)}")
+                .createSQLQuery("{CALL {h-schema}usp_Excel_LineProductivity(:po, :modelName, :lineId, :jobnumber, :minPcs, :sD, :eD)}")
                 .setParameter("po", po)
                 .setParameter("modelName", modelName)
                 .setParameter("lineId", line_id)
@@ -255,7 +255,7 @@ public class SqlViewDAO extends AbstractDao<Integer, Object> {
 
     public List<Map> findBabLineProductivityWithBarcode(String po, String modelName, Integer line_id, String jobnumber, Integer minPcs, DateTime sD, DateTime eD) {
         return super.getSession()
-                .createSQLQuery("{CALL usp_Excel_LineProductivity_WithBarcode(:po, :modelName, :lineId, :jobnumber, :minPcs, :sD, :eD)}")
+                .createSQLQuery("{CALL {h-schema}usp_Excel_LineProductivity_WithBarcode(:po, :modelName, :lineId, :jobnumber, :minPcs, :sD, :eD)}")
                 .setParameter("po", po)
                 .setParameter("modelName", modelName)
                 .setParameter("lineId", line_id)
@@ -269,7 +269,7 @@ public class SqlViewDAO extends AbstractDao<Integer, Object> {
 
     public List<Map> findBabPassStationRecord(String po, String modelName, DateTime sD, DateTime eD, String lineType) {
         return super.getSession()
-                .createSQLQuery("{CALL usp_GetBabPassStationRecord_1(:po, :modelName, :sD, :eD, :lineType)}")
+                .createSQLQuery("{CALL {h-schema}usp_GetBabPassStationRecord_1(:po, :modelName, :sD, :eD, :lineType)}")
                 .setParameter("po", po)
                 .setParameter("modelName", modelName)
                 .setParameter("sD", sD != null ? sD.withHourOfDay(0).toDate() : null)
@@ -281,7 +281,7 @@ public class SqlViewDAO extends AbstractDao<Integer, Object> {
 
     public List<Map> findBabPassStationExceptionReport(String po, String modelName, DateTime sD, DateTime eD, int lineType_id) {
         return super.getSession()
-                .createSQLQuery("{CALL usp_BabPassStation_ExceptionReport(:po, :modelName, :sD, :eD, :lineType_id)}")
+                .createSQLQuery("{CALL {h-schema}usp_BabPassStation_ExceptionReport(:po, :modelName, :sD, :eD, :lineType_id)}")
                 .setParameter("po", po)
                 .setParameter("modelName", modelName)
                 .setParameter("sD", sD != null ? sD.withHourOfDay(0).toDate() : null)
@@ -293,7 +293,7 @@ public class SqlViewDAO extends AbstractDao<Integer, Object> {
 
     public List<Map> findBabPreAssyProductivity(int lineType_id, int floor_id, DateTime sD, DateTime eD) {
         return super.getSession()
-                .createSQLQuery("{CALL usp_GetBabPreAssyProductivity(:lineType_id, :floor_id, :sD, :eD)}")
+                .createSQLQuery("{CALL {h-schema}usp_GetBabPreAssyProductivity(:lineType_id, :floor_id, :sD, :eD)}")
                 .setParameter("lineType_id", lineType_id)
                 .setParameter("floor_id", floor_id)
                 .setParameter("sD", sD != null ? sD.withHourOfDay(0).toDate() : null)
@@ -304,7 +304,7 @@ public class SqlViewDAO extends AbstractDao<Integer, Object> {
 
     public List<Map> findBabBestLineBalanceRecord(int lineType_id, DateTime sD, DateTime eD) {
         return super.getSession()
-                .createSQLQuery("{CALL usp_GetBabBestLineBalanceRecord(:lineType_id, :sD, :eD)}")
+                .createSQLQuery("{CALL {h-schema}usp_GetBabBestLineBalanceRecord(:lineType_id, :sD, :eD)}")
                 .setParameter("lineType_id", lineType_id)
                 .setParameter("sD", sD != null ? sD.withHourOfDay(0).toDate() : null)
                 .setParameter("eD", eD != null ? eD.withHourOfDay(23).toDate() : null)
@@ -314,14 +314,14 @@ public class SqlViewDAO extends AbstractDao<Integer, Object> {
 
     public List<Bab> findBabLastInputPerLine() {
         return super.getSession()
-                .createSQLQuery("select * from vw_BabLastInputPerLine order by line_id, id")
+                .createSQLQuery("select * from {h-schema}vw_BabLastInputPerLine order by line_id, id")
                 .addEntity(Bab.class)
                 .list();
     }
 
     public List<PreAssyModuleUnexecuted> findPreAssyModuleUnexecuted(DateTime sD, DateTime eD) {
         return super.getSession()
-                .createSQLQuery("{CALL usp_GetPreAssyModuleUnexecuted(:sD, :eD)}")
+                .createSQLQuery("{CALL {h-schema}usp_GetPreAssyModuleUnexecuted(:sD, :eD)}")
                 .setParameter("sD", sD != null ? sD.withHourOfDay(0).toDate() : null)
                 .setParameter("eD", eD != null ? eD.withHourOfDay(23).toDate() : null)
                 .setResultTransformer(Transformers.aliasToBean(PreAssyModuleUnexecuted.class))
@@ -330,7 +330,7 @@ public class SqlViewDAO extends AbstractDao<Integer, Object> {
 
     public List<Map> findTestPassStationProductivity(DateTime sD, DateTime eD) {
         return super.getSession()
-                .createSQLQuery("{CALL usp_Excel_TestPassStationProductivity(:sD, :eD)}")
+                .createSQLQuery("{CALL {h-schema}usp_Excel_TestPassStationProductivity(:sD, :eD)}")
                 .setParameter("sD", sD != null ? sD.withHourOfDay(0).toDate() : null)
                 .setParameter("eD", eD != null ? eD.withHourOfDay(23).toDate() : null)
                 .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)

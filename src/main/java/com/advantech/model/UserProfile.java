@@ -62,7 +62,7 @@ public class UserProfile implements java.io.Serializable {
         this.id = id;
     }
 
-    @Column(name = "type", length = 50, unique = true, nullable = false)
+    @Column(name = "[type]", length = 50, unique = true, nullable = false)
     public String getName() {
         return name;
     }
@@ -83,7 +83,7 @@ public class UserProfile implements java.io.Serializable {
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "User_Profile_REF", joinColumns = {
         @JoinColumn(name = "user_profile_id", nullable = false, insertable = false, updatable = false)}, inverseJoinColumns = {
-        @JoinColumn(name = "user_id", nullable = false, insertable = false, updatable = false)})
+        @JoinColumn(name = "[user_id]", nullable = false, insertable = false, updatable = false)})
     public Set<User> getUsers() {
         return this.users;
     }

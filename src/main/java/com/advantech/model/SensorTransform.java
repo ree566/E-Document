@@ -50,7 +50,7 @@ public class SensorTransform implements Serializable {
     }
 
     @Id
-    @Column(name = "name", unique = true, nullable = false)
+    @Column(name = "[name]", unique = true, nullable = false)
     public String getName() {
         return name;
     }

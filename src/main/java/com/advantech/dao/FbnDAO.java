@@ -43,7 +43,7 @@ public class FbnDAO extends AbstractDao<Integer, Fbn> {
     //利用檢視表(過濾後FBN資料表資訊)得到當前sensor時間 websocket用 
     public List<Map> getSensorCurrentStatus() {
         return super.getSession()
-                .createSQLQuery("SELECT * FROM vw_SensorStatusPerStationToday")
+                .createSQLQuery("SELECT * FROM {h-schema}vw_SensorStatusPerStationToday")
                 .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
                 .list();
     }
@@ -51,14 +51,14 @@ public class FbnDAO extends AbstractDao<Integer, Fbn> {
     //用途同上method comment
     public List<Map> getBarcodeCurrentStatus() {
         return super.getSession()
-                .createSQLQuery("SELECT * FROM vw_BarcodeStatusPerStationToday")
+                .createSQLQuery("SELECT * FROM {h-schema}vw_BarcodeStatusPerStationToday")
                 .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
                 .list();
     }
 
     public List<Map> getTotalAbnormalData(int bab_id) {
         return super.getSession()
-                .createSQLQuery("{CALL sensorTotalAbnormalCheck(:bab_id)}")
+                .createSQLQuery("{CALL {h-schema}sensorTotalAbnormalCheck(:bab_id)}")
                 .setParameter("bab_id", bab_id)
                 .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
                 .list();
@@ -66,7 +66,7 @@ public class FbnDAO extends AbstractDao<Integer, Fbn> {
 
     public List<Map> getAbnormalData(int bab_id) {
         return super.getSession()
-                .createSQLQuery("{CALL sensorAbnormalCheck(?)}")
+                .createSQLQuery("{CALL {h-schema}sensorAbnormalCheck(?)}")
                 .setParameter("bab_id", bab_id)
                 .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
                 .list();
@@ -74,7 +74,7 @@ public class FbnDAO extends AbstractDao<Integer, Fbn> {
 
     public int sensorDataClean(String date) {
         super.getSession()
-                .createSQLQuery("{CALL usp_DeleteSensorData(:date)}")
+                .createSQLQuery("{CALL {h-schema}usp_DeleteSensorData(:date)}")
                 .setParameter("date", date)
                 .executeUpdate();
         return 1;

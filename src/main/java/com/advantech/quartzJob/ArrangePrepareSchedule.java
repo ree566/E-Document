@@ -5,12 +5,10 @@
  */
 package com.advantech.quartzJob;
 
-import com.advantech.model.BabSettingHistory;
 import com.advantech.model.Floor;
 import com.advantech.model.Line;
 import com.advantech.model.LineUserReference;
 import com.advantech.model.PrepareSchedule;
-import com.advantech.model.User;
 import com.advantech.service.BabSettingHistoryService;
 import com.advantech.service.FloorService;
 import com.advantech.service.LineService;
@@ -21,15 +19,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import static java.util.Comparator.comparing;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.mapping;
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
-import java.util.stream.IntStream;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
 import org.joda.time.Minutes;
@@ -53,7 +44,7 @@ public abstract class ArrangePrepareSchedule {
 
     @Autowired
     private FloorService floorService;
-    
+
     @Autowired
     private PrepareScheduleService psService;
 
@@ -157,143 +148,9 @@ public abstract class ArrangePrepareSchedule {
 
     }
 
-    private List<PrepareSchedule> setScheduleLine(List<LineUserReference> users, List<PrepareSchedule> l) {
+    protected abstract List<PrepareSchedule> setScheduleLine(List<LineUserReference> users, List<PrepareSchedule> l);
 
-        //Find modelName fit in settings
-        List<String> modelNames = l.stream().map(s -> s.getModelName()).collect(toList());
-        List<BabSettingHistory> settings = settingHistoryService.findByBabModelNames(modelNames);
-
-        //Find jobnumber fit in settings
-//        List<BabSettingHistory> jSettings = settings.stream().filter(s -> {
-//            LineUserReference fitSettings = users.stream()
-//                    .filter(fw -> fw.getId().getUser().getJobnumber().equals(s.getJobnumber()) && fw.getStation() == s.getStation())
-//                    .findFirst().orElse(null);
-//            return fitSettings != null;
-//        }).collect(toList());
-        List<BabSettingHistory> jSettings = settings.stream().filter(s -> {
-            LineUserReference fitSettings = users.stream()
-                    .filter(fw -> fw.getUser().getJobnumber().equals(s.getJobnumber()))
-                    .findFirst().orElse(null);
-            return fitSettings != null;
-        }).collect(toList());
-
-        Map<Line, List<PrepareSchedule>> result = new HashMap();
-        List<Line> lines = users.stream().map(u -> u.getLine()).distinct().collect(toList());
-        lines = lines.stream().sorted(comparing(Line::getName)).collect(toList());
-
-        //Add empty List into result
-        lines.forEach((line) -> {
-            result.put(line, new ArrayList());
-        });
-
-        result.put(emptyLine, new ArrayList());
-
-        for (PrepareSchedule s : l) {
-//            HibernateObjectPrinter.print(s);
-
-            String modelName = s.getModelName();
-            List<BabSettingHistory> modelNameFitSetting = jSettings.stream()
-                    .filter(bsh -> bsh.getBab().getModelName().equals(modelName))
-                    .collect(toList());
-
-            //jSettings group by line & find max number of model experience
-            //Map<Line, Integer cnt of users>
-            Map<Line, List<Boolean>> historyFitUserSetting = users.stream()
-                    .collect(groupingBy(x -> x.getLine(), mapping(f -> {
-                        BabSettingHistory obj = modelNameFitSetting.stream()
-                                .filter(bsh -> bsh.getJobnumber().equals(f.getUser().getJobnumber()))
-                                .findFirst().orElse(null);
-                        return obj != null;
-                    }, toList())));
-
-            //Check line to add schedule(must schedule time and before 21:30)
-            findFitLineSetting(s, historyFitUserSetting, result, new ArrayList());
-        }
-
-        List<PrepareSchedule> result2 = new ArrayList();
-
-        result.forEach((k, v) -> {
-            int i = 1;
-            for (PrepareSchedule p : v) {
-                p.setPriority(i++);
-            }
-
-            List<User> settingUsers = users.stream().filter(u -> u.getLine().equals(k))
-                    .map(u -> u.getUser())
-                    .collect(toList());
-
-            v.forEach(s -> {
-                s.setUsers(settingUsers);
-            });
-
-            result2.addAll(v);
-        });
-
-        return result2;
-    }
-
-    private void findFitLineSetting(PrepareSchedule currentSchedule, Map<Line, List<Boolean>> lineUserSetting, Map<Line, List<PrepareSchedule>> result, List<Line> removeLine) {
-
-        Map<Line, List<Boolean>> settingClone = new HashMap(lineUserSetting);
-
-        removeLine.forEach((line) -> {
-            settingClone.remove(line);
-        });
-
-        if (settingClone.isEmpty()) {
-            currentSchedule.setLine(emptyLine);
-            currentSchedule.setStartDate(null);
-            currentSchedule.setEndDate(null);
-            currentSchedule.setUsers(null);
-            currentSchedule.setOtherInfo(null);
-            result.get(emptyLine).add(currentSchedule);
-            return;
-        }
-
-        //Find best line setting
-        Line line = settingClone.entrySet()
-                .stream()
-                .max((Map.Entry<Line, List<Boolean>> e1, Map.Entry<Line, List<Boolean>> e2) -> {
-                    int v1 = e1.getValue().stream().mapToInt(b -> b == true ? 1 : 0).sum();
-                    int v2 = e2.getValue().stream().mapToInt(b -> b == true ? 1 : 0).sum();
-                    int c1 = Integer.compare(v1, v2);
-                    if (c1 != 0) {
-                        return c1;
-                    } else {
-                        return e1.getKey().getName().compareTo(e2.getKey().getName());
-                    }
-                })
-                .get()
-                .getKey();
-
-        if (result.isEmpty() || line == null) {
-            return;
-        }
-
-        //Test and check last schedule time
-        List<PrepareSchedule> lineSchedule = result.get(line);
-        int usersCnt = lineUserSetting.get(line).size();
-        List<PrepareSchedule> testScheduleList = newArrayList(lineSchedule);
-        List<Boolean> fitStatus = lineUserSetting.get(line);
-        Map<Integer, Boolean> fitStatusMap = IntStream.range(0, fitStatus.size())
-                .boxed()
-                .collect(toMap(i -> i, fitStatus::get));
-        currentSchedule.setLine(line);
-        currentSchedule.setOtherInfo(fitStatusMap);
-        testScheduleList.add(currentSchedule);
-        testScheduleList = scheduleTime(usersCnt, testScheduleList);
-
-        //If last schedule finish time is after 21:30, remove line choose in map
-        Date lastScheduleDate = testScheduleList.get(testScheduleList.size() - 1).getEndDate();
-        if (new DateTime(lastScheduleDate).isAfter(scheduleEndTime)) {
-            removeLine.add(line);
-            findFitLineSetting(currentSchedule, lineUserSetting, result, removeLine);
-        } else {
-            result.replace(line, testScheduleList);
-        }
-    }
-
-    private List<PrepareSchedule> scheduleTime(int users, List<PrepareSchedule> l) {
+    protected List<PrepareSchedule> scheduleTime(int users, List<PrepareSchedule> l) {
 
         int maxPeopleCnt = users;
 
@@ -328,27 +185,27 @@ public abstract class ArrangePrepareSchedule {
                     /*
                         i   |----|
                         r |--------|   
-                    */
+                     */
                     return new Interval(restTime.getEnd(), restTime.getEnd().plusMinutes(iMin));
                 } else if (isInRestTime(restTime, i.getStart()) && !isInRestTime(restTime, i.getEnd())) {
                     /*
                         i    |--------|
                         r |----|   
-                    */
+                     */
                     int overlap = Minutes.minutesBetween(i.getStart(), restTime.getEnd()).getMinutes();
                     return new Interval(restTime.getEnd(), i.getEnd().plusMinutes(overlap));
                 } else if (!isInRestTime(restTime, i.getStart()) && isInRestTime(restTime, i.getEnd())) {
                     /*
                         i |----|
                         r   |--------|   
-                    */
+                     */
                     int overlap = Minutes.minutesBetween(restTime.getStart(), i.getEnd()).getMinutes();
                     return new Interval(i.getStart(), restTime.getEnd().plusMinutes(overlap));
                 } else {
                     /*
                         i |--------|
                         r   |----|   
-                    */
+                     */
                     return new Interval(i.getStart(), i.getEnd().plusMinutes(restMin));
                 }
             }

@@ -33,7 +33,7 @@ public class Sensor implements Serializable {
     private Set<TagNameComparison> tagNameComparisons = new HashSet<>(0);
 
     @Id
-    @Column(name = "name", unique = true, nullable = false)
+    @Column(name = "[name]", unique = true, nullable = false)
     public String getName() {
         return name;
     }

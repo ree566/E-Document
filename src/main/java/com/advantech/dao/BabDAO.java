@@ -180,7 +180,7 @@ public class BabDAO extends AbstractDao<Integer, Bab> implements BasicDAO_1<Bab>
 
     public int closeBabDirectly(Bab b) {
         super.getSession()
-                .createSQLQuery("{CALL usp_CloseBabDirectly(:bab_id)}")
+                .createSQLQuery("{CALL {h-schema}usp_CloseBabDirectly(:bab_id)}")
                 .setParameter("bab_id", b.getId())
                 .executeUpdate();
         return 1;
@@ -188,7 +188,7 @@ public class BabDAO extends AbstractDao<Integer, Bab> implements BasicDAO_1<Bab>
 
     public int closeBabWithSaving(Bab b) {
         super.getSession()
-                .createSQLQuery("{CALL usp_CloseBabWithSaving(:bab_id)}")
+                .createSQLQuery("{CALL {h-schema}usp_CloseBabWithSaving(:bab_id)}")
                 .setParameter("bab_id", b.getId())
                 .executeUpdate();
         return 1;
@@ -196,7 +196,7 @@ public class BabDAO extends AbstractDao<Integer, Bab> implements BasicDAO_1<Bab>
 
     public int closeBabWithSavingWithBarcode(Bab b) {
         super.getSession()
-                .createSQLQuery("{CALL usp_CloseBabWithSavingWithBarcode(:bab_id)}")
+                .createSQLQuery("{CALL {h-schema}usp_CloseBabWithSavingWithBarcode(:bab_id)}")
                 .setParameter("bab_id", b.getId())
                 .executeUpdate();
         return 1;

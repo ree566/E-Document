@@ -404,7 +404,7 @@ public class TestSqlBeans {
 
     }
 
-    @Test
+//    @Test
     @Rollback(true)
     public void testPrepareSchedule() {
         PrepareSchedule p = session.get(PrepareSchedule.class, 30);
@@ -412,6 +412,18 @@ public class TestSqlBeans {
         assertNotNull(p);
 
         HibernateObjectPrinter.print(p);
+    }
+    
+    @Test
+    @Rollback(false)
+    public void testUserInsert(){
+        User user = session.get(User.class, 1);
+        
+        assertNotNull(user);
+        
+        user.setUsernameCh("中文");
+        
+        session.update(user);
     }
 
 

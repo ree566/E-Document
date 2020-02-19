@@ -303,9 +303,10 @@
                 <ref bean="CleanSensorData-Trig"/>
                 <ref bean="TestLineTypeRecord-Trig"/>
                 <ref bean="SyncTestPassStationData-Trig"/>-->
-                <ref bean="SyncPrepareSchedule-Trig"/>
+                
+<!--                <ref bean="SyncPrepareSchedule-Trig"/>
                 <ref bean="SyncLineUserReference-Trig"/>
-                <ref bean="SyncUserFromRemote-Trig"/>
+                <ref bean="SyncUserFromRemote-Trig"/>-->
                 
                 <!--<ref bean="SaveMesCountRecord-Trig"/>-->
                 <!--<ref bean="CountermeasureAlarm-Trig"/>-->                
