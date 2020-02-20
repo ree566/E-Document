@@ -11,6 +11,7 @@ import com.advantech.helper.ApplicationContextHelper;
 import com.advantech.helper.MailManager;
 import com.advantech.model.User;
 import com.advantech.model.view.SensorCurrentGroupStatus;
+import com.advantech.service.SqlProcedureService;
 import com.advantech.service.SqlViewService;
 import java.util.Collections;
 import java.util.Date;
@@ -45,12 +46,12 @@ public class CheckSensor extends QuartzJobBean {
     private List<User> responsors;
     private List<User> ccLoops;
 
-    private final SqlViewService sqlViewService;
+    private final SqlProcedureService procViewService;
 
     private MailManager mailManager;
 
     public CheckSensor() {
-        sqlViewService = (SqlViewService) ApplicationContextHelper.getBean("sqlViewService");
+        procViewService = (SqlProcedureService) ApplicationContextHelper.getBean("sqlProcedureService");
         mailManager = (MailManager) ApplicationContextHelper.getBean("mailManager");
     }
 
@@ -70,7 +71,7 @@ public class CheckSensor extends QuartzJobBean {
             return;
         }
 
-        List<SensorCurrentGroupStatus> sensorStatus = sqlViewService.findSensorCurrentGroupStatus(bab.getId());
+        List<SensorCurrentGroupStatus> sensorStatus = procViewService.findSensorCurrentGroupStatus(bab.getId());
         DateTime currentTime = new DateTime();
 
         int period;

@@ -201,9 +201,9 @@ public class TestDAO {
     public void testSqlView() {
         DateTime eD = new DateTime();
         DateTime sD = eD.minusWeeks(1);
-        List l = sqlViewDAO.findBabPassStationExceptionReport(null, null, sD, eD, 1);
+//        List l = sqlViewDAO.findBabPassStationExceptionReport(null, null, sD, eD, 1);
 //        assertTrue(l.isEmpty());
-        HibernateObjectPrinter.print(l);
+//        HibernateObjectPrinter.print(l);
     }
 
 //    @Test

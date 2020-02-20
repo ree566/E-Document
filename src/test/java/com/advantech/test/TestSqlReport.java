@@ -38,24 +38,17 @@ public class TestSqlReport {
     @Test
     @Transactional
     @Rollback(true)
-    public void testCountermeasureForExcel() {
-//        List l = systemReportService.getCountermeasureForExcel("18/01/01", "18/02/01");
-//        HibernateObjectPrinter.print(l);
+    public void testReports() {
+        systemReportService.getCountermeasureForExcel(-1, -1, "2018/01/01", "2018/02/01", true);
+
+        systemReportService.getPersonalAlmForExcel(-1, -1, "2018/01/01", "2018/02/01", true);
+        systemReportService.getEmptyRecordForExcel(-1, -1, "2018/01/01", "2018/02/01");
+        systemReportService.getBabPassStationExceptionReportDetails("", "", "2018/01/01", "2018/02/01", 1);
+
+        systemReportService.getBabPreAssyDetailForExcel(-1, -1, "2018/01/01", "2018/02/01");
+
+        systemReportService.getPreAssyModuleStandardTimeSetting();
+        systemReportService.getAssyModelSopStandardTimeSetting();
     }
     
-    @Test
-    @Transactional
-    @Rollback(true)
-    public void testPersonalAlmForExcel() {
-//        List l = systemReportService.getPersonalAlmForExcel("18/01/01", "18/02/01");
-//        HibernateObjectPrinter.print(l);
-    }
-    
-    @Test
-    @Transactional
-    @Rollback(true)
-    public void testEmptyRecordDownExcel() {
-//        List l = systemReportService.getEmptyRecordDownExcel("18/01/01", "18/02/01");
-//        HibernateObjectPrinter.print(l);
-    }
 }

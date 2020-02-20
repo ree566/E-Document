@@ -73,18 +73,6 @@ public class FbnService {
         return dtf.parseDateTime(date);
     }
 
-    public List<Map> getTotalAbnormalData(int BABid) {
-        return fbnDAO.getTotalAbnormalData(BABid);
-    }
-
-    public List<Map> getAbnormalData(int BABid) {
-        return fbnDAO.getAbnormalData(BABid);
-    }
-
-    public int sensorDataClean(String date) {
-        return fbnDAO.sensorDataClean(date);
-    }
-
     public List<Fbn> findByTagNameAndDate(String tagName, DateTime sD, DateTime eD) {
         return fbnDAO.findByTagNameAndDate(tagName, sD, eD);
     }

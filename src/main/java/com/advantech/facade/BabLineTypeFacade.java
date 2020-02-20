@@ -18,6 +18,7 @@ import com.advantech.service.BabService;
 import com.advantech.service.BabSettingHistoryService;
 import com.advantech.service.LineBalancingService;
 import com.advantech.service.LineService;
+import com.advantech.service.SqlProcedureService;
 import com.advantech.service.SqlViewService;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -55,7 +56,7 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
     private LineService lineService;
 
     @Autowired
-    private SqlViewService sqlViewService;
+    private SqlProcedureService procService;
 
     @Autowired
     private BabSettingHistoryService babSettingHistoryService;
@@ -136,7 +137,7 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
                 Because BabLastGroupStatus.class is a sql view object
                 Get all data in one transaction to prevent sql deadlock.
          */
-        List<BabLastBarcodeStatus> status = sqlViewService.findBabLastBarcodeStatus(processingBabs);
+        List<BabLastBarcodeStatus> status = procService.findBabLastBarcodeStatus(processingBabs);
 
         processingBabs.forEach((bab) -> {
             List<BabSettingHistory> babSettings = allBabSettings.stream()
@@ -191,7 +192,7 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
                 Because BabLastGroupStatus.class is a sql view object
                 Get all data in one transaction to prevent sql deadlock.
          */
-        List<BabLastGroupStatus> status = sqlViewService.findBabLastGroupStatus(processingBabs);
+        List<BabLastGroupStatus> status = procService.findBabLastGroupStatus(processingBabs);
 
         processingBabs.forEach((bab) -> {
             List<BabSettingHistory> babSettings = allBabSettings.stream()

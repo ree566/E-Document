@@ -8,6 +8,7 @@ package com.advantech.helper;
 import com.advantech.model.Bab;
 import com.advantech.service.BabService;
 import com.advantech.service.FbnService;
+import com.advantech.service.SqlProcedureService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.FileOutputStream;
 import static java.lang.System.out;
@@ -50,6 +51,9 @@ public class ExcelGenerator {
 
     @Autowired
     private BabService babService;
+    
+    @Autowired
+    private SqlProcedureService procService;
 
     private Workbook workbook;
     private Sheet spreadsheet;
@@ -292,16 +296,16 @@ public class ExcelGenerator {
 
         for (Bab bab : babs) {
             int bab_id = bab.getId();
-            List<Map> abnormalDataTotal = fbnService.getTotalAbnormalData(bab_id);
-            List<Map> abnormalData = fbnService.getAbnormalData(bab_id);
+            List<Map> abnormalDataTotal = procService.getTotalAbnormalData(bab_id);
+            List<Map> abnormalData = procService.getAbnormalData(bab_id);
 
             //Make sure the data if empty or not(deadLock always happen).
             if (abnormalDataTotal.isEmpty()) {
-                abnormalDataTotal = fbnService.getTotalAbnormalData(bab_id);
+                abnormalDataTotal = procService.getTotalAbnormalData(bab_id);
             }
 
             if (abnormalData.isEmpty()) {
-                abnormalData = fbnService.getAbnormalData(bab_id);
+                abnormalData = procService.getAbnormalData(bab_id);
             }
 
             CellStyle style = workbook.createCellStyle();

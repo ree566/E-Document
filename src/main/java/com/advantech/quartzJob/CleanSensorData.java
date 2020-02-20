@@ -7,7 +7,7 @@ package com.advantech.quartzJob;
 
 import com.advantech.helper.ApplicationContextHelper;
 import com.advantech.helper.DatetimeGenerator;
-import com.advantech.service.FbnService;
+import com.advantech.service.SqlProcedureService;
 import org.joda.time.DateTime;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -25,19 +25,17 @@ public class CleanSensorData extends QuartzJobBean {
     private static final Logger log = LoggerFactory.getLogger(CleanSensorData.class);
     private final DatetimeGenerator dg = new DatetimeGenerator("yyyy-MM-dd");
     private static final int SPECIFY_DAY = 7;
-
-    private final FbnService fbnService;
+    
+    private final SqlProcedureService procService;
 
     public CleanSensorData() {
-        fbnService = (FbnService) ApplicationContextHelper.getBean("fbnService");
+        procService = (SqlProcedureService) ApplicationContextHelper.getBean("sqlProcedureService");
     }
 
     @Override
     public void executeInternal(JobExecutionContext jec) throws JobExecutionException {
-        DateTime d = new DateTime();
-        d = d.minusDays(SPECIFY_DAY);
-        String date = dg.dateFormatToString(d);
-        log.info("Begin clean sensor data date before " + date);
-        fbnService.sensorDataClean(date);
+        DateTime d = new DateTime().minusDays(SPECIFY_DAY).withTime(0, 0, 0, 0);
+        log.info("Begin clean sensor data date before " + dg.dateFormatToString(d));
+        procService.sensorDataClean(d.toDate());
     }
 }

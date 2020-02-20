@@ -56,30 +56,6 @@ public class FbnDAO extends AbstractDao<Integer, Fbn> {
                 .list();
     }
 
-    public List<Map> getTotalAbnormalData(int bab_id) {
-        return super.getSession()
-                .createSQLQuery("{CALL {h-schema}sensorTotalAbnormalCheck(:bab_id)}")
-                .setParameter("bab_id", bab_id)
-                .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
-                .list();
-    }
-
-    public List<Map> getAbnormalData(int bab_id) {
-        return super.getSession()
-                .createSQLQuery("{CALL {h-schema}sensorAbnormalCheck(?)}")
-                .setParameter("bab_id", bab_id)
-                .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
-                .list();
-    }
-
-    public int sensorDataClean(String date) {
-        super.getSession()
-                .createSQLQuery("{CALL {h-schema}usp_DeleteSensorData(:date)}")
-                .setParameter("date", date)
-                .executeUpdate();
-        return 1;
-    }
-
     public List<Fbn> findByTagNameAndDate(String tagName, DateTime sD, DateTime eD) {
         DateTimeFormatter fmt = DateTimeFormat.forPattern("yy/MM/dd");
         DateTimeFormatter fmt2 = DateTimeFormat.forPattern("HH:mm:ss");

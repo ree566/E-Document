@@ -31,6 +31,9 @@ public class ModelSopRemarkDetailService {
 
     @Autowired
     private BabSettingHistoryService babSettingHistoryService;
+    
+    @Autowired
+    private SqlProcedureService procService; 
 
     public List<ModelSopRemarkDetail> findAll() {
         return modelSopRemarkDetailDAO.findAll();
@@ -50,7 +53,7 @@ public class ModelSopRemarkDetailService {
     }
 
     public List<ModelSopRemarkDetail> findByModelAndPeopleAndStation(String modelName, int people, int station) {
-        List<ModelSopRemarkDetail> l = modelSopRemarkDetailDAO.findByModelAndPeople(modelName, people);
+        List<ModelSopRemarkDetail> l = procService.findModelSopRemarkDetail(modelName, people);
         if (!l.isEmpty()) {
             ModelSopRemark m = l.get(0).getModelSopRemark();
             Hibernate.initialize(m);

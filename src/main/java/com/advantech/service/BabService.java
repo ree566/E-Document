@@ -74,6 +74,9 @@ public class BabService {
 
     @Autowired
     private LineTypeService lineTypeService;
+    
+    @Autowired
+    private SqlProcedureService procService;
 
     @PostConstruct
     private void init() {
@@ -324,16 +327,16 @@ public class BabService {
     }
 
     public int closeBabDirectly(Bab b) {
-        return babDAO.closeBabDirectly(b);
+        return procService.closeBabDirectly(b);
     }
 
     public int closeBabWithSaving(Bab b) {
         switch (mode) {
             case AUTO:
-                babDAO.closeBabWithSaving(b);
+                procService.closeBabWithSaving(b);
                 break;
             case MANUAL:
-                babDAO.closeBabWithSavingWithBarcode(b);
+                procService.closeBabWithSavingWithBarcode(b);
                 break;
             default:
                 throw new IllegalStateException("BabDataCollectMode doesn't exist");
