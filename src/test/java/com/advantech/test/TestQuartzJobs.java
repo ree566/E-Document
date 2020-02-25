@@ -107,7 +107,7 @@ public class TestQuartzJobs {
     @Test
     public void testSyncPrepareSchedule1() throws Exception {
         //先設定好當日出勤名單, 才會給予字動排站
-        DateTime d = new DateTime("2020-02-18");
+        DateTime d = new DateTime("2020-02-25");
 //        sps.execute(d);
         aps.execute(d);
     }
@@ -118,7 +118,7 @@ public class TestQuartzJobs {
 //    @Test
     public void testSyncLineUserReference() throws Exception {
 
-        DateTime d3 = new DateTime("2020-02-14");
+        DateTime d3 = new DateTime("2020-02-24");
         sur.execute(d3);
     }
     

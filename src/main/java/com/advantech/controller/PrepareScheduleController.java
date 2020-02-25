@@ -10,7 +10,7 @@ import com.advantech.helper.SecurityPropertiesUtils;
 import com.advantech.model.Floor;
 import com.advantech.model.PrepareSchedule;
 import com.advantech.model.User;
-import com.advantech.quartzJob.ArrangePrepareSchedule1Impl;
+import com.advantech.quartzJob.ArrangePrepareScheduleImpl_1;
 import com.advantech.service.FloorService;
 import com.advantech.service.PrepareScheduleService;
 import static com.google.common.base.Preconditions.checkState;
@@ -42,7 +42,7 @@ public class PrepareScheduleController {
     private FloorService floorService;
     
     @Autowired
-    private ArrangePrepareSchedule1Impl aps1;
+    private ArrangePrepareScheduleImpl_1 aps1;
 
     @RequestMapping(value = "/findPrepareSchedule", method = {RequestMethod.GET})
     @ResponseBody

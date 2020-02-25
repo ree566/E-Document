@@ -6,7 +6,6 @@
 package com.advantech.quartzJob;
 
 import com.advantech.model.Bab;
-import com.advantech.model.BabSettingHistory;
 import com.advantech.model.Floor;
 import com.advantech.model.Line;
 import com.advantech.model.LineUserReference;
@@ -47,9 +46,9 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Component
 @Transactional
-public class ArrangePrepareScheduleImpl2 {
+public class ArrangePrepareScheduleImpl_2 {
 
-    private static final Logger logger = LoggerFactory.getLogger(ArrangePrepareScheduleImpl2.class);
+    private static final Logger logger = LoggerFactory.getLogger(ArrangePrepareScheduleImpl_2.class);
 
     @Autowired
     private FloorService floorService;

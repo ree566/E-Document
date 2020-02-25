@@ -42,9 +42,9 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Component
 @Transactional
-public class ArrangePrepareSchedule1Impl {
+public class ArrangePrepareScheduleImpl_1 {
 
-    private static final Logger logger = LoggerFactory.getLogger(ArrangePrepareSchedule1Impl.class);
+    private static final Logger logger = LoggerFactory.getLogger(ArrangePrepareScheduleImpl_1.class);
 
     @Autowired
     private FloorService floorService;
@@ -105,6 +105,10 @@ public class ArrangePrepareSchedule1Impl {
         List<PrepareSchedule> l = psService.findByFloorAndDate(f, d);
 
         List<Line> lines = lineService.findBySitefloorAndLineType(f.getName(), 1, 2);
+        Line emptyLine = lineService.findByPrimaryKey(7);
+        if (!lines.contains(emptyLine)) {
+            lines.add(emptyLine);
+        }
 
         List<LineUserReference> users = lineUserRefService.findByLinesAndDate(lines, d);
 
@@ -256,27 +260,27 @@ public class ArrangePrepareSchedule1Impl {
                     /*
                         i   |----|
                         r |--------|   
-                    */
+                     */
                     return new Interval(restTime.getEnd(), restTime.getEnd().plusMinutes(iMin));
                 } else if (isInRestTime(restTime, i.getStart()) && !isInRestTime(restTime, i.getEnd())) {
                     /*
                         i    |--------|
                         r |----|   
-                    */
+                     */
                     int overlap = Minutes.minutesBetween(i.getStart(), restTime.getEnd()).getMinutes();
                     return new Interval(restTime.getEnd(), i.getEnd().plusMinutes(overlap));
                 } else if (!isInRestTime(restTime, i.getStart()) && isInRestTime(restTime, i.getEnd())) {
                     /*
                         i |----|
                         r   |--------|   
-                    */
+                     */
                     int overlap = Minutes.minutesBetween(restTime.getStart(), i.getEnd()).getMinutes();
                     return new Interval(i.getStart(), restTime.getEnd().plusMinutes(overlap));
                 } else {
                     /*
                         i |--------|
                         r   |----|   
-                    */
+                     */
                     return new Interval(i.getStart(), i.getEnd().plusMinutes(restMin));
                 }
             }
