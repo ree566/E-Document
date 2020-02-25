@@ -12,6 +12,8 @@ import com.advantech.model.ModelSopRemark;
 import com.advantech.model.ModelSopRemarkDetail;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,9 +33,6 @@ public class ModelSopRemarkDetailService {
 
     @Autowired
     private BabSettingHistoryService babSettingHistoryService;
-    
-    @Autowired
-    private SqlProcedureService procService; 
 
     public List<ModelSopRemarkDetail> findAll() {
         return modelSopRemarkDetailDAO.findAll();
@@ -53,7 +52,7 @@ public class ModelSopRemarkDetailService {
     }
 
     public List<ModelSopRemarkDetail> findByModelAndPeopleAndStation(String modelName, int people, int station) {
-        List<ModelSopRemarkDetail> l = procService.findModelSopRemarkDetail(modelName, people);
+        List<ModelSopRemarkDetail> l = this.findPeopleMatchDetail(modelName, people);
         if (!l.isEmpty()) {
             ModelSopRemark m = l.get(0).getModelSopRemark();
             Hibernate.initialize(m);
@@ -63,6 +62,12 @@ public class ModelSopRemarkDetailService {
             return stationData;
         }
         return l;
+    }
+
+    public List<ModelSopRemarkDetail> findPeopleMatchDetail(String modelName, int people) {
+        List<ModelSopRemarkDetail> l = modelSopRemarkDetailDAO.findByModelName(modelName);
+        Map<ModelSopRemark, List<ModelSopRemarkDetail>> groupingResult = l.stream().collect(groupingBy(ModelSopRemarkDetail::getModelSopRemark));
+        return groupingResult.values().stream().filter(list -> list.size() == people).findFirst().orElse(new ArrayList());
     }
 
     public int insert(ModelSopRemarkDetail pojo) {

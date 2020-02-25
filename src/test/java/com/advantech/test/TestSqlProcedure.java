@@ -12,6 +12,7 @@ import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.model.Bab;
 import java.util.List;
 import org.joda.time.DateTime;
+import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,46 +65,50 @@ public class TestSqlProcedure {
     @Transactional
     @Rollback(true)
     public void testProc() {
-        DateTime d = new DateTime();
+        DateTime sD = new DateTime("2020-02-03");
+        DateTime eD = new DateTime("2020-02-07");
         String st = "";
         int i = 1;
-
-//        procDAO.findBabBestLineBalanceRecord(1, d, d);
         
-//        procDAO.findBabDetail(1, 1, d, d, true); 
-        
-//        procDAO.findBabDetailWithBarcode(1, 1, d, d, true);
+//        assertTrue(!procDAO.findBabBestLineBalanceRecord(1, sD, eD).isEmpty());
+//
+//        assertTrue(!procDAO.findBabDetail(1, 1, sD, eD, true).isEmpty());
+//        
+//        procDAO.findBabDetailWithBarcode(1, 1, sD, eD, true);
+//        
 //        procDAO.findBabLastBarcodeStatus(123);
 //        procDAO.findBabLastGroupStatus(123);
-//        procDAO.findBabLineProductivity("", "", 1, "", 1, d, d);
-//        procDAO.findBabLineProductivityWithBarcode("", "", 1, "", 1, d, d);
-        
-//        procDAO.findBabPassStationExceptionReport("", "", d, d, 0); 
+//        
+//        assertTrue(!procDAO.findBabLineProductivity(null, null, 1, null, 1, sD, eD).isEmpty());
+//        procDAO.findBabLineProductivityWithBarcode(null, null, 1, null, 1, sD, eD);
+//        
+//        procDAO.findBabPassStationExceptionReport(null, null, sD, eD, 0); 
+//
+//        procDAO.findBabPassStationRecord(null, null, sD, eD, "ASSY");
 
-//        procDAO.findBabPassStationRecord("", "", d, d, ""); 
+        assertTrue(!procDAO.findBabPcsDetail(null, "ASSY", sD, eD).isEmpty());
+        procDAO.findBabPcsDetailWithBarcode(st, st, sD, eD);
 
-//        procDAO.findBabPcsDetail(st, st, d, d);
-//        procDAO.findBabPcsDetailWithBarcode(st, st, d, d);
-
-//        procDAO.findBabPreAssyProductivity(1, 1, d, d); 
-        
-//        procDAO.findLineBalanceCompare(st, st);
+//        assertTrue(!procDAO.findBabPreAssyProductivity(1, 1, sD, eD).isEmpty());
+//        
+//        procDAO.findLineBalanceCompare(st, "ASSY");
 //        procDAO.findLineBalanceCompareByBab(i);
 //        procDAO.findLineBalanceCompareByBabWithBarcode(i);
-//        procDAO.findPreAssyModuleUnexecuted(d, d);
+//        assertTrue(!procDAO.findPreAssyModuleUnexecuted(sD, eD).isEmpty());
 //        procDAO.findSensorCurrentGroupStatus(i);
-//        procDAO.findTestPassStationProductivity(d, d);
+//        assertTrue(!procDAO.findTestPassStationProductivity(sD, eD).isEmpty());
         
 //        procDAO.getTotalAbnormalData(i); //proc M3_BW.sensorTotalAbnormalCheck not found
 //        procDAO.getAbnormalData(i); proc not found
-//        procDAO.ModelSopRemarkDetail(st, i);
+
+//        assertTrue(!procDAO.ModelSopRemarkDetail("IPPC5211WS1801-T", 3).isEmpty());
         
         Bab b = babDAO.findByPrimaryKey(185);
 //        procDAO.closeBabDirectly(b);
 //        procDAO.closeBabWithSaving(b);
 //        procDAO.closeBabWithSavingWithBarcode(b);
         
-        procDAO.sensorDataClean(d.withTime(0, 0, 0, 0).toDate());
+//        procDAO.sensorDataClean(sD.withTime(0, 0, 0, 0).toDate());
         
 //        procDAO.findWorktime();
 //        procDAO.findWorktime(st);

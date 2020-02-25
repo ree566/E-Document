@@ -33,6 +33,7 @@ import com.advantech.service.FqcService;
 import com.advantech.service.LineBalancingService;
 import com.advantech.service.LineService;
 import com.advantech.service.LineUserReferenceService;
+import com.advantech.service.ModelSopRemarkDetailService;
 import com.advantech.service.PrepareScheduleService;
 import com.advantech.service.TagNameComparisonService;
 import com.advantech.service.UserService;
@@ -123,7 +124,7 @@ public class TestService {
         new HandleUncloseBab().executeInternal(null);
     }
 
-    @Test
+//    @Test
     @Transactional
     @Rollback(true)
     public void testBabSettingHistoryService() {
@@ -396,4 +397,14 @@ public class TestService {
         HibernateObjectPrinter.print(users.get(0));
     }
 
+    @Autowired
+    private ModelSopRemarkDetailService modelSopRemarkDetailService;
+    
+    @Test
+    @Transactional
+    @Rollback(true)
+    public void testModelSopRemarkDetailService(){
+        assertTrue(!modelSopRemarkDetailService.findPeopleMatchDetail("TPC-1582H-433BE", 4).isEmpty());
+        assertTrue(modelSopRemarkDetailService.findPeopleMatchDetail("TPC-1582H-4VVV33BE", 1).isEmpty());
+    }
 }

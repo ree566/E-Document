@@ -277,14 +277,4 @@ public class SqlProcedureDAO extends AbstractDao<Integer, Object> {
         return 1;
     }
 
-    public List<ModelSopRemarkDetail> ModelSopRemarkDetail(String modelName, int people) {
-        //Model's sop may be multiple.
-
-        return super.getSession().createSQLQuery("{CALL M3_BW.usp_GetModelSopRemarkDetail(:modelName, :people)}")
-                .setParameter("modelName", modelName)
-                .setParameter("people", people)
-                .setResultTransformer(Transformers.aliasToBean(ModelSopRemarkDetail.class))
-                .list();
-    }
-
 }

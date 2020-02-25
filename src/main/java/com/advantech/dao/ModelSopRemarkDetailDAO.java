@@ -6,10 +6,8 @@
 package com.advantech.dao;
 
 import com.advantech.model.ModelSopRemarkDetail;
-import com.advantech.model.view.SensorCurrentGroupStatus;
 import java.util.List;
 import org.hibernate.criterion.Restrictions;
-import org.hibernate.transform.Transformers;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -27,6 +25,13 @@ public class ModelSopRemarkDetailDAO extends AbstractDao<Integer, ModelSopRemark
     @Override
     public ModelSopRemarkDetail findByPrimaryKey(Object obj_id) {
         return super.getByKey((int) obj_id);
+    }
+
+    public List<ModelSopRemarkDetail> findByModelName(String modelName) {
+        return super.createEntityCriteria()
+                .createAlias("modelSopRemark", "mr")
+                .add(Restrictions.eq("mr.modelName", modelName))
+                .list();
     }
 
     @Override

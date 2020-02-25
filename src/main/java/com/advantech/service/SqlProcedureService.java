@@ -153,8 +153,4 @@ public class SqlProcedureService {
         return sqlProcedureDAO.sensorDataClean(date);
     }
 
-    public List<ModelSopRemarkDetail> findModelSopRemarkDetail(String modelName, int people) {
-        return sqlProcedureDAO.ModelSopRemarkDetail(modelName, people);
-    }
-
 }
