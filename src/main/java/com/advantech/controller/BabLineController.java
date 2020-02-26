@@ -6,7 +6,6 @@
  */
 package com.advantech.controller;
 
-import com.advantech.helper.HibernateObjectPrinter;
 import static com.advantech.helper.SecurityPropertiesUtils.*;
 import com.advantech.model.Line;
 import com.advantech.model.LineType;
