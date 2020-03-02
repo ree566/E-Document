@@ -10,6 +10,7 @@ import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.model.Type;
 import com.advantech.model.Worktime;
 import com.advantech.service.WorktimeService;
+import com.advantech.webservice.port.SopUploadPort;
 import com.google.gson.Gson;
 import java.io.File;
 import java.io.FileInputStream;
@@ -90,13 +91,16 @@ public class ExcelTest {
             }
         }
     }
+    
+    @Autowired
+    private SopUploadPort sopPort;
 
     @Test
     @Transactional
     @Rollback(false)
     public void testFileSyncToDb() throws Exception {
 
-        String syncFilePath = "C:\\Users\\Wei.Cheng\\Desktop\\worktime-template_加SAP工時.xls";
+        String syncFilePath = "C:\\Users\\Wei.Cheng\\Desktop\\worktime-PMC.xls";
         try (InputStream is = new FileInputStream(new File(syncFilePath))) {
 
             Session session = sessionFactory.getCurrentSession();
@@ -122,10 +126,10 @@ public class ExcelTest {
                         continue;
                     }
 
-                    w.setSapWt(objToBigDecimal(getCellValue(row, "BX")));
+                    w.setTestSop(w.getTestSop() + ", M-07-TT0986");
                     System.out.println("Update modelName: " + modelName);
                     session.update(w);
-
+                    sopPort.update(w);
                 }
             }
         }
