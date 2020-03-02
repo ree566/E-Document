@@ -7,11 +7,11 @@
 package com.advantech.controller;
 
 import static com.advantech.helper.SecurityPropertiesUtils.*;
-import com.advantech.model.Line;
-import com.advantech.model.LineType;
-import com.advantech.model.User;
-import com.advantech.service.LineService;
-import com.advantech.service.LineTypeService;
+import com.advantech.model.db1.Line;
+import com.advantech.model.db1.LineType;
+import com.advantech.model.db1.User;
+import com.advantech.service.db1.LineService;
+import com.advantech.service.db1.LineTypeService;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;

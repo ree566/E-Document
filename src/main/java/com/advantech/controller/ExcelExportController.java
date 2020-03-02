@@ -7,7 +7,7 @@ package com.advantech.controller;
 
 import com.advantech.helper.DatetimeGenerator;
 import com.advantech.helper.ExcelGenerator;
-import com.advantech.service.SystemReportService;
+import com.advantech.service.db1.SystemReportService;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;

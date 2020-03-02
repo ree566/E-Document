@@ -7,7 +7,7 @@ package com.advantech.quartzJob;
 
 import com.advantech.helper.ApplicationContextHelper;
 import com.advantech.helper.DatetimeGenerator;
-import com.advantech.service.SqlProcedureService;
+import com.advantech.service.db1.SqlProcedureService;
 import org.joda.time.DateTime;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;

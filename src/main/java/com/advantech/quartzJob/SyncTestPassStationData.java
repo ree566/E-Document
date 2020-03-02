@@ -5,10 +5,10 @@
  */
 package com.advantech.quartzJob;
 
-import com.advantech.model.TestPassStationDetail;
-import com.advantech.model.TestRecord;
-import com.advantech.service.TestPassStationDetailService;
-import com.advantech.service.TestRecordService;
+import com.advantech.model.db1.TestPassStationDetail;
+import com.advantech.model.db1.TestRecord;
+import com.advantech.service.db1.TestPassStationDetailService;
+import com.advantech.service.db1.TestRecordService;
 import com.advantech.webservice.Factory;
 import com.advantech.webservice.Section;
 import com.advantech.webservice.WebServiceRV;

@@ -6,13 +6,13 @@
  */
 package com.advantech.quartzJob;
 
-import com.advantech.model.Bab;
+import com.advantech.model.db1.Bab;
 import com.advantech.helper.ApplicationContextHelper;
 import com.advantech.helper.MailManager;
-import com.advantech.model.User;
+import com.advantech.model.db1.User;
 import com.advantech.model.view.SensorCurrentGroupStatus;
-import com.advantech.service.SqlProcedureService;
-import com.advantech.service.SqlViewService;
+import com.advantech.service.db1.SqlProcedureService;
+import com.advantech.service.db1.SqlViewService;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;

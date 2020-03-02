@@ -5,7 +5,7 @@
  */
 package com.advantech.converter;
 
-import com.advantech.model.BabDataCollectMode;
+import com.advantech.model.db1.BabDataCollectMode;
 import javax.persistence.Converter;
 
 /**

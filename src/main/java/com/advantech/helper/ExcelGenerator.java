@@ -5,10 +5,10 @@
  */
 package com.advantech.helper;
 
-import com.advantech.model.Bab;
-import com.advantech.service.BabService;
-import com.advantech.service.FbnService;
-import com.advantech.service.SqlProcedureService;
+import com.advantech.model.db1.Bab;
+import com.advantech.service.db1.BabService;
+import com.advantech.service.db1.FbnService;
+import com.advantech.service.db1.SqlProcedureService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.FileOutputStream;
 import static java.lang.System.out;

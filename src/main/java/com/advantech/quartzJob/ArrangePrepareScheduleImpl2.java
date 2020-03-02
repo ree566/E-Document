@@ -5,19 +5,19 @@
  */
 package com.advantech.quartzJob;
 
-import com.advantech.model.Bab;
-import com.advantech.model.BabSettingHistory;
-import com.advantech.model.Floor;
-import com.advantech.model.Line;
-import com.advantech.model.LineUserReference;
-import com.advantech.model.PrepareSchedule;
-import com.advantech.model.User;
-import com.advantech.service.BabService;
-import com.advantech.service.BabSettingHistoryService;
-import com.advantech.service.FloorService;
-import com.advantech.service.LineService;
-import com.advantech.service.LineUserReferenceService;
-import com.advantech.service.PrepareScheduleService;
+import com.advantech.model.db1.Bab;
+import com.advantech.model.db1.BabSettingHistory;
+import com.advantech.model.db1.Floor;
+import com.advantech.model.db1.Line;
+import com.advantech.model.db1.LineUserReference;
+import com.advantech.model.db1.PrepareSchedule;
+import com.advantech.model.db1.User;
+import com.advantech.service.db1.BabService;
+import com.advantech.service.db1.BabSettingHistoryService;
+import com.advantech.service.db1.FloorService;
+import com.advantech.service.db1.LineService;
+import com.advantech.service.db1.LineUserReferenceService;
+import com.advantech.service.db1.PrepareScheduleService;
 import static com.google.common.collect.Lists.newArrayList;
 import java.math.BigDecimal;
 import java.math.RoundingMode;

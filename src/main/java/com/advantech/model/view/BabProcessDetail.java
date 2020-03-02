@@ -5,7 +5,7 @@
  */
 package com.advantech.model.view;
 
-import com.advantech.model.Bab;
+import com.advantech.model.db1.Bab;
 import java.util.List;
 import org.joda.time.Interval;
 

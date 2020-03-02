@@ -5,38 +5,38 @@
  */
 package com.advantech.test;
 
-import com.advantech.dao.AlarmTestActionDAO;
-import com.advantech.dao.BabDAO;
-import com.advantech.dao.BabPassStationRecordDAO;
-import com.advantech.dao.BabSettingHistoryDAO;
-import com.advantech.dao.FloorDAO;
-import com.advantech.dao.LineDAO;
-import com.advantech.dao.LineUserReferenceDAO;
-import com.advantech.dao.PrepareScheduleDAO;
-import com.advantech.dao.SqlViewDAO;
+import com.advantech.dao.db1.AlarmTestActionDAO;
+import com.advantech.dao.db1.BabDAO;
+import com.advantech.dao.db1.BabPassStationRecordDAO;
+import com.advantech.dao.db1.BabSettingHistoryDAO;
+import com.advantech.dao.db1.FloorDAO;
+import com.advantech.dao.db1.LineDAO;
+import com.advantech.dao.db1.LineUserReferenceDAO;
+import com.advantech.dao.db1.PrepareScheduleDAO;
+import com.advantech.dao.db1.SqlViewDAO;
 import com.advantech.helper.HibernateObjectPrinter;
-import com.advantech.model.AlarmBabAction;
-import com.advantech.model.Bab;
-import com.advantech.model.BabAlarmHistory;
-import com.advantech.model.BabPassStationRecord;
-import com.advantech.model.BabPcsDetailHistory;
-import com.advantech.model.BabSensorLoginRecord;
-import com.advantech.model.BabSettingHistory;
-import com.advantech.model.BabStatus;
-import com.advantech.model.CountermeasureEvent;
-import com.advantech.model.Floor;
-import com.advantech.model.Fqc;
-import com.advantech.model.FqcTimeTemp;
-import com.advantech.model.Line;
-import com.advantech.model.LineUserReference;
-import com.advantech.model.PrepareSchedule;
-import com.advantech.model.ReplyStatus;
-import com.advantech.model.SensorTransform;
-import com.advantech.model.TagNameComparison;
-import com.advantech.model.User;
+import com.advantech.model.db1.AlarmBabAction;
+import com.advantech.model.db1.Bab;
+import com.advantech.model.db1.BabAlarmHistory;
+import com.advantech.model.db1.BabPassStationRecord;
+import com.advantech.model.db1.BabPcsDetailHistory;
+import com.advantech.model.db1.BabSensorLoginRecord;
+import com.advantech.model.db1.BabSettingHistory;
+import com.advantech.model.db1.BabStatus;
+import com.advantech.model.db1.CountermeasureEvent;
+import com.advantech.model.db1.Floor;
+import com.advantech.model.db1.Fqc;
+import com.advantech.model.db1.FqcTimeTemp;
+import com.advantech.model.db1.Line;
+import com.advantech.model.db1.LineUserReference;
+import com.advantech.model.db1.PrepareSchedule;
+import com.advantech.model.db1.ReplyStatus;
+import com.advantech.model.db1.SensorTransform;
+import com.advantech.model.db1.TagNameComparison;
+import com.advantech.model.db1.User;
 import com.advantech.security.State;
-import com.advantech.service.BabPcsDetailHistoryService;
-import com.advantech.service.PassStationRecordService;
+import com.advantech.service.db1.BabPcsDetailHistoryService;
+import com.advantech.service.db1.PassStationRecordService;
 import com.advantech.webservice.WebServiceRV;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import static com.google.common.collect.Lists.newArrayList;
@@ -98,7 +98,7 @@ public class TestHibernate {
     private BabDAO babDAO;
 
     @Autowired
-    private com.advantech.dao.TestDAO testDAO;
+    private com.advantech.dao.db1.TestDAO testDAO;
 
     @Autowired
     private BabPcsDetailHistoryService pcsHistoryService;

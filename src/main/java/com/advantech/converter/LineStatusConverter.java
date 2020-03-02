@@ -5,7 +5,7 @@
  */
 package com.advantech.converter;
 
-import com.advantech.model.LineStatus;
+import com.advantech.model.db1.LineStatus;
 import javax.persistence.Converter;
 
 /**

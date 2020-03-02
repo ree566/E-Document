@@ -6,10 +6,10 @@
 package com.advantech.controller;
 
 import com.advantech.datatable.DataTableResponse;
-import com.advantech.model.Bab;
-import com.advantech.model.TagNameComparison;
-import com.advantech.service.BabSettingHistoryService;
-import com.advantech.service.TagNameComparisonService;
+import com.advantech.model.db1.Bab;
+import com.advantech.model.db1.TagNameComparison;
+import com.advantech.service.db1.BabSettingHistoryService;
+import com.advantech.service.db1.TagNameComparisonService;
 import static com.google.common.base.Preconditions.checkArgument;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;

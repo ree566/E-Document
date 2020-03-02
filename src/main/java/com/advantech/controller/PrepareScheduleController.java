@@ -7,12 +7,12 @@ package com.advantech.controller;
 
 import com.advantech.datatable.DataTableResponse;
 import com.advantech.helper.SecurityPropertiesUtils;
-import com.advantech.model.Floor;
-import com.advantech.model.PrepareSchedule;
-import com.advantech.model.User;
+import com.advantech.model.db1.Floor;
+import com.advantech.model.db1.PrepareSchedule;
+import com.advantech.model.db1.User;
 import com.advantech.quartzJob.ArrangePrepareSchedule1Impl;
-import com.advantech.service.FloorService;
-import com.advantech.service.PrepareScheduleService;
+import com.advantech.service.db1.FloorService;
+import com.advantech.service.db1.PrepareScheduleService;
 import static com.google.common.base.Preconditions.checkState;
 import java.util.Date;
 import java.util.List;

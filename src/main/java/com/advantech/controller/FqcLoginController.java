@@ -6,10 +6,10 @@
  */
 package com.advantech.controller;
 
-import com.advantech.model.FqcLine;
-import com.advantech.model.FqcLoginRecord;
-import com.advantech.service.FqcLineService;
-import com.advantech.service.FqcLoginRecordService;
+import com.advantech.model.db1.FqcLine;
+import com.advantech.model.db1.FqcLoginRecord;
+import com.advantech.service.db1.FqcLineService;
+import com.advantech.service.db1.FqcLoginRecordService;
 import static com.google.common.base.Preconditions.checkArgument;
 import java.io.*;
 import org.quartz.SchedulerException;

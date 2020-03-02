@@ -7,8 +7,8 @@
 package com.advantech.controller;
 
 import com.advantech.datatable.DataTableResponse;
-import com.advantech.model.PreAssyModuleType;
-import com.advantech.service.PreAssyModuleTypeService;
+import com.advantech.model.db1.PreAssyModuleType;
+import com.advantech.service.db1.PreAssyModuleTypeService;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

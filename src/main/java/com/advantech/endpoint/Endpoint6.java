@@ -5,8 +5,8 @@
  */
 package com.advantech.endpoint;
 
-import com.advantech.model.Bab;
-import com.advantech.service.SqlViewService;
+import com.advantech.model.db1.Bab;
+import com.advantech.service.db1.SqlViewService;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;

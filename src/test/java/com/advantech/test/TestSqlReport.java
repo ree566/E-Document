@@ -5,9 +5,9 @@
  */
 package com.advantech.test;
 
-import com.advantech.dao.BabPcsDetailHistoryDAO;
+import com.advantech.dao.db1.BabPcsDetailHistoryDAO;
 import com.advantech.helper.HibernateObjectPrinter;
-import com.advantech.service.SystemReportService;
+import com.advantech.service.db1.SystemReportService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.List;
 import org.joda.time.DateTime;

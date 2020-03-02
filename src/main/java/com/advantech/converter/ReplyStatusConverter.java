@@ -5,7 +5,7 @@
  */
 package com.advantech.converter;
 
-import com.advantech.model.ReplyStatus;
+import com.advantech.model.db1.ReplyStatus;
 import javax.persistence.Converter;
 
 /**

@@ -5,16 +5,16 @@
  */
 package com.advantech.webservice;
 
-import com.advantech.model.MesPassCountRecord;
-import com.advantech.model.MesPassCountRecords;
-import com.advantech.model.PassStationRecord;
-import com.advantech.model.PassStationRecords;
-import com.advantech.model.Test;
-import com.advantech.model.TestPassStationDetail;
-import com.advantech.model.TestPassStationDetails;
-import com.advantech.model.TestRecord;
-import com.advantech.model.TestRecords;
-import com.advantech.model.UserOnMes;
+import com.advantech.model.db1.MesPassCountRecord;
+import com.advantech.model.db1.MesPassCountRecords;
+import com.advantech.model.db1.PassStationRecord;
+import com.advantech.model.db1.PassStationRecords;
+import com.advantech.model.db1.Test;
+import com.advantech.model.db1.TestPassStationDetail;
+import com.advantech.model.db1.TestPassStationDetails;
+import com.advantech.model.db1.TestRecord;
+import com.advantech.model.db1.TestRecords;
+import com.advantech.model.db1.UserOnMes;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

@@ -6,12 +6,12 @@
  */
 package com.advantech.controller;
 
-import com.advantech.model.BabSensorLoginRecord;
-import com.advantech.model.BabSettingHistory;
-import com.advantech.model.TagNameComparison;
-import com.advantech.service.BabSensorLoginRecordService;
-import com.advantech.service.BabSettingHistoryService;
-import com.advantech.service.TagNameComparisonService;
+import com.advantech.model.db1.BabSensorLoginRecord;
+import com.advantech.model.db1.BabSettingHistory;
+import com.advantech.model.db1.TagNameComparison;
+import com.advantech.service.db1.BabSensorLoginRecordService;
+import com.advantech.service.db1.BabSettingHistoryService;
+import com.advantech.service.db1.TagNameComparisonService;
 import static com.google.common.base.Preconditions.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

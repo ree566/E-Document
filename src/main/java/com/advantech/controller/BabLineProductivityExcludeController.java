@@ -5,10 +5,10 @@
  */
 package com.advantech.controller;
 
-import com.advantech.model.Bab;
-import com.advantech.model.BabLineProductivityExclude;
-import com.advantech.service.BabLineProductivityExcludeService;
-import com.advantech.service.BabService;
+import com.advantech.model.db1.Bab;
+import com.advantech.model.db1.BabLineProductivityExclude;
+import com.advantech.service.db1.BabLineProductivityExcludeService;
+import com.advantech.service.db1.BabService;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;

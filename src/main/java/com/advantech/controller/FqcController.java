@@ -7,15 +7,15 @@
 package com.advantech.controller;
 
 import com.advantech.converter.BabStatusControllerConverter;
-import com.advantech.model.BabStatus;
-import com.advantech.model.Fqc;
-import com.advantech.model.FqcModelStandardTime;
-import com.advantech.model.FqcProductivityHistory;
-import com.advantech.model.FqcTimeTemp;
-import com.advantech.service.FqcModelStandardTimeService;
-import com.advantech.service.FqcProductivityHistoryService;
-import com.advantech.service.FqcService;
-import com.advantech.service.FqcTimeTempService;
+import com.advantech.model.db1.BabStatus;
+import com.advantech.model.db1.Fqc;
+import com.advantech.model.db1.FqcModelStandardTime;
+import com.advantech.model.db1.FqcProductivityHistory;
+import com.advantech.model.db1.FqcTimeTemp;
+import com.advantech.service.db1.FqcModelStandardTimeService;
+import com.advantech.service.db1.FqcProductivityHistoryService;
+import com.advantech.service.db1.FqcService;
+import com.advantech.service.db1.FqcTimeTempService;
 import static com.google.common.base.Preconditions.*;
 import java.util.Comparator;
 import java.util.List;

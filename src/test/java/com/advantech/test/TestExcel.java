@@ -7,12 +7,12 @@ package com.advantech.test;
 
 import com.advantech.helper.ExampleEventUserModel;
 import com.advantech.helper.HibernateObjectPrinter;
-import com.advantech.model.Bab;
-import com.advantech.model.BabStatus;
-import com.advantech.model.Floor;
-import com.advantech.model.FqcModelStandardTime;
-import com.advantech.model.LineType;
-import com.advantech.model.PrepareSchedule;
+import com.advantech.model.db1.Bab;
+import com.advantech.model.db1.BabStatus;
+import com.advantech.model.db1.Floor;
+import com.advantech.model.db1.FqcModelStandardTime;
+import com.advantech.model.db1.LineType;
+import com.advantech.model.db1.PrepareSchedule;
 import com.monitorjbl.xlsx.StreamingReader;
 import java.io.File;
 import java.io.FileInputStream;

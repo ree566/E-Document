@@ -5,7 +5,7 @@
  */
 package com.advantech.quartzJob;
 
-import com.advantech.model.Bab;
+import com.advantech.model.db1.Bab;
 import com.advantech.helper.ApplicationContextHelper;
 import com.advantech.helper.CronTrigMod;
 import java.util.HashMap;

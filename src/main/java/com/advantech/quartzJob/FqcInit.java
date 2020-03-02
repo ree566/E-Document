@@ -7,8 +7,8 @@
 package com.advantech.quartzJob;
 
 import com.advantech.helper.ApplicationContextHelper;
-import com.advantech.model.FqcLoginRecord;
-import com.advantech.service.FqcLoginRecordService;
+import com.advantech.model.db1.FqcLoginRecord;
+import com.advantech.service.db1.FqcLoginRecordService;
 import java.util.List;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;

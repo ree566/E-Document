@@ -7,8 +7,8 @@
 package com.advantech.controller;
 
 import com.advantech.datatable.DataTableResponse;
-import com.advantech.model.FqcProductivityHistory;
-import com.advantech.service.FqcProductivityHistoryService;
+import com.advantech.model.db1.FqcProductivityHistory;
+import com.advantech.service.db1.FqcProductivityHistoryService;
 import java.io.*;
 import org.joda.time.DateTime;
 import org.quartz.SchedulerException;

@@ -8,8 +8,8 @@ package com.advantech.quartzJob;
 
 import com.advantech.endpoint.Endpoint;
 import com.advantech.helper.PropertiesReader;
-import com.advantech.model.BabDataCollectMode;
-import com.advantech.service.FbnService;
+import com.advantech.model.db1.BabDataCollectMode;
+import com.advantech.service.db1.FbnService;
 import com.google.gson.Gson;
 import javax.annotation.PostConstruct;
 import org.slf4j.Logger;

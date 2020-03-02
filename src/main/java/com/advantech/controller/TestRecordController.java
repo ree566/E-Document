@@ -8,12 +8,12 @@ package com.advantech.controller;
 
 import com.advantech.datatable.DataTableResponse;
 import static com.advantech.helper.SecurityPropertiesUtils.retrieveAndCheckUserInSession;
-import com.advantech.model.ReplyStatus;
-import com.advantech.model.TestRecord;
-import com.advantech.model.TestRecordRemark;
-import com.advantech.model.User;
-import com.advantech.service.TestRecordRemarkService;
-import com.advantech.service.TestRecordService;
+import com.advantech.model.db1.ReplyStatus;
+import com.advantech.model.db1.TestRecord;
+import com.advantech.model.db1.TestRecordRemark;
+import com.advantech.model.db1.User;
+import com.advantech.service.db1.TestRecordRemarkService;
+import com.advantech.service.db1.TestRecordService;
 import java.io.*;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;

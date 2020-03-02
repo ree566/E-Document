@@ -5,8 +5,8 @@
  */
 package com.advantech.test;
 
-import com.advantech.model.Bab;
-import com.advantech.service.BabService;
+import com.advantech.model.db1.Bab;
+import com.advantech.service.db1.BabService;
 import com.advantech.webservice.Factory;
 import com.google.common.collect.ImmutableMap;
 import java.util.List;
@@ -155,6 +155,7 @@ public class TestController {
         DateTime eD = new DateTime().withTime(23, 0, 0, 0);
         List<Bab> l = babService.findByModelAndDate("TEST", sD, eD);
         assertTrue(!l.isEmpty());
+        babService.delete(l.get(l.size()));
     }
 
     @Test

@@ -6,14 +6,14 @@
 package com.advantech.controller;
 
 import com.advantech.datatable.DataTableResponse;
-import com.advantech.model.Bab;
-import com.advantech.model.BabStatus;
+import com.advantech.model.db1.Bab;
+import com.advantech.model.db1.BabStatus;
 import com.advantech.model.view.BabAvg;
 import com.advantech.model.view.Worktime;
-import com.advantech.service.BabService;
-import com.advantech.service.LineBalancingService;
-import com.advantech.service.SqlProcedureService;
-import com.advantech.service.SqlViewService;
+import com.advantech.service.db1.BabService;
+import com.advantech.service.db2.LineBalancingService;
+import com.advantech.service.db1.SqlProcedureService;
+import com.advantech.service.db1.SqlViewService;
 import static com.google.common.base.Preconditions.checkArgument;
 import java.math.BigDecimal;
 import java.math.RoundingMode;

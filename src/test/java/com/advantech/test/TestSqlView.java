@@ -5,8 +5,8 @@
  */
 package com.advantech.test;
 
-import com.advantech.dao.BabPcsDetailHistoryDAO;
-import com.advantech.dao.SqlViewDAO;
+import com.advantech.dao.db1.BabPcsDetailHistoryDAO;
+import com.advantech.dao.db1.SqlViewDAO;
 import com.advantech.helper.HibernateObjectPrinter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.List;

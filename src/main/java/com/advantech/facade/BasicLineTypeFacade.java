@@ -23,7 +23,7 @@ import org.springframework.stereotype.Component;
  * @author Wei.Cheng
  */
 @Component
-public abstract class BasicLineTypeFacade implements com.advantech.service.AlarmAction {
+public abstract class BasicLineTypeFacade implements com.advantech.service.db1.AlarmAction {
 
     private static final Logger log = LoggerFactory.getLogger(BasicLineTypeFacade.class);
 
@@ -97,7 +97,7 @@ public abstract class BasicLineTypeFacade implements com.advantech.service.Alarm
         setAlarmSign(mapToAlarmSign(map));
     }
 
-    protected abstract List<com.advantech.model.AlarmAction> mapToAlarmSign(Map map);
+    protected abstract List<com.advantech.model.db1.AlarmAction> mapToAlarmSign(Map map);
 
     public void resetAlarm() throws IOException {
         if (isWriteToDB) {

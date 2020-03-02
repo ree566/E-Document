@@ -7,10 +7,10 @@
 package com.advantech.quartzJob;
 
 import com.advantech.helper.ApplicationContextHelper;
-import com.advantech.model.MesLine;
-import com.advantech.model.MesPassCountRecord;
-import com.advantech.service.MesLineService;
-import com.advantech.service.MesPassCountService;
+import com.advantech.model.db1.MesLine;
+import com.advantech.model.db1.MesPassCountRecord;
+import com.advantech.service.db1.MesLineService;
+import com.advantech.service.db1.MesPassCountService;
 import com.advantech.webservice.Factory;
 import com.advantech.webservice.WebServiceRV;
 import java.util.List;
