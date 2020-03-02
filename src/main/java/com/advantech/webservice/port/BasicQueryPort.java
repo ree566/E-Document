@@ -7,7 +7,7 @@ package com.advantech.webservice.port;
 
 import com.advantech.model.Worktime;
 import com.advantech.webservice.WsClient;
-import com.advantech.webservice.root.QueryResult;
+import com.advantech.webservice.unmarshallclass.QueryResult;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;

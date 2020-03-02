@@ -18,18 +18,19 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "root")
-public class MaterialPropertyUserPermissions implements Serializable, QueryResult<MaterialPropertyUserPermission> {
+public class StandardWorkTimes implements Serializable, QueryResult<StandardWorkTime> {
 
-    @XmlElement(name = "QryMatPropertyUser002", type = MaterialPropertyUserPermission.class)
-    private List<MaterialPropertyUserPermission> QryData;
+    @XmlElement(name = "QryData", type = StandardWorkTime.class)
+    private List<StandardWorkTime> QryData;
 
     @Override
-    public List<MaterialPropertyUserPermission> getQryData() {
+    public List<StandardWorkTime> getQryData() {
         return QryData;
     }
 
     @Override
-    public void setQryData(List<MaterialPropertyUserPermission> QryData) {
+    public void setQryData(List<StandardWorkTime> QryData) {
         this.QryData = QryData;
     }
+
 }

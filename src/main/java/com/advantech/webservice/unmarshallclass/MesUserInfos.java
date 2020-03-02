@@ -5,7 +5,6 @@
  */
 package com.advantech.webservice.unmarshallclass;
 
-import com.advantech.webservice.root.QueryResult;
 import java.io.Serializable;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
