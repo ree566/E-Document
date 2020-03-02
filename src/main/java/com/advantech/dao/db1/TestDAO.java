@@ -20,7 +20,7 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class TestDAO extends AbstractDao_1<Integer, Test> implements BasicDAO_1<Test> {
+public class TestDAO extends AbstractDao<Integer, Test> implements BasicDAO_1<Test> {
 
     @Autowired
     private AlarmTestActionDAO alarmTestActionDAO;

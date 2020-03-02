@@ -23,7 +23,7 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class FbnDAO extends AbstractDao_1<Integer, Fbn> {
+public class FbnDAO extends AbstractDao<Integer, Fbn> {
 
     public List<Fbn> findToday() {
         DateTimeFormatter dtf = DateTimeFormat.forPattern("YY/MM/dd");

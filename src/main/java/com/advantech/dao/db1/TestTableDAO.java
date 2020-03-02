@@ -16,7 +16,7 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class TestTableDAO extends AbstractDao_1<Integer, TestTable> implements BasicDAO_1<TestTable> {
+public class TestTableDAO extends AbstractDao<Integer, TestTable> implements BasicDAO_1<TestTable> {
 
     @Override
     public List<TestTable> findAll() {

@@ -15,7 +15,7 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class BabBalanceHistoryDAO extends AbstractDao_1<Integer, BabBalanceHistory> {
+public class BabBalanceHistoryDAO extends AbstractDao<Integer, BabBalanceHistory> {
 
     public List<BabBalanceHistory> findByBab(int bab_id) {
         return super.createEntityCriteria()

@@ -23,7 +23,7 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class SqlProcedureDAO extends AbstractDao_1<Integer, Object> {
+public class SqlProcedureDAO extends AbstractDao<Integer, Object> {
 
     public List<BabLastGroupStatus> findBabLastGroupStatus(int bab_id) {
         return super.getSession()

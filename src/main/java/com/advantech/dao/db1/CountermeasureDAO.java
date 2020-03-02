@@ -18,7 +18,7 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng bab資料表就是生產工單資料表
  */
 @Repository
-public class CountermeasureDAO extends AbstractDao_1<Integer, Countermeasure> implements BasicDAO_1<Countermeasure> {
+public class CountermeasureDAO extends AbstractDao<Integer, Countermeasure> implements BasicDAO_1<Countermeasure> {
 
     @Override
     public List<Countermeasure> findAll() {

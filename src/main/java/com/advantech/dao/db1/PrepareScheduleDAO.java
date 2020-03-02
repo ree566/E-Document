@@ -18,7 +18,7 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class PrepareScheduleDAO extends AbstractDao_1<Integer, PrepareSchedule> implements BasicDAO_1<PrepareSchedule> {
+public class PrepareScheduleDAO extends AbstractDao<Integer, PrepareSchedule> implements BasicDAO_1<PrepareSchedule> {
 
     @Override
     public List<PrepareSchedule> findAll() {

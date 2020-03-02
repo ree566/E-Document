@@ -22,7 +22,7 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class FqcProductivityHistoryDAO extends AbstractDao_1<Integer, FqcProductivityHistory> implements BasicDAO_1<FqcProductivityHistory> {
+public class FqcProductivityHistoryDAO extends AbstractDao<Integer, FqcProductivityHistory> implements BasicDAO_1<FqcProductivityHistory> {
 
     @Override
     public List<FqcProductivityHistory> findAll() {

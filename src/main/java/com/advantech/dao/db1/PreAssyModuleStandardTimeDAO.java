@@ -19,7 +19,7 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class PreAssyModuleStandardTimeDAO extends AbstractDao_1<Integer, PreAssyModuleStandardTime> implements BasicDAO_1<PreAssyModuleStandardTime> {
+public class PreAssyModuleStandardTimeDAO extends AbstractDao<Integer, PreAssyModuleStandardTime> implements BasicDAO_1<PreAssyModuleStandardTime> {
 
     @Override
     public List<PreAssyModuleStandardTime> findAll() {

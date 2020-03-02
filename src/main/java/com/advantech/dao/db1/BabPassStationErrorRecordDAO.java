@@ -16,7 +16,7 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class BabPassStationErrorRecordDAO extends AbstractDao_1<Integer, BabPassStationErrorRecord> implements BasicDAO_1<BabPassStationErrorRecord> {
+public class BabPassStationErrorRecordDAO extends AbstractDao<Integer, BabPassStationErrorRecord> implements BasicDAO_1<BabPassStationErrorRecord> {
 
     @Override
     public List<BabPassStationErrorRecord> findAll() {

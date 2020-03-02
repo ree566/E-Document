@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class BabCollectModeChangeEventDAO extends AbstractDao_1<Integer, BabCollectModeChangeEvent> implements BasicDAO_1<BabCollectModeChangeEvent> {
+public class BabCollectModeChangeEventDAO extends AbstractDao<Integer, BabCollectModeChangeEvent> implements BasicDAO_1<BabCollectModeChangeEvent> {
 
     @Override
     public List<BabCollectModeChangeEvent> findAll() {

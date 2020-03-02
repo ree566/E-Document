@@ -16,7 +16,7 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class ErrorCodeDAO extends AbstractDao_1<Integer, ErrorCode> implements BasicDAO_1<ErrorCode> {
+public class ErrorCodeDAO extends AbstractDao<Integer, ErrorCode> implements BasicDAO_1<ErrorCode> {
 
     @Override
     public List<ErrorCode> findAll() {

@@ -17,7 +17,7 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng Read the config from db and put in static variable
  */
 @Repository
-public class LineTypeConfigDAO extends AbstractDao_1<Integer, LineTypeConfig> implements BasicDAO_1<LineTypeConfig> {
+public class LineTypeConfigDAO extends AbstractDao<Integer, LineTypeConfig> implements BasicDAO_1<LineTypeConfig> {
 
     @Override
     public List<LineTypeConfig> findAll() {

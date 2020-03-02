@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.advantech.model.view;
+package com.advantech.model.db1;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -13,33 +13,43 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import org.hibernate.annotations.Immutable;
 
 /**
  *
- * @author Wei.Cheng
- * vw_worktime
+ * @author Wei.Cheng vw_worktime
  */
 @Entity
-@Immutable
-@Table(name = "vw_WorkTime")
+@Table(name = "vTb_WorkTime")
 public class Worktime implements Serializable {
 
+    private int id;
     private String modelName;
     private String floorName;
     private String speOwnerName;
     private String eeOwnerName;
     private String qcOwnerName;
-    private BigDecimal assyTime;
-    private BigDecimal t1Time;
-    private BigDecimal t2Time;
-    private BigDecimal packingTime;
+    private BigDecimal preAssy;
+    private BigDecimal assy;
+    private BigDecimal t1;
+    private BigDecimal t2;
+    private BigDecimal t3;
+    private BigDecimal t4;
+    private BigDecimal packing;
     private int assyPeople;
     private int packingPeople;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "modelName", unique = true, updatable = false)
+    @Column(name = "id", unique = true, nullable = false)
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    @Column(name = "modelName", unique = true)
     public String getModelName() {
         return modelName;
     }
@@ -48,7 +58,7 @@ public class Worktime implements Serializable {
         this.modelName = modelName;
     }
 
-    @Column(name = "floorName", updatable = false)
+    @Column(name = "floorName")
     public String getFloorName() {
         return floorName;
     }
@@ -57,7 +67,7 @@ public class Worktime implements Serializable {
         this.floorName = floorName;
     }
 
-    @Column(name = "speOwnerName", updatable = false)
+    @Column(name = "speOwnerName")
     public String getSpeOwnerName() {
         return speOwnerName;
     }
@@ -66,7 +76,7 @@ public class Worktime implements Serializable {
         this.speOwnerName = speOwnerName;
     }
 
-    @Column(name = "eeOwnerName", updatable = false)
+    @Column(name = "eeOwnerName")
     public String getEeOwnerName() {
         return eeOwnerName;
     }
@@ -75,7 +85,7 @@ public class Worktime implements Serializable {
         this.eeOwnerName = eeOwnerName;
     }
 
-    @Column(name = "qcOwnerName", updatable = false)
+    @Column(name = "qcOwnerName")
     public String getQcOwnerName() {
         return qcOwnerName;
     }
@@ -84,43 +94,70 @@ public class Worktime implements Serializable {
         this.qcOwnerName = qcOwnerName;
     }
 
-    @Column(name = "assyTime", updatable = false)
-    public BigDecimal getAssyTime() {
-        return assyTime;
+    @Column(name = "preAssy")
+    public BigDecimal getPreAssy() {
+        return preAssy;
     }
 
-    public void setAssyTime(BigDecimal assyTime) {
-        this.assyTime = assyTime;
+    public void setPreAssy(BigDecimal preAssy) {
+        this.preAssy = preAssy;
     }
 
-    @Column(name = "t1Time", updatable = false)
-    public BigDecimal getT1Time() {
-        return t1Time;
+    @Column(name = "assy")
+    public BigDecimal getAssy() {
+        return assy;
     }
 
-    public void setT1Time(BigDecimal t1Time) {
-        this.t1Time = t1Time;
+    public void setAssy(BigDecimal assy) {
+        this.assy = assy;
     }
 
-    @Column(name = "t2Time", updatable = false)
-    public BigDecimal getT2Time() {
-        return t2Time;
+    @Column(name = "t1")
+    public BigDecimal getT1() {
+        return t1;
     }
 
-    public void setT2Time(BigDecimal t2Time) {
-        this.t2Time = t2Time;
+    public void setT1(BigDecimal t1) {
+        this.t1 = t1;
     }
 
-    @Column(name = "packingTime", updatable = false)
-    public BigDecimal getPackingTime() {
-        return packingTime;
+    @Column(name = "t2")
+    public BigDecimal getT2() {
+        return t2;
     }
 
-    public void setPackingTime(BigDecimal packingTime) {
-        this.packingTime = packingTime;
+    public void setT2(BigDecimal t2) {
+        this.t2 = t2;
     }
 
-    @Column(name = "assyPeople", updatable = false)
+    @Column(name = "t3")
+    public BigDecimal getT3() {
+        return t3;
+    }
+
+    public void setT3(BigDecimal t3) {
+        this.t3 = t3;
+    }
+
+    @Column(name = "t4")
+    public BigDecimal getT4() {
+        return t4;
+    }
+
+    public void setT4(BigDecimal t4) {
+        this.t4 = t4;
+    }
+
+    @Column(name = "packing")
+    public BigDecimal getPacking() {
+        return packing;
+    }
+
+    public void setPacking(BigDecimal packing) {
+        this.packing = packing;
+    }
+
+    @Column(name = "assyPeople")
     public int getAssyPeople() {
         return assyPeople;
     }
@@ -129,7 +166,7 @@ public class Worktime implements Serializable {
         this.assyPeople = assyPeople;
     }
 
-    @Column(name = "packingPeople", updatable = false)
+    @Column(name = "packingPeople")
     public int getPackingPeople() {
         return packingPeople;
     }
@@ -137,7 +174,5 @@ public class Worktime implements Serializable {
     public void setPackingPeople(int packingPeople) {
         this.packingPeople = packingPeople;
     }
-    
-    
 
 }

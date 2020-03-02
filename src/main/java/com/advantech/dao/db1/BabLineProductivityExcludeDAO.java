@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class BabLineProductivityExcludeDAO extends AbstractDao_1<Integer, BabLineProductivityExclude> implements BasicDAO_1<BabLineProductivityExclude> {
+public class BabLineProductivityExcludeDAO extends AbstractDao<Integer, BabLineProductivityExclude> implements BasicDAO_1<BabLineProductivityExclude> {
 
     @Override
     public List<BabLineProductivityExclude> findAll() {

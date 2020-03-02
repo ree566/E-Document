@@ -34,6 +34,7 @@ import com.advantech.model.db1.TestPassStationDetail;
 import com.advantech.model.db1.TestTable;
 import com.advantech.model.db1.Unit;
 import com.advantech.model.db1.User;
+import com.advantech.model.db1.Worktime;
 import com.advantech.service.db1.TestPassStationDetailService;
 import com.advantech.webservice.Factory;
 import com.advantech.webservice.Section;
@@ -414,7 +415,7 @@ public class TestSqlBeans {
         HibernateObjectPrinter.print(p);
     }
     
-    @Test
+//    @Test
     @Rollback(false)
     public void testUserInsert(){
         User user = session.get(User.class, 1);
@@ -426,5 +427,14 @@ public class TestSqlBeans {
         session.update(user);
     }
 
-
+    @Test
+    @Rollback(true)
+    public void testWorktime(){
+        Worktime worktime = session.get(Worktime.class, 1);
+        
+        assertNotNull(worktime);
+        
+        HibernateObjectPrinter.print(worktime);
+    }
+    
 }

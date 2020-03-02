@@ -15,7 +15,7 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class FqcModelStandardTimeDAO extends AbstractDao_1<Integer, FqcModelStandardTime> implements BasicDAO_1<FqcModelStandardTime> {
+public class FqcModelStandardTimeDAO extends AbstractDao<Integer, FqcModelStandardTime> implements BasicDAO_1<FqcModelStandardTime> {
 
     @Override
     public List<FqcModelStandardTime> findAll() {

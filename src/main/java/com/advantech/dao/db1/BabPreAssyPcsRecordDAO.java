@@ -16,7 +16,7 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class BabPreAssyPcsRecordDAO extends AbstractDao_1<Integer, BabPreAssyPcsRecord> implements BasicDAO_1<BabPreAssyPcsRecord> {
+public class BabPreAssyPcsRecordDAO extends AbstractDao<Integer, BabPreAssyPcsRecord> implements BasicDAO_1<BabPreAssyPcsRecord> {
 
     @Override
     public List<BabPreAssyPcsRecord> findAll() {

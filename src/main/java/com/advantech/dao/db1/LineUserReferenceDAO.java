@@ -18,7 +18,7 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class LineUserReferenceDAO extends AbstractDao_1<Integer, LineUserReference> implements BasicDAO_1<LineUserReference> {
+public class LineUserReferenceDAO extends AbstractDao<Integer, LineUserReference> implements BasicDAO_1<LineUserReference> {
 
     @Override
     public List<LineUserReference> findAll() {

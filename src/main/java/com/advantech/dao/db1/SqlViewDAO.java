@@ -8,7 +8,6 @@ package com.advantech.dao.db1;
 import com.advantech.model.db1.Bab;
 import com.advantech.model.view.BabAvg;
 import com.advantech.model.view.UserInfoRemote;
-import com.advantech.model.view.Worktime;
 import java.util.List;
 import java.util.Map;
 import org.hibernate.criterion.Restrictions;
@@ -21,7 +20,7 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class SqlViewDAO extends AbstractDao_1<Integer, Object> {
+public class SqlViewDAO extends AbstractDao<Integer, Object> {
 
     public List<BabAvg> findBabAvg(int bab_id) {
         return super.getSession()
@@ -54,19 +53,6 @@ public class SqlViewDAO extends AbstractDao_1<Integer, Object> {
                 .setParameter("bab_id", bab_id)
                 .setResultTransformer(Transformers.aliasToBean(BabAvg.class))
                 .list();
-    }
-
-    public List<Worktime> findWorktime() {
-        return super.getSession()
-                .createCriteria(Worktime.class)
-                .list();
-    }
-
-    public Worktime findWorktime(String modelName) {
-        return (Worktime) super.getSession()
-                .createCriteria(Worktime.class)
-                .add(Restrictions.eq("modelName", modelName))
-                .uniqueResult();
     }
 
     public UserInfoRemote findUserInfoRemote(String jobnumber) {

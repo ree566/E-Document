@@ -22,7 +22,7 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng bab資料表就是生產工單資料表
  */
 @Repository
-public class BabDAO extends AbstractDao_1<Integer, Bab> implements BasicDAO_1<Bab> {
+public class BabDAO extends AbstractDao<Integer, Bab> implements BasicDAO_1<Bab> {
 
     @Override
     public List<Bab> findAll() {

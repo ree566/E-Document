@@ -10,7 +10,6 @@ import com.advantech.helper.PropertiesReader;
 import com.advantech.model.db1.Bab;
 import com.advantech.model.view.BabAvg;
 import com.advantech.model.view.UserInfoRemote;
-import com.advantech.model.view.Worktime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -45,14 +44,6 @@ public class SqlViewService {
 
     public List<BabAvg> findBabAvgInHistory(int bab_id) {
         return sqlViewDAO.findBabAvgInHistory(bab_id);
-    }
-
-    public List<Worktime> findWorktime() {
-        return sqlViewDAO.findWorktime();
-    }
-
-    public Worktime findWorktime(String modelName) {
-        return sqlViewDAO.findWorktime(modelName);
     }
 
     public UserInfoRemote findUserInfoRemote(String jobnumber) {

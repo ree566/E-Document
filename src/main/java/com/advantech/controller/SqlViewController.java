@@ -8,12 +8,13 @@ package com.advantech.controller;
 import com.advantech.datatable.DataTableResponse;
 import com.advantech.model.db1.Bab;
 import com.advantech.model.db1.BabStatus;
+import com.advantech.model.db1.Worktime;
 import com.advantech.model.view.BabAvg;
-import com.advantech.model.view.Worktime;
 import com.advantech.service.db1.BabService;
 import com.advantech.service.db2.LineBalancingService;
 import com.advantech.service.db1.SqlProcedureService;
 import com.advantech.service.db1.SqlViewService;
+import com.advantech.service.db1.WorktimeService;
 import static com.google.common.base.Preconditions.checkArgument;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -52,6 +53,9 @@ public class SqlViewController {
     
     @Autowired
     private SqlProcedureService procSerice;
+    
+    @Autowired
+    private WorktimeService worktimeService;
 
     @RequestMapping(value = "/findBabDetail", method = {RequestMethod.GET})
     @ResponseBody
@@ -201,9 +205,9 @@ public class SqlViewController {
         Map m = new HashMap();
         String modelName = modelController.findModelNameByPo(po);
         if (modelName != null) {
-            Worktime w = this.sqlViewService.findWorktime(modelName);
+            Worktime w = this.worktimeService.findByModelName(modelName);
             if (w != null) {
-                BigDecimal worktime = lineType == 1 ? w.getAssyTime() : w.getPackingTime();
+                BigDecimal worktime = lineType == 1 ? w.getAssy(): w.getPacking();
                 people = (people == null ? (lineType == 1 ? w.getAssyPeople() : w.getPackingPeople()) : people);
                 m.put("po", po);
                 m.put("modelName", modelName);

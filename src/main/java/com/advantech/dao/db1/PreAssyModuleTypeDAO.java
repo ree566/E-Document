@@ -16,7 +16,7 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class PreAssyModuleTypeDAO extends AbstractDao_1<Integer, PreAssyModuleType> implements BasicDAO_1<PreAssyModuleType> {
+public class PreAssyModuleTypeDAO extends AbstractDao<Integer, PreAssyModuleType> implements BasicDAO_1<PreAssyModuleType> {
 
     @Override
     public List<PreAssyModuleType> findAll() {

@@ -5,8 +5,9 @@
  */
 package com.advantech.dao.db1;
 
-import com.advantech.model.db1.SensorTransform;
+import com.advantech.model.db1.Worktime;
 import java.util.List;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -14,32 +15,38 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class SensorTransformDAO extends AbstractDao<String, SensorTransform> implements BasicDAO_1<SensorTransform> {
+public class WorktimeDAO extends AbstractDao<String, Worktime> implements BasicDAO_1<Worktime> {
 
     @Override
-    public List<SensorTransform> findAll() {
+    public List<Worktime> findAll() {
         return super.createEntityCriteria().list();
     }
 
     @Override
-    public SensorTransform findByPrimaryKey(Object obj_id) {
+    public Worktime findByPrimaryKey(Object obj_id) {
         return super.getByKey((String) obj_id);
     }
 
+    public Worktime findByModelName(String modelName) {
+        return (Worktime) super.createEntityCriteria()
+                .add(Restrictions.eq("modelName", modelName))
+                .uniqueResult();
+    }
+
     @Override
-    public int insert(SensorTransform pojo) {
+    public int insert(Worktime pojo) {
         this.getSession().save(pojo);
         return 1;
     }
 
     @Override
-    public int update(SensorTransform pojo) {
+    public int update(Worktime pojo) {
         this.getSession().update(pojo);
         return 1;
     }
 
     @Override
-    public int delete(SensorTransform pojo) {
+    public int delete(Worktime pojo) {
         this.getSession().delete(pojo);
         return 1;
     }

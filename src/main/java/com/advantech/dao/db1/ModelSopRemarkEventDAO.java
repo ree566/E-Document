@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class ModelSopRemarkEventDAO extends AbstractDao_1<Integer, ModelSopRemarkEvent> implements BasicDAO_1<ModelSopRemarkEvent> {
+public class ModelSopRemarkEventDAO extends AbstractDao<Integer, ModelSopRemarkEvent> implements BasicDAO_1<ModelSopRemarkEvent> {
 
     @Override
     public List<ModelSopRemarkEvent> findAll() {

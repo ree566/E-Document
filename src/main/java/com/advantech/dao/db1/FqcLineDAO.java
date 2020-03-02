@@ -17,7 +17,7 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class FqcLineDAO extends AbstractDao_1<Integer, FqcLine> implements BasicDAO_1<FqcLine> {
+public class FqcLineDAO extends AbstractDao<Integer, FqcLine> implements BasicDAO_1<FqcLine> {
 
     @Override
     public List<FqcLine> findAll() {

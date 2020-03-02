@@ -16,7 +16,7 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class ActionCodeDAO extends AbstractDao_1<Integer, ActionCode> implements BasicDAO_1<ActionCode> {
+public class ActionCodeDAO extends AbstractDao<Integer, ActionCode> implements BasicDAO_1<ActionCode> {
 
     @Override
     public List<ActionCode> findAll() {

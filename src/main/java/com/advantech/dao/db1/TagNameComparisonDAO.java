@@ -19,7 +19,7 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class TagNameComparisonDAO extends AbstractDao_1<TagNameComparisonId, TagNameComparison> implements BasicDAO_1<TagNameComparison> {
+public class TagNameComparisonDAO extends AbstractDao<TagNameComparisonId, TagNameComparison> implements BasicDAO_1<TagNameComparison> {
 
     @Override
     public List<TagNameComparison> findAll() {

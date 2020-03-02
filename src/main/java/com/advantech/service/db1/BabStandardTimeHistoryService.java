@@ -9,7 +9,7 @@ import com.advantech.dao.db1.BabStandardTimeHistoryDAO;
 import com.advantech.model.db1.Bab;
 import com.advantech.model.db1.BabStandardTimeHistory;
 import com.advantech.model.db1.LineType;
-import com.advantech.model.view.Worktime;
+import com.advantech.model.db1.Worktime;
 import java.math.BigDecimal;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +28,7 @@ public class BabStandardTimeHistoryService {
     private BabStandardTimeHistoryDAO babStandardTimeHistoryDAO;
 
     @Autowired
-    private SqlViewService sqlViewService;
+    private WorktimeService worktimeService;
 
     @Autowired
     private LineService lineService;
@@ -46,17 +46,17 @@ public class BabStandardTimeHistoryService {
     }
 
     public int insertByBab(Bab b) {
-        Worktime w = sqlViewService.findWorktime(b.getModelName());
+        Worktime w = worktimeService.findByModelName(b.getModelName());
         LineType lineType = lineService.findLineType(b.getLine().getId());
         String lineTypeName = lineType.getName();
         BigDecimal standardTime = BigDecimal.ZERO;
         if (w != null) {
             switch (lineTypeName) {
                 case "ASSY":
-                    standardTime = w.getAssyTime();
+                    standardTime = w.getAssy();
                     break;
                 case "Packing":
-                    standardTime = w.getPackingTime();
+                    standardTime = w.getPacking();
                     break;
                 default:
                     break;

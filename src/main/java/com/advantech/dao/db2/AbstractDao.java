@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.advantech.dao.db3;
+package com.advantech.dao.db2;
 
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
@@ -19,15 +19,15 @@ import org.springframework.beans.factory.annotation.Qualifier;
  * @param <PK>
  * @param <T>
  */
-public abstract class AbstractDao_3<PK extends Serializable, T> {
+public abstract class AbstractDao<PK extends Serializable, T> {
 
     private final Class<T> persistentClass;
 
     @Autowired
-    @Qualifier("sessionFactory3")
+    @Qualifier("sessionFactory2")
     private SessionFactory sessionFactory;
 
-    public AbstractDao_3() {
+    public AbstractDao() {
         this.persistentClass = (Class<T>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[1];
     }
 

@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class MesLineDAO extends AbstractDao_1<Integer, MesLine> implements BasicDAO_1<MesLine> {
+public class MesLineDAO extends AbstractDao<Integer, MesLine> implements BasicDAO_1<MesLine> {
 
     @Override
     public List<MesLine> findAll() {

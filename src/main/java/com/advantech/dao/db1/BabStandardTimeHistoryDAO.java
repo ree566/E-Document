@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class BabStandardTimeHistoryDAO extends AbstractDao_1<Integer, BabStandardTimeHistory> implements BasicDAO_1<BabStandardTimeHistory> {
+public class BabStandardTimeHistoryDAO extends AbstractDao<Integer, BabStandardTimeHistory> implements BasicDAO_1<BabStandardTimeHistory> {
 
     @Override
     public List<BabStandardTimeHistory> findAll() {
