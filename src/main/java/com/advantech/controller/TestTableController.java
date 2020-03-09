@@ -6,9 +6,9 @@
  */
 package com.advantech.controller;
 
-import com.advantech.model.TestTable;
+import com.advantech.model.db1.TestTable;
 import com.advantech.facade.TestLineTypeFacade;
-import com.advantech.service.TestTableService;
+import com.advantech.service.db1.TestTableService;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;

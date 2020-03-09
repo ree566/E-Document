@@ -5,11 +5,11 @@
  */
 package com.advantech.controller;
 
-import com.advantech.model.Bab;
-import com.advantech.model.BabPassStationRecord;
-import com.advantech.model.BabSettingHistory;
-import com.advantech.service.BabPassStationRecordService;
-import com.advantech.service.BabSettingHistoryService;
+import com.advantech.model.db1.Bab;
+import com.advantech.model.db1.BabPassStationRecord;
+import com.advantech.model.db1.BabSettingHistory;
+import com.advantech.service.db1.BabPassStationRecordService;
+import com.advantech.service.db1.BabSettingHistoryService;
 import static com.google.common.base.Preconditions.checkArgument;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

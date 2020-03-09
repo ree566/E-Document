@@ -6,8 +6,8 @@
  */
 package com.advantech.controller;
 
-import com.advantech.model.FqcLine;
-import com.advantech.service.FqcLineService;
+import com.advantech.model.db1.FqcLine;
+import com.advantech.service.db1.FqcLineService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

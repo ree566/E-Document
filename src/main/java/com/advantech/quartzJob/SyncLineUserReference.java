@@ -5,8 +5,8 @@
  */
 package com.advantech.quartzJob;
 
-import com.advantech.dao.LineUserReferenceDAO;
-import com.advantech.model.LineUserReference;
+import com.advantech.dao.db1.LineUserReferenceDAO;
+import com.advantech.model.db1.LineUserReference;
 import java.util.List;
 import org.hibernate.SessionFactory;
 import org.joda.time.DateTime;

@@ -5,7 +5,7 @@
  */
 package com.advantech.helper;
 
-import com.advantech.model.User;
+import com.advantech.model.db1.User;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;

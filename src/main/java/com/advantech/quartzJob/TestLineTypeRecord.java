@@ -6,16 +6,16 @@
  */
 package com.advantech.quartzJob;
 
-import com.advantech.model.Test;
+import com.advantech.model.db1.Test;
 import com.advantech.helper.ApplicationContextHelper;
 import com.advantech.helper.PropertiesReader;
-import com.advantech.model.LineType;
-import com.advantech.model.LineTypeConfig;
-import com.advantech.model.ReplyStatus;
-import com.advantech.service.LineTypeConfigService;
-import com.advantech.service.LineTypeService;
-import com.advantech.service.TestRecordService;
-import com.advantech.service.TestService;
+import com.advantech.model.db1.LineType;
+import com.advantech.model.db1.LineTypeConfig;
+import com.advantech.model.db1.ReplyStatus;
+import com.advantech.service.db1.LineTypeConfigService;
+import com.advantech.service.db1.LineTypeService;
+import com.advantech.service.db1.TestRecordService;
+import com.advantech.service.db1.TestService;
 import com.advantech.webservice.WebServiceRV;
 import static com.google.common.base.Preconditions.checkState;
 import java.util.ArrayList;
@@ -68,7 +68,7 @@ public class TestLineTypeRecord extends QuartzJobBean {
             log.info("No need to record right now.");
         } else {
             //只存下已經刷入的使用者
-            List<com.advantech.model.TestRecord> testLineTypeStatus = separateOfflineUser(rv.getTestLineTypeRecords());
+            List<com.advantech.model.db1.TestRecord> testLineTypeStatus = separateOfflineUser(rv.getTestLineTypeRecords());
             updateReplyFlag(testLineTypeStatus);
             addSaltProductivity(testLineTypeStatus);
             testRecordService.insert(testLineTypeStatus);
@@ -76,7 +76,7 @@ public class TestLineTypeRecord extends QuartzJobBean {
         }
     }
     
-    private List<com.advantech.model.TestRecord> separateOfflineUser(List<com.advantech.model.TestRecord> l) {
+    private List<com.advantech.model.db1.TestRecord> separateOfflineUser(List<com.advantech.model.db1.TestRecord> l) {
         List<Test> tests = testService.findAll();
         List list = new ArrayList();
         Date d = new Date();
@@ -90,13 +90,13 @@ public class TestLineTypeRecord extends QuartzJobBean {
         return list;
     }
     
-    private void addSaltProductivity(List<com.advantech.model.TestRecord> l) {
+    private void addSaltProductivity(List<com.advantech.model.db1.TestRecord> l) {
         l.forEach((rec) -> {
             rec.setProductivity(rec.getProductivity() + this.testSaltProductivity);
         });
     }
     
-    private void updateReplyFlag(List<com.advantech.model.TestRecord> l) {
+    private void updateReplyFlag(List<com.advantech.model.db1.TestRecord> l) {
         initProductivityStandard();
         l.forEach((rec) -> {
             Double productivity = rec.getProductivity();

@@ -6,13 +6,15 @@
 package com.advantech.controller;
 
 import com.advantech.datatable.DataTableResponse;
-import com.advantech.model.Bab;
-import com.advantech.model.BabStatus;
+import com.advantech.model.db1.Bab;
+import com.advantech.model.db1.BabStatus;
+import com.advantech.model.db1.Worktime;
 import com.advantech.model.view.BabAvg;
-import com.advantech.model.view.Worktime;
-import com.advantech.service.BabService;
-import com.advantech.service.LineBalancingService;
-import com.advantech.service.SqlViewService;
+import com.advantech.service.db1.BabService;
+import com.advantech.service.db2.LineBalancingService;
+import com.advantech.service.db1.SqlProcedureService;
+import com.advantech.service.db1.SqlViewService;
+import com.advantech.service.db1.WorktimeService;
 import static com.google.common.base.Preconditions.checkArgument;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -48,6 +50,12 @@ public class SqlViewController {
 
     @Autowired
     private ModelController modelController;
+    
+    @Autowired
+    private SqlProcedureService procSerice;
+    
+    @Autowired
+    private WorktimeService worktimeService;
 
     @RequestMapping(value = "/findBabDetail", method = {RequestMethod.GET})
     @ResponseBody
@@ -58,7 +66,7 @@ public class SqlViewController {
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime endDate,
             @RequestParam boolean isAboveStandard
     ) {
-        List l = sqlViewService.findBabDetail(lineType_id, floor_id, startDate, endDate, isAboveStandard);
+        List l = procSerice.findBabDetail(lineType_id, floor_id, startDate, endDate, isAboveStandard);
         return new DataTableResponse(l);
     }
 
@@ -68,7 +76,7 @@ public class SqlViewController {
             @RequestParam int bab_id
     ) {
         Bab b = babService.findByPrimaryKey(bab_id);
-        List<Map> l = sqlViewService.findLineBalanceCompareByBab(bab_id);
+        List<Map> l = procSerice.findLineBalanceCompareByBab(bab_id);
         Map m = l.get(0);
 
         m.put("exp_avgs",
@@ -90,7 +98,7 @@ public class SqlViewController {
             @RequestParam String modelName,
             @RequestParam String lineTypeName
     ) {
-        List l = sqlViewService.findLineBalanceCompare(modelName, lineTypeName);
+        List l = procSerice.findLineBalanceCompare(modelName, lineTypeName);
         return new DataTableResponse(l);
     }
 
@@ -125,7 +133,7 @@ public class SqlViewController {
                     "日期區間不得超過2週");
         }
 
-        return new DataTableResponse(sqlViewService.findBabPcsDetail(modelName, lineType, startDate, endDate));
+        return new DataTableResponse(procSerice.findBabPcsDetail(modelName, lineType, startDate, endDate));
     }
 
     @RequestMapping(value = "/findBabLineProductivity", method = {RequestMethod.GET})
@@ -138,7 +146,7 @@ public class SqlViewController {
             @RequestParam(required = false) Integer minPcs,
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime startDate,
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime endDate) {
-        return new DataTableResponse(sqlViewService.findBabLineProductivity(po, modelName, line_id, jobnumber, minPcs, startDate, endDate));
+        return new DataTableResponse(procSerice.findBabLineProductivity(po, modelName, line_id, jobnumber, minPcs, startDate, endDate));
     }
 
     @RequestMapping(value = "/findBabPassStationRecord", method = {RequestMethod.GET})
@@ -150,7 +158,7 @@ public class SqlViewController {
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime endDate,
             @RequestParam String lineType
     ) {
-        return new DataTableResponse(sqlViewService.findBabPassStationRecord(po, modelName, startDate, endDate, lineType));
+        return new DataTableResponse(procSerice.findBabPassStationRecord(po, modelName, startDate, endDate, lineType));
     }
 
     @RequestMapping(value = "/findBabPassStationExceptionReport", method = {RequestMethod.GET})
@@ -162,7 +170,7 @@ public class SqlViewController {
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime endDate,
             @RequestParam int lineType_id
     ) {
-        return new DataTableResponse(sqlViewService.findBabPassStationExceptionReport(po, modelName, startDate, endDate, lineType_id));
+        return new DataTableResponse(procSerice.findBabPassStationExceptionReport(po, modelName, startDate, endDate, lineType_id));
     }
 
     @RequestMapping(value = "/findBabPreAssyProductivity", method = {RequestMethod.GET})
@@ -173,7 +181,7 @@ public class SqlViewController {
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime startDate,
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime endDate
     ) {
-        return new DataTableResponse(sqlViewService.findBabPreAssyProductivity(lineType_id, floor_id, startDate, endDate));
+        return new DataTableResponse(procSerice.findBabPreAssyProductivity(lineType_id, floor_id, startDate, endDate));
     }
 
     @RequestMapping(value = "/findBabBestLineBalanceRecord", method = {RequestMethod.GET})
@@ -183,9 +191,9 @@ public class SqlViewController {
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime startDate,
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime endDate
     ) {
-        return new DataTableResponse(sqlViewService.findBabBestLineBalanceRecord(lineType_id, startDate, endDate));
+        return new DataTableResponse(procSerice.findBabBestLineBalanceRecord(lineType_id, startDate, endDate));
     }
-
+    
     @RequestMapping(value = "/calculateChangeover", method = {RequestMethod.GET})
     @ResponseBody
     protected Map calculateChangeover(
@@ -197,9 +205,9 @@ public class SqlViewController {
         Map m = new HashMap();
         String modelName = modelController.findModelNameByPo(po);
         if (modelName != null) {
-            Worktime w = this.sqlViewService.findWorktime(modelName);
+            Worktime w = this.worktimeService.findByModelName(modelName);
             if (w != null) {
-                BigDecimal worktime = lineType == 1 ? w.getAssyTime() : w.getPackingTime();
+                BigDecimal worktime = lineType == 1 ? w.getAssy(): w.getPacking();
                 people = (people == null ? (lineType == 1 ? w.getAssyPeople() : w.getPackingPeople()) : people);
                 m.put("po", po);
                 m.put("modelName", modelName);
@@ -221,7 +229,7 @@ public class SqlViewController {
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime startDate,
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime endDate
     ) {
-        return new DataTableResponse(sqlViewService.findTestPassStationProductivity(startDate, endDate));
+        return new DataTableResponse(procSerice.findTestPassStationProductivity(startDate, endDate));
     }
 
 }

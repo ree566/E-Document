@@ -5,10 +5,9 @@
  */
 package com.advantech.test;
 
-import com.advantech.dao.BabPcsDetailHistoryDAO;
-import com.advantech.dao.SqlViewDAO;
+import com.advantech.dao.db1.BabPcsDetailHistoryDAO;
+import com.advantech.dao.db1.SqlViewDAO;
 import com.advantech.helper.HibernateObjectPrinter;
-import com.advantech.model.view.UserInfoRemote;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.List;
 import org.joda.time.DateTime;
@@ -42,15 +41,6 @@ public class TestSqlView {
 //    @Test
     @Transactional
     @Rollback(true)
-    public void testFindBabLastGroupStatus() throws JsonProcessingException {
-        List l = sqlViewDAO.findSensorCurrentGroupStatus(11240);
-        assertEquals(2, l.size());
-        HibernateObjectPrinter.print(l);
-    }
-
-//    @Test
-    @Transactional
-    @Rollback(true)
     public void testGetBabDetail() {
         DateTime sD = new DateTime(2017, 12, 01, 0, 0, 0, 0);
         DateTime eD = new DateTime(2017, 12, 31, 0, 0, 0, 0);
@@ -67,23 +57,28 @@ public class TestSqlView {
         HibernateObjectPrinter.print(l);
     }
 
-//    @Test
-    @Transactional
-    @Rollback(true)
-    public void testFindPreAssyModuleUnexecuted() {
-        DateTime sD = new DateTime().minusDays(1).withTime(0, 0, 0, 0);
-        DateTime eD = new DateTime().withTime(0, 0, 0, 0);
-        List l = sqlViewDAO.findPreAssyModuleUnexecuted(sD, eD);
-        HibernateObjectPrinter.print(l);
-    }
-    
     @Test
     @Transactional
     @Rollback(true)
-    public void testUserInfoRemote() {
-        UserInfoRemote l = sqlViewDAO.findUserInfoRemote("A-7568");
-        HibernateObjectPrinter.print(l);
+    public void testProc() {
+        DateTime d = new DateTime();
+        String st = "";
+        int i = 1;
+
+        sqlViewDAO.findBabAvg(123);
+        sqlViewDAO.findBabAvgInHistory(123);
+        sqlViewDAO.findBabAvgWithBarcode(123);
+        sqlViewDAO.findBabLastInputPerLine();
+        sqlViewDAO.findBalanceDetail(i);
+        sqlViewDAO.findBalanceDetailWithBarcode(i);
+        sqlViewDAO.findBarcodeStatus(i);
+        sqlViewDAO.findSensorStatus(i);
+        sqlViewDAO.findSensorStatusPerStationToday();
+
+//        sqlViewDAO.findWorktime();
+//        sqlViewDAO.findWorktime(st);
+//        sqlViewDAO.findUserInfoRemote();
+//        sqlViewDAO.findUserInfoRemote(st);
     }
-  
-    
+
 }

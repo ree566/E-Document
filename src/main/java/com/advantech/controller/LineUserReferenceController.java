@@ -7,13 +7,13 @@ package com.advantech.controller;
 
 import com.advantech.datatable.DataTableResponse;
 import com.advantech.helper.SecurityPropertiesUtils;
-import com.advantech.model.Line;
-import com.advantech.model.LineUserReference;
-import com.advantech.model.User;
+import com.advantech.model.db1.Line;
+import com.advantech.model.db1.LineUserReference;
+import com.advantech.model.db1.User;
 import com.advantech.security.State;
-import com.advantech.service.LineService;
-import com.advantech.service.LineUserReferenceService;
-import com.advantech.service.UserService;
+import com.advantech.service.db1.LineService;
+import com.advantech.service.db1.LineUserReferenceService;
+import com.advantech.service.db1.UserService;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import org.joda.time.DateTime;
@@ -72,17 +72,18 @@ public class LineUserReferenceController {
     @RequestMapping(value = "/findUserByRole", method = {RequestMethod.GET})
     @ResponseBody
     protected DataTableResponse findUserByRole(
-            @RequestParam(name = "userRole[]") String[] userRole, 
+            @RequestParam(name = "userRole[]") String[] userRole,
             HttpServletRequest request
     ) {
+        for (int i = 0; i < userRole.length; i++) {
+            userRole[i] += "_USER";
+        }
+
         if (request.isUserInRole("ROLE_ADMIN") || request.isUserInRole("ROLE_OPER_IE")) {
             List<User> l = userService.findByRole(userRole);
             return new DataTableResponse(l);
         } else {
             User user = SecurityPropertiesUtils.retrieveAndCheckUserInSession();
-            for (int i = 0; i < userRole.length; i++) {
-                userRole[i] += "_USER";
-            }
             List l = userService.findByFloorAndRole(user.getFloor(), userRole);
             return new DataTableResponse(l);
         }

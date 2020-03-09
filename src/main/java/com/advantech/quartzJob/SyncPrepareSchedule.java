@@ -5,9 +5,9 @@
  */
 package com.advantech.quartzJob;
 
-import com.advantech.model.Floor;
-import com.advantech.model.LineType;
-import com.advantech.model.PrepareSchedule;
+import com.advantech.model.db1.Floor;
+import com.advantech.model.db1.LineType;
+import com.advantech.model.db1.PrepareSchedule;
 import java.io.File;
 import java.math.BigDecimal;
 import java.util.Iterator;

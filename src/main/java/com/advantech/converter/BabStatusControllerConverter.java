@@ -5,7 +5,7 @@
  */
 package com.advantech.converter;
 
-import com.advantech.model.BabStatus;
+import com.advantech.model.db1.BabStatus;
 import java.beans.PropertyEditorSupport;
 import org.apache.commons.lang3.math.NumberUtils;
 

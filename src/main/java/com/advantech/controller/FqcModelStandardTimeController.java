@@ -7,8 +7,8 @@
 package com.advantech.controller;
 
 import com.advantech.datatable.DataTableResponse;
-import com.advantech.model.FqcModelStandardTime;
-import com.advantech.service.FqcModelStandardTimeService;
+import com.advantech.model.db1.FqcModelStandardTime;
+import com.advantech.service.db1.FqcModelStandardTimeService;
 import static com.google.common.base.Preconditions.checkArgument;
 import java.util.List;
 import javax.validation.Valid;

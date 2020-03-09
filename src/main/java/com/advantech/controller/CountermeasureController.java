@@ -7,17 +7,17 @@
 package com.advantech.controller;
 
 import static com.advantech.helper.SecurityPropertiesUtils.retrieveAndCheckUserInSession;
-import com.advantech.model.ActionCode;
-import com.advantech.model.Bab;
-import com.advantech.model.Countermeasure;
-import com.advantech.model.CountermeasureType;
-import com.advantech.model.ErrorCode;
-import com.advantech.model.User;
-import com.advantech.service.ActionCodeService;
-import com.advantech.service.BabService;
-import com.advantech.service.CountermeasureService;
-import com.advantech.service.CountermeasureTypeService;
-import com.advantech.service.ErrorCodeService;
+import com.advantech.model.db1.ActionCode;
+import com.advantech.model.db1.Bab;
+import com.advantech.model.db1.Countermeasure;
+import com.advantech.model.db1.CountermeasureType;
+import com.advantech.model.db1.ErrorCode;
+import com.advantech.model.db1.User;
+import com.advantech.service.db1.ActionCodeService;
+import com.advantech.service.db1.BabService;
+import com.advantech.service.db1.CountermeasureService;
+import com.advantech.service.db1.CountermeasureTypeService;
+import com.advantech.service.db1.ErrorCodeService;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.collect.Sets.newHashSet;
 import java.util.List;

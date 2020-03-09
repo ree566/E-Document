@@ -9,10 +9,10 @@ package com.advantech.controller;
 import com.advantech.datatable.DataTableResponse;
 import com.advantech.helper.CustomPasswordEncoder;
 import com.advantech.helper.SecurityPropertiesUtils;
-import com.advantech.model.User;
+import com.advantech.model.db1.User;
 import com.advantech.model.view.UserInfoRemote;
-import com.advantech.service.SqlViewService;
-import com.advantech.service.UserService;
+import com.advantech.service.db1.SqlViewService;
+import com.advantech.service.db1.UserService;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
 import javax.servlet.http.HttpServletRequest;
@@ -65,8 +65,8 @@ public class UserController {
 
     private boolean isUserExist(String jobnumber) {
         //change the sql query(password not check)
-        UserInfoRemote i = sqlViewService.findUserInfoRemote(jobnumber);
-        return !(i == null);
+        User user = userService.findByJobnumber(jobnumber);
+        return user != null;
     }
 
     @RequestMapping(value = "/updatePassword", method = {RequestMethod.POST})

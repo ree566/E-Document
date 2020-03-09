@@ -5,9 +5,9 @@
  */
 package com.advantech.test;
 
-import com.advantech.dao.BabPcsDetailHistoryDAO;
+import com.advantech.dao.db1.BabPcsDetailHistoryDAO;
 import com.advantech.helper.HibernateObjectPrinter;
-import com.advantech.service.SystemReportService;
+import com.advantech.service.db1.SystemReportService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.List;
 import org.joda.time.DateTime;
@@ -38,24 +38,17 @@ public class TestSqlReport {
     @Test
     @Transactional
     @Rollback(true)
-    public void testCountermeasureForExcel() {
-//        List l = systemReportService.getCountermeasureForExcel("18/01/01", "18/02/01");
-//        HibernateObjectPrinter.print(l);
+    public void testReports() {
+        systemReportService.getCountermeasureForExcel(-1, -1, "2018/01/01", "2018/02/01", true);
+
+        systemReportService.getPersonalAlmForExcel(-1, -1, "2018/01/01", "2018/02/01", true);
+        systemReportService.getEmptyRecordForExcel(-1, -1, "2018/01/01", "2018/02/01");
+        systemReportService.getBabPassStationExceptionReportDetails("", "", "2018/01/01", "2018/02/01", 1);
+
+        systemReportService.getBabPreAssyDetailForExcel(-1, -1, "2018/01/01", "2018/02/01");
+
+        systemReportService.getPreAssyModuleStandardTimeSetting();
+        systemReportService.getAssyModelSopStandardTimeSetting();
     }
     
-    @Test
-    @Transactional
-    @Rollback(true)
-    public void testPersonalAlmForExcel() {
-//        List l = systemReportService.getPersonalAlmForExcel("18/01/01", "18/02/01");
-//        HibernateObjectPrinter.print(l);
-    }
-    
-    @Test
-    @Transactional
-    @Rollback(true)
-    public void testEmptyRecordDownExcel() {
-//        List l = systemReportService.getEmptyRecordDownExcel("18/01/01", "18/02/01");
-//        HibernateObjectPrinter.print(l);
-    }
 }

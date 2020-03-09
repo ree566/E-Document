@@ -5,16 +5,16 @@
  */
 package com.advantech.quartzJob;
 
-import com.advantech.dao.FloorDAO;
-import com.advantech.dao.SqlViewDAO;
-import com.advantech.dao.UnitDAO;
-import com.advantech.dao.UserDAO;
-import com.advantech.dao.UserProfileDAO;
+import com.advantech.dao.db1.FloorDAO;
+import com.advantech.dao.db1.SqlViewDAO;
+import com.advantech.dao.db1.UnitDAO;
+import com.advantech.dao.db1.UserDAO;
+import com.advantech.dao.db1.UserProfileDAO;
 import com.advantech.helper.CustomPasswordEncoder;
-import com.advantech.model.Floor;
-import com.advantech.model.Unit;
-import com.advantech.model.User;
-import com.advantech.model.UserProfile;
+import com.advantech.model.db1.Floor;
+import com.advantech.model.db1.Unit;
+import com.advantech.model.db1.User;
+import com.advantech.model.db1.UserProfile;
 import com.advantech.model.view.UserInfoRemote;
 import com.advantech.security.State;
 import java.util.Date;

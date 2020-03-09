@@ -8,34 +8,38 @@ package com.advantech.test;
 import com.advantech.facade.BabLineTypeFacade;
 import com.advantech.helper.CustomPasswordEncoder;
 import com.advantech.helper.HibernateObjectPrinter;
-import com.advantech.model.Bab;
-import com.advantech.model.BabCollectModeChangeEvent;
-import com.advantech.model.BabDataCollectMode;
-import com.advantech.model.BabSettingHistory;
-import com.advantech.model.Floor;
-import com.advantech.model.Fqc;
-import com.advantech.model.FqcLine;
-import com.advantech.model.Line;
-import com.advantech.model.PrepareSchedule;
-import com.advantech.model.TagNameComparison;
-import com.advantech.model.User;
+import com.advantech.model.db1.Bab;
+import com.advantech.model.db1.BabCollectModeChangeEvent;
+import com.advantech.model.db1.BabDataCollectMode;
+import com.advantech.model.db1.BabSettingHistory;
+import com.advantech.model.db1.Floor;
+import com.advantech.model.db1.Fqc;
+import com.advantech.model.db1.FqcLine;
+import com.advantech.model.db1.Line;
+import com.advantech.model.db1.PrepareSchedule;
+import com.advantech.model.db1.TagNameComparison;
+import com.advantech.model.db1.User;
+import com.advantech.model.db1.Worktime;
 import com.advantech.model.view.BabProcessDetail;
 import com.advantech.quartzJob.HandleUncloseBab;
-import com.advantech.service.BabCollectModeChangeEventService;
-import com.advantech.service.BabPassStationRecordService;
-import com.advantech.service.BabSensorLoginRecordService;
-import com.advantech.service.BabService;
-import com.advantech.service.BabSettingHistoryService;
-import com.advantech.service.FloorService;
-import com.advantech.service.FqcLineService;
-import com.advantech.service.FqcProductivityHistoryService;
-import com.advantech.service.FqcService;
-import com.advantech.service.LineBalancingService;
-import com.advantech.service.LineService;
-import com.advantech.service.LineUserReferenceService;
-import com.advantech.service.PrepareScheduleService;
-import com.advantech.service.TagNameComparisonService;
-import com.advantech.service.UserService;
+import com.advantech.service.db1.BabCollectModeChangeEventService;
+import com.advantech.service.db1.BabPassStationRecordService;
+import com.advantech.service.db1.BabSensorLoginRecordService;
+import com.advantech.service.db1.BabService;
+import com.advantech.service.db1.BabSettingHistoryService;
+import com.advantech.service.db1.FloorService;
+import com.advantech.service.db1.FqcLineService;
+import com.advantech.service.db1.FqcProductivityHistoryService;
+import com.advantech.service.db1.FqcService;
+import com.advantech.service.db2.LineBalancingService;
+import com.advantech.service.db1.LineService;
+import com.advantech.service.db1.LineUserReferenceService;
+import com.advantech.service.db1.ModelSopRemarkDetailService;
+import com.advantech.service.db1.PrepareScheduleService;
+import com.advantech.service.db1.TagNameComparisonService;
+import com.advantech.service.db1.UserService;
+import com.advantech.service.db1.WorktimeService;
+import com.advantech.service.db3.SqlViewService;
 import com.advantech.webservice.WebServiceRV;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.List;
@@ -56,6 +60,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
@@ -355,7 +360,7 @@ public class TestService {
     @Autowired
     private FloorService floorService;
 
-    @Test
+//    @Test
     @Transactional
     @Rollback(true)
     public void testGroupBy() {
@@ -367,24 +372,58 @@ public class TestService {
         List<String> modelNames = l.stream().map(s -> s.getModelName()).collect(toList());
         List<Bab> babs = babService.findByModelNames(modelNames);
 
-         Map<String, Map<Line, Long>> historyFitUserSetting = babs.stream()
-//                    .filter(b -> b.getModelName().equals(s.getModelName()))
-                    .collect(groupingBy(Bab::getModelName,
-                            Collectors.groupingBy(Bab::getLine,
-                                    Collectors.mapping(Bab::getId,
-                                            Collectors.counting()))));
-         
-         Map m = historyFitUserSetting.get("bbbb");
-         System.out.println(m == null || m.isEmpty() ? "Object not exists" : "Object exists");
-        
-//        for (PrepareSchedule s : l) {
-            
-            //Map<ModelName, Map<Line, Count>>
-           
+        Map<String, Map<Line, Long>> historyFitUserSetting = babs.stream()
+                //                    .filter(b -> b.getModelName().equals(s.getModelName()))
+                .collect(groupingBy(Bab::getModelName,
+                        Collectors.groupingBy(Bab::getLine,
+                                Collectors.mapping(Bab::getId,
+                                        Collectors.counting()))));
 
+        Map m = historyFitUserSetting.get("bbbb");
+        System.out.println(m == null || m.isEmpty() ? "Object not exists" : "Object exists");
+
+//        for (PrepareSchedule s : l) {
+        //Map<ModelName, Map<Line, Count>>
 //            HibernateObjectPrinter.print(historyFitUserSetting);
 //            break;
 //        }
     }
 
+//    @Test
+    public void testUserRole() {
+        List<User> users = userService.findByRole("ASSY_USER");
+
+        assertTrue(!users.isEmpty());
+
+        HibernateObjectPrinter.print(users.get(0));
+    }
+
+    @Autowired
+    private ModelSopRemarkDetailService modelSopRemarkDetailService;
+
+//    @Test
+    @Transactional
+    @Rollback(true)
+    public void testModelSopRemarkDetailService() {
+        assertTrue(!modelSopRemarkDetailService.findPeopleMatchDetail("TPC-1582H-433BE", 4).isEmpty());
+        assertTrue(modelSopRemarkDetailService.findPeopleMatchDetail("TPC-1582H-4VVV33BE", 1).isEmpty());
+    }
+
+    @Autowired
+    private WorktimeService worktimeService;
+
+    @Autowired
+    @Qualifier("sqlViewService3")
+    private SqlViewService sqlViewService;
+
+    @Test
+    @Rollback(false)
+    public void testSyncWorktime() {
+        List<Worktime> l = sqlViewService.findWorktime();
+
+        l.forEach(w -> {
+            w.setId(0);
+            worktimeService.insert(w);
+        });
+    }
 }

@@ -5,36 +5,37 @@
  */
 package com.advantech.test;
 
-import com.advantech.dao.LineDAO;
-import com.advantech.dao.LineUserReferenceDAO;
+import com.advantech.dao.db1.LineDAO;
+import com.advantech.dao.db1.LineUserReferenceDAO;
 import com.advantech.helper.HibernateObjectPrinter;
-import com.advantech.model.Bab;
-import com.advantech.model.BabAlarmHistory;
-import com.advantech.model.BabLineProductivityExclude;
-import com.advantech.model.BabLineProductivityExcludeModel;
-import com.advantech.model.BabPassStationRecord;
-import com.advantech.model.BabStandardTimeHistory;
-import com.advantech.model.Countermeasure;
-import com.advantech.model.CountermeasureType;
-import com.advantech.model.Floor;
-import com.advantech.model.Fqc;
-import com.advantech.model.FqcLine;
-import com.advantech.model.FqcLoginRecord;
-import com.advantech.model.FqcModelStandardTime;
-import com.advantech.model.FqcSettingHistory;
-import com.advantech.model.Line;
-import com.advantech.model.LineType;
-import com.advantech.model.LineUserReference;
-import com.advantech.model.ModelSopRemark;
-import com.advantech.model.ModelSopRemarkDetail;
-import com.advantech.model.PreAssyModuleStandardTime;
-import com.advantech.model.PreAssyModuleType;
-import com.advantech.model.PrepareSchedule;
-import com.advantech.model.TestPassStationDetail;
-import com.advantech.model.TestTable;
-import com.advantech.model.Unit;
-import com.advantech.model.User;
-import com.advantech.service.TestPassStationDetailService;
+import com.advantech.model.db1.Bab;
+import com.advantech.model.db1.BabAlarmHistory;
+import com.advantech.model.db1.BabLineProductivityExclude;
+import com.advantech.model.db1.BabLineProductivityExcludeModel;
+import com.advantech.model.db1.BabPassStationRecord;
+import com.advantech.model.db1.BabStandardTimeHistory;
+import com.advantech.model.db1.Countermeasure;
+import com.advantech.model.db1.CountermeasureType;
+import com.advantech.model.db1.Floor;
+import com.advantech.model.db1.Fqc;
+import com.advantech.model.db1.FqcLine;
+import com.advantech.model.db1.FqcLoginRecord;
+import com.advantech.model.db1.FqcModelStandardTime;
+import com.advantech.model.db1.FqcSettingHistory;
+import com.advantech.model.db1.Line;
+import com.advantech.model.db1.LineType;
+import com.advantech.model.db1.LineUserReference;
+import com.advantech.model.db1.ModelSopRemark;
+import com.advantech.model.db1.ModelSopRemarkDetail;
+import com.advantech.model.db1.PreAssyModuleStandardTime;
+import com.advantech.model.db1.PreAssyModuleType;
+import com.advantech.model.db1.PrepareSchedule;
+import com.advantech.model.db1.TestPassStationDetail;
+import com.advantech.model.db1.TestTable;
+import com.advantech.model.db1.Unit;
+import com.advantech.model.db1.User;
+import com.advantech.model.db1.Worktime;
+import com.advantech.service.db1.TestPassStationDetailService;
 import com.advantech.webservice.Factory;
 import com.advantech.webservice.Section;
 import com.advantech.webservice.WebServiceRV;
@@ -368,7 +369,7 @@ public class TestSqlBeans {
     private WebServiceRV rv;
 
     @Autowired
-    private com.advantech.service.TestService testService;
+    private com.advantech.service.db1.TestService testService;
 
     @Autowired
     private TestPassStationDetailService testPassStationDetailService;
@@ -382,7 +383,7 @@ public class TestSqlBeans {
 
         DateTime eD = new DateTime().withTime(8, 0, 0, 0);
         DateTime sD = eD.minusMonths(8).withTime(8, 0, 0, 0);
-        List<com.advantech.model.Test> users = testService.findAll();
+        List<com.advantech.model.db1.Test> users = testService.findAll();
 
         List<Integer> stations = newArrayList(3, 11, 30, 151);
 
@@ -404,7 +405,7 @@ public class TestSqlBeans {
 
     }
 
-    @Test
+//    @Test
     @Rollback(true)
     public void testPrepareSchedule() {
         PrepareSchedule p = session.get(PrepareSchedule.class, 30);
@@ -413,6 +414,27 @@ public class TestSqlBeans {
 
         HibernateObjectPrinter.print(p);
     }
+    
+//    @Test
+    @Rollback(false)
+    public void testUserInsert(){
+        User user = session.get(User.class, 1);
+        
+        assertNotNull(user);
+        
+        user.setUsernameCh("中文");
+        
+        session.update(user);
+    }
 
-
+    @Test
+    @Rollback(true)
+    public void testWorktime(){
+        Worktime worktime = session.get(Worktime.class, 1);
+        
+        assertNotNull(worktime);
+        
+        HibernateObjectPrinter.print(worktime);
+    }
+    
 }

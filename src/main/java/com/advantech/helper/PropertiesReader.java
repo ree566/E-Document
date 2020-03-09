@@ -5,9 +5,9 @@
  */
 package com.advantech.helper;
 
-import com.advantech.model.BabDataCollectMode;
-import com.advantech.model.LineTypeConfig;
-import com.advantech.service.LineTypeConfigService;
+import com.advantech.model.db1.BabDataCollectMode;
+import com.advantech.model.db1.LineTypeConfig;
+import com.advantech.service.db1.LineTypeConfigService;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;

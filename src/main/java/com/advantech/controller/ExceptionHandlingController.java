@@ -6,7 +6,7 @@
  */
 package com.advantech.controller;
 
-import com.advantech.dao.BasicDAO;
+import com.advantech.dao.db1.BasicDAO;
 import java.util.Arrays;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;

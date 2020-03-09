@@ -5,12 +5,12 @@
  */
 package com.advantech.quartzJob;
 
-import com.advantech.model.Bab;
+import com.advantech.model.db1.Bab;
 import com.advantech.helper.ApplicationContextHelper;
 import com.advantech.helper.PropertiesReader;
-import com.advantech.model.User;
-import com.advantech.service.BabService;
-import com.advantech.service.UserService;
+import com.advantech.model.db1.User;
+import com.advantech.service.db1.BabService;
+import com.advantech.service.db1.UserService;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;

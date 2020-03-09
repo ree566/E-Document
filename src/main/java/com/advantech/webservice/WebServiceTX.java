@@ -5,7 +5,7 @@
  */
 package com.advantech.webservice;
 
-import com.advantech.model.UserOnMes;
+import com.advantech.model.db1.UserOnMes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import static com.google.common.base.Preconditions.*;

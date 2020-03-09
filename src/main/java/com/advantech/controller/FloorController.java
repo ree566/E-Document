@@ -5,8 +5,8 @@
  */
 package com.advantech.controller;
 
-import com.advantech.model.Floor;
-import com.advantech.service.FloorService;
+import com.advantech.model.db1.Floor;
+import com.advantech.service.db1.FloorService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

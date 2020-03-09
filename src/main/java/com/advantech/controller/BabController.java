@@ -6,8 +6,8 @@
 package com.advantech.controller;
 
 import com.advantech.datatable.DataTableResponse;
-import com.advantech.model.Bab;
-import com.advantech.service.BabService;
+import com.advantech.model.db1.Bab;
+import com.advantech.service.db1.BabService;
 import java.util.List;
 import java.util.Map;
 import org.joda.time.DateTime;

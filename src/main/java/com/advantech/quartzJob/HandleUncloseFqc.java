@@ -6,10 +6,10 @@
  */
 package com.advantech.quartzJob;
 
-import com.advantech.model.BabStatus;
+import com.advantech.model.db1.BabStatus;
 import com.advantech.helper.ApplicationContextHelper;
-import com.advantech.model.Fqc;
-import com.advantech.service.FqcService;
+import com.advantech.model.db1.Fqc;
+import com.advantech.service.db1.FqcService;
 import java.util.List;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;

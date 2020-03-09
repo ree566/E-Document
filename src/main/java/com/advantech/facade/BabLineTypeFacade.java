@@ -6,19 +6,20 @@
 package com.advantech.facade;
 
 import com.advantech.helper.PropertiesReader;
-import com.advantech.model.Bab;
-import com.advantech.model.Line;
-import com.advantech.model.AlarmBabAction;
-import com.advantech.model.BabDataCollectMode;
-import com.advantech.model.BabSettingHistory;
+import com.advantech.model.db1.Bab;
+import com.advantech.model.db1.Line;
+import com.advantech.model.db1.AlarmBabAction;
+import com.advantech.model.db1.BabDataCollectMode;
+import com.advantech.model.db1.BabSettingHistory;
 import com.advantech.model.view.BabLastBarcodeStatus;
 import com.advantech.model.view.BabLastGroupStatus;
-import com.advantech.service.AlarmBabActionService;
-import com.advantech.service.BabService;
-import com.advantech.service.BabSettingHistoryService;
-import com.advantech.service.LineBalancingService;
-import com.advantech.service.LineService;
-import com.advantech.service.SqlViewService;
+import com.advantech.service.db1.AlarmBabActionService;
+import com.advantech.service.db1.BabService;
+import com.advantech.service.db1.BabSettingHistoryService;
+import com.advantech.service.db2.LineBalancingService;
+import com.advantech.service.db1.LineService;
+import com.advantech.service.db1.SqlProcedureService;
+import com.advantech.service.db1.SqlViewService;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -55,7 +56,7 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
     private LineService lineService;
 
     @Autowired
-    private SqlViewService sqlViewService;
+    private SqlProcedureService procService;
 
     @Autowired
     private BabSettingHistoryService babSettingHistoryService;
@@ -136,7 +137,7 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
                 Because BabLastGroupStatus.class is a sql view object
                 Get all data in one transaction to prevent sql deadlock.
          */
-        List<BabLastBarcodeStatus> status = sqlViewService.findBabLastBarcodeStatus(processingBabs);
+        List<BabLastBarcodeStatus> status = procService.findBabLastBarcodeStatus(processingBabs);
 
         processingBabs.forEach((bab) -> {
             List<BabSettingHistory> babSettings = allBabSettings.stream()
@@ -191,7 +192,7 @@ public class BabLineTypeFacade extends BasicLineTypeFacade {
                 Because BabLastGroupStatus.class is a sql view object
                 Get all data in one transaction to prevent sql deadlock.
          */
-        List<BabLastGroupStatus> status = sqlViewService.findBabLastGroupStatus(processingBabs);
+        List<BabLastGroupStatus> status = procService.findBabLastGroupStatus(processingBabs);
 
         processingBabs.forEach((bab) -> {
             List<BabSettingHistory> babSettings = allBabSettings.stream()

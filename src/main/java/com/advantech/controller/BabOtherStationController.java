@@ -8,16 +8,16 @@
 package com.advantech.controller;
 
 import com.advantech.endpoint.Endpoint6;
-import com.advantech.model.Bab;
-import com.advantech.model.BabAlarmHistory;
-import com.advantech.model.BabPreAssyPcsRecord;
-import com.advantech.model.BabSettingHistory;
-import com.advantech.model.ReplyStatus;
-import com.advantech.service.BabAlarmHistoryService;
-import com.advantech.service.BabPreAssyPcsRecordService;
-import com.advantech.service.BabSensorLoginRecordService;
-import com.advantech.service.BabSettingHistoryService;
-import com.advantech.service.BabService;
+import com.advantech.model.db1.Bab;
+import com.advantech.model.db1.BabAlarmHistory;
+import com.advantech.model.db1.BabPreAssyPcsRecord;
+import com.advantech.model.db1.BabSettingHistory;
+import com.advantech.model.db1.ReplyStatus;
+import com.advantech.service.db1.BabAlarmHistoryService;
+import com.advantech.service.db1.BabPreAssyPcsRecordService;
+import com.advantech.service.db1.BabSensorLoginRecordService;
+import com.advantech.service.db1.BabSettingHistoryService;
+import com.advantech.service.db1.BabService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

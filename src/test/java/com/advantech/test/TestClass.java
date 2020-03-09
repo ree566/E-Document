@@ -8,7 +8,9 @@ package com.advantech.test;
 import static com.google.common.collect.Lists.newArrayList;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -112,7 +114,7 @@ public class TestClass {
     DateTimeFormatter df = DateTimeFormat.forPattern("yyyy/MM/dd HH:mm:ss");
     List<Interval> restTimes = newArrayList(new Interval(new DateTime().withTime(15, 30, 0, 0), new DateTime().withTime(15, 45, 0, 0)));
     
-    @Test
+//    @Test
     public void testDateTime() {
         DateTime dS = new DateTime().withTime(15, 20, 0, 0);
         DateTime dE = new DateTime().withTime(15, 25, 0, 0);
@@ -186,6 +188,13 @@ public class TestClass {
 
     private boolean isInRestTime(Interval rest, DateTime d) {
         return rest.getStart().compareTo(d) * d.compareTo(rest.getEnd()) >= 0;
+    }
+    
+    @Test
+    public void testMap(){
+        Map m = null;
+        Map m2 = new HashMap(m);
+        System.out.println(m2 == null);
     }
     
 }

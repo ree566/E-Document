@@ -6,11 +6,11 @@
 package com.advantech.webservice;
 
 import com.advantech.helper.HibernateObjectPrinter;
-import com.advantech.model.PassStationRecord;
-import com.advantech.model.TestPassStationDetail;
-import com.advantech.model.TestRecord;
-import com.advantech.model.UserOnMes;
-import com.advantech.service.TestService;
+import com.advantech.model.db1.PassStationRecord;
+import com.advantech.model.db1.TestPassStationDetail;
+import com.advantech.model.db1.TestRecord;
+import com.advantech.model.db1.UserOnMes;
+import com.advantech.service.db1.TestService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.gson.Gson;
 import static java.lang.System.out;
@@ -165,7 +165,7 @@ public class WebServiceRVTest {
     public void testGetTestPassStationDetails() {
         DateTime eD = new DateTime().withTime(8, 0, 0, 0);
         DateTime sD = eD.minusMonths(2).withTime(8, 0, 0, 0);
-        List<com.advantech.model.Test> users = testService.findAll();
+        List<com.advantech.model.db1.Test> users = testService.findAll();
 
         List<TestPassStationDetail> l = rv.getTestPassStationDetails2(users, Section.BAB, 3, sD, eD, Factory.DEFAULT);
         assertTrue(!l.isEmpty());

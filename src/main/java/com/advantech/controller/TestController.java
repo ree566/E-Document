@@ -8,9 +8,9 @@ package com.advantech.controller;
 
 import com.advantech.datatable.DataTableResponse;
 import com.advantech.helper.HibernateObjectPrinter;
-import com.advantech.model.TagNameComparison;
+import com.advantech.model.db1.TagNameComparison;
 import com.advantech.quartzJob.CountermeasureAlarm;
-import com.advantech.service.LineService;
+import com.advantech.service.db1.LineService;
 import java.io.File;
 import java.io.FileInputStream;
 import org.springframework.beans.factory.annotation.Autowired;

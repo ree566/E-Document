@@ -6,10 +6,10 @@
 package com.advantech.controller;
 
 import com.advantech.datatable.DataTableResponse;
-import com.advantech.model.Bab;
-import com.advantech.model.BabStatus;
-import com.advantech.service.BabPcsDetailHistoryService;
-import com.advantech.service.SqlViewService;
+import com.advantech.model.db1.Bab;
+import com.advantech.model.db1.BabStatus;
+import com.advantech.service.db1.BabPcsDetailHistoryService;
+import com.advantech.service.db1.SqlViewService;
 import static com.google.common.base.Preconditions.checkArgument;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

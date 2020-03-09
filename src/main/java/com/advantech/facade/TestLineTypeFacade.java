@@ -6,13 +6,13 @@
 package com.advantech.facade;
 
 import com.advantech.helper.PropertiesReader;
-import com.advantech.model.Test;
-import com.advantech.model.TestRecord;
-import com.advantech.model.AlarmTestAction;
-import com.advantech.model.TestTable;
-import com.advantech.service.AlarmTestActionService;
-import com.advantech.service.TestService;
-import com.advantech.service.TestTableService;
+import com.advantech.model.db1.Test;
+import com.advantech.model.db1.TestRecord;
+import com.advantech.model.db1.AlarmTestAction;
+import com.advantech.model.db1.TestTable;
+import com.advantech.service.db1.AlarmTestActionService;
+import com.advantech.service.db1.TestService;
+import com.advantech.service.db1.TestTableService;
 import com.advantech.webservice.WebServiceRV;
 import java.util.ArrayList;
 import java.util.HashMap;

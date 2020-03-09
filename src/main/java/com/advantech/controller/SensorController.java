@@ -6,9 +6,9 @@
 package com.advantech.controller;
 
 import com.advantech.datatable.DataTableResponse;
-import com.advantech.model.TagNameComparison;
-import com.advantech.service.FbnService;
-import com.advantech.service.TagNameComparisonService;
+import com.advantech.model.db1.TagNameComparison;
+import com.advantech.service.db1.FbnService;
+import com.advantech.service.db1.TagNameComparisonService;
 import java.util.List;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;

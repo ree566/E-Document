@@ -8,9 +8,9 @@ package com.advantech.controller;
 
 import com.advantech.datatable.DataTableResponse;
 import com.advantech.helper.SecurityPropertiesUtils;
-import com.advantech.model.PreAssyModuleStandardTime;
-import com.advantech.model.User;
-import com.advantech.service.PreAssyModuleStandardTimeService;
+import com.advantech.model.db1.PreAssyModuleStandardTime;
+import com.advantech.model.db1.User;
+import com.advantech.service.db1.PreAssyModuleStandardTimeService;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;

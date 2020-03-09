@@ -296,14 +296,15 @@
                 <ref bean="HandleUncloseFqc-Trig"/>
                 <ref bean="FqcInit-Trig"/>-->
 
-<!--                <ref bean="BabGenerateData-Trig"/>
+                <ref bean="BabGenerateData-Trig"/>
                 <ref bean="TestGenerateData-Trig"/>
                 <ref bean="DataBaseInit-Trig"/>
                 <ref bean="HandleUncloseBab-Trig"/>
                 <ref bean="CleanSensorData-Trig"/>
                 <ref bean="TestLineTypeRecord-Trig"/>
-                <ref bean="SyncTestPassStationData-Trig"/>-->
-                <ref bean="SyncPrepareSchedule-Trig"/>
+                <ref bean="SyncTestPassStationData-Trig"/>
+                
+                <!--<ref bean="SyncPrepareSchedule-Trig"/>-->
                 <ref bean="SyncLineUserReference-Trig"/>
                 <ref bean="SyncUserFromRemote-Trig"/>
                 

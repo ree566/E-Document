@@ -5,20 +5,20 @@
  */
 package com.advantech.facade;
 
-import com.advantech.model.BabStatus;
-import com.advantech.model.Fqc;
-import com.advantech.model.FqcLine;
-import com.advantech.model.FqcModelStandardTime;
-import com.advantech.model.FqcSettingHistory;
-import com.advantech.model.FqcTimeTemp;
-import com.advantech.model.LineTypeConfig;
-import com.advantech.model.PassStationRecord;
-import com.advantech.service.FqcLineService;
-import com.advantech.service.FqcModelStandardTimeService;
-import com.advantech.service.FqcService;
-import com.advantech.service.FqcSettingHistoryService;
-import com.advantech.service.FqcTimeTempService;
-import com.advantech.service.LineTypeConfigService;
+import com.advantech.model.db1.BabStatus;
+import com.advantech.model.db1.Fqc;
+import com.advantech.model.db1.FqcLine;
+import com.advantech.model.db1.FqcModelStandardTime;
+import com.advantech.model.db1.FqcSettingHistory;
+import com.advantech.model.db1.FqcTimeTemp;
+import com.advantech.model.db1.LineTypeConfig;
+import com.advantech.model.db1.PassStationRecord;
+import com.advantech.service.db1.FqcLineService;
+import com.advantech.service.db1.FqcModelStandardTimeService;
+import com.advantech.service.db1.FqcService;
+import com.advantech.service.db1.FqcSettingHistoryService;
+import com.advantech.service.db1.FqcTimeTempService;
+import com.advantech.service.db1.LineTypeConfigService;
 import com.advantech.webservice.WebServiceRV;
 import static com.google.common.collect.Maps.newHashMap;
 import java.util.ArrayList;
