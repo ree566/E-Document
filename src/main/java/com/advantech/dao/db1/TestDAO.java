@@ -6,7 +6,6 @@
 package com.advantech.dao.db1;
 
 import com.advantech.model.db1.Test;
-import com.advantech.model.db1.AlarmTestAction;
 import java.util.List;
 import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
@@ -63,7 +62,7 @@ public class TestDAO extends AbstractDao<Integer, Test> implements BasicDAO_1<Te
     }
 
     public int cleanTests() {
-        Query q = super.getSession().createSQLQuery("truncate table LS_Test");
+        Query q = super.getSession().createSQLQuery("truncate table {h-schema}LS_Test");
         q.executeUpdate();
         return 1;
     }

@@ -226,7 +226,7 @@ public class PrepareSchedule implements Serializable {
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", iso = DateTimeFormat.ISO.DATE)
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "GMT+8")
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "createDate", length = 23, insertable = true, updatable = false)
+    @Column(name = "createDate", length = 23, updatable = false)
     public Date getCreateDate() {
         return createDate;
     }

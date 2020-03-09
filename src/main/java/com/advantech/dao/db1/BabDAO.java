@@ -6,6 +6,7 @@
 package com.advantech.dao.db1;
 
 import com.advantech.model.db1.Bab;
+import com.advantech.model.db1.Line;
 import com.advantech.model.db1.LineType;
 import com.advantech.model.db1.ReplyStatus;
 import java.util.List;
@@ -163,6 +164,13 @@ public class BabDAO extends AbstractDao<Integer, Bab> implements BasicDAO_1<Bab>
     public List<Bab> findByModelNames(List<String> modelNames) {
         return super.createEntityCriteria()
                 .add(Restrictions.in("modelName", modelNames))
+                .list();
+    }
+    
+    public List<Bab> findByModelNamesAndLines(List<String> modelNames, List<Line> lines) {
+        return super.createEntityCriteria()
+                .add(Restrictions.in("modelName", modelNames))
+                .add(Restrictions.in("line", lines))
                 .list();
     }
 

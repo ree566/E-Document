@@ -104,7 +104,7 @@ public class BabPcsDetailHistory implements Serializable {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @JsonFormat(pattern = "yyyy-MM-dd'T'kk:mm:ss.SSS'Z'", timezone = "GMT+8")
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "lastUpdateTime", length = 23, insertable = false, updatable = false)
+    @Column(name = "lastUpdateTime", length = 23, updatable = false)
     public Date getLastUpdateTime() {
         return lastUpdateTime;
     }

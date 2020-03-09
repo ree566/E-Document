@@ -6,7 +6,6 @@
 package com.advantech.quartzJob;
 
 import com.advantech.model.db1.Bab;
-import com.advantech.model.db1.BabSettingHistory;
 import com.advantech.model.db1.Floor;
 import com.advantech.model.db1.Line;
 import com.advantech.model.db1.LineUserReference;
@@ -47,9 +46,9 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Component
 @Transactional
-public class ArrangePrepareScheduleImpl2 {
+public class ArrangePrepareScheduleImpl_2 {
 
-    private static final Logger logger = LoggerFactory.getLogger(ArrangePrepareScheduleImpl2.class);
+    private static final Logger logger = LoggerFactory.getLogger(ArrangePrepareScheduleImpl_2.class);
 
     @Autowired
     private FloorService floorService;
@@ -183,7 +182,7 @@ public class ArrangePrepareScheduleImpl2 {
 
         result.put(emptyLine, new ArrayList());
 
-        List<Bab> babs = babService.findByModelNames(modelNames);
+        List<Bab> babs = babService.findByModelNamesAndLines(modelNames, lines);
         Map<String, Map<Line, Long>> modelUsageHistory = babs.stream()
                 .collect(groupingBy(Bab::getModelName,
                         Collectors.groupingBy(Bab::getLine,
@@ -195,11 +194,9 @@ public class ArrangePrepareScheduleImpl2 {
 
             Map<Line, Long> modelNameFitHistory = modelUsageHistory.get(s.getModelName());
 
-            if (modelNameFitHistory == null || modelNameFitHistory.isEmpty()) {
-                //Set the schedule to the first order line(order by name)
-            } else {
-                //Find best setting which with the maxinum counting
-            }
+            if (modelNameFitHistory == null) {
+                modelNameFitHistory = new HashMap();
+            } 
 
             //Check line to add schedule(must schedule time and before 21:30)
             findFitLineSetting(s, users, modelNameFitHistory, result, new ArrayList());

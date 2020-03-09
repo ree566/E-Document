@@ -149,7 +149,7 @@
                 $("body").on("click", "input[type='text'], input[type='number']", function () {
                     $(this).select();
                 });
-                
+
                 $(".lineSelGroup").hide();
 
             });
@@ -275,9 +275,13 @@
                                     return 'n/a';
                                 } else {
                                     var username = arr[col].username;
-                                    var flag = full["otherInfo"][col];
-                                    if (flag == false) {
-                                        return "<b class='text-danger'>" + username + "</b>";
+                                    if (full.hasOwnProperty("otherInfo") && full["otherInfo"] != null) {
+                                        var flag = full["otherInfo"][col];
+                                        if (flag == false) {
+                                            return "<b class='text-danger'>" + username + "</b>";
+                                        }
+                                    } else if (username == null) {
+                                        return 'n/a';
                                     }
                                     return username;
                                 }

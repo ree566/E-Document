@@ -8,6 +8,7 @@ import com.advantech.model.db1.Bab;
 import com.advantech.model.db1.BabDataCollectMode;
 import com.advantech.model.db1.BabSettingHistory;
 import com.advantech.model.db1.BabStatus;
+import com.advantech.model.db1.Line;
 import com.advantech.model.db1.LineType;
 import com.advantech.model.db1.TagNameComparison;
 import com.advantech.model.view.BabAvg;
@@ -75,7 +76,7 @@ public class BabService {
 
     @Autowired
     private LineTypeService lineTypeService;
-    
+
     @Autowired
     private SqlProcedureService procService;
 
@@ -213,6 +214,10 @@ public class BabService {
 
     public List<Bab> findByModelNames(List<String> modelNames) {
         return babDAO.findByModelNames(modelNames);
+    }
+
+    public List<Bab> findByModelNamesAndLines(List<String> modelNames, List<Line> lines) {
+        return babDAO.findByModelNamesAndLines(modelNames, lines);
     }
 
     public List<Interval> searchGaps(List<Bab> l, DateTime startTimeOfDay, DateTime endTimeOfDay) {
