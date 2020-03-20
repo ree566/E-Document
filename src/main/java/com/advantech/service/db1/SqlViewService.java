@@ -9,7 +9,6 @@ import com.advantech.dao.db1.SqlViewDAO;
 import com.advantech.helper.PropertiesReader;
 import com.advantech.model.db1.Bab;
 import com.advantech.model.view.BabAvg;
-import com.advantech.model.view.UserInfoRemote;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -44,10 +43,6 @@ public class SqlViewService {
 
     public List<BabAvg> findBabAvgInHistory(int bab_id) {
         return sqlViewDAO.findBabAvgInHistory(bab_id);
-    }
-
-    public UserInfoRemote findUserInfoRemote(String jobnumber) {
-        return sqlViewDAO.findUserInfoRemote(jobnumber);
     }
 
     public List<Map> findSensorStatus(int bab_id) {

@@ -68,8 +68,19 @@
         <script>
             var table;
             var lockDays = 14;
+            var urlLineType;
+            var lineTypeIds;
 
             $(function () {
+                urlLineType = getQueryVariable("lineType");
+                lineTypeIds = (urlLineType == null || urlLineType == "ASSY" ? [1, 2] : [3]);
+
+                if (urlLineType == "ASSY") {
+                    $("#worktimeSumArea").hide();
+                    $("#page-title").html("組裝最佳排站配置");
+                } else if (urlLineType == "Packing") {
+                    $("#page-title").html("包裝最佳排站配置");
+                }
                 initSelectOption();
 
                 var momentFormatString = 'YYYY-MM-DD';
@@ -155,9 +166,13 @@
             });
 
             function initSelectOption() {
+                console.log(lineTypeIds);
                 $.ajax({
                     type: "GET",
-                    url: "<c:url value="/BabLineController/findByUser" />",
+                    url: "<c:url value="/BabLineController/findByUserAndLineType" />",
+                    data: {
+                        lineType_id: lineTypeIds
+                    },
                     dataType: "json",
                     success: function (response) {
                         var lineWiget = $("#line");
@@ -200,7 +215,8 @@
                         data: {
                             lineId: $("#line").val(),
                             d: $("#fini").val(),
-                            floorId: $("#floor").val()
+                            floorId: $("#floor").val(),
+                            lineType_id: lineTypeIds
                         },
                         error: function (xhr, ajaxOptions, thrownError) {
                             alert(xhr.responseText);
@@ -322,6 +338,15 @@
                     "processing": true,
                     "initComplete": function (settings, json) {
                         $("#send").attr("disabled", false);
+                        var worktimeSum = 0;
+                        var data = table
+                                .rows()
+                                .data();
+
+                        for (var i = 0; i < data.length; i++) {
+                            worktimeSum += data[i].timeCost;
+                        }
+                        $("#worktimeSumArea").html("<h5 class='text text-danger'>排站工時: " + worktimeSum + " 分</h5>");
                     },
                     filter: false,
                     destroy: true,
@@ -349,7 +374,7 @@
         <c:import url="/temp/admin-header.jsp" />
         <div class="container-fluid">
             <div>
-                <h3 class="title">組裝最佳排站配置</h3>
+                <h3 id="page-title" class="title">組裝最佳排站配置</h3>
             </div>
             <div class="row form-inline">
                 <div class="col form-group lineSelGroup">
@@ -372,6 +397,9 @@
                 </div>
                 <div class="col form-group">
                     <input type="button" id="send" value="確定(Ok)">
+                </div>
+                <div class="col form-group">
+                    <div id="worktimeSumArea"></div>
                 </div>
             </div>
 

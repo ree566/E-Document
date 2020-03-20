@@ -37,6 +37,7 @@ public class Worktime implements Serializable {
     private BigDecimal packing;
     private int assyPeople;
     private int packingPeople;
+    private BigDecimal packingLeadTime;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -173,6 +174,15 @@ public class Worktime implements Serializable {
 
     public void setPackingPeople(int packingPeople) {
         this.packingPeople = packingPeople;
+    }
+
+    @Column(name = "packingLeadTime")
+    public BigDecimal getPackingLeadTime() {
+        return packingLeadTime;
+    }
+
+    public void setPackingLeadTime(BigDecimal packingLeadTime) {
+        this.packingLeadTime = packingLeadTime;
     }
 
 }

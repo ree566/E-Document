@@ -7,6 +7,7 @@ package com.advantech.dao.db1;
 
 import com.advantech.model.db1.Floor;
 import com.advantech.model.db1.Line;
+import com.advantech.model.db1.LineType;
 import com.advantech.model.db1.PrepareSchedule;
 import java.util.List;
 import org.hibernate.criterion.Restrictions;
@@ -43,9 +44,10 @@ public class PrepareScheduleDAO extends AbstractDao<Integer, PrepareSchedule> im
                 .list();
     }
     
-    public List<PrepareSchedule> findByFloorAndDate(Floor floor, DateTime sD) {
+    public List<PrepareSchedule> findByFloorAndLineTypeAndDate(Floor floor, List<LineType> lineType, DateTime sD) {
         return super.createEntityCriteria()
                 .add(Restrictions.eq("floor", floor))
+                .add(Restrictions.in("lineType", lineType))
                 .add(Restrictions.eq("onBoardDate", sD.toDate()))
                 .list();
     }

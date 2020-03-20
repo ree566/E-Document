@@ -8,9 +8,13 @@ package com.advantech.quartzJob;
 import com.advantech.model.db1.Floor;
 import com.advantech.model.db1.LineType;
 import com.advantech.model.db1.PrepareSchedule;
+import com.advantech.model.db1.Worktime;
+import com.advantech.service.db1.PrepareScheduleService;
+import static com.google.common.collect.Lists.newArrayList;
 import java.io.File;
 import java.math.BigDecimal;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Objects;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.ss.usermodel.Cell;
@@ -21,6 +25,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Restrictions;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,19 +35,22 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
- * @author Wei.Cheng
+ * @author Wei.Cheng For assy
  */
 @Component
 @Transactional
-public class SyncPrepareSchedule {
+public class SyncPrepareScheduleForPacking {
 
-    private static final Logger logger = LoggerFactory.getLogger(SyncPrepareSchedule.class);
+    private static final Logger logger = LoggerFactory.getLogger(SyncPrepareScheduleForPacking.class);
 
     @Autowired
     private SessionFactory sessionFactory;
 
     @Autowired
     private ArrangePrepareScheduleImpl aps;
+    
+    @Autowired
+    private PrepareScheduleService psService;
 
     public void execute() throws Exception {
         DateTime d = new DateTime();
@@ -58,30 +66,37 @@ public class SyncPrepareSchedule {
 
         int[] floors = {5, 6};
 
+        Session session = sessionFactory.getCurrentSession();
+        List<Worktime> worktimes = session
+                .createCriteria(Worktime.class)
+                .add(Restrictions.ne("packingLeadTime", BigDecimal.ZERO))
+                .list();
+        LineType pkg = session.get(LineType.class, 3);
+
         for (int floor : floors) {
+            String syncFilePath = "\\\\aclfile.advantech.corp\\Group1\\DF\\PMC\\生產日排程\\TWM3 " + floor + "F APS製程排程.xlsx";
 
-            String syncFilePath = "\\\\aclfile.advantech.corp\\Group1\\DF\\PMC\\生產日排程\\APS " + floor + "F 組裝排程.xlsx";
-
-            Session session = sessionFactory.getCurrentSession();
-            LineType assy = session.get(LineType.class, 1);
             Floor f = session.get(Floor.class, floor == 5 ? 1 : 2);
+            
+            List nextDaysData = psService.findByFloorAndLineTypeAndDate(f, newArrayList(pkg), d);
+            if (!nextDaysData.isEmpty()) {
+                //Bypass the data when data is already exists
+                continue;
+            }
 
             try (Workbook workbook = WorkbookFactory.create(new File(syncFilePath), "234", true)) {
-                Sheet sheet = workbook.getSheet(floor + "F--前置&組裝");
+                Sheet sheet = workbook.getSheet(floor + "F--包裝");
 
                 int dateIdx = 5;
                 int titleIdx = 6;
 
                 int patchColumn = findColumnIdx(sheet.getRow(dateIdx), d);
-                int lineTypeIdx = findColumnIdx(sheet.getRow(titleIdx), "料號&製程段");
                 int modelNameIdx = findColumnIdx(sheet.getRow(titleIdx), "料號");
                 int poIdx = findColumnIdx(sheet.getRow(titleIdx), "工單");
                 int totalQtyIdx = findColumnIdx(sheet.getRow(titleIdx), "工單數");
                 int scheduleQtyIdx = patchColumn;
-                int timeCostIdx = patchColumn + 1;
 
                 //Step 1: First get column index matches the current date
-                //Step 2: Filter data B7 contain word "BASSY" & 排產量 is not blank
                 //Iterate through each rows one by one
                 int cnt = 0;
 
@@ -91,32 +106,39 @@ public class SyncPrepareSchedule {
                         //Skip row to main data
                         if (cnt > titleIdx) {
                             Row row = rowIterator.next();
-                            Cell cell_LineType = row.getCell(lineTypeIdx);
                             Cell cell_OutputCnt = row.getCell(patchColumn);
-                            if (cell_LineType != null && cell_OutputCnt != null) {
-                                cell_LineType.setCellType(CellType.STRING);
-                                if (cell_LineType.getRichStringCellValue().toString().contains("BASSY") && cell_OutputCnt.getCellType() != CellType.BLANK) {
+                            if (cell_OutputCnt != null && cell_OutputCnt.getCellType() != CellType.BLANK) {
 
-                                    Cell cell_ModelName = row.getCell(modelNameIdx);
+                                Cell cell_ModelName = row.getCell(modelNameIdx);
+
+                                String modelName = cell_ModelName.getStringCellValue();
+                                Worktime w = worktimes.stream()
+                                        .filter(o -> o.getModelName().equals(modelName))
+                                        .findFirst()
+                                        .orElse(null);
+
+                                if (w != null) {
+
                                     Cell cell_Po = row.getCell(poIdx);
                                     Cell cell_TotalQty = row.getCell(totalQtyIdx);
                                     Cell cell_ScheduleQty = row.getCell(scheduleQtyIdx);
-                                    Cell cell_TimeCost = row.getCell(timeCostIdx);
 
                                     logger.info(cell_ModelName.getStringCellValue());
 
                                     PrepareSchedule p = new PrepareSchedule();
-                                    p.setModelName(cell_ModelName.getStringCellValue());
+                                    p.setModelName(modelName);
                                     p.setPo(cell_Po.getStringCellValue());
                                     p.setTotalQty((int) cell_TotalQty.getNumericCellValue());
                                     p.setScheduleQty((int) cell_ScheduleQty.getNumericCellValue());
-                                    p.setTimeCost(new BigDecimal(cell_TimeCost.getNumericCellValue()));
-                                    p.setLineType(assy);
+                                    p.setTimeCost(w.getPackingLeadTime().multiply(new BigDecimal(p.getScheduleQty()))); //花費紀錄時間為附件盒工時
+                                    p.setLineType(pkg);
                                     p.setOnBoardDate(d.toDate());
                                     p.setFloor(f);
                                     session.save(p);
+
                                 }
                             }
+
                         }
                         cnt++;
                     } catch (Exception e) {

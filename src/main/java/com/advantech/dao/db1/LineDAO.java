@@ -46,20 +46,18 @@ public class LineDAO extends AbstractDao<Integer, Line> implements BasicDAO_1<Li
         return c.list();
     }
 
-    public List<Line> findBySitefloorAndLineType(String floorName, Integer... lineType_ids) {
+    public List<Line> findBySitefloorAndLineType(String floorName, List<LineType> lineType) {
         return super.createEntityCriteria()
-                .createAlias("lineType", "lt")
                 .createAlias("floor", "f")
                 .add(Restrictions.eq("f.name", floorName))
-                .add(Restrictions.in("lt.id", lineType_ids))
+                .add(Restrictions.in("lineType", lineType))
                 .addOrder(Order.asc("name"))
                 .list();
     }
-    
-    public List<Line> findByLineType(Integer... lineType_ids) {
+
+    public List<Line> findByLineType(List<LineType> lineType) {
         return super.createEntityCriteria()
-                .createAlias("lineType", "lt")
-                .add(Restrictions.in("lt.id", lineType_ids))
+                .add(Restrictions.in("lineType", lineType))
                 .addOrder(Order.asc("name"))
                 .list();
     }
@@ -85,6 +83,14 @@ public class LineDAO extends AbstractDao<Integer, Line> implements BasicDAO_1<Li
                 .list();
     }
     
+    public List<Line> findByUserAndLineType(User user, List<LineType> lt) {
+        return super.createEntityCriteria()
+                .createAlias("users", "u")
+                .add(Restrictions.eq("u.jobnumber", user.getJobnumber()))
+                .add(Restrictions.in("lineType", lt))
+                .list();
+    }
+
     public List<Line> findByModelSopRemark(ModelSopRemark m) {
         return super.createEntityCriteria()
                 .createAlias("modelSopRemarks", "m")

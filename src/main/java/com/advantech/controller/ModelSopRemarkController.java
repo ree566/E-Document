@@ -8,11 +8,13 @@ package com.advantech.controller;
 import com.advantech.datatable.DataTableResponse;
 import static com.advantech.helper.SecurityPropertiesUtils.retrieveAndCheckUserInSession;
 import com.advantech.model.db1.Line;
+import com.advantech.model.db1.LineType;
 import com.advantech.model.db1.ModelSopRemark;
 import com.advantech.model.db1.ModelSopRemarkDetail;
 import com.advantech.model.db1.ModelSopRemarkEvent;
 import com.advantech.model.db1.User;
 import com.advantech.service.db1.LineService;
+import com.advantech.service.db1.LineTypeService;
 import com.advantech.service.db1.ModelSopRemarkDetailService;
 import com.advantech.service.db1.ModelSopRemarkEventService;
 import com.advantech.service.db1.ModelSopRemarkService;
@@ -52,6 +54,9 @@ public class ModelSopRemarkController {
     @Autowired
     private LineService lineService;
 
+    @Autowired
+    private LineTypeService lineTypeService;
+
     @RequestMapping(value = "/findAll", method = {RequestMethod.GET})
     @ResponseBody
     protected DataTableResponse findAll(HttpServletRequest request) {
@@ -76,7 +81,8 @@ public class ModelSopRemarkController {
     @RequestMapping(value = "/saveOrUpdate", method = {RequestMethod.POST})
     @ResponseBody
     protected String saveOrUpdate(@Valid @ModelAttribute ModelSopRemark pojo) {
-        List l = lineService.findByLineType(1, 3);
+        List<LineType> lt = lineTypeService.findByPrimaryKeys(1, 2);
+        List l = lineService.findByLineType(lt);
         pojo.setLines(new HashSet(l));
         if (pojo.getId() == 0) {
             modelSopRemarkService.insert(pojo);

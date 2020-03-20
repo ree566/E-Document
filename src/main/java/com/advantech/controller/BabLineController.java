@@ -64,10 +64,23 @@ public class BabLineController {
         }
     }
 
+    @RequestMapping(value = "/findByUserAndLineType", method = {RequestMethod.GET})
+    @ResponseBody
+    protected List<Line> findByUserAndLineType(@RequestParam("lineType_id[]") Integer[] lineType_id, HttpServletRequest request) {
+        List<LineType> lt = lineTypeService.findByPrimaryKeys(lineType_id);
+        if (request.isUserInRole("ROLE_ADMIN") || request.isUserInRole("ROLE_OPER_IE")) {
+            return lineService.findByLineType(lt);
+        } else {
+            User user = retrieveAndCheckUserInSession();
+            return lineService.findByUserAndLineType(user, lt);
+        }
+    }
+
     @RequestMapping(value = "/findBySitefloorAndLineType", method = {RequestMethod.GET})
     @ResponseBody
     protected List<Line> findBySitefloorAndLineType(@RequestParam String floorName, @RequestParam("lineType_id[]") Integer[] lineType_id) {
-        return lineService.findBySitefloorAndLineType(floorName, lineType_id);
+        List<LineType> lt = lineTypeService.findByPrimaryKeys(lineType_id);
+        return lineService.findBySitefloorAndLineType(floorName, lt);
     }
 
 }

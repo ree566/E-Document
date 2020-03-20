@@ -7,6 +7,7 @@ package com.advantech.dao.db1;
 
 import com.advantech.model.db1.PrepareScheduleEndtimeSetting;
 import java.util.List;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -14,7 +15,7 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class PrepareScheduleEndtimeSettingDAO extends AbstractDao<String, PrepareScheduleEndtimeSetting> implements BasicDAO_1<PrepareScheduleEndtimeSetting> {
+public class PrepareScheduleEndtimeSettingDAO extends AbstractDao<Integer, PrepareScheduleEndtimeSetting> implements BasicDAO_1<PrepareScheduleEndtimeSetting> {
 
     @Override
     public List<PrepareScheduleEndtimeSetting> findAll() {
@@ -23,7 +24,14 @@ public class PrepareScheduleEndtimeSettingDAO extends AbstractDao<String, Prepar
 
     @Override
     public PrepareScheduleEndtimeSetting findByPrimaryKey(Object obj_id) {
-        return super.getByKey((String) obj_id);
+        return super.getByKey((Integer) obj_id);
+    }
+    
+    public PrepareScheduleEndtimeSetting findByWeekOfWeekyear(int weekOfWeekyear){
+        return (PrepareScheduleEndtimeSetting) super.createEntityCriteria()
+                .add(Restrictions.eq("weekOfYear", weekOfWeekyear))
+                .setMaxResults(1)
+                .uniqueResult();
     }
 
     @Override

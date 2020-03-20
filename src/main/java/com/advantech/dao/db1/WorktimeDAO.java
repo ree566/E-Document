@@ -5,8 +5,10 @@
  */
 package com.advantech.dao.db1;
 
+import static com.advantech.helper.HibernateBatchUtils.flushIfReachFetchSize;
 import com.advantech.model.db1.Worktime;
 import java.util.List;
+import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
@@ -38,10 +40,30 @@ public class WorktimeDAO extends AbstractDao<String, Worktime> implements BasicD
         this.getSession().save(pojo);
         return 1;
     }
+    
+    public int insert(List<Worktime> l) {
+        Session session = super.getSession();
+        int currentRow = 1;
+        for (Worktime a : l) {
+            session.save(a);
+            flushIfReachFetchSize(session, currentRow++);
+        }
+        return 1;
+    }
 
     @Override
     public int update(Worktime pojo) {
         this.getSession().update(pojo);
+        return 1;
+    }
+    
+    public int update(List<Worktime> l) {
+        Session session = super.getSession();
+        int currentRow = 1;
+        for (Worktime a : l) {
+            session.update(a);
+            flushIfReachFetchSize(session, currentRow++);
+        }
         return 1;
     }
 

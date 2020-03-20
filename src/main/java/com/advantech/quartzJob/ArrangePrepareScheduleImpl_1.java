@@ -8,12 +8,14 @@ package com.advantech.quartzJob;
 import com.advantech.model.db1.BabSettingHistory;
 import com.advantech.model.db1.Floor;
 import com.advantech.model.db1.Line;
+import com.advantech.model.db1.LineType;
 import com.advantech.model.db1.LineUserReference;
 import com.advantech.model.db1.PrepareSchedule;
 import com.advantech.model.db1.User;
 import com.advantech.service.db1.BabSettingHistoryService;
 import com.advantech.service.db1.FloorService;
 import com.advantech.service.db1.LineService;
+import com.advantech.service.db1.LineTypeService;
 import com.advantech.service.db1.LineUserReferenceService;
 import com.advantech.service.db1.PrepareScheduleService;
 import static com.google.common.collect.Lists.newArrayList;
@@ -47,9 +49,6 @@ public class ArrangePrepareScheduleImpl_1 {
     private static final Logger logger = LoggerFactory.getLogger(ArrangePrepareScheduleImpl_1.class);
 
     @Autowired
-    private FloorService floorService;
-
-    @Autowired
     private PrepareScheduleService psService;
 
     @Autowired
@@ -61,34 +60,14 @@ public class ArrangePrepareScheduleImpl_1 {
     @Autowired
     private BabSettingHistoryService settingHistoryService;
 
+    @Autowired
+    private LineTypeService lineTypeService;
+
     private List<Interval> restTimes;
     private DateTime scheduleStartTime, scheduleEndTime;
 
-    public void execute() throws Exception {
-        this.execute(new DateTime());
-    }
-
-    public void execute(DateTime d) throws Exception {
-        d = d.withTime(0, 0, 0, 0);
-
-        List<Floor> floors = floorService.findAll();
-        floors = floors.stream()
-                .filter(f -> f.getId() == 1 || f.getId() == 2)
-                .collect(toList());
-
-        for (Floor f : floors) {
-            List<PrepareSchedule> ps = this.findPrepareSchedule(f, d);
-            ps.forEach((p) -> {
-                psService.update(p);
-            });
-        }
-
-        logger.info("Update prepareSchedule finish");
-    }
-
     private void updateDateParamater(DateTime d) {
         scheduleStartTime = new DateTime(d).withTime(8, 30, 0, 0);
-//        scheduleEndTime = new DateTime(d).withTime(21, 0, 0, 0);
         scheduleEndTime = new DateTime(d).withTime(23, 59, 59, 0);
         restTimes = newArrayList(
                 new Interval(new DateTime(d).withTime(12, 0, 0, 0), new DateTime(d).withTime(12, 50, 0, 0)),
@@ -97,14 +76,16 @@ public class ArrangePrepareScheduleImpl_1 {
         );
     }
 
-    public List<PrepareSchedule> findPrepareSchedule(Floor f, DateTime d) {
+    public List<PrepareSchedule> findPrepareSchedule(Floor f, Integer[] lineType_id, DateTime d) {
 
         updateDateParamater(d);
         d = d.withTime(0, 0, 0, 0);
 
-        List<PrepareSchedule> l = psService.findByFloorAndDate(f, d);
+        List<LineType> lineTypes = lineTypeService.findByPrimaryKeys(lineType_id);
 
-        List<Line> lines = lineService.findBySitefloorAndLineType(f.getName(), 1, 2);
+        List<PrepareSchedule> l = psService.findByFloorAndLineTypeAndDate(f, lineTypes, d);
+
+        List<Line> lines = lineService.findBySitefloorAndLineType(f.getName(), lineTypes);
         Line emptyLine = lineService.findByPrimaryKey(7);
         if (!lines.contains(emptyLine)) {
             lines.add(emptyLine);
@@ -128,7 +109,7 @@ public class ArrangePrepareScheduleImpl_1 {
                 lineSchedule = scheduleTime(lineUsers, lineSchedule);
                 lineSchedule = addProducedFlag(lineSchedule);
             }
-            
+
             result.addAll(lineSchedule);
         });
 
@@ -155,34 +136,7 @@ public class ArrangePrepareScheduleImpl_1 {
             }
             w.setUsers(u);
         }
-
-//        l = fillUserGap(line, l);
         return l;
-    }
-
-    private List<PrepareSchedule> fillUserGap(Line line, List<PrepareSchedule> l) {
-
-        List<Line> cellLine = lineService.findBySitefloorAndLineType(line.getFloor().getName(), 2);
-        List<LineUserReference> cellUsers = lineUserRefService.findByLines(cellLine);
-        List<User> settingUsers = cellUsers.stream().map(u -> u.getUser()).collect(toList());
-
-        int peopleFlag = 0;
-
-        for (PrepareSchedule w : l) {
-            int gapCnt = line.getPeople() - w.getUsers().size();
-            List<User> scheduleUsers = w.getUsers();
-            if (cellUsers.size() <= gapCnt) {
-                scheduleUsers.addAll(settingUsers);
-            } else {
-                for (int i = 0; i < gapCnt; i++) {
-                    scheduleUsers.add(settingUsers.get(peopleFlag % l.size()));
-                }
-                peopleFlag += gapCnt;
-            }
-        }
-
-        return l;
-
     }
 
     private List<PrepareSchedule> addProducedFlag(List<PrepareSchedule> l) {
@@ -201,14 +155,6 @@ public class ArrangePrepareScheduleImpl_1 {
             List<User> scheduleUsers = p.getUsers();
             int[] ordinal = {0};
             scheduleUsers.forEach((u) -> {
-//                System.out.println(ordinal[0]);
-//                BabSettingHistory h = settings.stream().filter(s
-//                        -> s.getBab().getModelName().equals(p.getModelName())
-//                        && s.getStation() == ordinal[0]
-//                        && s.getJobnumber().equals(u.getJobnumber()))
-//                        .findFirst()
-//                        .orElse(null);
-
                 BabSettingHistory h = settings.stream().filter(s
                         -> s.getBab().getModelName().equals(p.getModelName())
                         && s.getJobnumber().equals(u.getJobnumber()))

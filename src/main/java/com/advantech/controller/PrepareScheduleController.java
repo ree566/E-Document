@@ -48,6 +48,7 @@ public class PrepareScheduleController {
     @ResponseBody
     protected DataTableResponse findPrepareSchedule(
             @RequestParam(required = false) Integer floorId,
+            @RequestParam("lineType_id[]") Integer[] lineType_id,
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime d,
             HttpServletRequest request
     ) {
@@ -61,7 +62,8 @@ public class PrepareScheduleController {
             f = user.getFloor();
         }
 
-        List l = aps1.findPrepareSchedule(f, d);
+//        List l = aps1.findPrepareSchedule(f, d);
+        List l = aps1.findPrepareSchedule(f, lineType_id, d);
         return new DataTableResponse(l);
     }
 

@@ -8,7 +8,6 @@ package com.advantech.quartzJob;
 import com.advantech.dao.db1.LineUserReferenceDAO;
 import com.advantech.model.db1.LineUserReference;
 import java.util.List;
-import org.hibernate.SessionFactory;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,21 +39,26 @@ public class SyncLineUserReference {
     public void execute(DateTime d) throws Exception {
         d = d.withTime(0, 0, 0, 0);
         int dayOfWeek = d.getDayOfWeek();
+        DateTime nextDay = new DateTime(d).plusDays(dayOfWeek == 6 ? 2 : 1);
 
         List<LineUserReference> l = dao.findByDate(d);
+        List<LineUserReference> nextDaysData = dao.findByDate(nextDay);
 
-        l.forEach(ref -> {
-            LineUserReference nr = new LineUserReference();
+        if (nextDaysData.isEmpty()) {
+            l.forEach(ref -> {
+                LineUserReference nr = new LineUserReference();
 
-            nr.setLine(ref.getLine());
-            nr.setStation(ref.getStation());
-            nr.setUser(ref.getUser());
-            nr.setOnboardDate(new DateTime(ref.getOnboardDate()).plusDays(dayOfWeek == 6 ? 2 : 1).toDate());
+                nr.setLine(ref.getLine());
+                nr.setStation(ref.getStation());
+                nr.setUser(ref.getUser());
+                nr.setOnboardDate(nextDay.toDate());
 
-            dao.insert(nr);
-        });
-
-        logger.info("SyncLineUserReference finish");
+                dao.insert(nr);
+            });
+            logger.info("SyncLineUserReference finish");
+        } else {
+            logger.info("SyncLineUserReference fail, the data in next workday is already exists");
+        }
     }
 
 }

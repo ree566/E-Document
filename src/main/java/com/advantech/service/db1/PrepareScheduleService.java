@@ -5,30 +5,17 @@
  */
 package com.advantech.service.db1;
 
-import com.advantech.dao.db1.BabSettingHistoryDAO;
-import com.advantech.dao.db1.LineDAO;
-import com.advantech.dao.db1.LineUserReferenceDAO;
 import com.advantech.model.db1.PrepareSchedule;
 import com.advantech.dao.db1.PrepareScheduleDAO;
-import com.advantech.model.db1.BabSettingHistory;
 import com.advantech.model.db1.Floor;
-import com.advantech.model.db1.Line;
-import com.advantech.model.db1.LineUserReference;
-import com.advantech.model.db1.User;
-import static com.google.common.collect.Lists.newArrayList;
+import com.advantech.model.db1.LineType;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.ArrayList;
 import static java.util.Comparator.comparing;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import static java.util.stream.Collectors.toList;
 import org.apache.commons.lang3.SerializationUtils;
 import org.joda.time.DateTime;
-import org.joda.time.Interval;
-import org.joda.time.Minutes;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -52,8 +39,8 @@ public class PrepareScheduleService {
         return dao.findByPrimaryKey(obj_id);
     }
 
-    public List<PrepareSchedule> findByFloorAndDate(Floor floor, DateTime sD) {
-        return dao.findByFloorAndDate(floor, sD);
+    public List<PrepareSchedule> findByFloorAndLineTypeAndDate(Floor floor, List<LineType> lineType, DateTime sD) {
+        return dao.findByFloorAndLineTypeAndDate(floor, lineType, sD);
     }
 
     public int insert(PrepareSchedule pojo) {
@@ -90,7 +77,7 @@ public class PrepareScheduleService {
 
         return 1;
     }
-    
+
     public int separateCnt(PrepareSchedule pojo, List<Integer> cnt) {
         int rowCnt = 0;
         int baseCnt = pojo.getScheduleQty();

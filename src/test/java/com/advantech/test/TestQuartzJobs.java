@@ -13,12 +13,15 @@ import com.advantech.quartzJob.DataBaseInit;
 import com.advantech.quartzJob.InsertMesCountRecord;
 import com.advantech.quartzJob.PollingDataCollectStatus;
 import com.advantech.quartzJob.SyncLineUserReference;
-import com.advantech.quartzJob.SyncPrepareSchedule;
+import com.advantech.quartzJob.SyncPrepareScheduleForAssy;
 import com.advantech.quartzJob.SyncTestPassStationData;
 import com.advantech.quartzJob.SyncUserFromRemote;
 import com.advantech.quartzJob.TestLineTypeRecord;
 import com.advantech.quartzJob.TestLineTypeRecordUnrepliedAlarm;
 import com.advantech.quartzJob.ArrangePrepareScheduleImpl_2;
+import com.advantech.quartzJob.ArrangePrepareScheduleImpl_Packing;
+import com.advantech.quartzJob.SyncPrepareScheduleForPacking;
+import com.advantech.quartzJob.SyncWorktimeFromRemote;
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,7 +44,7 @@ public class TestQuartzJobs {
 
     @Autowired
     private PollingDataCollectStatus job;
-    
+
     @Autowired
     private SyncTestPassStationData job2;
 
@@ -91,43 +94,69 @@ public class TestQuartzJobs {
         InsertMesCountRecord i = new InsertMesCountRecord();
         i.executeInternal(null);
     }
-    
+
 //    @Test
     public void testSyncTestPassStationData() throws JobExecutionException {
         job2.execute();
     }
-    
+
     @Autowired
-    private SyncPrepareSchedule sps;
-    
+    private SyncPrepareScheduleForAssy sps;
+
     @Autowired
     private ArrangePrepareScheduleImpl_2 aps;
-    
+
     @Test
     public void testSyncPrepareSchedule1() throws Exception {
         //先設定好當日出勤名單, 才會給予字動排站
-        DateTime d = new DateTime("2020-03-09");
+        //This is assy schedule
+
+        DateTime d = new DateTime("2020-03-20");
+
         sps.execute(d);
         aps.execute(d);
     }
-    
+
     @Autowired
     private SyncLineUserReference sur;
-    
+
 //    @Test
     public void testSyncLineUserReference() throws Exception {
 
         DateTime d3 = new DateTime("2020-03-07");
         sur.execute(d3);
     }
-    
+
     @Autowired
     private SyncUserFromRemote suf;
-    
+
 //    @Test
     public void testSyncUserFromRemote() throws Exception {
 
         suf.execute();
     }
-    
+
+    @Autowired
+    private SyncPrepareScheduleForPacking sps2;
+
+    @Autowired
+    private ArrangePrepareScheduleImpl_Packing apspkg;
+
+//    @Test
+    public void testSyncPrepareSchedule2() throws Exception {
+        //先設定好當日出勤名單, 才會給予字動排站
+        //This is packing schedule
+        DateTime d = new DateTime("2020-03-17");
+        sps2.execute(d);
+        apspkg.execute(d);
+    }
+
+    @Autowired
+    private SyncWorktimeFromRemote swr;
+
+//    @Test
+    public void testSyncWorktimeFromRemote() throws Exception {
+        swr.execute();
+    }
+
 }

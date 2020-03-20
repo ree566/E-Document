@@ -244,16 +244,16 @@
     <!--<property name="cronExpression" value="0 0 12, 18 ? * MON-FRI *" />-->
     
     <!--
-        將PMC排程exce儲存到DB
+        將PMC排程exce儲存到DB(Assy)
     -->    
-    <bean name="SyncPrepareSchedule-Job" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
-        <property name="targetObject" ref="syncPrepareSchedule" />
+    <bean name="SyncPrepareScheduleForAssy-Job" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="syncPrepareScheduleForAssy" />
         <property name="targetMethod" value="execute"/>  
         <property name="concurrent" value="false"/>
     </bean>
     
     <bean id="SyncPrepareSchedule-Trig" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
-        <property name="jobDetail" ref="SyncPrepareSchedule-Job" />
+        <property name="jobDetail" ref="SyncPrepareScheduleForAssy-Job" />
         <property name="cronExpression" value="0 30 18 ? * MON-SAT *" />
     </bean>
     
@@ -284,6 +284,20 @@
         <property name="jobDetail" ref="SyncUserFromRemote-Job" />
         <property name="cronExpression" value="0 30 14 ? * MON-SAT *" />
     </bean>
+    
+    <!--
+        工時大表資訊同步回table
+    -->    
+    <bean name="SyncWorktimeFromRemote-Job" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="syncWorktimeFromRemote" />
+        <property name="targetMethod" value="execute"/>  
+        <property name="concurrent" value="false"/>
+    </bean>
+    
+    <bean id="SyncWorktimeFromRemote-Trig" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="SyncWorktimeFromRemote-Job" />
+        <property name="cronExpression" value="0 30 08 ? * MON-FRI *" />
+    </bean>
 
     <!--schedule jobs-->
     <bean id="schedulerFactoryBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
@@ -307,6 +321,7 @@
                 <!--<ref bean="SyncPrepareSchedule-Trig"/>-->
                 <ref bean="SyncLineUserReference-Trig"/>
                 <ref bean="SyncUserFromRemote-Trig"/>
+                <ref bean="SyncWorktimeFromRemote-Trig"/>
                 
                 <!--<ref bean="SaveMesCountRecord-Trig"/>-->
                 <!--<ref bean="CountermeasureAlarm-Trig"/>-->                

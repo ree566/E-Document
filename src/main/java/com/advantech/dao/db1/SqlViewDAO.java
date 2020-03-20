@@ -7,10 +7,8 @@ package com.advantech.dao.db1;
 
 import com.advantech.model.db1.Bab;
 import com.advantech.model.view.BabAvg;
-import com.advantech.model.view.UserInfoRemote;
 import java.util.List;
 import java.util.Map;
-import org.hibernate.criterion.Restrictions;
 import org.hibernate.transform.Transformers;
 import org.hibernate.type.StandardBasicTypes;
 import org.springframework.stereotype.Repository;
@@ -55,22 +53,9 @@ public class SqlViewDAO extends AbstractDao<Integer, Object> {
                 .list();
     }
 
-    public UserInfoRemote findUserInfoRemote(String jobnumber) {
-        return (UserInfoRemote) super.getSession()
-                .createCriteria(UserInfoRemote.class)
-                .add(Restrictions.eq("jobnumber", jobnumber))
-                .uniqueResult();
-    }
-
-    public List<UserInfoRemote> findUserInfoRemote() {
-        return super.getSession()
-                .createCriteria(UserInfoRemote.class)
-                .list();
-    }
-
     public List<Map> findSensorStatus(int bab_id) {
         return super.getSession()
-                .createSQLQuery("select * from {h-schema}tbfn_GetSensorStatus(:bab_id)")
+                .createSQLQuery("select * from {h-schema}tbfn_GetSensorStatus(:bab_id) ORDER BY groupid, station")
                 .setParameter("bab_id", bab_id)
                 .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
                 .list();
@@ -78,7 +63,7 @@ public class SqlViewDAO extends AbstractDao<Integer, Object> {
 
     public List<Map> findBarcodeStatus(int bab_id) {
         return super.getSession()
-                .createSQLQuery("select * from {h-schema}tbfn_GetBarcodeStatus(:bab_id)")
+                .createSQLQuery("select * from {h-schema}tbfn_GetBarcodeStatus(:bab_id) ORDER BY groupid, station")
                 .setParameter("bab_id", bab_id)
                 .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
                 .list();

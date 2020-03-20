@@ -16,7 +16,9 @@ import com.advantech.model.db1.Floor;
 import com.advantech.model.db1.Fqc;
 import com.advantech.model.db1.FqcLine;
 import com.advantech.model.db1.Line;
+import com.advantech.model.db1.LineType;
 import com.advantech.model.db1.PrepareSchedule;
+import com.advantech.model.db1.PrepareScheduleEndtimeSetting;
 import com.advantech.model.db1.TagNameComparison;
 import com.advantech.model.db1.User;
 import com.advantech.model.db1.Worktime;
@@ -33,8 +35,10 @@ import com.advantech.service.db1.FqcProductivityHistoryService;
 import com.advantech.service.db1.FqcService;
 import com.advantech.service.db2.LineBalancingService;
 import com.advantech.service.db1.LineService;
+import com.advantech.service.db1.LineTypeService;
 import com.advantech.service.db1.LineUserReferenceService;
 import com.advantech.service.db1.ModelSopRemarkDetailService;
+import com.advantech.service.db1.PrepareScheduleEndtimeSettingService;
 import com.advantech.service.db1.PrepareScheduleService;
 import com.advantech.service.db1.TagNameComparisonService;
 import com.advantech.service.db1.UserService;
@@ -49,7 +53,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.mapping;
 import static java.util.stream.Collectors.toList;
 import javax.mail.MessagingException;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -360,6 +363,9 @@ public class TestService {
     @Autowired
     private FloorService floorService;
 
+    @Autowired
+    private LineTypeService lineTypeService;
+
 //    @Test
     @Transactional
     @Rollback(true)
@@ -368,7 +374,9 @@ public class TestService {
         Floor floor = floorService.findByPrimaryKey(1);
         DateTime d = new DateTime().withTime(0, 0, 0, 0);
 
-        List<PrepareSchedule> l = psService.findByFloorAndDate(floor, d);
+        List<LineType> lt = lineTypeService.findByPrimaryKeys(1, 2);
+
+        List<PrepareSchedule> l = psService.findByFloorAndLineTypeAndDate(floor, lt, d);
         List<String> modelNames = l.stream().map(s -> s.getModelName()).collect(toList());
         List<Bab> babs = babService.findByModelNames(modelNames);
 
@@ -425,5 +433,26 @@ public class TestService {
             w.setId(0);
             worktimeService.insert(w);
         });
+    }
+
+    @Autowired
+    private PrepareScheduleEndtimeSettingService psesService;
+
+//    @Test
+    @Rollback(false)
+    public void testPrepareScheduleEndtimeSetting() {
+        PrepareScheduleEndtimeSetting setting = psesService.findByPrimaryKey(1);
+
+        assertNotNull(setting);
+
+        HibernateObjectPrinter.print(setting);
+
+        PrepareScheduleEndtimeSetting newSetting = new PrepareScheduleEndtimeSetting();
+
+        DateTime dt = new DateTime("2020-04-20");
+        newSetting.setWeekOfYear(dt.getWeekOfWeekyear());
+        newSetting.setScheduleEndtime(dt.toDate());
+
+        psesService.insert(newSetting);
     }
 }

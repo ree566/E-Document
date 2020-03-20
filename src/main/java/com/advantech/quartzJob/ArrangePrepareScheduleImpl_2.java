@@ -8,13 +8,14 @@ package com.advantech.quartzJob;
 import com.advantech.model.db1.Bab;
 import com.advantech.model.db1.Floor;
 import com.advantech.model.db1.Line;
+import com.advantech.model.db1.LineType;
 import com.advantech.model.db1.LineUserReference;
 import com.advantech.model.db1.PrepareSchedule;
 import com.advantech.model.db1.User;
 import com.advantech.service.db1.BabService;
-import com.advantech.service.db1.BabSettingHistoryService;
 import com.advantech.service.db1.FloorService;
 import com.advantech.service.db1.LineService;
+import com.advantech.service.db1.LineTypeService;
 import com.advantech.service.db1.LineUserReferenceService;
 import com.advantech.service.db1.PrepareScheduleService;
 import static com.google.common.collect.Lists.newArrayList;
@@ -63,10 +64,10 @@ public class ArrangePrepareScheduleImpl_2 {
     private LineService lineService;
 
     @Autowired
-    private BabSettingHistoryService settingHistoryService;
+    private BabService babService;
 
     @Autowired
-    private BabService babService;
+    private LineTypeService lineTypeService;
 
     private List<Interval> restTimes;
     private DateTime scheduleStartTime;
@@ -114,10 +115,14 @@ public class ArrangePrepareScheduleImpl_2 {
 
         updateDateParamater(d);
 
-        List<Line> lines = lineService.findBySitefloorAndLineType(f.getName(), 1);
-        List<Line> cellLines = lineService.findBySitefloorAndLineType(f.getName(), 2);
+        List<LineType> lt = lineTypeService.findByPrimaryKeys(1, 2);
 
-        List<PrepareSchedule> l = psService.findByFloorAndDate(f, d);
+        List<Line> totalLine = lineService.findBySitefloorAndLineType(f.getName(), lt);
+
+        List<Line> lines = totalLine.stream().filter(l -> l.getLineType().getId() == 1).collect(toList());
+        List<Line> cellLines = totalLine.stream().filter(l -> l.getLineType().getId() == 2).collect(toList());
+
+        List<PrepareSchedule> l = psService.findByFloorAndLineTypeAndDate(f, lt, d);
 
         List<PrepareSchedule> noneCellableSchedules = l.stream()
                 .filter(p -> p.getTimeCost().compareTo(new BigDecimal(100)) >= 0)
@@ -149,7 +154,7 @@ public class ArrangePrepareScheduleImpl_2 {
     private void updateDateParamater(DateTime d) {
         scheduleStartTime = new DateTime(d).withTime(8, 30, 0, 0);
 //        scheduleEndTime = new DateTime(d).withTime(21, 0, 0, 0);
-        scheduleEndTime = new DateTime(d).withTime(20, 0, 0, 0);
+        scheduleEndTime = new DateTime(d).withTime(21, 0, 0, 0);
 
         restTimes = newArrayList(
                 new Interval(new DateTime(d).withTime(12, 0, 0, 0), new DateTime(d).withTime(12, 50, 0, 0)),
@@ -177,7 +182,13 @@ public class ArrangePrepareScheduleImpl_2 {
 
         //Add empty List into result
         lines.forEach((line) -> {
-            result.put(line, new ArrayList());
+            LineUserReference lr = users.stream()
+                    .filter(lur -> lur.getLine().getId() == line.getId())
+                    .findFirst()
+                    .orElse(null);
+            if (lr != null) {
+                result.put(line, new ArrayList());
+            }
         });
 
         result.put(emptyLine, new ArrayList());
@@ -189,6 +200,27 @@ public class ArrangePrepareScheduleImpl_2 {
                                 Collectors.mapping(Bab::getId,
                                         Collectors.counting()))));
 
+        //Add missing zero count record
+        for (String m : modelNames) {
+            if (!modelUsageHistory.keySet().contains(m)) {
+                Map<Line, Long> v = new HashMap();
+                lines.forEach(ll -> {
+                    v.put(ll, 0L);
+                });
+                modelUsageHistory.put(m, v);
+            }
+        }
+
+        for (Map.Entry<String, Map<Line, Long>> entry : modelUsageHistory.entrySet()) {
+            Map<Line, Long> v = entry.getValue();
+            List<Line> existLines = new ArrayList(v.keySet());
+            lines.forEach(ll -> {
+                if (!existLines.contains(ll)) {
+                    v.put(ll, 0L);
+                }
+            });
+        }
+
         l.forEach((s) -> {
             //            HibernateObjectPrinter.print(s);
 
@@ -196,7 +228,7 @@ public class ArrangePrepareScheduleImpl_2 {
 
             if (modelNameFitHistory == null) {
                 modelNameFitHistory = new HashMap();
-            } 
+            }
 
             //Check line to add schedule(must schedule time and before 21:30)
             findFitLineSetting(s, users, modelNameFitHistory, result, new ArrayList());
@@ -224,15 +256,15 @@ public class ArrangePrepareScheduleImpl_2 {
         return result2;
     }
 
-    private void findFitLineSetting(PrepareSchedule currentSchedule, List<LineUserReference> users, Map<Line, Long> lineUserSetting, Map<Line, List<PrepareSchedule>> result, List<Line> removeLine) {
+    private void findFitLineSetting(PrepareSchedule currentSchedule, List<LineUserReference> users, Map<Line, Long> modelUsageCnt, Map<Line, List<PrepareSchedule>> result, List<Line> removeLine) {
 
-        Map<Line, Long> settingClone = new HashMap(lineUserSetting);
+        Map<Line, Long> modelUsageCntClone = new HashMap(modelUsageCnt);
 
         removeLine.forEach((line) -> {
-            settingClone.remove(line);
+            modelUsageCntClone.remove(line);
         });
 
-        if (settingClone.isEmpty()) {
+        if (modelUsageCntClone.isEmpty()) {
             currentSchedule.setLine(emptyLine);
             currentSchedule.setStartDate(null);
             currentSchedule.setEndDate(null);
@@ -243,7 +275,7 @@ public class ArrangePrepareScheduleImpl_2 {
         }
 
         //Find best line setting
-        Line line = settingClone.entrySet()
+        Line line = modelUsageCntClone.entrySet()
                 .stream()
                 .max((Map.Entry<Line, Long> e1, Map.Entry<Line, Long> e2) -> {
                     int c1 = Long.compare(e1.getValue(), e2.getValue());
@@ -263,6 +295,11 @@ public class ArrangePrepareScheduleImpl_2 {
         //Test and check last schedule time
         List<PrepareSchedule> lineSchedule = result.get(line);
         int usersCnt = (int) users.stream().filter(u -> u.getLine().getId() == line.getId()).count();
+
+        if (usersCnt == 0) {
+            removeLine.add(line);
+            findFitLineSetting(currentSchedule, users, modelUsageCnt, result, removeLine);
+        }
         List<PrepareSchedule> testScheduleList = newArrayList(lineSchedule);
         currentSchedule.setLine(line);
 
@@ -273,7 +310,7 @@ public class ArrangePrepareScheduleImpl_2 {
         Date lastScheduleDate = testScheduleList.get(testScheduleList.size() - 1).getEndDate();
         if (new DateTime(lastScheduleDate).isAfter(scheduleEndTime)) {
             removeLine.add(line);
-            findFitLineSetting(currentSchedule, users, lineUserSetting, result, removeLine);
+            findFitLineSetting(currentSchedule, users, modelUsageCnt, result, removeLine);
         } else {
             result.replace(line, testScheduleList);
         }
@@ -314,27 +351,27 @@ public class ArrangePrepareScheduleImpl_2 {
                     /*
                         i   |----|
                         r |--------|   
-                    */
+                     */
                     return new Interval(restTime.getEnd(), restTime.getEnd().plusMinutes(iMin));
                 } else if (isInRestTime(restTime, i.getStart()) && !isInRestTime(restTime, i.getEnd())) {
                     /*
                         i    |--------|
                         r |----|   
-                    */
+                     */
                     int overlap = Minutes.minutesBetween(i.getStart(), restTime.getEnd()).getMinutes();
                     return new Interval(restTime.getEnd(), i.getEnd().plusMinutes(overlap));
                 } else if (!isInRestTime(restTime, i.getStart()) && isInRestTime(restTime, i.getEnd())) {
                     /*
                         i |----|
                         r   |--------|   
-                    */
+                     */
                     int overlap = Minutes.minutesBetween(restTime.getStart(), i.getEnd()).getMinutes();
                     return new Interval(i.getStart(), restTime.getEnd().plusMinutes(overlap));
                 } else {
                     /*
                         i |--------|
                         r   |----|   
-                    */
+                     */
                     return new Interval(i.getStart(), i.getEnd().plusMinutes(restMin));
                 }
             }

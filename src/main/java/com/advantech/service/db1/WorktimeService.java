@@ -39,8 +39,16 @@ public class WorktimeService {
         return dao.insert(pojo);
     }
 
+    public int insert(List<Worktime> l) {
+        return dao.insert(l);
+    }
+
     public int update(Worktime pojo) {
         return dao.update(pojo);
+    }
+
+    public int update(List<Worktime> l) {
+        return dao.update(l);
     }
 
     public int delete(Worktime pojo) {

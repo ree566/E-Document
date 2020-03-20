@@ -8,12 +8,14 @@ package com.advantech.quartzJob;
 import com.advantech.model.db1.BabSettingHistory;
 import com.advantech.model.db1.Floor;
 import com.advantech.model.db1.Line;
+import com.advantech.model.db1.LineType;
 import com.advantech.model.db1.LineUserReference;
 import com.advantech.model.db1.PrepareSchedule;
 import com.advantech.model.db1.User;
 import com.advantech.service.db1.BabSettingHistoryService;
 import com.advantech.service.db1.FloorService;
 import com.advantech.service.db1.LineService;
+import com.advantech.service.db1.LineTypeService;
 import com.advantech.service.db1.LineUserReferenceService;
 import com.advantech.service.db1.PrepareScheduleService;
 import static com.google.common.collect.Lists.newArrayList;
@@ -65,6 +67,9 @@ public abstract class ArrangePrepareSchedule {
 
     @Autowired
     private BabSettingHistoryService settingHistoryService;
+    
+    @Autowired
+    private LineTypeService lineTypeService;
 
     private List<Interval> restTimes;
     private DateTime scheduleStartTime;
@@ -112,10 +117,14 @@ public abstract class ArrangePrepareSchedule {
 
         updateDateParamater(d);
 
-        List<Line> lines = lineService.findBySitefloorAndLineType(f.getName(), 1);
-        List<Line> cellLines = lineService.findBySitefloorAndLineType(f.getName(), 2);
+        List<LineType> lt = lineTypeService.findByPrimaryKeys(1, 2);
+        
+        List<Line> totalLine = lineService.findBySitefloorAndLineType(f.getName(), lt);
 
-        List<PrepareSchedule> l = psService.findByFloorAndDate(f, d);
+        List<Line> lines = totalLine.stream().filter(l -> l.getLineType().getId() == 1).collect(toList());
+        List<Line> cellLines = totalLine.stream().filter(l -> l.getLineType().getId() == 2).collect(toList());
+
+        List<PrepareSchedule> l = psService.findByFloorAndLineTypeAndDate(f, lt, d);
 
         List<PrepareSchedule> noneCellableSchedules = l.stream()
                 .filter(p -> p.getTimeCost().compareTo(new BigDecimal(100)) >= 0)

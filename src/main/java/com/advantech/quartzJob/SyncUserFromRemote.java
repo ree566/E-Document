@@ -6,10 +6,10 @@
 package com.advantech.quartzJob;
 
 import com.advantech.dao.db1.FloorDAO;
-import com.advantech.dao.db1.SqlViewDAO;
 import com.advantech.dao.db1.UnitDAO;
 import com.advantech.dao.db1.UserDAO;
 import com.advantech.dao.db1.UserProfileDAO;
+import com.advantech.dao.db3.SqlViewDAO;
 import com.advantech.helper.CustomPasswordEncoder;
 import com.advantech.model.db1.Floor;
 import com.advantech.model.db1.Unit;
@@ -25,6 +25,7 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,6 +40,7 @@ public class SyncUserFromRemote {
     private static final Logger logger = LoggerFactory.getLogger(SyncUserFromRemote.class);
 
     @Autowired
+    @Qualifier("sqlViewDAO3")
     private SqlViewDAO sqlViewDAO;
 
     @Autowired
@@ -83,16 +85,16 @@ public class SyncUserFromRemote {
                         .findFirst()
                         .orElse(null);
 
-                if (matchesUser == null) {
-                    //insert new one
-                    User userWithoutRole = userDAO.findByJobnumber(ru.getJobnumber());
+                Floor floor = floors.stream()
+                        .filter(f -> f.getName().equals(ru.getSitefloor()))
+                        .findFirst()
+                        .orElse(null);
 
-                    Floor floor = floors.stream()
-                            .filter(f -> f.getName().equals(ru.getSitefloor()))
-                            .findFirst()
-                            .orElse(null);
+                if (floor != null) {
+                    if (matchesUser == null) {
+                        //insert new one
+                        User userWithoutRole = userDAO.findByJobnumber(ru.getJobnumber());
 
-                    if (floor != null) {
                         User user = new User();
                         user.setJobnumber(ru.getJobnumber());
                         user.setUsername(ru.getName());
@@ -107,18 +109,20 @@ public class SyncUserFromRemote {
 
                         userDAO.insert(user);
                         System.out.println("insert" + " " + ru.getJobnumber());
-                    }
-                } else {
-                    //Find user's department is matches or not
-                    //if not match, update department
-                    setUserProfle(matchesUser, ru.getDepartment());
-                    
-                    matchesUser.setUsername(ru.getName());
-                    matchesUser.setUsernameCh(ru.getName());
 
-                    matchesUser.setState("1".equals(ru.getActive()) && isDateInRecent(ru.getLastUpdateTime()) ? State.ACTIVE : State.DELETED);
-                    userDAO.update(matchesUser);
-                    System.out.println("update" + " " + ru.getJobnumber());
+                    } else {
+                        //Find user's department & floor is matches or not
+                        //if not match, update department & floor
+                        setUserProfle(matchesUser, ru.getDepartment());
+
+                        matchesUser.setUsername(ru.getName());
+                        matchesUser.setUsernameCh(ru.getName());
+                        matchesUser.setFloor(floor);
+
+                        matchesUser.setState("1".equals(ru.getActive()) && isDateInRecent(ru.getLastUpdateTime()) ? State.ACTIVE : State.DELETED);
+                        userDAO.update(matchesUser);
+                        System.out.println("update" + " " + ru.getJobnumber());
+                    }
                 }
             });
         }

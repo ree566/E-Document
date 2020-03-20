@@ -117,8 +117,8 @@
                         <li class="divider"></li>
                         <li class="hide-when-auto"><a href="BabPassStationRecord?lineType=ASSY">Barcode過站紀錄</a></li>
                         <li class="hide-when-auto"><a href="BabPassStationExceptionReport?lineType=ASSY">異常資料統計</a></li>
-                        <li><a href="lineUserReference.jsp">當日線別人員維護</a></li>
-                        <li><a href="prepareSchedule.jsp">當日自動排站</a></li>
+                        <li><a href="lineUserReference.jsp">組裝當日線別人員維護</a></li>
+                        <li><a href="prepareSchedule.jsp?lineType=ASSY">組裝當日自動排站</a></li>
                     </ul>
                 </li>
                 <li class="dropdown">
@@ -141,6 +141,9 @@
                         <li><a href="BabPreAssyProductivity?lineType=Packing">前置資料查詢</a></li>
                         <li class="divider"></li>
                         <li><a href="babLineUsageRate.jsp">線體使用率統計</a></li>
+                        <li class="divider"></li>
+                        <li><a href="lineUserReference.jsp">附件盒當日線別人員維護</a></li>
+                        <li><a href="prepareSchedule.jsp?lineType=Packing">附件盒當日自動排站</a></li>
                     </ul>
                 </li>
                 <li>

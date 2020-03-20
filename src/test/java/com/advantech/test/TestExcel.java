@@ -10,8 +10,9 @@ import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.model.db1.Bab;
 import com.advantech.model.db1.BabStatus;
 import com.advantech.model.db1.Floor;
-import com.advantech.model.db1.FqcModelStandardTime;
 import com.advantech.model.db1.LineType;
+import com.advantech.model.db1.PreAssyModuleStandardTime;
+import com.advantech.model.db1.PreAssyModuleType;
 import com.advantech.model.db1.PrepareSchedule;
 import com.monitorjbl.xlsx.StreamingReader;
 import java.io.File;
@@ -22,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -129,16 +131,19 @@ public class TestExcel {
 //        return l;
     }
 
-//    @Test
+    @Test
     @Transactional
     @Rollback(false)
-    public void testReadExcel() throws FileNotFoundException, IOException, InvalidFormatException {
-        String syncFilePath = "C:\\Users\\Wei.Cheng\\Desktop\\複本 FQC機種標準工時管控表.xlsx";
+    public void testReadExcel() throws FileNotFoundException, IOException, InvalidFormatException, Exception, Exception {
+        String syncFilePath = "C:\\Users\\wei.cheng\\Desktop\\preModuleStandardTime.xlsx";
         try (InputStream is = new FileInputStream(new File(syncFilePath))) {
 
             Session session = sessionFactory.getCurrentSession();
 
             Workbook workbook = WorkbookFactory.create(is);
+
+            List<PreAssyModuleStandardTime> standardTimes = session.createCriteria(PreAssyModuleStandardTime.class).list();
+
             Sheet sheet = workbook.getSheetAt(0);
             for (int i = 1, maxNumberfRows = sheet.getPhysicalNumberOfRows(); i < maxNumberfRows; i++) {
                 Row row = sheet.getRow(i); // 取得第 i Row
@@ -149,16 +154,26 @@ public class TestExcel {
                     Cell cell_A = CellUtil.getCell(row, CellReference.convertColStringToIndex("A"));
                     cell_A.setCellType(CellType.STRING);
 
-                    String modelNameC = ((String) getCellValue(row, "A")).trim();
-                    Integer avg = Integer.parseInt(((String) getCellValue(row, "C")).trim().replace("秒", ""));
-                    String modelB = getCellValue(row, "B") == null ? "無生產"
-                            : ((String) getCellValue(row, "B")).trim();
+                    String modelName = ((String) getCellValue(row, "A")).trim();
+                    String preModuleName = ((String) getCellValue(row, "B"));
+                    BigDecimal avg = new BigDecimal((double) getCellValue(row, "C"));
 
-                    if (!"無生產".equals(modelB)) {
-                        FqcModelStandardTime standardTime = new FqcModelStandardTime();
-                        standardTime.setModelNameCategory(modelNameC);
-                        standardTime.setStandardTime(avg);
-                        session.save(standardTime);
+                    PreAssyModuleStandardTime fitData = standardTimes.stream()
+                            .filter(p -> p.getModelName().equals(modelName) && p.getPreAssyModuleType().getName().equals(preModuleName))
+                            .findFirst().orElse(null);
+
+                    if (fitData == null) {
+                        throw new Exception("Can't find fit data on model name " + modelName + " and preType " + preModuleName);
+                    } else {
+                        fitData.setModelName(modelName);
+                        avg.setScale(0, RoundingMode.FLOOR);
+                        fitData.setStandardTime(avg);
+                        PreAssyModuleType pt = (PreAssyModuleType) session
+                                .createCriteria(PreAssyModuleType.class)
+                                .add(Restrictions.eq("name", preModuleName))
+                                .uniqueResult();
+                        fitData.setPreAssyModuleType(pt);
+                        session.update(fitData);
                     }
 
                 }
@@ -312,7 +327,7 @@ public class TestExcel {
         return patchColumn;
     }
 
-    @Test
+//    @Test
     public void testStreamReader() throws Exception {
         InputStream is = new FileInputStream(new File("C:\\Users\\wei.cheng\\Desktop\\excel_test\\APS 5F 組裝排程.xlsx"));
         Workbook workbook = StreamingReader.builder()
@@ -322,17 +337,17 @@ public class TestExcel {
                 .open(is);            // InputStream or File for XLSX file (required)
 
         Sheet sheet = workbook.getSheet(5 + "F--前置&組裝");
-        
+
 //        for (Sheet sheet : workbook) {
 //            System.out.println(sheet.getSheetName());
-            for (Row r : sheet) {
-                for (Cell c : r) {
-                    System.out.println(c.getStringCellValue());
-                }
+        for (Row r : sheet) {
+            for (Cell c : r) {
+                System.out.println(c.getStringCellValue());
             }
+        }
 //        }
     }
-    
+
 //    @Test
     public void testExampleEventUserModel() throws Exception {
         ExampleEventUserModel example = new ExampleEventUserModel();

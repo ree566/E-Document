@@ -41,12 +41,12 @@ public class LineService {
         return lineDAO.findBySitefloor(floor_name);
     }
 
-    public List<Line> findBySitefloorAndLineType(String floorName, Integer... lineType_ids) {
-        return lineDAO.findBySitefloorAndLineType(floorName, lineType_ids);
+    public List<Line> findBySitefloorAndLineType(String floorName, List<LineType> lineType) {
+        return lineDAO.findBySitefloorAndLineType(floorName, lineType);
     }
 
-    public List<Line> findByLineType(Integer... lineType_ids) {
-        return lineDAO.findByLineType(lineType_ids);
+    public List<Line> findByLineType(List<LineType> lineType) {
+        return lineDAO.findByLineType(lineType);
     }
 
     public List<Line> findWithLineType() {
@@ -59,6 +59,10 @@ public class LineService {
 
     public List<Line> findByUser(User user) {
         return lineDAO.findByUser(user);
+    }
+
+    public List<Line> findByUserAndLineType(User user, List<LineType> lt) {
+        return lineDAO.findByUserAndLineType(user, lt);
     }
 
     public int insert(Line pojo) {

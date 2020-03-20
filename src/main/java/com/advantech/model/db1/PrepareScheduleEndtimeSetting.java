@@ -27,6 +27,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 public class PrepareScheduleEndtimeSetting implements Serializable {
 
     private int id;
+    private int weekOfYear;
     private Date scheduleEndtime;
 
     public PrepareScheduleEndtimeSetting() {
@@ -48,10 +49,19 @@ public class PrepareScheduleEndtimeSetting implements Serializable {
         this.id = id;
     }
 
+    @Column(name = "week_of_year", nullable = false)
+    public int getWeekOfYear() {
+        return weekOfYear;
+    }
+
+    public void setWeekOfYear(int weekOfYear) {
+        this.weekOfYear = weekOfYear;
+    }
+
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @JsonFormat(pattern = "yyyy-MM-dd'T'kk:mm:ss.SSS'Z'", timezone = "GMT+8")
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "schedule_endTime", length = 23, insertable = true, updatable = true)
+    @Column(name = "schedule_endTime", length = 23)
     public Date getScheduleEndtime() {
         return scheduleEndtime;
     }
