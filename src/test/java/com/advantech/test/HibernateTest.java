@@ -264,4 +264,22 @@ public class HibernateTest {
         return NumberFormat.getNumberInstance().format(n);
     }
 
+    @Test
+    @Transactional
+    @Rollback(false)
+    public void testWorktime() throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+
+        Session session = sessionFactory.getCurrentSession();
+        List<Worktime> l = session.createCriteria(Worktime.class).list();
+
+        for (Worktime w : l) {
+            System.out.println(w.getModelName());
+
+            w.setPackingLeadTime(BigDecimal.ZERO);
+
+            session.merge(w);
+        }
+
+    }
+
 }

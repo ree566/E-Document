@@ -91,7 +91,7 @@ public class ExcelTest {
             }
         }
     }
-    
+
     @Autowired
     private SopUploadPort sopPort;
 
@@ -100,7 +100,7 @@ public class ExcelTest {
     @Rollback(false)
     public void testFileSyncToDb() throws Exception {
 
-        String syncFilePath = "C:\\Users\\Wei.Cheng\\Desktop\\worktime-PMC.xls";
+        String syncFilePath = "C:\\Users\\Wei.Cheng\\Desktop\\工時大表附件盒工時.xlsx";
         try (InputStream is = new FileInputStream(new File(syncFilePath))) {
 
             Session session = sessionFactory.getCurrentSession();
@@ -114,10 +114,10 @@ public class ExcelTest {
 
                     //Because cell_A will auto convert to number if modelName only contains numbers.
                     //Search will cause exception when not add convert lines
-                    Cell model_cell = CellUtil.getCell(row, CellReference.convertColStringToIndex("B"));
+                    Cell model_cell = CellUtil.getCell(row, CellReference.convertColStringToIndex("A"));
                     model_cell.setCellType(CellType.STRING);
 
-                    String modelName = ((String) getCellValue(row, "B")).trim();
+                    String modelName = ((String) getCellValue(row, "A")).trim();
 
                     Worktime w = l.stream().filter(o -> Objects.equals(o.getModelName(), modelName)).findFirst().orElse(null);
 
@@ -126,10 +126,12 @@ public class ExcelTest {
                         continue;
                     }
 
-                    w.setTestSop(w.getTestSop() + ", M-07-TT0986");
-                    System.out.println("Update modelName: " + modelName);
-                    session.update(w);
-                    sopPort.update(w);
+                    if (getCellValue(row, "D") instanceof Double) {
+                        BigDecimal v = (new BigDecimal((Double) getCellValue(row, "D")));
+                        System.out.println("Update modelName: " + modelName);
+                        w.setPackingLeadTime(v);
+                        session.merge(w);
+                    }
                 }
             }
         }
