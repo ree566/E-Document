@@ -244,7 +244,7 @@ public class HibernateTest {
 
     }
 
-    @Test
+//    @Test
     @Transactional
     @Rollback(false)
     public void testUpdateSetupTime() throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
@@ -274,10 +274,10 @@ public class HibernateTest {
 
         for (Worktime w : l) {
             System.out.println(w.getModelName());
-
-            w.setPackingLeadTime(BigDecimal.ZERO);
-
-            session.merge(w);
+            break;
+//            w.setPackingLeadTime(BigDecimal.ZERO);
+//
+//            session.merge(w);
         }
 
     }
