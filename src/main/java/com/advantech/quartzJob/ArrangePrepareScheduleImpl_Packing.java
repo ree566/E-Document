@@ -77,7 +77,11 @@ public class ArrangePrepareScheduleImpl_Packing {
     Line emptyLine;
 
     public void execute() throws Exception {
-        this.execute(new DateTime());
+        DateTime d = new DateTime();
+        if (d.getHourOfDay() >= 17) {
+            d = d.plusDays(d.getDayOfWeek() == 6 ? 2 : 1);
+        }
+        this.execute(d);
     }
 
     public void execute(DateTime d) throws Exception {

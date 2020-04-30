@@ -57,7 +57,8 @@ public class SyncPrepareScheduleForPacking {
         if (d.getHourOfDay() >= 17) {
             d = d.plusDays(d.getDayOfWeek() == 6 ? 2 : 1);
         }
-        this.execute(d);
+        //Because oom problem on poi, excel sync job set on c# winform project
+//        this.execute(d);
         aps.execute(d);
     }
 

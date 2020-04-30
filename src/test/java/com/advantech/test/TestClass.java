@@ -5,6 +5,7 @@
  */
 package com.advantech.test;
 
+import com.advantech.helper.HttpClientUtil;
 import static com.google.common.collect.Lists.newArrayList;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -23,15 +24,16 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StopWatch;
+import org.json.JSONObject;
 
 /**
  *
  * @author Wei.Cheng
  */
 public class TestClass {
-    
+
     private static final Logger log = LoggerFactory.getLogger(TestClass.class);
-    
+
     List<StopWatch> temp_L = new ArrayList();
 
 //    @Test
@@ -44,7 +46,7 @@ public class TestClass {
     public void testKeywordFilter() throws InterruptedException {
         List<String> keywords = newArrayList("TPC", "T1PC1", "ABCC", "T1PC1331", "DBB");
         String modelName = "TPC1331-2213-ZZ";
-        
+
         String key = keywords.stream()
                 .filter(modelName::contains)
                 .max(Comparator.comparing(String::length)).orElse(null);
@@ -80,7 +82,7 @@ public class TestClass {
     public void testInterval() {
         Interval rest1 = new Interval(new DateTime().withTime(12, 0, 0, 0), new DateTime().withTime(12, 50, 0, 0));
         Interval testRange = new Interval(new DateTime().withTime(9, 40, 2, 983), new DateTime().withTime(17, 8, 38, 470));
-        
+
         System.out.println(testRange.overlaps(rest1));
         Interval overlap = testRange.overlap(rest1);
         System.out.println(
@@ -103,34 +105,34 @@ public class TestClass {
             "包裝",
             "測試"
         };
-        
+
         for (String str : strs) {
             if (str.matches("(前置|組裝|測試|包裝)")) {
                 System.out.println(str);
             }
         }
     }
-    
+
     DateTimeFormatter df = DateTimeFormat.forPattern("yyyy/MM/dd HH:mm:ss");
     List<Interval> restTimes = newArrayList(new Interval(new DateTime().withTime(15, 30, 0, 0), new DateTime().withTime(15, 45, 0, 0)));
-    
+
 //    @Test
     public void testDateTime() {
         DateTime dS = new DateTime().withTime(15, 20, 0, 0);
         DateTime dE = new DateTime().withTime(15, 25, 0, 0);
-        
+
         DateTime dS1 = new DateTime().withTime(15, 20, 0, 0);
         DateTime dE1 = new DateTime().withTime(15, 35, 0, 0);
-        
+
         DateTime dS2 = new DateTime().withTime(15, 20, 0, 0);
         DateTime dE2 = new DateTime().withTime(15, 50, 0, 0);
-        
+
         DateTime dS3 = new DateTime().withTime(15, 40, 0, 0);
         DateTime dE3 = new DateTime().withTime(15, 42, 0, 0);
-        
+
         DateTime dS4 = new DateTime().withTime(15, 40, 0, 0);
         DateTime dE4 = new DateTime().withTime(15, 55, 0, 0);
-        
+
         Interval i = byPassRestTime(new Interval(dS, dE));
         Interval i1 = byPassRestTime(new Interval(dS1, dE1));
         Interval i2 = byPassRestTime(new Interval(dS2, dE2));
@@ -142,9 +144,9 @@ public class TestClass {
         System.out.printf("Interval 3: %s --- %s\r\n", df.print(i2.getStart()), df.print(i2.getEnd()));
         System.out.printf("Interval 4: %s --- %s\r\n", df.print(i3.getStart()), df.print(i3.getEnd()));
         System.out.printf("Interval 5: %s --- %s\r\n", df.print(i4.getStart()), df.print(i4.getEnd()));
-        
+
     }
-    
+
     private Interval byPassRestTime(Interval i) {
         for (Interval restTime : restTimes) {
             int iMin = Minutes.minutesBetween(i.getStart(), i.getEnd()).getMinutes();
@@ -154,27 +156,27 @@ public class TestClass {
                     /*
                         i   |----|
                         r |--------|   
-                    */
+                     */
                     return new Interval(restTime.getEnd(), restTime.getEnd().plusMinutes(iMin));
                 } else if (isInRestTime(restTime, i.getStart()) && !isInRestTime(restTime, i.getEnd())) {
                     /*
                         i    |--------|
                         r |----|   
-                    */
+                     */
                     int overlap = Minutes.minutesBetween(i.getStart(), restTime.getEnd()).getMinutes();
                     return new Interval(restTime.getEnd(), i.getEnd().plusMinutes(overlap));
                 } else if (!isInRestTime(restTime, i.getStart()) && isInRestTime(restTime, i.getEnd())) {
                     /*
                         i |----|
                         r   |--------|   
-                    */
+                     */
                     int overlap = Minutes.minutesBetween(restTime.getStart(), i.getEnd()).getMinutes();
                     return new Interval(i.getStart(), restTime.getEnd().plusMinutes(overlap));
                 } else {
                     /*
                         i |--------|
                         r   |----|   
-                    */
+                     */
                     return new Interval(i.getStart(), i.getEnd().plusMinutes(restMin));
                 }
             }
@@ -189,12 +191,33 @@ public class TestClass {
     private boolean isInRestTime(Interval rest, DateTime d) {
         return rest.getStart().compareTo(d) * d.compareTo(rest.getEnd()) >= 0;
     }
-    
-    @Test
-    public void testMap(){
-        Map m = null;
-        Map m2 = new HashMap(m);
-        System.out.println(m2 == null);
+
+//    @Test
+    public void testMap() throws Exception {
+        String url = "https://atmc.advantech.com.tw/Api/AtmcEmployee/v1/Employee/" + "A-7568";
+        String url2 = "https://atmc.advantech.com.tw/Api/AtmcEmployee/v1/Employee/login";
+        Map m = new HashMap();
+        m.put("empNo", "A-7568");
+        m.put("password", "w75687568");
+        String charset = "UTF-8";
+
+        String result = HttpClientUtil.doGet(url, m, charset);
+        String result2 = HttpClientUtil.doPost(url2, m, charset);
+
+        System.out.println(result);
+        System.out.println(result2);
     }
-    
+
+    @Test
+    public void testSt() {
+        int s = 0, k = 0, j = 0;
+
+        for (k = 1; k <= 6; k += 2) {
+            for (j = 3; j <= 8; j += 3) {
+                s += j;
+            }
+        }
+        System.out.println(s + k + j);
+    }
+
 }

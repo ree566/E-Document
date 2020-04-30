@@ -71,7 +71,7 @@
                 <prop key="hibernate.query.factory_class">org.hibernate.hql.internal.ast.ASTQueryTranslatorFactory</prop>
                 <prop key="hibernate.jdbc.batch_size">${HIBERNATE.JDBC.BATCHSIZE}</prop>
                 <prop key="hibernate.id.new_generator_mappings" >false</prop>
-                <prop key="hibernate.show_sql">true</prop>
+                <!--<prop key="hibernate.show_sql">true</prop>-->
                 <!--<prop key="hibernate.format_sql">true</prop>-->
                 <prop key="hibernate.default_schema">M3_BW</prop>
                 <prop key="hibernate.dialect">com.advantech.helper.SqlServerDialectWithNvarchar</prop>
@@ -113,7 +113,7 @@
     <bean id="dataSource3" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
         <property name="connectionTestQuery" value="SELECT 1" />
         <property name="driverClassName" value="net.sourceforge.jtds.jdbc.Driver" />
-        <property name="jdbcUrl" value="jdbc:jtds:sqlserver://M3-SERVER/WebAccess_1" />
+        <property name="jdbcUrl" value="jdbc:jtds:sqlserver://172.20.131.241/WebAccess_1" />
         <property name="username" value="waychien" />
         <property name="password" value="m3server" />
     </bean>

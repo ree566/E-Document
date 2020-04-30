@@ -14,6 +14,7 @@ import com.advantech.model.db1.LineType;
 import com.advantech.model.db1.PreAssyModuleStandardTime;
 import com.advantech.model.db1.PreAssyModuleType;
 import com.advantech.model.db1.PrepareSchedule;
+import com.alibaba.excel.EasyExcel;
 import com.monitorjbl.xlsx.StreamingReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -26,6 +27,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
@@ -131,7 +133,7 @@ public class TestExcel {
 //        return l;
     }
 
-    @Test
+//    @Test
     @Transactional
     @Rollback(false)
     public void testReadExcel() throws FileNotFoundException, IOException, InvalidFormatException, Exception, Exception {
@@ -214,9 +216,9 @@ public class TestExcel {
         }
     }
 
-//    @Test
+    @Test
     @Transactional
-    @Rollback(false)
+    @Rollback(true)
     public void testReadExcel2() throws Exception {
         int[] floors = {5, 6};
 
@@ -228,7 +230,12 @@ public class TestExcel {
             LineType assy = session.get(LineType.class, 1);
             Floor f = session.get(Floor.class, floor == 5 ? 1 : 2);
 
-            try (Workbook workbook = WorkbookFactory.create(new File(syncFilePath), "234", true)) {
+            FileInputStream in = new FileInputStream(syncFilePath);
+            try (Workbook workbook = StreamingReader.builder()
+                    .password("234")
+                    .rowCacheSize(100) //缓存到内存中的行数，默认是10
+                    .bufferSize(4096) //读取资源时，缓存到内存的字节大小，默认是1024
+                    .open(in)) {
                 Sheet sheet = workbook.getSheet(floor + "F--前置&組裝");
 
                 DateTime d = new DateTime().withTime(0, 0, 0, 0);
@@ -236,53 +243,103 @@ public class TestExcel {
                 int dateIdx = 5;
                 int titleIdx = 6;
 
-                int patchColumn = findColumnIdx(sheet.getRow(dateIdx), d);
-                int lineTypeIdx = findColumnIdx(sheet.getRow(titleIdx), "料號&製程段");
-                int modelNameIdx = findColumnIdx(sheet.getRow(titleIdx), "料號");
-                int poIdx = findColumnIdx(sheet.getRow(titleIdx), "工單");
-                int totalQtyIdx = findColumnIdx(sheet.getRow(titleIdx), "工單數");
-                int scheduleQtyIdx = patchColumn;
-                int timeCostIdx = patchColumn + 1;
-
+                int patchColumn = 0;
+                int lineTypeIdx = 0;
+                int modelNameIdx = 0;
+                int poIdx = 0;
+                int totalQtyIdx = 0;
+                int scheduleQtyIdx = 0;
+                int timeCostIdx = 0;
                 //Step 1: First get column index matches the current date
                 //Step 2: Filter data B7 contain word "BASSY" & 排產量 is not blank
                 //Iterate through each rows one by one
-//            List<PrepareSchedule> prepareSchedules = new ArrayList();
                 int cnt = 0;
 
                 Iterator<Row> rowIterator = sheet.iterator();
                 while (rowIterator.hasNext()) {
                     try {
+                        Row row = rowIterator.next();
                         //Skip row to main data
-                        if (cnt > titleIdx) {
-                            Row row = rowIterator.next();
-                            Cell cell_LineType = row.getCell(lineTypeIdx);
-                            Cell cell_OutputCnt = row.getCell(patchColumn);
-                            if (cell_LineType != null && cell_OutputCnt != null) {
-                                cell_LineType.setCellType(CellType.STRING);
-                                if (cell_LineType.getRichStringCellValue().toString().contains("BASSY") && cell_OutputCnt.getCellType() != CellType.BLANK) {
-
-                                    Cell cell_ModelName = row.getCell(modelNameIdx);
-                                    Cell cell_Po = row.getCell(poIdx);
-                                    Cell cell_TotalQty = row.getCell(totalQtyIdx);
-                                    Cell cell_ScheduleQty = row.getCell(scheduleQtyIdx);
-                                    Cell cell_TimeCost = row.getCell(timeCostIdx);
-
-                                    System.out.println(cell_ModelName.getStringCellValue());
-
-                                    PrepareSchedule p = new PrepareSchedule();
-                                    p.setModelName(cell_ModelName.getStringCellValue());
-                                    p.setPo(cell_Po.getStringCellValue());
-                                    p.setTotalQty((int) cell_TotalQty.getNumericCellValue());
-                                    p.setScheduleQty((int) cell_ScheduleQty.getNumericCellValue());
-                                    p.setTimeCost(new BigDecimal(cell_TimeCost.getNumericCellValue()));
-                                    p.setLineType(assy);
-                                    p.setOnBoardDate(d.toDate());
-                                    p.setFloor(f);
-//                            prepareSchedules.add(p);
-//                                    session.save(p);
+                        if (cnt == dateIdx) {
+                            for (Cell cell : row) {
+                                Date st = cell.getDateCellValue();
+                                if (Objects.equals(st, d)) {
+                                    patchColumn = cell.getColumnIndex();
                                 }
                             }
+                            scheduleQtyIdx = patchColumn;
+                            timeCostIdx = patchColumn + 1;
+                        } else if (cnt == titleIdx) {
+                            for (Cell cell : row) {
+                                switch (cell.getStringCellValue()) {
+                                    case "料號&製程段":
+                                        lineTypeIdx = cell.getColumnIndex();
+                                        break;
+                                    case "料號":
+                                        modelNameIdx = cell.getColumnIndex();
+                                        break;
+                                    case "工單":
+                                        poIdx = cell.getColumnIndex();
+                                        break;
+                                    case "工單數":
+                                        totalQtyIdx = cell.getColumnIndex();
+                                        break;
+                                    default:
+                                        break;
+                                }
+                            }
+                        } else if (cnt > titleIdx) {
+
+                            Cell cell_LineType = null;
+                            Cell cell_OutputCnt = null;
+
+                            for (Cell cell : row) {
+                                int index = cell.getColumnIndex();
+                                if (index == lineTypeIdx) {
+                                    if (cell.getStringCellValue() == null || cell.getCellType() == CellType.BLANK || cell.getStringCellValue().contains("BASSY")) {
+                                        continue;
+                                    }
+                                }
+//                                switch(cell.getColumnIndex()){
+//                                    
+//                                    case lineTypeIdx:
+//                                        cell_LineType = cell;
+//                                        break;
+//                                    case patchColumn:
+//                                        cell_OutputCnt = cell;
+//                                        break;
+//                                    default:
+//                                        break;
+//                                }
+
+                                System.out.print(cell.getStringCellValue() + " ");
+
+                            }
+                            break;
+
+//                            if (cell_LineType != null && cell_OutputCnt != null) {
+//                                cell_LineType.setCellType(CellType.STRING);
+//                                if (cell_LineType.getRichStringCellValue().toString().contains("BASSY") && cell_OutputCnt.getCellType() != CellType.BLANK) {
+//
+//                                    Cell cell_ModelName = row.getCell(modelNameIdx);
+//                                    Cell cell_Po = row.getCell(poIdx);
+//                                    Cell cell_TotalQty = row.getCell(totalQtyIdx);
+//                                    Cell cell_ScheduleQty = row.getCell(scheduleQtyIdx);
+//                                    Cell cell_TimeCost = row.getCell(timeCostIdx);
+//
+//                                    System.out.println(cell_ModelName.getStringCellValue());
+//
+//                                    PrepareSchedule p = new PrepareSchedule();
+//                                    p.setModelName(cell_ModelName.getStringCellValue());
+//                                    p.setPo(cell_Po.getStringCellValue());
+//                                    p.setTotalQty((int) cell_TotalQty.getNumericCellValue());
+//                                    p.setScheduleQty((int) cell_ScheduleQty.getNumericCellValue());
+//                                    p.setTimeCost(new BigDecimal(cell_TimeCost.getNumericCellValue()));
+//                                    p.setLineType(assy);
+//                                    p.setOnBoardDate(d.toDate());
+//                                    p.setFloor(f);
+//                                }
+//                            }
                         }
                         cnt++;
                     } catch (Exception e) {
@@ -358,5 +415,11 @@ public class TestExcel {
 //        example.processAllSheets(filePath);
         Workbook workbook = WorkbookFactory.create(new File(filePath));
         workbook.close();
+    }
+
+//    @Test
+    public void testEasyexcel() {
+//        String filePath = "C:\\Users\\wei.cheng\\Desktop\\TWM3 5F APS製程排程.xlsx";
+//        EasyExcel.read(filePath, IndexOrNameData.class, new IndexOrNameDataListener()).sheet().doRead();
     }
 }

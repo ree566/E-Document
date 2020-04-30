@@ -46,7 +46,7 @@ public class SyncWorktimeFromRemote {
 
         remoteData.forEach(rw -> {
             Worktime lw = localData.stream()
-                    .filter(w -> w.getModelName().equals(rw.getModelName()))
+                    .filter(w -> w.getModelName().trim().equals(rw.getModelName().trim()))
                     .findFirst()
                     .orElse(null);
 

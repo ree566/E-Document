@@ -252,9 +252,23 @@
         <property name="concurrent" value="false"/>
     </bean>
     
-    <bean id="SyncPrepareSchedule-Trig" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+    <bean id="SyncPrepareScheduleForAssy-Trig" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
         <property name="jobDetail" ref="SyncPrepareScheduleForAssy-Job" />
-        <property name="cronExpression" value="0 30 18 ? * MON-SAT *" />
+        <property name="cronExpression" value="0 45 17 ? * MON-SAT *" />
+    </bean>
+    
+    <!--
+        將PMC排程exce儲存到DB(Packing)
+    -->    
+    <bean name="SyncPrepareScheduleForPacking-Job" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="syncPrepareScheduleForPacking" />
+        <property name="targetMethod" value="execute"/>  
+        <property name="concurrent" value="false"/>
+    </bean>
+    
+    <bean id="SyncPrepareScheduleForPacking-Trig" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="SyncPrepareScheduleForPacking-Job" />
+        <property name="cronExpression" value="0 45 17 ? * MON-SAT *" />
     </bean>
     
     <!--
@@ -318,7 +332,8 @@
                 <ref bean="TestLineTypeRecord-Trig"/>
                 <ref bean="SyncTestPassStationData-Trig"/>
                 
-                <!--<ref bean="SyncPrepareSchedule-Trig"/>-->
+                <ref bean="SyncPrepareScheduleForAssy-Trig"/>
+                <ref bean="SyncPrepareScheduleForPacking-Trig"/>
                 <ref bean="SyncLineUserReference-Trig"/>
                 <ref bean="SyncUserFromRemote-Trig"/>
                 <ref bean="SyncWorktimeFromRemote-Trig"/>
