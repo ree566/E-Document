@@ -47,8 +47,8 @@ public class SyncPrepareScheduleForPacking {
     private SessionFactory sessionFactory;
 
     @Autowired
-    private ArrangePrepareScheduleImpl aps;
-    
+    private ArrangePrepareScheduleImpl_Packing aps;
+
     @Autowired
     private PrepareScheduleService psService;
 
@@ -59,6 +59,7 @@ public class SyncPrepareScheduleForPacking {
         }
         //Because oom problem on poi, excel sync job set on c# winform project
 //        this.execute(d);
+        logger.info("Update packing prepareSchedule...");
         aps.execute(d);
     }
 
@@ -78,7 +79,7 @@ public class SyncPrepareScheduleForPacking {
             String syncFilePath = "\\\\aclfile.advantech.corp\\Group1\\DF\\PMC\\生產日排程\\TWM3 " + floor + "F APS製程排程.xlsx";
 
             Floor f = session.get(Floor.class, floor == 5 ? 1 : 2);
-            
+
             List nextDaysData = psService.findByFloorAndLineTypeAndDate(f, newArrayList(pkg), d);
             if (!nextDaysData.isEmpty()) {
                 //Bypass the data when data is already exists

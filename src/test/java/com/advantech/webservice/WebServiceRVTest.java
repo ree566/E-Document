@@ -161,7 +161,7 @@ public class WebServiceRVTest {
     @Autowired
     private TestService testService;
 
-    @Test
+//    @Test
     public void testGetTestPassStationDetails() {
         DateTime eD = new DateTime().withTime(8, 0, 0, 0);
         DateTime sD = eD.minusMonths(2).withTime(8, 0, 0, 0);
@@ -170,5 +170,9 @@ public class WebServiceRVTest {
         List<TestPassStationDetail> l = rv.getTestPassStationDetails2(users, Section.BAB, 3, sD, eD, Factory.DEFAULT);
         assertTrue(!l.isEmpty());
         HibernateObjectPrinter.print(l.get(0));
+    }
+    
+    public void testGetUsersInfoOnMes(){
+        List l = rv.getUsersInfoOnMes();
     }
 }

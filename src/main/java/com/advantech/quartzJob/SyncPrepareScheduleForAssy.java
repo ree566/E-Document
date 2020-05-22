@@ -45,7 +45,7 @@ public class SyncPrepareScheduleForAssy {
     private SessionFactory sessionFactory;
 
     @Autowired
-    private ArrangePrepareScheduleImpl aps;
+    private ArrangePrepareScheduleImpl_2 aps;
 
     @Autowired
     private PrepareScheduleService psService;
@@ -57,6 +57,7 @@ public class SyncPrepareScheduleForAssy {
         }
         //Because oom problem on poi, excel sync job set on c# winform project
 //        this.execute(d);
+        logger.info("Update assy prepareSchedule...");
         aps.execute(d);
     }
 

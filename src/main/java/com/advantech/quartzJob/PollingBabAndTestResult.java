@@ -50,6 +50,7 @@ public class PollingBabAndTestResult implements EndpointPollingJob{
     }
 
     public String getData() {
+//        throw new RuntimeException("This is a testing sql exception...");
         return new JSONArray().put(tF.getJSONObject())
                 .put(bF.getJSONObject()).toString();
     }

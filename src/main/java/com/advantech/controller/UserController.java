@@ -10,7 +10,6 @@ import com.advantech.datatable.DataTableResponse;
 import com.advantech.helper.CustomPasswordEncoder;
 import com.advantech.helper.SecurityPropertiesUtils;
 import com.advantech.model.db1.User;
-import com.advantech.model.view.UserInfoRemote;
 import com.advantech.service.db1.SqlViewService;
 import com.advantech.service.db1.UserService;
 import static com.google.common.base.Preconditions.checkArgument;

@@ -98,7 +98,7 @@ public class ArrangePrepareScheduleImpl {
             });
         }
 
-        logger.info("Update prepareSchedule finish");
+        logger.info("Update assy prepareSchedule finish");
     }
 
     public List<PrepareSchedule> findPrepareSchedule(Floor f, DateTime d) {

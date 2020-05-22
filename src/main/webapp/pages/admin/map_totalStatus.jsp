@@ -259,8 +259,8 @@
                         $("#testArea").append("<div></div>");
                         var groupStatus = testGroup[i];
                         for (var j = 0, k = groupStatus.people; j < k; j++) {
-							var style = {left: groupStatus.x + pXa, top: groupStatus.y + pYa};
-							if ('straight' in groupStatus) {
+                            var style = {left: groupStatus.x + pXa, top: groupStatus.y + pYa};
+                            if ('straight' in groupStatus) {
                                 style.width = "10px";
                             }
                             $("#testArea>div")
@@ -268,7 +268,7 @@
                                     .append("<div></div>")
                                     .addClass("testWiget")
                                     .css(style);
-							if ('reverse' in groupStatus) {
+                            if ('reverse' in groupStatus) {
                                 $("#testArea>div")
                                         .eq(i)
                                         .attr("reverse", true);
@@ -325,29 +325,29 @@
 
                 function testObjectInit() {
                     var loopCount = maxTestTableNo;
-					$(".testWiget").each(function () {
-						if ($(this).attr("reverse")) {
-							var childAmount = $(this).children().length;
-							var startCount = loopCount - childAmount + 1;
-							
-							$(this).children().each(function () {
-								$(this).attr({"id": "draggable" + "T" + startCount + "_" + sitefloor + "f"})
-											.addClass("draggable blub-empty divCustomBg")
-											.html(startCount)
-											.tooltipster({updateAnimation: null});
-								startCount++;
-							});
-							loopCount-=childAmount;
-						} else {
-							$(this).children().each(function () {
-								$(this).attr({"id": "draggable" + "T" + loopCount + "_" + sitefloor + "f"})
-										.addClass("draggable blub-empty divCustomBg")
-										.html(loopCount)
-										.tooltipster({updateAnimation: null});
-								loopCount--;
-							});
-						}
-					});
+                    $(".testWiget").each(function () {
+                        if ($(this).attr("reverse")) {
+                            var childAmount = $(this).children().length;
+                            var startCount = loopCount - childAmount + 1;
+
+                            $(this).children().each(function () {
+                                $(this).attr({"id": "draggable" + "T" + startCount + "_" + sitefloor + "f"})
+                                        .addClass("draggable blub-empty divCustomBg")
+                                        .html(startCount)
+                                        .tooltipster({updateAnimation: null});
+                                startCount++;
+                            });
+                            loopCount -= childAmount;
+                        } else {
+                            $(this).children().each(function () {
+                                $(this).attr({"id": "draggable" + "T" + loopCount + "_" + sitefloor + "f"})
+                                        .addClass("draggable blub-empty divCustomBg")
+                                        .html(loopCount)
+                                        .tooltipster({updateAnimation: null});
+                                loopCount--;
+                            });
+                        }
+                    });
                 }
 
                 function babObjectInit() {
@@ -525,7 +525,7 @@
                     else
                         reason = "Unknown reason";
                     console.log("The connection was closed for reason: " + reason);
-                    closeConnect();
+//                    closeConnect();
                 };
 
                 if (testGroup.length != 0 || babGroup.length != 0) {
@@ -555,6 +555,7 @@
 
                 function setWebSocketClient(webSocket) {
                     webSocket.timeoutInterval = 3000;
+                    webSocket.reconnectInterval = 30 * 1000;
                     webSocket.onopen = onopen;
                     webSocket.onerror = onerror;
                     webSocket.onclose = onclose;
@@ -564,8 +565,12 @@
                 }
 
                 function closeConnect() {
-                    ws2.close();
-                    ws4.close();
+                    if (ws2 != null) {
+                        ws2.close();
+                    }
+                    if (ws4 != null) {
+                        ws4.close();
+                    }
                     console.log("websocket connection is now end");
                 }
 //-----------------------

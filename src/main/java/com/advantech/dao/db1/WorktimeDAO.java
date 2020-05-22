@@ -72,5 +72,11 @@ public class WorktimeDAO extends AbstractDao<String, Worktime> implements BasicD
         this.getSession().delete(pojo);
         return 1;
     }
+    
+    public int deleteAll() {
+        Session session = super.getSession();
+        session.createQuery("delete from Worktime").executeUpdate();
+        return 1;
+    }
 
 }

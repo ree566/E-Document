@@ -55,4 +55,8 @@ public class WorktimeService {
         return dao.delete(pojo);
     }
 
+    public int deleteAll() {
+        return dao.deleteAll();
+    }
+
 }

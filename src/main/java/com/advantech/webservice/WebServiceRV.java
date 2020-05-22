@@ -14,7 +14,9 @@ import com.advantech.model.db1.TestPassStationDetail;
 import com.advantech.model.db1.TestPassStationDetails;
 import com.advantech.model.db1.TestRecord;
 import com.advantech.model.db1.TestRecords;
+import com.advantech.model.db1.UserInfoOnMes;
 import com.advantech.model.db1.UserOnMes;
+import com.advantech.model.db1.UsersInfoOnMes;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -153,6 +155,29 @@ public class WebServiceRV {
         } catch (Exception ex) {
             log.error(ex.toString());
             return null;
+        }
+    }
+    
+    public List<UserInfoOnMes> getUsersInfoOnMes() {
+
+        try {
+            String queryString
+                    = "<root><METHOD ID='SYSSO.QryUserInfo001'/><USERS><USER_ID>-1</USER_ID><DEPT_ID>-1</DEPT_ID>"
+                    + "<STATUS>A</STATUS><UNIT_NO></UNIT_NO><LINE_ID>-1</LINE_ID></USERS></root>";
+
+            RvResponse response = mClient.simpleRvSendAndReceive(queryString, f);
+            RvResponse.RvResult result = response.getRvResult();
+            List l = result.getAny();
+
+            Document doc = ((Node) l.get(1)).getOwnerDocument();
+            //Skip the <diffgr:diffgram> tag, read QryData tag directly.
+            Node node = doc.getFirstChild().getFirstChild();
+
+            Object o = this.unmarshalFromList(node, UsersInfoOnMes.class);
+            return o == null ? new ArrayList() : ((UsersInfoOnMes) o).getQryData();
+        } catch (JAXBException ex) {
+            log.error(ex.toString());
+            return new ArrayList();
         }
     }
 

@@ -40,28 +40,10 @@ public class SyncWorktimeFromRemote {
 
     public void execute() throws Exception {
         List<Worktime> remoteData = sqlViewService.findWorktime();
-        List<Worktime> localData = worktimeService.findAll();
-        List<Worktime> insertedData = new ArrayList();
-        List<Worktime> updatedData = new ArrayList();
 
-        remoteData.forEach(rw -> {
-            Worktime lw = localData.stream()
-                    .filter(w -> w.getModelName().trim().equals(rw.getModelName().trim()))
-                    .findFirst()
-                    .orElse(null);
-
-            if (lw == null) {
-                rw.setId(0);
-                insertedData.add(rw);
-            } else {
-                rw.setId(lw.getId());
-                updatedData.add(rw);
-            }
-        });
+        worktimeService.deleteAll();
+        worktimeService.insert(remoteData);
         
-        worktimeService.insert(insertedData);
-        worktimeService.update(updatedData);
-
     }
 
 }
