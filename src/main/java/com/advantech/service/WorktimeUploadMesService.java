@@ -63,7 +63,7 @@ public class WorktimeUploadMesService {
 
     public void portParamInit() throws Exception {
         if (isUploadMatProp) {
-            materialPropertyUploadPort.initSetting();
+            materialPropertyUploadPort.initSettings();
         }
     }
 
@@ -173,6 +173,7 @@ public class WorktimeUploadMesService {
                 || !isEquals(prev.getBiTemperature(), current.getBiTemperature())
                 || !isEquals(prev.getKeypartA(), current.getKeypartA())
                 || !isEquals(prev.getKeypartB(), current.getKeypartB())
+                || !isEquals(prev.getMacTotalQty(), current.getMacTotalQty())
                 || !isEquals(prev.getCe(), current.getCe())
                 || !isEquals(prev.getCe(), current.getCe())
                 || !isEquals(prev.getUl(), current.getUl())

@@ -26,6 +26,8 @@ import com.advantech.webservice.unmarshallclass.MaterialPropertyUserPermission;
 import com.advantech.webservice.unmarshallclass.MaterialPropertyValue;
 import com.advantech.webservice.unmarshallclass.StandardWorkTime;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import static java.util.stream.Collectors.toList;
@@ -90,6 +92,9 @@ public class QueryPortTest {
 
     @Autowired
     private StandardWorkTimeQueryPort worktimeQueryPort;
+    
+    @Autowired
+    private SessionFactory sessionFactory;
 
     @Before
     public void init() {
@@ -174,34 +179,34 @@ public class QueryPortTest {
         assertEquals("N", value.getValue());
     }
 
-//    @Test
+    @Test
+    @Rollback(false)
     public void testRetriveMatPropertyValue() throws Exception {
+        Session session = sessionFactory.getCurrentSession();
+        
         List<Worktime> worktimes = worktimeService.findAll();
+
         for (Worktime worktime : worktimes) {
+
             System.out.println("Update " + worktime.getModelName());
             List<MaterialPropertyValue> l = materialPropertyValueQueryPort.query(worktime);
-            MaterialPropertyValue acw = l.stream().filter(m1 -> "HA".equals(m1.getMatPropertyNo())).findFirst().orElse(null);
-            MaterialPropertyValue llt = l.stream().filter(m1 -> "HL".equals(m1.getMatPropertyNo())).findFirst().orElse(null);
-            MaterialPropertyValue testP = l.stream().filter(m1 -> "HP".equals(m1.getMatPropertyNo())).findFirst().orElse(null);
-            MaterialPropertyValue ir = l.stream().filter(m1 -> "HI".equals(m1.getMatPropertyNo())).findFirst().orElse(null);
-            if (acw != null) {
-                worktime.setAcwVoltage(acw.getValue());
-            }
-            if (llt != null) {
-                worktime.setLltValue(llt.getValue());
-            }
-            if (testP != null) {
-                worktime.setTestProfile(testP.getValue());
-            }
-            if (ir != null) {
-                worktime.setIrVoltage(ir.getValue());
-            }
-        }
-        worktimeService.update(worktimes);
-    }
+            MaterialPropertyValue macV = l.stream().filter(m1 -> "MO".equals(m1.getMatPropertyNo())).findFirst().orElse(null);
 
-    @Autowired
-    private SessionFactory sessionFactory;
+            if (macV != null) {
+                String value = macV.getValue();
+                String[] i = value.split(";");
+                int len = (int) Arrays.stream(i).filter(o -> !"".equals(o)).count();
+                worktime.setMacPrintedQty(len);
+
+            } else {
+                worktime.setMacPrintedQty(0);
+            }
+
+            session.merge(worktime);
+
+        }
+
+    }
 
 //    @Test
 //    @Rollback(false)
@@ -259,11 +264,11 @@ public class QueryPortTest {
         HibernateObjectPrinter.print(l);
     }
 
-    @Test
+//    @Test
     public void testStandardWorkTimeQueryPort() throws Exception {
         List<StandardWorkTime> l = this.worktimeQueryPort.query("IMC-450-SL");
         l = l.stream().filter(s -> s.getITEMNO().equals("IMC-450-SL")).collect(toList());
-        
+
         HibernateObjectPrinter.print(l);
     }
 

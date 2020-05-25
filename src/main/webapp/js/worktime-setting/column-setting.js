@@ -72,7 +72,10 @@ var worktimeCol = [
     {name: "businessGroup.id"},
     {name: "workCenter"},
     {name: "burnInQuantity"},
-    {name: "sapWt"}
+    {name: "sapWt"},
+    {name: "macTotalQty"},
+    {name: "macPrintedQty"},
+    {name: "twm2Flag"}
 ];
 
 //不受show / hide 影響

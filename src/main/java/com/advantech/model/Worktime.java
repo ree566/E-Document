@@ -98,6 +98,8 @@ public class Worktime implements java.io.Serializable {
     private String testSop;
     private Integer keypartA = 0;
     private Integer keypartB = 0;
+    private Integer macTotalQty = 0;
+    private Integer macPrintedQty = 0;
     private Character partLink;
     private int ce;
     private int ul;
@@ -133,6 +135,7 @@ public class Worktime implements java.io.Serializable {
     private Date modifiedDate;
 
     private String reasonCode;
+    private int twm2Flag = 0;
 
     //This value almost equals to productionWt in sap
     private BigDecimal sapWt = BigDecimal.ZERO;
@@ -533,6 +536,24 @@ public class Worktime implements java.io.Serializable {
         this.keypartB = keypartB;
     }
 
+    @Column(name = "mac_totalQty")
+    public Integer getMacTotalQty() {
+        return macTotalQty;
+    }
+
+    public void setMacTotalQty(Integer macTotalQty) {
+        this.macTotalQty = macTotalQty;
+    }
+
+    @Column(name = "mac_printedQty")
+    public Integer getMacPrintedQty() {
+        return macPrintedQty;
+    }
+
+    public void setMacPrintedQty(Integer macPrintedQty) {
+        this.macPrintedQty = macPrintedQty;
+    }
+
     @Column(name = "part_link", length = 1)
     public Character getPartLink() {
         return this.partLink;
@@ -902,6 +923,16 @@ public class Worktime implements java.io.Serializable {
 
     public void setReasonCode(String reasonCode) {
         this.reasonCode = reasonCode;
+    }
+
+    @NotAudited
+    @Column(name = "twm2_flag", nullable = false)
+    public int getTwm2Flag() {
+        return twm2Flag;
+    }
+
+    public void setTwm2Flag(int twm2Flag) {
+        this.twm2Flag = twm2Flag;
     }
 
     @Digits(integer = 10 /*precision*/, fraction = 1 /*scale*/)

@@ -9,6 +9,7 @@ import com.advantech.webservice.root.PartMappingUserRoot;
 import com.advantech.model.Worktime;
 import com.advantech.webservice.unmarshallclass.MesUserInfo;
 import java.util.List;
+import static java.util.stream.Collectors.toList;
 import javax.xml.bind.JAXBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -84,11 +85,14 @@ public class ModelResponsorUploadPort extends BasicUploadPort implements UploadP
     }
 
     private String concatUserId(List<MesUserInfo> l) {
+        l = l.stream().distinct().collect(toList());
+        
         StringBuilder sb = new StringBuilder();
         l.forEach((info) -> {
             sb.append("/");
             sb.append(info.getId());
         });
+
         return sb.toString();
     }
 

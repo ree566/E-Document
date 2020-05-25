@@ -76,31 +76,44 @@ public class Test1Test {
             System.out.println("Successfully Copied JSON Object to File...");
         }
     }
-    
+
 //    @Test
     public void testStringSplit() {
         String sidx = "col1 asc, col2 desc, id";
         String sidx2 = "id";
         String sidx3 = "id asc";
-        
+
         String[] result = sidx.split(",");
         String[] result2 = sidx2.split(",");
         String[] result3 = sidx3.split(",");
-        
+
         System.out.println(trimLeftRight(result[0]));
         System.out.println(trimLeftRight(result[1]));
         System.out.println(trimLeftRight(result[2]));
     }
-    
-    private String trimLeftRight(String s){
-        return s.replaceAll("^\\s+","").replaceAll("\\s+$","");
+
+    private String trimLeftRight(String s) {
+        return s.replaceAll("^\\s+", "").replaceAll("\\s+$", "");
     }
-    
-    @Test
-    public void testString(){
+
+//    @Test
+    public void testString() {
         String test1 = "IMC-719-2AC";
         String test2 = "IMC-719-2AC";
         System.out.println(Objects.equals(test1, test2));
     }
 
+    @Test
+    public void testString2() {
+        String test1 = "1;2;3;";
+        String test2 = "1;2;3";
+
+        String[] i = test1.split(";");
+        int len = (int) Arrays.stream(i).filter(o -> !"".equals(o)).count();
+        System.out.println(len);
+        
+        String[] i2 = test2.split(";");
+        int len2 = (int) Arrays.stream(i2).filter(o -> !"".equals(o)).count();
+        System.out.println(len2);
+    }
 }

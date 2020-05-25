@@ -19,8 +19,8 @@ import com.advantech.webservice.port.MaterialPropertyUploadPort;
 import com.advantech.webservice.port.ModelResponsorUploadPort;
 import com.advantech.webservice.port.SopUploadPort;
 import com.advantech.webservice.port.StandardtimeUploadPort;
-import java.math.BigDecimal;
 import java.util.List;
+import static java.util.stream.Collectors.toList;
 import javax.transaction.Transactional;
 import static junit.framework.Assert.*;
 import org.hibernate.Session;
@@ -48,8 +48,10 @@ import org.springframework.test.context.web.WebAppConfiguration;
 @RunWith(SpringJUnit4ClassRunner.class)
 @Transactional
 public class UploadPortTest {
-    
+
     private Worktime w;
+
+    private List<Worktime> worktimes;
 
     //Port for ie
     @Autowired
@@ -58,54 +60,56 @@ public class UploadPortTest {
     //Port for spe
     @Autowired
     private FlowUploadPort flowUploadPort;
-    
+
     @Autowired
     private ModelResponsorUploadPort mappingUserPort;
-    
+
     @Autowired
     private SopUploadPort sopPort;
-    
+
     @Autowired
     private WorktimeService worktimeService;
-    
+
     @Autowired
     private FlowService flowService;
-    
+
     @Autowired
     private PreAssyService preAssyService;
-    
+
     @Autowired
     private MaterialPropertyUploadPort materialPropertyUploadPort;
-    
+
     @Autowired
     private WorktimeAutouploadSettingService worktimeAutouploadSettingService;
-    
+
     @Autowired
     private PendingService pendingService;
-    
+
     @Before
     public void initTestData() {
 //        w = worktimeService.findByModel("TEST-MODEL-2");
+        worktimes = worktimeService.findAll();
+        worktimes = worktimes.stream().filter(o -> o.getTwm2Flag() == 1).collect(toList());
     }
-    
+
     @Value("${WORKTIME.UPLOAD.INSERT: true}")
     private boolean isInserted;
-    
+
     @Value("${WORKTIME.UPLOAD.UPDATE: true}")
     private boolean isUpdated;
-    
+
     @Value("${WORKTIME.UPLOAD.DELETE: true}")
     private boolean isDeleted;
-    
+
     @Value("${WORKTIME.UPLOAD.SOP: true}")
     private boolean isUploadSop;
-    
+
     @Value("${WORKTIME.UPLOAD.RESPONSOR: true}")
     private boolean isUploadResponsor;
-    
+
     @Value("${WORKTIME.UPLOAD.FLOW: true}")
     private boolean isUploadFlow;
-    
+
     @Value("${WORKTIME.UPLOAD.MATPROPERTY: true}")
     private boolean isUploadMatProp;
 
@@ -120,53 +124,55 @@ public class UploadPortTest {
         assertTrue(isUploadFlow);
         assertFalse(isUploadMatProp);
     }
-    
-    @Test
+
+//    @Test
     @Rollback(true)
     public void testStandardtimeUpload() throws Exception {
-        List<Worktime> l = worktimeService.findByPrimaryKeys(5460);
+        List<Worktime> l = worktimes;
         assertNotNull(l.get(0));
         List<WorktimeAutouploadSetting> settings = worktimeAutouploadSettingService.findAll();
         standardtimePort.initSettings(settings);
-        
-        l.forEach((worktime) -> {
-            try {
-                System.out.println("Upload model: " + worktime.getModelName());
-                worktime.setReasonCode("A6");
-                standardtimePort.update(worktime);
-            } catch (Exception ex) {
-                System.out.println(ex);
-            }
-        });
+
+        for (Worktime worktime : l) {
+            System.out.println("Upload model: " + worktime.getModelName());
+            worktime.setReasonCode("A6");
+            standardtimePort.update(worktime);
+        }
     }
 
-//    @Test
-//    @Rollback(true)
+    @Test
+    @Rollback(true)
     public void testFlowUpload() throws Exception {
-        
+        List<Worktime> l = worktimes;
+        for (Worktime worktime : l) {
+            System.out.println("Upload model: " + worktime.getModelName());
+            flowUploadPort.update(worktime);
+        }
     }
-    
+
     @Autowired
     private SessionFactory factory;
 
 //    @Test
     public void testPartMappingUserUpload() throws Exception {
-        Session session = factory.getCurrentSession();
-        List<Worktime> l = session.createCriteria(Worktime.class).add(Restrictions.eq("userByQcOwnerId.id", 95)).list();
-        assertEquals(75, l.size());
-        
-        for (Worktime wo : l) {
-            mappingUserPort.update(wo);
-        }
+        List<Worktime> l = this.worktimes;
+        l.forEach((worktime) -> {
+            try {
+                System.out.println("Upload model: " + worktime.getModelName());
+                mappingUserPort.update(worktime);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+        });
     }
 
 //    @Test
     public void testSopUpload() throws Exception {
-//        List<Worktime> l = worktimeService.findAll();
-//        for (Worktime worktime : l) {
-//            System.out.println("Upload " + worktime.getModelName());
-//        sopPort.upload(w);
-//        }
+        List<Worktime> l = this.worktimes;
+        for (Worktime worktime : l) {
+            System.out.println("Upload " + worktime.getModelName());
+            sopPort.update(worktime);
+        }
     }
 
     //暫時用
@@ -178,49 +184,31 @@ public class UploadPortTest {
         info.setSearchString("2017-11-26");
         info.setRows(Integer.MAX_VALUE);
         List<Worktime> l = worktimeService.findAll(info);
-        
+
         standardtimePort.initSettings();
-        
+
         for (Worktime worktime : l) {
             System.out.println(worktime.getModelName());
             standardtimePort.update(worktime);
         }
     }
 
-    //@Test
+//    @Test
     @Rollback(true)
     public void testMaterialPropertyUploadPort() throws Exception {
-        
-        Integer[] ids = {6189,
-            6231,
-            6232,
-            6233,
-            7723,
-            7996,
-            8109,
-            8110,
-            8209,
-            8416,
-            8419,
-            8440,
-            8499,
-            8503,
-            8504,
-            8505,
-            8534,
-            8628,
-            8805};
-        List<Worktime> l = worktimeService.findByPrimaryKeys(ids);
-        materialPropertyUploadPort.initSetting();
-        
+
+        List<Worktime> l = worktimes;
+        materialPropertyUploadPort.initSettings();
+
         for (Worktime worktime : l) {
+            System.out.println("Upload " + worktime.getModelName());
             materialPropertyUploadPort.update(worktime);
         }
 
 //        materialPropertyUploadPort.update(worktime);
 //        materialPropertyUploadPort.delete(worktime);
     }
-    
+
     @Autowired
     private StandardTimeUpload standardTimeUpload;
 

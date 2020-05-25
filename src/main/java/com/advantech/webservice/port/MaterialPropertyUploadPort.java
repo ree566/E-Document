@@ -73,7 +73,12 @@ public class MaterialPropertyUploadPort extends BasicUploadPort implements Uploa
         }
     }
 
-    public void initSetting() throws Exception {
+    public void initSettings() throws Exception {
+        settings = propSettingService.findAll();
+        this.initSettings(settings);
+    }
+
+    public void initSettings(List<WorktimeMaterialPropertyUploadSetting> settings) throws Exception {
         temp_MaterialPropertys = materialPropertyQueryPort.query("");
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null) {
@@ -82,7 +87,7 @@ public class MaterialPropertyUploadPort extends BasicUploadPort implements Uploa
             User user = (User) auth.getPrincipal();
             temp_MaterialPropertyUserPermissions = permissionQueryPort.query(user.getJobnumber());
         }
-        settings = propSettingService.findAll();
+        this.settings = settings;
     }
 
     @Override

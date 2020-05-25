@@ -7,11 +7,17 @@ package com.advantech.test;
 
 import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.jqgrid.PageInfo;
+import com.advantech.model.Flow;
 import com.advantech.model.Worktime;
+import com.advantech.model.WorktimeAutouploadSetting;
 import com.advantech.model.WorktimeFormulaSetting;
+import com.advantech.model.WorktimeMaterialPropertyUploadSetting;
 import com.advantech.service.AuditService;
+import com.advantech.service.WorktimeAutouploadSettingService;
 import com.advantech.service.WorktimeService;
 import com.advantech.service.WorktimeUploadMesService;
+import com.advantech.webservice.port.MaterialPropertyUploadPort;
+import com.advantech.webservice.port.StandardtimeUploadPort;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -20,6 +26,7 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import static java.util.stream.Collectors.toList;
 import javax.transaction.Transactional;
 import javax.validation.Validation;
 import javax.validation.Validator;
@@ -28,6 +35,7 @@ import static junit.framework.Assert.*;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Restrictions;
 import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
 import org.hibernate.envers.query.AuditEntity;
@@ -264,22 +272,81 @@ public class HibernateTest {
         return NumberFormat.getNumberInstance().format(n);
     }
 
-    @Test
+    @Autowired
+    private StandardtimeUploadPort standardtimePort;
+
+    @Autowired
+    private WorktimeAutouploadSettingService worktimeAutouploadSettingService;
+
+//    @Test
     @Transactional
     @Rollback(false)
-    public void testWorktime() throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+    public void testWorktime() throws IllegalAccessException, NoSuchMethodException, InvocationTargetException, Exception {
 
         Session session = sessionFactory.getCurrentSession();
         List<Worktime> l = session.createCriteria(Worktime.class).list();
 
+        l = l.stream().filter(p -> p.getModelName().matches("ADAM.*|WISE.*|USB.*")).collect(toList());
+
         for (Worktime w : l) {
             System.out.println(w.getModelName());
-            break;
-//            w.setPackingLeadTime(BigDecimal.ZERO);
-//
-//            session.merge(w);
+
+            List<WorktimeFormulaSetting> settings = w.getWorktimeFormulaSettings();
+            WorktimeFormulaSetting setting = settings.get(0);
+            setting.setAssyStation(0);
+            setting.setPackingStation(0);
+            w.setAssyStation(1);
+            w.setPackingStation(1);
+
+            session.update(setting);
+            session.merge(w);
         }
 
+        List<WorktimeAutouploadSetting> settings = worktimeAutouploadSettingService.findByPrimaryKeys(2, 4, 14, 16);
+        standardtimePort.initSettings(settings);
+
+        for (Worktime w : l) {
+            w.setReasonCode("A0");
+            standardtimePort.update(w);
+        }
+
+    }
+
+//    @Test
+    @Transactional
+    @Rollback(false)
+    public void testWorktimeMacTotalQty() {
+        Session session = sessionFactory.getCurrentSession();
+        List<Worktime> l = session.createCriteria(Worktime.class).list();
+        Worktime w = l.get(0);
+        assertTrue(w.getMacTotalQty() == null);
+
+        w.setMacTotalQty(0);
+        session.merge(w);
+        assertTrue(w.getMacTotalQty() == 0);
+    }
+
+    @Autowired
+    private MaterialPropertyUploadPort materialPropertyUploadPort;
+    
+    @Test
+    @Transactional
+    @Rollback(false)
+    public void testWorktime1() throws Exception {
+        Session session = sessionFactory.getCurrentSession();
+        List<Worktime> l = session.createCriteria(Worktime.class).add(Restrictions.between("id", 10739, 11172)).list();
+        List<WorktimeMaterialPropertyUploadSetting> setting = session.createCriteria(WorktimeMaterialPropertyUploadSetting.class).list();
+        assertEquals(l.size(), 434);
+        
+        materialPropertyUploadPort.initSettings(setting);
+
+        for (Worktime w : l) {
+            if (Objects.equals('N', w.getPartLink())) {
+                w.setPartLink('Y');
+                session.merge(w);
+                materialPropertyUploadPort.update(w);
+            }
+        }
     }
 
 }

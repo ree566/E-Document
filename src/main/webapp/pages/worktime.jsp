@@ -134,6 +134,9 @@
 
             var biSamplingCheckResult = checkIfBiSampling(postdata);
             checkResult = checkResult.concat(biSamplingCheckResult);
+            
+            var macFieldCheckResult = checkMacFieldIsValid(postdata);
+            checkResult = checkResult.concat(macFieldCheckResult);
 
             if (checkResult.length != 0) {
                 errorTextFormatF(checkResult); //field // code
@@ -157,6 +160,9 @@
 
             var biSamplingCheckResult = checkIfBiSampling(postdata);
             checkResult = checkResult.concat(biSamplingCheckResult);
+            
+            var macFieldCheckResult = checkMacFieldIsValid(postdata);
+            checkResult = checkResult.concat(macFieldCheckResult);
 
             if (checkResult.length != 0) {
                 errorTextFormatF(checkResult); //field // code
@@ -241,6 +247,8 @@
                 {label: '測試SOP', name: "testSop", width: 100, search: true, searchrules: {required: true}, searchoptions: search_string_options, edittype: "textarea", editoptions: {maxlength: 500}, formoptions: {elmsuffix: "<b class='danger'>M-07-TT0986 測試通則SOP</b>"}},
                 {label: 'KEYPART_A', name: "keypartA", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, editoptions: {defaultValue: '0'}},
                 {label: 'KEYPART_B', name: "keypartB", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, editoptions: {defaultValue: '0'}},
+                {label: 'Total Qty', name: "macTotalQty", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, editoptions: {defaultValue: '0'}},
+                {label: 'Printed Qty', name: "macPrintedQty", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, editoptions: {defaultValue: '0'}},
                 {label: 'PRE-ASSY', name: "preAssy.id", edittype: "select", editoptions: {value: selectOptions["preAssy"]}, formatter: selectOptions["preAssy_func"], width: 100, searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["preAssy"], sopt: ['eq']}},
                 {label: 'BAB_FLOW', name: "flowByBabFlowId.id", edittype: "select", editoptions: {value: selectOptions["bab_flow"], dataEvents: babFlow_select_event, defaultValue: "111"}, formatter: selectOptions["bab_flow_func"], cellattr: hideEmptyBabFlow, width: 100, searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["bab_flow"], sopt: ['eq']}},
                 {label: 'TEST_FLOW', name: "flowByTestFlowId.id", edittype: "select", editoptions: {value: selectOptions["test_flow"], dataEvents: testFlow_select_event}, formatter: selectOptions["test_flow_func"], width: 100, searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["test_flow"], sopt: ['eq']}},
@@ -275,7 +283,8 @@
                 {label: 'Create_Date', width: 200, name: "createDate", formatter: 'date', formatoptions: {srcformat: 'Y-m-d H:i:s A', newformat: 'Y-m-d H:i:s A'}, stype: 'text', searchrules: date_search_rule, searchoptions: search_date_options, align: 'center'},
                 {label: 'Modified_Date', width: 200, name: "modifiedDate", formatter: 'date', formatoptions: {srcformat: 'Y-m-d H:i:s A', newformat: 'Y-m-d H:i:s A'}, stype: 'text', searchrules: date_search_rule, searchoptions: search_date_options, align: 'center'},
                 {label: '藍燈組裝(秒)', width: 80, name: "bwFields.0.assyAvg", index: "bwFields.assyAvg", sortable: true, searchrules: number_search_rule, searchoptions: search_decimal_options},
-                {label: '藍燈包裝(秒)', width: 80, name: "bwFields.0.packingAvg", index: "bwFields.packingAvg", sortable: true, searchrules: number_search_rule, searchoptions: search_decimal_options}
+                {label: '藍燈包裝(秒)', width: 80, name: "bwFields.0.packingAvg", index: "bwFields.packingAvg", sortable: true, searchrules: number_search_rule, searchoptions: search_decimal_options},
+                {label: 'M2機種', width: 80, name: "twm2Flag", search: true, searchrules: number_search_rule, searchoptions: search_string_options, edittype: "select", editoptions: {value: "0:N;1:Y"}}
             ],
             rowNum: 20,
             rowList: [20, 50, 100],
@@ -319,6 +328,7 @@
         grid.jqGrid('setGroupHeaders', {
             useColSpanStyle: true,
             groupHeaders: [
+                {startColumnName: 'macTotalQty', numberOfColumns: 2, titleText: '<em>MAC</em>'},
                 {startColumnName: 'ce', numberOfColumns: 8, titleText: '<em>外箱Label產品資訊 (1：要印   0：不印)</em>'},
                 {startColumnName: 'partNoAttributeMaintain', numberOfColumns: 1, titleText: '<em>料號屬性值維護</em>'},
                 {startColumnName: 'assyLeadTime', numberOfColumns: 2, titleText: '<em>組裝看板工時</em>'},
