@@ -8,11 +8,6 @@ package com.advantech.test;
 import com.advantech.dao.db1.AlarmTestActionDAO;
 import com.advantech.dao.db1.BabDAO;
 import com.advantech.dao.db1.BabPassStationRecordDAO;
-import com.advantech.dao.db1.BabSettingHistoryDAO;
-import com.advantech.dao.db1.FloorDAO;
-import com.advantech.dao.db1.LineDAO;
-import com.advantech.dao.db1.LineUserReferenceDAO;
-import com.advantech.dao.db1.PrepareScheduleDAO;
 import com.advantech.dao.db1.SqlViewDAO;
 import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.model.db1.AlarmBabAction;
@@ -21,40 +16,29 @@ import com.advantech.model.db1.BabAlarmHistory;
 import com.advantech.model.db1.BabPassStationRecord;
 import com.advantech.model.db1.BabPcsDetailHistory;
 import com.advantech.model.db1.BabSensorLoginRecord;
-import com.advantech.model.db1.BabSettingHistory;
 import com.advantech.model.db1.BabStatus;
 import com.advantech.model.db1.CountermeasureEvent;
-import com.advantech.model.db1.Floor;
 import com.advantech.model.db1.Fqc;
 import com.advantech.model.db1.FqcTimeTemp;
-import com.advantech.model.db1.Line;
-import com.advantech.model.db1.LineUserReference;
-import com.advantech.model.db1.PrepareSchedule;
 import com.advantech.model.db1.ReplyStatus;
 import com.advantech.model.db1.SensorTransform;
 import com.advantech.model.db1.TagNameComparison;
 import com.advantech.model.db1.User;
+import com.advantech.model.db1.UserInfoOnMes;
 import com.advantech.security.State;
 import com.advantech.service.db1.BabPcsDetailHistoryService;
 import com.advantech.service.db1.PassStationRecordService;
+import com.advantech.webservice.Factory;
 import com.advantech.webservice.WebServiceRV;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import static com.google.common.collect.Lists.newArrayList;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
-import static java.util.Comparator.comparing;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import static java.util.stream.Collectors.*;
-import java.util.stream.IntStream;
 import org.hibernate.Criteria;
 import org.hibernate.Hibernate;
 import org.hibernate.Query;
@@ -62,11 +46,6 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.transform.Transformers;
-import org.joda.time.DateTime;
-import org.joda.time.Interval;
-import org.joda.time.Minutes;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -464,6 +443,21 @@ public class TestHibernate {
 
         HibernateObjectPrinter.print(l2);
 
+    }
+
+    @Test
+    @Transactional
+    @Rollback(true)
+    public void testSyncUserDataFromMes() {
+        Session session = sessionFactory.getCurrentSession();
+        
+        List<UserInfoOnMes> mesData = rv.getUsersInfoOnMes(Factory.DEFAULT);
+        List<User> users = session.createCriteria(User.class).list();
+        
+        
+        for (UserInfoOnMes m : mesData) {
+            
+        }
     }
 
 }

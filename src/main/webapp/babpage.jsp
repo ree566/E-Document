@@ -698,7 +698,7 @@
                     modelName: modelName,
                     people: people,
                     ispre: ispre,
-                    moduleTypes: arr
+                    moduleTypes: [arr]
                 });
             }
 
@@ -964,7 +964,7 @@
                                             <option value="-1">---請選擇人數---</option>
                                         </select>
                                         <input type="checkbox" id="ispre" /><label for="ispre">前置</label>
-                                        <select id="pre-moduleType" multiple="multiple">
+                                        <select id="pre-moduleType" >
                                         </select>
                                     </td>
                                 </tr>

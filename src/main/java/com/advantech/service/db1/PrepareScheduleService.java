@@ -39,6 +39,10 @@ public class PrepareScheduleService {
         return dao.findByPrimaryKey(obj_id);
     }
 
+    public List<PrepareSchedule> findByLineTypeAndDate(List<LineType> lineType, DateTime sD) {
+        return dao.findByLineTypeAndDate(lineType, sD);
+    }
+
     public List<PrepareSchedule> findByFloorAndLineTypeAndDate(Floor floor, List<LineType> lineType, DateTime sD) {
         return dao.findByFloorAndLineTypeAndDate(floor, lineType, sD);
     }

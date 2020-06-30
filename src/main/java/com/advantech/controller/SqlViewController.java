@@ -8,9 +8,11 @@ package com.advantech.controller;
 import com.advantech.datatable.DataTableResponse;
 import com.advantech.model.db1.Bab;
 import com.advantech.model.db1.BabStatus;
+import com.advantech.model.db1.Floor;
 import com.advantech.model.db1.Worktime;
 import com.advantech.model.view.BabAvg;
 import com.advantech.service.db1.BabService;
+import com.advantech.service.db1.FloorService;
 import com.advantech.service.db2.LineBalancingService;
 import com.advantech.service.db1.SqlProcedureService;
 import com.advantech.service.db1.SqlViewService;
@@ -50,12 +52,15 @@ public class SqlViewController {
 
     @Autowired
     private ModelController modelController;
-    
+
     @Autowired
     private SqlProcedureService procSerice;
-    
+
     @Autowired
     private WorktimeService worktimeService;
+
+    @Autowired
+    private FloorService floorService;
 
     @RequestMapping(value = "/findBabDetail", method = {RequestMethod.GET})
     @ResponseBody
@@ -193,7 +198,7 @@ public class SqlViewController {
     ) {
         return new DataTableResponse(procSerice.findBabBestLineBalanceRecord(lineType_id, startDate, endDate));
     }
-    
+
     @RequestMapping(value = "/calculateChangeover", method = {RequestMethod.GET})
     @ResponseBody
     protected Map calculateChangeover(
@@ -207,7 +212,7 @@ public class SqlViewController {
         if (modelName != null) {
             Worktime w = this.worktimeService.findByModelName(modelName);
             if (w != null) {
-                BigDecimal worktime = lineType == 1 ? w.getAssy(): w.getPacking();
+                BigDecimal worktime = lineType == 1 ? w.getAssy() : w.getPacking();
                 people = (people == null ? (lineType == 1 ? w.getAssyPeople() : w.getPackingPeople()) : people);
                 m.put("po", po);
                 m.put("modelName", modelName);
@@ -222,7 +227,7 @@ public class SqlViewController {
         }
         return m;
     }
-    
+
     @RequestMapping(value = "/findTestPassStationProductivity", method = {RequestMethod.GET})
     @ResponseBody
     protected DataTableResponse findTestPassStationProductivity(
@@ -230,6 +235,17 @@ public class SqlViewController {
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime endDate
     ) {
         return new DataTableResponse(procSerice.findTestPassStationProductivity(startDate, endDate));
+    }
+
+    @RequestMapping(value = "/findBabModuleUsageRate", method = {RequestMethod.GET})
+    @ResponseBody
+    protected DataTableResponse findBabModuleUsageRate(
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime startDate,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime endDate,
+            @RequestParam int floor_id
+    ) {
+        Floor f = floor_id == -1 ? null : floorService.findByPrimaryKey(floor_id);
+        return new DataTableResponse(procSerice.findBabModuleUsageRate(startDate, endDate, f));
     }
 
 }

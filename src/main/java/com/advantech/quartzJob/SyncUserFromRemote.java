@@ -14,9 +14,11 @@ import com.advantech.helper.CustomPasswordEncoder;
 import com.advantech.model.db1.Floor;
 import com.advantech.model.db1.Unit;
 import com.advantech.model.db1.User;
+import com.advantech.model.db1.UserInfoOnMes;
 import com.advantech.model.db1.UserProfile;
-import com.advantech.model.view.UserInfoRemote;
 import com.advantech.security.State;
+import com.advantech.webservice.Factory;
+import com.advantech.webservice.WebServiceRV;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -60,16 +62,18 @@ public class SyncUserFromRemote {
 
     private List<UserProfile> userProfiles;
 
+    @Autowired
+    private WebServiceRV rv;
+
     public void execute() throws Exception {
-        List<UserInfoRemote> l = sqlViewDAO.findUserInfoRemote();
-        List<UserInfoRemote> remoteDirectUser = l.stream()
-                .filter(ur -> (ur.getDepartment().matches("(前置|組裝|測試|包裝)"))
-                && ur.getDep1().contains("東湖"))
+        List<UserInfoOnMes> l = rv.getUsersInfoOnMes(Factory.DEFAULT);
+        List<UserInfoOnMes> remoteDirectUser = l.stream()
+                .filter(ur -> (ur.getUnitNo() != null && ur.getUnitNo().matches("(A|B|T|P)")))
                 .collect(toList());
 
         List<User> users = userDAO.findAll();
 
-        List<Floor> floors = floorDAO.findAll();
+        Floor f = floorDAO.findByPrimaryKey(4);
 
         Unit mfg = unitDAO.findByPrimaryKey(1);
 
@@ -81,49 +85,43 @@ public class SyncUserFromRemote {
 
             remoteDirectUser.forEach(ru -> {
                 User matchesUser = users.stream()
-                        .filter(a -> a.getJobnumber().equals(ru.getJobnumber()))
+                        .filter(a -> a.getJobnumber().equals(ru.getUserNo()))
                         .findFirst()
                         .orElse(null);
 
-                Floor floor = floors.stream()
-                        .filter(f -> f.getName().equals(ru.getSitefloor()))
-                        .findFirst()
-                        .orElse(null);
+                if (matchesUser == null) {
+                    //insert new one
+                    User userWithoutRole = userDAO.findByJobnumber(ru.getUserNo());
 
-                if (floor != null) {
-                    if (matchesUser == null) {
-                        //insert new one
-                        User userWithoutRole = userDAO.findByJobnumber(ru.getJobnumber());
+                    User user = new User();
+                    user.setJobnumber(ru.getUserNo());
+                    user.setUsername(ru.getUserNameCh());
+                    user.setUsernameCh(ru.getUserNameCh());
+                    user.setPassword(pswEncoder.encode(ru.getUserNo()));
+                    user.setState(State.ACTIVE);
 
-                        User user = new User();
-                        user.setJobnumber(ru.getJobnumber());
-                        user.setUsername(ru.getName());
-                        user.setUsernameCh(ru.getName());
-                        user.setPassword(pswEncoder.encode(ru.getJobnumber()));
-                        user.setState(State.ACTIVE);
+                    user.setFloor(f);
+                    
+                    user.setUnit(mfg);
 
-                        user.setFloor(floor);
-                        user.setUnit(mfg);
+                    setUserProfle(user, ru.getUnitNo());
 
-                        setUserProfle(user, ru.getDepartment());
+                    userDAO.insert(user);
+                    System.out.println("insert" + " " + ru.getUserNo());
 
-                        userDAO.insert(user);
-                        System.out.println("insert" + " " + ru.getJobnumber());
+                } else {
+                    //Find user's department & floor is matches or not
+                    //if not match, update department & floor
+                    setUserProfle(matchesUser, ru.getUnitNo());
 
-                    } else {
-                        //Find user's department & floor is matches or not
-                        //if not match, update department & floor
-                        setUserProfle(matchesUser, ru.getDepartment());
+                    matchesUser.setUsername(ru.getUserNameCh());
+                    matchesUser.setUsernameCh(ru.getUserNameCh());
 
-                        matchesUser.setUsername(ru.getName());
-                        matchesUser.setUsernameCh(ru.getName());
-                        matchesUser.setFloor(floor);
-
-                        matchesUser.setState("1".equals(ru.getActive()) && isDateInRecent(ru.getLastUpdateTime()) ? State.ACTIVE : State.DELETED);
-                        userDAO.update(matchesUser);
-                        System.out.println("update" + " " + ru.getJobnumber());
-                    }
+                    matchesUser.setState(State.ACTIVE);
+                    userDAO.update(matchesUser);
+                    System.out.println("update" + " " + ru.getUserNo());
                 }
+
             });
         }
     }
@@ -142,16 +140,16 @@ public class SyncUserFromRemote {
 //"ASSY_USER", "PREASSY_USER", "PACKING_USER"
 
         switch (department) {
-            case "前置":
+            case "A":
                 roles.add(preAssyRole);
                 break;
-            case "組裝":
+            case "B":
                 roles.add(assyRole);
                 break;
-            case "測試":
+            case "T":
                 roles.add(testRole);
                 break;
-            case "包裝":
+            case "P":
                 roles.add(pkgRole);
                 break;
             default:

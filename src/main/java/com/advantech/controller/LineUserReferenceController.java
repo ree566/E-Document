@@ -6,15 +6,15 @@
 package com.advantech.controller;
 
 import com.advantech.datatable.DataTableResponse;
-import com.advantech.helper.SecurityPropertiesUtils;
 import com.advantech.model.db1.Line;
 import com.advantech.model.db1.LineUserReference;
 import com.advantech.model.db1.User;
-import com.advantech.security.State;
 import com.advantech.service.db1.LineService;
 import com.advantech.service.db1.LineUserReferenceService;
 import com.advantech.service.db1.UserService;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,14 +79,10 @@ public class LineUserReferenceController {
             userRole[i] += "_USER";
         }
 
-        if (request.isUserInRole("ROLE_ADMIN") || request.isUserInRole("ROLE_OPER_IE")) {
-            List<User> l = userService.findByRole(userRole);
-            return new DataTableResponse(l);
-        } else {
-            User user = SecurityPropertiesUtils.retrieveAndCheckUserInSession();
-            List l = userService.findByFloorAndRole(user.getFloor(), userRole);
-            return new DataTableResponse(l);
-        }
+        List<User> l = userService.findByRole(userRole);
+        l = l.stream().sorted(Comparator.comparing(User::getUsernameCh))
+                .collect(Collectors.toList());
+        return new DataTableResponse(l);
 
     }
 

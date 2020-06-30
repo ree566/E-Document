@@ -66,8 +66,10 @@
         <script>
             var tableMap = new Map();
             var userMap = new Map();
+            var urlLineType;
             $(function () {
-
+                urlLineType = getQueryVariable("lineType");
+                
                 //Find all user and perform user select options
                 //Let user create station
 
@@ -201,10 +203,14 @@
                 $("#send").attr("disabled", "disabled");
                 var area = $("#tableArea");
                 var table = area.find("table").eq(0).clone();
+                var lineTypeIds = urlLineType == "ASSY" ? [1, 2] : [3];
                 $.ajax({
                     type: "GET",
-                    url: "<c:url value="/BabLineController/findByUser" />",
+                    url: "<c:url value="/BabLineController/findByLineType" />",
                     dataType: "json",
+                    data: {
+                        lineType_id: lineTypeIds
+                    },
                     success: function (response) {
                         var arr = response;
                         for (var i = 0; i < arr.length; i++) {
@@ -308,11 +314,18 @@
             }
 
             function setUserOptions() {
+                var role;
+                console.log();
+                if (urlLineType == "ASSY") {
+                    role = ["PREASSY", "ASSY"];
+                } else {
+                    role = ["PACKING"];
+                }
                 $.ajax({
                     type: "GET",
                     url: "<c:url value="/LineUserReferenceController/findUserByRole" />",
                     data: {
-                        userRole: ["PREASSY", "ASSY"]
+                        userRole: role
                     },
                     dataType: "json",
                     async: false,

@@ -6,7 +6,6 @@
 package com.advantech.model.db1;
 
 import java.io.Serializable;
-import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -17,19 +16,29 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Wei.Cheng
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlRootElement(name = "root")
-public class UsersInfoOnMes implements Serializable{
+@XmlRootElement(name = "QryUserInfo001")
+public class RptStationQty implements Serializable {
 
-    @XmlElement(name = "QryUserInfo001", type = UserInfoOnMes.class)
-    private List<UserInfoOnMes> QryData;
+    @XmlElement(name = "WIP_NO")
+    private String po;
 
+    @XmlElement(name = "PASS_CNT_QRY")
+    private int qty;
 
-    public List<UserInfoOnMes> getQryData() {
-        return QryData;
+    public String getPo() {
+        return po;
     }
 
-    public void setQryData(List<UserInfoOnMes> QryData) {
-        this.QryData = QryData;
+    public void setPo(String po) {
+        this.po = po;
+    }
+
+    public int getQty() {
+        return qty;
+    }
+
+    public void setQty(int qty) {
+        this.qty = qty;
     }
 
 }

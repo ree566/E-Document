@@ -8,6 +8,7 @@ package com.advantech.service.db1;
 import com.advantech.dao.db1.SqlProcedureDAO;
 import com.advantech.helper.PropertiesReader;
 import com.advantech.model.db1.Bab;
+import com.advantech.model.db1.Floor;
 import com.advantech.model.db1.ModelSopRemarkDetail;
 import com.advantech.model.view.BabLastBarcodeStatus;
 import com.advantech.model.view.BabLastGroupStatus;
@@ -32,7 +33,7 @@ public class SqlProcedureService {
 
     @Autowired
     private SqlProcedureDAO sqlProcedureDAO;
-    
+
     @Autowired
     private PropertiesReader reader;
 
@@ -48,7 +49,7 @@ public class SqlProcedureService {
         return l;
     }
 
-     public List<BabLastBarcodeStatus> findBabLastBarcodeStatus(List<Bab> babs) {
+    public List<BabLastBarcodeStatus> findBabLastBarcodeStatus(List<Bab> babs) {
         List<BabLastBarcodeStatus> l = new ArrayList();
         babs.forEach((b) -> {
             l.addAll(sqlProcedureDAO.findBabLastBarcodeStatus(b.getId()));
@@ -151,6 +152,10 @@ public class SqlProcedureService {
 
     public int sensorDataClean(Date date) {
         return sqlProcedureDAO.sensorDataClean(date);
+    }
+
+    public List<Map> findBabModuleUsageRate(DateTime sD, DateTime eD, Floor f) {
+        return sqlProcedureDAO.findBabModuleUsageRate(sD, eD, f);
     }
 
 }

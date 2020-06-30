@@ -6,7 +6,7 @@
 package com.advantech.dao.db1;
 
 import com.advantech.model.db1.Bab;
-import com.advantech.model.db1.ModelSopRemarkDetail;
+import com.advantech.model.db1.Floor;
 import com.advantech.model.view.BabLastBarcodeStatus;
 import com.advantech.model.view.BabLastGroupStatus;
 import com.advantech.model.view.PreAssyModuleUnexecuted;
@@ -228,7 +228,7 @@ public class SqlProcedureDAO extends AbstractDao<Integer, Object> {
                 .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
                 .list();
     }
-    
+
     public int closeBabDirectly(Bab b) {
         super.getSession()
                 .createSQLQuery("{CALL M3_BW.usp_CloseBabDirectly(:bab_id)}")
@@ -252,7 +252,7 @@ public class SqlProcedureDAO extends AbstractDao<Integer, Object> {
                 .executeUpdate();
         return 1;
     }
-    
+
     public List<Map> getTotalAbnormalData(int bab_id) {
         return super.getSession()
                 .createSQLQuery("{CALL M3_BW.sensorTotalAbnormalCheck(:bab_id)}")
@@ -275,6 +275,16 @@ public class SqlProcedureDAO extends AbstractDao<Integer, Object> {
                 .setParameter("date", date)
                 .executeUpdate();
         return 1;
+    }
+
+    public List<Map> findBabModuleUsageRate(DateTime sD, DateTime eD, Floor f) {
+        return super.getSession()
+                .createSQLQuery("{CALL M3_BW.usp_GetBabModuleUsageRate(:sD, :eD, :floor_id)}")
+                .setParameter("sD", sD != null ? sD.withHourOfDay(0).toDate() : null)
+                .setParameter("eD", eD != null ? eD.withHourOfDay(23).toDate() : null)
+                .setParameter("floor_id", f == null ? null : f.getId())
+                .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
+                .list();
     }
 
 }

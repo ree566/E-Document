@@ -111,7 +111,7 @@ public class TestQuartzJobs {
         //先設定好當日出勤名單, 才會給予字動排站
         //This is assy schedule
 
-        DateTime d = new DateTime("2020-05-18");
+        DateTime d = new DateTime("2020-06-15");
 
 //        sps.execute(d);
         aps.execute(d);
@@ -123,7 +123,7 @@ public class TestQuartzJobs {
 //    @Test
     public void testSyncLineUserReference() throws Exception {
 
-        DateTime d3 = new DateTime("2020-05-04");
+        DateTime d3 = new DateTime("2020-06-01");
         sur.execute(d3);
     }
 
@@ -146,7 +146,7 @@ public class TestQuartzJobs {
     public void testSyncPrepareSchedule2() throws Exception {
         //先設定好當日出勤名單, 才會給予字動排站
         //This is packing schedule
-        DateTime d = new DateTime("2020-05-18");
+        DateTime d = new DateTime("2020-06-15");
 //        sps2.execute(d);
         apspkg.execute(d);
     }

@@ -16,7 +16,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Wei.Cheng
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlRootElement(name = "QryData")
+@XmlRootElement(name = "QryUserInfo001")
 public class UserInfoOnMes implements Serializable {
 
     @XmlElement(name = "USER_NO")
@@ -27,6 +27,9 @@ public class UserInfoOnMes implements Serializable {
 
     @XmlElement(name = "CLASS_ID")
     private int classId;
+
+    @XmlElement(name = "USER_NAME_CH")
+    private String userNameCh;
 
     public String getUserNo() {
         return userNo;
@@ -50,6 +53,14 @@ public class UserInfoOnMes implements Serializable {
 
     public void setClassId(int classId) {
         this.classId = classId;
+    }
+
+    public String getUserNameCh() {
+        return userNameCh;
+    }
+
+    public void setUserNameCh(String userNameCh) {
+        this.userNameCh = userNameCh;
     }
 
 }

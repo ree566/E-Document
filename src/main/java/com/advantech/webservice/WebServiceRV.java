@@ -9,6 +9,8 @@ import com.advantech.model.db1.MesPassCountRecord;
 import com.advantech.model.db1.MesPassCountRecords;
 import com.advantech.model.db1.PassStationRecord;
 import com.advantech.model.db1.PassStationRecords;
+import com.advantech.model.db1.RptStationQty;
+import com.advantech.model.db1.RptStationQtys;
 import com.advantech.model.db1.Test;
 import com.advantech.model.db1.TestPassStationDetail;
 import com.advantech.model.db1.TestPassStationDetails;
@@ -157,8 +159,8 @@ public class WebServiceRV {
             return null;
         }
     }
-    
-    public List<UserInfoOnMes> getUsersInfoOnMes() {
+
+    public List<UserInfoOnMes> getUsersInfoOnMes(Factory f) {
 
         try {
             String queryString
@@ -290,6 +292,38 @@ public class WebServiceRV {
 
             Object o = this.unmarshalFromList(node, MesPassCountRecords.class);
             return o == null ? new ArrayList() : ((MesPassCountRecords) o).getQryData();
+        } catch (JAXBException ex) {
+            log.error(ex.toString());
+            return new ArrayList();
+        }
+    }
+
+    public List<RptStationQty> getRptStationQtys(DateTime sD, DateTime eD, final Factory f) {
+
+        try {
+            String queryString
+                    = "<root>"
+                    + "<METHOD ID='RPTSO.QryRptStationQty001'/>"
+                    + "<STATION_QTY>"
+                    + "<START_TIME>" + fmt.print(sD) + "</START_TIME>"
+                    + "<END_TIME>" + fmt.print(eD) + "</END_TIME>"
+                    + "<UNIT_NO/>"
+                    + "<STATION_ID>2</STATION_ID>"
+                    + "<WERKS>TWM3</WERKS>"
+                    + "<ITEM_NO/>"
+                    + "</STATION_QTY>"
+                    + "</root>";
+
+            RvResponse response = mClient.simpleRvSendAndReceive(queryString, f);
+            RvResponse.RvResult result = response.getRvResult();
+            List l = result.getAny();
+
+            Document doc = ((Node) l.get(1)).getOwnerDocument();
+            //Skip the <diffgr:diffgram> tag, read QryData tag directly.
+            Node node = doc.getFirstChild().getFirstChild();
+
+            Object o = this.unmarshalFromList(node, RptStationQtys.class);
+            return o == null ? new ArrayList() : ((RptStationQtys) o).getQryData();
         } catch (JAXBException ex) {
             log.error(ex.toString());
             return new ArrayList();

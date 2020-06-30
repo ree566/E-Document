@@ -114,11 +114,14 @@
                             <li><a href="PreAssyModuleStandardTime">前置模組工時維護</a></li>
                             </c:if>
                         <li><a href="BabPreAssyDetail">前置資料查詢</a></li>
+                        <li><a href="babModuleUsageRate.jsp">前置機種模組使用狀態</a></li>
                         <li class="divider"></li>
                         <li class="hide-when-auto"><a href="BabPassStationRecord?lineType=ASSY">Barcode過站紀錄</a></li>
                         <li class="hide-when-auto"><a href="BabPassStationExceptionReport?lineType=ASSY">異常資料統計</a></li>
-                        <li><a href="lineUserReference.jsp">組裝當日線別人員維護</a></li>
+                        <li><a href="lineUserReference.jsp?lineType=ASSY">組裝當日線別人員維護</a></li>
                         <li><a href="prepareSchedule.jsp?lineType=ASSY">組裝當日自動排站</a></li>
+                        <li class="divider"></li>
+                        <li><a href="prepareSchedule_percentage.jsp">工單完成度列表</a></li>
                     </ul>
                 </li>
                 <li class="dropdown">
@@ -139,10 +142,11 @@
                             </c:if>
                         <li class="hide-when-auto"><a href="BabPassStationRecord?lineType=Packing">Barcode過站紀錄</a></li>
                         <li><a href="BabPreAssyProductivity?lineType=Packing">前置資料查詢</a></li>
+                        <li><a href="babModuleUsageRate.jsp">前置機種模組使用狀態</a></li>
                         <li class="divider"></li>
                         <li><a href="babLineUsageRate.jsp">線體使用率統計</a></li>
                         <li class="divider"></li>
-                        <li><a href="lineUserReference.jsp">附件盒當日線別人員維護</a></li>
+                        <li><a href="lineUserReference.jsp?lineType=Packing">附件盒當日線別人員維護</a></li>
                         <li><a href="prepareSchedule.jsp?lineType=Packing">附件盒當日自動排站</a></li>
                     </ul>
                 </li>

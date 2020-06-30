@@ -44,6 +44,13 @@ public class PrepareScheduleDAO extends AbstractDao<Integer, PrepareSchedule> im
                 .list();
     }
     
+    public List<PrepareSchedule> findByLineTypeAndDate(List<LineType> lineType, DateTime sD) {
+        return super.createEntityCriteria()
+                .add(Restrictions.in("lineType", lineType))
+                .add(Restrictions.eq("onBoardDate", sD.toDate()))
+                .list();
+    }
+    
     public List<PrepareSchedule> findByFloorAndLineTypeAndDate(Floor floor, List<LineType> lineType, DateTime sD) {
         return super.createEntityCriteria()
                 .add(Restrictions.eq("floor", floor))

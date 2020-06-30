@@ -64,6 +64,13 @@ public class BabLineController {
         }
     }
 
+    @RequestMapping(value = "/findByLineType", method = {RequestMethod.GET})
+    @ResponseBody
+    protected List<Line> findByLineType(@RequestParam("lineType_id[]") Integer[] lineType_id, HttpServletRequest request) {
+        List<LineType> lt = lineTypeService.findByPrimaryKeys(lineType_id);
+        return lineService.findByLineType(lt);
+    }
+
     @RequestMapping(value = "/findByUserAndLineType", method = {RequestMethod.GET})
     @ResponseBody
     protected List<Line> findByUserAndLineType(@RequestParam("lineType_id[]") Integer[] lineType_id, HttpServletRequest request) {
