@@ -14,7 +14,6 @@ import com.advantech.model.db1.LineType;
 import com.advantech.model.db1.PreAssyModuleStandardTime;
 import com.advantech.model.db1.PreAssyModuleType;
 import com.advantech.model.db1.PrepareSchedule;
-import com.alibaba.excel.EasyExcel;
 import com.monitorjbl.xlsx.StreamingReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -417,9 +416,4 @@ public class TestExcel {
         workbook.close();
     }
 
-//    @Test
-    public void testEasyexcel() {
-//        String filePath = "C:\\Users\\wei.cheng\\Desktop\\TWM3 5F APS製程排程.xlsx";
-//        EasyExcel.read(filePath, IndexOrNameData.class, new IndexOrNameDataListener()).sheet().doRead();
-    }
 }

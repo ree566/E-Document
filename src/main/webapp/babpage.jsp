@@ -119,6 +119,8 @@
             var firstStation = 1;
 
             var tabreg = /^[0-9a-zA-Z-]+$/;//Textbox check regex.
+            
+            var smallWindow;
 
             $(function () {
                 $(document).ajaxSend(function () {
@@ -240,8 +242,8 @@
                         initPreAssyModuleType();
                     }
                     sel.toggle($(this).prop("checked"));
-                    
-                    if(!$(this).prop("checked")){
+
+                    if (!$(this).prop("checked")) {
                         sel.val([]).trigger('change').next().hide();
                     }
                 });
@@ -344,6 +346,25 @@
                 });
 
                 $("#memo-reload").click(findModelSopRemark);
+                
+                $("#open-barcode-input").click(function () {
+                    var userInfo = $.parseJSON(userInfoCookie);
+                    if (userInfo != null) {
+                        smallWindow = smallWindow ||
+                                window.open("BabPassStationRecordController/redirect?sitefloor=${userSitefloor}&tagName=" + userInfo.tagName,
+                                        "mywindow", "menubar=0,resizable=0,width=350,height=50");
+                        smallWindow.focus();
+                        smallWindow.onbeforeunload = function () {
+                            smallWindow = null;
+                        };
+                    }
+                });
+
+                $(window).unload(function () {
+                    if (smallWindow) {
+                        smallWindow.close();
+                    }
+                });
             });
 
             function block() {
@@ -990,6 +1011,7 @@
                                     <td>輸入前置工單數量</td>
                                     <td>
                                         <input type="text" id="pcsCnt" placeholder="請輸入工單數量" />
+                                        <input type="button" id="open-barcode-input" class="btn btn-info" value="Open barcode input">
                                     </td>
                                 </tr>
                                 <tr>
