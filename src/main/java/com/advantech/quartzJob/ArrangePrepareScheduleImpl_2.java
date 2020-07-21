@@ -47,7 +47,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Component
 @Transactional
-public class ArrangePrepareScheduleImpl_2 {
+public class ArrangePrepareScheduleImpl_2 extends PrepareScheduleJob {
 
     private static final Logger logger = LoggerFactory.getLogger(ArrangePrepareScheduleImpl_2.class);
 
@@ -73,29 +73,25 @@ public class ArrangePrepareScheduleImpl_2 {
     private DateTime scheduleStartTime;
     private DateTime scheduleEndTime;
 
-    DateTimeFormatter df = DateTimeFormat.forPattern("yyyy/MM/dd HH:mm:ss");
-
     Line emptyLine;
 
-    public void execute() throws Exception {
-        this.execute(new DateTime());
-    }
+    @Override
+    public void execute(List<DateTime> dts) throws Exception {
+        dts.forEach(d -> {
+            d = d.withTime(0, 0, 0, 0);
 
-    public void execute(DateTime d) throws Exception {
-        d = d.withTime(0, 0, 0, 0);
+            List<Floor> floors = floorService.findAll();
+            floors = floors.stream()
+                    .filter(f -> f.getId() == 1 || f.getId() == 2)
+                    .collect(toList());
 
-        List<Floor> floors = floorService.findAll();
-        floors = floors.stream()
-                .filter(f -> f.getId() == 1 || f.getId() == 2)
-                .collect(toList());
-
-        for (Floor f : floors) {
-            List<PrepareSchedule> ps = this.findPrepareSchedule(f, d);
-            ps.forEach((p) -> {
-                psService.update(p);
-            });
-        }
-
+            for (Floor f : floors) {
+                List<PrepareSchedule> ps = this.findPrepareSchedule(f, d);
+                ps.forEach((p) -> {
+                    psService.update(p);
+                });
+            }
+        });
         logger.info("Update prepareSchedule finish");
     }
 
@@ -115,6 +111,8 @@ public class ArrangePrepareScheduleImpl_2 {
 
         updateDateParamater(d);
 
+        emptyLine = lineService.findByPrimaryKey(7);
+
         List<LineType> lt = lineTypeService.findByPrimaryKeys(1, 2);
 
         List<Line> totalLine = lineService.findBySitefloorAndLineType(f.getName(), lt);
@@ -123,6 +121,18 @@ public class ArrangePrepareScheduleImpl_2 {
         List<Line> cellLines = totalLine.stream().filter(l -> l.getLineType().getId() == 2).collect(toList());
 
         List<PrepareSchedule> l = psService.findByFloorAndLineTypeAndDate(f, lt, d);
+
+        //Check is prepareSchedule has been scheduled or not
+        PrepareSchedule ps = l.stream().filter(p -> p.getLine() != null).findFirst().orElse(null);
+        if (ps != null) {
+            //Fill empty line and return data when prepareSchedule has been modify by PMC
+            l.forEach(p -> {
+                if (p.getLine() == null) {
+                    p.setLine(emptyLine);
+                }
+            });
+            return l;
+        }
 
         List<PrepareSchedule> noneCellableSchedules = l.stream()
                 .filter(p -> p.getTimeCost().compareTo(new BigDecimal(100)) >= 0)
@@ -138,8 +148,6 @@ public class ArrangePrepareScheduleImpl_2 {
 
         List<LineUserReference> users = lineUserRefService.findByLinesAndDate(lines, d);
         List<LineUserReference> cellUsers = lineUserRefService.findByLinesAndDate(cellLines, d);
-
-        emptyLine = lineService.findByPrimaryKey(7);
 
         List<PrepareSchedule> result = new ArrayList();
         if (!noneCellableSchedules.isEmpty()) {

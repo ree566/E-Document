@@ -132,18 +132,22 @@ public class TestExcel {
 //        return l;
     }
 
-//    @Test
+    @Test
     @Transactional
     @Rollback(false)
     public void testReadExcel() throws FileNotFoundException, IOException, InvalidFormatException, Exception, Exception {
-        String syncFilePath = "C:\\Users\\wei.cheng\\Desktop\\preModuleStandardTime.xlsx";
+        String syncFilePath = "C:\\Users\\wei.cheng\\Desktop\\複本 更新大表附件盒及線外工時用.xlsx";
         try (InputStream is = new FileInputStream(new File(syncFilePath))) {
 
             Session session = sessionFactory.getCurrentSession();
 
             Workbook workbook = WorkbookFactory.create(is);
 
-            List<PreAssyModuleStandardTime> standardTimes = session.createCriteria(PreAssyModuleStandardTime.class).list();
+            PreAssyModuleType packingModuleType = session.get(PreAssyModuleType.class, 121);
+            
+            List<PreAssyModuleStandardTime> standardTimes = session.createCriteria(PreAssyModuleStandardTime.class)
+                    .add(Restrictions.eq("preAssyModuleType", packingModuleType))
+                    .list();
 
             Sheet sheet = workbook.getSheetAt(0);
             for (int i = 1, maxNumberfRows = sheet.getPhysicalNumberOfRows(); i < maxNumberfRows; i++) {
@@ -152,28 +156,27 @@ public class TestExcel {
 
                     //Because cell_A will auto convert to number if modelName only contains numbers.
                     //Search will cause exception when not add convert lines
-                    Cell cell_A = CellUtil.getCell(row, CellReference.convertColStringToIndex("A"));
-                    cell_A.setCellType(CellType.STRING);
+                    Cell modelName_cell = CellUtil.getCell(row, CellReference.convertColStringToIndex("B"));
+                    modelName_cell.setCellType(CellType.STRING);
 
-                    String modelName = ((String) getCellValue(row, "A")).trim();
-                    String preModuleName = ((String) getCellValue(row, "B"));
-                    BigDecimal avg = new BigDecimal((double) getCellValue(row, "C"));
+                    String modelName = ((String) getCellValue(row, "B")).trim();
+                    BigDecimal standardTime = new BigDecimal((double) getCellValue(row, "BQ"));
 
                     PreAssyModuleStandardTime fitData = standardTimes.stream()
-                            .filter(p -> p.getModelName().equals(modelName) && p.getPreAssyModuleType().getName().equals(preModuleName))
+                            .filter(p -> p.getModelName().equals(modelName))
                             .findFirst().orElse(null);
 
                     if (fitData == null) {
-                        throw new Exception("Can't find fit data on model name " + modelName + " and preType " + preModuleName);
+//                        throw new Exception("Can't find fit data on model name " + modelName);
+                        PreAssyModuleStandardTime pt = new PreAssyModuleStandardTime();
+                        pt.setModelName(modelName);
+                        pt.setPreAssyModuleType(packingModuleType);
+                        pt.setStandardTime(standardTime);
+                        session.save(pt);
                     } else {
                         fitData.setModelName(modelName);
-                        avg.setScale(0, RoundingMode.FLOOR);
-                        fitData.setStandardTime(avg);
-                        PreAssyModuleType pt = (PreAssyModuleType) session
-                                .createCriteria(PreAssyModuleType.class)
-                                .add(Restrictions.eq("name", preModuleName))
-                                .uniqueResult();
-                        fitData.setPreAssyModuleType(pt);
+                        standardTime.setScale(0, RoundingMode.FLOOR);
+                        fitData.setStandardTime(standardTime);
                         session.update(fitData);
                     }
 
@@ -215,7 +218,7 @@ public class TestExcel {
         }
     }
 
-    @Test
+//    @Test
     @Transactional
     @Rollback(true)
     public void testReadExcel2() throws Exception {

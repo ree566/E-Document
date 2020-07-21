@@ -53,14 +53,10 @@ public class SyncPrepareScheduleForPacking {
     private PrepareScheduleService psService;
 
     public void execute() throws Exception {
-        DateTime d = new DateTime();
-        if (d.getHourOfDay() >= 17) {
-            d = d.plusDays(d.getDayOfWeek() == 6 ? 2 : 1);
-        }
         //Because oom problem on poi, excel sync job set on c# winform project
 //        this.execute(d);
         logger.info("Update packing prepareSchedule...");
-        aps.execute(d);
+        aps.execute();
     }
 
     public void execute(DateTime d) throws Exception {
