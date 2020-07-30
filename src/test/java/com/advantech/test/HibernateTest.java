@@ -7,6 +7,7 @@ package com.advantech.test;
 
 import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.jqgrid.PageInfo;
+import com.advantech.model.Pending;
 import com.advantech.model.Worktime;
 import com.advantech.service.AuditService;
 import com.advantech.service.WorktimeService;
@@ -241,7 +242,7 @@ public class HibernateTest {
         
     }
     
-    @Test
+//    @Test
     @Transactional
     @Rollback(false)
     public void revisionInit() {
@@ -251,6 +252,15 @@ public class HibernateTest {
             w.setCe(0);
             session.update(w);
         }
+    }
+    
+    @Test
+    @Transactional
+    @Rollback(false)
+    public void testWorktime() {
+        List<Worktime> l = worktimeService.findAll();
+        Worktime w = l.get(0);
+        HibernateObjectPrinter.print(w.getPending().getName());
     }
     
 }

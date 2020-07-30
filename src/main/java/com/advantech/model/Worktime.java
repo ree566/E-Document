@@ -54,6 +54,8 @@ public class Worktime implements java.io.Serializable {
 
     private int id;
     private String modelName;
+    private Pending pending;
+    private BigDecimal pendingTime;
     private Type type;
     private BusinessGroup businessGroup;
     private WorkCenter workCenter;
@@ -141,6 +143,28 @@ public class Worktime implements java.io.Serializable {
 
     public void setModelName(String modelName) {
         this.modelName = modelName;
+    }
+
+//    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "pending_id")
+    public Pending getPending() {
+        return pending;
+    }
+
+    public void setPending(Pending pending) {
+        this.pending = pending;
+    }
+
+    @NotNull(message = "Pending Time 不可為空")
+    @Digits(integer = 10 /*precision*/, fraction = 1 /*scale*/)
+    @Column(name = "pending_time", nullable = false, precision = 10, scale = 1)
+    public BigDecimal getPendingTime() {
+        return pendingTime;
+    }
+
+    public void setPendingTime(BigDecimal pendingTime) {
+        this.pendingTime = pendingTime;
     }
 
 //    @NotNull
