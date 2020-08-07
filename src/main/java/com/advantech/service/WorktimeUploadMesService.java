@@ -166,6 +166,8 @@ public class WorktimeUploadMesService {
 
     private boolean isMatPropertyChanged(Worktime prev, Worktime current) {
         boolean b = isModelNameChanged(prev, current)
+                || !isEquals(prev.getPending(), current.getPending())
+                || !isEquals(prev.getPendingTime(), current.getPendingTime())
                 || !isEquals(prev.getBurnIn(), current.getBurnIn())
                 || !isEquals(prev.getBiTime(), current.getBiTime())
                 || !isEquals(prev.getBiTemperature(), current.getBiTemperature())

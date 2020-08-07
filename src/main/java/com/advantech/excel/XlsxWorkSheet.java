@@ -105,9 +105,9 @@ public class XlsxWorkSheet {
             return "";
         }
 
-        int type = cell.getCellType();
+        CellType type = cell.getCellType();
         switch (type) {
-            case XSSFCell.CELL_TYPE_NUMERIC:
+            case NUMERIC:
                 XSSFCellStyle style = cell.getCellStyle();
                 if (DateUtil.isCellDateFormatted(cell)) {
                     return getDateValue(cell);
@@ -118,20 +118,20 @@ public class XlsxWorkSheet {
                     return getNumericValue(cell);
                 }
 
-            case XSSFCell.CELL_TYPE_STRING:
+            case STRING:
                 return cell.getRichStringCellValue().getString();
 
-            case XSSFCell.CELL_TYPE_FORMULA:
+            case FORMULA:
                 throw new Exception("Formula not supported at row="
                         + row + ", column=" + column);
 
-            case XSSFCell.CELL_TYPE_BLANK:
+            case BLANK:
                 return "";
 
-            case XSSFCell.CELL_TYPE_BOOLEAN:
+            case BOOLEAN:
                 return cell.getBooleanCellValue() ? Boolean.TRUE : Boolean.FALSE;
 
-            case XSSFCell.CELL_TYPE_ERROR:
+            case ERROR:
                 throw new Exception("Error at row=" + row
                         + ", column=" + column);
 

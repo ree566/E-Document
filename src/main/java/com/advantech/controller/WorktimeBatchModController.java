@@ -11,6 +11,7 @@ import com.advantech.excel.XlsWorkSheet;
 import com.advantech.model.BusinessGroup;
 import com.advantech.model.Floor;
 import com.advantech.model.Flow;
+import com.advantech.model.Pending;
 import com.advantech.model.PreAssy;
 import com.advantech.model.Remark;
 import com.advantech.model.Type;
@@ -21,6 +22,7 @@ import com.advantech.service.AuditService;
 import com.advantech.service.BusinessGroupService;
 import com.advantech.service.FloorService;
 import com.advantech.service.FlowService;
+import com.advantech.service.PendingService;
 import com.advantech.service.PreAssyService;
 import com.advantech.service.RemarkService;
 import com.advantech.service.TypeService;
@@ -66,6 +68,9 @@ public class WorktimeBatchModController {
 
     @Autowired
     private FloorService floorService;
+
+    @Autowired
+    private PendingService pendingService;
 
     @Autowired
     private UserService userService;
@@ -262,12 +267,16 @@ public class WorktimeBatchModController {
         }
     }
 
+    /*
+        若欄位為relative column, 要將excel template的欄位名稱加上*Name, ex: bpeOwner -> bpeOwnerName, packingFlow -> packingFlowName
+        無加name在XlsWorkSheet的method.invoke會出錯(無法將值轉換為class的錯誤)
+    */
     private List retrieveRelativeColumns(XlsWorkSheet sheet, List<Worktime> hgList) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, Exception {
         Map<String, Type> typeOptions = toSelectOptions(typeService.findAll());
         Map<String, Floor> floorOptions = toSelectOptions(floorService.findAll());
         Map<String, User> userOptions = toSelectOptions(userService.findAll());
         Map<String, Flow> flowOptions = toSelectOptions(flowService.findAll());
-
+        Map<String, Pending> pendingOptions = toSelectOptions(pendingService.findAll());
         Map<String, PreAssy> preAssyOptions = toSelectOptions(preAssyService.findAll());
         Map<String, BusinessGroup> businessGroupOptions = toSelectOptions(businessGroupService.findAll());
         Map<String, WorkCenter> workCenterOptions = toSelectOptions(workCenterService.findAll());
@@ -294,6 +303,8 @@ public class WorktimeBatchModController {
             w.setFlowByBabFlowId(valid(babFlowName, flowOptions.get(babFlowName)));
             w.setFlowByPackingFlowId(valid(pkgFlowName, flowOptions.get(pkgFlowName)));
             w.setFlowByTestFlowId(valid(testFlowName, flowOptions.get(testFlowName)));
+
+            w.setPending(pendingOptions.get(sheet.getValue(i, "pendingName").toString()));
 
             String preAssyName = sheet.getValue(i, "preAssyName").toString();
             w.setPreAssy(valid(preAssyName, preAssyOptions.get(preAssyName)));

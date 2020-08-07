@@ -21,7 +21,13 @@ var pending_select_event = [
         type: 'change',
         fn: function (e) {
             var selectOption = $('option:selected', this).text();
-            $('input#pendingTime').val(selectOption == 'N' ? 0 : '');
+            var defaultValue = {
+                "SL": [24],
+                "OB": [72],
+                "SL+OB": [96],
+                "N": [0]
+            };
+            $('input#pendingTime').val(defaultValue[selectOption][0]);
         }
     }
 ];

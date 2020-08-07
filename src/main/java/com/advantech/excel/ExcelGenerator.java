@@ -207,7 +207,7 @@ public class ExcelGenerator {
     private CellStyle createTestCell() {
         CellStyle style = workbook.createCellStyle();
         Font font = workbook.createFont();
-        font.setColor(HSSFColor.RED.index);
+        font.setColor(HSSFColor.HSSFColorPredefined.RED.getIndex());
         style.setFont(font);
         return style;
     }

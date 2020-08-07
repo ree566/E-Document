@@ -145,9 +145,9 @@ public class Worktime implements java.io.Serializable {
         this.modelName = modelName;
     }
 
-//    @NotNull
+    @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "pending_id")
+    @JoinColumn(name = "pending_id", nullable = false)
     public Pending getPending() {
         return pending;
     }

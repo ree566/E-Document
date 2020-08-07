@@ -110,10 +110,18 @@ public class MaterialPropertyUploadPort extends BasicUploadPort implements Uploa
         super.upload(root, UploadType.UPDATE);
     }
 
-    //找出Remote & local difference, 差異如果屬性值在local setting則update, else keep and don't change its value
-    //已存在遠端的setting只許更新其值
+    /*
+        找出Remote & local difference, 差異如果屬性值在local setting則update, else keep and don't change its value
+        已存在遠端的setting只許更新其值
+        One to many的欄位假如要取得name等其他欄位需要先在這findByPrimaryKey
+     */
     public MaterialPropertyBatchUploadRoot checkDifferenceAndGenerateRoot(List<MaterialPropertyValue> remotePropSettings, Worktime w) throws Exception {
         List<WorktimeMaterialPropertyUploadSetting> settings = propSettingService.findAll();
+
+        checkArgument(!settings.isEmpty(), "Can't find any upload setting in WorktimeMaterialPropertyUploadSetting table");
+
+        //This column is not init(lazy loading) yet, so get the object by id first
+        w.setPending(pendingService.findByPrimaryKey(w.getPending().getId()));
 
         Set<String> localMatPropNo = settings.stream()
                 .map(WorktimeMaterialPropertyUploadSetting::getMatPropNo)

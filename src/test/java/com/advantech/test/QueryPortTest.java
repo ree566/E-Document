@@ -6,10 +6,7 @@
 package com.advantech.test;
 
 import static com.advantech.excel.ExcelUtils.getCellValue;
-import com.advantech.excel.XlsWorkBook;
-import com.advantech.excel.XlsWorkSheet;
 import com.advantech.helper.HibernateObjectPrinter;
-import com.advantech.model.Flow;
 import com.advantech.model.Worktime;
 import com.advantech.service.WorktimeService;
 import com.advantech.webservice.port.FlowRuleQueryPort;
@@ -25,7 +22,6 @@ import com.advantech.webservice.unmarshallclass.MaterialFlow;
 import com.advantech.webservice.unmarshallclass.MaterialProperty;
 import com.advantech.webservice.unmarshallclass.MaterialPropertyUserPermission;
 import com.advantech.webservice.unmarshallclass.MaterialPropertyValue;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -35,10 +31,8 @@ import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import javax.transaction.Transactional;
 import static junit.framework.Assert.*;
-import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -54,7 +48,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -197,7 +190,7 @@ public class QueryPortTest {
 
             CellStyle style = workbook.createCellStyle();
             Font font = workbook.createFont();
-            font.setColor(HSSFColor.RED.index);
+            font.setColor(HSSFColor.HSSFColorPredefined.RED.getIndex());
             style.setFont(font);
 
             Worktime tempW = new Worktime();

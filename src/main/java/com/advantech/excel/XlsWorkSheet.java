@@ -5,7 +5,6 @@
  */
 package com.advantech.excel;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
@@ -17,11 +16,11 @@ import java.util.TimeZone;
 import javax.activation.UnsupportedDataTypeException;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
-import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.DataFormatter;
+import org.apache.poi.ss.usermodel.DateUtil;
 import org.dbunit.dataset.excel.XlsDataSetWriter;
 import org.joda.time.DateTime;
 
@@ -106,11 +105,11 @@ public class XlsWorkSheet {
             return "";
         }
 
-        int type = cell.getCellType();
+        CellType type = cell.getCellType();
         switch (type) {
-            case HSSFCell.CELL_TYPE_NUMERIC:
+            case NUMERIC:
                 HSSFCellStyle style = cell.getCellStyle();
-                if (HSSFDateUtil.isCellDateFormatted(cell)) {
+                if (DateUtil.isCellDateFormatted(cell)) {
                     return getDateValue(cell);
                 } else if (XlsDataSetWriter.DATE_FORMAT_AS_NUMBER_DBUNIT.equals(style.getDataFormatString())) {
                     // The special dbunit date format  
@@ -119,20 +118,20 @@ public class XlsWorkSheet {
                     return getNumericValue(cell);
                 }
 
-            case HSSFCell.CELL_TYPE_STRING:
+            case STRING:
                 return cell.getRichStringCellValue().getString();
 
-            case HSSFCell.CELL_TYPE_FORMULA:
+            case FORMULA:
                 throw new UnsupportedDataTypeException("Formula not supported at row="
                         + row + ", column=" + column);
 
-            case HSSFCell.CELL_TYPE_BLANK:
+            case BLANK:
                 return "";
 
-            case HSSFCell.CELL_TYPE_BOOLEAN:
+            case BOOLEAN:
                 return cell.getBooleanCellValue() ? Boolean.TRUE : Boolean.FALSE;
 
-            case HSSFCell.CELL_TYPE_ERROR:
+            case ERROR:
                 throw new UnsupportedDataTypeException("Error at row=" + row
                         + ", column=" + column);
 
@@ -154,7 +153,7 @@ public class XlsWorkSheet {
     protected Object getDateValue(HSSFCell cell) {
 
         double numericValue = cell.getNumericCellValue();
-        Date date = HSSFDateUtil.getJavaDate(numericValue);
+        Date date = DateUtil.getJavaDate(numericValue);
         // Add the timezone offset again because it was subtracted automatically by Apache-POI (we need UTC)  
         long tzOffset = TimeZone.getDefault().getOffset(date.getTime());
         date = new Date(date.getTime() + tzOffset);

@@ -143,9 +143,9 @@ public class ExcelTest {
                     return value == null || "".equals(value.trim()) ? null : value;
                 case FORMULA:
                     switch (cell.getCachedFormulaResultType()) {
-                        case Cell.CELL_TYPE_NUMERIC:
+                        case NUMERIC:
                             return cell.getNumericCellValue();
-                        case Cell.CELL_TYPE_STRING:
+                        case STRING:
                             return null;
                     }
                 case NUMERIC:
