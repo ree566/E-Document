@@ -8,7 +8,9 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -16,6 +18,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -68,7 +72,7 @@ public class Worktime implements java.io.Serializable {
     private String modelName;
 
 //    @JsonIgnore
-    private List<BwField> bwField = new AutoPopulatingList<BwField>(BwField.class);
+    private List<BwField> bwField = new AutoPopulatingList<>(BwField.class);
 
     @JsonIgnore
     private List<WorktimeFormulaSetting> worktimeFormulaSettings = new AutoPopulatingList<WorktimeFormulaSetting>(WorktimeFormulaSetting.class);
@@ -139,6 +143,9 @@ public class Worktime implements java.io.Serializable {
 
     //This value almost equals to productionWt in sap
     private BigDecimal sapWt = BigDecimal.ZERO;
+
+//    @JsonIgnore
+    private Set<HrcType> hrcTypes = new HashSet<>(0);
 
     public Worktime() {
     }
@@ -943,6 +950,18 @@ public class Worktime implements java.io.Serializable {
 
     public void setSapWt(BigDecimal sapWt) {
         this.sapWt = sapWt;
+    }
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "Worktime_HRC_REF", joinColumns = {
+        @JoinColumn(name = "worktime_id", nullable = false, insertable = false, updatable = false)}, inverseJoinColumns = {
+        @JoinColumn(name = "hrc_id", nullable = false, insertable = false, updatable = false)})
+    public Set<HrcType> getHrcTypes() {
+        return hrcTypes;
+    }
+
+    public void setHrcTypes(Set<HrcType> hrcTypes) {
+        this.hrcTypes = hrcTypes;
     }
 
 //---------------------------------------------------------------------

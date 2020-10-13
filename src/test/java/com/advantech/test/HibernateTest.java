@@ -7,7 +7,7 @@ package com.advantech.test;
 
 import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.jqgrid.PageInfo;
-import com.advantech.model.Flow;
+import com.advantech.model.HrcType;
 import com.advantech.model.Worktime;
 import com.advantech.model.WorktimeAutouploadSetting;
 import com.advantech.model.WorktimeFormulaSetting;
@@ -24,8 +24,10 @@ import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import static java.util.stream.Collectors.toList;
 import javax.transaction.Transactional;
 import javax.validation.Validation;
@@ -329,7 +331,7 @@ public class HibernateTest {
     @Autowired
     private MaterialPropertyUploadPort materialPropertyUploadPort;
     
-    @Test
+//    @Test
     @Transactional
     @Rollback(false)
     public void testWorktime1() throws Exception {
@@ -347,6 +349,22 @@ public class HibernateTest {
                 materialPropertyUploadPort.update(w);
             }
         }
+    }
+    
+    @Test
+    @Transactional
+    @Rollback(false)
+    public void testHrcType() throws Exception {
+        Session session = sessionFactory.getCurrentSession();
+        HrcType ht = session.get(HrcType.class, 1);
+        HrcType ht2 = session.get(HrcType.class, 2);
+        Worktime w = session.get(Worktime.class, 3815);
+        Set s = new HashSet();
+        s.add(ht);
+        s.add(ht2);
+        w.setHrcTypes(s);
+        session.update(w);
+        HibernateObjectPrinter.print(ht);
     }
 
 }
