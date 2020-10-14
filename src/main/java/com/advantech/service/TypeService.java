@@ -5,7 +5,7 @@
  */
 package com.advantech.service;
 
-import com.advantech.dao.*;
+import com.advantech.repo.TypeDAO;
 import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.Type;
 import java.util.List;

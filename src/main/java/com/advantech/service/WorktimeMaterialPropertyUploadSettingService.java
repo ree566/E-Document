@@ -5,7 +5,7 @@
  */
 package com.advantech.service;
 
-import com.advantech.dao.WorktimeMaterialPropertyUploadSettingDAO;
+import com.advantech.repo.WorktimeMaterialPropertyUploadSettingDAO;
 import com.advantech.model.WorktimeMaterialPropertyUploadSetting;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;

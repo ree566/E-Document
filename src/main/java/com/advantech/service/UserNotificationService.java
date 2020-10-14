@@ -5,7 +5,7 @@
  */
 package com.advantech.service;
 
-import com.advantech.dao.*;
+import com.advantech.repo.UserNotificationDAO;
 import com.advantech.model.User;
 import com.advantech.model.UserNotification;
 import java.util.ArrayList;

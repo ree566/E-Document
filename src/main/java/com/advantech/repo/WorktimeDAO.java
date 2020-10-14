@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.advantech.dao;
+package com.advantech.repo;
 
 import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.Worktime;

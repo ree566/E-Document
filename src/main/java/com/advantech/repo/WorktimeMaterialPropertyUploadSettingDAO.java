@@ -3,46 +3,41 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.advantech.dao;
+package com.advantech.repo;
 
-import com.advantech.model.SheetView;
-import com.advantech.jqgrid.PageInfo;
+import com.advantech.model.WorktimeMaterialPropertyUploadSetting;
 import java.util.List;
 import org.springframework.stereotype.Repository;
 
 /**
- * 未使用，後續可能要用到view時作參考
+ *
  * @author Wei.Cheng
  */
 @Repository
-public class SheetViewDAO extends AbstractDao<Integer, SheetView> implements BasicDAO<SheetView> {
+public class WorktimeMaterialPropertyUploadSettingDAO extends AbstractDao<Integer, WorktimeMaterialPropertyUploadSetting> implements BasicDAO<WorktimeMaterialPropertyUploadSetting> {
 
     @Override
-    public List<SheetView> findAll() {
+    public List<WorktimeMaterialPropertyUploadSetting> findAll() {
         return createEntityCriteria().list();
     }
 
-    public List<SheetView> findAll(PageInfo info) {
-        return super.getByPaginateInfo(info);
+    @Override
+    public WorktimeMaterialPropertyUploadSetting findByPrimaryKey(Object obj_id) {
+        return super.getByKey((int) obj_id);
     }
 
     @Override
-    public SheetView findByPrimaryKey(Object obj_id) {
+    public int insert(WorktimeMaterialPropertyUploadSetting pojo) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public int insert(SheetView pojo) {
+    public int update(WorktimeMaterialPropertyUploadSetting pojo) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public int update(SheetView pojo) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public int delete(SheetView pojo) {
+    public int delete(WorktimeMaterialPropertyUploadSetting pojo) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

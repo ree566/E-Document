@@ -5,7 +5,7 @@
  */
 package com.advantech.service;
 
-import com.advantech.dao.SheetViewDAO;
+import com.advantech.repo.SheetViewDAO;
 import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.SheetView;
 import java.util.List;

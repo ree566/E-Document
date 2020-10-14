@@ -5,7 +5,7 @@
  */
 package com.advantech.service;
 
-import com.advantech.dao.*;
+import com.advantech.repo.UserProfileDAO;
 import com.advantech.model.UserProfile;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;

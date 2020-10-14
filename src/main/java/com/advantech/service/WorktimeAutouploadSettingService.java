@@ -5,7 +5,7 @@
  */
 package com.advantech.service;
 
-import com.advantech.dao.WorktimeAutouploadSettingDAO;
+import com.advantech.repo.WorktimeAutouploadSettingDAO;
 import com.advantech.model.WorktimeAutouploadSetting;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;

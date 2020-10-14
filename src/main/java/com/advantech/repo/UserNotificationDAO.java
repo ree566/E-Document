@@ -3,11 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.advantech.dao;
+package com.advantech.repo;
 
-import com.advantech.jqgrid.PageInfo;
-import com.advantech.model.FlowGroup;
+import com.advantech.model.UserNotification;
 import java.util.List;
+import org.hibernate.Criteria;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -15,34 +16,36 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class FlowGroupDAO extends AbstractDao<Integer, FlowGroup> implements BasicDAO<FlowGroup> {
+public class UserNotificationDAO extends AbstractDao<Integer, UserNotification> implements BasicDAO<UserNotification> {
 
     @Override
-    public List<FlowGroup> findAll() {
+    public List<UserNotification> findAll() {
         return createEntityCriteria().list();
     }
 
-    public List<FlowGroup> findAll(PageInfo info) {
-        return super.getByPaginateInfo(info);
-    }
- 
     @Override
-    public FlowGroup findByPrimaryKey(Object obj_id) {
-        return super.getByKey((int) obj_id);
+    public UserNotification findByPrimaryKey(Object obj_id) {
+        return getByKey((int) obj_id);
+    }
+
+    public UserNotification findByName(String name) {
+        Criteria c = createEntityCriteria();
+        c.add(Restrictions.eq("name", name));
+        return (UserNotification) c.uniqueResult();
     }
 
     @Override
-    public int insert(FlowGroup pojo) {
+    public int insert(UserNotification pojo) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public int update(FlowGroup pojo) {
+    public int update(UserNotification pojo) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public int delete(FlowGroup pojo) {
+    public int delete(UserNotification pojo) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

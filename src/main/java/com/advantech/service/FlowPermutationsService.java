@@ -5,7 +5,7 @@
  */
 package com.advantech.service;
 
-import com.advantech.dao.*;
+import com.advantech.repo.FlowPermutationsDAO;
 import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.FlowPermutations;
 import java.util.List;

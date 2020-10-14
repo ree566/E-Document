@@ -5,7 +5,7 @@
  */
 package com.advantech.service;
 
-import com.advantech.dao.AuditDAO;
+import com.advantech.repo.AuditDAO;
 import com.advantech.model.Worktime;
 import com.advantech.webservice.port.FlowUploadPort;
 import com.advantech.webservice.port.MaterialPropertyUploadPort;

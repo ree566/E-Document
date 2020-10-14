@@ -5,10 +5,10 @@
  */
 package com.advantech.service;
 
-import com.advantech.dao.BwFieldDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.advantech.repo.BwFieldRepository;
 
 /**
  *
@@ -19,10 +19,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class BwFieldService {
 
     @Autowired
-    private BwFieldDAO bwFieldDAO;
+    private BwFieldRepository repo;
 
-    public int update() {
-        return bwFieldDAO.update();
+    public int syncFromRemote() {
+        return repo.syncFromRemote();
     }
 
 }

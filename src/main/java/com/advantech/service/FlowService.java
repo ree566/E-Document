@@ -5,7 +5,6 @@
  */
 package com.advantech.service;
 
-import com.advantech.dao.*;
 import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.Flow;
 import com.advantech.model.FlowGroup;
@@ -18,6 +17,7 @@ import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.advantech.repo.FlowRepository;
 
 /**
  *
@@ -28,17 +28,17 @@ import org.springframework.transaction.annotation.Transactional;
 public class FlowService {
 
     @Autowired
-    private FlowDAO flowDAO;
+    private FlowRepository repo;
 
     @Autowired
-    private FlowGroupDAO flowGroupDAO;
+    private FlowGroupRepository flowGroupRepo;
 
     public List<Flow> findAll() {
-        return flowDAO.findAll();
+        return repo.findAll();
     }
 
     public List<Flow> findAll(PageInfo info) {
-        return flowDAO.findAll(info);
+        return repo.findAll(info);
     }
 
     public Flow findByPrimaryKey(Object obj_id) {
