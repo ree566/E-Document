@@ -3,12 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.advantech.dao;
+package com.advantech.repo;
 
-import com.advantech.model.WorktimeAutouploadSetting;
+import com.advantech.model.Unit;
 import java.util.List;
-import org.hibernate.Criteria;
-import org.hibernate.criterion.Restrictions;
+import org.hibernate.criterion.Order;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -16,36 +15,30 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class WorktimeAutouploadSettingDAO extends AbstractDao<Integer, WorktimeAutouploadSetting> implements BasicDAO<WorktimeAutouploadSetting> {
+public class UnitDAO extends AbstractDao<Integer, Unit> implements BasicDAO<Unit> {
 
     @Override
-    public List<WorktimeAutouploadSetting> findAll() {
-        return createEntityCriteria().list();
+    public List<Unit> findAll() {
+        return createEntityCriteria().addOrder(Order.asc("name")).list();
     }
 
     @Override
-    public WorktimeAutouploadSetting findByPrimaryKey(Object obj_id) {
+    public Unit findByPrimaryKey(Object obj_id) {
         return super.getByKey((int) obj_id);
     }
 
-    public List<WorktimeAutouploadSetting> findByPrimaryKeys(Integer... id) {
-        Criteria c = super.createEntityCriteria();
-        c.add(Restrictions.in("id", id));
-        return c.list();
-    }
-
     @Override
-    public int insert(WorktimeAutouploadSetting pojo) {
+    public int insert(Unit pojo) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public int update(WorktimeAutouploadSetting pojo) {
+    public int update(Unit pojo) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public int delete(WorktimeAutouploadSetting pojo) {
+    public int delete(Unit pojo) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

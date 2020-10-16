@@ -3,12 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.advantech.dao;
+package com.advantech.repo;
 
-import com.advantech.model.Floor;
+import com.advantech.jqgrid.PageInfo;
+import com.advantech.model.FlowGroup;
 import java.util.List;
-import org.hibernate.Criteria;
-import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -16,36 +15,34 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class FloorDAO extends AbstractDao<Integer, Floor> implements BasicDAO<Floor> {
+public class FlowGroupDAO extends AbstractDao<Integer, FlowGroup> implements BasicDAO<FlowGroup> {
 
     @Override
-    public List<Floor> findAll() {
+    public List<FlowGroup> findAll() {
         return createEntityCriteria().list();
     }
 
-    public List<Floor> findByPrimaryKeys(Integer... id) {
-        Criteria criteria = createEntityCriteria();
-        criteria.add(Restrictions.in("id", id));
-        return criteria.list();
+    public List<FlowGroup> findAll(PageInfo info) {
+        return super.getByPaginateInfo(info);
     }
-
+ 
     @Override
-    public Floor findByPrimaryKey(Object obj_id) {
+    public FlowGroup findByPrimaryKey(Object obj_id) {
         return super.getByKey((int) obj_id);
     }
 
     @Override
-    public int insert(Floor pojo) {
+    public int insert(FlowGroup pojo) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public int update(Floor pojo) {
+    public int update(FlowGroup pojo) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public int delete(Floor pojo) {
+    public int delete(FlowGroup pojo) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

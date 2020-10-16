@@ -5,7 +5,7 @@
  */
 package com.advantech.test;
 
-import com.advantech.dao.FloorDAO;
+import com.advantech.repo.FloorDAO;
 import com.advantech.helper.MailManager;
 import com.advantech.model.Floor;
 import java.io.File;

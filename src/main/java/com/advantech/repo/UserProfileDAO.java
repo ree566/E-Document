@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.advantech.dao;
+package com.advantech.repo;
 
-import com.advantech.model.UserNotification;
+import com.advantech.model.UserProfile;
 import java.util.List;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
@@ -16,36 +16,42 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class UserNotificationDAO extends AbstractDao<Integer, UserNotification> implements BasicDAO<UserNotification> {
+public class UserProfileDAO extends AbstractDao<Integer, UserProfile> implements BasicDAO<UserProfile> {
 
     @Override
-    public List<UserNotification> findAll() {
+    public List<UserProfile> findAll() {
         return createEntityCriteria().list();
     }
 
     @Override
-    public UserNotification findByPrimaryKey(Object obj_id) {
+    public UserProfile findByPrimaryKey(Object obj_id) {
         return getByKey((int) obj_id);
     }
 
-    public UserNotification findByName(String name) {
+    public List<UserProfile> findByPrimaryKeys(Integer... ids) {
         Criteria c = createEntityCriteria();
-        c.add(Restrictions.eq("name", name));
-        return (UserNotification) c.uniqueResult();
+        c.add(Restrictions.in("id", ids));
+        return c.list();
+    }
+
+    public UserProfile findByType(String typeName) {
+        Criteria c = createEntityCriteria();
+        c.add(Restrictions.eq("type", typeName));
+        return (UserProfile) c.uniqueResult();
     }
 
     @Override
-    public int insert(UserNotification pojo) {
+    public int insert(UserProfile pojo) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public int update(UserNotification pojo) {
+    public int update(UserProfile pojo) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public int delete(UserNotification pojo) {
+    public int delete(UserProfile pojo) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

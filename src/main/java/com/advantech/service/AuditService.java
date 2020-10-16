@@ -5,8 +5,8 @@
  */
 package com.advantech.service;
 
-import com.advantech.dao.AuditAction;
-import com.advantech.dao.AuditDAO;
+import com.advantech.repo.AuditAction;
+import com.advantech.repo.AuditDAO;
 import com.advantech.jqgrid.PageInfo;
 import java.util.Date;
 import java.util.List;

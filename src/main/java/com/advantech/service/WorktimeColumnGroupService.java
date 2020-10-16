@@ -5,7 +5,7 @@
  */
 package com.advantech.service;
 
-import com.advantech.dao.WorktimeColumnGroupDAO;
+import com.advantech.repo.WorktimeColumnGroupDAO;
 import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.WorktimeColumnGroup;
 import java.util.List;

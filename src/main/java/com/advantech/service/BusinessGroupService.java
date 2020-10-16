@@ -5,7 +5,7 @@
  */
 package com.advantech.service;
 
-import com.advantech.dao.BusinessGroupDAO;
+import com.advantech.repo.BusinessGroupDAO;
 import com.advantech.model.BusinessGroup;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;

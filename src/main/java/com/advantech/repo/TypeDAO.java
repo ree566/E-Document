@@ -3,11 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.advantech.dao;
+package com.advantech.repo;
 
 import com.advantech.jqgrid.PageInfo;
-import com.advantech.model.PreAssy;
+import com.advantech.model.Type;
 import java.util.List;
+import org.hibernate.Criteria;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -15,36 +17,42 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class PreAssyDAO extends AbstractDao<Integer, PreAssy> implements BasicDAO<PreAssy> {
+public class TypeDAO extends AbstractDao<Integer, Type> implements BasicDAO<Type> {
 
     @Override
-    public List<PreAssy> findAll() {
+    public List<Type> findAll() {
         return createEntityCriteria().list();
     }
 
-    public List<PreAssy> findAll(PageInfo info) {
+    public List<Type> findAll(PageInfo info) {
         return super.getByPaginateInfo(info);
     }
 
     @Override
-    public PreAssy findByPrimaryKey(Object obj_id) {
+    public Type findByPrimaryKey(Object obj_id) {
         return super.getByKey((int) obj_id);
     }
 
+    public List<Type> findByPrimaryKeys(Integer... id) {
+        Criteria criteria = createEntityCriteria();
+        criteria.add(Restrictions.in("id", id));
+        return criteria.list();
+    }
+
     @Override
-    public int insert(PreAssy pojo) {
+    public int insert(Type pojo) {
         this.getSession().save(pojo);
         return 1;
     }
 
     @Override
-    public int update(PreAssy pojo) {
+    public int update(Type pojo) {
         this.getSession().update(pojo);
         return 1;
     }
 
     @Override
-    public int delete(PreAssy pojo) {
+    public int delete(Type pojo) {
         this.getSession().delete(pojo);
         return 1;
     }

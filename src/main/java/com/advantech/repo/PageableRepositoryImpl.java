@@ -3,30 +3,47 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.advantech.dao;
+package com.advantech.repo;
 
 import com.advantech.jqgrid.PageInfo;
-import java.lang.reflect.Field;
-import java.math.BigDecimal;
+import java.io.Serializable;
 import java.util.List;
-import java.util.Objects;
+import javax.persistence.EntityManagerFactory;
 import org.hibernate.Criteria;
-import org.hibernate.criterion.MatchMode;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
-import org.springframework.stereotype.Repository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
  *
- * @author Wei.Cheng
+ * @author MFG.ESOP
+ * @param <T>
+ * @param <PK>
  */
-@Repository
-public class PaginateDAO {
+public class PageableRepositoryImpl<T, PK extends Serializable> implements PageableRepository {
 
-    protected List paginateResult(Criteria criteria, Class clz, PageInfo info) {
+    @Autowired
+    @Qualifier("entityManagerFactory")
+    private EntityManagerFactory factory;
+
+    @Override
+    public List<T> getByPaginateInfo(PageInfo info) {
+        //Pageable是介面，PageRequest是介面實現
+//PageRequest的物件建構函式有多個，page是頁數，初始值是0，size是查詢結果的條數，後兩個引數參考Sort物件的構造方法
+        Pageable pageable = new PageRequest(0, 3, Sort.Direction.DESC, "id");
+        Page<T> page = repository.findByName("bauer", pageable);
+//查詢結果總行數
+        System.out.println(page.getTotalElements());
+//按照當前分頁大小，總頁數
+        System.out.println(page.getTotalPages());
+//按照當前頁數、分頁大小，查出的分頁結果集合
+        for (Customer customer : page.getContent()) {
+            System.out.println(customer.toString());
+        }
+        System.out.println("-------------------------------------------");
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    private List paginateResult(Criteria criteria, Class clz, PageInfo info) {
         if (info.getSearchField() != null) {
             String searchOper = info.getSearchOper();
             String searchField = info.getSearchField();

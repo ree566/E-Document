@@ -5,7 +5,7 @@
  */
 package com.advantech.service;
 
-import com.advantech.dao.BasicDAO;
+import com.advantech.repo.BasicDAO;
 
 /**
  *

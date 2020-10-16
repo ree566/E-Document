@@ -5,7 +5,7 @@
  */
 package com.advantech.service;
 
-import com.advantech.dao.WorktimeFormulaSettingDAO;
+import com.advantech.repo.WorktimeFormulaSettingDAO;
 import com.advantech.model.WorktimeFormulaSetting;
 import java.util.List;
 
