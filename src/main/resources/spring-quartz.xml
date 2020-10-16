@@ -78,11 +78,11 @@
     <bean id="schedulerFactoryBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
         <property name="triggers">
             <list>
-<!--                <ref bean="cronTrigger"/>
+                <ref bean="cronTrigger"/>
                 <ref bean="cronTrigger2"/>
-                <ref bean="cronTrigger3"/>
+                <!--<ref bean="cronTrigger3"/>-->
                 <ref bean="cronTrigger4"/>
-                <ref bean="cronTrigger5"/>-->
+                <ref bean="cronTrigger5"/>
             </list>
         </property>
         <property name="schedulerName">

@@ -75,7 +75,8 @@ var worktimeCol = [
     {name: "sapWt"},
     {name: "macTotalQty"},
     {name: "macPrintedQty"},
-    {name: "twm2Flag"}
+    {name: "twm2Flag"},
+    {name: "hrcValues"}
 ];
 
 //不受show / hide 影響

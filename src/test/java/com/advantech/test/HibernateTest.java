@@ -351,7 +351,7 @@ public class HibernateTest {
         }
     }
     
-    @Test
+//    @Test
     @Transactional
     @Rollback(false)
     public void testHrcType() throws Exception {
@@ -362,7 +362,7 @@ public class HibernateTest {
         Set s = new HashSet();
         s.add(ht);
         s.add(ht2);
-        w.setHrcTypes(s);
+//        w.setHrcTypes(s);
         session.update(w);
         HibernateObjectPrinter.print(ht);
     }

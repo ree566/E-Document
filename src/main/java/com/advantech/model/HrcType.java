@@ -26,11 +26,11 @@ import javax.persistence.UniqueConstraint;
  *
  * @author Wei.Cheng
  */
-@Entity
-@Table(
-        name = "HRC",
-        uniqueConstraints = @UniqueConstraint(columnNames = "[name]")
-)
+//@Entity
+//@Table(
+//        name = "HRC",
+//        uniqueConstraints = @UniqueConstraint(columnNames = "[name]")
+//)
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class HrcType implements java.io.Serializable {
 

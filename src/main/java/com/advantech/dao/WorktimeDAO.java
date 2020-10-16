@@ -40,9 +40,9 @@ public class WorktimeDAO extends AbstractDao<Integer, Worktime> implements Basic
     }
 
     public List<Worktime> findByPrimaryKeys(Integer... id) {
-        Criteria criteria = createEntityCriteria();
-        criteria.add(Restrictions.in("id", id));
-        return criteria.list();
+        return createEntityCriteria()
+                .add(Restrictions.in("id", id))
+                .list();
     }
 
     public Worktime findByModel(String modelName) {

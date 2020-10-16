@@ -145,7 +145,8 @@ public class Worktime implements java.io.Serializable {
     private BigDecimal sapWt = BigDecimal.ZERO;
 
 //    @JsonIgnore
-    private Set<HrcType> hrcTypes = new HashSet<>(0);
+//    private Set<HrcType> hrcTypes = new HashSet<>(0);
+    private String hrcValues;
 
     public Worktime() {
     }
@@ -952,16 +953,27 @@ public class Worktime implements java.io.Serializable {
         this.sapWt = sapWt;
     }
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "Worktime_HRC_REF", joinColumns = {
-        @JoinColumn(name = "worktime_id", nullable = false, insertable = false, updatable = false)}, inverseJoinColumns = {
-        @JoinColumn(name = "hrc_id", nullable = false, insertable = false, updatable = false)})
-    public Set<HrcType> getHrcTypes() {
-        return hrcTypes;
+//    @ManyToMany(fetch = FetchType.EAGER)
+//    @JoinTable(name = "Worktime_HRC_REF", joinColumns = {
+//        @JoinColumn(name = "worktime_id", nullable = false, insertable = false, updatable = false)}, inverseJoinColumns = {
+//        @JoinColumn(name = "hrc_id", nullable = false, insertable = false, updatable = false)})
+//    public Set<HrcType> getHrcTypes() {
+//        return hrcTypes;
+//    }
+//
+//    public void setHrcTypes(Set<HrcType> hrcTypes) {
+//        this.hrcTypes = hrcTypes;
+//    }
+    
+
+    @Size(min = 0, max = 200)
+    @Column(name = "hrc_values", length = 200)
+    public String getHrcValues() {
+        return hrcValues;
     }
 
-    public void setHrcTypes(Set<HrcType> hrcTypes) {
-        this.hrcTypes = hrcTypes;
+    public void setHrcValues(String hrcValues) {
+        this.hrcValues = hrcValues;
     }
 
 //---------------------------------------------------------------------

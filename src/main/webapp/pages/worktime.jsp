@@ -52,6 +52,7 @@
 <script src="<c:url value="/js/worktime-setting/column-validator.js" />"></script>
 <script src="<c:url value="/webjars/github-com-johnculviner-jquery-fileDownload/1.4.6/src/Scripts/jquery.fileDownload.js" />"></script>
 <script src="<c:url value="/js/worktime-setting/column-custom-callback.js" />"></script>
+<script src="<c:url value="/js/jquery.multi-select.js" />"></script>
 
 <script>
     $(function () {
@@ -134,7 +135,7 @@
 
             var biSamplingCheckResult = checkIfBiSampling(postdata);
             checkResult = checkResult.concat(biSamplingCheckResult);
-            
+
             var macFieldCheckResult = checkMacFieldIsValid(postdata);
             checkResult = checkResult.concat(macFieldCheckResult);
 
@@ -160,7 +161,7 @@
 
             var biSamplingCheckResult = checkIfBiSampling(postdata);
             checkResult = checkResult.concat(biSamplingCheckResult);
-            
+
             var macFieldCheckResult = checkMacFieldIsValid(postdata);
             checkResult = checkResult.concat(macFieldCheckResult);
 
@@ -284,7 +285,21 @@
                 {label: 'Modified_Date', width: 200, name: "modifiedDate", formatter: 'date', formatoptions: {srcformat: 'Y-m-d H:i:s A', newformat: 'Y-m-d H:i:s A'}, stype: 'text', searchrules: date_search_rule, searchoptions: search_date_options, align: 'center'},
                 {label: '藍燈組裝(秒)', width: 80, name: "bwFields.0.assyAvg", index: "bwFields.assyAvg", sortable: true, searchrules: number_search_rule, searchoptions: search_decimal_options},
                 {label: '藍燈包裝(秒)', width: 80, name: "bwFields.0.packingAvg", index: "bwFields.packingAvg", sortable: true, searchrules: number_search_rule, searchoptions: search_decimal_options},
-                {label: 'M2機種', width: 80, name: "twm2Flag", search: true, searchrules: number_search_rule, searchoptions: search_string_options, edittype: "select", editoptions: {value: "0:N;1:Y"}}
+                {label: 'M2機種', width: 80, name: "twm2Flag", search: true, searchrules: number_search_rule, searchoptions: search_string_options, edittype: "select", editoptions: {value: "0:N;1:Y"}},
+                {label: '自動化人機協作', width: 80, name: "hrcValues", search: false, edittype: "select", editoptions: {
+                        value: "ADAM智能混流生產:ADAM智能混流生產;MTP智能混流生產:MTP智能混流生產;智能混流自動封箱:智能混流自動封箱;OCR影像智能檢測:OCR影像智能檢測",
+                        dataInit: function (elem) {
+                            setTimeout(function () {
+                                $(elem).multiSelect({
+                                    selectableHeader: "<div class='custom-header'>可選欄位</div>",
+                                    selectionHeader: "<div class='custom-header'>已選欄位</div>"
+                                });
+                            }, 150);
+                        },
+                        multiple: true,
+                        defaultValue: 'IN'
+                    }
+                }
             ],
             rowNum: 20,
             rowList: [20, 50, 100],
@@ -438,7 +453,7 @@
                 },
                 position: "last"
             });
-            
+
             grid.navButtonAdd('#pager', {
                 caption: "Export to Excel(PMC)",
                 buttonicon: "ui-icon-disk",
