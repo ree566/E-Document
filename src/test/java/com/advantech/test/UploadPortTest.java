@@ -19,6 +19,7 @@ import com.advantech.webservice.port.MaterialPropertyUploadPort;
 import com.advantech.webservice.port.ModelResponsorUploadPort;
 import com.advantech.webservice.port.SopUploadPort;
 import com.advantech.webservice.port.StandardtimeUploadPort;
+import static com.google.common.collect.Lists.newArrayList;
 import java.util.List;
 import static java.util.stream.Collectors.toList;
 import javax.transaction.Transactional;
@@ -87,9 +88,10 @@ public class UploadPortTest {
 
     @Before
     public void initTestData() {
-//        w = worktimeService.findByModel("TEST-MODEL-2");
+//        w = worktimeService.findByModel("PDCW240A10BGE0-ES");
         worktimes = worktimeService.findAll();
-        worktimes = worktimes.stream().filter(o -> o.getTwm2Flag() == 1).collect(toList());
+//        worktimes = newArrayList(w);
+//        worktimes = worktimes.stream().filter(o -> o.getTwm2Flag() == 1).collect(toList());
     }
 
     @Value("${WORKTIME.UPLOAD.INSERT: true}")
@@ -140,7 +142,7 @@ public class UploadPortTest {
         }
     }
 
-    @Test
+//    @Test
     @Rollback(true)
     public void testFlowUpload() throws Exception {
         List<Worktime> l = worktimes;
@@ -153,7 +155,7 @@ public class UploadPortTest {
     @Autowired
     private SessionFactory factory;
 
-//    @Test
+    @Test
     public void testPartMappingUserUpload() throws Exception {
         List<Worktime> l = this.worktimes;
         l.forEach((worktime) -> {

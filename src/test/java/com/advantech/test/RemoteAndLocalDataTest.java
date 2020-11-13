@@ -46,6 +46,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Restrictions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -108,6 +109,7 @@ public class RemoteAndLocalDataTest {
     @Before
     public void init() {
         Criteria c = sessionFactory.getCurrentSession().createCriteria(Worktime.class);
+//        c.add(Restrictions.eq("modelName", "SES-DM015W-AE"));
         c.setFetchMode("userByEeOwnerId", FetchMode.EAGER);
         c.setFetchMode("userByQcOwnerId", FetchMode.EAGER);
         c.setFetchMode("userBySpeOwnerId", FetchMode.EAGER);
@@ -120,7 +122,7 @@ public class RemoteAndLocalDataTest {
     }
 
     //*************************************
-//    @Test
+    @Test
     public void testResponsor() throws Exception {
         ExcelGenerator generator = new ExcelGenerator();
         List<Map> errors = new ArrayList();
@@ -172,7 +174,7 @@ public class RemoteAndLocalDataTest {
             s2.add(m.getUserNo());
         });
 
-        return s1.containsAll(s2);
+        return s1.containsAll(s2) && s2.containsAll(s1);
     }
 
 //    @Test
@@ -400,7 +402,7 @@ public class RemoteAndLocalDataTest {
         return s;
     }
 
-    @Test
+//    @Test
     public void testStandardTime() throws Exception {
         List<WorktimeAutouploadSetting> settings = this.uploadSettingService.findAll();
         int cnt = 0;

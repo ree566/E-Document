@@ -19,6 +19,7 @@ import com.advantech.service.WorktimeUploadMesService;
 import com.advantech.webservice.port.MaterialPropertyUploadPort;
 import com.advantech.webservice.port.StandardtimeUploadPort;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import static com.google.common.collect.Lists.newArrayList;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
@@ -330,7 +331,7 @@ public class HibernateTest {
 
     @Autowired
     private MaterialPropertyUploadPort materialPropertyUploadPort;
-    
+
 //    @Test
     @Transactional
     @Rollback(false)
@@ -339,7 +340,7 @@ public class HibernateTest {
         List<Worktime> l = session.createCriteria(Worktime.class).add(Restrictions.between("id", 10739, 11172)).list();
         List<WorktimeMaterialPropertyUploadSetting> setting = session.createCriteria(WorktimeMaterialPropertyUploadSetting.class).list();
         assertEquals(l.size(), 434);
-        
+
         materialPropertyUploadPort.initSettings(setting);
 
         for (Worktime w : l) {
@@ -350,7 +351,7 @@ public class HibernateTest {
             }
         }
     }
-    
+
 //    @Test
     @Transactional
     @Rollback(false)
@@ -365,6 +366,49 @@ public class HibernateTest {
 //        w.setHrcTypes(s);
         session.update(w);
         HibernateObjectPrinter.print(ht);
+    }
+
+    @Test
+    @Transactional
+    @Rollback(false)
+    public void testWorktime2() throws Exception {
+        Session session = sessionFactory.getCurrentSession();
+        List<String> models = newArrayList(
+                "MIT-W101-Q24DNB00E",
+                "MIT-W101-Q14DNBF2E",
+                "MIT-W101-Q04DNB00E",
+                "MIT-W101-Q04DNBF2E",
+                "MIT-W101-Q04DEBF2E",
+                "MIT-W101-Q24DNA00E",
+                "MIT-W101-Q04DNA00E",
+                "MIT-W101-Q24DNW00E",
+                "MIT-W101-Q24DNBF2E",
+                "MIT-W101-Q04DNAF2E",
+                "MIT-W101-Q04DNW00E",
+                "MIT-W101-Q04DNWF2E",
+                "MITW101SOR10A0E-ES",
+                "MITW101BOV10A0E-ES",
+                "MIT-W101-Q04DCA00E",
+                "MIT-W101-Q04DCAF2E",
+                "MITW101SRL10A0E-ES",
+                "MITW101LVN10A0E-ES",
+                "MIT-W101-BOV10A0E",
+                "MIT-W101-BOV20A0E",
+                "MIT-W101-LVN10A0E",
+                "MIT-W101-LVN10A1E",
+                "MIT-W101-ZIM10A0E",
+                "MIT-W101-COV20A0E",
+                "MIT-W101-COV20A1E",
+                "MITW101COV20A2E-ES",
+                "MIT-W101-COV20A2E"
+        );
+        List<Worktime> l = session.createCriteria(Worktime.class).add(Restrictions.in("modelName", models)).list();
+
+        for (Worktime w : l) {
+            System.out.println(w.getModelName());
+            w.setMacPrintedQty(2);
+            session.merge(w);
+        }
     }
 
 }
