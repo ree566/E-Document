@@ -119,6 +119,8 @@ public class Worktime implements java.io.Serializable {
     @JsonIgnore
     private List<WorktimeFormulaSetting> worktimeFormulaSettings = new AutoPopulatingList<WorktimeFormulaSetting>(WorktimeFormulaSetting.class);
 
+    private String hrcValues;
+    
     public Worktime() {
     }
 
@@ -760,6 +762,16 @@ public class Worktime implements java.io.Serializable {
 
     public void setBwFields(List<BwField> bwFields) {
         this.bwField = bwFields;
+    }
+    
+    @Size(min = 0, max = 200)
+    @Column(name = "hrc_values", length = 200)
+    public String getHrcValues() {
+        return hrcValues;
+    }
+
+    public void setHrcValues(String hrcValues) {
+        this.hrcValues = hrcValues;
     }
 
 //  Default formula column caculate

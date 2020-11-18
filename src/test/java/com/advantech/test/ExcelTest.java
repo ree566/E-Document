@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Objects;
 import javax.transaction.Transactional;
 import static junit.framework.Assert.*;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
@@ -90,44 +91,71 @@ public class ExcelTest {
         }
     }
 
-//    @Test
+    @Test
     @Transactional
-    @Rollback(true)
+    @Rollback(false)
     public void testFileSyncToDb() throws Exception {
 
-        String syncFilePath = "C:\\Users\\Wei.Cheng\\Desktop\\m6.xlsx";
+        String syncFilePath = "C:\\Users\\MFG.ESOP\\Desktop\\testExcel\\M6_hrc.xlsx";
         try (InputStream is = new FileInputStream(new File(syncFilePath))) {
 
             Session session = sessionFactory.getCurrentSession();
             List<Worktime> l = worktimeService.findAll();
 
             Workbook workbook = WorkbookFactory.create(is);
-            Sheet sheet = workbook.getSheetAt(0);
-            for (int i = 1, maxNumberfRows = sheet.getPhysicalNumberOfRows(); i < maxNumberfRows; i++) {
-                Row row = sheet.getRow(i); // 取得第 i Row
-                if (row != null) {
 
-                    //Because cell_A will auto convert to number if modelName only contains numbers.
-                    //Search will cause exception when not add convert lines
-                    Cell cell_A = CellUtil.getCell(row, CellReference.convertColStringToIndex("A"));
-                    cell_A.setCellType(CellType.STRING);
+            Map<String, List<String>> modelHrcMap = new HashMap();
 
-                    String modelName = ((String) getCellValue(row, "A")).trim();
+            for (int sheetPage = 0; sheetPage <= 1; sheetPage++) {
+                Sheet sheet = workbook.getSheetAt(sheetPage);
+                for (int i = 1, maxNumberfRows = sheet.getPhysicalNumberOfRows(); i < maxNumberfRows; i++) {
+                    Row row = sheet.getRow(i); // 取得第 i Row
+                    if (row != null) {
 
-                    Worktime w = l.stream().filter(o -> Objects.equals(o.getModelName(), modelName)).findFirst().orElse(null);
+                        //Because cell_A will auto convert to number if modelName only contains numbers.
+                        //Search will cause exception when not add convert lines
+                        Cell model_cell = CellUtil.getCell(row, CellReference.convertColStringToIndex("A"));
+                        model_cell.setCellType(CellType.STRING);
 
-                    if (w == null) {
-                        System.out.println("Can't find modelName: " + modelName + " in worktime");
-                        continue;
+                        String modelName = ((String) getCellValue(row, "A")).trim();
+
+                        List<String> hrcValues = modelHrcMap.get(modelName);
+                        if (hrcValues == null) {
+                            hrcValues = new ArrayList();
+                        }
+
+                        if (sheetPage == 0) {
+                            hrcValues.add("AB智能混灌設備");
+                        } else if (sheetPage == 1) {
+                            hrcValues.add("LCD自動檢測設備");
+                        }
+
+                        modelHrcMap.put(modelName.trim(), hrcValues);
+
+//                        Worktime w = l.stream().filter(o -> Objects.equals(o.getModelName(), modelName)).findFirst().orElse(null);
+//                        if (w == null) {
+//                            System.out.println("\tCan't find modelName: " + modelName + " in worktime");
+//                            continue;
+//                        }
+//
+//                        if (getCellValue(row, "D") instanceof Double) {
+//                            BigDecimal v = (new BigDecimal((Double) getCellValue(row, "D")));
+//                            System.out.println("Update modelName: " + modelName);
+//                            w.setPackingLeadTime(v);
+//                            session.merge(w);
+//                        }
                     }
-
-                    w.setWeight(objToBigDecimal(getCellValue(row, "B")));
-                    w.setTolerance(objToBigDecimal(getCellValue(row, "C")));
-
-                    session.update(w);
-
                 }
             }
+            modelHrcMap.forEach((k, v) -> {
+                System.out.println(k);
+                Worktime worktime = l.stream().filter(w -> w.getModelName().equals(k)).findFirst().orElse(null);
+                if (worktime != null) {
+                    worktime.setHrcValues(StringUtils.join(v, ","));
+                    session.merge(worktime);
+//                System.out.printf("ModelName: %s, details: %s\r\n", k, StringUtils.join(v, ";"));
+                }
+            });
         }
     }
 
@@ -168,7 +196,7 @@ public class ExcelTest {
         return o != null && NumberUtils.isNumber(o.toString()) ? new BigDecimal(o.toString()) : null;
     }
 
-    @Test
+//    @Test
     public void testJxlsReader() throws Exception {
         Resource r = resourceLoader.getResource("classpath:worktime.xml");
         String filePath = "C:\\Users\\Wei.Cheng\\Desktop\\複本 worktime-template.xls";

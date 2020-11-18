@@ -52,6 +52,7 @@
 <script src="<c:url value="/js/worktime-setting/column-validator.js" />"></script>
 <script src="<c:url value="/webjars/github-com-johnculviner-jquery-fileDownload/1.4.6/src/Scripts/jquery.fileDownload.js" />"></script>
 <script src="<c:url value="/js/worktime-setting/column-custom-callback.js" />"></script>
+<script src="<c:url value="/js/jquery.multi-select.js" />"></script>
 
 <script>
     $(function () {
@@ -230,7 +231,21 @@
                 {label: '前置工時', name: "assyLeadTime", width: 80, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, formoptions: {elmsuffix: addFormulaCheckbox("assyLeadTime")}, editoptions: {defaultValue: '0'}},
                 {label: '測試工時', name: "test", width: 80, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, formoptions: {elmsuffix: addFormulaCheckbox("test")}, editoptions: {defaultValue: '0'}},
                 {label: 'Create_Date', width: 200, name: "createDate", index: "createDate", formatter: 'date', formatoptions: {srcformat: 'Y-m-d H:i:s A', newformat: 'Y-m-d H:i:s A'}, stype: 'text', searchrules: date_search_rule, searchoptions: search_date_options, align: 'center'},
-                {label: 'Modified_Date', width: 200, name: "modifiedDate", index: "modifiedDate", formatter: 'date', formatoptions: {srcformat: 'Y-m-d H:i:s A', newformat: 'Y-m-d H:i:s A'}, stype: 'text', searchrules: date_search_rule, searchoptions: search_date_options, align: 'center'}
+                {label: 'Modified_Date', width: 200, name: "modifiedDate", index: "modifiedDate", formatter: 'date', formatoptions: {srcformat: 'Y-m-d H:i:s A', newformat: 'Y-m-d H:i:s A'}, stype: 'text', searchrules: date_search_rule, searchoptions: search_date_options, align: 'center'},
+                {label: '自動化人機協作', width: 80, name: "hrcValues", search: false, edittype: "select", editoptions: {
+                        value: "LCD自動檢測設備:LCD自動檢測設備;AB智能混灌設備:AB智能混灌設備",
+                        dataInit: function (elem) {
+                            setTimeout(function () {
+                                $(elem).multiSelect({
+                                    selectableHeader: "<div class='custom-header'>可選欄位</div>",
+                                    selectionHeader: "<div class='custom-header'>已選欄位</div>"
+                                });
+                            }, 150);
+                        },
+                        multiple: true,
+                        defaultValue: 'IN'
+                    }
+                }
             ],
             rowNum: 20,
             rowList: [20, 100, 500],

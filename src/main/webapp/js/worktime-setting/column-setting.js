@@ -65,7 +65,8 @@ var worktimeCol = [
     {name: "businessGroup.id"},
     {name: "workCenter.id"},
     {name: "pending.id"},
-    {name: "pendingTime"}
+    {name: "pendingTime"},
+    {name: "hrcValues"}
 
 ];
 

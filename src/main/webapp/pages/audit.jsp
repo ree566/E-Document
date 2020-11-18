@@ -139,7 +139,8 @@
                     {label: 'A膠溶劑量', name: "materialVolumeA", jsonmap: "0.materialVolumeA", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options},
                     {label: 'B膠溶劑量', name: "materialVolumeB", jsonmap: "0.materialVolumeB", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options},
                     {label: '前置時間', name: "assyLeadTime", jsonmap: "0.assyLeadTime", width: 80, searchrules: number_search_rule, searchoptions: search_decimal_options},
-                    {label: '測試工時', name: "test", jsonmap: "0.test", width: 80, searchrules: number_search_rule, searchoptions: search_decimal_options}
+                    {label: '測試工時', name: "test", jsonmap: "0.test", width: 80, searchrules: number_search_rule, searchoptions: search_decimal_options},
+                    {label: '自動化人機協作', width: 200, name: "hrcValues", jsonmap: "0.hrcValues", index: "hrcValues", align: 'center'}
                 ],
                 rowNum: 100,
                 rowList: [100, 200, 500, 1000],
