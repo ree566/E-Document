@@ -99,7 +99,7 @@ public class StandardTimeUpload {
 
         for (Worktime w : modifiedWorktimes) {
             try {
-                boolean isFieldChanged = auditService.isFieldChangedInTime(Worktime.class, w.getId(), checkField, startDate, endDate);
+                boolean isFieldChanged = auditService.findByFieldChangedInDate(Worktime.class, w.getId(), checkField, startDate, endDate).isEmpty();
                 if (isFieldChanged) {
                     port.update(w);
                 }

@@ -14,14 +14,13 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
 import org.hibernate.envers.query.AuditEntity;
 import org.hibernate.envers.query.AuditQuery;
 import org.hibernate.envers.query.criteria.AuditDisjunction;
 import org.hibernate.envers.query.criteria.AuditProperty;
-import org.hibernate.envers.query.internal.property.EntityPropertyName;
-import org.hibernate.envers.query.internal.property.ModifiedFlagPropertyName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -67,7 +66,7 @@ public class AuditDAO implements AuditAction {
                 .setFirstResult((info.getPage() - 1) * info.getRows());
 
         if (info.getSearchField() != null) {
-            q.add(AuditEntity.property(info.getSearchField()).eq(info.getSearchString()));
+            addSearchQuery(info, q);
         }
 
         String sortOrder = info.getSord();
@@ -121,7 +120,7 @@ public class AuditDAO implements AuditAction {
         }
 
         if (info.getSearchField() != null) {
-            q.add(AuditEntity.property(info.getSearchField()).eq(info.getSearchString()));
+            addSearchQuery(info, q);
         }
 
         info.setMaxNumOfRows(((Long) q.addProjection(AuditEntity.id().count()).getSingleResult()).intValue());
@@ -137,7 +136,7 @@ public class AuditDAO implements AuditAction {
         }
 
         if (info.getSearchField() != null) {
-            q.add(AuditEntity.property(info.getSearchField()).eq(info.getSearchString()));
+            addSearchQuery(info, q);
         }
 
         String sortOrder = info.getSord();
@@ -183,11 +182,14 @@ public class AuditDAO implements AuditAction {
         return q.getSingleResult();
     }
 
-    public boolean isFieldChangedInTime(Class clz, Object id, List<String> fieldNames, Date startDate, Date endDate) {
+    public List findByFieldChangedInDate(Class clz, Object id, List<String> fieldNames, Date startDate, Date endDate) {
         AuditQuery q = getReader().createQuery()
-                .forRevisionsOfEntity(clz, true, false)
-                .add(AuditEntity.id().eq(id))
+                .forRevisionsOfEntity(clz, false, false)
                 .add(AuditEntity.revisionProperty("REVTSTMP").between(startDate.getTime(), endDate.getTime()));
+
+        if (id != null) {
+            q.add(AuditEntity.id().eq(id));
+        }
 
         AuditDisjunction disjunction = AuditEntity.disjunction();
         fieldNames.forEach((fieldName) -> {
@@ -198,7 +200,45 @@ public class AuditDAO implements AuditAction {
 
         List l = q.getResultList();
 
-        return !l.isEmpty();
+        return l;
+    }
+
+    private AuditQuery addSearchQuery(PageInfo info, AuditQuery q) {
+        if (info.getSearchField() != null && info.get_Search() == true) {
+            String searchOper = info.getSearchOper();
+            String searchField = info.getSearchField();
+            String searchString = info.getSearchString();
+            switch (searchOper) {
+                case "in":
+                    String[] param = searchString.split(",");
+                    q.add(AuditEntity.property(searchField).in(param));
+                    break;
+                case "eq":
+                    q.add(AuditEntity.property(searchField).eq(searchString));
+                    break;
+                case "ne":
+                    q.add(AuditEntity.property(searchField).ne(searchString));
+                    break;
+                case "bw":
+                    q.add(AuditEntity.property(searchField).like(searchString, MatchMode.START));
+                    break;
+                case "ew":
+                    q.add(AuditEntity.property(searchField).like(searchString, MatchMode.END));
+                    break;
+                case "cn":
+                    q.add(AuditEntity.property(searchField).like(searchString, MatchMode.ANYWHERE));
+                    break;
+                case "lt":
+                    q.add(AuditEntity.property(searchField).lt(searchString));
+                    break;
+                case "gt":
+                    q.add(AuditEntity.property(searchField).gt(searchString));
+                    break;
+                default:
+                    break;
+            }
+        }
+        return q;
     }
 
 }

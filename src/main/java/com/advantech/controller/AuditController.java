@@ -65,25 +65,41 @@ public class AuditController {
                 if (w == null) {
 //                Search the revision when model not found.
 //                If revision still no info, model is not exist.
-                    PageInfo tempInfo = info.clone();
-                    tempInfo.setSearchField("modelName");
-                    tempInfo.setSearchOper("eq");
-                    tempInfo.setSearchString(modelName);
-                    tempInfo.setMaxNumOfRows(1);
-
+                    PageInfo tempInfo = addModelNameFilterAndGetClone(info, modelName);
                     List<Object[]> auditInfo = auditService.findAll(Worktime.class, tempInfo);
-                    Worktime auditW = (Worktime) auditInfo.get(0)[0];
+                    Worktime auditW = (auditInfo.isEmpty() ? null : (Worktime) auditInfo.get(0)[0]);
                     w = auditW != null ? auditW : null;
 
                 }
                 if (w != null) {
                     l = auditService.findByDate(Worktime.class, w.getId(), info, d1.toDate(), d2.toDate());
+                } else {
+                    PageInfo tempInfo = addModelNameFilterAndGetClone(info, modelName);
+                    tempInfo.setSearchOper("bw");
+                    l = auditService.findByDate(Worktime.class, tempInfo, d1.toDate(), d2.toDate());
                 }
             } else if (id != null) {
                 l = auditService.findByDate(Worktime.class, id, info, d1.toDate(), d2.toDate());
             }
+        } else if (startDate == null && endDate == null) {
+            if (id != null) {
+                l = auditService.findByPrimaryKey(Worktime.class, id);
+            } else if (modelName != null && !"".equals(modelName)) {
+                PageInfo tempInfo = addModelNameFilterAndGetClone(info, modelName);
+                l = auditService.findAll(Worktime.class, tempInfo);
+        }
         }
         return l;
+    }
+
+    private PageInfo addModelNameFilterAndGetClone(PageInfo p, String modelName) throws CloneNotSupportedException {
+        PageInfo tempInfo = p.clone();
+        tempInfo.set_Search(true);
+        tempInfo.setSearchField("modelName");
+        tempInfo.setSearchOper("eq");
+        tempInfo.setSearchString(modelName);
+        tempInfo.setMaxNumOfRows(1);
+        return tempInfo;
     }
 
     @ResponseBody

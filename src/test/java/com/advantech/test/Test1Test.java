@@ -52,12 +52,20 @@ public class Test1Test {
         DateTime d = new DateTime("2017/01/01 00:00:00.00 ");
     }
 
-    @Test
+//    @Test
     public void testReadFile() throws Exception{
         String syncFilePath = "C:\\Users\\Wei.Cheng\\Desktop\\M6 work_time(整理後).xls";
         try (InputStream is = new FileInputStream(new File(syncFilePath))) {
             
         }   
+    }
+    
+    @Test
+    public void testString() throws Exception{
+        String t1 = "‪Yui‪";
+        String t2 = "Yui";
+        
+        System.out.println(t1.equals(t2));
     }
 
 }
