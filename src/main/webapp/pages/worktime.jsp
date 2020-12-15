@@ -185,7 +185,9 @@
                 {label: '壓力鍋', name: "pressureCooker", width: 100, searchrules: {required: true}, searchoptions: search_string_options, edittype: "select", editoptions: {value: "Y:Y;N:N", defaultValue: 'N'}},
                 {label: 'CleanPanel', name: "cleanPanel", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true, required: true}, editoptions: {defaultValue: '0'}},
                 {label: 'PI', name: "pi", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true, required: true}, editoptions: {defaultValue: '0'}},
-                {label: 'Assembly', name: "assy", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true, required: true}, editoptions: {defaultValue: '0'}},
+                {label: '高亮', name: "highBright", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true, required: true}, editoptions: {defaultValue: '0'}},
+                {label: '組裝', name: "assy", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true, required: true}, editoptions: {defaultValue: '0'}},
+                {label: '封/貼前框', name: "bondedSealingFrame", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true, required: true}, editoptions: {defaultValue: '0'}},
                 {label: 'T1', name: "t1", width: 60, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true, required: true}, editoptions: {defaultValue: '0'}},
                 {label: 'T2', name: "t2", width: 60, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true, required: true}, editoptions: {defaultValue: '0'}},
                 {label: 'Packing', name: "packing", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true, required: true}, editoptions: {defaultValue: '0'}},
@@ -289,6 +291,7 @@
         grid.jqGrid('setGroupHeaders', {
             useColSpanStyle: true,
             groupHeaders: [
+                {startColumnName: 'highBright', numberOfColumns: 3, titleText: '<em>Assembly</em>'},
                 {startColumnName: 'seal', numberOfColumns: 2, titleText: '<em>Optical bonding work time</em>'},
                 {startColumnName: 'ce', numberOfColumns: 8, titleText: '<em>外箱Label產品資訊 (1：要印   0：不印)</em>'},
                 {startColumnName: 'nsInOneCollectionBox', numberOfColumns: 1, titleText: '<em>N合1集合箱</em>'},

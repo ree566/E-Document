@@ -66,7 +66,9 @@ var worktimeCol = [
     {name: "workCenter.id"},
     {name: "pending.id"},
     {name: "pendingTime"},
-    {name: "hrcValues"}
+    {name: "hrcValues"},
+    {name: "highBright"},
+    {name: "bondedSealingFrame"}
 
 ];
 

@@ -151,7 +151,7 @@
     <!--Email setting-->
     <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
         <property name="host" value="Relay.advantech.com.tw" />
-        <property name="port" value="25" />
+        <property name="port" value="2526" />
 
         <property name="javaMailProperties">
             <props>
