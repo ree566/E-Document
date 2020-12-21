@@ -25,7 +25,7 @@ var flow_check_logic = {
         {keyword: ["PRE_ASSY"], checkColumn: ["arFilmAttachment", "cleanPanel", "pi"], checkType: "OR", message: not_null_and_zero_message, prmValid: notZeroOrNull}
     ],
     BAB: [
-        {keyword: ["ASSY"], checkColumn: ["assy"], message: not_null_and_zero_message, prmValid: notZeroOrNull},
+        {keyword: ["ASSY"], checkColumn: ["assy", "highBright", "bondedSealingFrame"], message: not_null_and_zero_message, prmValid: notZeroOrNull, checkType: "OR"},
         {keyword: ["SL"], checkColumn: ["seal"], message: not_null_and_zero_message, prmValid: notZeroOrNull},
         {keyword: ["OB"], checkColumn: ["opticalBonding"], message: not_null_and_zero_message, prmValid: notZeroOrNull},
         {keyword: ["T1"], checkColumn: ["t1"], message: not_null_and_zero_message, prmValid: notZeroOrNull},
@@ -46,7 +46,9 @@ var field_check_flow_logic = [
     {checkColumn: {name: "arFilmAttachment", equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: preAssy, keyword: ["PRE_ASSY"]}},
     {checkColumn: {name: "cleanPanel", equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: preAssy, keyword: ["PRE_ASSY"]}},
     {checkColumn: {name: "pi", equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: preAssy, keyword: ["PRE_ASSY"]}},
+    {checkColumn: {name: "highBright", equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: babFlow, keyword: ["ASSY"]}},
     {checkColumn: {name: "assy", equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: babFlow, keyword: ["ASSY"]}},
+    {checkColumn: {name: "bondedSealingFrame", equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: babFlow, keyword: ["ASSY"]}},
     {checkColumn: {name: "seal", equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: babFlow, keyword: ["SL"]}},
     {checkColumn: {name: "opticalBonding", equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: babFlow, keyword: ["OB"]}},
     {checkColumn: {name: "t1", equals: false, value: 0}, description: when_not_empty_or_null, targetColumn: {name: babFlow, keyword: ["T1"]}},
@@ -112,6 +114,7 @@ function appendFieldInfo(field, description, error) {
     error.code = field + description + ' , ' + error.code;
 }
 
+//Field check flow
 function checkFlow(bool, targetColName, targetColVal, keyword) {
     var err = {};
     if (bool) {
@@ -133,6 +136,60 @@ function checkFlow(bool, targetColName, targetColVal, keyword) {
         }
     }
     return err;
+}
+
+//Flow check field
+function flowCheck(logicArrName, flowName, formObj) {
+    var logicArr = flow_check_logic[logicArrName];
+
+    if (logicArr == null) {
+        throw 'logicArr ' + logicArrName + ' not found!';
+    }
+
+    if (flowName == null) {
+        flowName = '';
+    }
+    var validationErrors = [];
+    for (var i = 0; i < logicArr.length; i++) {
+        var logic = logicArr[i];
+        var keyword = logic.keyword;
+        for (var j = 0; j < keyword.length; j++) {
+            if (flowName.indexOf(keyword[j]) > -1) {
+                var checkCol = logic.checkColumn;
+                var checkType = logic.checkType;
+                if (checkType == null) { //And logic check
+                    for (var k = 0; k < checkCol.length; k++) {
+                        var colName = checkCol[k];
+                        if (!logic.prmValid(formObj[colName])) {
+                            validationErrors.push({
+                                field: colName,
+                                code: logic.message
+                            });
+                        }
+                    }
+                } else if (checkType == 'OR') { //Or logic check
+                    var checkFlag = false;
+                    var tempArr = [];
+                    for (var k = 0; k < checkCol.length; k++) {
+                        var colName = checkCol[k];
+                        if (!logic.prmValid(formObj[colName])) {
+                            tempArr.push({
+                                field: colName,
+                                code: logic.message
+                            });
+                            checkFlag = checkFlag || false;
+                        } else {
+                            checkFlag = checkFlag || true;
+                        }
+                    }
+                    if (checkFlag == false) {
+                        validationErrors = validationErrors.concat(tempArr);
+                    }
+                }
+            }
+        }
+    }
+    return validationErrors;
 }
 
 //Model

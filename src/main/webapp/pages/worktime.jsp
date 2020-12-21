@@ -129,6 +129,7 @@
                 errorTextFormatF(checkResult); //field // code
                 return [false, "There are some errors in the entered data. Hover over the error icons for details."];
             } else {
+//                return [false, "saved"];
                 $.extend(postdata, formulaFieldInfo);
                 return [true, "saved"];
             }
@@ -151,6 +152,7 @@
                 if (revision_number != selected_row_revision) {
                     return [false, "欄位版本已經被修改，請重新整理檢視新版本"];
                 } else {
+//                    return [false, "saved"];//For validator debug use
                     $.extend(postdata, formulaFieldInfo);
                     return [true, "saved"];
                 }
@@ -502,53 +504,6 @@
             }
         }
 
-        function flowCheck(logicArr, flowName, formObj) {
-            if (flowName == null) {
-                flowName = '';
-            }
-            var validationErrors = [];
-            for (var i = 0; i < logicArr.length; i++) {
-                var logic = logicArr[i];
-                var keyword = logic.keyword;
-                for (var j = 0; j < keyword.length; j++) {
-                    if (flowName.indexOf(keyword[j]) > -1) {
-                        var checkCol = logic.checkColumn;
-                        var checkType = logic.checkType;
-                        if (checkType == null) { //And logic check
-                            for (var k = 0; k < checkCol.length; k++) {
-                                var colName = checkCol[k];
-                                if (!logic.prmValid(formObj[colName])) {
-                                    validationErrors.push({
-                                        field: colName,
-                                        code: logic.message
-                                    });
-                                }
-                            }
-                        } else if (checkType == 'OR') { //Or logic check
-                            var checkFlag = false;
-                            var tempArr = [];
-                            for (var k = 0; k < checkCol.length; k++) {
-                                var colName = checkCol[k];
-                                if (!logic.prmValid(formObj[colName])) {
-                                    tempArr.push({
-                                        field: colName,
-                                        code: logic.message
-                                    });
-                                    checkFlag = checkFlag || false;
-                                } else {
-                                    checkFlag = checkFlag || true;
-                                }
-                            }
-                            if (checkFlag == false) {
-                                validationErrors = validationErrors.concat(tempArr);
-                            }
-                        }
-                    }
-                }
-            }
-            return validationErrors;
-        }
-
         function addFormulaCheckbox(fieldName) {
             var str = "<input type='checkbox' id='f_" +
                     fieldName + "' name='f_" + fieldName +
@@ -630,14 +585,10 @@
                     babFlowName = babOptions.get(parseInt(postdata["flowByBabFlowId.id"])),
                     testFlowName = testOptions.get(parseInt(postdata["flowByTestFlowId.id"])),
                     pkgFlowName = pkgOptions.get(parseInt(postdata["flowByPackingFlowId.id"]));
-            var preAssyCheckLogic = flow_check_logic["PRE-ASSY"],
-                    babCheckLogic = flow_check_logic.BAB,
-                    testCheckLogic = flow_check_logic.TEST,
-                    pkgCheckLogic = flow_check_logic.PKG;
-            var preAssyCheckMessage = flowCheck(preAssyCheckLogic, preAssyName, postdata);
-            var babCheckMessage = flowCheck(babCheckLogic, babFlowName, postdata);
-            var testCheckMessage = flowCheck(testCheckLogic, testFlowName, postdata);
-            var pkgCheckMessage = flowCheck(pkgCheckLogic, pkgFlowName, postdata);
+            var preAssyCheckMessage = flowCheck("PRE-ASSY", preAssyName, postdata);
+            var babCheckMessage = flowCheck("BAB", babFlowName, postdata);
+            var testCheckMessage = flowCheck("TEST", testFlowName, postdata);
+            var pkgCheckMessage = flowCheck("PKG", pkgFlowName, postdata);
 
             var firstCheckResult = babCheckMessage.concat(testCheckMessage).concat(pkgCheckMessage).concat(preAssyCheckMessage);
 
