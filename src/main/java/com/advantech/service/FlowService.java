@@ -5,7 +5,6 @@
  */
 package com.advantech.service;
 
-import com.advantech.dao.*;
 import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.Flow;
 import com.advantech.model.FlowGroup;
@@ -18,6 +17,8 @@ import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.advantech.repo.FlowRepository;
+import com.advantech.repo.FlowGroupRepository;
 
 /**
  *
@@ -28,58 +29,61 @@ import org.springframework.transaction.annotation.Transactional;
 public class FlowService {
 
     @Autowired
-    private FlowDAO flowDAO;
+    private FlowRepository repo;
 
     @Autowired
-    private FlowGroupDAO flowGroupDAO;
+    private FlowGroupRepository flowGroupRepo;
 
     public List<Flow> findAll() {
-        return flowDAO.findAll();
+        return repo.findAll();
     }
 
     public List<Flow> findAll(PageInfo info) {
-        return flowDAO.findAll(info);
+        return repo.findAll(info);
     }
 
-    public Flow findByPrimaryKey(Object obj_id) {
-        return flowDAO.findByPrimaryKey(obj_id);
+    public Flow findByPrimaryKey(Integer obj_id) {
+        return repo.getOne(obj_id);
     }
 
     public Flow findByFlowName(String flowName) {
-        return flowDAO.findByFlowName(flowName);
+        return repo.findByName(flowName);
     }
 
     public List<Flow> findByFlowGroup(int flowGroupId) {
-        FlowGroup fg = flowGroupDAO.findByPrimaryKey(flowGroupId);
-        return flowDAO.findByFlowGroup(fg);
+        FlowGroup fg = flowGroupRepo.getOne(flowGroupId);
+        return repo.findByFlowGroup(fg);
     }
 
-    public List<Flow> findByParent(Object parent_id) {
+    public List<Flow> findByParent(Integer parent_id) {
         List l = new ArrayList();
-        Flow f = this.findByPrimaryKey(parent_id);
+        Flow f = repo.getOne(parent_id);
         l.addAll(f.getFlowsForTestFlowId());
         return l;
     }
 
     public List<Flow> findFlowWithSub() {
         List<Flow> l = this.findAll();
-        for (Flow f : l) {
+        l.forEach((f) -> {
             Hibernate.initialize(f.getFlowsForTestFlowId());
-        }
+        });
         return l;
     }
 
     public int insert(Flow flow) {
-        return flowDAO.insert(flow);
+        repo.save(flow);
+        return 1;
     }
 
     public int update(Flow flow) {
-        return flowDAO.update(flow);
+        repo.save(flow);
+        return 1;
     }
 
     public int delete(int id) {
         Flow flow = this.findByPrimaryKey(id);
-        return flowDAO.delete(flow);
+        repo.delete(flow);
+        return 1;
     }
 
     public int addSub(int parentFlowId, List<Integer> subFlowId) {

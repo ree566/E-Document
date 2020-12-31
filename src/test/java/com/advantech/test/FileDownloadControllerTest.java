@@ -8,7 +8,6 @@ package com.advantech.test;
 import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.SheetView;
 import com.advantech.model.Worktime;
-import com.advantech.service.SheetViewService;
 import com.advantech.service.WorktimeService;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -51,9 +50,6 @@ public class FileDownloadControllerTest {
     private WebApplicationContext webApplicationContext;
 
     @Autowired
-    private SheetViewService sheetViewService;
-
-    @Autowired
     private WorktimeService worktimeService;
 
 //    @Test
@@ -70,7 +66,7 @@ public class FileDownloadControllerTest {
     public void testAddDataToTemp() throws Exception {
         Resource r = resourceLoader.getResource("classpath:excel-template\\Plant-sp matl status(M3).xls");
         try (InputStream is = r.getInputStream()) {
-            List<SheetView> l = sheetViewService.findAll(new PageInfo().setRows(1));
+            List<SheetView> l = worktimeService.findSheetView();
             try (OutputStream os = new FileOutputStream("C:\\Users\\Wei.Cheng\\Desktop\\object_collection_output.xls")) {
                 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 

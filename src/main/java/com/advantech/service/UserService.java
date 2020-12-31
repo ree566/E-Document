@@ -5,14 +5,17 @@
  */
 package com.advantech.service;
 
-import com.advantech.dao.*;
+import com.advantech.repo.UserRepository;
 import com.advantech.helper.CustomPasswordEncoder;
 import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.Unit;
 import com.advantech.model.User;
 import com.advantech.model.UserProfile;
+import com.advantech.repo.UnitRepository;
+import com.advantech.security.State;
 import java.util.ArrayList;
 import java.util.List;
+import static java.util.stream.Collectors.toList;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,26 +30,32 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
     @Autowired
-    private UserDAO userDAO;
+    private UserRepository repo;
+
+    @Autowired
+    private UnitRepository unitRepo;
 
     public List<User> findAll() {
-        return userDAO.findAll();
+        return repo.findAll();
     }
 
     public List<User> findAll(PageInfo info) {
-        return userDAO.findAll(info);
+        return repo.findAll(info);
     }
 
-    public List<User> findAll(PageInfo info, Unit usersUnit) {
-        return userDAO.findAll(info, usersUnit);
+    public List<User> findAll(PageInfo info, Unit unit) {
+        List<User> l = repo.findAll(info);
+        return l.stream()
+                .filter(u -> u.getUnit().getName().equals(unit.getName()))
+                .collect(toList());
     }
 
-    public User findByPrimaryKey(Object obj_id) {
-        return userDAO.findByPrimaryKey(obj_id);
+    public User findByPrimaryKey(Integer obj_id) {
+        return repo.getOne(obj_id);
     }
 
     public User findByJobnumber(String jobnumber) {
-        User i = userDAO.findByJobnumber(jobnumber);
+        User i = repo.findByJobnumber(jobnumber);
 
         if (i == null) {
             return null;
@@ -75,34 +84,38 @@ public class UserService {
     }
 
     public List<User> findByUnitName(String unitName) {
-        return userDAO.findByUnitName(unitName);
+        Unit u = unitRepo.findFirstByName(unitName);
+        return repo.findByUnit(u);
     }
 
     public List<User> findActive() {
-        return userDAO.findActive();
+        return repo.findByState(State.ACTIVE);
     }
 
     public int insert(User user) {
-        return userDAO.insert(user);
+        repo.save(user);
+        return 1;
     }
 
     public int update(User user) {
-        return userDAO.update(user);
+        repo.save(user);
+        return 1;
     }
 
     public int delete(int id) {
         User user = this.findByPrimaryKey(id);
-        return userDAO.delete(user);
+        repo.delete(user);
+        return 1;
     }
 
     public int resetPsw() {
         CustomPasswordEncoder encoder = new CustomPasswordEncoder();
         List<User> l = this.findAll();
-        for (User user : l) {
+        l.forEach((user) -> {
             String encryptPassord = encoder.encode(user.getJobnumber());
             user.setPassword(encryptPassord);
-            this.update(user);
-        }
+        });
+        repo.saveAll(l);
         return 1;
     }
 

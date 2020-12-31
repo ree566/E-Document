@@ -5,9 +5,8 @@
  */
 package com.advantech.service;
 
-import com.advantech.dao.AuditAction;
-import com.advantech.dao.AuditDAO;
 import com.advantech.jqgrid.PageInfo;
+import com.advantech.dao.AuditDAO;
 import java.util.Date;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,12 +19,11 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @Transactional
-public class AuditService implements AuditAction {
+public class AuditService {
 
     @Autowired
     private AuditDAO auditDAO;
 
-    @Override
     public List findAll(Class clz) {
         return auditDAO.findAll(clz);
     }
@@ -34,22 +32,18 @@ public class AuditService implements AuditAction {
         return auditDAO.findAll(clz, info);
     }
 
-    @Override
     public List findByPrimaryKey(Class clz, Object id) {
         return auditDAO.findByPrimaryKey(clz, id);
     }
 
-    @Override
     public Object findByPrimaryKeyAndVersion(Class clz, Object id, int version) {
         return auditDAO.findByPrimaryKeyAndVersion(clz, id, version);
     }
 
-    @Override
     public List<Number> findRevisions(Class clz, Object id) {
         return auditDAO.findRevisions(clz, id);
     }
 
-    @Override
     public List forEntityAtRevision(Class clz, int version) {
         return auditDAO.forEntityAtRevision(clz, version);
     }

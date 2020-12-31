@@ -5,8 +5,9 @@
  */
 package com.advantech.service;
 
-import com.advantech.dao.*;
+import com.advantech.repo.UserProfileRepository;
 import com.advantech.model.UserProfile;
+import java.util.Arrays;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,34 +22,37 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserProfileService {
 
     @Autowired
-    private UserProfileDAO userProfileDAO;
+    private UserProfileRepository repo;
 
     public List<UserProfile> findAll() {
-        return userProfileDAO.findAll();
+        return repo.findAll();
     }
 
-    public UserProfile findByPrimaryKey(Object obj_id) {
-        return userProfileDAO.findByPrimaryKey(obj_id);
+    public UserProfile findByPrimaryKey(Integer obj_id) {
+        return repo.getOne(obj_id);
     }
 
     public List<UserProfile> findByPrimaryKeys(Integer... ids) {
-        return userProfileDAO.findByPrimaryKeys(ids);
+        return repo.findAllById(Arrays.asList(ids));
     }
 
-    public UserProfile findByType(String typeName) {
-        return userProfileDAO.findByType(typeName);
+    public UserProfile findByType(String name) {
+        return repo.findByName(name);
     }
 
     public int insert(UserProfile userProfile) {
-        return userProfileDAO.insert(userProfile);
+        repo.save(userProfile);
+        return 1;
     }
 
     public int update(UserProfile userProfile) {
-        return userProfileDAO.update(userProfile);
+        repo.save(userProfile);
+        return 1;
     }
 
     public int delete(UserProfile userProfile) {
-        return userProfileDAO.delete(userProfile);
+        repo.delete(userProfile);
+        return 1;
     }
 
 }

@@ -5,7 +5,6 @@
  */
 package com.advantech.service;
 
-import com.advantech.dao.*;
 import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.FlowPermutations;
 import java.util.List;
@@ -13,6 +12,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.advantech.repo.FlowPermutationsRepository;
 
 /**
  *
@@ -23,35 +23,38 @@ import org.springframework.transaction.annotation.Transactional;
 public class FlowPermutationsService {
 
     @Autowired
-    private FlowPermutationsDAO dao;
+    private FlowPermutationsRepository repo;
 
     public List<FlowPermutations> findAll() {
-        return dao.findAll();
+        return repo.findAll();
     }
 
     public List<FlowPermutations> findAll(PageInfo info) {
-        return dao.findAll(info);
+        return repo.findAll(info);
     }
 
-    public FlowPermutations findByPrimaryKey(Object obj_id) {
-        return dao.findByPrimaryKey(obj_id);
+    public FlowPermutations findByPrimaryKey(Integer obj_id) {
+        return repo.getOne(obj_id);
     }
 
     public String findLastCode() {
-        return dao.findLastCode();
+        return repo.findLastCode();
     }
 
     public int insert(FlowPermutations pojo) {
-        return dao.insert(pojo);
+        repo.save(pojo);
+        return 1;
     }
 
     public int update(FlowPermutations pojo) {
-        return dao.update(pojo);
+        repo.save(pojo);
+        return 1;
     }
 
     public int delete(int id) {
-        FlowPermutations f = dao.findByPrimaryKey(id);
-        return dao.delete(f);
+        FlowPermutations f = this.findByPrimaryKey(id);
+        repo.delete(f);
+        return 1;
     }
 
 }

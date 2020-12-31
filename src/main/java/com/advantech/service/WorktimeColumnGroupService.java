@@ -5,9 +5,11 @@
  */
 package com.advantech.service;
 
-import com.advantech.dao.WorktimeColumnGroupDAO;
+import com.advantech.repo.WorktimeColumnGroupRepository;
 import com.advantech.jqgrid.PageInfo;
+import com.advantech.model.Unit;
 import com.advantech.model.WorktimeColumnGroup;
+import com.advantech.repo.UnitRepository;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,35 +25,42 @@ import org.springframework.transaction.annotation.Transactional;
 public class WorktimeColumnGroupService {
 
     @Autowired
-    private WorktimeColumnGroupDAO worktimeColumnGroupDAO;
+    private WorktimeColumnGroupRepository repo;
+    
+    @Autowired
+    private UnitRepository unitRepo;
 
     public List<WorktimeColumnGroup> findAll() {
-        return worktimeColumnGroupDAO.findAll();
+        return repo.findAll();
     }
 
     public List<WorktimeColumnGroup> findAll(PageInfo info) {
-        return worktimeColumnGroupDAO.findAll(info);
+        return repo.findAll(info);
     }
 
-    public WorktimeColumnGroup findByPrimaryKey(Object obj_id) {
-        return worktimeColumnGroupDAO.findByPrimaryKey(obj_id);
+    public WorktimeColumnGroup findByPrimaryKey(Integer obj_id) {
+        return repo.getOne(obj_id);
     }
 
     public WorktimeColumnGroup findByUnit(int obj_id) {
-        return worktimeColumnGroupDAO.findByUnit(obj_id);
+        Unit u = unitRepo.getOne(obj_id);
+        return repo.findByUnit(u);
     }
 
     public int insert(WorktimeColumnGroup w) {
-        return worktimeColumnGroupDAO.insert(w);
+        repo.save(w);
+        return 1;
     }
 
     public int update(WorktimeColumnGroup w) {
-        return worktimeColumnGroupDAO.update(w);
+        repo.save(w);
+        return 1;
     }
 
     public int delete(int id) {
         WorktimeColumnGroup w = this.findByPrimaryKey(id);
-        return worktimeColumnGroupDAO.delete(w);
+        repo.delete(w);
+        return 1;
     }
 
 }

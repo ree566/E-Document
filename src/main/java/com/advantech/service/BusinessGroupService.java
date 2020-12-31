@@ -5,12 +5,12 @@
  */
 package com.advantech.service;
 
-import com.advantech.dao.BusinessGroupDAO;
 import com.advantech.model.BusinessGroup;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.advantech.repo.BusinessGroupRepository;
 
 /**
  *
@@ -21,26 +21,29 @@ import org.springframework.transaction.annotation.Transactional;
 public class BusinessGroupService {
 
     @Autowired
-    private BusinessGroupDAO businessGroupDAO;
+    private BusinessGroupRepository repo;
 
     public List<BusinessGroup> findAll() {
-        return businessGroupDAO.findAll();
+        return repo.findAll();
     }
 
-    public BusinessGroup findByPrimaryKey(Object obj_id) {
-        return businessGroupDAO.findByPrimaryKey(obj_id);
+    public BusinessGroup findByPrimaryKey(Integer obj_id) {
+        return repo.getOne(obj_id);
     }
 
     public int insert(BusinessGroup pojo) {
-        return businessGroupDAO.insert(pojo);
+        repo.save(pojo);
+        return 1;
     }
 
     public int update(BusinessGroup pojo) {
-        return businessGroupDAO.update(pojo);
+        repo.save(pojo);
+        return 1;
     }
 
     public int delete(BusinessGroup pojo) {
-        return businessGroupDAO.delete(pojo);
+        repo.delete(pojo);
+        return 1;
     }
 
 }

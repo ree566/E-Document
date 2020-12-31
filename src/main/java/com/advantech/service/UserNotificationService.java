@@ -5,7 +5,6 @@
  */
 package com.advantech.service;
 
-import com.advantech.dao.*;
 import com.advantech.model.User;
 import com.advantech.model.UserNotification;
 import java.util.ArrayList;
@@ -13,6 +12,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.advantech.repo.UserNotificationRepository;
 
 /**
  *
@@ -23,18 +23,18 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserNotificationService {
 
     @Autowired
-    private UserNotificationDAO userNotificationDAO;
+    private UserNotificationRepository repo;
 
     public List<UserNotification> findAll() {
-        return userNotificationDAO.findAll();
+        return repo.findAll();
     }
 
-    public UserNotification findByPrimaryKey(Object obj_id) {
-        return userNotificationDAO.findByPrimaryKey(obj_id);
+    public UserNotification findByPrimaryKey(Integer obj_id) {
+        return repo.getOne(obj_id);
     }
 
     public List<User> findUsersByNotification(String name) {
-        UserNotification n = userNotificationDAO.findByName(name);
+        UserNotification n = repo.findByName(name);
         List l = new ArrayList();
         if (n != null && n.enabled()) {
             l.addAll(n.getUsers());
@@ -43,15 +43,18 @@ public class UserNotificationService {
     }
 
     public int insert(UserNotification userProfile) {
-        return userNotificationDAO.insert(userProfile);
+        repo.save(userProfile);
+        return 1;
     }
 
     public int update(UserNotification userProfile) {
-        return userNotificationDAO.update(userProfile);
+        repo.save(userProfile);
+        return 1;
     }
 
     public int delete(UserNotification userProfile) {
-        return userNotificationDAO.delete(userProfile);
+        repo.delete(userProfile);
+        return 1;
     }
 
 }

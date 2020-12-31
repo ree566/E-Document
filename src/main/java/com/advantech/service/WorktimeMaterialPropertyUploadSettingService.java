@@ -5,12 +5,12 @@
  */
 package com.advantech.service;
 
-import com.advantech.dao.WorktimeMaterialPropertyUploadSettingDAO;
 import com.advantech.model.WorktimeMaterialPropertyUploadSetting;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.advantech.repo.WorktimeMaterialPropertyUploadSettingRepository;
 
 /**
  *
@@ -21,26 +21,29 @@ import org.springframework.transaction.annotation.Transactional;
 public class WorktimeMaterialPropertyUploadSettingService {
 
     @Autowired
-    private WorktimeMaterialPropertyUploadSettingDAO worktimeAutouploadSettingDAO;
+    private WorktimeMaterialPropertyUploadSettingRepository repo;
 
     public List<WorktimeMaterialPropertyUploadSetting> findAll() {
-        return worktimeAutouploadSettingDAO.findAll();
+        return repo.findAll();
     }
 
-    public WorktimeMaterialPropertyUploadSetting findByPrimaryKey(Object obj_id) {
-        return worktimeAutouploadSettingDAO.findByPrimaryKey(obj_id);
+    public WorktimeMaterialPropertyUploadSetting findByPrimaryKey(Integer obj_id) {
+        return repo.getOne(obj_id);
     }
 
     public int insert(WorktimeMaterialPropertyUploadSetting pojo) {
-        return worktimeAutouploadSettingDAO.insert(pojo);
+        repo.save(pojo);
+        return 1;
     }
 
     public int update(WorktimeMaterialPropertyUploadSetting pojo) {
-        return worktimeAutouploadSettingDAO.update(pojo);
+        repo.save(pojo);
+        return 1;
     }
 
     public int delete(WorktimeMaterialPropertyUploadSetting pojo) {
-        return worktimeAutouploadSettingDAO.delete(pojo);
+        repo.delete(pojo);
+        return 1;
     }
 
 }

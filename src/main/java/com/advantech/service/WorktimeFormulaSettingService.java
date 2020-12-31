@@ -5,8 +5,10 @@
  */
 package com.advantech.service;
 
-import com.advantech.dao.WorktimeFormulaSettingDAO;
+import com.advantech.model.Worktime;
+import com.advantech.repo.WorktimeFormulaSettingRepository;
 import com.advantech.model.WorktimeFormulaSetting;
+import com.advantech.repo.WorktimeRepository;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,30 +24,37 @@ import org.springframework.transaction.annotation.Transactional;
 public class WorktimeFormulaSettingService {
 
     @Autowired
-    private WorktimeFormulaSettingDAO worktimeFormulaSettingDAO;
+    private WorktimeRepository worktimeRepo;
+
+    @Autowired
+    private WorktimeFormulaSettingRepository repo;
 
     public List<WorktimeFormulaSetting> findAll() {
-        return worktimeFormulaSettingDAO.findAll();
+        return repo.findAll();
     }
 
-    public WorktimeFormulaSetting findByPrimaryKey(Object obj_id) {
-        return worktimeFormulaSettingDAO.findByPrimaryKey(obj_id);
+    public WorktimeFormulaSetting findByPrimaryKey(Integer obj_id) {
+        return repo.getOne(obj_id);
     }
 
     public List<WorktimeFormulaSetting> findByWorktime(int worktimeId) {
-        return worktimeFormulaSettingDAO.findByWorktime(worktimeId);
+        Worktime w = worktimeRepo.getOne(worktimeId);
+        return repo.findByWorktime(w);
     }
 
     public int insert(WorktimeFormulaSetting pojo) {
-        return worktimeFormulaSettingDAO.insert(pojo);
+        repo.save(pojo);
+        return 1;
     }
 
     public int update(WorktimeFormulaSetting pojo) {
-        return worktimeFormulaSettingDAO.update(pojo);
+        repo.save(pojo);
+        return 1;
     }
 
     public int delete(WorktimeFormulaSetting pojo) {
-        return worktimeFormulaSettingDAO.delete(pojo);
+        repo.delete(pojo);
+        return 1;
     }
 
 }

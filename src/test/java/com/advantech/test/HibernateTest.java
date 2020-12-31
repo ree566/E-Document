@@ -353,17 +353,10 @@ public class HibernateTest {
     
     @Test
     @Transactional
-    @Rollback(false)
+    @Rollback(true)
     public void testHrcType() throws Exception {
         Session session = sessionFactory.getCurrentSession();
         HrcType ht = session.get(HrcType.class, 1);
-        HrcType ht2 = session.get(HrcType.class, 2);
-        Worktime w = session.get(Worktime.class, 3815);
-        Set s = new HashSet();
-        s.add(ht);
-        s.add(ht2);
-        w.setHrcTypes(s);
-        session.update(w);
         HibernateObjectPrinter.print(ht);
     }
 

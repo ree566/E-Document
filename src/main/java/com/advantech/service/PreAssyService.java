@@ -5,7 +5,7 @@
  */
 package com.advantech.service;
 
-import com.advantech.dao.*;
+import com.advantech.repo.PreAssyRepository;
 import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.PreAssy;
 import java.util.List;
@@ -23,31 +23,34 @@ import org.springframework.transaction.annotation.Transactional;
 public class PreAssyService {
 
     @Autowired
-    private PreAssyDAO preAssyDAO;
+    private PreAssyRepository repo;
 
     public List<PreAssy> findAll() {
-        return preAssyDAO.findAll();
+        return repo.findAll();
     }
 
     public List<PreAssy> findAll(PageInfo info) {
-        return preAssyDAO.findAll(info);
+        return repo.findAll(info);
     }
 
-    public PreAssy findByPrimaryKey(Object obj_id) {
-        return preAssyDAO.findByPrimaryKey(obj_id);
+    public PreAssy findByPrimaryKey(Integer obj_id) {
+        return repo.getOne(obj_id);
     }
 
     public int insert(PreAssy preAssy) {
-        return preAssyDAO.insert(preAssy);
+        repo.save(preAssy);
+        return 1;
     }
 
     public int update(PreAssy preAssy) {
-        return preAssyDAO.update(preAssy);
+        repo.save(preAssy);
+        return 1;
     }
 
     public int delete(int id) {
         PreAssy preAssy = this.findByPrimaryKey(id);
-        return preAssyDAO.delete(preAssy);
+        repo.delete(preAssy);
+        return 1;
     }
 
 }

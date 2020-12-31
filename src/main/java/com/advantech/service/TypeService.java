@@ -5,9 +5,10 @@
  */
 package com.advantech.service;
 
-import com.advantech.dao.*;
+import com.advantech.repo.TypeRepository;
 import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.Type;
+import java.util.Arrays;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,35 +23,38 @@ import org.springframework.transaction.annotation.Transactional;
 public class TypeService {
 
     @Autowired
-    private TypeDAO typeDAO;
+    private TypeRepository repo;
 
     public List<Type> findAll() {
-        return typeDAO.findAll();
+        return repo.findAll();
     }
 
     public List<Type> findAll(PageInfo info) {
-        return typeDAO.findAll(info);
+        return repo.findAll(info);
     }
 
-    public Type findByPrimaryKey(Object obj_id) {
-        return typeDAO.findByPrimaryKey(obj_id);
+    public Type findByPrimaryKey(Integer obj_id) {
+        return repo.getOne(obj_id);
     }
 
     public List<Type> findByPrimaryKeys(Integer... id) {
-        return typeDAO.findByPrimaryKeys(id);
+        return repo.findAllById(Arrays.asList(id));
     }
 
     public int insert(Type type) {
-        return typeDAO.insert(type);
+        repo.save(type);
+        return 1;
     }
 
     public int update(Type type) {
-        return typeDAO.update(type);
+        repo.save(type);
+        return 1;
     }
 
     public int delete(int id) {
         Type type = this.findByPrimaryKey(id);
-        return typeDAO.delete(type);
+        repo.delete(type);
+        return 1;
     }
 
 }

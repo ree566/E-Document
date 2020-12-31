@@ -5,7 +5,7 @@
  */
 package com.advantech.service;
 
-import com.advantech.dao.*;
+import com.advantech.repo.UnitRepository;
 import com.advantech.model.Unit;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,26 +21,29 @@ import org.springframework.transaction.annotation.Transactional;
 public class UnitService {
 
     @Autowired
-    private UnitDAO unitDAO;
+    private UnitRepository repo;
 
     public List<Unit> findAll() {
-        return unitDAO.findAll();
+        return repo.findAll();
     }
 
-    public Unit findByPrimaryKey(Object obj_id) {
-        return unitDAO.findByPrimaryKey(obj_id);
+    public Unit findByPrimaryKey(Integer obj_id) {
+        return repo.getOne(obj_id);
     }
 
     public int insert(Unit unit) {
-        return unitDAO.insert(unit);
+        repo.save(unit);
+        return 1;
     }
 
     public int update(Unit unit) {
-        return unitDAO.update(unit);
+        repo.save(unit);
+        return 1;
     }
 
     public int delete(Unit unit) {
-        return unitDAO.delete(unit);
+        repo.delete(unit);
+        return 1;
     }
 
 }

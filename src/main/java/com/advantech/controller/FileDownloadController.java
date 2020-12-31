@@ -10,7 +10,6 @@ import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.SheetView;
 import com.advantech.model.Worktime;
 import com.advantech.service.AuditService;
-import com.advantech.service.SheetViewService;
 import com.advantech.service.WorktimeService;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
@@ -37,9 +36,6 @@ public class FileDownloadController {
     private static final Logger logger = LoggerFactory.getLogger(FileDownloadController.class);
 
     @Autowired
-    private SheetViewService sheetViewService;
-
-    @Autowired
     private WorktimeService worktimeService;
 
     @Autowired
@@ -56,7 +52,7 @@ public class FileDownloadController {
         info.setSord("asc");
         info.setPage(1); //Override the request param from jqgrid.
 
-        List<SheetView> l = sheetViewService.findAll(info);
+        List<SheetView> l = worktimeService.findSheetView();
         ModelAndView mav = new ModelAndView("ExcelRevenueSummary");
         mav.addObject("revenueData", l);
         return mav;

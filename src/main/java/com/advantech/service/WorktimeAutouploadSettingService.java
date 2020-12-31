@@ -5,8 +5,9 @@
  */
 package com.advantech.service;
 
-import com.advantech.dao.WorktimeAutouploadSettingDAO;
+import com.advantech.repo.WorktimeAutouploadSettingRepository;
 import com.advantech.model.WorktimeAutouploadSetting;
+import java.util.Arrays;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,30 +22,33 @@ import org.springframework.transaction.annotation.Transactional;
 public class WorktimeAutouploadSettingService {
 
     @Autowired
-    private WorktimeAutouploadSettingDAO worktimeAutouploadSettingDAO;
+    private WorktimeAutouploadSettingRepository repo;
 
     public List<WorktimeAutouploadSetting> findAll() {
-        return worktimeAutouploadSettingDAO.findAll();
+        return repo.findAll();
     }
 
-    public WorktimeAutouploadSetting findByPrimaryKey(Object obj_id) {
-        return worktimeAutouploadSettingDAO.findByPrimaryKey(obj_id);
+    public WorktimeAutouploadSetting findByPrimaryKey(Integer obj_id) {
+        return repo.getOne(obj_id);
     }
 
     public List<WorktimeAutouploadSetting> findByPrimaryKeys(Integer... id) {
-        return worktimeAutouploadSettingDAO.findByPrimaryKeys(id);
+        return repo.findAllById(Arrays.asList(id));
     }
 
     public int insert(WorktimeAutouploadSetting pojo) {
-        return worktimeAutouploadSettingDAO.insert(pojo);
+        repo.save(pojo);
+        return 1;
     }
 
     public int update(WorktimeAutouploadSetting pojo) {
-        return worktimeAutouploadSettingDAO.update(pojo);
+        repo.save(pojo);
+        return 1;
     }
 
     public int delete(WorktimeAutouploadSetting pojo) {
-        return worktimeAutouploadSettingDAO.delete(pojo);
+        repo.delete(pojo);
+        return 1;
     }
 
 }

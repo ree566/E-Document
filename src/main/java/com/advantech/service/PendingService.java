@@ -5,7 +5,7 @@
  */
 package com.advantech.service;
 
-import com.advantech.dao.*;
+import com.advantech.repo.PendingRepository;
 import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.Pending;
 import java.util.List;
@@ -23,31 +23,34 @@ import org.springframework.transaction.annotation.Transactional;
 public class PendingService {
 
     @Autowired
-    private PendingDAO pendingDAO;
+    private PendingRepository repo;
 
     public List<Pending> findAll() {
-        return pendingDAO.findAll();
+        return repo.findAll();
     }
 
     public List<Pending> findAll(PageInfo info) {
-        return pendingDAO.findAll(info);
+        return repo.findAll(info);
     }
 
-    public Pending findByPrimaryKey(Object obj_id) {
-        return pendingDAO.findByPrimaryKey(obj_id);
+    public Pending findByPrimaryKey(Integer obj_id) {
+        return repo.getOne(obj_id);
     }
 
     public int insert(Pending pending) {
-        return pendingDAO.insert(pending);
+        repo.save(pending);
+        return 1;
     }
 
     public int update(Pending pending) {
-        return pendingDAO.update(pending);
+        repo.save(pending);
+        return 1;
     }
 
     public int delete(int id) {
         Pending pending = this.findByPrimaryKey(id);
-        return pendingDAO.delete(pending);
+        repo.delete(pending);
+        return 1;
     }
 
 }

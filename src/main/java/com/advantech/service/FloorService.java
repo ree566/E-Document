@@ -5,13 +5,14 @@
  */
 package com.advantech.service;
 
-import com.advantech.dao.*;
 import com.advantech.model.Floor;
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.advantech.repo.FloorRepository;
 
 /**
  *
@@ -22,30 +23,33 @@ import org.springframework.transaction.annotation.Transactional;
 public class FloorService {
 
     @Autowired
-    private FloorDAO floorDAO;
+    private FloorRepository repo;
 
     public List<Floor> findAll() {
-        return floorDAO.findAll();
+        return repo.findAll();
     }
 
-    public Floor findByPrimaryKey(Object obj_id) {
-        return floorDAO.findByPrimaryKey(obj_id);
+    public Floor findByPrimaryKey(Integer obj_id) {
+        return repo.getOne(obj_id);
     }
 
     public List<Floor> findByPrimaryKeys(Integer... id) {
-        return floorDAO.findByPrimaryKeys(id);
+        return repo.findAllById(Arrays.asList(id));
     }
 
     public int insert(Floor floor) {
-        return floorDAO.insert(floor);
+        repo.save(floor);
+        return 1;
     }
 
     public int update(Floor floor) {
-        return floorDAO.update(floor);
+        repo.save(floor);
+        return 1;
     }
 
     public int delete(Floor floor) {
-        return floorDAO.delete(floor);
+        repo.delete(floor);
+        return 1;
     }
 
 }
