@@ -25,7 +25,8 @@ var testProfile_select_event = [
                 "0": ["0", "0", "0", "0"],
                 "M5": ["1500", "25", "500", "3500,3500,3500,3500"],
                 "601": ["1776", "0", "500", "100,500,500,1000,500,100,500,500,1000,500"],
-                "B-B": ["2500", "0", "0", "0"]
+                "B-B": ["2500", "0", "0", "0"],
+                "EKI9528": ["1500", "0", "0", "0"]
             };
             $('input#acwVoltage').val(defaultValue[selectOption][0]);
             $('input#gndValue').val(defaultValue[selectOption][1]);
