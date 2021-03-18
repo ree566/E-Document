@@ -80,7 +80,7 @@ public class WorktimeSelectOptionController {
 
     @Autowired
     private UserNotificationService userNotificationService;
-    
+
     @Autowired
     private StandardWorkReasonQueryPort standardWorkReasonQueryPort;
 
@@ -99,7 +99,11 @@ public class WorktimeSelectOptionController {
     @ResponseBody
     @RequestMapping(value = "/user/{unitName}", method = {RequestMethod.GET})
     protected List<User> getUserOption(@PathVariable(value = "unitName") final String unitName) {
-        return userService.findByUnitName(unitName);
+        List l = userService.findByUnitName(unitName);
+        if ("SPE".equals(unitName) || "EE".equals(unitName)) {
+            l.addAll(userService.findByUnitName("SPE_AND_EE"));
+        }
+        return l;
     }
 
     @ResponseBody
