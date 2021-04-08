@@ -36,6 +36,7 @@ import java.util.stream.Collectors;
 import static java.util.stream.Collectors.toList;
 import javax.activation.UnsupportedDataTypeException;
 import javax.transaction.Transactional;
+import junit.framework.Assert;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import org.apache.commons.beanutils.PropertyUtils;
@@ -52,6 +53,7 @@ import org.hibernate.envers.query.criteria.AuditDisjunction;
 import org.hibernate.envers.query.criteria.AuditProperty;
 import org.hibernate.envers.query.internal.property.EntityPropertyName;
 import org.hibernate.envers.query.internal.property.ModifiedFlagPropertyName;
+import static org.hibernate.validator.internal.util.Contracts.assertTrue;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -81,34 +83,34 @@ import org.springframework.test.context.web.WebAppConfiguration;
 })
 @RunWith(SpringJUnit4ClassRunner.class)
 public class HibernateEnversTest {
-
+    
     private final String regex = "[(\\r\\n|\\n),\" ]+";
-
+    
     @Autowired
     private WorktimeService worktimeService;
-
+    
     @Autowired
     private ResourceLoader resourceLoader;
-
+    
     List<Worktime> l;
-
+    
     @Autowired
     private SessionFactory sessionFactory;
-
+    
     private AuditReader reader;
-
+    
     @Autowired
     private AuditService auditService;
-
+    
     @Before
     public void setUp() {
         Session session = sessionFactory.getCurrentSession();
         reader = AuditReaderFactory.get(session);
     }
-
+    
     public void setUpList() {
         DateTime d = new DateTime("2017-09-26").withHourOfDay(0);
-
+        
         AuditQuery q = reader.createQuery()
                 .forRevisionsOfEntity(Worktime.class, false, false)
                 .addProjection(AuditEntity.id())
@@ -118,10 +120,10 @@ public class HibernateEnversTest {
                         AuditEntity.property("assyPackingSop").hasChanged(),
                         AuditEntity.property("testSop").hasChanged()
                 ));
-
+        
         List<Integer> ids = q.getResultList();
         assertEquals(59, ids.size());
-
+        
         Iterator it = l.iterator();
         while (it.hasNext()) {
             Worktime w = (Worktime) it.next();
@@ -129,7 +131,7 @@ public class HibernateEnversTest {
                 it.remove();
             }
         }
-
+        
         assertEquals(4663, l.size());
     }
 
@@ -139,29 +141,29 @@ public class HibernateEnversTest {
     public void testHibernateQuery() throws Exception {
         String inputLocation = "C:\\Users\\Wei.Cheng\\Desktop\\testXls\\M3SOP-ok.xls";
         String outputFile = "C:\\Users\\Wei.Cheng\\Desktop\\worktime-template.xls";
-
+        
         String tempfile = "worktime-template.xls";
         Resource r = resourceLoader.getResource("classpath:excel-template\\" + tempfile);
-
+        
         try (InputStream inputStream = r.getInputStream()) {
             try (FileOutputStream outputStream = new FileOutputStream(outputFile); FileInputStream excelFile = new FileInputStream(new File(inputLocation))) {
                 XlsWorkBook workbook = new XlsWorkBook(excelFile);
                 assertNotNull(workbook);
                 XlsWorkSheet sheet = workbook.getSheet("Sheet1");
                 assertNotNull(sheet);
-
+                
                 Map<String, Set> tempSopInfos = this.generateSopInfos(sheet);
-
+                
                 for (Worktime w : l) {
                     w.setAssyPackingSop(combineListInfo(tempSopInfos.get(w.getModelName() + "_ASSY")));
                     w.setTestSop(combineListInfo(tempSopInfos.get(w.getModelName() + "_T1")));
                 }
-
+                
                 this.outputFile(l, inputStream, outputStream);
             }
         }
     }
-
+    
     @Transactional
     @Rollback(false)
 //    @Test
@@ -181,11 +183,11 @@ public class HibernateEnversTest {
             this.mergeData(l);
         }
     }
-
+    
     private void mergeData(List<Worktime> l) throws Exception {
         worktimeService.merge(l);
     }
-
+    
     private Map<String, Set> generateSopInfos(XlsWorkSheet sheet) throws UnsupportedDataTypeException {
         Map<String, Set> tempSopInfos = new HashMap();
         for (int row = 0, rowCount = sheet.getRowCount(); row < rowCount; row++) {
@@ -203,7 +205,7 @@ public class HibernateEnversTest {
         }
         return tempSopInfos;
     }
-
+    
     private void addInfoIntoSopTemp(Map<String, Set> tempSopInfos, String key, String sop) {
         Set exist = tempSopInfos.get(key);
         if (exist == null) {
@@ -212,7 +214,7 @@ public class HibernateEnversTest {
         exist.add(sop);
         tempSopInfos.put(key, exist);
     }
-
+    
     private String combineListInfo(Set<String> l) {
         if (l == null || l.isEmpty()) {
             return null;
@@ -227,33 +229,33 @@ public class HibernateEnversTest {
         }
         return temp;
     }
-
+    
     public Worktime findMatches(final String modelName) {
         return Iterables.find(l, (Worktime input) -> modelName.replaceAll(regex, "").trim().equals(input.getModelName().replaceAll(regex, "").trim()), null);
     }
-
+    
     private void outputFile(List data, InputStream is, OutputStream os) throws IOException {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-
+        
         Context context = new Context();
         context.putVar("worktimes", data);
         context.putVar("dateFormat", dateFormat);
-
+        
         Transformer transformer = TransformerFactory.createTransformer(is, os);
 //        transformer.getTransformationConfig().setExpressionEvaluator(new JexlExpressionEvaluatorNoThreadLocal());
         JexlExpressionEvaluator evaluator = (JexlExpressionEvaluator) transformer.getTransformationConfig().getExpressionEvaluator();
 
         //避免Jexl2在javabean值為null時會log
         evaluator.getJexlEngine().setSilent(true);
-
+        
         JxlsHelper helper = JxlsHelper.getInstance();
         helper.processTemplate(context, transformer);
     }
-
+    
     public String replaceString(String st) {
         return st.replaceAll(regex, "\n");
     }
-
+    
     public String replaceWhenNull(String st) {
         return st == null ? "" : st;
     }
@@ -263,13 +265,13 @@ public class HibernateEnversTest {
     @Rollback(true)
     public void testModifyFlag() {
         Class c = Worktime.class;
-
+        
         AuditQuery q = reader.createQuery()
                 .forRevisionsOfEntity(c, false, false)
                 .add(AuditEntity.id().eq(17991))
                 .addProjection(AuditEntity.revisionNumber())
                 .addProjection(AuditEntity.id());
-
+        
         Field fields[] = c.getDeclaredFields();
         for (Field field : fields) {
             if (!Collection.class.isAssignableFrom(field.getType()) && !field.isAnnotationPresent(javax.persistence.JoinColumn.class)) {
@@ -284,9 +286,9 @@ public class HibernateEnversTest {
                 }
             }
         }
-
+        
         List result = q.getResultList();
-
+        
         HibernateObjectPrinter.print(result);
     }
 
@@ -304,43 +306,43 @@ public class HibernateEnversTest {
             When 16:00, time range currentDay 11:00 to currentDay 16:00
             Don't send mail when nothing has changed
          */
-
+        
         DateTime now = new DateTime().withMinuteOfHour(0).withSecondOfMinute(0);
         int currentHour = now.getHourOfDay();
-
+        
         DateTimeFormatter dtfOut = DateTimeFormat.forPattern("yyyy/M/d HH:mm:SS");
         DateTime sD = currentHour <= 11 ? now.minusDays(1).withHourOfDay(16) : now.withHourOfDay(11);
         DateTime eD = currentHour <= 11 ? now.withHourOfDay(11) : now.withHourOfDay(16);
-
+        
         AuditQuery q = reader.createQuery()
                 .forRevisionsOfEntity(Worktime.class, false, false);
-
+        
         AuditDisjunction disjunction = AuditEntity.disjunction();
-
+        
         for (String field : checkFields) {
             disjunction.add(AuditEntity.property(field).hasChanged());
         }
-
+        
         q.add(disjunction);
         q.add(AuditEntity.revisionType().eq(RevisionType.MOD));
         q.add(AuditEntity.revisionProperty("REVTSTMP").between(sD.getMillis(), eD.getMillis()));
-
+        
         List<Object[]> ws = q.getResultList();
-
+        
         if (ws.isEmpty()) {
             System.out.println("Nothing has changed");
         }
-
+        
         for (int i = 0; i < ws.size(); i++) {
             System.out.println("------------------");
             Object[] triplet = ws.get(i);
-
+            
             Worktime entity = (Worktime) triplet[0];
             AuditedRevisionEntity revisionEntity = (AuditedRevisionEntity) triplet[1];
             RevisionType revisionType = (RevisionType) triplet[2];
-
+            
             Worktime prevEntity = this.getPreviousVersion(entity, revisionEntity.getREV());
-
+            
             System.out.printf("ModelName: %s, AUD: %d, ChangeBy: %s \r\n", entity.getModelName(), revisionEntity.getREV(), revisionEntity.getUsername());
             for (String field : checkFields) {
                 try {
@@ -362,25 +364,25 @@ public class HibernateEnversTest {
                 } catch (Exception ex) {
                     System.out.println(ex);
                 }
-
+                
             }
             System.out.println("------------------");
         }
     }
-
+    
     private boolean equalsWithId(Object o1, Object o2) throws Exception {
         return Objects.equals(PropertyUtils.getProperty(o1, "id"), PropertyUtils.getProperty(o2, "id"));
     }
-
+    
     private Worktime getPreviousVersion(Worktime entity, int current_rev) {
-
+        
         Number prior_revision = (Number) reader.createQuery()
                 .forRevisionsOfEntity(entity.getClass(), false, true)
                 .addProjection(AuditEntity.revisionNumber().max())
                 .add(AuditEntity.id().eq(entity.getId()))
                 .add(AuditEntity.revisionNumber().lt(current_rev))
                 .getSingleResult();
-
+        
         if (prior_revision != null) {
             return reader.find(entity.getClass(), entity.getId(), prior_revision);
         } else {
@@ -396,7 +398,7 @@ public class HibernateEnversTest {
                 .forRevisionsOfEntity(Worktime.class, false, false)
                 .add(AuditEntity.id().eq(9753));
     }
-
+    
     @Autowired
     private StandardtimeUploadPort port;
 
@@ -408,14 +410,14 @@ public class HibernateEnversTest {
                 .forEntitiesAtRevision(Worktime.class, 13208)
                 .add(AuditEntity.id().eq(9295))
                 .getSingleResult();
-
+        
         assertNotNull(w);
-
+        
         port.initSettings();
         port.update(w);
     }
 
-    @Test
+//    @Test
     @Transactional
     @Rollback(true)
     public void testRevisionQuery2() throws Exception {
@@ -427,7 +429,7 @@ public class HibernateEnversTest {
                 .add(AuditEntity.property("modelName").like(seriseModel, MatchMode.START))
                 .add(AuditEntity.revisionType().eq(RevisionType.DEL))
                 .getResultList();
-
+        
         l = reader.createQuery()
                 .forRevisionsOfEntity(Worktime.class, false, false)
                 .addProjection(AuditEntity.property("modelName"))
@@ -437,8 +439,59 @@ public class HibernateEnversTest {
                 .add(AuditEntity.not(AuditEntity.id().in(del)))
                 .addOrder(AuditEntity.property("modelName").asc())
                 .getResultList();
-
+        
         HibernateObjectPrinter.print(l);
     }
+    
+    @Test
+    @Transactional
+    @Rollback(false)
+    public void testRevisionQuery3() throws Exception {
+        List<Worktime> history = auditService.findModifiedAtRevision(Worktime.class, 29032);
+        List<Worktime> revertTargetData = auditService.forEntityAtRevision(Worktime.class, 29031);
+        
+        Session session = sessionFactory.getCurrentSession();
+        
+        List<Worktime> dataInDb = session.createCriteria(Worktime.class).list();
+        
+        HibernateObjectPrinter.print(history.size());
+        HibernateObjectPrinter.print(revertTargetData.size());
 
+        assertTrue(history.size() == 688, "Size not equals 688");
+        assertTrue(revertTargetData.size() != 1, "revertTargetData Size equals 1");
+        
+        history.forEach(d -> {
+            Worktime w = dataInDb.stream()
+                    .filter(wk -> wk.getId() == d.getId()).findFirst()
+                    .orElse(null);
+            
+            Worktime revertTarget = revertTargetData.stream()
+                    .filter(r -> r.getId() == d.getId()).findFirst()
+                    .orElse(null);
+            
+            if (w != null && revertTarget != null) {
+                w.setAssy(revertTarget.getAssy());
+                w.setT1(revertTarget.getT1());
+                w.setT2(revertTarget.getT2());
+                w.setT3(revertTarget.getT3());
+                w.setT4(revertTarget.getT4());
+                w.setPacking(revertTarget.getPacking());
+                
+                w.setDefaultProductWt();
+                w.setDefaultSetupTime();
+                w.setDefaultAssyToT1();
+                w.setDefaultT2ToPacking();
+                w.setDefaultAssyKanbanTime();
+                w.setDefaultAssyStation();
+                w.setDefaultPackingKanbanTime();
+                w.setDefaultPackingStation();
+                w.setDefaultCleanPanelAndAssembly();
+                
+                HibernateObjectPrinter.print(w.getModelName());
+                session.merge(w);
+            }
+        });
+        HibernateObjectPrinter.print(l);
+    }
+    
 }

@@ -293,12 +293,12 @@ function checkWhenBiSampling(data, babFlowName) {
 
 function checkMacFieldIsValid(data) {
     var validationErrors = [];
-    if (data["macTotalQty"] < data["macPrintedQty"]) {
-        validationErrors.push({
-            field: "macTotalQty",
-            code: "Field Total Qty must large than Printed Qty"
-        });
-    }
+//    if (data["macTotalQty"] < data["macPrintedQty"]) {
+//        validationErrors.push({
+//            field: "macTotalQty",
+//            code: "Field Total Qty must large than Printed Qty"
+//        });
+//    }
     return validationErrors;
 }
 
