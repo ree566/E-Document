@@ -6,6 +6,7 @@
 package com.advantech.webservice.unmarshallclass;
 
 import java.io.Serializable;
+import java.util.Objects;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -50,6 +51,39 @@ public class SopInfo implements Serializable {
 
     public void setSopPageNo(String sopPageNo) {
         this.sopPageNo = sopPageNo;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 79 * hash + Objects.hashCode(this.sopName);
+        hash = 79 * hash + Objects.hashCode(this.stationNo);
+        hash = 79 * hash + Objects.hashCode(this.sopPageNo);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final SopInfo other = (SopInfo) obj;
+        if (!Objects.equals(this.sopName, other.sopName)) {
+            return false;
+        }
+        if (!Objects.equals(this.stationNo, other.stationNo)) {
+            return false;
+        }
+        if (!Objects.equals(this.sopPageNo, other.sopPageNo)) {
+            return false;
+        }
+        return true;
     }
 
 }

@@ -24,12 +24,14 @@ import com.advantech.webservice.unmarshallclass.MaterialFlow;
 import com.advantech.webservice.unmarshallclass.MaterialProperty;
 import com.advantech.webservice.unmarshallclass.MaterialPropertyUserPermission;
 import com.advantech.webservice.unmarshallclass.MaterialPropertyValue;
+import com.advantech.webservice.unmarshallclass.SopInfo;
 import com.advantech.webservice.unmarshallclass.StandardWorkTime;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import static java.util.stream.Collectors.toList;
 import javax.transaction.Transactional;
 import static junit.framework.Assert.*;
@@ -101,14 +103,19 @@ public class QueryPortTest {
 //        w = worktimeService.findByPrimaryKey(5352);
     }
 
-//    @Test
+    @Test
     public void testSopQueryPort() throws Exception {
-        Worktime worktime = worktimeService.findByModel("POCW2431903-T");
-        sopQueryPort.setTypes("ASSY", "T1");
-        List l = sopQueryPort.query(worktime);
-        assertEquals(4, l.size());
-
-        HibernateObjectPrinter.print(l);
+        Worktime worktime = worktimeService.findByModel("UTC-532CH-P00E");
+        sopQueryPort.setTypes("測試");
+        List<SopInfo> l = sopQueryPort.query(worktime);
+        l.removeIf(s -> "".equals(s.getSopName()) || s.getSopName().contains(","));
+//        assertEquals(4, l.size());
+//        l = l.stream().sorted(Comparator.comparing(SopInfo::getSopName)).distinct().collect(toList());
+//        l.forEach(s -> {
+//            System.out.println(s.getSopName());
+//        });
+        
+        System.out.println(l.stream().sorted(Comparator.comparing(SopInfo::getSopName)).distinct().map(n -> n.getSopName()).collect(Collectors.joining(",")));
     }
 
 //    @Test
@@ -179,7 +186,7 @@ public class QueryPortTest {
         assertEquals("N", value.getValue());
     }
 
-    @Test
+//    @Test
     @Rollback(false)
     public void testRetriveMatPropertyValue() throws Exception {
         Session session = sessionFactory.getCurrentSession();

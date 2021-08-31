@@ -8,8 +8,11 @@ package com.advantech.test;
 import com.advantech.excel.WorktimeJxlsModel;
 import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.model.Type;
+import com.advantech.model.User;
 import com.advantech.model.Worktime;
+import com.advantech.service.UserService;
 import com.advantech.service.WorktimeService;
+import com.advantech.webservice.port.ModelResponsorUploadPort;
 import com.advantech.webservice.port.SopUploadPort;
 import com.google.gson.Gson;
 import java.io.File;
@@ -20,6 +23,7 @@ import java.util.Map;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import javax.transaction.Transactional;
 import static junit.framework.Assert.*;
 import org.apache.commons.lang3.StringUtils;
@@ -64,6 +68,9 @@ public class ExcelTest {
 
     @Autowired
     private WorktimeService worktimeService;
+    
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private SessionFactory sessionFactory;
@@ -94,23 +101,26 @@ public class ExcelTest {
 
     @Autowired
     private SopUploadPort sopPort;
+    
+    @Autowired
+    private ModelResponsorUploadPort mappingUserPort;
 
     @Test
     @Transactional
     @Rollback(false)
     public void testFileSyncToDb() throws Exception {
 
-        String syncFilePath = "C:\\Users\\MFG.ESOP\\Desktop\\自動化可導入機種.xlsx";
+        String syncFilePath = "C:\\Users\\MFG.ESOP\\Desktop\\PN_0824.xls";
         try (InputStream is = new FileInputStream(new File(syncFilePath))) {
 
             Session session = sessionFactory.getCurrentSession();
             List<Worktime> l = worktimeService.findAll();
 
             Workbook workbook = WorkbookFactory.create(is);
+            
+            List<User> users = userService.findByUnitName("MPM");
 
-            Map<String, List<String>> modelHrcMap = new HashMap();
-
-            for (int sheetPage = 0; sheetPage <= 2; sheetPage++) {
+            for (int sheetPage = 0; sheetPage <= 0; sheetPage++) {
                 Sheet sheet = workbook.getSheetAt(sheetPage);
                 for (int i = 1, maxNumberfRows = sheet.getPhysicalNumberOfRows(); i < maxNumberfRows; i++) {
                     Row row = sheet.getRow(i); // 取得第 i Row
@@ -123,45 +133,22 @@ public class ExcelTest {
 
                         String modelName = ((String) getCellValue(row, "A")).trim();
 
-                        List<String> hrcValues = modelHrcMap.get(modelName);
-                        if (hrcValues == null) {
-                            hrcValues = new ArrayList();
+                        Worktime w = l.stream().filter(o -> Objects.equals(o.getModelName(), modelName)).findFirst().orElse(null);
+                        if (w == null) {
+                            System.out.println("\tCan't find modelName: " + modelName + " in worktime");
+                            continue;
                         }
+                        
+                        String userName = ((String) getCellValue(row, "D")).trim();
+                        User user = users.stream().filter(u -> u.getUsername().equals(userName)).findFirst().orElse(null);
+                        w.setUserByMpmOwnerId(user);
+                        session.merge(w);
+                        mappingUserPort.update(w);
+                        System.out.println("Update modelName: " + modelName);
 
-                        if (sheetPage == 0) {
-                            hrcValues.add("MTP智能混流生產");
-                        } else if (sheetPage == 1) {
-                            hrcValues.add("智能混流自動封箱");
-                        } else if (sheetPage == 2) {
-                            hrcValues.add("ADAM智能混流生產");
-                        }
-
-                        modelHrcMap.put(modelName.trim(), hrcValues);
-
-//                        Worktime w = l.stream().filter(o -> Objects.equals(o.getModelName(), modelName)).findFirst().orElse(null);
-//                        if (w == null) {
-//                            System.out.println("\tCan't find modelName: " + modelName + " in worktime");
-//                            continue;
-//                        }
-//
-//                        if (getCellValue(row, "D") instanceof Double) {
-//                            BigDecimal v = (new BigDecimal((Double) getCellValue(row, "D")));
-//                            System.out.println("Update modelName: " + modelName);
-//                            w.setPackingLeadTime(v);
-//                            session.merge(w);
-//                        }
                     }
                 }
             }
-            modelHrcMap.forEach((k, v) -> {
-                System.out.println(k);
-                Worktime worktime = l.stream().filter(w -> w.getModelName().equals(k)).findFirst().orElse(null);
-                if (worktime != null) {
-                    worktime.setHrcValues(StringUtils.join(v, ","));
-                    session.merge(worktime);
-//                System.out.printf("ModelName: %s, details: %s\r\n", k, StringUtils.join(v, ";"));
-                }
-            });
         }
     }
 

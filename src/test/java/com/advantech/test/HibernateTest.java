@@ -7,6 +7,7 @@ package com.advantech.test;
 
 import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.jqgrid.PageInfo;
+import com.advantech.model.Flow;
 import com.advantech.model.HrcType;
 import com.advantech.model.Worktime;
 import com.advantech.model.WorktimeAutouploadSetting;
@@ -16,6 +17,7 @@ import com.advantech.service.AuditService;
 import com.advantech.service.WorktimeAutouploadSettingService;
 import com.advantech.service.WorktimeService;
 import com.advantech.service.WorktimeUploadMesService;
+import com.advantech.webservice.port.FlowUploadPort;
 import com.advantech.webservice.port.MaterialPropertyUploadPort;
 import com.advantech.webservice.port.StandardtimeUploadPort;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -368,7 +370,7 @@ public class HibernateTest {
         HibernateObjectPrinter.print(ht);
     }
 
-    @Test
+//    @Test
     @Transactional
     @Rollback(false)
     public void testWorktime2() throws Exception {
@@ -409,6 +411,56 @@ public class HibernateTest {
             w.setMacPrintedQty(2);
             session.merge(w);
         }
+    }
+
+    @Autowired
+    private FlowUploadPort flowPort;
+
+    @Test
+    @Transactional
+    @Rollback(false)
+    public void testWorktime3() throws Exception {
+        Session session = sessionFactory.getCurrentSession();
+
+        List<String> models = newArrayList(
+                "SEP-ACBPI3-AE", "SEP-ACBPIA-AE", "SEP-ACBPP5-AE", "SEP-ACBU10-AE", "SEP-AID1TP-AE", "SEP-AID2R2-AE", "SEP-AID2R4-AE",
+                "SEP-AID2U3-AE", "SEP-AID4R2-AE", "SEP-AID4R4-AE", "SEP-AIDAUD-AE", "SEP-AIDDIO-AE", "SEP-AIDFCA-AE", "SEP-AIDFPB-AE",
+                "SEP-AIDGAN-AE", "SEP-AIDPOE-AE", "SEP-AIDRAM-AE", "SEP-AMEAPC-AE", "SEP-AMEDPC-AE", "SEP-AMEFFT-AE", "SEP-AMEFKT-AE",
+                "SEP-AMEMEH-AE", "SEP-AMEMHD-AE", "SEP-AMEP10-AE", "SEP-AMEP16-AE", "SEP-AMEP18-AE", "SEP-AMEP21-AE", "SEP-AMEV10-AE",
+                "SEP-AMEV15-AE", "SEP-AMEVS2-AE", "SEP-AMEVS4-AE", "SEP-AMFSTN-AE", "SEP-AMGR15-AE", "SEP-AMGW10-AE", "SEP-AMGW15-AE",
+                "SEP-AMGW19-AE", "SEP-AMGW22-AE", "SEP-AOSW81-AE", "SEP-AOSWN7-AE", "SEP-AOSWS7-AE", "SEP-APSA15-AE", "SEP-APSA18-AE",
+                "SEP-APSA60-AE", "SEP-APSUBT-AE", "SEP-ASRC16-AE", "SEP-ASRC32-AE", "SEP-ASRH1T-AE", "SEP-ASRH50-AE", "SEP-ASRS24-AE",
+                "SEP-ASRS80-AE", "SEP-ASRU32-AE", "SES-ACBMOK-AE", "SES-ACBPI3-AE", "SES-ACBPIA-AE", "SES-ACBPP5-AE", "SES-ACBU10-AE",
+                "SES-AID2R2-AE", "SES-AID2R4-AE", "SES-AID2U3-AE", "SES-AID4R2-AE", "SES-AID4R4-AE", "SES-AIDAUD-AE", "SES-AIDC5M-AE",
+                "SES-AIDDIO-AE", "SES-AIDFCA-AE", "SES-AIDFPB-AE", "SES-AIDGAN-AE", "SES-AIDRAM-AE", "SES-AIDWAN-AE", "SES-AMEFKT-AE",
+                "SES-AMEMBD-AE", "SES-AMEMEH-AE", "SES-AMEMHD-AE", "SES-AMEMPB-AE", "SES-AMEMPS-AE", "SES-AMEP10-AE", "SES-AMEP16-AE",
+                "SES-AMEP18-AE", "SES-AMEP21-AE", "SES-AMEV10-AE", "SES-AMEV15-AE", "SES-AMEVS2-AE", "SES-AMEVS4-AE", "SES-APSA15-AE",
+                "SES-APSA18-AE", "SES-APSA60-AE", "SES-APSUBT-AE", "SES-ASRC32-AE", "SES-ASRH1T-AE", "SES-ASRH50-AE", "SES-ASRS24-AE",
+                "SES-ASRS80-AE", "SES-ASRU32-AE", "SES-PS318W-B081A", "SES-AIDLDR-AE", "SES-AIDLDT-AE", "SES-AIDLDV-AE", "SEP-AIDLDR-AE",
+                "SEP-AIDLDT-AE", "SEP-AIDLDV-AE", "SES-ASRM32-AE", "SES-ASRM64-AE", "SES-AIDTPM-AE", "SES-AMEV12-AE", "SES-ASRM25-AE",
+                "SEP-AIDTPM-AE", "SEP-AMEV12-AE", "SEP-ASRM25-AE", "SEP-ASRM32-AE", "SEP-ASRM64-AE", "SEP-AOSW1E-AE", "SEP-AOSW1P-AE",
+                "SEP-AOSW1U-AE", "SEP-AIDDVA-AE", "SEP-AIDDVI-AE", "SES-AIDDVA-AE", "SES-AIDDVI-AE", "SES-AID4GE-AE", "SES-AIDAUM-AE",
+                "SES-AMEMBO-AE", "SEP-AID4GE-AE", "SEP-AID4GU-AE", "SEP-AIDAUM-AE", "SEP-AMEP12-AE", "SES-AMEP12-AE", "SES-AMEHDK-AE",
+                "SEP-AMEHDK-AE", "SEP-ASRC16-BE", "SES-AID4GU-AE", "SEP-ASWMCF-AE", "SES-ASWMCF-AE", "SEP-AIDETM-AE", "SEP-ACBMCK-AE",
+                "SES-ACBMCK-AE", "SES-ASRC16-AE", "SEP-AMGR12-AE", "SEP-AMGW12-AE", "SEP-ASRS12-AE", "SEP-ASRS25-AE", "SEP-AC4G5M-AE",
+                "SEP-AMEDIN-AE", "SEP-ASRM12-AE", "SES-ABCTPM-AE", "SES-AC4G5M-AE", "SES-ACBWAN-AE", "SES-AIDWA2-AE", "SES-AMEBSC-AE",
+                "SES-AMEDIN-AE", "SES-ASDI16-AE", "SES-ASDI64-AE", "SES-ASRM12-AE", "SEP-BMI121-B0B1AE", "SEP-AID2M2-AE", "SEP-ACBWAN-AE",
+                "SEP-AID8AI-AE", "SES-AID2M2-AE", "SES-AID8AI-AE", "SES-AID1TP-AE", "SES-APSA60-BE", "SEP-APSA60-BE"
+        );
+
+        List<Worktime> l = session.createCriteria(Worktime.class).add(Restrictions.in("modelName", models)).list();
+
+        Flow flow = session.get(Flow.class, 246);
+        for (Worktime w : l) {
+            System.out.println(w.getModelName());
+
+            w.setFlowByPackingFlowId(flow);
+            w.setWeight(BigDecimal.ONE);
+
+            session.merge(w);
+            flowPort.update(w);
+        }
+
     }
 
 }

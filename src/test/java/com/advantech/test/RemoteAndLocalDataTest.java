@@ -6,7 +6,6 @@
 package com.advantech.test;
 
 import com.advantech.excel.ExcelGenerator;
-import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.helper.SpringExpressionUtils;
 import com.advantech.model.User;
 import com.advantech.model.Worktime;
@@ -46,7 +45,6 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Restrictions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

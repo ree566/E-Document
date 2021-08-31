@@ -59,6 +59,9 @@ public class User implements UserDetails, Comparable<User> {
     private Set<Worktime> worktimesForSpeOwnerId = new HashSet<Worktime>(0);
 
     @JsonIgnore
+    private Set<Worktime> worktimesForMpmOwnerId = new HashSet<Worktime>(0);
+
+    @JsonIgnore
     private Set<UserNotification> userNotifications = new HashSet<UserNotification>(0);
 
     private boolean enabled;
@@ -203,6 +206,15 @@ public class User implements UserDetails, Comparable<User> {
 
     public void setWorktimesForSpeOwnerId(Set<Worktime> worktimesForSpeOwnerId) {
         this.worktimesForSpeOwnerId = worktimesForSpeOwnerId;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "userByMpmOwnerId")
+    public Set<Worktime> getWorktimesForMpmOwnerId() {
+        return worktimesForMpmOwnerId;
+    }
+
+    public void setWorktimesForMpmOwnerId(Set<Worktime> worktimesForMpmOwnerId) {
+        this.worktimesForMpmOwnerId = worktimesForMpmOwnerId;
     }
 
     @ManyToMany(fetch = FetchType.LAZY)

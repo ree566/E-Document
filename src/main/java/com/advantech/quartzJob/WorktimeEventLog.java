@@ -85,13 +85,10 @@ public class WorktimeEventLog {
 
     private String[] getMailByNotification(String notification) {
         List<User> users = userNotificationService.findUsersByNotification(notification);
-        String[] mails = new String[users.size()];
-        for (int i = 0; i < mails.length; i++) {
-            String mail = users.get(i).getEmail();
-            if (mail != null && !"".equals(mail)) {
-                mails[i] = mail;
-            }
-        }
+        String[] mails = users.stream()
+                .filter(u -> u.getEmail() != null || !"".endsWith(u.getEmail()))
+                .map(u -> u.getEmail())
+                .toArray(String[]::new);
         return mails;
     }
 

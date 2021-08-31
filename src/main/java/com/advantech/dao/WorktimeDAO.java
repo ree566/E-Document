@@ -55,7 +55,7 @@ public class WorktimeDAO extends AbstractDao<Integer, Worktime> implements Basic
         String[] fetchField = {
             "type", "businessGroup", "floor", "pending", "preAssy",
             "flowByBabFlowId", "flowByPackingFlowId", "flowByTestFlowId",
-            "userBySpeOwnerId", "userByEeOwnerId", "userByQcOwnerId"
+            "userBySpeOwnerId", "userByEeOwnerId", "userByQcOwnerId", "userByMpmOwnerId"
         };
 
         Criteria criteria = createEntityCriteria();

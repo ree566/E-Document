@@ -8,9 +8,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -18,8 +16,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -65,6 +61,7 @@ public class Worktime implements java.io.Serializable {
     private User userByEeOwnerId; //EE teams name has been changed to BPE
     private User userByQcOwnerId;
     private User userBySpeOwnerId;
+    private User userByMpmOwnerId;
     private Pending pending;
     private PreAssy preAssy;
     private Type type;
@@ -234,6 +231,17 @@ public class Worktime implements java.io.Serializable {
 
     public void setUserBySpeOwnerId(User userBySpeOwnerId) {
         this.userBySpeOwnerId = userBySpeOwnerId;
+    }
+
+//    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "mpm_owner_id", nullable = true)
+    public User getUserByMpmOwnerId() {
+        return userByMpmOwnerId;
+    }
+
+    public void setUserByMpmOwnerId(User userByMpmOwnerId) {
+        this.userByMpmOwnerId = userByMpmOwnerId;
     }
 
     @NotNull
@@ -964,8 +972,6 @@ public class Worktime implements java.io.Serializable {
 //    public void setHrcTypes(Set<HrcType> hrcTypes) {
 //        this.hrcTypes = hrcTypes;
 //    }
-    
-
     @Size(min = 0, max = 200)
     @Column(name = "hrc_values", length = 200)
     public String getHrcValues() {

@@ -152,7 +152,8 @@ public class WorktimeUploadMesService {
         return isModelNameChanged(prev, current)
                 || !isEquals(prev.getUserBySpeOwnerId(), current.getUserBySpeOwnerId())
                 || !isEquals(prev.getUserByEeOwnerId(), current.getUserByEeOwnerId())
-                || !isEquals(prev.getUserByQcOwnerId(), current.getUserByQcOwnerId());
+                || !isEquals(prev.getUserByQcOwnerId(), current.getUserByQcOwnerId())
+                || !isEquals(prev.getUserByMpmOwnerId(), current.getUserByMpmOwnerId());
     }
 
     //Revision entity relation object are lasy loading.

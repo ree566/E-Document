@@ -66,9 +66,14 @@ public class MesUserInfoQueryPort extends BasicQueryPort {
         User speOwner = w.getUserBySpeOwnerId();
         User eeOwner = w.getUserByEeOwnerId();
         User qcOwner = w.getUserByQcOwnerId();
+        User mpmOwner = w.getUserByMpmOwnerId();
 
         if (eeOwner != null) {
             m.put("eeOwner", userService.findByPrimaryKey(eeOwner.getId()).getJobnumber());
+        }
+        
+        if (mpmOwner != null) {
+            m.put("mpmOwner", userService.findByPrimaryKey(mpmOwner.getId()).getJobnumber());
         }
 
         m.put("speOwner", userService.findByPrimaryKey(speOwner.getId()).getJobnumber());

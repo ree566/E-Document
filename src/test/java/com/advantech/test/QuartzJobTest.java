@@ -5,8 +5,10 @@
  */
 package com.advantech.test;
 
+import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.quartzJob.StandardTimeUpload;
 import com.advantech.quartzJob.WorktimeEventLog1;
+import com.advantech.quartzJob.WorktimeFieldValueRetrieve;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,16 +35,27 @@ public class QuartzJobTest {
     @Autowired
     @Qualifier("standardTimeUpload")
     private StandardTimeUpload job2;
+    
+    @Autowired
+    @Qualifier("worktimeFieldValueRetrieve")
+    private WorktimeFieldValueRetrieve job3;
 
 //    @Test
     public void testWorktimeEventLog() {
         job1.execute();
     }
 
-    @Test
+//    @Test
     public void testStandardTimeUpload() {
 
-        job2.uploadToMes();
+//        job2.uploadToMes();
+//        HibernateObjectPrinter.print(job2.getMailByNotification("worktime_ie_alarm"));
+    }
+    
+    @Test
+    public void testWorktimeFieldValueRetrieve() {
+
+        HibernateObjectPrinter.print(job3.getMailByNotification("worktime_ie_alarm"));
     }
 
 }
