@@ -291,10 +291,12 @@ public class WorktimeBatchModController {
             String eeUserName = sheet.getValue(i, "bpeOwnerName").toString().toUpperCase().trim();
             String speUserName = sheet.getValue(i, "speOwnerName").toString().toUpperCase().trim();
             String qcUserName = sheet.getValue(i, "qcOwnerName").toString().toUpperCase().trim();
+            String mpmUserName = sheet.getValue(i, "mpmOwnerName").toString().toUpperCase().trim();
 
             w.setUserByEeOwnerId(valid(eeUserName, userOptions.get(eeUserName)));
             w.setUserBySpeOwnerId(valid(speUserName, userOptions.get(speUserName)));
             w.setUserByQcOwnerId(valid(qcUserName, userOptions.get(qcUserName)));
+            w.setUserByMpmOwnerId(valid(mpmUserName, userOptions.get(mpmUserName)));
 
             String babFlowName = sheet.getValue(i, "babFlowName").toString().trim();
             String pkgFlowName = sheet.getValue(i, "packingFlowName").toString().trim();

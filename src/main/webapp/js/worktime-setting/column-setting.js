@@ -32,6 +32,7 @@ var worktimeCol = [
     {name: "userBySpeOwnerId.id"},
     {name: "userByEeOwnerId.id"},
     {name: "userByQcOwnerId.id"},
+    {name: "userByMpmOwnerId.id"},
     {name: "assyPackingSop"},
     {name: "testSop"},
     {name: "keypartA"},

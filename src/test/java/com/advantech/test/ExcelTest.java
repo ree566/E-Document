@@ -7,8 +7,12 @@ package com.advantech.test;
 
 import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.model.Type;
+import com.advantech.model.User;
 import com.advantech.model.Worktime;
+import com.advantech.service.UserService;
 import com.advantech.service.WorktimeService;
+import com.advantech.webservice.port.ModelResponsorUploadPort;
+import com.advantech.webservice.port.SopUploadPort;
 import com.google.gson.Gson;
 import java.io.File;
 import java.io.FileInputStream;
@@ -65,6 +69,9 @@ public class ExcelTest {
     private WorktimeService worktimeService;
 
     @Autowired
+    private UserService userService;
+
+    @Autowired
     private SessionFactory sessionFactory;
 
     @Autowired
@@ -91,12 +98,18 @@ public class ExcelTest {
         }
     }
 
+    @Autowired
+    private SopUploadPort sopPort;
+    
+    @Autowired
+    private ModelResponsorUploadPort mappingUserPort;
+
     @Test
     @Transactional
     @Rollback(false)
     public void testFileSyncToDb() throws Exception {
 
-        String syncFilePath = "C:\\Users\\MFG.ESOP\\Desktop\\testExcel\\M6_hrc.xlsx";
+        String syncFilePath = "C:\\Users\\MFG.ESOP\\Desktop\\PN_0824.xls";
         try (InputStream is = new FileInputStream(new File(syncFilePath))) {
 
             Session session = sessionFactory.getCurrentSession();
@@ -104,9 +117,9 @@ public class ExcelTest {
 
             Workbook workbook = WorkbookFactory.create(is);
 
-            Map<String, List<String>> modelHrcMap = new HashMap();
+            List<User> users = userService.findByUnitName("MPM");
 
-            for (int sheetPage = 0; sheetPage <= 1; sheetPage++) {
+            for (int sheetPage = 0; sheetPage <= 0; sheetPage++) {
                 Sheet sheet = workbook.getSheetAt(sheetPage);
                 for (int i = 1, maxNumberfRows = sheet.getPhysicalNumberOfRows(); i < maxNumberfRows; i++) {
                     Row row = sheet.getRow(i); // 取得第 i Row
@@ -119,43 +132,22 @@ public class ExcelTest {
 
                         String modelName = ((String) getCellValue(row, "A")).trim();
 
-                        List<String> hrcValues = modelHrcMap.get(modelName);
-                        if (hrcValues == null) {
-                            hrcValues = new ArrayList();
+                        Worktime w = l.stream().filter(o -> Objects.equals(o.getModelName(), modelName)).findFirst().orElse(null);
+                        if (w == null) {
+                            System.out.println("\tCan't find modelName: " + modelName + " in worktime");
+                            continue;
                         }
 
-                        if (sheetPage == 0) {
-                            hrcValues.add("AB智能混灌設備");
-                        } else if (sheetPage == 1) {
-                            hrcValues.add("LCD自動檢測設備");
-                        }
+                        String userName = ((String) getCellValue(row, "D")).trim();
+                        User user = users.stream().filter(u -> u.getUsername().equals(userName)).findFirst().orElse(null);
+                        w.setUserByMpmOwnerId(user);
+                        session.merge(w);
+                        mappingUserPort.update(w);
+                        System.out.println("Update modelName: " + modelName);
 
-                        modelHrcMap.put(modelName.trim(), hrcValues);
-
-//                        Worktime w = l.stream().filter(o -> Objects.equals(o.getModelName(), modelName)).findFirst().orElse(null);
-//                        if (w == null) {
-//                            System.out.println("\tCan't find modelName: " + modelName + " in worktime");
-//                            continue;
-//                        }
-//
-//                        if (getCellValue(row, "D") instanceof Double) {
-//                            BigDecimal v = (new BigDecimal((Double) getCellValue(row, "D")));
-//                            System.out.println("Update modelName: " + modelName);
-//                            w.setPackingLeadTime(v);
-//                            session.merge(w);
-//                        }
                     }
                 }
             }
-            modelHrcMap.forEach((k, v) -> {
-                System.out.println(k);
-                Worktime worktime = l.stream().filter(w -> w.getModelName().equals(k)).findFirst().orElse(null);
-                if (worktime != null) {
-                    worktime.setHrcValues(StringUtils.join(v, ","));
-                    session.merge(worktime);
-//                System.out.printf("ModelName: %s, details: %s\r\n", k, StringUtils.join(v, ";"));
-                }
-            });
         }
     }
 

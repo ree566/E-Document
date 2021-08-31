@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
@@ -210,6 +211,10 @@ public class MaterialPropertyUploadPort extends BasicUploadPort implements Uploa
     }
 
     private void checkMatPermission(List<MaterialPropertyValue> changedMatProp) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
+            return;
+        }
         List<String> noPermissionMatProp = new ArrayList();
         changedMatProp.forEach(prop -> {
             boolean hasMatPermission = temp_MaterialPropertyUserPermissions.stream()

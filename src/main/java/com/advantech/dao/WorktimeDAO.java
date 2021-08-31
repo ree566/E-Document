@@ -56,7 +56,7 @@ public class WorktimeDAO extends AbstractDao<Integer, Worktime> implements Basic
         String[] fetchField = {
             "type", "businessGroup", "floor", "workCenter", "preAssy",
             "flowByBabFlowId", "flowByPackingFlowId", "flowByTestFlowId",
-            "userBySpeOwnerId", "userByEeOwnerId", "userByQcOwnerId", "remark",
+            "userBySpeOwnerId", "userByEeOwnerId", "userByQcOwnerId", "userByMpmOwnerId", "remark",
             "pending"
         };
 

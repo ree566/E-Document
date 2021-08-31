@@ -87,6 +87,7 @@ public class Worktime implements java.io.Serializable {
     private User userBySpeOwnerId;
     private User userByEeOwnerId; //Unit name change "EE" to "BPE"
     private User userByQcOwnerId;
+    private User userByMpmOwnerId;
     private String assyPackingSop;
     private String testSop;
     private Integer keypartA = 0;
@@ -468,6 +469,16 @@ public class Worktime implements java.io.Serializable {
 
     public void setUserByQcOwnerId(User userByQcOwnerId) {
         this.userByQcOwnerId = userByQcOwnerId;
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "mpm_owner_id", nullable = true)
+    public User getUserByMpmOwnerId() {
+        return userByMpmOwnerId;
+    }
+
+    public void setUserByMpmOwnerId(User userByMpmOwnerId) {
+        this.userByMpmOwnerId = userByMpmOwnerId;
     }
 
     @Size(min = 0, max = 500)
