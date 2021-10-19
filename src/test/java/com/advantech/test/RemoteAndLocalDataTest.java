@@ -9,17 +9,21 @@ import com.advantech.excel.ExcelGenerator;
 import com.advantech.helper.SpringExpressionUtils;
 import com.advantech.model.User;
 import com.advantech.model.Worktime;
+import com.advantech.model.WorktimeAutouploadSetting;
 import com.advantech.model.WorktimeMaterialPropertyUploadSetting;
 import com.advantech.service.FlowService;
+import com.advantech.service.WorktimeAutouploadSettingService;
 import com.advantech.service.WorktimeMaterialPropertyUploadSettingService;
 import com.advantech.service.WorktimeService;
 import com.advantech.webservice.port.MaterialFlowQueryPort;
 import com.advantech.webservice.port.MaterialPropertyValueQueryPort;
 import com.advantech.webservice.port.ModelResponsorQueryPort;
+import com.advantech.webservice.port.StandardWorkTimeQueryPort;
 import com.advantech.webservice.root.Section;
 import com.advantech.webservice.unmarshallclass.MaterialFlow;
 import com.advantech.webservice.unmarshallclass.MaterialPropertyValue;
 import com.advantech.webservice.unmarshallclass.ModelResponsor;
+import com.advantech.webservice.unmarshallclass.StandardWorkTime;
 import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
 import java.math.BigDecimal;
@@ -74,6 +78,12 @@ public class RemoteAndLocalDataTest {
 
     @Autowired
     private FlowService flowService;
+    
+    @Autowired
+    private StandardWorkTimeQueryPort standardTimeQueryPort;
+
+    @Autowired
+    private WorktimeAutouploadSettingService uploadSettingService;
 
     @Autowired
     private MaterialFlowQueryPort materialFlowQueryPort;
@@ -241,7 +251,7 @@ public class RemoteAndLocalDataTest {
     }
 
     //*************************************
-    @Test
+//    @Test
     public void testMaterialProperty() throws Exception {
         List<WorktimeMaterialPropertyUploadSetting> matSettingLocal = worktimeMaterialPropertyUploadSettingService.findAll();
         List<Map> errors = new ArrayList();
@@ -314,5 +324,38 @@ public class RemoteAndLocalDataTest {
             }
         }
         return null;
+    }
+    
+    @Test
+    public void testStandardTime() throws Exception {
+        List<WorktimeAutouploadSetting> settings = this.uploadSettingService.findAll();
+        int cnt = 0;
+        for (Worktime w : l) {
+            List<StandardWorkTime> remoteStandardTime = this.standardTimeQueryPort.query(w.getModelName());
+            for (WorktimeAutouploadSetting setting : settings) {
+                if (setting.getId() == 24) {
+                    continue;
+                }
+
+                StandardWorkTime worktimeOnMes = remoteStandardTime.stream()
+                        .filter(p -> (Objects.equals(p.getSTATIONID(), setting.getStationId()) || (p.getSTATIONID() == -1 && setting.getStationId() == null))
+                        && (p.getLINEID() == setting.getLineId())
+                        && Objects.equals(p.getUNITNO(), setting.getColumnUnit())
+                        && Objects.equals(p.getITEMNO(), w.getModelName()))
+                        .findFirst().orElse(null);
+
+                BigDecimal totalCt = (BigDecimal) expressionUtils.getValueFromFormula(w, setting.getFormula());
+
+                if (worktimeOnMes == null) {
+                    System.out.printf("%s: %s remote is empty, local: %s\r\n", w.getModelName(), setting.getColumnName(), totalCt.toString());
+                    cnt++;
+                } else if (worktimeOnMes.getTOTALCT().compareTo(totalCt) != 0) {
+                    System.out.printf("%s: %s remote: %s, local: %s\r\n", w.getModelName(), setting.getColumnName(), worktimeOnMes.getTOTALCT().toString(), totalCt.toString());
+                    cnt++;
+                }
+
+            }
+        }
+        System.out.printf("Data count: %d\r\n", cnt);
     }
 }

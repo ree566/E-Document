@@ -5,6 +5,8 @@
  */
 package com.advantech.helper;
 
+import java.util.Map;
+import javax.annotation.PostConstruct;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import org.slf4j.Logger;
@@ -20,11 +22,26 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 public class MailManager {
 
     private static final Logger log = LoggerFactory.getLogger(MailManager.class);
+    
+    private String hostName;
 
     private JavaMailSender mailSender;
 
     public void setMailSender(JavaMailSender mailSender) {
         this.mailSender = mailSender;
+    }
+    
+    @PostConstruct
+    protected void initHostName() {
+        Map<String, String> env = System.getenv();
+        if (env.containsKey("COMPUTERNAME")) {
+            hostName = env.get("COMPUTERNAME");
+        } else if (env.containsKey("HOSTNAME")) {
+            hostName = env.get("HOSTNAME");
+        } else {
+            hostName = "Unknown";
+        }
+        hostName = hostName + "@advantech.com.tw";
     }
 
     public boolean sendMail(String[] to, String subject, String text) throws MessagingException {
@@ -43,7 +60,7 @@ public class MailManager {
         helper.setTo(to);
         helper.setCc(cc);
         helper.setSubject(subject);
-        helper.setFrom("kevin1@172.20.131.52");
+        helper.setFrom(hostName);
 
         try {
             this.mailSender.send(mimeMessage);
