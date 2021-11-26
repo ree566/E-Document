@@ -74,6 +74,7 @@ public class Worktime implements java.io.Serializable {
 
     private BigDecimal t1 = BigDecimal.ZERO;
     private BigDecimal t2 = BigDecimal.ZERO;
+    private BigDecimal t3 = BigDecimal.ZERO;
     private BigDecimal packing = BigDecimal.ZERO;
     private BigDecimal upBiRi = BigDecimal.ZERO;
     private BigDecimal downBiRi = BigDecimal.ZERO;
@@ -333,6 +334,16 @@ public class Worktime implements java.io.Serializable {
 
     public void setT2(BigDecimal t2) {
         this.t2 = autoFixScale(t2, 1);
+    }
+
+    @Digits(integer = 10 /*precision*/, fraction = 1 /*scale*/)
+    @Column(name = "t3", precision = 10, scale = 1)
+    public BigDecimal getT3() {
+        return t3;
+    }
+
+    public void setT3(BigDecimal t3) {
+        this.t3 = t3;
     }
 
     @Digits(integer = 10 /*precision*/, fraction = 1 /*scale*/)
@@ -814,7 +825,7 @@ public class Worktime implements java.io.Serializable {
         BigDecimal defaultValue = notEmpty(arFilmAttachment).add(notEmpty(seal))
                 .add(notEmpty(opticalBonding)).add(notEmpty(cleanPanel)).add(notEmpty(pi))
                 .add(notEmpty(assy)).add(notEmpty(highBright)).add(notEmpty(bondedSealingFrame))
-                .add(notEmpty(t1)).add(notEmpty(t2)).add(notEmpty(packing))
+                .add(notEmpty(t1)).add(notEmpty(t2)).add(notEmpty(t3)).add(notEmpty(packing))
                 .add(notEmpty(upBiRi)).add(notEmpty(downBiRi)).add(notEmpty(biCost));
         this.setProductionWt(defaultValue);
     }
@@ -823,7 +834,7 @@ public class Worktime implements java.io.Serializable {
         BigDecimal defaultValue = BigDecimal.ZERO
                 .add(notEmpty(arFilmAttachment).add(notEmpty(cleanPanel)).add(notEmpty(pi)).compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : new BigDecimal(20))
                 .add(notEmpty(assy).add(notEmpty(highBright)).add(notEmpty(bondedSealingFrame)).compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : new BigDecimal(10))
-                .add(notEmpty(t1).add(notEmpty(t2)).compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : new BigDecimal(5))
+                .add(notEmpty(t1).add(notEmpty(t2)).add(notEmpty(t3)).compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : new BigDecimal(5))
                 .add(notEmpty(packing).compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : new BigDecimal(10));
         this.setSetupTime(defaultValue);
     }
@@ -840,6 +851,7 @@ public class Worktime implements java.io.Serializable {
 
     public void setDefaultT2ToPacking() {
         BigDecimal defaultValue = notEmpty(t2)
+                .add(notEmpty(t3))
                 .add(notEmpty(packing));
         this.setT2ToPacking(defaultValue);
     }
@@ -852,7 +864,7 @@ public class Worktime implements java.io.Serializable {
     }
 
     public void setDefaultTest() {
-        BigDecimal defaultValue = notEmpty(t1).add(notEmpty(t2));
+        BigDecimal defaultValue = notEmpty(t1).add(notEmpty(t2)).add(notEmpty(t3));
         this.setTest(defaultValue);
     }
 
