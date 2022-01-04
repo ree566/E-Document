@@ -48,17 +48,27 @@ public class TxMtdTestIntegrityUploadPort extends BasicUploadPort implements Upl
     private void generateRootAndUpload(Worktime w, UploadType type) throws Exception {
         try {
             TxMtdTestIntegrityUploadRoot root = new TxMtdTestIntegrityUploadRoot();
+
             TxMtdTestIntegrityUploadRoot.MTDTESTINTEGRITY t = root.getMTDTESTINTEGRITY();
             //Get T1 T2 state & items cnt from worktime field
-            t.setDUTPARTNO("");
-            t.setSTATIONNAME("");
-            t.setTOTALSTATE("");
-            t.setTOTALTESTITEM("");
-
+            t.setDUTPARTNO(w.getModelName());
+            t.setSTATIONNAME("T1");
+            t.setTOTALSTATE(nullIntegerToString(w.getT1StatusQty()));
+            t.setTOTALTESTITEM(nullIntegerToString(w.getT1ItemsQty()));
+            super.upload(root, type);
+            
+            t.setSTATIONNAME("T2");
+            t.setTOTALSTATE(nullIntegerToString(w.getT2StatusQty()));
+            t.setTOTALTESTITEM(nullIntegerToString(w.getT2ItemsQty()));
             super.upload(root, type);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw e;
         }
+    }
+
+    private String nullIntegerToString(Integer i) {
+        i = i == null ? 0 : i;
+        return i.toString();
     }
 }

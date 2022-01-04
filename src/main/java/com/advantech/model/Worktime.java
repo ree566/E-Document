@@ -74,6 +74,9 @@ public class Worktime implements java.io.Serializable {
     @JsonIgnore
     private List<WorktimeFormulaSetting> worktimeFormulaSettings = new AutoPopulatingList<WorktimeFormulaSetting>(WorktimeFormulaSetting.class);
 
+//    @JsonIgnore
+//    private Set<WorktimeTestStationInfo> worktimeTestStationInfos = new HashSet<>();
+
     private String workCenter;
     private BigDecimal totalModule = BigDecimal.ZERO;
     private BigDecimal cleanPanel = BigDecimal.ZERO;
@@ -132,6 +135,12 @@ public class Worktime implements java.io.Serializable {
     private BigDecimal assyKanbanTime = BigDecimal.ZERO;
     private BigDecimal packingKanbanTime = BigDecimal.ZERO;
     private BigDecimal cleanPanelAndAssembly = BigDecimal.ZERO;
+    
+    private Integer t1StatusQty = 0;
+    private Integer t1ItemsQty = 0;
+    private Integer t2StatusQty = 0;
+    private Integer t2ItemsQty = 0;
+    
     private Date createDate;
     private Date modifiedDate;
 
@@ -981,6 +990,56 @@ public class Worktime implements java.io.Serializable {
     public void setHrcValues(String hrcValues) {
         this.hrcValues = hrcValues;
     }
+
+    @Column(name = "t1_statusQty")
+    public Integer getT1StatusQty() {
+        return t1StatusQty;
+    }
+
+    public void setT1StatusQty(Integer t1StatusQty) {
+        this.t1StatusQty = t1StatusQty;
+    }
+
+    @Column(name = "t1_itemsQty")
+    public Integer getT1ItemsQty() {
+        return t1ItemsQty;
+    }
+
+    public void setT1ItemsQty(Integer t1ItemsQty) {
+        this.t1ItemsQty = t1ItemsQty;
+    }
+
+    @Column(name = "t2_statusQty")
+    public Integer getT2StatusQty() {
+        return t2StatusQty;
+    }
+
+    public void setT2StatusQty(Integer t2StatusQty) {
+        this.t2StatusQty = t2StatusQty;
+    }
+
+    @Column(name = "t2_itemsQty")
+    public Integer getT2ItemsQty() {
+        return t2ItemsQty;
+    }
+
+    public void setT2ItemsQty(Integer t2ItemsQty) {
+        this.t2ItemsQty = t2ItemsQty;
+    }
+    
+    
+
+//    @LazyCollection(LazyCollectionOption.FALSE)
+//    @Fetch(value = FetchMode.SUBSELECT)
+//    @NotAudited
+//    @OneToMany(fetch=FetchType.EAGER, mappedBy = "worktime", orphanRemoval = true)
+//    public Set<WorktimeTestStationInfo> getWorktimeTestStationInfos() {
+//        return worktimeTestStationInfos;
+//    }
+//
+//    public void setWorktimeTestStationInfos(Set<WorktimeTestStationInfo> worktimeTestStationInfos) {
+//        this.worktimeTestStationInfos = worktimeTestStationInfos;
+//    }
 
 //---------------------------------------------------------------------
 //  Default formula column caculate

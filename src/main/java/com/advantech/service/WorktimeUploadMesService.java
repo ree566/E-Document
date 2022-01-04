@@ -11,6 +11,7 @@ import com.advantech.webservice.port.FlowUploadPort;
 import com.advantech.webservice.port.MaterialPropertyUploadPort;
 import com.advantech.webservice.port.ModelResponsorUploadPort;
 import com.advantech.webservice.port.SopUploadPort;
+import com.advantech.webservice.port.TxMtdTestIntegrityUploadPort;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,6 +41,9 @@ public class WorktimeUploadMesService {
     @Autowired
     private MaterialPropertyUploadPort materialPropertyUploadPort;
 
+    @Autowired
+    private TxMtdTestIntegrityUploadPort testIntegrityUploadPort;
+
     @Value("${WORKTIME.UPLOAD.INSERT: true}")
     private boolean isInserted;
 
@@ -60,6 +64,9 @@ public class WorktimeUploadMesService {
 
     @Value("${WORKTIME.UPLOAD.MATPROPERTY: true}")
     private boolean isUploadMatProp;
+
+    @Value("${WORKTIME.UPLOAD.TESTINTEGRITY: true}")
+    private boolean isUploadTestIntegrity;
 
     public void portParamInit() throws Exception {
         if (isUploadMatProp) {
@@ -93,6 +100,13 @@ public class WorktimeUploadMesService {
             if (isUploadMatProp) {
                 try {
                     materialPropertyUploadPort.insert(w);
+                } catch (Exception e) {
+                    throw new Exception("料號屬性值新增至MES失敗<br />" + e.getMessage());
+                }
+            }
+            if (isUploadTestIntegrity) {
+                try {
+                    testIntegrityUploadPort.insert(w);
                 } catch (Exception e) {
                     throw new Exception("料號屬性值新增至MES失敗<br />" + e.getMessage());
                 }
@@ -132,6 +146,13 @@ public class WorktimeUploadMesService {
                     materialPropertyUploadPort.update(w);
                 } catch (Exception e) {
                     throw new Exception("料號屬性值更新至MES失敗<br />" + e.getMessage());
+                }
+            }
+            if (isUploadTestIntegrity && isUploadTestIntegrityChanged(rowLastStatus, w)) {
+                try {
+                    testIntegrityUploadPort.update(w);
+                } catch (Exception e) {
+                    throw new Exception("測試狀態更新至MES失敗<br />" + e.getMessage());
                 }
             }
         }
@@ -201,6 +222,14 @@ public class WorktimeUploadMesService {
         return b;
     }
 
+    private boolean isUploadTestIntegrityChanged(Worktime prev, Worktime current) {
+        return isModelNameChanged(prev, current)
+                || !isEquals(prev.getT1ItemsQty(), current.getT1ItemsQty())
+                || !isEquals(prev.getT1StatusQty(), current.getT1StatusQty())
+                || !isEquals(prev.getT2ItemsQty(), current.getT2ItemsQty())
+                || !isEquals(prev.getT2StatusQty(), current.getT2StatusQty());
+    }
+
     private <T extends Comparable> boolean isEquals(T o1, T o2) {
         return ObjectUtils.compare(o1, o2) == 0;
     }
@@ -236,6 +265,14 @@ public class WorktimeUploadMesService {
                     materialPropertyUploadPort.delete(w);
                 } catch (Exception e) {
                     throw new Exception("料號屬性值刪除至MES失敗<br />" + e.getMessage());
+                }
+            }
+            
+            if (isUploadTestIntegrity) {
+                try {
+                    testIntegrityUploadPort.delete(w);
+                } catch (Exception e) {
+                    throw new Exception("測試狀態刪除至MES失敗<br />" + e.getMessage());
                 }
             }
         }

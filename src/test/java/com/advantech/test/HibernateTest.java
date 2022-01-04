@@ -416,7 +416,7 @@ public class HibernateTest {
     @Autowired
     private FlowUploadPort flowPort;
 
-    @Test
+//    @Test
     @Transactional
     @Rollback(false)
     public void testWorktime3() throws Exception {
@@ -460,6 +460,25 @@ public class HibernateTest {
             session.merge(w);
             flowPort.update(w);
         }
+
+    }
+
+    @Test
+    @Transactional
+    @Rollback(true)
+    public void testWorktimeTestStationInfo() throws Exception {
+
+        Session session = sessionFactory.getCurrentSession();
+        Worktime w = session.get(Worktime.class, 11336);
+        
+        Integer i = 1;
+        assertEquals(w.getT1ItemsQty(), i);
+        assertEquals(w.getT1StatusQty(), i);
+        
+        assertTrue(w.getT2ItemsQty() == null);
+        assertTrue(w.getT2StatusQty() == null);
+
+//        HibernateObjectPrinter.print(w.getWorktimeTestStationInfos());
 
     }
 
