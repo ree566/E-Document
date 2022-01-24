@@ -16,6 +16,7 @@ import com.advantech.webservice.port.MaterialPropertyValueQueryPort;
 import com.advantech.webservice.port.MaterialPropertyUserPermissionQueryPort;
 import com.advantech.webservice.port.MesUserInfoQueryPort;
 import com.advantech.webservice.port.ModelResponsorQueryPort;
+import com.advantech.webservice.port.MtdTestIntegrityQueryPort;
 import com.advantech.webservice.port.SopQueryPort;
 import com.advantech.webservice.port.StandardWorkTimeQueryPort;
 import com.advantech.webservice.unmarshallclass.StandardWorkReason;
@@ -24,6 +25,7 @@ import com.advantech.webservice.unmarshallclass.MaterialFlow;
 import com.advantech.webservice.unmarshallclass.MaterialProperty;
 import com.advantech.webservice.unmarshallclass.MaterialPropertyUserPermission;
 import com.advantech.webservice.unmarshallclass.MaterialPropertyValue;
+import com.advantech.webservice.unmarshallclass.MtdTestIntegrity;
 import com.advantech.webservice.unmarshallclass.SopInfo;
 import com.advantech.webservice.unmarshallclass.StandardWorkTime;
 import java.math.BigDecimal;
@@ -96,6 +98,9 @@ public class QueryPortTest {
     private StandardWorkTimeQueryPort worktimeQueryPort;
     
     @Autowired
+    private MtdTestIntegrityQueryPort mtdTestIntegrityQueryPort;
+    
+    @Autowired
     private SessionFactory sessionFactory;
 
     @Before
@@ -103,7 +108,7 @@ public class QueryPortTest {
 //        w = worktimeService.findByPrimaryKey(5352);
     }
 
-    @Test
+//    @Test
     public void testSopQueryPort() throws Exception {
         Worktime worktime = worktimeService.findByModel("UTC-532CH-P00E");
         sopQueryPort.setTypes("測試");
@@ -277,6 +282,18 @@ public class QueryPortTest {
         l = l.stream().filter(s -> s.getITEMNO().equals("IMC-450-SL")).collect(toList());
 
         HibernateObjectPrinter.print(l);
+    }
+    
+    @Test
+    @Rollback(true)
+    public void testMtdTestIntegrityQueryPort() throws Exception{
+        Session session = sessionFactory.getCurrentSession();
+        Worktime worktime = session.get(Worktime.class, 4653);
+        List<MtdTestIntegrity> l = this.mtdTestIntegrityQueryPort.query(worktime);
+        
+        assertEquals(2, l.size());
+        assertEquals("張東旭", l.get(0).getUserName());
+        assertEquals("T2", l.get(1).getStationName());
     }
 
 }

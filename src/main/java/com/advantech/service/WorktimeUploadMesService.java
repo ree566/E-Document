@@ -11,7 +11,7 @@ import com.advantech.webservice.port.FlowUploadPort;
 import com.advantech.webservice.port.MaterialPropertyUploadPort;
 import com.advantech.webservice.port.ModelResponsorUploadPort;
 import com.advantech.webservice.port.SopUploadPort;
-import com.advantech.webservice.port.TxMtdTestIntegrityUploadPort;
+import com.advantech.webservice.port.MtdTestIntegrityUploadPort;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,7 +42,7 @@ public class WorktimeUploadMesService {
     private MaterialPropertyUploadPort materialPropertyUploadPort;
 
     @Autowired
-    private TxMtdTestIntegrityUploadPort testIntegrityUploadPort;
+    private MtdTestIntegrityUploadPort testIntegrityUploadPort;
 
     @Value("${WORKTIME.UPLOAD.INSERT: true}")
     private boolean isInserted;

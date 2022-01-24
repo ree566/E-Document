@@ -19,12 +19,16 @@ import com.advantech.service.WorktimeService;
 import com.advantech.service.WorktimeUploadMesService;
 import com.advantech.webservice.port.FlowUploadPort;
 import com.advantech.webservice.port.MaterialPropertyUploadPort;
+import com.advantech.webservice.port.MtdTestIntegrityQueryPort;
 import com.advantech.webservice.port.StandardtimeUploadPort;
+import com.advantech.webservice.unmarshallclass.MtdTestIntegrity;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import static com.google.common.collect.Lists.newArrayList;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -463,23 +467,104 @@ public class HibernateTest {
 
     }
 
-    @Test
+//    @Test
     @Transactional
     @Rollback(true)
     public void testWorktimeTestStationInfo() throws Exception {
 
         Session session = sessionFactory.getCurrentSession();
         Worktime w = session.get(Worktime.class, 11336);
-        
+
         Integer i = 1;
         assertEquals(w.getT1ItemsQty(), i);
         assertEquals(w.getT1StatusQty(), i);
-        
+
         assertTrue(w.getT2ItemsQty() == null);
         assertTrue(w.getT2StatusQty() == null);
 
 //        HibernateObjectPrinter.print(w.getWorktimeTestStationInfos());
+    }
 
+//    @Test
+    @Transactional
+    @Rollback(false)
+    public void testWorktimeForBatchUpdate() throws Exception {
+        Session session = sessionFactory.getCurrentSession();
+
+        List<Worktime> l = session.createCriteria(Worktime.class).list();
+        List<BigDecimal> filterValues = newArrayList(new BigDecimal(0.0800),
+                new BigDecimal(0.0500),
+                new BigDecimal(0.1000),
+                new BigDecimal(0.5000));
+
+        assertTrue(l.size() > 5000);
+
+        DecimalFormat df = new DecimalFormat("#,###.0000");
+
+        List<Worktime> filterDatas = l.stream()
+                .filter(w -> {
+                    for (BigDecimal v : filterValues) {
+                        BigDecimal value = w.getWeightAff();
+                        if (v.setScale(4, RoundingMode.HALF_DOWN).compareTo(value.setScale(4, RoundingMode.HALF_DOWN)) == 0) {
+                            System.out.printf("\t \t %s / %s \r\n", df.format(v), df.format(value));
+                            return true;
+                        }
+                        System.out.printf("%s / %s \r\n", df.format(v), df.format(value));
+                    }
+                    return false;
+                })
+                .collect(toList());
+
+        assertEquals(1626, filterDatas.size());
+
+        List<WorktimeMaterialPropertyUploadSetting> setting = newArrayList(session.get(WorktimeMaterialPropertyUploadSetting.class, 22));
+        materialPropertyUploadPort.initSettings(setting);
+
+        for (Worktime w : filterDatas) {
+            w.setWeightAff(new BigDecimal(0.04));
+            try {
+                materialPropertyUploadPort.update(w);
+            } catch (Exception ex) {
+                System.out.println(w.getModelName());
+                System.out.println(ex);
+            }
+            session.merge(w);
+        }
+
+    }
+
+    @Autowired
+    private MtdTestIntegrityQueryPort mtdTestIntegrityQueryPort;
+
+    @Test
+    @Transactional
+    @Rollback(false)
+    public void testRetrieveTEstIntegrity() {
+        Session session = sessionFactory.getCurrentSession();
+
+        List<Worktime> l = session.createCriteria(Worktime.class).list();
+
+        l.forEach(w -> {
+            List<MtdTestIntegrity> mesTestData;
+            try {
+                mesTestData = mtdTestIntegrityQueryPort.query(w);
+                MtdTestIntegrity t1Data = mesTestData.stream().filter(t -> "T1".equals(t.getStationName())).findFirst().orElse(null);
+                MtdTestIntegrity t2Data = mesTestData.stream().filter(t -> "T2".equals(t.getStationName())).findFirst().orElse(null);
+
+                if (t1Data != null) {
+                    w.setT1ItemsQty(t1Data.getItemCnt());
+                    w.setT1StatusQty(t1Data.getStateCnt());
+                }
+
+                if (t2Data != null) {
+                    w.setT2ItemsQty(t2Data.getItemCnt());
+                    w.setT2StatusQty(t2Data.getStateCnt());
+                }
+                session.merge(w);
+            } catch (Exception ex) {
+                System.out.println(ex);
+            }
+        });
     }
 
 }

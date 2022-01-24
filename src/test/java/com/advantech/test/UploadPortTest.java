@@ -17,11 +17,10 @@ import com.advantech.service.WorktimeService;
 import com.advantech.webservice.port.FlowUploadPort;
 import com.advantech.webservice.port.MaterialPropertyUploadPort;
 import com.advantech.webservice.port.ModelResponsorUploadPort;
+import com.advantech.webservice.port.MtdTestIntegrityUploadPort;
 import com.advantech.webservice.port.SopUploadPort;
 import com.advantech.webservice.port.StandardtimeUploadPort;
-import static com.google.common.collect.Lists.newArrayList;
 import java.util.List;
-import static java.util.stream.Collectors.toList;
 import javax.transaction.Transactional;
 import static junit.framework.Assert.*;
 import org.hibernate.Session;
@@ -85,6 +84,9 @@ public class UploadPortTest {
 
     @Autowired
     private PendingService pendingService;
+    
+    @Autowired
+    private MtdTestIntegrityUploadPort mtdTestIntegrityUploadPort;
 
     @Before
     public void initTestData() {

@@ -6,7 +6,7 @@
 package com.advantech.webservice.port;
 
 import com.advantech.model.Worktime;
-import com.advantech.webservice.root.TxMtdTestIntegrityUploadRoot;
+import com.advantech.webservice.root.MtdTestIntegrityUploadRoot;
 import javax.xml.bind.JAXBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,14 +17,14 @@ import org.springframework.stereotype.Component;
  * @author Wei.Cheng 測試訊息資料維護
  */
 @Component
-public class TxMtdTestIntegrityUploadPort extends BasicUploadPort implements UploadPort {
+public class MtdTestIntegrityUploadPort extends BasicUploadPort implements UploadPort {
 
-    private static final Logger logger = LoggerFactory.getLogger(TxMtdTestIntegrityUploadPort.class);
+    private static final Logger logger = LoggerFactory.getLogger(MtdTestIntegrityUploadPort.class);
 
     @Override
     protected void initJaxbMarshaller() {
         try {
-            super.initJaxbMarshaller(TxMtdTestIntegrityUploadRoot.class);
+            super.initJaxbMarshaller(MtdTestIntegrityUploadRoot.class);
         } catch (JAXBException e) {
             logger.error(e.toString());
         }
@@ -47,9 +47,9 @@ public class TxMtdTestIntegrityUploadPort extends BasicUploadPort implements Upl
 
     private void generateRootAndUpload(Worktime w, UploadType type) throws Exception {
         try {
-            TxMtdTestIntegrityUploadRoot root = new TxMtdTestIntegrityUploadRoot();
+            MtdTestIntegrityUploadRoot root = new MtdTestIntegrityUploadRoot();
 
-            TxMtdTestIntegrityUploadRoot.MTDTESTINTEGRITY t = root.getMTDTESTINTEGRITY();
+            MtdTestIntegrityUploadRoot.MTDTESTINTEGRITY t = root.getMTDTESTINTEGRITY();
             //Get T1 T2 state & items cnt from worktime field
             t.setDUTPARTNO(w.getModelName());
             t.setSTATIONNAME("T1");

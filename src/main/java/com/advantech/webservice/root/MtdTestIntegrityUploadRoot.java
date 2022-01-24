@@ -62,16 +62,16 @@ import javax.xml.bind.annotation.XmlType;
     "mtdtestintegrity"
 })
 @XmlRootElement(name = "root")
-public class TxMtdTestIntegrityUploadRoot {
+public class MtdTestIntegrityUploadRoot {
 
     @XmlElement(name = "METHOD", required = true)
-    protected TxMtdTestIntegrityUploadRoot.METHOD method;
+    protected MtdTestIntegrityUploadRoot.METHOD method;
     @XmlElement(name = "MTD_TEST_INTEGRITY", required = true)
-    protected TxMtdTestIntegrityUploadRoot.MTDTESTINTEGRITY mtdtestintegrity;
+    protected MtdTestIntegrityUploadRoot.MTDTESTINTEGRITY mtdtestintegrity;
 
-    public TxMtdTestIntegrityUploadRoot() {
-        this.method = new TxMtdTestIntegrityUploadRoot.METHOD();
-        this.mtdtestintegrity = new TxMtdTestIntegrityUploadRoot.MTDTESTINTEGRITY();
+    public MtdTestIntegrityUploadRoot() {
+        this.method = new MtdTestIntegrityUploadRoot.METHOD();
+        this.mtdtestintegrity = new MtdTestIntegrityUploadRoot.MTDTESTINTEGRITY();
     }
 
     /**
@@ -80,7 +80,7 @@ public class TxMtdTestIntegrityUploadRoot {
      * @return possible object is {@link Root.METHOD }
      *
      */
-    public TxMtdTestIntegrityUploadRoot.METHOD getMETHOD() {
+    public MtdTestIntegrityUploadRoot.METHOD getMETHOD() {
         return method;
     }
 
@@ -90,7 +90,7 @@ public class TxMtdTestIntegrityUploadRoot {
      * @param value allowed object is {@link Root.METHOD }
      *
      */
-    public void setMETHOD(TxMtdTestIntegrityUploadRoot.METHOD value) {
+    public void setMETHOD(MtdTestIntegrityUploadRoot.METHOD value) {
         this.method = value;
     }
 
@@ -100,7 +100,7 @@ public class TxMtdTestIntegrityUploadRoot {
      * @return possible object is {@link Root.MTDTESTINTEGRITY }
      *
      */
-    public TxMtdTestIntegrityUploadRoot.MTDTESTINTEGRITY getMTDTESTINTEGRITY() {
+    public MtdTestIntegrityUploadRoot.MTDTESTINTEGRITY getMTDTESTINTEGRITY() {
         return mtdtestintegrity;
     }
 
@@ -110,7 +110,7 @@ public class TxMtdTestIntegrityUploadRoot {
      * @param value allowed object is {@link Root.MTDTESTINTEGRITY }
      *
      */
-    public void setMTDTESTINTEGRITY(TxMtdTestIntegrityUploadRoot.MTDTESTINTEGRITY value) {
+    public void setMTDTESTINTEGRITY(MtdTestIntegrityUploadRoot.MTDTESTINTEGRITY value) {
         this.mtdtestintegrity = value;
     }
 
