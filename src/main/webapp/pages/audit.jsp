@@ -159,7 +159,8 @@
                     {label: 'CleanPanel+Assembly', name: "cleanPanelAndAssembly", jsonmap: "0.cleanPanelAndAssembly", width: 200, searchrules: number_search_rule, searchoptions: search_decimal_options},
                     {label: 'Modified_Date', width: 200, name: "modifiedDate", jsonmap: "0.modifiedDate", index: "modifiedDate", formatter: 'date', formatoptions: {srcformat: 'Y-m-d H:i:s A', newformat: 'Y-m-d H:i:s A'}, stype: 'text', searchrules: date_search_rule, searchoptions: search_date_options, align: 'center', hidden: true},
                     {label: '自動化人機協作', width: 200, name: "hrcValues", jsonmap: "0.hrcValues", index: "hrcValues", align: 'center'},
-                    {label: '修改原因', name: "reasonCode", jsonmap: "0.reasonCode", formatter: selectOptions["modReasonCode_func"], width: 100, searchrules: {required: true}, searchoptions: search_string_options}
+                    {label: '修改原因代號', name: "reasonCode", jsonmap: "0.reasonCode", formatter: selectOptions["modReasonCode_func"], width: 100, searchrules: {required: true}, searchoptions: search_string_options},
+                    {label: '修改原因描述', name: "worktimeModReason", jsonmap: "0.worktimeModReason", width: 100, search: false}
                 ],
                 rowNum: 100,
                 rowList: [100, 200, 500, 1000],

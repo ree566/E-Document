@@ -499,7 +499,7 @@ public class FileUploadController {
 
     private Object getCellValue(Row row, String letter) {
         Cell cell = CellUtil.getCell(row, CellReference.convertColStringToIndex(letter));
-        CellType cellType = cell.getCellTypeEnum();
+        CellType cellType = cell.getCellType();
         if (null == cellType) {
             return null;
         } else {
@@ -509,9 +509,9 @@ public class FileUploadController {
                     return value == null || "".equals(value.trim()) ? null : value;
                 case FORMULA:
                     switch (cell.getCachedFormulaResultType()) {
-                        case Cell.CELL_TYPE_NUMERIC:
+                        case NUMERIC:
                             return cell.getNumericCellValue();
-                        case Cell.CELL_TYPE_STRING:
+                        case STRING:
                             return null;
                     }
                 case NUMERIC:
@@ -532,7 +532,7 @@ public class FileUploadController {
 
     private int isFormula(Row row, String letter) {
         Cell cell = CellUtil.getCell(row, CellReference.convertColStringToIndex(letter));
-        return cell.getCellType() == Cell.CELL_TYPE_FORMULA ? 1 : 0;
+        return cell.getCellType() == CellType.FORMULA ? 1 : 0;
     }
 
     private void cellSetAlert(Row row, String letter, CellStyle style) {

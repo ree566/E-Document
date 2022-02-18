@@ -204,14 +204,6 @@ public class ExcelGenerator {
         return dateCellStyle;
     }
 
-    private CellStyle createTestCell() {
-        CellStyle style = workbook.createCellStyle();
-        Font font = workbook.createFont();
-        font.setColor(HSSFColor.RED.index);
-        style.setFont(font);
-        return style;
-    }
-
     public void formatExcel() {
         for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
             Sheet sheet = workbook.getSheetAt(i);

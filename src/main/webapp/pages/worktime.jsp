@@ -176,9 +176,11 @@
                 if (revision_number != selected_row_revision) {
                     return [false, "欄位版本已經被修改，請重新整理檢視新版本"];
                 } else {
+                    var standardWorkReasonCode = $("#standardWorkReasonCode").val();
                     var standardWorkReason = $("#standardWorkReason").val();
-                    if (standardWorkReason != "") {
-                        postdata.reasonCode = standardWorkReason;
+                    if (standardWorkReasonCode != "" || standardWorkReason != "") {
+                        postdata.reasonCode = standardWorkReasonCode;
+                        postdata.worktimeModReason = standardWorkReason;
                     }
                     $.extend(postdata, formulaFieldInfo);
                     return [true, "saved"];
@@ -259,7 +261,7 @@
                 {label: 'PRE-ASSY', name: "preAssy.id", edittype: "select", editoptions: {value: selectOptions["preAssy"]}, formatter: selectOptions["preAssy_func"], width: 100, searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["preAssy"], sopt: ['eq']}},
                 {label: 'BAB_FLOW', name: "flowByBabFlowId.id", edittype: "select", editoptions: {value: selectOptions["bab_flow"], dataEvents: babFlow_select_event, defaultValue: "111"}, formatter: selectOptions["bab_flow_func"], cellattr: hideEmptyBabFlow, width: 100, searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["bab_flow"], sopt: ['eq']}},
                 {label: 'TEST_FLOW', name: "flowByTestFlowId.id", edittype: "select", editoptions: {value: selectOptions["test_flow"], dataEvents: testFlow_select_event}, formatter: selectOptions["test_flow_func"], width: 100, searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["test_flow"], sopt: ['eq']}},
-                {label: 'PACKING_FLOW', name: "flowByPackingFlowId.id", edittype: "select", editoptions: {value: selectOptions["pkg_flow"]}, formatter: selectOptions["pkg_flow_func"], width: 140, searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["pkg_flow"], sopt: ['eq']}},
+                {label: 'PACKING_FLOW', name: "flowByPackingFlowId.id", edittype: "select", editoptions: {value: selectOptions["pkg_flow"]}, formatter: selectOptions["pkg_flow_func"], width: 140, searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["pkg_flow"], sopt: ['eq']}, formoptions: {elmsuffix: "<b class='danger'>確認秤重途程</b>"}},
                 {label: 'PART-LINK', name: "partLink", edittype: "select", editoptions: {value: "Y:Y;N:N", defaultValue: 'Y'}, width: 100, searchrules: {required: true}, searchoptions: search_string_options},
                 {label: 'CE', name: "ce", width: 60, searchrules: number_search_rule, searchoptions: search_string_options, edittype: "select", editoptions: {value: "0:0;1:1"}},
                 {label: 'UL', name: "ul", width: 60, searchrules: number_search_rule, searchoptions: search_string_options, edittype: "select", editoptions: {value: "0:0;1:1"}},
@@ -375,6 +377,7 @@
                             $("#flowByBabFlowId\\.id, #businessGroup\\.id").trigger("change");
                             settingFormulaCheckbox();
                             addModReasonCode();
+                            addModReasonTextarea();
                         }, 50);
                         greyout(form);
                     },
@@ -485,6 +488,7 @@
         $(window).bind('resize', function () {
             setTimeout(function () {
                 grid.jqGrid("setGridWidth", $('#worktime-content').width());
+                //grid.jqGrid("setGridHeight", $(window).height() - $("#worktime-content").position().top - 210);
             }, 1000);
         }).trigger('resize');
 
@@ -726,12 +730,17 @@
 
         function addModReasonCode() {
             var sel = "";
-            sel += "<div id='mod-reason' class='fm-button ui-corner-all fm-button-icon-left ui-state-disabled'><label>工時修改原因: </label><select id='standardWorkReason'>";
+            sel += "<div id='mod-reason' class='fm-button ui-corner-all fm-button-icon-left ui-state-disabled hidden'><div><label>工時修改原因: </label><select id='standardWorkReasonCode'>";
             modReasonCodes.forEach(function (value, key, map) {
                 sel += "<option value='" + key + "'>" + value + "</option>";
             });
-            sel += "</select></div>";
+            sel += "</select></div></div>";
             $(sel).prependTo("#Act_Buttons>td.EditButton");
+        }
+
+        function addModReasonTextarea() {
+            var html = "<div><label>工時修改原因描述: </label><textarea id='standardWorkReason'></textarea></div>";
+            $(html).prependTo("#mod-reason");
         }
 
         function setReasonCodeRelateFieldEvent(form) {
@@ -740,7 +749,7 @@
                 #upBiRi, #downBiRi, #biCost, #vibration, #hiPotLeakage, \n\
                 #coldBoot, #warmBoot");
             relativeObj.on("keyup, change", function () {
-                $("#mod-reason").removeClass("ui-state-disabled");
+                $("#mod-reason").removeClass("ui-state-disabled hidden");
                 relativeObj.unbind("keyup, change");
             });
         }

@@ -110,7 +110,10 @@ public class WorktimeController extends CrudController<Worktime> {
         removeModelNameExtraSpaceCharacter(worktime);
         validator.checkModelNameExists(worktime);
         
+        //ProductionWt changed must add reason code
         validator.checkProductionWtChanged(worktime);
+        
+        //Check reasonCode user input is valid
         validator.checkReasonCode(worktime);
 
         resetNullableColumn(worktime);

@@ -76,7 +76,6 @@ public class Worktime implements java.io.Serializable {
 
 //    @JsonIgnore
 //    private Set<WorktimeTestStationInfo> worktimeTestStationInfos = new HashSet<>();
-
     private String workCenter;
     private BigDecimal totalModule = BigDecimal.ZERO;
     private BigDecimal cleanPanel = BigDecimal.ZERO;
@@ -135,16 +134,18 @@ public class Worktime implements java.io.Serializable {
     private BigDecimal assyKanbanTime = BigDecimal.ZERO;
     private BigDecimal packingKanbanTime = BigDecimal.ZERO;
     private BigDecimal cleanPanelAndAssembly = BigDecimal.ZERO;
-    
+
     private Integer t1StatusQty = 0;
     private Integer t1ItemsQty = 0;
     private Integer t2StatusQty = 0;
     private Integer t2ItemsQty = 0;
-    
+
     private Date createDate;
     private Date modifiedDate;
 
     private String reasonCode;
+    private String worktimeModReason;
+
     private int twm2Flag = 0;
 
     //This value almost equals to productionWt in sap
@@ -950,6 +951,16 @@ public class Worktime implements java.io.Serializable {
         this.reasonCode = reasonCode;
     }
 
+    @Audited(withModifiedFlag = false)
+    @Column(name = "worktime_mod_reason", length = 150)
+    public String getWorktimeModReason() {
+        return worktimeModReason;
+    }
+
+    public void setWorktimeModReason(String worktimeModReason) {
+        this.worktimeModReason = worktimeModReason;
+    }
+
     @NotAudited
     @Column(name = "twm2_flag", nullable = false)
     public int getTwm2Flag() {
@@ -1026,8 +1037,6 @@ public class Worktime implements java.io.Serializable {
     public void setT2ItemsQty(Integer t2ItemsQty) {
         this.t2ItemsQty = t2ItemsQty;
     }
-    
-    
 
 //    @LazyCollection(LazyCollectionOption.FALSE)
 //    @Fetch(value = FetchMode.SUBSELECT)
@@ -1040,7 +1049,6 @@ public class Worktime implements java.io.Serializable {
 //    public void setWorktimeTestStationInfos(Set<WorktimeTestStationInfo> worktimeTestStationInfos) {
 //        this.worktimeTestStationInfos = worktimeTestStationInfos;
 //    }
-
 //---------------------------------------------------------------------
 //  Default formula column caculate
     public void setDefaultProductWt() {

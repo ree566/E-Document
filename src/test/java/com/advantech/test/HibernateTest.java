@@ -562,6 +562,7 @@ public class HibernateTest {
                 }
                 session.merge(w);
             } catch (Exception ex) {
+                System.out.println(w.getModelName());
                 System.out.println(ex);
             }
         });

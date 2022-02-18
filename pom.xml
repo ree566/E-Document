@@ -4,7 +4,7 @@
 
     <groupId>com.advantech</groupId>
     <artifactId>E-Document</artifactId>
-    <version>1.4.0-b01</version>
+    <version>1.5.0-b01</version>
     <packaging>war</packaging>
 
     <pluginRepositories>
@@ -39,11 +39,11 @@
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <poi.version>4.1.2</poi.version>
-        <spring.version>4.3.7.RELEASE</spring.version>
-        <spring-security.version>5.2.10.RELEASE</spring-security.version>
-        <hibernate.version>5.1.10.Final</hibernate.version>
-        <jackson.version>2.9.10.8</jackson.version>
-        <quartz.version>2.2.3</quartz.version>
+        <spring.version>5.2.19.RELEASE</spring.version>
+        <spring-security.version>5.1.13.RELEASE</spring-security.version>
+        <hibernate.version>5.2.18.Final</hibernate.version>
+        <jackson.version>2.13.1</jackson.version>
+        <quartz.version>2.3.2</quartz.version>
     </properties>
     
     <dependencies>
@@ -132,7 +132,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-oxm</artifactId>
-            <version>4.3.9.RELEASE</version>
+            <version>${spring.version}</version>
         </dependency>
 
         <dependency>

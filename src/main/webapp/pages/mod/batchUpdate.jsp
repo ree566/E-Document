@@ -147,6 +147,7 @@
         <li>若Update時Excel中無"Revision"欄位資訊，系統將跳過版本檢查直接覆蓋現有資料</li>
         <li style="color:red">
             <b id="modReasonHint">※當CleanPanel到Warm Boot的欄位有異動，請在Excel螢光色欄位中附上修改原因"代號"</b>
+            <b id="modReasonHint2">※當CleanPanel到Warm Boot的欄位有異動，請在Excel螢光色欄位worktimeModReason處加上修改原因描述</b>
         </li>
     </ol>
 </div>

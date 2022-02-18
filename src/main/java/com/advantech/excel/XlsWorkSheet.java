@@ -105,9 +105,9 @@ public class XlsWorkSheet {
             return "";
         }
 
-        int type = cell.getCellType();
+        CellType type = cell.getCellType();
         switch (type) {
-            case HSSFCell.CELL_TYPE_NUMERIC:
+            case NUMERIC:
                 HSSFCellStyle style = cell.getCellStyle();
                 if (HSSFDateUtil.isCellDateFormatted(cell)) {
                     return getDateValue(cell);
@@ -118,20 +118,20 @@ public class XlsWorkSheet {
                     return getNumericValue(cell);
                 }
 
-            case HSSFCell.CELL_TYPE_STRING:
+            case STRING:
                 return cell.getRichStringCellValue().getString();
 
-            case HSSFCell.CELL_TYPE_FORMULA:
+            case FORMULA:
                 throw new UnsupportedDataTypeException("Formula not supported at row="
                         + row + ", column=" + column);
 
-            case HSSFCell.CELL_TYPE_BLANK:
+            case BLANK:
                 return "";
 
-            case HSSFCell.CELL_TYPE_BOOLEAN:
+            case BOOLEAN:
                 return cell.getBooleanCellValue() ? Boolean.TRUE : Boolean.FALSE;
 
-            case HSSFCell.CELL_TYPE_ERROR:
+            case ERROR:
                 throw new UnsupportedDataTypeException("Error at row=" + row
                         + ", column=" + column);
 
@@ -247,8 +247,8 @@ public class XlsWorkSheet {
         for (int row = 0, rowCount = this.getRowCount(); row < rowCount; row++) {
             HSSFCell checkedCell = _sheet.getRow(row).getCell(0);
             HSSFCell checkedCell2 = _sheet.getRow(row).getCell(1);
-            if (checkedCell == null || checkedCell.getCellTypeEnum() == CellType.BLANK
-                    || checkedCell2 == null || checkedCell2.getCellTypeEnum() == CellType.BLANK
+            if (checkedCell == null || checkedCell.getCellType() == CellType.BLANK
+                    || checkedCell2 == null || checkedCell2.getCellType() == CellType.BLANK
                     || ("".equals(formatter.formatCellValue(checkedCell)) && "".equals(formatter.formatCellValue(checkedCell2)))) {
                 continue;
             }

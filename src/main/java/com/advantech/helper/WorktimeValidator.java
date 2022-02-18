@@ -59,6 +59,7 @@ public class WorktimeValidator {
     private void checkProductionWt(Worktime currentW, Worktime existW, WorktimeFormulaSetting setting) {
 
         String reasonCode = currentW.getReasonCode();
+        String modReason = currentW.getWorktimeModReason();
         boolean fieldChangeFlag = this.isProductWtRelativeFieldChanged(currentW, existW);
         checkAppendUnNecessaryReasonCode(fieldChangeFlag, reasonCode);
 
@@ -79,8 +80,8 @@ public class WorktimeValidator {
             flag = fieldChangeFlag;
         }
 
-        checkArgument(flag == false || (flag == true && isReasonCodeChanged(reasonCode)),
-                currentW.getModelName() + " ProductionWt has changed, please choose a mod reason code");
+        checkArgument(flag == false || (flag == true && isReasonCodeChanged(reasonCode) && isModReasonValid(modReason)),
+                currentW.getModelName() + " ProductionWt has changed, please choose a mod reason code and insert reason");
     }
 
     private void checkAppendUnNecessaryReasonCode(boolean isChanged, String reasonCode) {
@@ -91,6 +92,10 @@ public class WorktimeValidator {
 
     private boolean isReasonCodeChanged(String reasonCode) {
         return reasonCode != null && !"".equals(reasonCode) && !"0".equals(reasonCode);
+    }
+    
+    private boolean isModReasonValid(String reason){
+        return reason != null && !"".equals(reason);
     }
 
     private boolean isProductWtRelativeFieldChanged(Worktime currentW, Worktime existW) {
