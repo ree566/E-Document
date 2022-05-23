@@ -295,7 +295,7 @@
                 {label: '藍燈包裝(秒)', width: 80, name: "bwFields.0.packingAvg", index: "bwFields.packingAvg", sortable: true, searchrules: number_search_rule, searchoptions: search_decimal_options},
                 {label: 'M2機種', width: 80, name: "twm2Flag", search: true, searchrules: number_search_rule, searchoptions: search_string_options, edittype: "select", editoptions: {value: "0:N;1:Y"}},
                 {label: '自動化人機協作', width: 80, name: "hrcValues", search: false, edittype: "select", editoptions: {
-                        value: "ADAM智能混流生產:ADAM智能混流生產;MTP智能混流生產:MTP智能混流生產;智能混流自動封箱:智能混流自動封箱;OCR影像智能檢測:OCR影像智能檢測",
+                        value: "ADAM智能混流生產:ADAM智能混流生產;MTP智能混流生產:MTP智能混流生產;智能混流自動封箱:智能混流自動封箱;OCR影像智能檢測:OCR影像智能檢測;附件包人機協作:附件包人機協作",
                         dataInit: function (elem) {
                             setTimeout(function () {
                                 $(elem).multiSelect({
