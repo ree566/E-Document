@@ -240,7 +240,7 @@
                 {label: 'Create_Date', width: 200, name: "createDate", index: "createDate", formatter: 'date', formatoptions: {srcformat: 'Y-m-d H:i:s A', newformat: 'Y-m-d H:i:s A'}, stype: 'text', searchrules: date_search_rule, searchoptions: search_date_options, align: 'center'},
                 {label: 'Modified_Date', width: 200, name: "modifiedDate", index: "modifiedDate", formatter: 'date', formatoptions: {srcformat: 'Y-m-d H:i:s A', newformat: 'Y-m-d H:i:s A'}, stype: 'text', searchrules: date_search_rule, searchoptions: search_date_options, align: 'center'},
                 {label: '自動化人機協作', width: 80, name: "hrcValues", search: false, edittype: "select", editoptions: {
-                        value: "LCD自動檢測設備:LCD自動檢測設備;AB智能混灌設備:AB智能混灌設備",
+                        value: "LCD自動檢測設備:LCD自動檢測設備;AB智能混灌設備:AB智能混灌設備;TP貼合設備:TP貼合設備",
                         dataInit: function (elem) {
                             setTimeout(function () {
                                 $(elem).multiSelect({
