@@ -33,26 +33,13 @@ public class WorktimeFormulaSetting implements java.io.Serializable {
     private int assyKanbanTime = 1;
     private int packingKanbanTime = 1;
     private int cleanPanelAndAssembly = 1;
+    private int machineWorktime = 1;
 
     public WorktimeFormulaSetting() {
     }
 
     public WorktimeFormulaSetting(Worktime worktime) {
         this.worktime = worktime;
-    }
-
-    public WorktimeFormulaSetting(int id, Worktime worktime, int productionWt, int setupTime, int assyToT1, int t2ToPacking, int assyStation, int packingStation, int assyKanbanTime, int packingKanbanTime, int cleanPanelAndAssembly) {
-        this.id = id;
-        this.worktime = worktime;
-        this.productionWt = productionWt;
-        this.setupTime = setupTime;
-        this.assyToT1 = assyToT1;
-        this.t2ToPacking = t2ToPacking;
-        this.assyStation = assyStation;
-        this.packingStation = packingStation;
-        this.assyKanbanTime = assyKanbanTime;
-        this.packingKanbanTime = packingKanbanTime;
-        this.cleanPanelAndAssembly = cleanPanelAndAssembly;
     }
 
     @Id
@@ -155,6 +142,15 @@ public class WorktimeFormulaSetting implements java.io.Serializable {
 
     public void setCleanPanelAndAssembly(int cleanPanelAndAssembly) {
         this.cleanPanelAndAssembly = cleanPanelAndAssembly;
+    }
+
+    @Column(name = "machine_worktime", nullable = false)
+    public int getMachineWorktime() {
+        return machineWorktime;
+    }
+
+    public void setMachineWorktime(int machineWorktime) {
+        this.machineWorktime = machineWorktime;
     }
 
 }

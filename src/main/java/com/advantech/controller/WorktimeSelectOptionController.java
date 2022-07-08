@@ -6,6 +6,7 @@
 package com.advantech.controller;
 
 import com.advantech.model.BusinessGroup;
+import com.advantech.model.Cobot;
 import com.advantech.model.Floor;
 import com.advantech.model.Flow;
 import com.advantech.model.FlowGroup;
@@ -17,6 +18,7 @@ import com.advantech.model.User;
 import com.advantech.model.UserNotification;
 import com.advantech.model.UserProfile;
 import com.advantech.service.BusinessGroupService;
+import com.advantech.service.CobotService;
 import com.advantech.service.FloorService;
 import com.advantech.service.FlowGroupService;
 import com.advantech.service.FlowService;
@@ -30,8 +32,6 @@ import com.advantech.service.UserProfileService;
 import com.advantech.webservice.port.StandardWorkReasonQueryPort;
 import com.advantech.webservice.unmarshallclass.StandardWorkReason;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -83,6 +83,9 @@ public class WorktimeSelectOptionController {
 
     @Autowired
     private StandardWorkReasonQueryPort standardWorkReasonQueryPort;
+    
+    @Autowired
+    private CobotService cobotService;
 
     @ResponseBody
     @RequestMapping(value = "/floor", method = {RequestMethod.GET})
@@ -184,5 +187,11 @@ public class WorktimeSelectOptionController {
         } catch (Exception ex) {
             throw new Exception("Error while getting mod reason code select options");
         }
+    }
+    
+    @ResponseBody
+    @RequestMapping(value = "/cobots", method = {RequestMethod.GET})
+    protected List<Cobot> getCobotOption() throws Exception {
+        return cobotService.findAll();
     }
 }

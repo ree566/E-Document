@@ -8,16 +8,21 @@ package com.advantech.service;
 import com.advantech.dao.*;
 import com.advantech.helper.WorktimeValidator;
 import com.advantech.jqgrid.PageInfo;
+import com.advantech.model.Cobot;
 import com.advantech.model.Worktime;
 import com.advantech.model.WorktimeFormulaSetting;
-import com.advantech.webservice.port.StandardWorkReasonQueryPort;
 import static com.google.common.base.Preconditions.*;
 import static com.google.common.collect.Lists.newArrayList;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.apache.commons.beanutils.BeanUtils;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -52,7 +57,9 @@ public class WorktimeService {
 
     public List<Worktime> findAll(PageInfo info) {
         trimSearchString(info);
-        return worktimeDAO.findAll(info);
+        List<Worktime> l = worktimeDAO.findAll(info);
+        l.forEach(w -> Hibernate.initialize(w.getCobots()));
+        return l;
     }
 
     public Worktime findByPrimaryKey(Object obj_id) {
@@ -67,9 +74,18 @@ public class WorktimeService {
         return worktimeDAO.findByModel(modelName);
     }
 
+    public Set<Cobot> findCobots(int obj_id) {
+        Worktime w = this.findByPrimaryKey(obj_id);
+        Set result = w.getCobots();
+        Hibernate.initialize(result);
+        return result;
+    }
+
     public List<Worktime> findWithFullRelation(PageInfo info) {
         trimSearchString(info);
-        return worktimeDAO.findWithFullRelation(info);
+        List<Worktime> result = worktimeDAO.findWithFullRelation(info);
+        result.forEach(w -> Hibernate.initialize(w.getCobots()));
+        return result;
     }
 
     private void trimSearchString(PageInfo info) {
@@ -116,6 +132,8 @@ public class WorktimeService {
     }
 
     public int insertSeries(String baseModelName, List<String> seriesModelNames) throws Exception {
+        //Insert worktime then insert worktimeFormulaSetting & cobots setting
+        
         Worktime baseW = this.findByModel(baseModelName);
         checkArgument(baseW != null, "Can't find modelName: " + baseModelName);
         List<Worktime> l = new ArrayList();
@@ -124,15 +142,20 @@ public class WorktimeService {
             Worktime cloneW = (Worktime) BeanUtils.cloneBean(baseW);
             cloneW.setId(0); //CloneW is a new row, reset id.
             cloneW.setModelName(seriesModelName);
+            cloneW.setReasonCode(null); //Don't copy exist reason in base model
+            
+            //Remove relation from FK models
             cloneW.setWorktimeFormulaSettings(null);
             cloneW.setBwFields(null);
-            cloneW.setReasonCode(null); //Don't copy exist reason in base model
+            cloneW.setCobots(null);
+            
             l.add(cloneW);
         }
 
         validator.checkModelNameExists(l);
         this.insert(l);
 
+        //Insert worktimeFormulaSetting
         WorktimeFormulaSetting baseWSetting = baseW.getWorktimeFormulaSettings().get(0);
         checkState(baseWSetting != null, "Can't find formulaSetting on: " + baseModelName);
         for (Worktime w : l) {
@@ -141,6 +164,19 @@ public class WorktimeService {
             worktimeFormulaSettingDAO.insert(cloneSetting);
         }
 
+        //Insert cobots setting
+        Set<Cobot> cobots = baseW.getCobots();
+        Set<Cobot> cloneCobotsSetting = new HashSet<>(); 
+        for(Cobot c : cobots){
+            Cobot cloneCobot = (Cobot) BeanUtils.cloneBean(c);
+            cloneCobotsSetting.add(cloneCobot);
+        }
+        
+        l.forEach(w ->{
+            w.setCobots(cloneCobotsSetting);
+            worktimeDAO.update(w);
+        });
+ 
         return 1;
     }
 
@@ -247,10 +283,26 @@ public class WorktimeService {
         if (isColumnCalculated(setting.getPackingKanbanTime())) {
             w.setDefaultPackingKanbanTime();
         }
+        if (isColumnCalculated(setting.getMachineWorktime())) {
+            //Set machine worktime
+            w = setCobotWorktime(w);
+        }
     }
 
     private boolean isColumnCalculated(int i) {
         return i == 1;
+    }
+
+    public Worktime setCobotWorktime(Worktime w) {
+        //Find cobots setting if cobots is not provide when user use excel batch update model
+        Set<Cobot> cobots = w.getCobots() == null ? this.findCobots(w.getId()) : w.getCobots();
+        if (cobots != null && !cobots.isEmpty()) {
+            BigDecimal machineWorktime = cobots.stream()
+                    .map(x -> x.getWorktimeSeconds())
+                    .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(1, RoundingMode.HALF_UP);
+            w.setMachineWorktime(machineWorktime);
+        }
+        return w;
     }
 
     //For sysop batch insert data into database.

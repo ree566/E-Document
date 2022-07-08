@@ -10,6 +10,7 @@ import com.advantech.excel.XlsWorkBook;
 import com.advantech.excel.XlsWorkSheet;
 import com.advantech.helper.WorktimeValidator;
 import com.advantech.model.BusinessGroup;
+import com.advantech.model.Cobot;
 import com.advantech.model.Floor;
 import com.advantech.model.Flow;
 import com.advantech.model.Pending;
@@ -19,6 +20,7 @@ import com.advantech.model.User;
 import com.advantech.model.Worktime;
 import com.advantech.service.AuditService;
 import com.advantech.service.BusinessGroupService;
+import com.advantech.service.CobotService;
 import com.advantech.service.FloorService;
 import com.advantech.service.FlowService;
 import com.advantech.service.PendingService;
@@ -27,8 +29,10 @@ import com.advantech.service.TypeService;
 import com.advantech.service.UserService;
 import com.advantech.service.WorktimeService;
 import com.google.gson.Gson;
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -83,6 +87,9 @@ public class WorktimeBatchModController {
 
     @Autowired
     private BusinessGroupService businessGroupService;
+
+    @Autowired
+    private CobotService cobotService;
 
     @Autowired
     private AuditService auditService;
@@ -174,7 +181,7 @@ public class WorktimeBatchModController {
     private List<Worktime> transToWorktimes(MultipartFile file, boolean checkRevision) throws Exception {
         //固定sheet name為sheet1
 
-        try (XlsWorkBook workbook = new XlsWorkBook(file.getInputStream())) {
+        try ( XlsWorkBook workbook = new XlsWorkBook(file.getInputStream())) {
             XlsWorkSheet sheet = workbook.getSheet("sheet1");
             if (sheet == null) {
                 throw new Exception("Sheet named \"sheet1\" not found");
@@ -195,6 +202,30 @@ public class WorktimeBatchModController {
             return hgList;
         }
 
+    }
+
+    public List<Worktime> transToWorktimes(InputStream file, boolean checkRevision) throws Exception {
+
+        try ( XlsWorkBook workbook = new XlsWorkBook(file)) {
+            XlsWorkSheet sheet = workbook.getSheet("sheet1");
+            if (sheet == null) {
+                throw new Exception("Sheet named \"sheet1\" not found");
+            }
+
+            //Init not relative column first.
+            List<Worktime> hgList = sheet.buildBeans(Worktime.class);
+
+            //If id is zero, the action is add.
+            if (checkRevision) {
+                Integer revisionNum = retriveRevisionNumber(sheet);
+                if (revisionNum != null) {
+                    checkRevision(hgList, revisionNum);
+                }
+            }
+
+            hgList = retrieveRelativeColumns(sheet, hgList);
+            return hgList;
+        }
     }
 
     //Check revision number is greater than current revision
@@ -278,6 +309,7 @@ public class WorktimeBatchModController {
         Map<String, Pending> pendingOptions = toSelectOptions(pendingService.findAll());
         Map<String, PreAssy> preAssyOptions = toSelectOptions(preAssyService.findAll());
         Map<String, BusinessGroup> businessGroupOptions = toSelectOptions(businessGroupService.findAll());
+        Map<String, Cobot> cobotOptions = toSelectOptions(cobotService.findAll());
 
         //設定關聯by name
         for (int i = 0; i < hgList.size(); i++) {
@@ -311,6 +343,13 @@ public class WorktimeBatchModController {
             String businessGroupName = sheet.getValue(i, "businessGroupName").toString();
             w.setBusinessGroup(valid(businessGroupName, businessGroupOptions.get(businessGroupName)));
 
+            String cobotNames = sheet.getValue(i, "cobots").toString();
+            String[] cobotNamesArr = (cobotNames == null ? new String[0] : cobotNames.trim().split(","));
+            Set<Cobot> c = new HashSet();
+            for(String cobotName: cobotNamesArr){
+                c.add(valid(cobotName, cobotOptions.get(cobotName)));
+            }
+            w.setCobots(c);
         }
 
         return hgList;

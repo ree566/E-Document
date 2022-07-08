@@ -8,7 +8,7 @@ package com.advantech.test;
 import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.Flow;
-import com.advantech.model.HrcType;
+import com.advantech.model.Cobot;
 import com.advantech.model.Worktime;
 import com.advantech.model.WorktimeAutouploadSetting;
 import com.advantech.model.WorktimeFormulaSetting;
@@ -40,7 +40,7 @@ import javax.transaction.Transactional;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
-import static junit.framework.Assert.*;
+import static org.junit.Assert.*;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -361,22 +361,6 @@ public class HibernateTest {
 //    @Test
     @Transactional
     @Rollback(false)
-    public void testHrcType() throws Exception {
-        Session session = sessionFactory.getCurrentSession();
-        HrcType ht = session.get(HrcType.class, 1);
-        HrcType ht2 = session.get(HrcType.class, 2);
-        Worktime w = session.get(Worktime.class, 3815);
-        Set s = new HashSet();
-        s.add(ht);
-        s.add(ht2);
-//        w.setHrcTypes(s);
-        session.update(w);
-        HibernateObjectPrinter.print(ht);
-    }
-
-//    @Test
-    @Transactional
-    @Rollback(false)
     public void testWorktime2() throws Exception {
         Session session = sessionFactory.getCurrentSession();
         List<String> models = newArrayList(
@@ -536,7 +520,7 @@ public class HibernateTest {
     @Autowired
     private MtdTestIntegrityQueryPort mtdTestIntegrityQueryPort;
 
-    @Test
+//    @Test
     @Transactional
     @Rollback(false)
     public void testRetrieveTEstIntegrity() {
@@ -564,6 +548,24 @@ public class HibernateTest {
             } catch (Exception ex) {
                 System.out.println(w.getModelName());
                 System.out.println(ex);
+            }
+        });
+    }
+
+    @Test
+    @Transactional
+    @Rollback(false)
+    public void testMachineWorktime() {
+        Session session = sessionFactory.getCurrentSession();
+        List<Worktime> l = session
+                .createQuery("select w from Worktime w", Worktime.class)
+                .getResultList();
+        assertEquals(5614, l.size());
+
+        l.forEach(w -> {
+            if (!w.getCobots().isEmpty()) {
+                this.worktimeService.setCobotWorktime(w);
+                session.save(w);
             }
         });
     }

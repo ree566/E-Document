@@ -8,7 +8,9 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -16,6 +18,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -28,6 +32,8 @@ import javax.validation.constraints.Size;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
@@ -74,8 +80,6 @@ public class Worktime implements java.io.Serializable {
     @JsonIgnore
     private List<WorktimeFormulaSetting> worktimeFormulaSettings = new AutoPopulatingList<WorktimeFormulaSetting>(WorktimeFormulaSetting.class);
 
-//    @JsonIgnore
-//    private Set<WorktimeTestStationInfo> worktimeTestStationInfos = new HashSet<>();
     private String workCenter;
     private BigDecimal totalModule = BigDecimal.ZERO;
     private BigDecimal cleanPanel = BigDecimal.ZERO;
@@ -134,6 +138,7 @@ public class Worktime implements java.io.Serializable {
     private BigDecimal assyKanbanTime = BigDecimal.ZERO;
     private BigDecimal packingKanbanTime = BigDecimal.ZERO;
     private BigDecimal cleanPanelAndAssembly = BigDecimal.ZERO;
+    private BigDecimal machineWorktime = BigDecimal.ZERO;
 
     private Integer t1StatusQty = 0;
     private Integer t1ItemsQty = 0;
@@ -152,8 +157,7 @@ public class Worktime implements java.io.Serializable {
     private BigDecimal sapWt = BigDecimal.ZERO;
 
 //    @JsonIgnore
-//    private Set<HrcType> hrcTypes = new HashSet<>(0);
-    private String hrcValues;
+    private Set<Cobot> cobots = new HashSet<Cobot>(0);
 
     public Worktime() {
     }
@@ -277,7 +281,7 @@ public class Worktime implements java.io.Serializable {
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "type_id", nullable = false)
+    @JoinColumn(name = "[type_id]", nullable = false)
     public Type getType() {
         return this.type;
     }
@@ -889,6 +893,16 @@ public class Worktime implements java.io.Serializable {
         this.cleanPanelAndAssembly = autoFixScale(cleanPanelAndAssembly, 1);
     }
 
+    @Digits(integer = 10 /*precision*/, fraction = 1 /*scale*/)
+    @Column(name = "machine_worktime", precision = 10, scale = 1)
+    public BigDecimal getMachineWorktime() {
+        return machineWorktime;
+    }
+
+    public void setMachineWorktime(BigDecimal machineWorktime) {
+        this.machineWorktime = machineWorktime;
+    }
+
     private BigDecimal autoFixScale(BigDecimal d, int scale) {
         return d == null ? null : d.setScale(scale, RoundingMode.HALF_UP);
     }
@@ -981,27 +995,6 @@ public class Worktime implements java.io.Serializable {
         this.sapWt = sapWt;
     }
 
-//    @ManyToMany(fetch = FetchType.EAGER)
-//    @JoinTable(name = "Worktime_HRC_REF", joinColumns = {
-//        @JoinColumn(name = "worktime_id", nullable = false, insertable = false, updatable = false)}, inverseJoinColumns = {
-//        @JoinColumn(name = "hrc_id", nullable = false, insertable = false, updatable = false)})
-//    public Set<HrcType> getHrcTypes() {
-//        return hrcTypes;
-//    }
-//
-//    public void setHrcTypes(Set<HrcType> hrcTypes) {
-//        this.hrcTypes = hrcTypes;
-//    }
-    @Size(min = 0, max = 200)
-    @Column(name = "hrc_values", length = 200)
-    public String getHrcValues() {
-        return hrcValues;
-    }
-
-    public void setHrcValues(String hrcValues) {
-        this.hrcValues = hrcValues;
-    }
-
     @Column(name = "t1_statusQty")
     public Integer getT1StatusQty() {
         return t1StatusQty;
@@ -1036,6 +1029,20 @@ public class Worktime implements java.io.Serializable {
 
     public void setT2ItemsQty(Integer t2ItemsQty) {
         this.t2ItemsQty = t2ItemsQty;
+    }
+
+//    @NotAudited
+    @ManyToMany
+    @Fetch(FetchMode.SUBSELECT)
+    @JoinTable(name = "Worktime_Cobot_REF", joinColumns = {
+        @JoinColumn(name = "worktime_id", nullable = false, insertable = false, updatable = false)}, inverseJoinColumns = {
+        @JoinColumn(name = "cobot_id", nullable = false, insertable = false, updatable = false)})
+    public Set<Cobot> getCobots() {
+        return cobots;
+    }
+
+    public void setCobots(Set<Cobot> cobots) {
+        this.cobots = cobots;
     }
 
 //    @LazyCollection(LazyCollectionOption.FALSE)

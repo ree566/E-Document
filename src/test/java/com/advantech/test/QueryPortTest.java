@@ -36,7 +36,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import static java.util.stream.Collectors.toList;
 import javax.transaction.Transactional;
-import static junit.framework.Assert.*;
+import static org.junit.Assert.*;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;

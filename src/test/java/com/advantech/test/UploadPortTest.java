@@ -22,7 +22,7 @@ import com.advantech.webservice.port.SopUploadPort;
 import com.advantech.webservice.port.StandardtimeUploadPort;
 import java.util.List;
 import javax.transaction.Transactional;
-import static junit.framework.Assert.*;
+import static org.junit.Assert.*;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.MatchMode;

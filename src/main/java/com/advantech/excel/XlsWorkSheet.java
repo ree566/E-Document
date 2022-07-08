@@ -263,6 +263,9 @@ public class XlsWorkSheet {
                         continue;
                     }
                     String pType = m.getGenericParameterTypes()[0].toString();
+                    if (pType.contains("java.util.List") || pType.contains("java.util.Set")) {
+                        continue;
+                    }
                     switch (pType) {
                         case "class java.lang.Integer":
                         case "int":

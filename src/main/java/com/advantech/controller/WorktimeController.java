@@ -11,11 +11,13 @@ import com.advantech.helper.WorktimeValidator;
 import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.Worktime;
 import com.advantech.jqgrid.JqGridResponse;
+import com.advantech.model.Cobot;
 import com.advantech.service.WorktimeService;
 import static com.google.common.base.Preconditions.*;
 import static com.google.common.collect.Lists.newArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -134,6 +136,13 @@ public class WorktimeController extends CrudController<Worktime> {
             worktimeMailManager.notifyUser(newArrayList(w), DELETE);
         }
         return serverResponse(modifyMessage);
+    }
+    
+    //編輯Cobots用
+    @ResponseBody
+    @RequestMapping(value = SELECT_URL + "/cobots", method = {RequestMethod.GET})
+    public Set<Cobot> findCobot(@RequestParam int id) {
+        return worktimeService.findCobots(id);
     }
 
     private void resetNullableColumn(Worktime worktime) {

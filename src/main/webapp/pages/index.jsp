@@ -217,6 +217,9 @@
                                                 <a class="redirect-link" href="mod/type.jsp">Type</a>
                                             </li>
                                             <li>
+                                                <a class="redirect-link" href="mod/cobot.jsp">Cobot</a>
+                                            </li>
+                                            <li>
                                                 <a class="redirect-link" href="mod/batchUpdate.jsp">大表批次更新</a>
                                             </li>
                                         </sec:authorize>

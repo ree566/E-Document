@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import javax.transaction.Transactional;
-import static junit.framework.Assert.*;
+import static org.junit.Assert.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.poi.ss.usermodel.Cell;
@@ -63,12 +63,11 @@ import org.springframework.test.context.web.WebAppConfiguration;
 @RunWith(SpringJUnit4ClassRunner.class)
 public class ExcelTest {
 
-    private final String xmlConfig = "C:\\Users\\Wei.Cheng\\Desktop\\testXls\\worktime.xml";
-    private final String dataXLS = "C:\\Users\\Wei.Cheng\\Desktop\\testXls\\worktime-template.xls";
-
+//    private final String xmlConfig = "C:\\Users\\Wei.Cheng\\Desktop\\testXls\\worktime.xml";
+//    private final String dataXLS = "C:\\Users\\Wei.Cheng\\Desktop\\testXls\\worktime-template.xls";
     @Autowired
     private WorktimeService worktimeService;
-    
+
     @Autowired
     private UserService userService;
 
@@ -80,28 +79,31 @@ public class ExcelTest {
 
 //    @Test
     public void testJxls() throws Exception {
-        try (InputStream inputXML = new FileInputStream(new File(xmlConfig))) {
+        Resource r = resourceLoader.getResource("classpath:excel-template\\worktime-template.xls");
+        String filePath = "C:\\Users\\Wei.Cheng\\Desktop\\worktime_output.xls";
+        
+        try ( InputStream inputXML = r.getInputStream();  InputStream inputXLS = new FileInputStream(filePath);) {
+
             assertNotNull(inputXML);
 
             XLSReader mainReader = ReaderBuilder.buildFromXML(inputXML);
 
-            try (InputStream inputXLS = new FileInputStream(new File(dataXLS))) {
-                assertNotNull(inputXLS);
+            assertNotNull(inputXLS);
 
-                List<Worktime> l = new ArrayList();
-                Map beans = new HashMap();
-                beans.put("worktimes", l);
-                beans.put("type", new Type());
-                XLSReadStatus readStatus = mainReader.read(inputXLS, beans);
-                assertTrue(readStatus.isStatusOK());
-                System.out.println(new Gson().toJson(l));
-            }
+            List<Worktime> l = new ArrayList();
+            Map beans = new HashMap();
+            beans.put("worktimes", l);
+            beans.put("type", new Type());
+            XLSReadStatus readStatus = mainReader.read(inputXLS, beans);
+            assertTrue(readStatus.isStatusOK());
+            System.out.println(new Gson().toJson(l));
+
         }
     }
 
     @Autowired
     private SopUploadPort sopPort;
-    
+
     @Autowired
     private ModelResponsorUploadPort mappingUserPort;
 
@@ -111,13 +113,13 @@ public class ExcelTest {
     public void testFileSyncToDb() throws Exception {
 
         String syncFilePath = "C:\\Users\\MFG.ESOP\\Desktop\\PN_0824.xls";
-        try (InputStream is = new FileInputStream(new File(syncFilePath))) {
+        try ( InputStream is = new FileInputStream(new File(syncFilePath))) {
 
             Session session = sessionFactory.getCurrentSession();
             List<Worktime> l = worktimeService.findAll();
 
             Workbook workbook = WorkbookFactory.create(is);
-            
+
             List<User> users = userService.findByUnitName("MPM");
 
             for (int sheetPage = 0; sheetPage <= 0; sheetPage++) {
@@ -138,7 +140,7 @@ public class ExcelTest {
                             System.out.println("\tCan't find modelName: " + modelName + " in worktime");
                             continue;
                         }
-                        
+
                         String userName = ((String) getCellValue(row, "D")).trim();
                         User user = users.stream().filter(u -> u.getUsername().equals(userName)).findFirst().orElse(null);
                         w.setUserByMpmOwnerId(user);
@@ -194,7 +196,7 @@ public class ExcelTest {
         Resource r = resourceLoader.getResource("classpath:worktime.xml");
         String filePath = "C:\\Users\\Wei.Cheng\\Desktop\\worktime-template.xls";
 
-        try (InputStream inputXML = r.getInputStream(); InputStream inputXLS = new FileInputStream(filePath);) {
+        try ( InputStream inputXML = r.getInputStream();  InputStream inputXLS = new FileInputStream(filePath);) {
             XLSReader mainReader = ReaderBuilder.buildFromXML(inputXML);
 //            ReaderConfig.getInstance().setSkipErrors(true);
 

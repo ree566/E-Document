@@ -135,6 +135,7 @@
             <list>
                 <bean class="com.advantech.converter.UserNotificationConverter"/>
                 <bean class="com.advantech.converter.UserProfileConverter"/>
+                <bean class="com.advantech.converter.CobotConverter"/>
             </list>
         </property>
     </bean>

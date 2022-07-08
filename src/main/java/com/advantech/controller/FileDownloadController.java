@@ -5,6 +5,7 @@
  */
 package com.advantech.controller;
 
+import com.advantech.converter.CobotConverter;
 import com.advantech.excel.JxlsExcelView;
 import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.SheetView;
@@ -44,6 +45,9 @@ public class FileDownloadController {
 
     @Autowired
     private AuditService auditService;
+    
+    @Autowired
+    private CobotConverter cobotConverter;
 
     private static int fileDownloadCount = 0;
 
@@ -105,6 +109,7 @@ public class FileDownloadController {
         model.put("worktimes", l);
         model.put("dateFormat", dateFormat);
         model.put("revision", revisionInfo);
+        model.put("cobotConverter", cobotConverter);
 
         return new ModelAndView(new JxlsExcelView("excel-template/" + tempfileName, tempfileName), model);
 

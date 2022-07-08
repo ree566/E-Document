@@ -81,7 +81,9 @@ var worktimeCol = [
     {name: "t1StatusQty"},
     {name: "t1ItemsQty"},
     {name: "t2StatusQty"},
-    {name: "t2ItemsQty"}
+    {name: "t2ItemsQty"},
+    {name: "machineWorktime"},
+    {name: "cobots"}
 ];
 
 //不受show / hide 影響
@@ -99,5 +101,6 @@ var formulaColumn = [
     "packingStation",
     "assyKanbanTime",
     "packingKanbanTime",
-    "cleanPanelAndAssembly"
+    "cleanPanelAndAssembly",
+    "machineWorktime"
 ];

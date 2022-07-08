@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 import static java.util.stream.Collectors.toList;
 import javax.activation.UnsupportedDataTypeException;
 import javax.transaction.Transactional;
-import junit.framework.Assert;
+import org.junit.Assert;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import org.apache.commons.beanutils.PropertyUtils;

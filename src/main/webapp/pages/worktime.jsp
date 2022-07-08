@@ -105,9 +105,34 @@
                 {name: "flow", nameprefix: "pkg_", isNullable: true, dataToServer: "2"},
                 {name: "preAssy", isNullable: true},
                 {name: "pending", isNullable: false},
-                {name: "modReasonCode", isNullable: true}
+                {name: "modReasonCode", isNullable: true},
+                {name: "cobots", isNullable: false}
             ]
         });
+
+        var setCobots = function (form) {
+            var selectRowId = grid.jqGrid('getGridParam', 'selrow');
+            $.ajax({
+                type: "GET",
+                url: "<c:url value="/Worktime/read/cobots" />",
+                data: {
+                    id: selectRowId
+                },
+                dataType: "json",
+                success: function (response) {
+                    var arr = response;
+                    var idArr = [];
+                    for (var i = 0; i < arr.length; i++) {
+                        //convert to string because multiselect don't recognize the int type of id 
+                        idArr.push(arr[i].id.toString());
+                    }
+                    $("#cobots").multiSelect('select', idArr);
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        };
 
         var modReasonCodes = selectOptions["modReasonCode_options"];
 
@@ -217,6 +242,7 @@
                 {label: 'TYPE', name: "type.id", edittype: "select", editoptions: {value: selectOptions["type"]}, formatter: selectOptions["type_func"], width: 100, searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["type"], sopt: ['eq']}},
                 {label: 'BU', name: "businessGroup.id", edittype: "select", editoptions: {value: selectOptions["businessGroup"], dataEvents: businessGroup_select_event}, formatter: selectOptions["businessGroup_func"], width: 100, searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["businessGroup"], sopt: ['eq']}},
                 {label: 'Work Center', name: "workCenter", width: 100, searchrules: {required: true}, searchoptions: search_string_options, editrules: {required: false}},
+                {label: '人機', name: "machineWorktime", width: 120, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: {elmsuffix: addFormulaCheckbox("machineWorktime")}, editrules: {number: true}, editoptions: {defaultValue: '0'}},
                 {label: 'SapWT', name: "sapWt", width: 120, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, editoptions: {defaultValue: '0'}},
                 {label: 'ProductionWT', name: "productionWt", width: 120, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: {elmsuffix: addFormulaCheckbox("productionWt")}, editrules: {number: true}, editoptions: {defaultValue: '0'}},
                 {label: 'Setup Time', name: "setupTime", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: {elmsuffix: addFormulaCheckbox("setupTime")}, editrules: {number: true}, editoptions: {defaultValue: '0'}},
@@ -294,19 +320,17 @@
                 {label: '藍燈組裝(秒)', width: 80, name: "bwFields.0.assyAvg", index: "bwFields.assyAvg", sortable: true, searchrules: number_search_rule, searchoptions: search_decimal_options},
                 {label: '藍燈包裝(秒)', width: 80, name: "bwFields.0.packingAvg", index: "bwFields.packingAvg", sortable: true, searchrules: number_search_rule, searchoptions: search_decimal_options},
                 {label: 'M2機種', width: 80, name: "twm2Flag", search: true, searchrules: number_search_rule, searchoptions: search_string_options, edittype: "select", editoptions: {value: "0:N;1:Y"}},
-                {label: '自動化人機協作', width: 80, name: "hrcValues", search: false, edittype: "select", editoptions: {
-                        value: "ADAM智能混流生產:ADAM智能混流生產;MTP智能混流生產:MTP智能混流生產;智能混流自動封箱:智能混流自動封箱;OCR影像智能檢測:OCR影像智能檢測;附件包人機協作:附件包人機協作",
+                {label: '自動化人機協作', name: "cobots", width: 60, editable: true, hidden: false, formatter: selectOptions["cobots_func"], editrules: {edithidden: true, required: false}, edittype: "select",
+                    editoptions: {
+                        multiple: true, value: selectOptions["cobots"],
                         dataInit: function (elem) {
-                            setTimeout(function () {
-                                $(elem).multiSelect({
-                                    selectableHeader: "<div class='custom-header'>可選欄位</div>",
-                                    selectionHeader: "<div class='custom-header'>已選欄位</div>"
-                                });
-                            }, 150);
-                        },
-                        multiple: true,
-                        defaultValue: 'IN'
-                    }
+                            $(elem).multiSelect({
+                                selectableHeader: "<div class='custom-header'>可選欄位</div>",
+                                selectionHeader: "<div class='custom-header'>已選欄位</div>"
+                            });
+                        }
+                    },
+                    search: false
                 }
             ],
             rowNum: 20,
@@ -378,6 +402,7 @@
                             settingFormulaCheckbox();
                             addModReasonCode();
                             addModReasonTextarea();
+                            setCobots();
                         }, 50);
                         greyout(form);
                     },
