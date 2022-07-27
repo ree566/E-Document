@@ -133,7 +133,7 @@ public class WorktimeService {
 
     public int insertSeries(String baseModelName, List<String> seriesModelNames) throws Exception {
         //Insert worktime then insert worktimeFormulaSetting & cobots setting
-        
+
         Worktime baseW = this.findByModel(baseModelName);
         checkArgument(baseW != null, "Can't find modelName: " + baseModelName);
         List<Worktime> l = new ArrayList();
@@ -143,12 +143,12 @@ public class WorktimeService {
             cloneW.setId(0); //CloneW is a new row, reset id.
             cloneW.setModelName(seriesModelName);
             cloneW.setReasonCode(null); //Don't copy exist reason in base model
-            
+
             //Remove relation from FK models
             cloneW.setWorktimeFormulaSettings(null);
             cloneW.setBwFields(null);
             cloneW.setCobots(null);
-            
+
             l.add(cloneW);
         }
 
@@ -166,17 +166,17 @@ public class WorktimeService {
 
         //Insert cobots setting
         Set<Cobot> cobots = baseW.getCobots();
-        Set<Cobot> cloneCobotsSetting = new HashSet<>(); 
-        for(Cobot c : cobots){
+        Set<Cobot> cloneCobotsSetting = new HashSet<>();
+        for (Cobot c : cobots) {
             Cobot cloneCobot = (Cobot) BeanUtils.cloneBean(c);
             cloneCobotsSetting.add(cloneCobot);
         }
-        
-        l.forEach(w ->{
+
+        l.forEach(w -> {
             w.setCobots(cloneCobotsSetting);
             worktimeDAO.update(w);
         });
- 
+
         return 1;
     }
 
@@ -296,12 +296,14 @@ public class WorktimeService {
     public Worktime setCobotWorktime(Worktime w) {
         //Find cobots setting if cobots is not provide when user use excel batch update model
         Set<Cobot> cobots = w.getCobots() == null ? this.findCobots(w.getId()) : w.getCobots();
+        BigDecimal machineWorktime = BigDecimal.ZERO;
         if (cobots != null && !cobots.isEmpty()) {
-            BigDecimal machineWorktime = cobots.stream()
-                    .map(x -> x.getWorktimeSeconds())
+            machineWorktime = cobots.stream()
+                    .map(x -> x.getWorktimeMinutes())
                     .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(1, RoundingMode.HALF_UP);
-            w.setMachineWorktime(machineWorktime);
         }
+        w.setMachineWorktime(machineWorktime);
+
         return w;
     }
 

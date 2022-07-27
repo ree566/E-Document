@@ -105,7 +105,7 @@ public class QueryPortTest {
 
     @Before
     public void init() {
-//        w = worktimeService.findByPrimaryKey(5352);
+        w = worktimeService.findByPrimaryKey(5352);
     }
 
 //    @Test
@@ -131,7 +131,7 @@ public class QueryPortTest {
         HibernateObjectPrinter.print(l);
     }
 
-//    @Test
+    @Test
     public void testMesUserInfoQueryPort() throws Exception {
         List l = mesUserQueryPort.query(w);
         assertEquals(3, l.size());

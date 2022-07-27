@@ -20,7 +20,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "root")
 public class MesUserInfos implements Serializable, QueryResult<MesUserInfo> {
 
-    @XmlElement(name = "QryRoleUser003", type = MesUserInfo.class)
+    @XmlElement(name = "QryUserInfo002", type = MesUserInfo.class)
     private List<MesUserInfo> QryData;
 
     @Override

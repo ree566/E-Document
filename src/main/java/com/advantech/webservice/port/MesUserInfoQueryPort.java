@@ -54,7 +54,7 @@ public class MesUserInfoQueryPort extends BasicQueryPort {
             String key = entry.getKey();
             String value = entry.getValue();
             MesUserInfoQueryRoot root = new MesUserInfoQueryRoot();
-            MesUserInfoQueryRoot.USERS users = root.getUSERS();
+            MesUserInfoQueryRoot.USERINFO users = root.getUSERS();
             users.setUSERNO(value);
             xmlResults.put(key, super.generateXmlString(root));
         }

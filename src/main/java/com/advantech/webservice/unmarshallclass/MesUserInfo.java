@@ -25,9 +25,6 @@ public class MesUserInfo implements Serializable {
     @XmlElement(name = "USER_NO")
     private String jobnumber;
 
-    @XmlElement(name = "USER_NAME_CH")
-    private String userName;
-
     public int getId() {
         return id;
     }
@@ -42,14 +39,6 @@ public class MesUserInfo implements Serializable {
 
     public void setJobnumber(String jobnumber) {
         this.jobnumber = jobnumber;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
     }
 
     @Override

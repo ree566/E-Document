@@ -195,21 +195,7 @@ public class HibernateTest {
         worktimeUploadMesService.delete(w);
     }
 
-//    @Test
-    @Transactional
-    @Rollback(true)
-    public void testLastStatus() {
-        Worktime w = worktimeService.findByPrimaryKey(8066);
-        Worktime rowLastStatus = (Worktime) auditService.findLastStatusBeforeUpdate(Worktime.class, w.getId());
-        System.out.println((int) w.getPartNoAttributeMaintain());
-        System.out.println((int) rowLastStatus.getPartNoAttributeMaintain());
-        System.out.println((int) '5');
-        System.out.println(Objects.equals(w.getPartNoAttributeMaintain(), rowLastStatus.getPartNoAttributeMaintain()));
-        System.out.println(Objects.equals((int) w.getPartNoAttributeMaintain(), (int) rowLastStatus.getPartNoAttributeMaintain()));
-
-    }
-
-//    @Test
+    @Test
     @Transactional
     @Rollback(true)
     public void testTrimModel() throws JsonProcessingException {
@@ -552,7 +538,7 @@ public class HibernateTest {
         });
     }
 
-    @Test
+//    @Test
     @Transactional
     @Rollback(false)
     public void testMachineWorktime() {
@@ -560,13 +546,48 @@ public class HibernateTest {
         List<Worktime> l = session
                 .createQuery("select w from Worktime w", Worktime.class)
                 .getResultList();
-        assertEquals(5614, l.size());
+        assertEquals(5615, l.size());
 
         l.forEach(w -> {
             if (!w.getCobots().isEmpty()) {
                 this.worktimeService.setCobotWorktime(w);
                 session.save(w);
             }
+        });
+    }
+
+    @Test
+    @Transactional
+    @Rollback(false)
+    public void testModAssyStationAndPkgStation() {
+        Session session = sessionFactory.getCurrentSession();
+
+        List<Worktime> l = session
+                .createQuery("select w from Worktime w inner join w.worktimeFormulaSettings", Worktime.class)
+                .getResultList();
+
+        BigDecimal five = new BigDecimal(5);
+
+        List<Worktime> needModWorktime = l.stream()
+                .filter(w -> (w.getAssy().compareTo(five) <= 0 && w.getAssyStation() == 1)
+                || (w.getPacking().compareTo(five) <= 0 && w.getPackingStation() == 1))
+                .collect(toList());
+
+        assertEquals(needModWorktime.size(), 2620);
+
+        needModWorktime.forEach(w -> {
+            System.out.println(w.getModelName());
+            WorktimeFormulaSetting formula = w.getWorktimeFormulaSettings().get(0);
+            if (w.getAssy().compareTo(five) >= 0) {
+                formula.setAssyStation(1);
+                w.setDefaultAssyStation();
+            }
+            if (w.getPacking().compareTo(five) >= 0) {
+                formula.setPackingStation(1);
+                w.setDefaultPackingStation();
+            }
+            session.save(formula);
+            session.save(w);
         });
     }
 

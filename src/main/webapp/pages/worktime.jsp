@@ -110,28 +110,18 @@
             ]
         });
 
-        var setCobots = function (form) {
-            var selectRowId = grid.jqGrid('getGridParam', 'selrow');
-            $.ajax({
-                type: "GET",
-                url: "<c:url value="/Worktime/read/cobots" />",
-                data: {
-                    id: selectRowId
-                },
-                dataType: "json",
-                success: function (response) {
-                    var arr = response;
-                    var idArr = [];
-                    for (var i = 0; i < arr.length; i++) {
-                        //convert to string because multiselect don't recognize the int type of id 
-                        idArr.push(arr[i].id.toString());
-                    }
-                    $("#cobots").multiSelect('select', idArr);
-                },
-                error: function (xhr, ajaxOptions, thrownError) {
-                    console.log(xhr.responseText);
+        var cobotsFormatter = function (cellvalue, options, rowObject) {
+            if (cellvalue.length == 0) {
+                return '';
+            }
+            const strArr = cellvalue.map(c => {
+                if (c.name) {
+                    return c.name;
+                } else {
+                    return (selectOptions["cobots_options"]).get(c);
                 }
             });
+            return strArr.join(',')
         };
 
         var modReasonCodes = selectOptions["modReasonCode_options"];
@@ -242,7 +232,7 @@
                 {label: 'TYPE', name: "type.id", edittype: "select", editoptions: {value: selectOptions["type"]}, formatter: selectOptions["type_func"], width: 100, searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["type"], sopt: ['eq']}},
                 {label: 'BU', name: "businessGroup.id", edittype: "select", editoptions: {value: selectOptions["businessGroup"], dataEvents: businessGroup_select_event}, formatter: selectOptions["businessGroup_func"], width: 100, searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["businessGroup"], sopt: ['eq']}},
                 {label: 'Work Center', name: "workCenter", width: 100, searchrules: {required: true}, searchoptions: search_string_options, editrules: {required: false}},
-                {label: '人機', name: "machineWorktime", width: 120, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: {elmsuffix: addFormulaCheckbox("machineWorktime")}, editrules: {number: true}, editoptions: {defaultValue: '0'}},
+                {label: '機器工時', name: "machineWorktime", width: 120, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: {elmsuffix: addFormulaCheckbox("machineWorktime")}, editrules: {number: true}, editoptions: {defaultValue: '0'}},
                 {label: 'SapWT', name: "sapWt", width: 120, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, editoptions: {defaultValue: '0'}},
                 {label: 'ProductionWT', name: "productionWt", width: 120, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: {elmsuffix: addFormulaCheckbox("productionWt")}, editrules: {number: true}, editoptions: {defaultValue: '0'}},
                 {label: 'Setup Time', name: "setupTime", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: {elmsuffix: addFormulaCheckbox("setupTime")}, editrules: {number: true}, editoptions: {defaultValue: '0'}},
@@ -320,7 +310,7 @@
                 {label: '藍燈組裝(秒)', width: 80, name: "bwFields.0.assyAvg", index: "bwFields.assyAvg", sortable: true, searchrules: number_search_rule, searchoptions: search_decimal_options},
                 {label: '藍燈包裝(秒)', width: 80, name: "bwFields.0.packingAvg", index: "bwFields.packingAvg", sortable: true, searchrules: number_search_rule, searchoptions: search_decimal_options},
                 {label: 'M2機種', width: 80, name: "twm2Flag", search: true, searchrules: number_search_rule, searchoptions: search_string_options, edittype: "select", editoptions: {value: "0:N;1:Y"}},
-                {label: '自動化人機協作', name: "cobots", width: 60, editable: true, hidden: false, formatter: selectOptions["cobots_func"], editrules: {edithidden: true, required: false}, edittype: "select",
+                {label: '自動化人機協作', name: "cobots", width: 60, editable: true, hidden: false, formatter: cobotsFormatter, editrules: {edithidden: true, required: false}, edittype: "select",
                     editoptions: {
                         multiple: true, value: selectOptions["cobots"],
                         dataInit: function (elem) {
@@ -402,7 +392,6 @@
                             settingFormulaCheckbox();
                             addModReasonCode();
                             addModReasonTextarea();
-                            setCobots();
                         }, 50);
                         greyout(form);
                     },

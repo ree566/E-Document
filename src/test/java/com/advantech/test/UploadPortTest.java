@@ -21,6 +21,7 @@ import com.advantech.webservice.port.MtdTestIntegrityUploadPort;
 import com.advantech.webservice.port.SopUploadPort;
 import com.advantech.webservice.port.StandardtimeUploadPort;
 import java.util.List;
+import static java.util.stream.Collectors.toList;
 import javax.transaction.Transactional;
 import static org.junit.Assert.*;
 import org.hibernate.Session;
@@ -160,6 +161,8 @@ public class UploadPortTest {
     @Test
     public void testPartMappingUserUpload() throws Exception {
         List<Worktime> l = this.worktimes;
+        l = l.stream().filter(w -> w.getUserBySpeOwnerId().getId() == 129).collect(toList());
+        assertEquals(l.size(), 518);
         l.forEach((worktime) -> {
             try {
                 System.out.println("Upload model: " + worktime.getModelName());

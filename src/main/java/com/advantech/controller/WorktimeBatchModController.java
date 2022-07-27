@@ -92,7 +92,7 @@ public class WorktimeBatchModController {
     private CobotService cobotService;
 
     @Autowired
-    private AuditService auditService;
+    private AuditService<Worktime, Integer> auditService;
 
     @Autowired
     private WorktimeValidator worktimeValidator;
@@ -232,7 +232,7 @@ public class WorktimeBatchModController {
     private void checkRevision(List<Worktime> l, Integer revisionNum) throws Exception {
 
         Integer maxAllowRevisionsGap = 10;
-        Integer currentRevision = auditService.findLastRevisions(Worktime.class).intValue();
+        Integer currentRevision = auditService.findLastRevisions().intValue();
 
         //Check revision history contain update datas or not.
         if (revisionNum < currentRevision) {
@@ -241,7 +241,7 @@ public class WorktimeBatchModController {
             }
 
             for (int i = revisionNum + 1; i <= currentRevision; i++) {
-                List<Worktime> revData = auditService.findModifiedAtRevision(Worktime.class, i);
+                List<Worktime> revData = auditService.findModifiedAtRevision(i);
                 for (Worktime w : l) {
                     for (Worktime rev_w : revData) {
                         if (rev_w.getId() == w.getId()) {

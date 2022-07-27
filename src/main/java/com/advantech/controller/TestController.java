@@ -45,7 +45,7 @@ public class TestController {
     }
 
     @Autowired
-    private AuditService auditService;
+    private AuditService<Worktime, Integer> auditService;
 
     @Autowired
     private WorktimeService worktimeService;
@@ -64,7 +64,7 @@ public class TestController {
     @RequestMapping(value = "/test2/{id}", method = RequestMethod.GET)
     @Secured({"ROLE_USER", "ROLE_ADMIN"})
     protected List test2(@PathVariable int id) {
-        return auditService.findByPrimaryKey(Worktime.class, id);
+        return auditService.findByPrimaryKey(id);
     }
 
     @ResponseBody

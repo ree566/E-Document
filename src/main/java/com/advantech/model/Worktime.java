@@ -4,6 +4,7 @@ package com.advantech.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -1032,6 +1033,7 @@ public class Worktime implements java.io.Serializable {
     }
 
 //    @NotAudited
+//    @ManyToMany(fetch = FetchType.LAZY)
     @ManyToMany
     @Fetch(FetchMode.SUBSELECT)
     @JoinTable(name = "Worktime_Cobot_REF", joinColumns = {

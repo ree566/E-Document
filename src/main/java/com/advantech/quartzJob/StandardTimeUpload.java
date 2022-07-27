@@ -37,7 +37,7 @@ public class StandardTimeUpload {
     private static final Logger log = LoggerFactory.getLogger(StandardTimeUpload.class);
 
     @Autowired
-    private AuditService auditService;
+    private AuditService<Worktime, Integer> auditService;
 
     @Autowired
     private UserNotificationService userNotificationService;
@@ -152,7 +152,7 @@ public class StandardTimeUpload {
 
     public List<Worktime> findFieldChangeInDate(DateTime sD, DateTime eD) {
         List<Worktime> checkResult = new ArrayList();
-        List<Object[]> result = auditService.findByFieldChangedInDate(Worktime.class, null, checkField, sD.toDate(), eD.toDate());
+        List<Object[]> result = auditService.findByFieldChangedInDate(null, checkField, sD.toDate(), eD.toDate());
 
         Map<Integer, List<Object[]>> g = result.stream().collect(Collectors.groupingBy(o -> ((Worktime) o[0]).getId()));
 
