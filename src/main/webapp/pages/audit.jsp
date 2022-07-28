@@ -87,7 +87,7 @@
                     {label: 'TYPE', name: "type_id", jsonmap: "0.type.id", formatter: selectOptions["type_func"], width: 100, searchrules: {required: true}, searchoptions: search_string_options},
                     {label: 'BU', name: "businessGroup_id", jsonmap: "0.businessGroup.id", formatter: selectOptions["businessGroup_func"], width: 100, searchrules: {required: true}, searchoptions: search_string_options},
                     {label: 'Work Center', name: "workCenter", jsonmap: "0.workCenter", width: 100, searchrules: {required: true}, searchoptions: search_string_options},
-                    {label: '人機協作', name: "machineWorktime", jsonmap: "0.machineWorktime", width: 120, searchrules: number_search_rule, searchoptions: search_decimal_options},
+                    {label: '機器工時', name: "machineWorktime", jsonmap: "0.machineWorktime", width: 120, searchrules: number_search_rule, searchoptions: search_decimal_options},
                     {label: 'SapWT', name: "sapWt", jsonmap: "0.sapWt", width: 120, searchrules: number_search_rule, searchoptions: search_decimal_options},
                     {label: 'ProductionWT', name: "productionWt", jsonmap: "0.productionWt", width: 120, searchrules: number_search_rule, searchoptions: search_decimal_options},
                     {label: 'Setup Time', name: "setupTime", jsonmap: "0.setupTime", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options},
@@ -159,6 +159,7 @@
                     {label: '看板工時', name: "packingKanbanTime", jsonmap: "0.packingKanbanTime", width: 80, searchrules: number_search_rule, searchoptions: search_decimal_options},
                     {label: 'CleanPanel+Assembly', name: "cleanPanelAndAssembly", jsonmap: "0.cleanPanelAndAssembly", width: 200, searchrules: number_search_rule, searchoptions: search_decimal_options},
                     {label: 'Modified_Date', width: 200, name: "modifiedDate", jsonmap: "0.modifiedDate", index: "modifiedDate", formatter: 'date', formatoptions: {srcformat: 'Y-m-d H:i:s A', newformat: 'Y-m-d H:i:s A'}, stype: 'text', searchrules: date_search_rule, searchoptions: search_date_options, align: 'center', hidden: true},
+//                    {label: '自動化人機協作', width: 200, name: "cobots", jsonmap: "0.cobots", index: "cobots", align: 'center'},
                     {label: '修改原因代號', name: "reasonCode", jsonmap: "0.reasonCode", formatter: selectOptions["modReasonCode_func"], width: 100, searchrules: {required: true}, searchoptions: search_string_options},
                     {label: '修改原因描述', name: "worktimeModReason", jsonmap: "0.worktimeModReason", width: 100, search: false}
                 ],

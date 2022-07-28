@@ -18,7 +18,7 @@ import com.advantech.model.PreAssy;
 import com.advantech.model.Type;
 import com.advantech.model.User;
 import com.advantech.model.Worktime;
-import com.advantech.service.AuditService;
+import com.advantech.service.WorktimeAuditService;
 import com.advantech.service.BusinessGroupService;
 import com.advantech.service.CobotService;
 import com.advantech.service.FloorService;
@@ -92,7 +92,7 @@ public class WorktimeBatchModController {
     private CobotService cobotService;
 
     @Autowired
-    private AuditService<Worktime, Integer> auditService;
+    private WorktimeAuditService auditService;
 
     @Autowired
     private WorktimeValidator worktimeValidator;
@@ -163,7 +163,7 @@ public class WorktimeBatchModController {
             ids[i] = hgList.get(i).getId();
         }
 
-        if (worktimeService.delete(ids) == 1) {
+        if (worktimeService.deleteWithMesUpload(ids) == 1) {
             worktimeMailManager.notifyUser(hgList, CrudAction.DEL);
             return "success";
         } else {

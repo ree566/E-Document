@@ -4,9 +4,11 @@
  */
 package com.advantech.service;
 
+import com.advantech.dao.BasicDAOImpl;
 import com.advantech.dao.CobotDAO;
 import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.Cobot;
+import com.advantech.model.Worktime;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,33 +20,33 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @Transactional
-public class CobotService {
+public class CobotService extends BasicServiceImpl<Integer, Cobot> {
 
     @Autowired
     private CobotDAO dao;
 
-    public List<Cobot> findAll() {
-        return dao.findAll();
+    @Autowired
+    private WorktimeService worktimeService;
+
+    @Override
+    protected BasicDAOImpl getDao() {
+        return this.dao;
     }
 
     public List<Cobot> findAll(PageInfo info) {
         return dao.findAll(info);
     }
 
-    public Cobot findByPrimaryKey(Object obj_id) {
-        return dao.findByPrimaryKey(obj_id);
-    }
-
-    public int insert(Cobot pojo) {
-        return dao.insert(pojo);
-    }
-
+    @Override
     public int update(Cobot pojo) {
-        return dao.update(pojo);
+        dao.update(pojo);
+        
+        //Reset worktime when cobot's worktime is changed
+        List<Worktime> l = worktimeService.findAll();
+        for (Worktime w : l) {
+            worktimeService.setCobotWorktime(w);
+        }
+        worktimeService.merge(l);
+        return 1;
     }
-
-    public int delete(Cobot pojo) {
-        return dao.delete(pojo);
-    }
-
 }

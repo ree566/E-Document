@@ -31,25 +31,25 @@ import org.springframework.test.context.web.WebAppConfiguration;
 })
 @RunWith(SpringJUnit4ClassRunner.class)
 public class WorktimeServiceTest {
-    
+
     @Autowired
     WorktimeService instance;
-    
+
     public WorktimeServiceTest() {
     }
-    
+
     @BeforeClass
     public static void setUpClass() {
     }
-    
+
     @AfterClass
     public static void tearDownClass() {
     }
-    
+
     @Before
     public void setUp() {
     }
-    
+
     @After
     public void tearDown() {
     }
@@ -229,10 +229,11 @@ public class WorktimeServiceTest {
 //        fail("The test case is a prototype.");
 //    }
 //
+
     /**
      * Test of insertSeries method, of class WorktimeService.
      */
-    @Test
+//    @Test
     @Transactional
     @Rollback(true)
     public void testInsertSeries() throws Exception {
@@ -240,9 +241,9 @@ public class WorktimeServiceTest {
         String baseModelName = "UNO-1372G-E3AE";
         List<String> seriesModelNames = newArrayList("TEST_1", "TEST2");
         int expResult = 1;
-        int result = instance.insertSeries(baseModelName, seriesModelNames);
+        int result = instance.insertSeriesWithMesUpload(baseModelName, seriesModelNames);
         assertEquals(expResult, result);
-        
+
         Worktime seriesModelPojo = instance.findByModel(seriesModelNames.get(0));
         assertNotNull(seriesModelPojo);
         assertEquals(3, seriesModelPojo.getCobots().size());
@@ -438,5 +439,14 @@ public class WorktimeServiceTest {
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
 //    }
-    
+
+    @Test
+    public void testBatchUpdate() throws Exception {
+        System.out.println("testBatchUpdate");
+        List<Worktime> l = instance.findByPrimaryKeys(3815, 3816);
+        assertEquals(2, l.size());
+        l.forEach(w -> w.setReasonCode("A3"));
+        instance.merge(l);
+    }
+
 }

@@ -8,7 +8,7 @@ package com.advantech.quartzJob;
 import com.advantech.helper.MailManager;
 import com.advantech.model.User;
 import com.advantech.model.Worktime;
-import com.advantech.service.AuditService;
+import com.advantech.service.WorktimeAuditService;
 import com.advantech.service.UserNotificationService;
 import com.advantech.webservice.port.StandardtimeUploadPort;
 import static com.google.common.collect.Lists.newArrayList;
@@ -37,7 +37,7 @@ public class StandardTimeUpload {
     private static final Logger log = LoggerFactory.getLogger(StandardTimeUpload.class);
 
     @Autowired
-    private AuditService<Worktime, Integer> auditService;
+    private WorktimeAuditService auditService;
 
     @Autowired
     private UserNotificationService userNotificationService;

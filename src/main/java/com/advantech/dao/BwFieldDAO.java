@@ -15,7 +15,7 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class BwFieldDAO extends AbstractDao<Integer, BwField> {
+public class BwFieldDAO extends BasicDAOImpl<Integer, BwField> {
 
     public int update() {
         Session session = this.getSession();

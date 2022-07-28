@@ -13,7 +13,7 @@ import com.advantech.model.Worktime;
 import com.advantech.model.WorktimeAutouploadSetting;
 import com.advantech.model.WorktimeFormulaSetting;
 import com.advantech.model.WorktimeMaterialPropertyUploadSetting;
-import com.advantech.service.AuditService;
+import com.advantech.service.WorktimeAuditService;
 import com.advantech.service.WorktimeAutouploadSettingService;
 import com.advantech.service.WorktimeService;
 import com.advantech.service.WorktimeUploadMesService;
@@ -77,7 +77,7 @@ public class HibernateTest {
     private SessionFactory sessionFactory;
 
     @Autowired
-    private AuditService auditService;
+    private WorktimeAuditService auditService;
 
     private static Validator validator;
 
@@ -125,7 +125,7 @@ public class HibernateTest {
         Session session = sessionFactory.getCurrentSession();
         Worktime w = (Worktime) session.load(Worktime.class, 17915);
         w.setModelName("TTBB");
-        worktimeService.update(w);
+        worktimeService.updateWithMesUpload(w);
         throw new Exception("this is a testing exception");
     }
 
@@ -166,7 +166,7 @@ public class HibernateTest {
             modelNames.add(modelName + "-CLONE-" + i);
         }
 
-        worktimeService.insertSeries(modelName, modelNames);
+        worktimeService.insertSeriesWithMesUpload(modelName, modelNames);
     }
 
 //    @Test
@@ -177,7 +177,7 @@ public class HibernateTest {
         assertEquals(13, l.size());
         l.forEach((w) -> {
             try {
-                worktimeService.delete(w);
+                worktimeService.deleteWithMesUpload(w);
             } catch (Exception e) {
                 System.out.println(w.getModelName() + " delete fail.");
                 System.out.println(e);

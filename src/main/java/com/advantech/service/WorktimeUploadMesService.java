@@ -5,7 +5,6 @@
  */
 package com.advantech.service;
 
-import com.advantech.dao.AuditDAO;
 import com.advantech.model.Worktime;
 import com.advantech.webservice.port.FlowUploadPort;
 import com.advantech.webservice.port.MaterialPropertyUploadPort;
@@ -27,7 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class WorktimeUploadMesService {
 
     @Autowired
-    private AuditService<Worktime, Integer> auditService;
+    private WorktimeAuditService auditService;
 
     @Autowired
     private SopUploadPort sopUploadPort;

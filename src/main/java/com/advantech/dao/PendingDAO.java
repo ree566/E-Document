@@ -15,38 +15,10 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class PendingDAO extends AbstractDao<Integer, Pending> implements BasicDAO<Pending> {
-
-    @Override
-    public List<Pending> findAll() {
-        return createEntityCriteria().list();
-    }
+public class PendingDAO extends BasicDAOImpl<Integer, Pending> {
 
     public List<Pending> findAll(PageInfo info) {
         return super.getByPaginateInfo(info);
-    }
-
-    @Override
-    public Pending findByPrimaryKey(Object obj_id) {
-        return super.getByKey((int) obj_id);
-    }
-
-    @Override
-    public int insert(Pending obj) {
-        getSession().save(obj);
-        return 1;
-    }
-
-    @Override
-    public int update(Pending obj) {
-        getSession().update(obj);
-        return 1;
-    }
-
-    @Override
-    public int delete(Pending pojo) {
-        getSession().delete(pojo);
-        return 1;
     }
 
 }

@@ -7,7 +7,6 @@ package com.advantech.service;
 
 import com.advantech.dao.*;
 import com.advantech.model.Unit;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,29 +17,14 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @Transactional
-public class UnitService {
+public class UnitService extends BasicServiceImpl<Integer, Unit> {
 
     @Autowired
-    private UnitDAO unitDAO;
+    private UnitDAO dao;
 
-    public List<Unit> findAll() {
-        return unitDAO.findAll();
-    }
-
-    public Unit findByPrimaryKey(Object obj_id) {
-        return unitDAO.findByPrimaryKey(obj_id);
-    }
-
-    public int insert(Unit unit) {
-        return unitDAO.insert(unit);
-    }
-
-    public int update(Unit unit) {
-        return unitDAO.update(unit);
-    }
-
-    public int delete(Unit unit) {
-        return unitDAO.delete(unit);
+    @Override
+    protected BasicDAOImpl getDao() {
+        return this.dao;
     }
 
 }

@@ -5,6 +5,7 @@
  */
 package com.advantech.dao;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -12,11 +13,11 @@ import java.util.List;
  * @author Wei.Cheng
  * @param <T>
  */
-public interface BasicDAO<T> {
+public interface BasicDAO<PK extends Serializable, T> {
 
     public List<T> findAll();
 
-    public T findByPrimaryKey(Object obj_id);
+    public T findByPrimaryKey(PK obj_id);
 
     public int insert(T pojo);
 

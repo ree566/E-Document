@@ -6,11 +6,18 @@
 package com.advantech.service;
 
 import com.advantech.dao.BasicDAO;
+import java.io.Serializable;
+import java.util.List;
 
 /**
  *
  * @author Wei.Cheng
  */
-public interface BasicService extends BasicDAO{
-    
+public interface BasicService<PK extends Serializable, T> extends BasicDAO<PK, T> {
+
+    public int insert(List<T> pojo);
+
+    public int update(List<T> pojo);
+
+    public int delete(List<T> pojo);
 }

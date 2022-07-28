@@ -5,6 +5,7 @@
  */
 package com.advantech.service;
 
+import com.advantech.dao.BasicDAOImpl;
 import com.advantech.dao.WorktimeFormulaSettingDAO;
 import com.advantech.model.WorktimeFormulaSetting;
 import java.util.List;
@@ -19,33 +20,18 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @Transactional
-public class WorktimeFormulaSettingService {
+public class WorktimeFormulaSettingService extends BasicServiceImpl<Integer, WorktimeFormulaSetting> {
 
     @Autowired
-    private WorktimeFormulaSettingDAO worktimeFormulaSettingDAO;
+    private WorktimeFormulaSettingDAO dao;
 
-    public List<WorktimeFormulaSetting> findAll() {
-        return worktimeFormulaSettingDAO.findAll();
-    }
-
-    public WorktimeFormulaSetting findByPrimaryKey(Object obj_id) {
-        return worktimeFormulaSettingDAO.findByPrimaryKey(obj_id);
+    @Override
+    protected BasicDAOImpl getDao() {
+        return this.dao;
     }
 
     public List<WorktimeFormulaSetting> findByWorktime(int worktimeId) {
-        return worktimeFormulaSettingDAO.findByWorktime(worktimeId);
-    }
-
-    public int insert(WorktimeFormulaSetting pojo) {
-        return worktimeFormulaSettingDAO.insert(pojo);
-    }
-
-    public int update(WorktimeFormulaSetting pojo) {
-        return worktimeFormulaSettingDAO.update(pojo);
-    }
-
-    public int delete(WorktimeFormulaSetting pojo) {
-        return worktimeFormulaSettingDAO.delete(pojo);
+        return dao.findByWorktime(worktimeId);
     }
 
 }

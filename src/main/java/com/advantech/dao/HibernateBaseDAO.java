@@ -20,7 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @param <PK>
  * @param <T>
  */
-public abstract class AbstractDao<PK extends Serializable, T> {
+public abstract class HibernateBaseDAO<PK extends Serializable, T> {
 
     private final Class<T> persistentClass;
 
@@ -30,7 +30,7 @@ public abstract class AbstractDao<PK extends Serializable, T> {
     @Autowired
     private SessionFactory sessionFactory;
 
-    public AbstractDao() {
+    public HibernateBaseDAO() {
         this.persistentClass = (Class<T>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[1];
     }
 

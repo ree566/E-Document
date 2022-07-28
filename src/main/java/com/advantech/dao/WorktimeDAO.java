@@ -20,12 +20,7 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class WorktimeDAO extends AbstractDao<Integer, Worktime> implements BasicDAO<Worktime> {
-
-    @Override
-    public List<Worktime> findAll() {
-        return createEntityCriteria().list();
-    }
+public class WorktimeDAO extends BasicDAOImpl<Integer, Worktime> {
 
     public List<Worktime> findAll(PageInfo info) {
         Criteria criteria = createEntityCriteria()
@@ -33,17 +28,6 @@ public class WorktimeDAO extends AbstractDao<Integer, Worktime> implements Basic
                 .createAlias("bwFields", "bwFields", JoinType.LEFT_OUTER_JOIN);
         List l = getByPaginateInfo(criteria, info);
         return l;
-    }
-
-    @Override
-    public Worktime findByPrimaryKey(Object obj_id) {
-        return getByKey((int) obj_id);
-    }
-
-    public List<Worktime> findByPrimaryKeys(Integer... id) {
-        return createEntityCriteria()
-                .add(Restrictions.in("id", id))
-                .list();
     }
 
     public Worktime findByModel(String modelName) {
@@ -74,12 +58,6 @@ public class WorktimeDAO extends AbstractDao<Integer, Worktime> implements Basic
         return l;
     }
 
-    @Override
-    public int insert(Worktime pojo) {
-        getSession().save(pojo);
-        return 1;
-    }
-
     public int merge(Worktime pojo) {
         getSession().merge(pojo);
         return 1;
@@ -90,21 +68,4 @@ public class WorktimeDAO extends AbstractDao<Integer, Worktime> implements Basic
         return 1;
     }
 
-    @Override
-    public int update(Worktime pojo) {
-        getSession().update(pojo);
-        return 1;
-    }
-
-    @Override
-    public int delete(Worktime pojo) {
-        getSession().delete(pojo);
-        return 1;
-    }
-
-    public void flushSession() {
-        Session session = this.getSession();
-        session.flush();
-        session.clear();
-    }
 }

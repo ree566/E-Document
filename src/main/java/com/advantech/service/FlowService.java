@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import javax.annotation.PostConstruct;
 import org.hibernate.Hibernate;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,36 +26,33 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @Transactional
-public class FlowService {
+public class FlowService extends BasicServiceImpl<Integer, Flow> {
 
     @Autowired
-    private FlowDAO flowDAO;
+    private FlowDAO dao;
 
-    @Autowired
-    private FlowGroupDAO flowGroupDAO;
-
-    public List<Flow> findAll() {
-        return flowDAO.findAll();
+    @Override
+    protected BasicDAOImpl getDao() {
+        return this.dao;
     }
+
+    @Autowired
+    private FlowGroupService flowGroupService;
 
     public List<Flow> findAll(PageInfo info) {
-        return flowDAO.findAll(info);
-    }
-
-    public Flow findByPrimaryKey(Object obj_id) {
-        return flowDAO.findByPrimaryKey(obj_id);
+        return dao.findAll(info);
     }
 
     public Flow findByFlowName(String flowName) {
-        return flowDAO.findByFlowName(flowName);
+        return dao.findByFlowName(flowName);
     }
 
     public List<Flow> findByFlowGroup(int flowGroupId) {
-        FlowGroup fg = flowGroupDAO.findByPrimaryKey(flowGroupId);
-        return flowDAO.findByFlowGroup(fg);
+        FlowGroup fg = flowGroupService.findByPrimaryKey(flowGroupId);
+        return dao.findByFlowGroup(fg);
     }
 
-    public List<Flow> findByParent(Object parent_id) {
+    public List<Flow> findByParent(Integer parent_id) {
         List l = new ArrayList();
         Flow f = this.findByPrimaryKey(parent_id);
         l.addAll(f.getFlowsForTestFlowId());
@@ -67,19 +65,6 @@ public class FlowService {
             Hibernate.initialize(f.getFlowsForTestFlowId());
         }
         return l;
-    }
-
-    public int insert(Flow flow) {
-        return flowDAO.insert(flow);
-    }
-
-    public int update(Flow flow) {
-        return flowDAO.update(flow);
-    }
-
-    public int delete(int id) {
-        Flow flow = this.findByPrimaryKey(id);
-        return flowDAO.delete(flow);
     }
 
     public int addSub(int parentFlowId, List<Integer> subFlowId) {
@@ -106,6 +91,11 @@ public class FlowService {
         }
 
         return 1;
+    }
+    
+    public int delete(int id) {
+        Flow flow = this.findByPrimaryKey(id);
+        return dao.delete(flow);
     }
 
 }

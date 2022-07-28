@@ -5,6 +5,7 @@
  */
 package com.advantech.service;
 
+import com.advantech.dao.BasicDAOImpl;
 import com.advantech.dao.SheetViewDAO;
 import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.SheetView;
@@ -19,33 +20,18 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @Transactional
-public class SheetViewService {
+public class SheetViewService extends BasicServiceImpl<Integer, SheetView> {
 
     @Autowired
-    private SheetViewDAO sheetViewDAO;
+    private SheetViewDAO dao;
 
-    public List<SheetView> findAll() {
-        return sheetViewDAO.findAll();
+    @Override
+    protected BasicDAOImpl getDao() {
+        return this.dao;
     }
 
     public List<SheetView> findAll(PageInfo info) {
-        return sheetViewDAO.findAll(info);
-    }
-
-    public SheetView findByPrimaryKey(Object obj_id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    public int insert(SheetView sheetView) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    public int update(SheetView sheetView) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    public int delete(SheetView sheetView) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return dao.findAll(info);
     }
 
 }

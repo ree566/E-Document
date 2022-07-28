@@ -3,7 +3,6 @@ package com.advantech.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.math.BigDecimal;
@@ -56,108 +55,265 @@ import org.springframework.util.AutoPopulatingList;
 @DynamicUpdate(true)
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = Worktime.class)
 @Audited(targetAuditMode = NOT_AUDITED, withModifiedFlag = true)
-//@FlowValidate
-//@EsValidate
 public class Worktime implements java.io.Serializable {
 
+    @JsonView(View.Public.class)
     private int id;
+    
+    @JsonView(View.Public.class)
     private Floor floor;
+    
+    @JsonView(View.Public.class)
     private Flow flowByTestFlowId;
+    
+    @JsonView(View.Public.class)
     private Flow flowByPackingFlowId;
+    
+    @JsonView(View.Public.class)
     private Flow flowByBabFlowId;
+    
+    @JsonView(View.Public.class)
     private User userByEeOwnerId; //EE teams name has been changed to BPE
+    
+    @JsonView(View.Public.class)
     private User userByQcOwnerId;
+    
+    @JsonView(View.Public.class)
     private User userBySpeOwnerId;
+    
+    @JsonView(View.Public.class)
     private User userByMpmOwnerId;
+    
+    @JsonView(View.Public.class)
     private Pending pending;
+    
+    @JsonView(View.Public.class)
     private PreAssy preAssy;
+    
+    @JsonView(View.Public.class)
     private Type type;
+    
+    @JsonView(View.Public.class)
     private BusinessGroup businessGroup;
+    
+    @JsonView(View.Public.class)
     private String modelName;
 
-//    @JsonIgnore
+    @JsonView(View.Public.class)
     private List<BwField> bwField = new AutoPopulatingList<>(BwField.class);
 
-    @JsonIgnore
+    @JsonView(View.Internal.class)
     private List<WorktimeFormulaSetting> worktimeFormulaSettings = new AutoPopulatingList<WorktimeFormulaSetting>(WorktimeFormulaSetting.class);
 
+    @JsonView(View.Public.class)
     private String workCenter;
+    
+    @JsonView(View.Public.class)
     private BigDecimal totalModule = BigDecimal.ZERO;
+    
+    @JsonView(View.Public.class)
     private BigDecimal cleanPanel = BigDecimal.ZERO;
+    
+    @JsonView(View.Public.class)
     private BigDecimal assy = BigDecimal.ZERO;
+    
+    @JsonView(View.Public.class)
     private BigDecimal t1 = BigDecimal.ZERO;
+    
+    @JsonView(View.Public.class)
     private BigDecimal t2 = BigDecimal.ZERO;
+    
+    @JsonView(View.Public.class)
     private BigDecimal t3 = BigDecimal.ZERO;
+    
+    @JsonView(View.Public.class)
     private BigDecimal t4 = BigDecimal.ZERO;
+    
+    @JsonView(View.Public.class)
     private BigDecimal packing = BigDecimal.ZERO;
+    
+    @JsonView(View.Public.class)
     private BigDecimal upBiRi = BigDecimal.ZERO;
+    
+    @JsonView(View.Public.class)
     private BigDecimal downBiRi = BigDecimal.ZERO;
+    
+    @JsonView(View.Public.class)
     private BigDecimal biCost = BigDecimal.ZERO;
+    
+    @JsonView(View.Public.class)
     private BigDecimal vibration = BigDecimal.ZERO;
+    
+    @JsonView(View.Public.class)
     private BigDecimal hiPotLeakage = BigDecimal.ZERO;
+    
+    @JsonView(View.Public.class)
     private BigDecimal coldBoot = BigDecimal.ZERO;
+    
+    @JsonView(View.Public.class)
     private BigDecimal warmBoot = BigDecimal.ZERO;
+    
+    @JsonView(View.Public.class)
     private BigDecimal pendingTime;
+    
+    @JsonView(View.Public.class)
     private String biSampling;
+    
+    @JsonView(View.Public.class)
     private String burnIn;
+    
+    @JsonView(View.Public.class)
     private BigDecimal biTime;
+    
+    @JsonView(View.Public.class)
     private BigDecimal biTemperature;
+    
+    @JsonView(View.Public.class)
     private String assyPackingSop;
+    
+    @JsonView(View.Public.class)
     private String testSop;
+    
+    @JsonView(View.Public.class)
     private Integer keypartA = 0;
+    
+    @JsonView(View.Public.class)
     private Integer keypartB = 0;
+    
+    @JsonView(View.Public.class)
     private Integer macTotalQty = 0;
+    
+    @JsonView(View.Public.class)
     private Integer macPrintedQty = 0;
+    
+    @JsonView(View.Public.class)
     private Character partLink;
+    
+    @JsonView(View.Public.class)
     private int ce;
+    
+    @JsonView(View.Public.class)
     private int ul;
+    
+    @JsonView(View.Public.class)
     private int rohs;
+    
+    @JsonView(View.Public.class)
     private int weee;
+    
+    @JsonView(View.Public.class)
     private int madeInTaiwan;
+    
+    @JsonView(View.Public.class)
     private int fcc;
+    
+    @JsonView(View.Public.class)
     private int eac;
+    
+    @JsonView(View.Public.class)
     private int kc;
+    
+    @JsonView(View.Public.class)
     private BigDecimal nsInOneCollectionBox = BigDecimal.ZERO;
+    
+    @JsonView(View.Public.class)
     private char partNoAttributeMaintain;
+    
+    @JsonView(View.Public.class)
     private String acwVoltage;
+    
+    @JsonView(View.Public.class)
     private String irVoltage;
+    
+    @JsonView(View.Public.class)
     private String testProfile;
+    
+    @JsonView(View.Public.class)
     private String lltValue;
+    
+    @JsonView(View.Public.class)
     private String gndValue;
+    
+    @JsonView(View.Public.class)
     private BigDecimal weight = BigDecimal.ZERO;
+    
+    @JsonView(View.Public.class)
     private BigDecimal weightAff = BigDecimal.ZERO;
+    
+    @JsonView(View.Public.class)
     private BigDecimal tolerance = BigDecimal.ZERO;
+    
+    @JsonView(View.Public.class)
     private BigDecimal assyLeadTime = BigDecimal.ZERO;
+    
+    @JsonView(View.Public.class)
     private BigDecimal packingLeadTime = BigDecimal.ZERO;
+    
+    @JsonView(View.Public.class)
     private BigDecimal productionWt = BigDecimal.ZERO;
+    
+    @JsonView(View.Public.class)
     private BigDecimal setupTime = BigDecimal.ZERO;
+    
+    @JsonView(View.Public.class)
     private BigDecimal assyToT1 = BigDecimal.ZERO;
+    
+    @JsonView(View.Public.class)
     private BigDecimal t2ToPacking = BigDecimal.ZERO;
+    
+    @JsonView(View.Public.class)
     private Integer burnInQuantity = 0;
+    
+    @JsonView(View.Public.class)
     private Integer assyStation = 0;
+    
+    @JsonView(View.Public.class)
     private Integer packingStation = 0;
+    
+    @JsonView(View.Public.class)
     private BigDecimal assyKanbanTime = BigDecimal.ZERO;
+    
+    @JsonView(View.Public.class)
     private BigDecimal packingKanbanTime = BigDecimal.ZERO;
+    
+    @JsonView(View.Public.class)
     private BigDecimal cleanPanelAndAssembly = BigDecimal.ZERO;
+    
+    @JsonView(View.Public.class)
     private BigDecimal machineWorktime = BigDecimal.ZERO;
 
+    @JsonView(View.Public.class)
     private Integer t1StatusQty = 0;
+    
+    @JsonView(View.Public.class)
     private Integer t1ItemsQty = 0;
+    
+    @JsonView(View.Public.class)
     private Integer t2StatusQty = 0;
+    
+    @JsonView(View.Public.class)
     private Integer t2ItemsQty = 0;
 
+    @JsonView(View.Public.class)
     private Date createDate;
+    
+    @JsonView(View.Public.class)
     private Date modifiedDate;
 
+    @JsonView(View.Public.class)
     private String reasonCode;
+    
+    @JsonView(View.Public.class)
     private String worktimeModReason;
 
+    @JsonView(View.Public.class)
     private int twm2Flag = 0;
 
     //This value almost equals to productionWt in sap
+    @JsonView(View.Public.class)
     private BigDecimal sapWt = BigDecimal.ZERO;
 
-//    @JsonIgnore
+    @JsonView(View.Internal.class)
     private Set<Cobot> cobots = new HashSet<Cobot>(0);
 
     public Worktime() {

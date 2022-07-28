@@ -101,7 +101,7 @@ public class HibernateEnversTest {
     private AuditReader reader;
 
     @Autowired
-    private AuditService<Worktime, Integer> auditService;
+    private WorktimeAuditService worktimeAuditService;
 
     @Before
     public void setUp() {
@@ -186,7 +186,7 @@ public class HibernateEnversTest {
     }
 
     private void mergeData(List<Worktime> l) throws Exception {
-        worktimeService.merge(l);
+        worktimeService.mergeWithMesUpload(l);
     }
 
     private Map<String, Set> generateSopInfos(XlsWorkSheet sheet) throws UnsupportedDataTypeException {
@@ -448,8 +448,8 @@ public class HibernateEnversTest {
     @Transactional
     @Rollback(false)
     public void testRevisionQuery3() throws Exception {
-        List<Worktime> history = auditService.findModifiedAtRevision(29032);
-        List<Worktime> revertTargetData = auditService.forEntityAtRevision(29031);
+        List<Worktime> history = worktimeAuditService.findModifiedAtRevision(29032);
+        List<Worktime> revertTargetData = worktimeAuditService.forEntityAtRevision(29031);
 
         Session session = sessionFactory.getCurrentSession();
 
@@ -503,21 +503,21 @@ public class HibernateEnversTest {
     @Transactional
     @Rollback(true)
     public void testRevisionQuery4() throws Exception {
-        List<Worktime> result = auditService.findModifiedAtRevision(38932);
+        List<Worktime> result = worktimeAuditService.findModifiedAtRevision(38932);
 //        q.traverseRelation("pending", JoinType.LEFT);
 
         System.out.println(result.size());
-        HibernateObjectPrinter.print(result.stream().map(Worktime::getCobots).collect(toList()));
+//        HibernateObjectPrinter.print(result.stream().map(Worktime::getCobots).collect(toList()));
 //        HibernateObjectPrinter.print(result);
 //        HibernateObjectPrinter.print(result.get(0));
     }
     
-//    @Test
+    @Test
     @Transactional
     @Rollback(true)
     public void testLastStatus() {
         Worktime w = worktimeService.findByPrimaryKey(8066);
-        Worktime rowLastStatus = (Worktime) auditService.findLastStatusBeforeUpdate(w.getId());
+        Worktime rowLastStatus = (Worktime) worktimeAuditService.findLastStatusBeforeUpdate(w.getId());
         System.out.println((int) w.getPartNoAttributeMaintain());
         System.out.println((int) rowLastStatus.getPartNoAttributeMaintain());
         System.out.println((int) '5');

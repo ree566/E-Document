@@ -9,6 +9,7 @@ import com.advantech.dao.*;
 import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.Pending;
 import java.util.List;
+import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,34 +21,23 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @Transactional
-public class PendingService {
+public class PendingService extends BasicServiceImpl<Integer, Pending> {
 
     @Autowired
-    private PendingDAO pendingDAO;
+    private PendingDAO dao;
 
-    public List<Pending> findAll() {
-        return pendingDAO.findAll();
+    @Override
+    protected BasicDAOImpl getDao() {
+        return this.dao;
     }
 
     public List<Pending> findAll(PageInfo info) {
-        return pendingDAO.findAll(info);
-    }
-
-    public Pending findByPrimaryKey(Object obj_id) {
-        return pendingDAO.findByPrimaryKey(obj_id);
-    }
-
-    public int insert(Pending pending) {
-        return pendingDAO.insert(pending);
-    }
-
-    public int update(Pending pending) {
-        return pendingDAO.update(pending);
+        return dao.findAll(info);
     }
 
     public int delete(int id) {
         Pending pending = this.findByPrimaryKey(id);
-        return pendingDAO.delete(pending);
+        return dao.delete(pending);
     }
 
 }

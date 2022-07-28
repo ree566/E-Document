@@ -15,35 +15,10 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class FlowGroupDAO extends AbstractDao<Integer, FlowGroup> implements BasicDAO<FlowGroup> {
-
-    @Override
-    public List<FlowGroup> findAll() {
-        return createEntityCriteria().list();
-    }
+public class FlowGroupDAO extends BasicDAOImpl<Integer, FlowGroup> {
 
     public List<FlowGroup> findAll(PageInfo info) {
         return super.getByPaginateInfo(info);
-    }
- 
-    @Override
-    public FlowGroup findByPrimaryKey(Object obj_id) {
-        return super.getByKey((int) obj_id);
-    }
-
-    @Override
-    public int insert(FlowGroup pojo) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public int update(FlowGroup pojo) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public int delete(FlowGroup pojo) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

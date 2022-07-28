@@ -5,9 +5,9 @@
  */
 package com.advantech.service;
 
+import com.advantech.dao.BasicDAOImpl;
 import com.advantech.dao.BusinessGroupDAO;
 import com.advantech.model.BusinessGroup;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,29 +18,14 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @Transactional
-public class BusinessGroupService {
+public class BusinessGroupService extends BasicServiceImpl<Integer, BusinessGroup> {
 
     @Autowired
-    private BusinessGroupDAO businessGroupDAO;
+    private BusinessGroupDAO dao;
 
-    public List<BusinessGroup> findAll() {
-        return businessGroupDAO.findAll();
-    }
-
-    public BusinessGroup findByPrimaryKey(Object obj_id) {
-        return businessGroupDAO.findByPrimaryKey(obj_id);
-    }
-
-    public int insert(BusinessGroup pojo) {
-        return businessGroupDAO.insert(pojo);
-    }
-
-    public int update(BusinessGroup pojo) {
-        return businessGroupDAO.update(pojo);
-    }
-
-    public int delete(BusinessGroup pojo) {
-        return businessGroupDAO.delete(pojo);
+    @Override
+    protected BasicDAOImpl getDao() {
+        return dao;
     }
 
 }

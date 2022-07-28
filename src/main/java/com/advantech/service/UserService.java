@@ -24,29 +24,26 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @Transactional
-public class UserService {
+public class UserService extends BasicServiceImpl<Integer, User> {
 
     @Autowired
-    private UserDAO userDAO;
+    private UserDAO dao;
 
-    public List<User> findAll() {
-        return userDAO.findAll();
+    @Override
+    protected BasicDAOImpl getDao() {
+        return this.dao;
     }
 
     public List<User> findAll(PageInfo info) {
-        return userDAO.findAll(info);
+        return dao.findAll(info);
     }
 
     public List<User> findAll(PageInfo info, Unit usersUnit) {
-        return userDAO.findAll(info, usersUnit);
-    }
-
-    public User findByPrimaryKey(Object obj_id) {
-        return userDAO.findByPrimaryKey(obj_id);
+        return dao.findAll(info, usersUnit);
     }
 
     public User findByJobnumber(String jobnumber) {
-        User i = userDAO.findByJobnumber(jobnumber);
+        User i = dao.findByJobnumber(jobnumber);
 
         if (i == null) {
             return null;
@@ -75,24 +72,16 @@ public class UserService {
     }
 
     public List<User> findByUnitName(String unitName) {
-        return userDAO.findByUnitName(unitName);
+        return dao.findByUnitName(unitName);
     }
 
     public List<User> findActive() {
-        return userDAO.findActive();
-    }
-
-    public int insert(User user) {
-        return userDAO.insert(user);
-    }
-
-    public int update(User user) {
-        return userDAO.update(user);
+        return dao.findActive();
     }
 
     public int delete(int id) {
         User user = this.findByPrimaryKey(id);
-        return userDAO.delete(user);
+        return dao.delete(user);
     }
 
     public int resetPsw() {

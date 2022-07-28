@@ -8,7 +8,7 @@ package com.advantech.controller;
 import com.advantech.converter.CrudActionControllerConverter;
 import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.Worktime;
-import com.advantech.service.AuditService;
+import com.advantech.service.WorktimeAuditService;
 import com.advantech.service.WorktimeService;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -45,7 +45,7 @@ public class TestController {
     }
 
     @Autowired
-    private AuditService<Worktime, Integer> auditService;
+    private WorktimeAuditService auditService;
 
     @Autowired
     private WorktimeService worktimeService;

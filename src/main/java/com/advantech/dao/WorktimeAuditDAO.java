@@ -6,6 +6,7 @@
 package com.advantech.dao;
 
 import com.advantech.jqgrid.PageInfo;
+import com.advantech.model.Worktime;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
@@ -29,7 +30,7 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class AuditDAO implements AuditAction {
+public class WorktimeAuditDAO implements AuditAction<Worktime, Integer> {
 
     private final boolean selectedEntitiesOnly = false;
     private final boolean selectDeletedEntities = true;
@@ -39,6 +40,8 @@ public class AuditDAO implements AuditAction {
 
     private final Pattern LTRIM = Pattern.compile("^\\s+");
     private final Pattern RTRIM = Pattern.compile("\\s+$");
+    
+    Class<Worktime> clz = Worktime.class;
 
     @Autowired
     private SessionFactory sessionFactory;
@@ -52,12 +55,12 @@ public class AuditDAO implements AuditAction {
     }
 
     @Override
-    public List findAll(Class clz) {
+    public List findAll() {
         AuditQuery q = getReader().createQuery().forRevisionsOfEntity(clz, selectedEntitiesOnly, selectDeletedEntities);
         return q.getResultList();
     }
 
-    public List findAll(Class clz, PageInfo info) {
+    public List findAll(PageInfo info) {
         AuditQuery q = getReader().createQuery().forRevisionsOfEntity(clz, selectedEntitiesOnly, selectDeletedEntities);
         info.setMaxNumOfRows(((Long) q.addProjection(AuditEntity.id().count()).getSingleResult()).intValue());
 
@@ -83,35 +86,35 @@ public class AuditDAO implements AuditAction {
     }
 
     @Override
-    public Object findByPrimaryKeyAndVersion(Class clz, Object id, int version) {
+    public Object findByPrimaryKeyAndVersion(Integer id, int version) {
         return getReader().find(clz, id, version);
     }
 
     @Override
-    public List findByPrimaryKey(Class clz, Object id) {
+    public List findByPrimaryKey(Integer id) {
         AuditQuery q = getReader().createQuery().forRevisionsOfEntity(clz, selectedEntitiesOnly, selectDeletedEntities);
         q.add(AuditEntity.id().eq(id));
         return q.getResultList();
     }
 
     @Override
-    public List<Number> findRevisions(Class clz, Object id) {
+    public List<Number> findRevisions(Integer id) {
         return getReader().getRevisions(clz, id);
     }
 
     @Override
-    public List forEntityAtRevision(Class clz, int version) {
+    public List forEntityAtRevision(int version) {
         AuditQuery q = getReader().createQuery().forEntitiesAtRevision(clz, version);
         return q.getResultList();
     }
 
-    public List findModifiedAtRevision(Class clz, int version) {
+    public List findModifiedAtRevision(int version) {
         AuditQuery q = getReader().createQuery().forRevisionsOfEntity(clz, true, true);
         q.add(AuditEntity.revisionNumber().eq(version));
         return q.getResultList();
     }
 
-    public List findByDate(Class clz, Object id, PageInfo info, Date startDate, Date endDate) {
+    public List findByDate(Integer id, PageInfo info, Date startDate, Date endDate) {
         //Group by first, get total rows number
         AuditQuery q = getReader().createQuery().forRevisionsOfEntity(clz, selectedEntitiesOnly, selectDeletedEntities);
         q.add(AuditEntity.revisionProperty("REVTSTMP").between(startDate.getTime(), endDate.getTime()));
@@ -148,7 +151,7 @@ public class AuditDAO implements AuditAction {
         return q.getResultList();
     }
 
-    public Number findLastRevisions(Class clz, Object id) {
+    public Number findLastRevisions(Integer id) {
         AuditQuery q = getReader().createQuery()
                 .forRevisionsOfEntity(clz, false, true)
                 .addProjection(AuditEntity.revisionNumber().max());
@@ -161,7 +164,7 @@ public class AuditDAO implements AuditAction {
         return revision;
     }
 
-    public boolean isFieldChangedAtLastRevision(Class clz, Object id, String[] fieldNames) {
+    public boolean isFieldChangedAtLastRevision(Integer id, String[] fieldNames) {
         AuditQuery q = getReader().createQuery()
                 .forRevisionsOfEntity(clz, true, false)
                 .add(AuditEntity.id().eq(id))
@@ -174,15 +177,15 @@ public class AuditDAO implements AuditAction {
         return !l.isEmpty();
     }
 
-    public Object findLastStatusBeforeUpdate(Class clz, Object id) {
+    public Worktime findLastStatusBeforeUpdate(Integer id) {
         AuditQuery q = getReader().createQuery()
                 .forRevisionsOfEntity(clz, true, false)
                 .add(AuditEntity.id().eq(id))
                 .add(AuditEntity.revisionNumber().maximize().computeAggregationInInstanceContext());
-        return q.getSingleResult();
+        return (Worktime) q.getSingleResult();
     }
 
-    public List findByFieldChangedInDate(Class clz, Object id, List<String> fieldNames, Date startDate, Date endDate) {
+    public List findByFieldChangedInDate(Integer id, List<String> fieldNames, Date startDate, Date endDate) {
         AuditQuery q = getReader().createQuery()
                 .forRevisionsOfEntity(clz, false, false)
                 .add(AuditEntity.revisionProperty("REVTSTMP").between(startDate.getTime(), endDate.getTime()));
