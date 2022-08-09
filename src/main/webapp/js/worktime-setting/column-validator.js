@@ -48,7 +48,7 @@ var flow_check_logic = {
     ],
     PKG: [
         {keyword: ["PKG"], checkColumn: ["packing"], message: not_null_and_zero_message, prmValid: notZeroOrNull},
-        {keyword: ["PI-PKG(WET)", "PKG(WET)(NO PI)"], checkColumn: ["weight"], message: not_null_and_zero_message, prmValid: notZeroOrNull}
+        {keyword: ["PKG(WET)"], checkColumn: ["weight"], message: not_null_and_zero_message, prmValid: notZeroOrNull}
     ]
 };
 var field_check_flow_logic = [
@@ -74,7 +74,7 @@ var field_check_flow_logic = [
     {checkColumn: {name: ["t3"], equals: false, value: 0}, description: when_not_empty_or_null, targetColumns: [{name: testFlow, keyword: ["T3"]}]},
     {checkColumn: {name: ["t4"], equals: false, value: 0}, description: when_not_empty_or_null, targetColumns: [{name: testFlow, keyword: ["T4"]}]},
     {checkColumn: {name: ["packing"], equals: false, value: 0}, description: when_not_empty_or_null, targetColumns: [{name: packingFlow, keyword: ["PKG"]}]},
-    {checkColumn: {name: ["weight"], equals: false, value: 0}, description: when_not_empty_or_null, targetColumns: [{name: packingFlow, keyword: ["PI-PKG(WET)", "PKG(WET)(NO PI)"]}]}
+    {checkColumn: {name: ["weight"], equals: false, value: 0}, description: when_not_empty_or_null, targetColumns: [{name: packingFlow, keyword: ["PKG(WET)"]}]}
 ];
 //Flow check logic
 function fieldCheck(postdata, preAssyVal, babFlowVal, testFlowVal, packingFlowVal) {

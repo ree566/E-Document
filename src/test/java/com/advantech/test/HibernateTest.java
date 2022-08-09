@@ -569,22 +569,22 @@ public class HibernateTest {
         BigDecimal five = new BigDecimal(5);
 
         List<Worktime> needModWorktime = l.stream()
-                .filter(w -> (w.getAssy().compareTo(five) <= 0 && w.getAssyStation() == 1)
-                || (w.getPacking().compareTo(five) <= 0 && w.getPackingStation() == 1))
+                .filter(w -> (w.getAssy().compareTo(five) <= 0 && w.getAssyStation() != 1)
+                || (w.getPacking().compareTo(five) <= 0 && w.getPackingStation() != 1))
                 .collect(toList());
 
-        assertEquals(needModWorktime.size(), 2620);
+        assertEquals(needModWorktime.size(), 636);
 
         needModWorktime.forEach(w -> {
             System.out.println(w.getModelName());
             WorktimeFormulaSetting formula = w.getWorktimeFormulaSettings().get(0);
-            if (w.getAssy().compareTo(five) >= 0) {
-                formula.setAssyStation(1);
-                w.setDefaultAssyStation();
+            if (w.getAssy().compareTo(five) <= 0) {
+                formula.setAssyStation(0);
+                w.setAssyStation(1);
             }
-            if (w.getPacking().compareTo(five) >= 0) {
-                formula.setPackingStation(1);
-                w.setDefaultPackingStation();
+            if (w.getPacking().compareTo(five) <= 0) {
+                formula.setPackingStation(0);
+                w.setPackingStation(1);
             }
             session.save(formula);
             session.save(w);
