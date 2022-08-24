@@ -9,8 +9,10 @@ import static com.advantech.helper.JqGridResponseUtils.toJqGridResponse;
 import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.Worktime;
 import com.advantech.jqgrid.JqGridResponse;
-import com.advantech.service.AuditService;
+import com.advantech.model.View;
+import com.advantech.service.WorktimeAuditService;
 import com.advantech.service.WorktimeService;
+import com.fasterxml.jackson.annotation.JsonView;
 import java.util.ArrayList;
 import java.util.List;
 import org.joda.time.DateTime;
@@ -32,13 +34,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class AuditController {
 
     @Autowired
-    private AuditService auditService;
+    private WorktimeAuditService worktimeAuditService;
 
     @Autowired
     private WorktimeService worktimeService;
 
     @ResponseBody
     @RequestMapping(value = "/find", method = {RequestMethod.GET, RequestMethod.POST})
+    @JsonView(View.Public.class)
     protected JqGridResponse getAudit(
             @RequestParam(required = false) final Integer id,
             @RequestParam(required = false) final String modelName,
@@ -59,34 +62,34 @@ public class AuditController {
             DateTime d2 = endDate.withHourOfDay(23).withMinuteOfHour(59);
 
             if (id == null && "".equals(modelName) && version == null) {
-                l = auditService.findByDate(Worktime.class, info, d1.toDate(), d2.toDate());
+                l = worktimeAuditService.findByDate(info, d1.toDate(), d2.toDate());
             } else if (!"".equals(modelName)) {
                 Worktime w = worktimeService.findByModel(modelName);
                 if (w == null) {
 //                Search the revision when model not found.
 //                If revision still no info, model is not exist.
                     PageInfo tempInfo = addModelNameFilterAndGetClone(info, modelName);
-                    List<Object[]> auditInfo = auditService.findAll(Worktime.class, tempInfo);
+                    List<Object[]> auditInfo = worktimeAuditService.findAll(tempInfo);
                     Worktime auditW = (auditInfo.isEmpty() ? null : (Worktime) auditInfo.get(0)[0]);
                     w = auditW != null ? auditW : null;
 
                 }
                 if (w != null) {
-                    l = auditService.findByDate(Worktime.class, w.getId(), info, d1.toDate(), d2.toDate());
+                    l = worktimeAuditService.findByDate(w.getId(), info, d1.toDate(), d2.toDate());
                 } else {
                     PageInfo tempInfo = addModelNameFilterAndGetClone(info, modelName);
                     tempInfo.setSearchOper("bw");
-                    l = auditService.findByDate(Worktime.class, tempInfo, d1.toDate(), d2.toDate());
+                    l = worktimeAuditService.findByDate(tempInfo, d1.toDate(), d2.toDate());
                 }
             } else if (id != null) {
-                l = auditService.findByDate(Worktime.class, id, info, d1.toDate(), d2.toDate());
+                l = worktimeAuditService.findByDate(id, info, d1.toDate(), d2.toDate());
             }
         } else if (startDate == null && endDate == null) {
             if (id != null) {
-                l = auditService.findByPrimaryKey(Worktime.class, id);
+                l = worktimeAuditService.findByPrimaryKey(id);
             } else if (modelName != null && !"".equals(modelName)) {
                 PageInfo tempInfo = addModelNameFilterAndGetClone(info, modelName);
-                l = auditService.findAll(Worktime.class, tempInfo);
+                l = worktimeAuditService.findAll(tempInfo);
         }
         }
         return l;
@@ -105,7 +108,7 @@ public class AuditController {
     @ResponseBody
     @RequestMapping(value = "/findLastRevision", method = {RequestMethod.GET, RequestMethod.POST})
     protected Number getAuditRevision(@RequestParam(required = false) Integer id) {
-        return auditService.findLastRevisions(Worktime.class, id);
+        return worktimeAuditService.findLastRevisions(id);
     }
 
 }

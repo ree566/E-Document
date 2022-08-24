@@ -131,7 +131,7 @@ public class User implements UserDetails, Comparable<User> {
         this.jobnumber = jobnumber;
     }
 
-    @Column(name = "password", length = 50)
+    @Column(name = "[password]", length = 50)
     @Override
     public String getPassword() {
         return this.password;
@@ -141,7 +141,7 @@ public class User implements UserDetails, Comparable<User> {
         this.password = password;
     }
 
-    @Column(name = "name", length = 50)
+    @Column(name = "[name]", length = 50)
     @Override
     public String getUsername() {
         return this.username;

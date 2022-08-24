@@ -5,11 +5,12 @@
  */
 package com.advantech.controller;
 
+import com.advantech.converter.CobotConverter;
 import com.advantech.excel.JxlsExcelView;
 import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.SheetView;
 import com.advantech.model.Worktime;
-import com.advantech.service.AuditService;
+import com.advantech.service.WorktimeAuditService;
 import com.advantech.service.SheetViewService;
 import com.advantech.service.WorktimeService;
 import java.text.SimpleDateFormat;
@@ -43,7 +44,10 @@ public class FileDownloadController {
     private WorktimeService worktimeService;
 
     @Autowired
-    private AuditService auditService;
+    private WorktimeAuditService worktimeAuditService;
+
+    @Autowired
+    private CobotConverter cobotConverter;
 
     private static int fileDownloadCount = 0;
 
@@ -98,13 +102,14 @@ public class FileDownloadController {
         }
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-        Number revisionNum = auditService.findLastRevisions(Worktime.class);
+        Number revisionNum = worktimeAuditService.findLastRevisions();
         String revisionInfo = this.encodeRevisionInfo(revisionNum);
 
         Map<String, Object> model = new HashMap<>();
         model.put("worktimes", l);
         model.put("dateFormat", dateFormat);
         model.put("revision", revisionInfo);
+        model.put("cobotConverter", cobotConverter);
 
         return new ModelAndView(new JxlsExcelView("excel-template/" + tempfileName, tempfileName), model);
 

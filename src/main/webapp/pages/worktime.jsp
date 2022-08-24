@@ -102,9 +102,24 @@
                 {name: "flow", nameprefix: "pkg_", isNullable: true, dataToServer: "2"},
                 {name: "preAssy", isNullable: true},
                 {name: "pending", isNullable: false},
-                {name: "remark", isNullable: false}
+                {name: "remark", isNullable: false},
+                {name: "cobots", isNullable: false}
             ]
         });
+
+        var cobotsFormatter = function (cellvalue, options, rowObject) {
+            if (cellvalue.length == 0) {
+                return '';
+            }
+            const strArr = cellvalue.map(c => {
+                if (c.name) {
+                    return c.name;
+                } else {
+                    return (selectOptions["cobots_options"]).get(c);
+                }
+            });
+            return strArr.join(',')
+        };
 
         var hideEmptyBabFlow = function (rowId, val, rawObject) {
             if (val == 111) {
@@ -123,14 +138,16 @@
         var before_add = function (postdata, formid) {
             var formulaFieldInfo = getFormulaCheckboxField();
             clearCheckErrorIcon();
+
             var checkResult = checkFlowIsValid(postdata, formid);
+
             var modelRelativeCheckResult = checkModelIsValid(postdata);
             checkResult = checkResult.concat(modelRelativeCheckResult);
             if (checkResult.length != 0) {
                 errorTextFormatF(checkResult); //field // code
                 return [false, "There are some errors in the entered data. Hover over the error icons for details."];
             } else {
-//                return [false, "saved"];
+//                return [false, "Saved."]; //--For debug validator
                 $.extend(postdata, formulaFieldInfo);
                 return [true, "saved"];
             }
@@ -142,12 +159,14 @@
             formulaFieldInfo["worktimeFormulaSettings[0].worktime.id"] = postdata.id;
             clearCheckErrorIcon();
             var checkResult = checkFlowIsValid(postdata, formid);
+
             var modelRelativeCheckResult = checkModelIsValid(postdata);
             checkResult = checkResult.concat(modelRelativeCheckResult);
             if (checkResult.length != 0) {
                 errorTextFormatF(checkResult); //field // code
                 return [false, "There are some errors in the entered data. Hover over the error icons for details."];
             } else {
+//                return [false, "Saved."]; //--For debug validator
                 //儲存前再check一次版本，給予覆蓋or取消的選擇
                 var revision_number = getRowRevision();
                 if (revision_number != selected_row_revision) {
@@ -180,6 +199,7 @@
                 {label: 'TYPE', name: "type.id", edittype: "select", editoptions: {value: selectOptions["type"]}, formatter: selectOptions["type_func"], width: 100, searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["type"], sopt: ['eq']}},
                 {label: 'BU', name: "businessGroup.id", edittype: "select", editoptions: {value: selectOptions["businessGroup"], dataEvents: businessGroup_select_event}, formatter: selectOptions["businessGroup_func"], width: 100, searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["businessGroup"], sopt: ['eq']}},
                 {label: 'Work Center', name: "workCenter.id", edittype: "select", editoptions: {value: selectOptions["workCenter"]}, formatter: selectOptions["workCenter_func"], width: 100, searchrules: {required: true}, stype: "select", searchoptions: {value: selectOptions["workCenter"], sopt: ['eq']}},
+                {label: '機器工時', name: "machineWorktime", width: 120, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: {elmsuffix: addFormulaCheckbox("machineWorktime")}, editrules: {number: true}, editoptions: {defaultValue: '0'}},        
                 {label: 'ProductionWT', name: "productionWt", width: 120, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: {elmsuffix: addFormulaCheckbox("productionWt")}, editrules: {number: true}, editoptions: {defaultValue: '0'}},
                 {label: 'Setup Time', name: "setupTime", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, formoptions: {elmsuffix: addFormulaCheckbox("setupTime")}, editrules: {number: true}, editoptions: {defaultValue: '0'}},
                 {label: 'AR film attachment', name: "arFilmAttachment", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, editoptions: {defaultValue: '0'}},
@@ -239,19 +259,17 @@
                 {label: '測試工時', name: "test", width: 80, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, formoptions: {elmsuffix: addFormulaCheckbox("test")}, editoptions: {defaultValue: '0'}},
                 {label: 'Create_Date', width: 200, name: "createDate", index: "createDate", formatter: 'date', formatoptions: {srcformat: 'Y-m-d H:i:s A', newformat: 'Y-m-d H:i:s A'}, stype: 'text', searchrules: date_search_rule, searchoptions: search_date_options, align: 'center'},
                 {label: 'Modified_Date', width: 200, name: "modifiedDate", index: "modifiedDate", formatter: 'date', formatoptions: {srcformat: 'Y-m-d H:i:s A', newformat: 'Y-m-d H:i:s A'}, stype: 'text', searchrules: date_search_rule, searchoptions: search_date_options, align: 'center'},
-                {label: '自動化人機協作', width: 80, name: "hrcValues", search: false, edittype: "select", editoptions: {
-                        value: "LCD自動檢測設備:LCD自動檢測設備;AB智能混灌設備:AB智能混灌設備;TP貼合設備:TP貼合設備",
+                {label: '自動化人機協作', name: "cobots", width: 60, editable: true, hidden: false, formatter: cobotsFormatter, editrules: {edithidden: true, required: false}, edittype: "select",
+                    editoptions: {
+                        multiple: true, value: selectOptions["cobots"],
                         dataInit: function (elem) {
-                            setTimeout(function () {
-                                $(elem).multiSelect({
-                                    selectableHeader: "<div class='custom-header'>可選欄位</div>",
-                                    selectionHeader: "<div class='custom-header'>已選欄位</div>"
-                                });
-                            }, 150);
-                        },
-                        multiple: true,
-                        defaultValue: 'IN'
-                    }
+                            $(elem).multiSelect({
+                                selectableHeader: "<div class='custom-header'>可選欄位</div>",
+                                selectionHeader: "<div class='custom-header'>已選欄位</div>"
+                            });
+                        }
+                    },
+                    search: false
                 }
             ],
             rowNum: 20,

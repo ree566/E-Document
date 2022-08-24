@@ -7,7 +7,6 @@ package com.advantech.service;
 
 import com.advantech.dao.*;
 import com.advantech.model.Floor;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,33 +18,14 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @Transactional
-public class FloorService {
+public class FloorService extends BasicServiceImpl<Integer, Floor> {
 
     @Autowired
-    private FloorDAO floorDAO;
+    private FloorDAO dao;
 
-    public List<Floor> findAll() {
-        return floorDAO.findAll();
-    }
-
-    public Floor findByPrimaryKey(Object obj_id) {
-        return floorDAO.findByPrimaryKey(obj_id);
-    }
-
-    public List<Floor> findByPrimaryKeys(Integer... id) {
-        return floorDAO.findByPrimaryKeys(id);
-    }
-
-    public int insert(Floor floor) {
-        return floorDAO.insert(floor);
-    }
-
-    public int update(Floor floor) {
-        return floorDAO.update(floor);
-    }
-
-    public int delete(Floor floor) {
-        return floorDAO.delete(floor);
+    @Override
+    protected BasicDAOImpl getDao() {
+        return this.dao;
     }
 
 }

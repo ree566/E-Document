@@ -19,20 +19,10 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class FlowDAO extends AbstractDao<Integer, Flow> implements BasicDAO<Flow> {
-
-    @Override
-    public List<Flow> findAll() {
-        return createEntityCriteria().addOrder(Order.asc("name")).list();
-    }
+public class FlowDAO extends BasicDAOImpl<Integer, Flow> {
 
     public List<Flow> findAll(PageInfo info) {
         return super.getByPaginateInfo(info);
-    }
-
-    @Override
-    public Flow findByPrimaryKey(Object obj_id) {
-        return super.getByKey((int) obj_id);
     }
 
     public List<Flow> findByFlowGroup(FlowGroup flowGroup) {
@@ -46,24 +36,6 @@ public class FlowDAO extends AbstractDao<Integer, Flow> implements BasicDAO<Flow
         Criteria criteria = createEntityCriteria();
         criteria.add(Restrictions.eq("name", flowName));
         return (Flow) criteria.uniqueResult();
-    }
-
-    @Override
-    public int insert(Flow pojo) {
-        getSession().save(pojo);
-        return 1;
-    }
-
-    @Override
-    public int update(Flow pojo) {
-        getSession().update(pojo);
-        return 1;
-    }
-
-    @Override
-    public int delete(Flow pojo) {
-        getSession().delete(pojo);
-        return 1;
     }
 
 }

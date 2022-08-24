@@ -8,6 +8,7 @@ package com.advantech.controller;
 import com.advantech.helper.WorktimeMailManager;
 import com.advantech.excel.XlsWorkBook;
 import com.advantech.excel.XlsWorkSheet;
+import com.advantech.helper.WorktimeValidator;
 import com.advantech.model.BusinessGroup;
 import com.advantech.model.Floor;
 import com.advantech.model.Flow;
@@ -18,7 +19,6 @@ import com.advantech.model.Type;
 import com.advantech.model.User;
 import com.advantech.model.WorkCenter;
 import com.advantech.model.Worktime;
-import com.advantech.service.AuditService;
 import com.advantech.service.BusinessGroupService;
 import com.advantech.service.FloorService;
 import com.advantech.service.FlowService;
@@ -28,6 +28,7 @@ import com.advantech.service.RemarkService;
 import com.advantech.service.TypeService;
 import com.advantech.service.UserService;
 import com.advantech.service.WorkCenterService;
+import com.advantech.service.WorktimeAuditService;
 import com.advantech.service.WorktimeService;
 import com.google.gson.Gson;
 import java.lang.reflect.InvocationTargetException;
@@ -94,7 +95,10 @@ public class WorktimeBatchModController {
     private RemarkService remarkService;
 
     @Autowired
-    private AuditService auditService;
+    private WorktimeAuditService worktimeAuditService;
+    
+    @Autowired
+    private WorktimeValidator worktimeValidator;
 
     private static Validator validator;
 
@@ -115,7 +119,7 @@ public class WorktimeBatchModController {
             w.setId(0);
         });
 
-        worktimeService.checkModelExists(hgList);
+        this.worktimeValidator.checkModelNameExists(hgList);
 
         //Validate the column, throw exception when false.
         validateWorktime(hgList);
@@ -136,7 +140,7 @@ public class WorktimeBatchModController {
 
         List<Worktime> hgList = this.transToWorktimes(file, true);
 
-        worktimeService.checkModelExists(hgList);
+        worktimeValidator.checkModelNameExists(hgList);
 
         //Validate the column, throw exception when false.
         validateWorktime(hgList);
@@ -155,7 +159,7 @@ public class WorktimeBatchModController {
             ids[i] = hgList.get(i).getId();
         }
 
-        if (worktimeService.delete(ids) == 1) {
+        if (worktimeService.deleteWithMesUpload(ids) == 1) {
             worktimeMailManager.notifyUser(hgList, "del");
             return "success";
         } else {
@@ -200,7 +204,7 @@ public class WorktimeBatchModController {
     private void checkRevision(List<Worktime> l, Integer revisionNum) throws Exception {
 
         Integer maxAllowRevisionsGap = 10;
-        Integer currentRevision = auditService.findLastRevisions(Worktime.class).intValue();
+        Integer currentRevision = worktimeAuditService.findLastRevisions().intValue();
 
         //Check revision history contain update datas or not.
         if (revisionNum < currentRevision) {
@@ -209,7 +213,7 @@ public class WorktimeBatchModController {
             }
 
             for (int i = revisionNum + 1; i <= currentRevision; i++) {
-                List<Worktime> revData = auditService.findModifiedAtRevision(Worktime.class, i);
+                List<Worktime> revData = worktimeAuditService.findModifiedAtRevision(i);
                 for (Worktime w : l) {
                     for (Worktime rev_w : revData) {
                         if (rev_w.getId() == w.getId()) {

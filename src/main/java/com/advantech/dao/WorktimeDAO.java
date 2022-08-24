@@ -20,30 +20,14 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class WorktimeDAO extends AbstractDao<Integer, Worktime> implements BasicDAO<Worktime> {
-
-    @Override
-    public List<Worktime> findAll() {
-        return createEntityCriteria().list();
-    }
+public class WorktimeDAO extends BasicDAOImpl<Integer, Worktime> {
 
     public List<Worktime> findAll(PageInfo info) {
-//        String fetchField = "bwFields";
-        Criteria criteria = createEntityCriteria();
-//        criteria.createAlias(fetchField, fetchField, JoinType.LEFT_OUTER_JOIN);
+        Criteria criteria = createEntityCriteria()
+                .setFetchMode("cobots", FetchMode.SELECT)
+                .createAlias("bwFields", "bwFields", JoinType.LEFT_OUTER_JOIN);
         List l = getByPaginateInfo(criteria, info);
         return l;
-    }
-
-    @Override
-    public Worktime findByPrimaryKey(Object obj_id) {
-        return getByKey((int) obj_id);
-    }
-
-    public List<Worktime> findByPrimaryKeys(Integer... id) {
-        Criteria criteria = createEntityCriteria();
-        criteria.add(Restrictions.in("id", id));
-        return criteria.list();
     }
 
     public Worktime findByModel(String modelName) {
@@ -65,14 +49,14 @@ public class WorktimeDAO extends AbstractDao<Integer, Worktime> implements Basic
             criteria.setFetchMode(field, FetchMode.JOIN);
         }
 
+        criteria.setFetchMode("cobots", FetchMode.SELECT);
+//        criteria.createAlias("cobots", "cobots", JoinType.LEFT_OUTER_JOIN);
+
+        String fetchField_c = "bwFields";
+        criteria.createAlias(fetchField_c, fetchField_c, JoinType.LEFT_OUTER_JOIN);
+
         List l = getByPaginateInfo(criteria, info);
         return l;
-    }
-
-    @Override
-    public int insert(Worktime pojo) {
-        getSession().save(pojo);
-        return 1;
     }
 
     public int merge(Worktime pojo) {
@@ -84,22 +68,5 @@ public class WorktimeDAO extends AbstractDao<Integer, Worktime> implements Basic
         getSession().saveOrUpdate(pojo);
         return 1;
     }
-
-    @Override
-    public int update(Worktime pojo) {
-        getSession().update(pojo);
-        return 1;
-    }
-
-    @Override
-    public int delete(Worktime pojo) {
-        getSession().delete(pojo);
-        return 1;
-    }
-
-    public void flushSession() {
-        Session session = this.getSession();
-        session.flush();
-        session.clear();
-    }
+   
 }

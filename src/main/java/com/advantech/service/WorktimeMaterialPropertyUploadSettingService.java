@@ -5,6 +5,7 @@
  */
 package com.advantech.service;
 
+import com.advantech.dao.BasicDAOImpl;
 import com.advantech.dao.WorktimeMaterialPropertyUploadSettingDAO;
 import com.advantech.model.WorktimeMaterialPropertyUploadSetting;
 import java.util.List;
@@ -18,29 +19,14 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @Transactional
-public class WorktimeMaterialPropertyUploadSettingService {
+public class WorktimeMaterialPropertyUploadSettingService extends BasicServiceImpl<Integer, WorktimeMaterialPropertyUploadSetting> {
 
     @Autowired
-    private WorktimeMaterialPropertyUploadSettingDAO worktimeAutouploadSettingDAO;
+    private WorktimeMaterialPropertyUploadSettingDAO dao;
 
-    public List<WorktimeMaterialPropertyUploadSetting> findAll() {
-        return worktimeAutouploadSettingDAO.findAll();
-    }
-
-    public WorktimeMaterialPropertyUploadSetting findByPrimaryKey(Object obj_id) {
-        return worktimeAutouploadSettingDAO.findByPrimaryKey(obj_id);
-    }
-
-    public int insert(WorktimeMaterialPropertyUploadSetting pojo) {
-        return worktimeAutouploadSettingDAO.insert(pojo);
-    }
-
-    public int update(WorktimeMaterialPropertyUploadSetting pojo) {
-        return worktimeAutouploadSettingDAO.update(pojo);
-    }
-
-    public int delete(WorktimeMaterialPropertyUploadSetting pojo) {
-        return worktimeAutouploadSettingDAO.delete(pojo);
+    @Override
+    protected BasicDAOImpl getDao() {
+        return this.dao;
     }
 
 }

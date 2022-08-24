@@ -54,7 +54,7 @@ public class Pending implements java.io.Serializable, Comparable<Pending> {
         this.id = id;
     }
 
-    @Column(name = "name", length = 50)
+    @Column(name = "[name]", length = 50)
     public String getName() {
         return this.name;
     }

@@ -7,10 +7,13 @@ package com.advantech.controller;
 
 import com.advantech.helper.WorktimeMailManager;
 import static com.advantech.helper.JqGridResponseUtils.toJqGridResponse;
+import com.advantech.helper.WorktimeValidator;
 import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.Worktime;
 import com.advantech.jqgrid.JqGridResponse;
+import com.advantech.model.View;
 import com.advantech.service.WorktimeService;
+import com.fasterxml.jackson.annotation.JsonView;
 import static com.google.common.base.Preconditions.*;
 import static com.google.common.collect.Lists.newArrayList;
 import java.util.Arrays;
@@ -40,9 +43,13 @@ public class WorktimeController extends CrudController<Worktime> {
 
     @Autowired
     private WorktimeMailManager worktimeMailManager;
+    
+    @Autowired
+    private WorktimeValidator worktimeValidator;
 
     @ResponseBody
     @RequestMapping(value = SELECT_URL, method = {RequestMethod.GET})
+    @JsonView(View.Internal.class)
     @Override
     protected JqGridResponse read(PageInfo info) {
         return toJqGridResponse(worktimeService.findAll(info), info);
@@ -59,7 +66,7 @@ public class WorktimeController extends CrudController<Worktime> {
 
         removeModelNameExtraSpaceCharacter(worktime);
         
-        worktimeService.checkModelExists(worktime);
+        worktimeValidator.checkModelNameExists(worktime);
         
         resetNullableColumn(worktime);
         
@@ -86,7 +93,7 @@ public class WorktimeController extends CrudController<Worktime> {
             return removeModelNameExtraSpaceCharacter(s);
         }).collect(Collectors.toList());
 
-        modifyMessage = worktimeService.insertSeries(baseModelName, l) == 1 ? this.SUCCESS_MESSAGE : FAIL_MESSAGE;
+        modifyMessage = worktimeService.insertSeriesWithMesUpload(baseModelName, l) == 1 ? this.SUCCESS_MESSAGE : FAIL_MESSAGE;
         if (SUCCESS_MESSAGE.equals(modifyMessage)) {
             worktimeMailManager.notifyUser2(l, ADD);
         }
@@ -104,13 +111,13 @@ public class WorktimeController extends CrudController<Worktime> {
 
         String modifyMessage;
 
-        worktimeService.checkModelExists(worktime);
+        this.worktimeValidator.checkModelNameExists(worktime);
         
         removeModelNameExtraSpaceCharacter(worktime);
         
         resetNullableColumn(worktime);
 
-        modifyMessage = worktimeService.merge(worktime) == 1 ? this.SUCCESS_MESSAGE : FAIL_MESSAGE;
+        modifyMessage = worktimeService.mergeWithMesUpload(worktime) == 1 ? this.SUCCESS_MESSAGE : FAIL_MESSAGE;
 
         return serverResponse(modifyMessage);
     }
@@ -119,7 +126,7 @@ public class WorktimeController extends CrudController<Worktime> {
     @Override
     protected ResponseEntity delete(int id) throws Exception {
         Worktime w = worktimeService.findByPrimaryKey(id);
-        String modifyMessage = worktimeService.delete(id) == 1 ? this.SUCCESS_MESSAGE : this.FAIL_MESSAGE;
+        String modifyMessage = worktimeService.deleteWithMesUpload(id) == 1 ? this.SUCCESS_MESSAGE : this.FAIL_MESSAGE;
         if (SUCCESS_MESSAGE.equals(modifyMessage)) {
             worktimeMailManager.notifyUser(newArrayList(w), DELETE);
         }

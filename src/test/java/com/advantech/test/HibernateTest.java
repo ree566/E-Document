@@ -9,7 +9,7 @@ import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.Pending;
 import com.advantech.model.Worktime;
-import com.advantech.service.AuditService;
+import com.advantech.service.WorktimeAuditService;
 import com.advantech.service.WorktimeService;
 import com.advantech.service.WorktimeUploadMesService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -58,7 +58,7 @@ public class HibernateTest {
     private SessionFactory sessionFactory;
     
     @Autowired
-    private AuditService auditService;
+    private WorktimeAuditService worktimeAuditService;
     
     private static Validator validator;
     
@@ -147,7 +147,7 @@ public class HibernateTest {
             modelNames.add(modelName + "-CLONE-" + i);
         }
         
-        worktimeService.insertSeries(modelName, modelNames);
+        worktimeService.insertSeriesWithMesUpload(modelName, modelNames);
     }
 
 //    @Test

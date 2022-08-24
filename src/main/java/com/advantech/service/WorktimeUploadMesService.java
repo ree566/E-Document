@@ -5,7 +5,7 @@
  */
 package com.advantech.service;
 
-import com.advantech.dao.AuditDAO;
+import com.advantech.dao.WorktimeAuditDAO;
 import com.advantech.model.Worktime;
 import com.advantech.webservice.port.FlowUploadPort;
 import com.advantech.webservice.port.MaterialPropertyUploadPort;
@@ -26,7 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class WorktimeUploadMesService {
 
     @Autowired
-    private AuditDAO auditDAO;
+    private WorktimeAuditService worktimeAuditService;
 
     @Autowired
     private SopUploadPort sopUploadPort;
@@ -102,7 +102,7 @@ public class WorktimeUploadMesService {
 
     public void update(Worktime w) throws Exception {
         if (isUpdated) {
-            Worktime rowLastStatus = (Worktime) auditDAO.findLastStatusBeforeUpdate(Worktime.class, w.getId());
+            Worktime rowLastStatus = worktimeAuditService.findLastStatusBeforeUpdate(w.getId());
             if (isUploadSop && isSopChanged(rowLastStatus, w)) {
                 try {
                     sopUploadPort.update(w);

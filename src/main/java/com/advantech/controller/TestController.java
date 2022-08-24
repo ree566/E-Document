@@ -7,7 +7,7 @@ package com.advantech.controller;
 
 import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.Worktime;
-import com.advantech.service.AuditService;
+import com.advantech.service.WorktimeAuditService;
 import com.advantech.service.WorktimeService;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -38,7 +38,7 @@ import org.springframework.web.servlet.ModelAndView;
 public class TestController {
 
     @Autowired
-    private AuditService auditService;
+    private WorktimeAuditService worktimeAuditService;
 
     @Autowired
     private WorktimeService worktimeService;
@@ -57,7 +57,7 @@ public class TestController {
     @RequestMapping(value = "/test2/{id}", method = RequestMethod.GET)
     @Secured({"ROLE_USER", "ROLE_ADMIN"})
     protected List test2(@PathVariable int id) {
-        return auditService.findByPrimaryKey(Worktime.class, id);
+        return worktimeAuditService.findByPrimaryKey(id);
     }
 
     @ResponseBody

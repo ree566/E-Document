@@ -6,6 +6,7 @@
 package com.advantech.controller;
 
 import com.advantech.model.BusinessGroup;
+import com.advantech.model.Cobot;
 import com.advantech.model.Floor;
 import com.advantech.model.Flow;
 import com.advantech.model.FlowGroup;
@@ -19,6 +20,7 @@ import com.advantech.model.UserNotification;
 import com.advantech.model.UserProfile;
 import com.advantech.model.WorkCenter;
 import com.advantech.service.BusinessGroupService;
+import com.advantech.service.CobotService;
 import com.advantech.service.FloorService;
 import com.advantech.service.FlowGroupService;
 import com.advantech.service.FlowService;
@@ -86,6 +88,9 @@ public class WorktimeSelectOptionController {
 
     @Autowired
     private WorkCenterService workCenterService;
+    
+    @Autowired
+    private CobotService cobotService;
 
     @ResponseBody
     @RequestMapping(value = "/floor", method = {RequestMethod.GET})
@@ -191,5 +196,11 @@ public class WorktimeSelectOptionController {
     @RequestMapping(value = "/remark", method = {RequestMethod.GET})
     protected List<Remark> getRemarkOption() {
         return remarkService.findAll();
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/cobots", method = {RequestMethod.GET})
+    protected List<Cobot> getCobotOption() throws Exception {
+        return cobotService.findAll();
     }
 }

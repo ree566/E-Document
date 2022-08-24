@@ -5,6 +5,7 @@
  */
 package com.advantech.service;
 
+import com.advantech.dao.BasicDAOImpl;
 import com.advantech.dao.WorktimeColumnGroupDAO;
 import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.WorktimeColumnGroup;
@@ -20,38 +21,27 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @Transactional
-public class WorktimeColumnGroupService {
+public class WorktimeColumnGroupService extends BasicServiceImpl<Integer, WorktimeColumnGroup> {
 
     @Autowired
-    private WorktimeColumnGroupDAO worktimeColumnGroupDAO;
+    private WorktimeColumnGroupDAO dao;
 
-    public List<WorktimeColumnGroup> findAll() {
-        return worktimeColumnGroupDAO.findAll();
+    @Override
+    protected BasicDAOImpl getDao() {
+        return this.dao;
     }
 
     public List<WorktimeColumnGroup> findAll(PageInfo info) {
-        return worktimeColumnGroupDAO.findAll(info);
-    }
-
-    public WorktimeColumnGroup findByPrimaryKey(Object obj_id) {
-        return worktimeColumnGroupDAO.findByPrimaryKey(obj_id);
+        return dao.findAll(info);
     }
 
     public WorktimeColumnGroup findByUnit(int obj_id) {
-        return worktimeColumnGroupDAO.findByUnit(obj_id);
-    }
-
-    public int insert(WorktimeColumnGroup w) {
-        return worktimeColumnGroupDAO.insert(w);
-    }
-
-    public int update(WorktimeColumnGroup w) {
-        return worktimeColumnGroupDAO.update(w);
+        return dao.findByUnit(obj_id);
     }
 
     public int delete(int id) {
         WorktimeColumnGroup w = this.findByPrimaryKey(id);
-        return worktimeColumnGroupDAO.delete(w);
+        return dao.delete(w);
     }
 
 }

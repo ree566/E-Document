@@ -88,6 +88,7 @@
                     {label: 'TYPE', name: "type_id", jsonmap: "0.type.id", formatter: selectOptions["type_func"], width: 100, searchrules: {required: true}, searchoptions: search_string_options},
                     {label: 'BU', name: "businessGroup_id", jsonmap: "0.businessGroup.id", formatter: selectOptions["businessGroup_func"], width: 100, searchrules: {required: true}, searchoptions: search_string_options},
                     {label: 'Work Center', name: "workCenter_id", jsonmap: "0.workCenter.id", formatter: selectOptions["workCenter_func"], width: 100, searchrules: {required: true}, searchoptions: search_string_options},
+                    {label: '機器工時', name: "machineWorktime", jsonmap: "0.machineWorktime", width: 120, searchrules: number_search_rule, searchoptions: search_decimal_options},            
                     {label: 'ProductionWT', name: "productionWt", jsonmap: "0.productionWt", width: 120, searchrules: number_search_rule, searchoptions: search_decimal_options},
                     {label: 'Setup Time', name: "setupTime", jsonmap: "0.setupTime", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options},
                     {label: 'AR film attachment', name: "arFilmAttachment", jsonmap: "0.arFilmAttachment", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options},
@@ -138,14 +139,14 @@
                     {label: 'KC', name: "kc", jsonmap: "0.kc", width: 60, searchrules: number_search_rule, searchoptions: search_string_options},
                     {label: 'N合1集合箱', name: "nsInOneCollectionBox", jsonmap: "0.nsInOneCollectionBox", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options},
                     {label: '料號屬性值維護', name: "partNoAttributeMaintain", jsonmap: "0.partNoAttributeMaintain", width: 120, searchrules: {required: true}, searchoptions: search_string_options},
-                    {label: '啟用料號屬性', name: "labelInformation", jsonmap: "0.partNoAttributeMaintain", width: 120, searchrules: {required: true}, searchoptions: search_string_options},
+                    {label: '啟用料號屬性', name: "labelInformation", jsonmap: "0.labelInformation", width: 120, searchrules: {required: true}, searchoptions: search_string_options},
                     {label: '禮盒總重量(含配件)', name: "weight", jsonmap: "0.weight", width: 120, searchrules: {required: true}, searchoptions: search_decimal_options},
                     {label: '整箱總重量誤差值', name: "tolerance", jsonmap: "0.tolerance", width: 120, searchrules: {required: true}, searchoptions: search_decimal_options},
                     {label: 'A膠溶劑量', name: "materialVolumeA", jsonmap: "0.materialVolumeA", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options},
                     {label: 'B膠溶劑量', name: "materialVolumeB", jsonmap: "0.materialVolumeB", width: 100, searchrules: number_search_rule, searchoptions: search_decimal_options},
                     {label: '前置時間', name: "assyLeadTime", jsonmap: "0.assyLeadTime", width: 80, searchrules: number_search_rule, searchoptions: search_decimal_options},
-                    {label: '測試工時', name: "test", jsonmap: "0.test", width: 80, searchrules: number_search_rule, searchoptions: search_decimal_options},
-                    {label: '自動化人機協作', width: 200, name: "hrcValues", jsonmap: "0.hrcValues", index: "hrcValues", align: 'center'}
+                    {label: '測試工時', name: "test", jsonmap: "0.test", width: 80, searchrules: number_search_rule, searchoptions: search_decimal_options}
+                    //{label: '自動化人機協作', width: 200, name: "hrcValues", jsonmap: "0.hrcValues", index: "hrcValues", align: 'center'}
                 ],
                 rowNum: 100,
                 rowList: [100, 200, 500, 1000],
@@ -205,6 +206,7 @@
                             );
                 }
             });
+
             $("#cb_" + grid[0].id).hide();
             grid.jqGrid('setFrozenColumns');
         }
@@ -220,7 +222,7 @@
         <input type="text" id="sD" name="startDate" placeholder="startDate" class="form-control" />
         <input type="text" id="eD" name="endDate" placeholder="endDate" class="form-control" />
         <input type="button" id="send" class="form-control" value="send" />
-        <h5 class="form-control alert">※id or modelName 不指定請留白</h5>
+        <h5 class="form-control alert">※id or modelName or 日期 不指定請留白</h5>
     </div>
     <table id="list"></table> 
     <div id="pager"></div>

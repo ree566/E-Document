@@ -5,6 +5,7 @@
  */
 package com.advantech.service;
 
+import com.advantech.dao.BasicDAOImpl;
 import com.advantech.dao.WorkCenterDAO;
 import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.WorkCenter;
@@ -19,42 +20,27 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @Transactional
-public class WorkCenterService {
+public class WorkCenterService extends BasicServiceImpl<Integer, WorkCenter>{
 
     @Autowired
-    private WorkCenterDAO workCenterDAO;
-
-    public List<WorkCenter> findAll() {
-        return workCenterDAO.findAll();
+    private WorkCenterDAO dao;
+    
+    @Override
+    protected BasicDAOImpl getDao() {
+        return this.dao;
     }
 
     public List<WorkCenter> findAll(PageInfo info) {
-        return workCenterDAO.findAll(info);
+        return dao.findAll(info);
     }
-
-    public WorkCenter findByPrimaryKey(Object obj_id) {
-        return workCenterDAO.findByPrimaryKey(obj_id);
-    }
-
+   
     public List<WorkCenter> findByBusinessGroup(int businessGroupId) {
-        return workCenterDAO.findByBusinessGroup(businessGroupId);
-    }
-
-    public int insert(WorkCenter pojo) {
-        return workCenterDAO.insert(pojo);
-    }
-
-    public int update(WorkCenter pojo) {
-        return workCenterDAO.update(pojo);
-    }
-
-    public int delete(WorkCenter pojo) {
-        return workCenterDAO.delete(pojo);
-    }
+        return dao.findByBusinessGroup(businessGroupId);
+    }    
 
     public int delete(int obj_id) {
         WorkCenter w = this.findByPrimaryKey(obj_id);
-        return workCenterDAO.delete(w);
+        return dao.delete(w);
     }
 
 }

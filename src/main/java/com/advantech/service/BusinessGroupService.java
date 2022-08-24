@@ -5,6 +5,7 @@
  */
 package com.advantech.service;
 
+import com.advantech.dao.BasicDAOImpl;
 import com.advantech.dao.BusinessGroupDAO;
 import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.BusinessGroup;
@@ -19,38 +20,24 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @Transactional
-public class BusinessGroupService {
+public class BusinessGroupService extends BasicServiceImpl<Integer, BusinessGroup> {
 
     @Autowired
-    private BusinessGroupDAO businessGroupDAO;
+    private BusinessGroupDAO dao;
 
-    public List<BusinessGroup> findAll() {
-        return businessGroupDAO.findAll();
+    @Override
+    protected BasicDAOImpl getDao() {
+        return dao;
     }
 
     public List<BusinessGroup> findAll(PageInfo info) {
-        return businessGroupDAO.findAll(info);
+        return dao.findAll(info);
     }
 
-    public BusinessGroup findByPrimaryKey(Object obj_id) {
-        return businessGroupDAO.findByPrimaryKey(obj_id);
-    }
-
-    public int insert(BusinessGroup pojo) {
-        return businessGroupDAO.insert(pojo);
-    }
-
-    public int update(BusinessGroup pojo) {
-        return businessGroupDAO.update(pojo);
-    }
-
-    public int delete(BusinessGroup pojo) {
-        return businessGroupDAO.delete(pojo);
-    }
-
-    public int delete(int obj_id) {
-        BusinessGroup b = this.findByPrimaryKey(obj_id);
-        return businessGroupDAO.delete(b);
+    public int delete(int id) {
+        BusinessGroup pojo = dao.findByPrimaryKey(id);
+        dao.delete(pojo);
+        return 1;
     }
 
 }

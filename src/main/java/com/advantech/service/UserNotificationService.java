@@ -20,38 +20,23 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @Transactional
-public class UserNotificationService {
+public class UserNotificationService extends BasicServiceImpl<Integer, UserNotification> {
 
     @Autowired
-    private UserNotificationDAO userNotificationDAO;
+    private UserNotificationDAO dao;
 
-    public List<UserNotification> findAll() {
-        return userNotificationDAO.findAll();
-    }
-
-    public UserNotification findByPrimaryKey(Object obj_id) {
-        return userNotificationDAO.findByPrimaryKey(obj_id);
+    @Override
+    protected BasicDAOImpl getDao() {
+        return this.dao;
     }
 
     public List<User> findUsersByNotification(String name) {
-        UserNotification n = userNotificationDAO.findByName(name);
+        UserNotification n = dao.findByName(name);
         List l = new ArrayList();
         if (n != null && n.enabled()) {
             l.addAll(n.getUsers());
         }
         return l;
-    }
-
-    public int insert(UserNotification userProfile) {
-        return userNotificationDAO.insert(userProfile);
-    }
-
-    public int update(UserNotification userProfile) {
-        return userNotificationDAO.update(userProfile);
-    }
-
-    public int delete(UserNotification userProfile) {
-        return userNotificationDAO.delete(userProfile);
     }
 
 }

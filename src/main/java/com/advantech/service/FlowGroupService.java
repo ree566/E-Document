@@ -9,6 +9,7 @@ import com.advantech.dao.*;
 import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.FlowGroup;
 import java.util.List;
+import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,33 +21,18 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @Transactional
-public class FlowGroupService {
+public class FlowGroupService extends BasicServiceImpl<Integer, FlowGroup> {
 
     @Autowired
-    private FlowGroupDAO flowGroupDAO;
+    private FlowGroupDAO dao;
 
-    public List<FlowGroup> findAll() {
-        return flowGroupDAO.findAll();
+    @Override
+    protected BasicDAOImpl getDao() {
+        return this.dao;
     }
 
     public List<FlowGroup> findAll(PageInfo info) {
-        return flowGroupDAO.findAll(info);
-    }
-
-    public FlowGroup findByPrimaryKey(Object obj_id) {
-        return flowGroupDAO.findByPrimaryKey(obj_id);
-    }
-
-    public int insert(FlowGroup flowGroup) {
-        return flowGroupDAO.insert(flowGroup);
-    }
-
-    public int update(FlowGroup flowGroup) {
-        return flowGroupDAO.update(flowGroup);
-    }
-
-    public int delete(FlowGroup flowGroup) {
-        return flowGroupDAO.delete(flowGroup);
+        return dao.findAll(info);
     }
 
 }

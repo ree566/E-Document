@@ -7,7 +7,6 @@ package com.advantech.service;
 
 import com.advantech.dao.*;
 import com.advantech.model.UserProfile;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,37 +17,18 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @Transactional
-public class UserProfileService {
+public class UserProfileService extends BasicServiceImpl<Integer, UserProfile> {
 
     @Autowired
-    private UserProfileDAO userProfileDAO;
+    private UserProfileDAO dao;
 
-    public List<UserProfile> findAll() {
-        return userProfileDAO.findAll();
-    }
-
-    public UserProfile findByPrimaryKey(Object obj_id) {
-        return userProfileDAO.findByPrimaryKey(obj_id);
-    }
-
-    public List<UserProfile> findByPrimaryKeys(Integer... ids) {
-        return userProfileDAO.findByPrimaryKeys(ids);
+    @Override
+    protected BasicDAOImpl getDao() {
+        return this.dao;
     }
 
     public UserProfile findByType(String typeName) {
-        return userProfileDAO.findByType(typeName);
-    }
-
-    public int insert(UserProfile userProfile) {
-        return userProfileDAO.insert(userProfile);
-    }
-
-    public int update(UserProfile userProfile) {
-        return userProfileDAO.update(userProfile);
-    }
-
-    public int delete(UserProfile userProfile) {
-        return userProfileDAO.delete(userProfile);
+        return dao.findByType(typeName);
     }
 
 }

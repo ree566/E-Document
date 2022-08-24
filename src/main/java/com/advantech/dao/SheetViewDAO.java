@@ -15,19 +15,14 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class SheetViewDAO extends AbstractDao<Integer, SheetView> implements BasicDAO<SheetView> {
-
-    @Override
-    public List<SheetView> findAll() {
-        return createEntityCriteria().list();
-    }
+public class SheetViewDAO extends BasicDAOImpl<Integer, SheetView> {
 
     public List<SheetView> findAll(PageInfo info) {
         return super.getByPaginateInfo(info);
     }
 
     @Override
-    public SheetView findByPrimaryKey(Object obj_id) {
+    public SheetView findByPrimaryKey(Integer obj_id) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

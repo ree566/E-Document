@@ -70,8 +70,9 @@ var worktimeCol = [
     {name: "pendingTime"},
     {name: "hrcValues"},
     {name: "highBright"},
-    {name: "bondedSealingFrame"}
-
+    {name: "bondedSealingFrame"},
+    {name: "machineWorktime"},
+    {name: "cobots"}
 ];
 
 

@@ -90,7 +90,7 @@ public class Flow implements java.io.Serializable, Comparable<Flow> {
         this.flowGroup = flowGroup;
     }
 
-    @Column(name = "name", length = 100)
+    @Column(name = "[name]", length = 100)
     public String getName() {
         return this.name;
     }

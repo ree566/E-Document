@@ -196,7 +196,6 @@
                                     <a href="#"><i class="fa fa-table fa-fw"></i> Tables<span class="fa arrow"></span></a>
                                     <ul class="nav nav-second-level">
                                         <li>
-                                            <!--id="preload_page"--> 
                                             <a class="redirect-link" id="preload_page" href="worktime.jsp">工時大表</a>
                                         </li>
                                         <sec:authorize access="hasAnyRole('ADMIN', 'OPER', 'AUTHOR')">
@@ -225,6 +224,9 @@
                                             </li>
                                             <li>
                                                 <a class="redirect-link" href="mod/businessGroup.jsp">BusinessGroup</a>
+                                            </li>
+                                            <li>
+                                                <a class="redirect-link" href="mod/cobot.jsp">Cobot</a>
                                             </li>
                                             <li>
                                                 <a class="redirect-link" href="mod/workCenter.jsp">WorkCenter</a>

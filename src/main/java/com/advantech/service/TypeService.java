@@ -19,38 +19,23 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @Transactional
-public class TypeService {
+public class TypeService extends BasicServiceImpl<Integer, Type> {
 
     @Autowired
-    private TypeDAO typeDAO;
+    private TypeDAO dao;
 
-    public List<Type> findAll() {
-        return typeDAO.findAll();
+    @Override
+    protected BasicDAOImpl getDao() {
+        return this.dao;
     }
 
     public List<Type> findAll(PageInfo info) {
-        return typeDAO.findAll(info);
-    }
-
-    public Type findByPrimaryKey(Object obj_id) {
-        return typeDAO.findByPrimaryKey(obj_id);
-    }
-
-    public List<Type> findByPrimaryKeys(Integer... id) {
-        return typeDAO.findByPrimaryKeys(id);
-    }
-
-    public int insert(Type type) {
-        return typeDAO.insert(type);
-    }
-
-    public int update(Type type) {
-        return typeDAO.update(type);
+        return dao.findAll(info);
     }
 
     public int delete(int id) {
         Type type = this.findByPrimaryKey(id);
-        return typeDAO.delete(type);
+        return dao.delete(type);
     }
 
 }

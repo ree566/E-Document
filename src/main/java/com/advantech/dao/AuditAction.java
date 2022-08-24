@@ -11,15 +11,15 @@ import java.util.List;
  *
  * @author Wei.Cheng
  */
-public interface AuditAction {
+public interface AuditAction<T, K extends Object> {
 
-    public List findAll(Class clz);
+    public List findAll();
 
-    public List findByPrimaryKey(Class clz, Object id);
+    public List findByPrimaryKey(K id);
 
-    public Object findByPrimaryKeyAndVersion(Class clz, Object id, int version);
+    public Object findByPrimaryKeyAndVersion(K id, int version);
 
-    public List<Number> findRevisions(Class clz, Object id);
+    public List<Number> findRevisions(K id);
     
-    public List forEntityAtRevision(Class clz, int version);
+    public List forEntityAtRevision(int version);
 }

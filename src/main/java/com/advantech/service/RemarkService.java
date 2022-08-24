@@ -19,34 +19,23 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @Transactional
-public class RemarkService {
+public class RemarkService extends BasicServiceImpl<Integer, Remark> {
 
     @Autowired
-    private RemarkDAO remarkDAO;
+    private RemarkDAO dao;
 
-    public List<Remark> findAll() {
-        return remarkDAO.findAll();
+    @Override
+    protected BasicDAOImpl getDao() {
+        return this.dao;
     }
 
     public List<Remark> findAll(PageInfo info) {
-        return remarkDAO.findAll(info);
-    }
-
-    public Remark findByPrimaryKey(Object obj_id) {
-        return remarkDAO.findByPrimaryKey(obj_id);
-    }
-
-    public int insert(Remark remark) {
-        return remarkDAO.insert(remark);
-    }
-
-    public int update(Remark remark) {
-        return remarkDAO.update(remark);
+        return dao.findAll(info);
     }
 
     public int delete(int id) {
-        Remark remark = this.findByPrimaryKey(id);
-        return remarkDAO.delete(remark);
+        Remark pojo = dao.findByPrimaryKey(id);
+        dao.delete(pojo);
+        return 1;
     }
-
 }

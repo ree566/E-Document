@@ -21,12 +21,7 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class UserDAO extends AbstractDao<Integer, User> implements BasicDAO<User> {
-
-    @Override
-    public List<User> findAll() {
-        return createEntityCriteria().list();
-    }
+public class UserDAO extends BasicDAOImpl<Integer, User> {
 
     public List<User> findAll(PageInfo info) {
         return getByPaginateInfo(info);
@@ -35,7 +30,7 @@ public class UserDAO extends AbstractDao<Integer, User> implements BasicDAO<User
     public List<User> findAll(PageInfo info, Unit usersUnit) {
         Criteria criteria = createEntityCriteria();
         criteria.add(Restrictions.eq("unit.id", usersUnit.getId()));
-        
+
         String searchField = info.getSearchField();
         String searchString = info.getSearchString();
         if (searchField != null && !"".equals(searchField) && searchString != null && !"".equals(searchString)) {
@@ -44,11 +39,6 @@ public class UserDAO extends AbstractDao<Integer, User> implements BasicDAO<User
         criteria.setFirstResult((info.getPage() - 1) * info.getRows());
         criteria.setMaxResults(info.getRows());
         return criteria.list();
-    }
-
-    @Override
-    public User findByPrimaryKey(Object obj_id) {
-        return super.getByKey((int) obj_id);
     }
 
     public User findByJobnumber(String jobnumber) {
@@ -72,24 +62,6 @@ public class UserDAO extends AbstractDao<Integer, User> implements BasicDAO<User
         Criteria criteria = createEntityCriteria();
         criteria.add(Restrictions.eq("state", State.ACTIVE.getName()));
         return criteria.list();
-    }
-
-    @Override
-    public int insert(User pojo) {
-        getSession().save(pojo);
-        return 1;
-    }
-
-    @Override
-    public int update(User pojo) {
-        getSession().update(pojo);
-        return 1;
-    }
-
-    @Override
-    public int delete(User pojo) {
-        getSession().delete(pojo);
-        return 1;
     }
 
 }

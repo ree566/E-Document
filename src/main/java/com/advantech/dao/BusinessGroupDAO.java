@@ -8,7 +8,6 @@ package com.advantech.dao;
 import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.BusinessGroup;
 import java.util.List;
-import org.hibernate.criterion.Order;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -16,40 +15,9 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public class BusinessGroupDAO extends AbstractDao<Integer, BusinessGroup> implements BasicDAO<BusinessGroup> {
+public class BusinessGroupDAO extends BasicDAOImpl<Integer, BusinessGroup> {
 
-    @Override
-    public List<BusinessGroup> findAll() {
-        return createEntityCriteria()
-                .addOrder(Order.asc("name"))
-                .list();
-    }
-    
     public List<BusinessGroup> findAll(PageInfo info) {
         return super.getByPaginateInfo(info);
     }
-
-    @Override
-    public BusinessGroup findByPrimaryKey(Object obj_id) {
-        return super.getByKey((int) obj_id);
-    }
-
-    @Override
-    public int insert(BusinessGroup pojo) {
-        this.getSession().save(pojo);
-        return 1;
-    }
-
-    @Override
-    public int update(BusinessGroup pojo) {
-        this.getSession().update(pojo);
-        return 1;
-    }
-
-    @Override
-    public int delete(BusinessGroup pojo) {
-        this.getSession().delete(pojo);
-        return 1;
-    }
-
 }

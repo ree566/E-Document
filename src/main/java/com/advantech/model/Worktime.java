@@ -3,12 +3,14 @@ package com.advantech.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -16,6 +18,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -29,6 +33,8 @@ import javax.validation.constraints.Size;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
@@ -52,80 +58,212 @@ import org.springframework.util.AutoPopulatingList;
 @Audited(targetAuditMode = NOT_AUDITED, withModifiedFlag = true)
 public class Worktime implements java.io.Serializable {
 
+    @JsonView(View.Public.class)
     private int id;
+
+    @JsonView(View.Public.class)
     private String modelName;
+
+    @JsonView(View.Public.class)
     private Pending pending;
+
+    @JsonView(View.Public.class)
     private BigDecimal pendingTime;
+
+    @JsonView(View.Public.class)
     private Type type;
+
+    @JsonView(View.Public.class)
     private BusinessGroup businessGroup;
+
+    @JsonView(View.Public.class)
     private WorkCenter workCenter;
+
+    @JsonView(View.Public.class)
     private BigDecimal productionWt = BigDecimal.ZERO;
+
+    @JsonView(View.Public.class)
     private BigDecimal setupTime = BigDecimal.ZERO;
+
+    @JsonView(View.Public.class)
     private BigDecimal arFilmAttachment = BigDecimal.ZERO;
+
+    @JsonView(View.Public.class)
     private BigDecimal seal = BigDecimal.ZERO;
+
+    @JsonView(View.Public.class)
     private BigDecimal opticalBonding = BigDecimal.ZERO;
+
+    @JsonView(View.Public.class)
     private String pressureCooker;
+
+    @JsonView(View.Public.class)
     private BigDecimal cleanPanel = BigDecimal.ZERO;
+    
+    @JsonView(View.Public.class)
+    private BigDecimal machineWorktime = BigDecimal.ZERO;
+
+    @JsonView(View.Public.class)
     private BigDecimal pi = BigDecimal.ZERO;
 
+    @JsonView(View.Public.class)
     private BigDecimal assy = BigDecimal.ZERO;
+
+    @JsonView(View.Public.class)
     private BigDecimal highBright = BigDecimal.ZERO;
+
+    @JsonView(View.Public.class)
     private BigDecimal bondedSealingFrame = BigDecimal.ZERO;
 
+    @JsonView(View.Public.class)
     private BigDecimal t1 = BigDecimal.ZERO;
+
+    @JsonView(View.Public.class)
     private BigDecimal t2 = BigDecimal.ZERO;
+
+    @JsonView(View.Public.class)
     private BigDecimal t3 = BigDecimal.ZERO;
+
+    @JsonView(View.Public.class)
     private BigDecimal packing = BigDecimal.ZERO;
+
+    @JsonView(View.Public.class)
     private BigDecimal upBiRi = BigDecimal.ZERO;
+
+    @JsonView(View.Public.class)
     private BigDecimal downBiRi = BigDecimal.ZERO;
+
+    @JsonView(View.Public.class)
     private BigDecimal biCost = BigDecimal.ZERO;
+
+    @JsonView(View.Public.class)
     private BigDecimal assyToT1 = BigDecimal.ZERO;
+
+    @JsonView(View.Public.class)
     private BigDecimal t2ToPacking = BigDecimal.ZERO;
+
+    @JsonView(View.Public.class)
     private Floor floor;
+
+    @JsonView(View.Public.class)
     private String burnIn;
+
+    @JsonView(View.Public.class)
     private BigDecimal biTime;
+
+    @JsonView(View.Public.class)
     private BigDecimal biTemperature;
+
+    @JsonView(View.Public.class)
     private User userBySpeOwnerId;
+
+    @JsonView(View.Public.class)
     private User userByEeOwnerId; //Unit name change "EE" to "BPE"
+
+    @JsonView(View.Public.class)
     private User userByQcOwnerId;
+
+    @JsonView(View.Public.class)
     private User userByMpmOwnerId;
+
+    @JsonView(View.Public.class)
     private String assyPackingSop;
+
+    @JsonView(View.Public.class)
     private String testSop;
+
+    @JsonView(View.Public.class)
     private Integer keypartA = 0;
+
+    @JsonView(View.Public.class)
     private Integer keypartB = 0;
+
+    @JsonView(View.Public.class)
     private PreAssy preAssy;
+
+    @JsonView(View.Public.class)
     private Flow flowByTestFlowId;
+
+    @JsonView(View.Public.class)
     private Flow flowByBabFlowId;
+
+    @JsonView(View.Public.class)
     private Flow flowByPackingFlowId;
+
+    @JsonView(View.Public.class)
     private String partLink;
+
+    @JsonView(View.Public.class)
     private Remark remark;
+
+    @JsonView(View.Public.class)
     private int ce;
+
+    @JsonView(View.Public.class)
     private int ul;
+
+    @JsonView(View.Public.class)
     private int rohs;
+
+    @JsonView(View.Public.class)
     private int weee;
+
+    @JsonView(View.Public.class)
     private int madeInTaiwan;
+
+    @JsonView(View.Public.class)
     private int fcc;
+
+    @JsonView(View.Public.class)
     private int eac;
+
+    @JsonView(View.Public.class)
     private int kc;
+
+    @JsonView(View.Public.class)
     private BigDecimal nsInOneCollectionBox = BigDecimal.ZERO;
+
+    @JsonView(View.Public.class)
     private String partNoAttributeMaintain;
+
+    @JsonView(View.Public.class)
     private String labelInformation;
+
+    @JsonView(View.Public.class)
     private BigDecimal weight = BigDecimal.ZERO;
+
+    @JsonView(View.Public.class)
     private BigDecimal tolerance = BigDecimal.ZERO;
+
+    @JsonView(View.Public.class)
     private BigDecimal materialVolumeA = BigDecimal.ZERO;
+
+    @JsonView(View.Public.class)
     private BigDecimal materialVolumeB = BigDecimal.ZERO;
+
+    @JsonView(View.Public.class)
     private BigDecimal assyLeadTime = BigDecimal.ZERO;
+
+    @JsonView(View.Public.class)
     private BigDecimal test = BigDecimal.ZERO;
+
+    @JsonView(View.Public.class)
     private Date createDate;
+
+    @JsonView(View.Public.class)
     private Date modifiedDate;
 
-    @JsonIgnore
+    @JsonView(View.Public.class)
     private List<BwField> bwField = new AutoPopulatingList<BwField>(BwField.class);
 
-    @JsonIgnore
+    @JsonView(View.Internal.class)
     private List<WorktimeFormulaSetting> worktimeFormulaSettings = new AutoPopulatingList<WorktimeFormulaSetting>(WorktimeFormulaSetting.class);
 
+    @JsonView(View.Public.class)
     private String hrcValues;
+
+    @JsonView(View.Internal.class)
+    private Set<Cobot> cobots = new HashSet<Cobot>(0);
 
     public Worktime() {
     }
@@ -276,6 +414,16 @@ public class Worktime implements java.io.Serializable {
         this.cleanPanel = autoFixScale(cleanPanel, 1);
     }
 
+    @Digits(integer = 10 /*precision*/, fraction = 1 /*scale*/)
+    @Column(name = "machine_worktime", precision = 10, scale = 1)
+    public BigDecimal getMachineWorktime() {
+        return machineWorktime;
+    }
+
+    public void setMachineWorktime(BigDecimal machineWorktime) {
+        this.machineWorktime = machineWorktime;
+    }
+    
     @Digits(integer = 10 /*precision*/, fraction = 1 /*scale*/)
     @Column(name = "[pi]", precision = 10, scale = 1)
     public BigDecimal getPi() {
@@ -799,7 +947,6 @@ public class Worktime implements java.io.Serializable {
         this.worktimeFormulaSettings = worktimeFormulaSettings;
     }
 
-    @Transient
     @NotAudited
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "worktime")
     public List<BwField> getBwFields() {
@@ -818,6 +965,19 @@ public class Worktime implements java.io.Serializable {
 
     public void setHrcValues(String hrcValues) {
         this.hrcValues = hrcValues;
+    }
+
+    @ManyToMany
+    @Fetch(FetchMode.SUBSELECT)
+    @JoinTable(name = "Worktime_Cobot_REF", joinColumns = {
+        @JoinColumn(name = "worktime_id", nullable = false, insertable = false, updatable = false)}, inverseJoinColumns = {
+        @JoinColumn(name = "cobot_id", nullable = false, insertable = false, updatable = false)})
+    public Set<Cobot> getCobots() {
+        return cobots;
+    }
+
+    public void setCobots(Set<Cobot> cobots) {
+        this.cobots = cobots;
     }
 
 //  Default formula column caculate

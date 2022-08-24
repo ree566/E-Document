@@ -20,33 +20,22 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @Transactional
-public class FlowPermutationsService {
+public class FlowPermutationsService extends BasicServiceImpl<Integer, FlowPermutations> {
 
     @Autowired
     private FlowPermutationsDAO dao;
 
-    public List<FlowPermutations> findAll() {
-        return dao.findAll();
+    @Override
+    protected BasicDAOImpl getDao() {
+        return this.dao;
     }
 
     public List<FlowPermutations> findAll(PageInfo info) {
         return dao.findAll(info);
     }
 
-    public FlowPermutations findByPrimaryKey(Object obj_id) {
-        return dao.findByPrimaryKey(obj_id);
-    }
-
     public String findLastCode() {
         return dao.findLastCode();
-    }
-
-    public int insert(FlowPermutations pojo) {
-        return dao.insert(pojo);
-    }
-
-    public int update(FlowPermutations pojo) {
-        return dao.update(pojo);
     }
 
     public int delete(int id) {

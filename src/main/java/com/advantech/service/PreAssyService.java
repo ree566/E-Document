@@ -9,6 +9,7 @@ import com.advantech.dao.*;
 import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.PreAssy;
 import java.util.List;
+import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,34 +21,23 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @Transactional
-public class PreAssyService {
+public class PreAssyService extends BasicServiceImpl<Integer, PreAssy> {
 
     @Autowired
-    private PreAssyDAO preAssyDAO;
+    private PreAssyDAO dao;
 
-    public List<PreAssy> findAll() {
-        return preAssyDAO.findAll();
+    @Override
+    protected BasicDAOImpl getDao() {
+        return this.dao;
     }
 
     public List<PreAssy> findAll(PageInfo info) {
-        return preAssyDAO.findAll(info);
-    }
-
-    public PreAssy findByPrimaryKey(Object obj_id) {
-        return preAssyDAO.findByPrimaryKey(obj_id);
-    }
-
-    public int insert(PreAssy preAssy) {
-        return preAssyDAO.insert(preAssy);
-    }
-
-    public int update(PreAssy preAssy) {
-        return preAssyDAO.update(preAssy);
+        return dao.findAll(info);
     }
 
     public int delete(int id) {
         PreAssy preAssy = this.findByPrimaryKey(id);
-        return preAssyDAO.delete(preAssy);
+        return dao.delete(preAssy);
     }
 
 }
