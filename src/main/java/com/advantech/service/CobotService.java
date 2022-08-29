@@ -39,7 +39,11 @@ public class CobotService extends BasicServiceImpl<Integer, Cobot> {
 
     @Override
     public int update(Cobot pojo) {
-        dao.update(pojo);
+        //Prevent update many to many relationship when pojo's column changed
+        Cobot dataInDb = this.findByPrimaryKey(pojo.getId());
+        dataInDb.setWorktimeMinutes(pojo.getWorktimeMinutes());
+        dataInDb.setWorktimeSeconds(pojo.getWorktimeSeconds());
+        dao.update(dataInDb);
         
         //Reset worktime when cobot's worktime is changed
         List<Worktime> l = worktimeService.findAll();
