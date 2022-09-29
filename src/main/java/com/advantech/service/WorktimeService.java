@@ -6,6 +6,7 @@
 package com.advantech.service;
 
 import com.advantech.dao.*;
+import com.advantech.helper.SpringExpressionUtils;
 import com.advantech.helper.WorktimeValidator;
 import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.Cobot;
@@ -46,6 +47,9 @@ public class WorktimeService extends BasicServiceImpl<Integer, Worktime> {
 
     @Autowired
     private WorktimeValidator validator;
+
+    @Autowired
+    private SpringExpressionUtils expressionUtils;
 
     @Override
     protected BasicDAOImpl getDao() {
@@ -276,7 +280,9 @@ public class WorktimeService extends BasicServiceImpl<Integer, Worktime> {
         BigDecimal machineWorktime = BigDecimal.ZERO;
         if (cobots != null && !cobots.isEmpty()) {
             machineWorktime = cobots.stream()
-                    .map(x -> x.getWorktimeMinutes())
+                    .map(x -> {
+                        return (BigDecimal) expressionUtils.getValueFromFormula(w, x.getFormula());
+                    })
                     .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(1, RoundingMode.HALF_UP);
         }
         w.setMachineWorktime(machineWorktime);

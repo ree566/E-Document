@@ -6,6 +6,7 @@
 package com.advantech.test;
 
 import com.advantech.helper.HibernateObjectPrinter;
+import com.advantech.model.Cobot;
 import com.advantech.model.Type;
 import com.advantech.model.User;
 import com.advantech.model.Worktime;
@@ -25,7 +26,6 @@ import java.util.List;
 import java.util.Objects;
 import javax.transaction.Transactional;
 import static junit.framework.Assert.*;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
@@ -109,7 +109,7 @@ public class ExcelTest {
     @Rollback(false)
     public void testFileSyncToDb() throws Exception {
 
-        String syncFilePath = "C:\\Users\\MFG.ESOP\\Desktop\\PN_0824.xls";
+        String syncFilePath = "C:\\Users\\wei.cheng\\Desktop\\複本 ADAM 調整0.3分鐘的機種.xlsx";
         try (InputStream is = new FileInputStream(new File(syncFilePath))) {
 
             Session session = sessionFactory.getCurrentSession();
@@ -117,7 +117,8 @@ public class ExcelTest {
 
             Workbook workbook = WorkbookFactory.create(is);
 
-            List<User> users = userService.findByUnitName("MPM");
+//            List<User> users = userService.findByUnitName("MPM");
+            Cobot cobot = session.get(Cobot.class, 6);
 
             for (int sheetPage = 0; sheetPage <= 0; sheetPage++) {
                 Sheet sheet = workbook.getSheetAt(sheetPage);
@@ -138,11 +139,13 @@ public class ExcelTest {
                             continue;
                         }
 
-                        String userName = ((String) getCellValue(row, "D")).trim();
-                        User user = users.stream().filter(u -> u.getUsername().equals(userName)).findFirst().orElse(null);
-                        w.setUserByMpmOwnerId(user);
+                        w.getCobots().add(cobot);
+                        w = worktimeService.setCobotWorktime(w);
+//                        String userName = ((String) getCellValue(row, "D")).trim();
+//                        User user = users.stream().filter(u -> u.getUsername().equals(userName)).findFirst().orElse(null);
+//                        w.setUserByMpmOwnerId(user);
                         session.merge(w);
-                        mappingUserPort.update(w);
+//                        mappingUserPort.update(w);
                         System.out.println("Update modelName: " + modelName);
 
                     }
