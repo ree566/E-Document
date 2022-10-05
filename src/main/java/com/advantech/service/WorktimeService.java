@@ -6,6 +6,7 @@
 package com.advantech.service;
 
 import com.advantech.dao.*;
+import com.advantech.helper.SpringExpressionUtils;
 import com.advantech.helper.WorktimeValidator;
 import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.Cobot;
@@ -47,6 +48,9 @@ public class WorktimeService extends BasicServiceImpl<Integer, Worktime> {
     @Autowired
     private WorktimeValidator validator;
 
+    @Autowired
+    private SpringExpressionUtils expressionUtils;
+
     @Override
     protected BasicDAOImpl getDao() {
         return this.dao;
@@ -67,6 +71,26 @@ public class WorktimeService extends BasicServiceImpl<Integer, Worktime> {
         Worktime w = this.findByPrimaryKey(obj_id);
         Set result = w.getCobots();
         Hibernate.initialize(result);
+        return result;
+    }
+
+    public List<Worktime> findWithFlowRelation() {
+        List<Worktime> result = dao.findAll();
+        result.forEach(w -> {
+            Hibernate.initialize(w.getFlowByBabFlowId());
+            Hibernate.initialize(w.getFlowByTestFlowId());
+            Hibernate.initialize(w.getFlowByPackingFlowId());
+        });
+        return result;
+    }
+
+    public List<Worktime> findWithFlowRelation(Integer... ids) {
+        List<Worktime> result = dao.findByPrimaryKeys(ids);
+        result.forEach(w -> {
+            Hibernate.initialize(w.getFlowByBabFlowId());
+            Hibernate.initialize(w.getFlowByTestFlowId());
+            Hibernate.initialize(w.getFlowByPackingFlowId());
+        });
         return result;
     }
 
@@ -288,8 +312,10 @@ public class WorktimeService extends BasicServiceImpl<Integer, Worktime> {
         BigDecimal machineWorktime = BigDecimal.ZERO;
         if (cobots != null && !cobots.isEmpty()) {
             machineWorktime = cobots.stream()
-                    .map(x -> x.getWorktimeMinutes())
-                    .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(1, RoundingMode.HALF_UP);
+                    .map(x -> {
+                        return (BigDecimal) expressionUtils.getValueFromFormula(w, x.getFormula());
+                    })
+                    .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP);
         }
         w.setMachineWorktime(machineWorktime);
 

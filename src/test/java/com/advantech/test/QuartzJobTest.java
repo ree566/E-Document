@@ -45,10 +45,10 @@ public class QuartzJobTest {
         job1.execute();
     }
 
-//    @Test
+    @Test
     public void testStandardTimeUpload() {
 
-//        job2.uploadToMes();
+        job2.uploadToMes();
 //        HibernateObjectPrinter.print(job2.getMailByNotification("worktime_ie_alarm"));
     }
     

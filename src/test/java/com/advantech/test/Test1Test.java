@@ -116,4 +116,9 @@ public class Test1Test {
         int len2 = (int) Arrays.stream(i2).filter(o -> !"".equals(o)).count();
         System.out.println(len2);
     }
+    
+    @Test
+    public void testDecimal() {
+        BigDecimal b = BigDecimal.ZERO;
+    }
 }

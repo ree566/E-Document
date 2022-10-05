@@ -8,8 +8,11 @@ package com.advantech.quartzJob;
 import com.advantech.helper.MailManager;
 import com.advantech.model.User;
 import com.advantech.model.Worktime;
+import com.advantech.model.WorktimeAutouploadSetting;
 import com.advantech.service.WorktimeAuditService;
 import com.advantech.service.UserNotificationService;
+import com.advantech.service.WorktimeAutouploadSettingService;
+import com.advantech.service.WorktimeService;
 import com.advantech.webservice.port.StandardtimeUploadPort;
 import static com.google.common.collect.Lists.newArrayList;
 import java.util.ArrayList;
@@ -55,6 +58,12 @@ public class StandardTimeUpload {
 
     private int uploadFailMaxAllow = 5;
 
+    @Autowired
+    private WorktimeAutouploadSettingService worktimeAutouploadSettingService;
+
+    @Autowired
+    private WorktimeService worktimeService;
+
     @PostConstruct
     public void init() {
         initCheckFieldNames();
@@ -74,18 +83,22 @@ public class StandardTimeUpload {
         List<String> errorMessages = new ArrayList();
         List<Worktime> modifiedWorktimes = this.findFieldChangeInDate(new DateTime().minusDays(1).withTime(0, 0, 0, 0), new DateTime().withTime(23, 59, 0, 0));
 
+        Integer[] ids = modifiedWorktimes.stream().map(Worktime::getId).toArray(Integer[]::new);
+        List<Worktime> worktimes = this.worktimeService.findWithFlowRelation(ids);
+        
         log.info("Begin upload standardtime to mes: " + modifiedWorktimes.size() + " datas.");
 
         port.initSettings();
 
         int failCount = 0;
 
-        for (Worktime w : modifiedWorktimes) {
+        for (Worktime w : worktimes) {
             try {
                 if (w.getReasonCode() == null || "".equals(w.getReasonCode()) || "0".equals(w.getReasonCode())) {
                     w.setReasonCode("A6");
                 }
                 port.update(w);
+                log.info("Upload standardtime " + w.getModelName());
             } catch (Exception e) {
                 String errorMessage = w.getModelName() + " upload fail: " + e.getMessage();
                 errorMessages.add(errorMessage);

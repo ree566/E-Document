@@ -39,6 +39,7 @@ public class Cobot implements java.io.Serializable {
     private String name;
     private BigDecimal worktimeMinutes;
     private BigDecimal worktimeSeconds;
+    private String formula;
 
     @JsonIgnore
     private Set<Worktime> worktimes = new HashSet<>(0);
@@ -81,6 +82,15 @@ public class Cobot implements java.io.Serializable {
 
     public void setWorktimeSeconds(BigDecimal worktimeSeconds) {
         this.worktimeSeconds = worktimeSeconds;
+    }
+
+    @Column(name = "formula")
+    public String getFormula() {
+        return formula;
+    }
+
+    public void setFormula(String formula) {
+        this.formula = formula;
     }
 
     @ManyToMany(fetch = FetchType.LAZY)

@@ -1050,8 +1050,8 @@ public class Worktime implements java.io.Serializable {
         this.cleanPanelAndAssembly = autoFixScale(cleanPanelAndAssembly, 1);
     }
 
-    @Digits(integer = 10 /*precision*/, fraction = 1 /*scale*/)
-    @Column(name = "machine_worktime", precision = 10, scale = 1)
+    @Digits(integer = 10 /*precision*/, fraction = 2 /*scale*/)
+    @Column(name = "machine_worktime", precision = 10, scale = 2)
     public BigDecimal getMachineWorktime() {
         return machineWorktime;
     }

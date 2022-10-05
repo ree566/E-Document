@@ -130,12 +130,12 @@ public class UploadPortTest {
         assertFalse(isUploadMatProp);
     }
 
-//    @Test
+    @Test
     @Rollback(true)
     public void testStandardtimeUpload() throws Exception {
-        List<Worktime> l = worktimes;
+        List<Worktime> l = worktimeService.findWithFlowRelation();
         assertNotNull(l.get(0));
-        List<WorktimeAutouploadSetting> settings = worktimeAutouploadSettingService.findAll();
+        List<WorktimeAutouploadSetting> settings = worktimeAutouploadSettingService.findByPrimaryKeys(19, 20, 21, 22);
         standardtimePort.initSettings(settings);
 
         for (Worktime worktime : l) {
