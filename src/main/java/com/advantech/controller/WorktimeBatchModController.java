@@ -346,8 +346,11 @@ public class WorktimeBatchModController {
             String cobotNames = sheet.getValue(i, "cobots").toString();
             String[] cobotNamesArr = (cobotNames == null ? new String[0] : cobotNames.trim().split(","));
             Set<Cobot> c = new HashSet();
-            for(String cobotName: cobotNamesArr){
-                c.add(valid(cobotName, cobotOptions.get(cobotName)));
+            for (String cobotName : cobotNamesArr) {
+                Cobot cobot = valid(cobotName, cobotOptions.get(cobotName));
+                if (cobot != null) {
+                    c.add(cobot);
+                }
             }
             w.setCobots(c);
         }

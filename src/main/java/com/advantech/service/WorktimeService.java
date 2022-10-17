@@ -64,6 +64,11 @@ public class WorktimeService extends BasicServiceImpl<Integer, Worktime> {
     }
 
     public Worktime findByModel(String modelName) {
+        List<Worktime> result = dao.findByModel(modelName);
+        return result.isEmpty() ? null : result.get(0);
+    }
+
+    public List<Worktime> findByModelNames(String... modelName) {
         return dao.findByModel(modelName);
     }
 

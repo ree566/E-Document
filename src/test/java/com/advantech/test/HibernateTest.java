@@ -8,7 +8,7 @@ package com.advantech.test;
 import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.Flow;
-import com.advantech.model.Cobot;
+import com.advantech.model.User;
 import com.advantech.model.Worktime;
 import com.advantech.model.WorktimeAutouploadSetting;
 import com.advantech.model.WorktimeFormulaSetting;
@@ -31,10 +31,8 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import static java.util.stream.Collectors.toList;
 import javax.transaction.Transactional;
 import javax.validation.Validation;
@@ -538,7 +536,7 @@ public class HibernateTest {
         });
     }
 
-//    @Test
+    @Test
     @Transactional
     @Rollback(false)
     public void testMachineWorktime() {
@@ -546,7 +544,6 @@ public class HibernateTest {
         List<Worktime> l = session
                 .createQuery("select w from Worktime w", Worktime.class)
                 .getResultList();
-        assertEquals(5615, l.size());
 
         l.forEach(w -> {
             if (!w.getCobots().isEmpty()) {
@@ -589,6 +586,27 @@ public class HibernateTest {
             session.save(formula);
             session.save(w);
         });
+    }
+
+    @Test
+    @Transactional
+    @Rollback(false)
+    public void testChangeMaterialUsers() {
+        Session session = sessionFactory.getCurrentSession();
+        List<Worktime> l = worktimeService.findByModelNames(
+                "FWA-3233DS-SRA00E",
+                "FWA-3233DS-SRA01E",
+                "FWA-3233DS-SRA10E",
+                "FWA-3233DS-SRA11E",
+                "FWA-3233-DSUMA01E",
+                "FWA-3233-DSUMA02E",
+                "FPM-3151SR-R3AE"
+        );
+        User bpeUser = session.get(User.class, 22);
+        for (Worktime w: l){
+            w.setUserByEeOwnerId(bpeUser);
+            session.save(w);
+        }
     }
 
 }

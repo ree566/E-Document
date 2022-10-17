@@ -67,4 +67,13 @@ public class SpringExpressionTest {
         System.out.println(o2);
 
     }
+    
+    @Test
+    public void testExp2() throws JsonProcessingException {
+        String exp = "nsInOneCollectionBox.intValue() == 0 ? new java.math.BigDecimal(0.8) : new java.math.BigDecimal(0.8 / nsInOneCollectionBox)";
+        Worktime worktime = worktimeService.findByPrimaryKey(16204);
+        Object o1 = expressionUtils.getValueFromFormula(worktime, exp);
+        System.out.println(o1);
+        System.out.println(o1.getClass());
+    }
 }

@@ -8,11 +8,13 @@ package com.advantech.test;
 import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.Worktime;
 import com.advantech.model.WorktimeAutouploadSetting;
+import com.advantech.model.WorktimeMaterialPropertyUploadSetting;
 import com.advantech.quartzJob.StandardTimeUpload;
 import com.advantech.service.FlowService;
 import com.advantech.service.PendingService;
 import com.advantech.service.PreAssyService;
 import com.advantech.service.WorktimeAutouploadSettingService;
+import com.advantech.service.WorktimeMaterialPropertyUploadSettingService;
 import com.advantech.service.WorktimeService;
 import com.advantech.webservice.port.FlowUploadPort;
 import com.advantech.webservice.port.MaterialPropertyUploadPort;
@@ -88,6 +90,9 @@ public class UploadPortTest {
     
     @Autowired
     private MtdTestIntegrityUploadPort mtdTestIntegrityUploadPort;
+    
+    @Autowired
+    private WorktimeMaterialPropertyUploadSettingService propService;
 
     @Before
     public void initTestData() {
@@ -200,12 +205,14 @@ public class UploadPortTest {
         }
     }
 
-//    @Test
+    @Test
     @Rollback(true)
     public void testMaterialPropertyUploadPort() throws Exception {
 
-        List<Worktime> l = worktimes;
-        materialPropertyUploadPort.initSettings();
+        List<Worktime> l = worktimeService.findWithFlowRelation();
+        List<WorktimeMaterialPropertyUploadSetting> settings = propService.findByPrimaryKeys(4, 43);
+        assertEquals(2, settings.size());
+        materialPropertyUploadPort.initSettings(settings);
 
         for (Worktime worktime : l) {
             System.out.println("Upload " + worktime.getModelName());

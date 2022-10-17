@@ -30,10 +30,10 @@ public class WorktimeDAO extends BasicDAOImpl<Integer, Worktime> {
         return l;
     }
 
-    public Worktime findByModel(String modelName) {
+    public List<Worktime> findByModel(String... modelName) {
         Criteria criteria = createEntityCriteria();
-        criteria.add(Restrictions.eq("modelName", modelName));
-        return (Worktime) criteria.uniqueResult();
+        criteria.add(Restrictions.in("modelName", modelName));
+        return criteria.list();
     }
 
     public List<Worktime> findWithFullRelation(PageInfo info) {
