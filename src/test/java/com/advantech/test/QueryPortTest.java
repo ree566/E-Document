@@ -17,11 +17,14 @@ import com.advantech.webservice.port.MaterialPropertyUserPermissionQueryPort;
 import com.advantech.webservice.port.MesUserInfoQueryPort;
 import com.advantech.webservice.port.ModelResponsorQueryPort;
 import com.advantech.webservice.port.SopQueryPort;
+import com.advantech.webservice.port.StandardWorkTimeQueryPort;
+import com.advantech.webservice.root.Section;
 import com.advantech.webservice.unmarshallclass.FlowRule;
 import com.advantech.webservice.unmarshallclass.MaterialFlow;
 import com.advantech.webservice.unmarshallclass.MaterialProperty;
 import com.advantech.webservice.unmarshallclass.MaterialPropertyUserPermission;
 import com.advantech.webservice.unmarshallclass.MaterialPropertyValue;
+import com.advantech.webservice.unmarshallclass.StandardWorkTime;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -90,6 +93,9 @@ public class QueryPortTest {
 
     @Autowired
     private MaterialPropertyValueQueryPort materialPropertyValueQueryPort;
+    
+    @Autowired
+    private StandardWorkTimeQueryPort worktimeQueryPort;
 
     @Autowired
     private WorktimeService worktimeService;
@@ -235,6 +241,14 @@ public class QueryPortTest {
             workbook.close();
 
         }
+    }
+    
+    @Test
+    public void testStandardWorkTimeQueryPort() throws Exception {
+        List<StandardWorkTime> l = this.worktimeQueryPort.query("IDP31215WP2202-T", Section.BAB.getCode());
+//        l = l.stream().filter(s -> s.getITEMNO().equals("IMC-450-SL")).collect(toList());
+
+        HibernateObjectPrinter.print(l);
     }
 
 }

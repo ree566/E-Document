@@ -283,7 +283,7 @@ public class WorktimeService extends BasicServiceImpl<Integer, Worktime> {
                     .map(x -> {
                         return (BigDecimal) expressionUtils.getValueFromFormula(w, x.getFormula());
                     })
-                    .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(1, RoundingMode.HALF_UP);
+                    .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP);
         }
         w.setMachineWorktime(machineWorktime);
 
