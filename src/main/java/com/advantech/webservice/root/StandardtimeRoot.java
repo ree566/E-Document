@@ -146,7 +146,7 @@ public class StandardtimeRoot {
     public static class METHOD {
 
         @XmlAttribute(name = "ID")
-        protected String id = "WMPSO.TxStandardWordtime";
+        protected String id = "WBASSO.TxStandardWorktime";
 
         /**
          * 取得 id 特性的值.
@@ -203,6 +203,7 @@ public class StandardtimeRoot {
      */
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "", propOrder = {
+        "standardid",
         "unitno",
         "stationid",
         "lineid",
@@ -220,32 +221,48 @@ public class StandardtimeRoot {
     })
     public static class STANDARDWORKTIME {
 
+        @XmlElement(name = "STANDARD_ID", required = true)
+        protected Integer standardid;
+        
         @XmlElement(name = "UNIT_NO", required = true, nillable = true)
         protected String unitno;
-        @XmlElement(name = "STATION_ID", required = true, nillable = true)
-        protected Integer stationid;
-        @XmlElement(name = "LINE_ID", required = true, nillable = true)
-        protected Integer lineid;
+        
         @XmlElement(name = "ITEM_NO", required = true, nillable = true)
         protected String itemno;
-        @XmlElement(name = "TOTAL_CT", required = true, nillable = true)
-        protected BigDecimal totalct;
-        @XmlElement(name = "FIRST_TIME", required = true, nillable = true)
-        protected BigDecimal firsttime;
-        @XmlElement(name = "CT", required = true, nillable = true)
-        protected BigDecimal ct;
-        @XmlElement(name = "SIDE", required = true, nillable = true)
-        protected Integer side;
+        
+        @XmlElement(name = "LINE_ID", required = true, nillable = true)
+        protected Integer lineid;
+        
         @XmlElement(name = "OP_CNT", required = true, nillable = true)
         protected Integer opcnt;
-        @XmlElement(name = "KP_TYPE", required = true, nillable = true)
-        protected String kptype;
-        @XmlElement(name = "MACHINE_CNT", required = true, nillable = true)
-        protected Integer machinecnt;
+        
+        @XmlElement(name = "FIRST_TIME", required = true, nillable = true)
+        protected BigDecimal firsttime;
+        
+        @XmlElement(name = "TOTAL_CT", required = true, nillable = true)
+        protected BigDecimal totalct;
+        
         @XmlElement(name = "MIX_CT", required = true, nillable = true)
         protected BigDecimal mixct;
+        
         @XmlElement(name = "AUTO_CT", required = true, nillable = true)
         protected BigDecimal autoct;
+        
+        @XmlElement(name = "CT", required = true, nillable = true)
+        protected BigDecimal ct;
+        
+        @XmlElement(name = "MACHINE_CNT", required = true, nillable = true)
+        protected Integer machinecnt;
+        
+        @XmlElement(name = "SIDE", required = true, nillable = true)
+        protected Integer side;
+        
+        @XmlElement(name = "STATION_ID", required = true, nillable = true)
+        protected Integer stationid;
+        
+        @XmlElement(name = "KP_TYPE", required = true, nillable = true)
+        protected String kptype;
+        
         @XmlElement(name = "CHANGE_REASON_NO", required = true, nillable = true)
         protected String changeReasonNo;
 
@@ -484,6 +501,18 @@ public class StandardtimeRoot {
         public void setCHANGEREASONNO(String changeReasonNo) {
             this.changeReasonNo = changeReasonNo;
         }
+
+        /**
+         * 設定 standardId 特性的值.
+         *
+         */
+        public Integer getStANDARDID() {
+            return standardid;
+        }
+
+        public void setSTANDARDID(Integer standardId) {
+            this.standardid = standardId;
+        }        
 
     }
 

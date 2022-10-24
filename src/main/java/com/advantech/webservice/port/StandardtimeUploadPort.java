@@ -101,8 +101,9 @@ public class StandardtimeUploadPort extends BasicUploadPort implements UploadPor
         if (isCtChanged(totalCt, standardWorktime)) {
             StandardtimeRoot root = new StandardtimeRoot();
             StandardtimeRoot.STANDARDWORKTIME swt = root.getSTANDARDWORKTIME();
+            swt.setSTANDARDID(standardWorktime == null ? 0 : standardWorktime.getSTANDARDID());
             swt.setUNITNO(columnUnit);
-            swt.setSTATIONID(setting.getStationId());
+            swt.setSTATIONID(setting.getStationId() == null ? -1 : setting.getStationId());
             swt.setLINEID(setting.getLineId());
             swt.setITEMNO(w.getModelName());
             swt.setTOTALCT(totalCt);
@@ -131,7 +132,7 @@ public class StandardtimeUploadPort extends BasicUploadPort implements UploadPor
                 swt.setMACHINECNT(0);
                 swt.setOPCNT(1);
             }
-            super.upload(root, UploadType.INSERT);
+            super.upload(root, standardWorktime == null ? UploadType.INSERT : UploadType.UPDATE);
         }
     }
 

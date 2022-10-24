@@ -22,6 +22,7 @@ import com.advantech.webservice.port.ModelResponsorUploadPort;
 import com.advantech.webservice.port.MtdTestIntegrityUploadPort;
 import com.advantech.webservice.port.SopUploadPort;
 import com.advantech.webservice.port.StandardtimeUploadPort;
+import java.math.BigDecimal;
 import java.util.List;
 import static java.util.stream.Collectors.toList;
 import javax.transaction.Transactional;
@@ -138,13 +139,14 @@ public class UploadPortTest {
     @Test
     @Rollback(true)
     public void testStandardtimeUpload() throws Exception {
-        List<Worktime> l = worktimeService.findWithFlowRelation();
+        List<Worktime> l = worktimeService.findWithFlowRelation(12343);
         assertNotNull(l.get(0));
-        List<WorktimeAutouploadSetting> settings = worktimeAutouploadSettingService.findByPrimaryKeys(19, 20, 21, 22);
+        List<WorktimeAutouploadSetting> settings = worktimeAutouploadSettingService.findByPrimaryKeys(2, 4);
         standardtimePort.initSettings(settings);
 
         for (Worktime worktime : l) {
             System.out.println("Upload model: " + worktime.getModelName());
+            worktime.setAssy(new BigDecimal(26));
             worktime.setReasonCode("A6");
             standardtimePort.update(worktime);
         }

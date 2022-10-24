@@ -19,6 +19,7 @@ import com.advantech.webservice.port.ModelResponsorQueryPort;
 import com.advantech.webservice.port.MtdTestIntegrityQueryPort;
 import com.advantech.webservice.port.SopQueryPort;
 import com.advantech.webservice.port.StandardWorkTimeQueryPort;
+import com.advantech.webservice.root.Section;
 import com.advantech.webservice.unmarshallclass.StandardWorkReason;
 import com.advantech.webservice.unmarshallclass.FlowRule;
 import com.advantech.webservice.unmarshallclass.MaterialFlow;
@@ -34,7 +35,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import static java.util.stream.Collectors.toList;
 import javax.transaction.Transactional;
 import static org.junit.Assert.*;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -276,10 +276,10 @@ public class QueryPortTest {
         HibernateObjectPrinter.print(l);
     }
 
-//    @Test
+    @Test
     public void testStandardWorkTimeQueryPort() throws Exception {
-        List<StandardWorkTime> l = this.worktimeQueryPort.query("IMC-450-SL");
-        l = l.stream().filter(s -> s.getITEMNO().equals("IMC-450-SL")).collect(toList());
+        List<StandardWorkTime> l = this.worktimeQueryPort.query("HPC8212SE1808-T", Section.BAB.getCode());
+//        l = l.stream().filter(s -> s.getITEMNO().equals("IMC-450-SL")).collect(toList());
 
         HibernateObjectPrinter.print(l);
     }
