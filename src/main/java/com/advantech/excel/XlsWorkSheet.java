@@ -247,8 +247,8 @@ public class XlsWorkSheet {
         for (int row = 0, rowCount = this.getRowCount(); row < rowCount; row++) {
             HSSFCell checkedCell = _sheet.getRow(row).getCell(0);
             HSSFCell checkedCell2 = _sheet.getRow(row).getCell(1);
-            if (checkedCell == null || checkedCell.getCellType() == CellType.BLANK
-                    || checkedCell2 == null || checkedCell2.getCellType() == CellType.BLANK
+            if (checkedCell == null || checkedCell.getCellTypeEnum() == CellType.BLANK
+                    || checkedCell2 == null || checkedCell2.getCellTypeEnum() == CellType.BLANK
                     || ("".equals(formatter.formatCellValue(checkedCell)) && "".equals(formatter.formatCellValue(checkedCell2)))) {
                 continue;
             }
@@ -263,9 +263,6 @@ public class XlsWorkSheet {
                         continue;
                     }
                     String pType = m.getGenericParameterTypes()[0].toString();
-                    if (pType.contains("java.util.List") || pType.contains("java.util.Set")) {
-                        continue;
-                    }
                     switch (pType) {
                         case "class java.lang.Integer":
                         case "int":

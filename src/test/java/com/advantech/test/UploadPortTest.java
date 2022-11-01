@@ -6,8 +6,8 @@
 package com.advantech.test;
 
 import com.advantech.jqgrid.PageInfo;
+import com.advantech.model.Pending;
 import com.advantech.model.Worktime;
-import com.advantech.model.WorktimeAutouploadSetting;
 import com.advantech.quartzJob.StandardTimeUpload;
 import com.advantech.service.FlowService;
 import com.advantech.service.PendingService;
@@ -19,7 +19,6 @@ import com.advantech.webservice.port.MaterialPropertyUploadPort;
 import com.advantech.webservice.port.ModelResponsorUploadPort;
 import com.advantech.webservice.port.SopUploadPort;
 import com.advantech.webservice.port.StandardtimeUploadPort;
-import java.math.BigDecimal;
 import java.util.List;
 import javax.transaction.Transactional;
 import static junit.framework.Assert.*;
@@ -120,14 +119,13 @@ public class UploadPortTest {
     @Test
     @Rollback(true)
     public void testStandardtimeUpload() throws Exception {
-        List<Worktime> l = worktimeService.findByPrimaryKeys(2156);
+        List<Worktime> l = worktimeService.findAll();
         assertNotNull(l.get(0));
-        List<WorktimeAutouploadSetting> settings = worktimeAutouploadSettingService.findByPrimaryKeys(2, 23, 24);
-        standardtimePort.initSettings(settings);
+//        List<WorktimeAutouploadSetting> settings = worktimeAutouploadSettingService.findByPrimaryKeys(19, 20, 21, 22);
+        standardtimePort.initSettings();
 
         l.forEach((worktime) -> {
             try {
-                worktime.setAssy(new BigDecimal(20));
                 System.out.println("Upload model: " + worktime.getModelName());
                 standardtimePort.update(worktime);
             } catch (Exception ex) {

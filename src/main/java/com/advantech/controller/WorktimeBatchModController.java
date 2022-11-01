@@ -10,7 +10,6 @@ import com.advantech.excel.XlsWorkBook;
 import com.advantech.excel.XlsWorkSheet;
 import com.advantech.helper.WorktimeValidator;
 import com.advantech.model.BusinessGroup;
-import com.advantech.model.Cobot;
 import com.advantech.model.Floor;
 import com.advantech.model.Flow;
 import com.advantech.model.Pending;
@@ -21,7 +20,6 @@ import com.advantech.model.User;
 import com.advantech.model.WorkCenter;
 import com.advantech.model.Worktime;
 import com.advantech.service.BusinessGroupService;
-import com.advantech.service.CobotService;
 import com.advantech.service.FloorService;
 import com.advantech.service.FlowService;
 import com.advantech.service.PendingService;
@@ -35,7 +33,6 @@ import com.advantech.service.WorktimeService;
 import com.google.gson.Gson;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -93,9 +90,6 @@ public class WorktimeBatchModController {
     
     @Autowired
     private WorkCenterService workCenterService;
-    
-    @Autowired
-    private CobotService cobotService;
     
     @Autowired
     private RemarkService remarkService;
@@ -291,7 +285,6 @@ public class WorktimeBatchModController {
         Map<String, BusinessGroup> businessGroupOptions = toSelectOptions(businessGroupService.findAll());
         Map<String, WorkCenter> workCenterOptions = toSelectOptions(workCenterService.findAll());
         Map<String, Remark> remarkOptions = toSelectOptions(remarkService.findAll());
-        Map<String, Cobot> cobotOptions = toSelectOptions(cobotService.findAll());
 
         //設定關聯by name
         for (int i = 0; i < hgList.size(); i++) {
@@ -330,17 +323,7 @@ public class WorktimeBatchModController {
             
             String remarkName = sheet.getValue(i, "remarkName").toString();
             w.setRemark(valid(remarkName, remarkOptions.get(remarkName)));
-            
-            String cobotNames = sheet.getValue(i, "cobots").toString();
-            String[] cobotNamesArr = (cobotNames == null ? new String[0] : cobotNames.trim().split(","));
-            Set<Cobot> c = new HashSet();
-            for (String cobotName : cobotNamesArr) {
-                Cobot cobot = valid(cobotName, cobotOptions.get(cobotName));
-                if (cobot != null) {
-                    c.add(cobot);
-                }
-            }
-            w.setCobots(c);
+
         }
 
         return hgList;

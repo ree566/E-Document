@@ -19,61 +19,34 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "QryData")
 public class StandardWorkTime implements Serializable {
-    
-    @XmlElement(name = "STANDARD_ID", required = true)
-    protected Integer stardardId;
 
     @XmlElement(name = "UNIT_NO", required = true, nillable = true)
     protected String unitno;
-    
     @XmlElement(name = "STATION_ID", required = true, nillable = true)
     protected Integer stationid;
-    
     @XmlElement(name = "LINE_ID", required = true, nillable = true)
     protected Integer lineid;
-    
     @XmlElement(name = "ITEM_NO", required = true, nillable = true)
     protected String itemno;
-    
     @XmlElement(name = "TOTAL_CT", required = true, nillable = true)
     protected BigDecimal totalct;
-    
     @XmlElement(name = "FIRST_TIME", required = true, nillable = true)
     protected BigDecimal firsttime;
-    
     @XmlElement(name = "CT", required = true, nillable = true)
     protected BigDecimal ct;
-    
     @XmlElement(name = "SIDE", required = true, nillable = true)
     protected Integer side;
-    
     @XmlElement(name = "OP_CNT", required = true, nillable = true)
     protected Integer opcnt;
-    
     @XmlElement(name = "KP_TYPE", required = true, nillable = true)
     protected String kptype;
-    
     @XmlElement(name = "MACHINE_CNT", required = true, nillable = true)
     protected Integer machinecnt;
-    
     @XmlElement(name = "MIX_CT", required = true, nillable = true)
     protected BigDecimal mixct;
-    
     @XmlElement(name = "AUTO_CT", required = true, nillable = true)
     protected BigDecimal autoct;
 
-    /**
-     * 取得 stationid 特性的值.
-     * 
-     */
-    public Integer getSTANDARDID() {
-        return stardardId;
-    }
-
-    public void setSTANDARDID(Integer stardardId) {
-        this.stardardId = stardardId;
-    }
-    
     /**
      * 取得 unitno 特性的值.
      *

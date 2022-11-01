@@ -36,13 +36,8 @@ public class StandardWorkTimeQueryPort extends BasicQueryPort {
     }
 
     public List<StandardWorkTime> query(String modelName) throws Exception {
-        return this.query(modelName, null);
-    }
-
-    public List<StandardWorkTime> query(String modelName, String unitNo) throws Exception {
         StandardWorktimeQueryRoot root = new StandardWorktimeQueryRoot();
         root.getSTANDARDWORKTIME().setITEMNO(modelName);
-        root.getSTANDARDWORKTIME().setUNITNO(unitNo);
         return this.query(root);
     }
 

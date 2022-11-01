@@ -414,8 +414,8 @@ public class Worktime implements java.io.Serializable {
         this.cleanPanel = autoFixScale(cleanPanel, 1);
     }
 
-    @Digits(integer = 10 /*precision*/, fraction = 2 /*scale*/)
-    @Column(name = "machine_worktime", precision = 10, scale = 2)
+    @Digits(integer = 10 /*precision*/, fraction = 1 /*scale*/)
+    @Column(name = "machine_worktime", precision = 10, scale = 1)
     public BigDecimal getMachineWorktime() {
         return machineWorktime;
     }
