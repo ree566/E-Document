@@ -5,6 +5,7 @@
  */
 package com.advantech.test;
 
+import com.advantech.helper.EmployeeZoneUtils;
 import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.helper.SpringExpressionUtils;
 import com.advantech.jqgrid.PageInfo;
@@ -20,6 +21,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 /**
  *
@@ -76,4 +79,13 @@ public class SpringExpressionTest {
         System.out.println(o1);
         System.out.println(o1.getClass());
     }
+    
+    @Autowired
+    private EmployeeZoneUtils ezUtils;
+    
+    @Test
+    public void testRestApi() {
+        HibernateObjectPrinter.print(ezUtils.findUser("A-7568"));
+    }
+    
 }

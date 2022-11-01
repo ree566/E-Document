@@ -73,6 +73,20 @@
         <property name="jobDetail" ref="jobDetail5"/>
         <property name="cronExpression" value="0 0 11,16 ? * MON-SAT *"/>
     </bean>
+    
+    <!--job6 setting-->
+    <!--Remove non-exist users-->
+    <bean id="targetClass6" class="com.advantech.quartzJob.SyncEmployeeZoneUser"/>
+    
+    <bean id="jobDetail6" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="targetClass6"/>
+        <property name="targetMethod" value="execute"/>
+    </bean>
+    
+    <bean id="cronTrigger6" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="jobDetail6"/>
+        <property name="cronExpression" value="0 0 12 ? * SAT *"/>
+    </bean>
 
     <!--schedule jobs-->
     <bean id="schedulerFactoryBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
@@ -83,6 +97,7 @@
                 <!--<ref bean="cronTrigger3"/>-->
                 <ref bean="cronTrigger4"/>
                 <ref bean="cronTrigger5"/>
+                <ref bean="cronTrigger6"/>
             </list>
         </property>
         <property name="schedulerName">

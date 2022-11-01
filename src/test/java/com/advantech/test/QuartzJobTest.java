@@ -7,6 +7,7 @@ package com.advantech.test;
 
 import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.quartzJob.StandardTimeUpload;
+import com.advantech.quartzJob.SyncEmployeeZoneUser;
 import com.advantech.quartzJob.WorktimeEventLog1;
 import com.advantech.quartzJob.WorktimeFieldValueRetrieve;
 import org.junit.Test;
@@ -39,6 +40,10 @@ public class QuartzJobTest {
     @Autowired
     @Qualifier("worktimeFieldValueRetrieve")
     private WorktimeFieldValueRetrieve job3;
+    
+    @Autowired
+    @Qualifier("syncEmployeeZoneUser")
+    private SyncEmployeeZoneUser job4;
 
 //    @Test
     public void testWorktimeEventLog() {
@@ -56,6 +61,11 @@ public class QuartzJobTest {
     public void testWorktimeFieldValueRetrieve() {
 
         HibernateObjectPrinter.print(job3.getMailByNotification("worktime_ie_alarm"));
+    }
+    
+    @Test
+    public void testSyncEmployeeZoneUser() {
+        job4.execute();
     }
 
 }

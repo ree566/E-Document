@@ -5,7 +5,9 @@
  */
 package com.advantech.test;
 
+import com.advantech.helper.EmployeeZoneUtils;
 import com.advantech.helper.HibernateObjectPrinter;
+import com.advantech.model.User;
 import com.advantech.model.Worktime;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
@@ -19,6 +21,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import static org.springframework.http.HttpStatus.REQUEST_TIMEOUT;
+import org.springframework.web.reactive.function.client.WebClient;
 
 /**
  *
@@ -71,7 +76,7 @@ public class Test1Test {
 
         String json = new Gson().toJson(l);
 
-        try (FileWriter file = new FileWriter(filePath)) {
+        try ( FileWriter file = new FileWriter(filePath)) {
             file.write(json);
             System.out.println("Successfully Copied JSON Object to File...");
         }
@@ -111,14 +116,10 @@ public class Test1Test {
         String[] i = test1.split(";");
         int len = (int) Arrays.stream(i).filter(o -> !"".equals(o)).count();
         System.out.println(len);
-        
+
         String[] i2 = test2.split(";");
         int len2 = (int) Arrays.stream(i2).filter(o -> !"".equals(o)).count();
         System.out.println(len2);
     }
-    
-    @Test
-    public void testDecimal() {
-        BigDecimal b = BigDecimal.ZERO;
-    }
+
 }

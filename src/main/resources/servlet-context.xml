@@ -188,6 +188,11 @@
     
     <!--regist for WsClient.class use, -->
     <bean id="objectFactory" class="org.tempuri.ObjectFactory" />
+    
+    <!--regist web api config-->
+    <bean id="employeeZoneUtils" class="com.advantech.helper.EmployeeZoneUtils">
+        <property name="webapiUrl" value="http://172.22.250.120:7878/v1/"/>
+    </bean>
 
     <import resource="classpath:spring-security.xml"/>
     <import resource="classpath:spring-quartz.xml"/>

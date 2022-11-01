@@ -134,6 +134,29 @@
             <artifactId>spring-oxm</artifactId>
             <version>${spring.version}</version>
         </dependency>
+        
+        <!--webapi config must contains spring-webflux reactor-netty reactor-core to call api-->
+        
+        <!-- https://mvnrepository.com/artifact/org.springframework/spring-webflux -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webflux</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        
+        <!-- https://mvnrepository.com/artifact/io.projectreactor.netty/reactor-netty -->
+        <dependency>
+            <groupId>io.projectreactor.netty</groupId>
+            <artifactId>reactor-netty</artifactId>
+            <version>1.0.24</version>
+        </dependency>
+        
+        <!-- https://mvnrepository.com/artifact/io.projectreactor/reactor-core -->
+        <dependency>
+            <groupId>io.projectreactor</groupId>
+            <artifactId>reactor-core</artifactId>
+            <version>3.4.24</version>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework.security</groupId>
