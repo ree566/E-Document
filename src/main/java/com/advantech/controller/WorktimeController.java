@@ -72,7 +72,7 @@ public class WorktimeController extends CrudController<Worktime> {
         
         modifyMessage = worktimeService.insertWithFormulaSetting(worktime) == 1 ? this.SUCCESS_MESSAGE : FAIL_MESSAGE;
         if (SUCCESS_MESSAGE.equals(modifyMessage)) {
-            worktimeMailManager.notifyUser(newArrayList(worktime), ADD);
+            worktimeMailManager.notifyUser(newArrayList(worktime), CrudAction.ADD);
         }
 
         return serverResponse(modifyMessage);

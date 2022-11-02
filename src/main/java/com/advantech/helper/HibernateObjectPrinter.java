@@ -25,14 +25,6 @@ public class HibernateObjectPrinter {
         mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
     }
 
-    public static void print(Object obj) {
-        try {
-            System.out.println(mapper.writeValueAsString(obj));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public static void print(Object... obj) {
         try {
             for (Object o : obj) {

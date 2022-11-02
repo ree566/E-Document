@@ -5,6 +5,7 @@
  */
 package com.advantech.test;
 
+import com.advantech.helper.EmployeeZoneUtils;
 import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.helper.SpringExpressionUtils;
 import com.advantech.model.Worktime;
@@ -54,4 +55,13 @@ public class SpringExpressionTest {
         
         
     }
+    
+    @Autowired
+    private EmployeeZoneUtils ezUtils;
+    
+    @Test
+    public void testRestApi() {
+        HibernateObjectPrinter.print(ezUtils.findUser("A-7568"));
+    }
+    
 }

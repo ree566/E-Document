@@ -38,7 +38,7 @@ public class WorktimeMailManager {
     @Value("#{contextParameters[pageTitle] ?: ''}")
     private String pageTitle;
 
-    public void notifyUser(List<Worktime> l, String action) {
+    public void notifyUser(List<Worktime> l, CrudAction action) {
         String[] to = getMailByNotification("worktime_alarm");
         String[] cc = getMailByNotification("worktime_alarm_cc");
 
@@ -52,7 +52,7 @@ public class WorktimeMailManager {
         }
     }
 
-    public void notifyUser2(List<String> modelNames, String action) {
+    public void notifyUser2(List<String> modelNames, CrudAction action) {
         String[] to = getMailByNotification("worktime_alarm");
         String[] cc = getMailByNotification("worktime_alarm_cc");
 
@@ -78,12 +78,12 @@ public class WorktimeMailManager {
         return mails;
     }
 
-    private String generateTextBody(List<Worktime> l, final String action) {
+    private String generateTextBody(List<Worktime> l, final CrudAction action) {
         List<String> modelNames = l.stream().map(w -> w.getModelName()).collect(toList());
         return this.generateTextBody2(modelNames, action);
     }
 
-    private String generateTextBody2(List<String> l, final String action) {
+    private String generateTextBody2(List<String> l, final CrudAction action) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         StringBuilder sb = new StringBuilder();
         sb.append("<p>Dear All:</p>");

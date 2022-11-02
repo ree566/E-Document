@@ -39,8 +39,10 @@ public class WsClient extends WebServiceGatewaySupport {
     @Qualifier("webServiceTemplate")
     private WebServiceTemplate webServiceTemplate;
 
+    @Autowired
+    private ObjectFactory factory;
+
     public TxResponse simpleTxSendAndReceive(String v, UploadType type) throws IOException {
-        ObjectFactory factory = new ObjectFactory();
         Tx tx = factory.createTx();
         tx.setSParam(v);
         tx.setSType(type.toString());
@@ -49,7 +51,6 @@ public class WsClient extends WebServiceGatewaySupport {
     }
 
     public RvResponse simpleRvSendAndReceive(String v) {
-        ObjectFactory factory = new ObjectFactory();
         Rv rv = factory.createRv();
         rv.setSParam(v);
         RvResponse response = (RvResponse) webServiceTemplate.marshalSendAndReceive(rv);

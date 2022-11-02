@@ -118,17 +118,17 @@ public class QueryPortTest {
         HibernateObjectPrinter.print(l);
     }
 
-//    @Test
+    @Test
     public void testMesUserInfoQueryPort() throws Exception {
         List l = mesUserQueryPort.query(w);
-        assertEquals(3, l.size());
+        assertEquals(4, l.size());
         HibernateObjectPrinter.print(l);
 
 //        Map m = mesUserQueryPort.transformData(w);
 //        HibernateObjectPrinter.print(m);
     }
 
-//    @Test
+    @Test
     public void testFlowRuleQueryPort() throws Exception {
         FlowRule rule = flowRuleQueryPort.query("B", "empty");
         assertNull(rule);

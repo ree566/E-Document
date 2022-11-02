@@ -72,7 +72,6 @@ public class AuditController {
                     List<Object[]> auditInfo = worktimeAuditService.findAll(tempInfo);
                     Worktime auditW = (auditInfo.isEmpty() ? null : (Worktime) auditInfo.get(0)[0]);
                     w = auditW != null ? auditW : null;
-
                 }
                 if (w != null) {
                     l = worktimeAuditService.findByDate(w.getId(), info, d1.toDate(), d2.toDate());
