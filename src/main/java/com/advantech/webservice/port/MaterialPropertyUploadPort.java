@@ -6,9 +6,11 @@
 package com.advantech.webservice.port;
 
 import com.advantech.helper.SpringExpressionUtils;
+import com.advantech.model.Flow;
 import com.advantech.model.User;
 import com.advantech.model.Worktime;
 import com.advantech.model.WorktimeMaterialPropertyUploadSetting;
+import com.advantech.service.FlowService;
 import com.advantech.service.PendingService;
 import com.advantech.service.WorktimeMaterialPropertyUploadSettingService;
 import com.advantech.webservice.root.MaterialPropertyBatchUploadRoot;
@@ -58,6 +60,9 @@ public class MaterialPropertyUploadPort extends BasicUploadPort implements Uploa
     private PendingService pendingService;
 
     @Autowired
+    private FlowService flowService;
+
+    @Autowired
     private SpringExpressionUtils expressionUtils;
 
     private List<MaterialProperty> temp_MaterialPropertys = new ArrayList();
@@ -92,6 +97,9 @@ public class MaterialPropertyUploadPort extends BasicUploadPort implements Uploa
 
     @Override
     public void insert(Worktime w) throws Exception {
+        //Mes upload port need to get babFlow name in proxy lazy init object of "Flow"
+        retrieveWorktimeBabFlowRelative(w);
+
         //Query to prevent override the exists setting on MES.
         List<MaterialPropertyValue> remotePropSettings = materialPropertyValueQueryPort.query(w);
         MaterialPropertyBatchUploadRoot root = this.checkDifferenceAndGenerateRoot(remotePropSettings, w);
@@ -100,6 +108,9 @@ public class MaterialPropertyUploadPort extends BasicUploadPort implements Uploa
 
     @Override
     public void update(Worktime w) throws Exception {
+        //Mes upload port need to get babFlow name in proxy lazy init object of "Flow"
+        retrieveWorktimeBabFlowRelative(w);
+
         List<MaterialPropertyValue> remotePropSettings = materialPropertyValueQueryPort.query(w);
         MaterialPropertyBatchUploadRoot root = this.checkDifferenceAndGenerateRoot(remotePropSettings, w);
         super.upload(root, UploadType.UPDATE);
@@ -235,5 +246,17 @@ public class MaterialPropertyUploadPort extends BasicUploadPort implements Uploa
                 .orElse(null);
         checkArgument(propInfo != null, "Can't find materialProperty: " + matPropNo);
         return propInfo;
+    }
+
+    private void retrieveWorktimeBabFlowRelative(Worktime w) {
+        Flow f = w.getFlowByBabFlowId();
+        
+        //Don't retrieve model when flow is already initialized or flow is not present
+        if (f == null || f.getId() == 0 || !(f.getName() == null || "".equals(f.getName()))) {
+            return;
+        }
+
+        f = this.flowService.findByPrimaryKey(f.getId());
+        w.setFlowByBabFlowId(f);
     }
 }
