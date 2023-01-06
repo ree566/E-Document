@@ -99,7 +99,7 @@ public class Worktime implements java.io.Serializable {
 
     @JsonView(View.Public.class)
     private BigDecimal cleanPanel = BigDecimal.ZERO;
-    
+
     @JsonView(View.Public.class)
     private BigDecimal machineWorktime = BigDecimal.ZERO;
 
@@ -265,6 +265,9 @@ public class Worktime implements java.io.Serializable {
     @JsonView(View.Internal.class)
     private Set<Cobot> cobots = new HashSet<Cobot>(0);
 
+    @JsonView(View.Public.class)
+    private BigDecimal tpWorktime = BigDecimal.ZERO;
+
     public Worktime() {
     }
 
@@ -423,7 +426,7 @@ public class Worktime implements java.io.Serializable {
     public void setMachineWorktime(BigDecimal machineWorktime) {
         this.machineWorktime = machineWorktime;
     }
-    
+
     @Digits(integer = 10 /*precision*/, fraction = 1 /*scale*/)
     @Column(name = "[pi]", precision = 10, scale = 1)
     public BigDecimal getPi() {
@@ -978,6 +981,16 @@ public class Worktime implements java.io.Serializable {
 
     public void setCobots(Set<Cobot> cobots) {
         this.cobots = cobots;
+    }
+
+    @Digits(integer = 10 /*precision*/, fraction = 1 /*scale*/)
+    @Column(name = "tp_worktime", precision = 10, scale = 1)
+    public BigDecimal getTpWorktime() {
+        return tpWorktime;
+    }
+
+    public void setTpWorktime(BigDecimal tpWorktime) {
+        this.tpWorktime = tpWorktime;
     }
 
 //  Default formula column caculate

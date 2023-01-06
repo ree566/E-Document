@@ -72,7 +72,8 @@ var worktimeCol = [
     {name: "highBright"},
     {name: "bondedSealingFrame"},
     {name: "machineWorktime"},
-    {name: "cobots"}
+    {name: "cobots"},
+    {name: "tpWorktime"}
 ];
 
 

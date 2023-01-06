@@ -270,7 +270,8 @@
                         }
                     },
                     search: false
-                }
+                },
+                {label: 'TP工時', name: "tpWorktime", width: 120, searchrules: number_search_rule, searchoptions: search_decimal_options, editrules: {number: true}, editoptions: {defaultValue: '0'}}
             ],
             rowNum: 20,
             rowList: [20, 100, 500],
